@@ -1,6 +1,7 @@
 # MSVC oracle
 
 <!-- toc -->
+
 - [Install](#install)
 - [What it can answer](#what-it-can-answer)
 - [Corpus sweep](#corpus-sweep)
@@ -13,8 +14,8 @@
 
 ## Install
 
-Outside the repo, ~5.5 GB, needs `wine` and `msitools`; accepts
-Microsoft's license.
+Outside the repo, ~5.5 GB, needs `wine` and `msitools`; accepts Microsoft's
+license.
 
 ```
 git clone --depth 1 https://github.com/mstorsjo/msvc-wine ~/.local/share/msvc-wine
@@ -40,28 +41,26 @@ architecture.
 python3 tools/corpus_sweep.py --tool msvc --fixtures tests/fixtures/clang/linux/x86_64/add.c
 ```
 
-- Runs `/Zs`. Fixtures with identical defines, include paths, and mode go
-  in batches of up to 32; a failing batch is split to find the culprits.
+- Runs `/Zs`. Fixtures with identical defines, include paths, and mode go in
+  batches of up to 32; a failing batch is split to find the culprits.
 - C89, C99, C23 fixtures run as C17 (`cl.exe` lacks those modes).
 
 ## clang/test MS-mode sweep
 
-`tools/llvm_lit_sweep.py <out.jsonl>` runs every Windows-triple or
-`%clang_cl` RUN line in `~/llvm-project/clang/test/**/*.c` through slate
-(both flavors), `clang --target=<triple> -fsyntax-only` with the slate
-sysroot as `-isystem`, and `tools/cl.exe /Zs`.
+`tools/llvm_lit_sweep.py <out.jsonl>` runs every Windows-triple or `%clang_cl`
+RUN line in `~/llvm-project/clang/test/**/*.c` through slate (both flavors),
+`clang --target=<triple> -fsyntax-only` with the slate sysroot as `-isystem`,
+and `tools/cl.exe /Zs`.
 
-- Skips driver, PCH, CIR, `-E`-only runs, and `-verify` runs expecting
-  errors.
-- Pins slate to the oracle's standard (gnu17 for clang, the mapped `/std:`
-  for msvc).
+- Skips driver, PCH, CIR, `-E`-only runs, and `-verify` runs expecting errors.
+- Pins slate to the oracle's standard (gnu17 for clang, the mapped `/std:` for
+  msvc).
 - `--migrate tests/fixtures/suites/clang-test` writes new fixtures (never
   overwriting) as `<flavor>/windows/<arch>/<Dir>__<stem>.c`.
 
 ## Gotchas
 
-- C mode defaults to pre-C11; pass `/std:c11` or `/std:c17` for
-  `_Static_assert` or get cascading C2143 errors.
+- C mode defaults to pre-C11; pass `/std:c11` or `/std:c17` for `_Static_assert`
+  or get cascading C2143 errors.
 - Use `/Z7`, not `/Zi` (`mspdbsrv` is flaky under Wine).
-- Wine startup is slow per call; use `--fixtures <file.c>` for a targeted
-  check.
+- Wine startup is slow per call; use `--fixtures <file.c>` for a targeted check.

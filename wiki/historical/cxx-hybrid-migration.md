@@ -1,25 +1,18 @@
 # Hybrid C++ migration with residual fallback
 
-> Historical record. See the [archive index](index.md) for scope and source revision.
+> Historical record. See the [archive index](index.md) for scope and source
+> revision.
 
 <!-- toc -->
 
-- [The baseline may be a C++
-  launcher](#the-baseline-may-be-a-c-launcher)
-- [Native Rust and C++ representations may
-  coexist](#native-rust-and-c-representations-may-coexist)
-- [Use a lazy shadow with one authoritative
-  side](#use-a-lazy-shadow-with-one-authoritative-side)
-- [Rewrite and deletion are fixed-point
-  operations](#rewrite-and-deletion-are-fixed-point-operations)
-- [Evidence levels for increasingly interpretive
-  rewrites](#evidence-levels-for-increasingly-interpretive-rewrites)
-- [Shadow execution can validate rewrite
-  rules](#shadow-execution-can-validate-rewrite-rules)
-- [Migration diagnostics are part of the
-  product](#migration-diagnostics-are-part-of-the-product)
-- [Suggested implementation
-sequence](#suggested-implementation-sequence)
+- [The baseline may be a C++ launcher](#the-baseline-may-be-a-c-launcher)
+- [Native Rust and C++ representations may coexist](#native-rust-and-c-representations-may-coexist)
+- [Use a lazy shadow with one authoritative side](#use-a-lazy-shadow-with-one-authoritative-side)
+- [Rewrite and deletion are fixed-point operations](#rewrite-and-deletion-are-fixed-point-operations)
+- [Evidence levels for increasingly interpretive rewrites](#evidence-levels-for-increasingly-interpretive-rewrites)
+- [Shadow execution can validate rewrite rules](#shadow-execution-can-validate-rewrite-rules)
+- [Migration diagnostics are part of the product](#migration-diagnostics-are-part-of-the-product)
+- [Suggested implementation sequence](#suggested-implementation-sequence)
 <!-- /toc -->
 
 > Design sketch, not implemented. This extends
@@ -53,25 +46,25 @@ control flow, and source-only names may not form an independent ABI operation.
 ## Native Rust and C++ representations may coexist
 
 A supported Rust island may prefer `Vec<MyType>` while a residual C++ consumer
-still requires `std::vector<MyType>`. A generated bridge can recursively
-convert the container and its elements in either direction. This permits a
-larger Rust island at the cost of an O(n) allocation and conversion at each
-representation transition.
+still requires `std::vector<MyType>`. A generated bridge can recursively convert
+the container and its elements in either direction. This permits a larger Rust
+island at the cost of an O(n) allocation and conversion at each representation
+transition.
 
 The bridge is a conversion, not a cast. It may change allocation, address,
 capacity, iterator identity, and constructor/destructor activity. Rules must
 therefore classify their semantic strength and prerequisites. A
-`std::vector<int>` bridge is much less constrained than a bridge for a vector
-of move-only, self-referential, polymorphic, allocator-aware, or
-side-effectful objects.
+`std::vector<int>` bridge is much less constrained than a bridge for a vector of
+move-only, self-referential, polymorphic, allocator-aware, or side-effectful
+objects.
 
 ## Use a lazy shadow with one authoritative side
 
 Unconditionally constructing both representations is not a semantics-neutral
 default. Constructing an otherwise-unused C++ shadow can invoke observable
 copy/move constructors, destructors, allocators, registration hooks, or
-exceptions. The general representation should create and synchronize the
-shadow lazily:
+exceptions. The general representation should create and synchronize the shadow
+lazily:
 
 ```rust
 struct HybridVector<T> {
@@ -97,11 +90,10 @@ or as an explicit validation mode. A dual-cache design must never permit
 independent writes to two current copies.
 
 Mutable-reference adapters need copy-in/call/copy-out behavior on both normal
-and exceptional return. Multiple arguments aliasing the same source object
-must receive the same shadow handle. A live pointer, reference, iterator,
-`span`, or `string_view` into a representation prevents switching until it is
-dead; an escaped interior alias may pin the value permanently to its current
-side.
+and exceptional return. Multiple arguments aliasing the same source object must
+receive the same shadow handle. A live pointer, reference, iterator, `span`, or
+`string_view` into a representation prevents switching until it is dead; an
+escaped interior alias may pin the value permanently to its current side.
 
 Reentrant callbacks are synchronization barriers. Residual C++ operating on a
 C++-current value cannot call translated Rust that observes a stale Rust copy.
@@ -110,8 +102,8 @@ first, or keep the callback-connected component on one side.
 
 ## Rewrite and deletion are fixed-point operations
 
-Generated boundary actions should be explicit operations rather than
-incidental adapter code:
+Generated boundary actions should be explicit operations rather than incidental
+adapter code:
 
 ```rust
 slate_bridge::ensure_cpp(&mut value);
@@ -121,15 +113,15 @@ slate_bridge::mark_cpp_mutated(&mut value);
 
 A whole-program Rust cleanup pass can replace `HybridVector<T>` with `Vec<T>`
 once it proves that no reachable caller, callback, export, global, or residual
-C++ operation requests the C++ representation. Removing one residual callee
-may make all its callers eligible, so deletion should iterate to a fixed point.
-The analysis must include the residual C++ call graph and exported ABI; rustc
-alone cannot prove that an external C++ caller does not exist.
+C++ operation requests the C++ representation. Removing one residual callee may
+make all its callers eligible, so deletion should iterate to a fixed point. The
+analysis must include the residual C++ call graph and exported ABI; rustc alone
+cannot prove that an external C++ caller does not exist.
 
 The same rule applies recursively to the type graph. A container cannot become
-Rust-only while a residual consumer still expects the C++ layout of its
-element, base, member, allocator, comparator, or callback state unless an
-explicit bridge handles that edge.
+Rust-only while a residual consumer still expects the C++ layout of its element,
+base, member, allocator, comparator, or callback state unless an explicit bridge
+handles that edge.
 
 ## Evidence levels for increasingly interpretive rewrites
 
@@ -152,19 +144,19 @@ This supports multiple migration policies without conflating them:
 - **Assisted idiomatic**: permit user-approved changes such as exceptions to
   `Result`, byte strings to UTF-8 `String`, or inheritance to composition.
 
-Profiles are evidence for prioritization and speculation, not proofs of
-absence. A profiled property can enable a guarded rewrite while the residual
-C++ path still exists. Deleting the fallback requires a static proof, a user
-assumption, or acceptance that a missed case will panic instead of preserving
-the original behavior.
+Profiles are evidence for prioritization and speculation, not proofs of absence.
+A profiled property can enable a guarded rewrite while the residual C++ path
+still exists. Deleting the fallback requires a static proof, a user assumption,
+or acceptance that a missed case will panic instead of preserving the original
+behavior.
 
 ## Shadow execution can validate rewrite rules
 
 For pure or isolated operations, Slate can execute both the residual C++ and
-candidate Rust implementations and compare their results or post-state. The
-C++ result remains an oracle until the rule is trusted. This does not apply
-blindly to I/O, locks, allocation hooks, globals, or other external effects,
-because executing both implementations would duplicate those effects.
+candidate Rust implementations and compare their results or post-state. The C++
+result remains an oracle until the rule is trusted. This does not apply blindly
+to I/O, locks, allocation hooks, globals, or other external effects, because
+executing both implementations would duplicate those effects.
 
 Useful output modes are:
 
@@ -188,16 +180,16 @@ should also emit a structured report recording:
   representation or the C++ artifact entirely.
 
 The useful measure of migration is the number and weight of remaining boundary
-edges, not the percentage of translated statements. One conversion inside a
-hot loop can dominate a large otherwise-Rust function.
+edges, not the percentage of translated statements. One conversion inside a hot
+loop can dominate a large otherwise-Rust function.
 
 ## Suggested implementation sequence
 
 1. Retain unsupported whole functions in their original C++ translation-unit
    context and generate C-ABI calls and reverse callback adapters.
 2. Add opaque handles with C++-owned lifetime and exception-status adapters.
-3. Introduce explicit bridge operations and lazy single-authority hybrid
-   storage for a narrow value-like type such as `std::vector<int>`.
+3. Introduce explicit bridge operations and lazy single-authority hybrid storage
+   for a narrow value-like type such as `std::vector<int>`.
 4. Add whole-program residual-call and type-usage facts, then delete unused
    shadows to a fixed point.
 5. Add guarded and profile-informed policies without weakening exact mode.

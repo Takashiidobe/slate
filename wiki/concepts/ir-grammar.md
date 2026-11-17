@@ -1,6 +1,7 @@
 # IR Grammar
 
 <!-- toc -->
+
 - [Notation](#notation)
 - [Lexical](#lexical)
 - [Module](#module)
@@ -95,25 +96,29 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
 - `freestanding` marks a unit compiled with `-ffreestanding` or `-fno-hosted`
   (`Module.hosted` false, `__STDC_HOSTED__` 0). `nostdinc` marks a unit compiled
   with `-nostdinc` (`Module.nostdinc`): no system include directories, so no
-  system libc. Slate emits core-only Rust when either is set. In a `freestanding`
-  unit `main` is not the program entry (C11 5.1.2.1): slate exports it as the C
-  symbol `main` with its own signature, with no `__slate_main` rename or
-  argc/argv shim, and a project of such units is a library, so `--crate-type`
-  applies. A `nostdinc`-only unit is still hosted and keeps the shim. A `no_std`
-  crate root also defines a weak `rust_eh_personality`, because calls through
-  `C-unwind` function pointers under `panic=abort` reference it.
+  system libc. Slate emits core-only Rust when either is set. In a
+  `freestanding` unit `main` is not the program entry (C11 5.1.2.1): slate
+  exports it as the C symbol `main` with its own signature, with no
+  `__slate_main` rename or argc/argv shim, and a project of such units is a
+  library, so `--crate-type` applies. A `nostdinc`-only unit is still hosted and
+  keeps the shim. A `no_std` crate root also defines a weak
+  `rust_eh_personality`, because calls through `C-unwind` function pointers
+  under `panic=abort` reference it.
 - `machine` lists the machine codegen flags the unit set explicitly
-  (`Module.machine`, a `MachineCodegen`), in the order above, and is omitted when
-  none is set: `-mcmodel=`, the last `-fpic`/`-fPIC`/`-fpie`/`-fPIE`/`-fno-*`
-  (`pic=none` for level 0), `-m[no-]red-zone`, `-fcf-protection` (gcc's `check`
-  bit prints as `check` or `<level>+check`), `-mindirect-branch-cs-prefix`, and
-  clang's `-mretpoline`. They change no C semantics; slate maps them to the
-  crate's Rust target and rustflags for freestanding units.
+  (`Module.machine`, a `MachineCodegen`), in the order above, and is omitted
+  when none is set: `-mcmodel=`, the last
+  `-fpic`/`-fPIC`/`-fpie`/`-fPIE`/`-fno-*` (`pic=none` for level 0),
+  `-m[no-]red-zone`, `-fcf-protection` (gcc's `check` bit prints as `check` or
+  `<level>+check`), `-mindirect-branch-cs-prefix`, and clang's `-mretpoline`.
+  They change no C semantics; slate maps them to the crate's Rust target and
+  rustflags for freestanding units.
 - `storage` lines cover every scalar format a module can name (`bool`, standard
   integers, floats, in that order), only for formats the target supports.
   Bit-precise integers, pointers, `va_list`, and composites are derived at the
   use site.
-- A `linker_option` is one option of an MSVC `#pragma comment(linker, ...)` other than `/alternatename` and `/include`, verbatim, in source order after the module asm.
+- A `linker_option` is one option of an MSVC `#pragma comment(linker, ...)`
+  other than `/alternatename` and `/include`, verbatim, in source order after
+  the module asm.
 - A module-level [`asm`](#statements) is a file-scope `asm("...")`, in source
   order before the types. No qualifiers or goto labels; operands only under the
   GNU personality, so it is almost always the single-`;` form.
@@ -263,8 +268,8 @@ target_feature = ( "+" | "-" ) feature_name | "arch=" cpu_name | "tune=" cpu_nam
 - `[constructor=N]` and `[destructor=N]` are `__attribute__((constructor(N)))`
   and `((destructor(N)))`; `N` defaults to 65535. The lowerer registers the
   function in `.init_array`/`.fini_array` (`.N` suffix when not the default),
-  `__DATA,__mod_init_func`/`__mod_term_func` on Darwin, or `.CRT$XCU` on
-  Windows (constructors only).
+  `__DATA,__mod_init_func`/`__mod_term_func` on Darwin, or `.CRT$XCU` on Windows
+  (constructors only).
 - `[interrupt]` is `__attribute__((interrupt))` from any declaration; the
   backend picks the interrupt calling convention from the function.
 - `[overloadable]` is clang's `__attribute__((overloadable))`. Several functions
@@ -276,9 +281,9 @@ target_feature = ( "+" | "-" ) feature_name | "arch=" cpu_name | "tune=" cpu_nam
 - `[target=...]` is `__attribute__((target("...")))` split as clang does:
   comma-separated and trimmed, empty entries dropped, `no-x` is `-x`. The last
   `target` attribute across declarations wins. Feature names are not validated.
-- `[sme=...]` is an SME keyword attribute on an AArch64 function, in source order:
-  `streaming`, `streaming_compatible`, `locally_streaming`, `new`, `in`, `out`,
-  `inout` or `preserves`; the last five carry their `za`/`zt0` states.
+- `[sme=...]` is an SME keyword attribute on an AArch64 function, in source
+  order: `streaming`, `streaming_compatible`, `locally_streaming`, `new`, `in`,
+  `out`, `inout` or `preserves`; the last five carry their `za`/`zt0` states.
 - `memory=none` (GNU `const`) reads and writes no memory beyond the arguments;
   `memory=read` (`pure`) may read but not write. Absent means unrestricted.
 
@@ -300,8 +305,7 @@ chunk         = "i" digits | float_type | "pair<" float_type ">" | "quad<" float
   as the C compiler does. Other record and complex shapes are explicit because
   rustc would differ.
 - `pair<T>` / `quad<T>`: two or four `T` lanes in one SSE eightbyte.
-- `vector<T, N>`: one vector register holding an x86-64 `vectorcall` HVA
-  member.
+- `vector<T, N>`: one vector register holding an x86-64 `vectorcall` HVA member.
 - `void` as an argument: nothing is passed (an empty record under x86-64
   `vectorcall` on SysV).
 - `direct`: passed in registers as its own type, no coercion or memory copy;
@@ -452,16 +456,17 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
   hard register or explicit-register letter (`a` is `{ax}`) as its canonical
   name, a matching operand number, or the letters' classes joined by `|`. Class
   names are Rust's, except `reg_legacy` and `vreg_low8`, subsets that emission
-  pins to an explicit register, and ARM32 `reg_pair`, a 64-bit core register pair. `{dx:ax}` is the register pair of x86 `A`, high
-  half first; a letter we cannot resolve prints as `unresolved("<")`.
+  pins to an explicit register, and ARM32 `reg_pair`, a 64-bit core register
+  pair. `{dx:ax}` is the register pair of x86 `A`, high half first; a letter we
+  cannot resolve prints as `unresolved("<")`.
 - An `in` with an `asm_place` is a memory-capable input naming its object; the
   asm may address it in place, so no load precedes the statement.
 - An `in` with an `asm_symbol` selected `sym`: a link-time address, the
   binding's symbol plus a byte offset, which Rust takes as a `sym` operand.
-- `asm_at` (`at<offset=N>(%b)`) marks a memory-selected place whose object
-  sits at a link-time address, static-storage binding `%b` plus `N` bytes, so
-  the operand can print as `sym+N(%rip)` like clang's instead of through a
-  register (`AsmOperand::address`).
+- `asm_at` (`at<offset=N>(%b)`) marks a memory-selected place whose object sits
+  at a link-time address, static-storage binding `%b` plus `N` bytes, so the
+  operand can print as `sym+N(%rip)` like clang's instead of through a register
+  (`AsmOperand::address`).
 - MSVC `__asm` lowers to the same node with `[dialect=intel]`. Its quoted string
   is the statement rebuilt from the AST (instructions joined by `\n`, numbers in
   decimal), not raw source. Its operands carry no constraint: `mem<access>` is a
@@ -720,9 +725,9 @@ exceptions        = "ignore" | "observable" ;
 - A policy is the operation's behavior _if_ the case occurs, not a claim that it
   does. `overflow=ub` is signed C arithmetic; `wrap` is unsigned or `-fwrapv`;
   `trap` is `-ftrapv`.
-- `fits` appears on `truncate`/`reinterpret`/`int_cast`; `exact=` on `int_to_float`;
-  `out_of_range=ub` on `float_to_int`; `floating` on the other float conversions
-  that can round.
+- `fits` appears on `truncate`/`reinterpret`/`int_cast`; `exact=` on
+  `int_to_float`; `out_of_range=ub` on `float_to_int`; `floating` on the other
+  float conversions that can round.
 - The arithmetic choices are, in order: `and`/`or`/`xor`/`not` and floating
   `neg`; integer `add`/`sub`/`mul`/`neg`; `div`/`rem` (signed adds
   `min_by_neg_one`); `shl` (signed adds `negative_left`); `shr`; floating
@@ -734,7 +739,8 @@ exceptions        = "ignore" | "observable" ;
   handles infinities and NaNs (C Annex G), `basic` may use the plain textbook
   formulas, `improved` divides with Smith's algorithm (multiplication as
   `basic`). Clang's `promoted` never appears: sema widens the operands with
-  excess-precision conversions, divides with `range=basic`, and narrows. Both are permissions; ignoring them is always correct.
+  excess-precision conversions, divides with `range=basic`, and narrows. Both
+  are permissions; ignoring them is always correct.
 - A fixed-point contract is `overflow=saturate` for a `_Sat` type and
   `overflow=ub` otherwise, and always `rounding=toward_zero`, which is the
   fractional bits the operation discards. It appears on `add`/`sub`/`mul`/
@@ -777,12 +783,13 @@ range            = digits "+" digits ;
   statements ([macro invocations](ir/pipeline.md#macro-invocations)).
 
 - `macro_site`, `macro_definition` and `macro_expansion` print only with
-  `--show-macros`. A statement or value prints one `macro_site` for each expansion
-  labeling it, most recently applied first, after its metadata. `defined` is `file:line` with a 0-based line.
+  `--show-macros`. A statement or value prints one `macro_site` for each
+  expansion labeling it, most recently applied first, after its metadata.
+  `defined` is `file:line` with a 0-based line.
 
-- `c_type` follows a value, record field, parameter, declaration, or `write`,
-  in the same position as metadata. A `let` can print two: its initializer's
-  and its own. A `write` can too: its value's and its place's
+- `c_type` follows a value, record field, parameter, declaration, or `write`, in
+  the same position as metadata. A `let` can print two: its initializer's and
+  its own. A `write` can too: its value's and its place's
   ([C type metadata](ir/pipeline.md#c-type-metadata)).
 
 - Metadata is source context keyed by node: C type (`c`, `c_canon`,

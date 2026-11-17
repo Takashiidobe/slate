@@ -1,6 +1,7 @@
 # Remove retired backend facts and Salsa
 
-> Historical record. See the [archive index](index.md) for scope and source revision.
+> Historical record. See the [archive index](index.md) for scope and source
+> revision.
 
 _created 2026-08-29_
 
@@ -8,9 +9,9 @@ The worklist rewrite engine no longer declares or consumes the old
 `backend::facts` module. Delete its collectors and Salsa-derived data model
 instead of keeping an unreachable copy of the pre-worklist analyses.
 
-The same retirement applies to the undeclared `idents`, `runtime`, and
-`support` helpers. Their only reverse dependencies were in the deleted facts
-and query infrastructure, and `support::walk` depended directly on the removed
+The same retirement applies to the undeclared `idents`, `runtime`, and `support`
+helpers. Their only reverse dependencies were in the deleted facts and query
+infrastructure, and `support::walk` depended directly on the removed
 `facts::PathSegment` type.
 
 Keep `backend::interproc` intact. Its pointer and length facts are live

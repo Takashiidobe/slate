@@ -1,11 +1,11 @@
 # Pointer capability lattice
 
 <!-- toc -->
+
 - [The tables](#the-tables)
 - [Why not SSA](#why-not-ssa)
 - [Monotonicity](#monotonicity)
-- [Two-phase design: interproc solve, then local
-  consumption](#two-phase-design-interproc-solve-then-local-consumption)
+- [Two-phase design: interproc solve, then local consumption](#two-phase-design-interproc-solve-then-local-consumption)
 - [Interprocedural propagation](#interprocedural-propagation)
 - [Status](#status)
 - [Related](#related)
@@ -14,13 +14,13 @@
 Tracked by `slate-y0qs.4` (SCC-ordered call-graph worklist for interprocedural
 fixpoint families). As of 2026-09-19, this page is the canonical reference for
 the capability analysis and the scalar/owned parameter rewrite. It implements
-the c2rust-derived pointer representation
-lattice first proposed in `wiki/historical/rewrite-worklist-engine.md`'s
-"Representation decisions are unification, not local rewrites" section, extended beyond
-c2rust per `wiki/log/2026-08-28-07-48.md`. Code: `src/backend/interproc/
-pointer_lattice.rs`. This is the canonical reference for how Slate chooses a
-pointer's Rust representation; it is wired into `engine::apply()` (see
-"Status" below).
+the c2rust-derived pointer representation lattice first proposed in
+`wiki/historical/rewrite-worklist-engine.md`'s "Representation decisions are
+unification, not local rewrites" section, extended beyond c2rust per
+`wiki/log/2026-08-28-07-48.md`. Code:
+`src/backend/interproc/ pointer_lattice.rs`. This is the canonical reference for
+how Slate chooses a pointer's Rust representation; it is wired into
+`engine::apply()` (see "Status" below).
 
 ## The tables
 
@@ -32,19 +32,19 @@ string-shaped usage is observed).
 
 A pointer passed as an `asm!` operand counts as a write unless the asm has
 `options(nomem)` or `options(readonly)`: the asm may store through it (a
-`"+m"`/`"+Q"` memory operand, or a register operand with a `"memory"`
-clobber), and lifting it to `&T` would let LLVM fold reads across the asm.
+`"+m"`/`"+Q"` memory operand, or a register operand with a `"memory"` clobber),
+and lifting it to `&T` would let LLVM fold reads across the asm.
 
-Core (unlike c2rust, no `Box<[T]>` — owned+indexed always resolves to
-`Vec<T>`; a `Vec<T>` that's never resized is exactly as correct as
-`Box<[T]>` for differential testing, so the `GROW` fact this would otherwise
-need is dropped from the lattice entirely).
+Core (unlike c2rust, no `Box<[T]>` — owned+indexed always resolves to `Vec<T>`;
+a `Vec<T>` that's never resized is exactly as correct as `Box<[T]>` for
+differential testing, so the `GROW` fact this would otherwise need is dropped
+from the lattice entirely).
 
-This is exhaustive over all 16 `(W, U, F, O)` combinations, not a sparse
-table with an implicit catch-all — `U` only gates ownership (paired with
-`F`) and exclusivity (paired with `W`); it never blocks the plain
-`&T`/`&[T]` rows. `W` never blocks the ownership rows either — writing
-through something you own doesn't revoke ownership:
+This is exhaustive over all 16 `(W, U, F, O)` combinations, not a sparse table
+with an implicit catch-all — `U` only gates ownership (paired with `F`) and
+exclusivity (paired with `W`); it never blocks the plain `&T`/`&[T]` rows. `W`
+never blocks the ownership rows either — writing through something you own
+doesn't revoke ownership:
 
 ```
  W   U   F   O  │  Resulting type
@@ -68,14 +68,14 @@ through something you own doesn't revoke ownership:
 ```
 
 An earlier version of this table only listed 7 rows and used an implicit
-catch-all for the rest, which — combined with `U` defaulting to `true`
-until disproven — meant the _common_ case (a plain pointer with no
-aliasing evidence yet) missed the `&T`/`&[T]` rows, and any owned buffer
-that was ever written (i.e. almost all of them) missed `Box<T>`/`Vec<T>`.
-See `wiki/log/2026-08-28-12-38.md` for the session that found this.
+catch-all for the rest, which — combined with `U` defaulting to `true` until
+disproven — meant the _common_ case (a plain pointer with no aliasing evidence
+yet) missed the `&T`/`&[T]` rows, and any owned buffer that was ever written
+(i.e. almost all of them) missed `Box<T>`/`Vec<T>`. See
+`wiki/log/2026-08-28-12-38.md` for the session that found this.
 
-String specialization (modifier over the buffer rows, `T` in `{u8, char}`,
-gated on `S`):
+String specialization (modifier over the buffer rows, `T` in `{u8, char}`, gated
+on `S`):
 
 ```
  Base type (S)        │ Specializes to
@@ -84,108 +84,105 @@ gated on `S`):
  Vec<T>    owned          │ String
 ```
 
-`&mut [T] → &mut str` is deliberately **not** in this table — `S` alone
-doesn't prove every write preserves UTF-8 validity (an arbitrary byte write
-breaks it even on an otherwise string-shaped buffer).
+`&mut [T] → &mut str` is deliberately **not** in this table — `S` alone doesn't
+prove every write preserves UTF-8 validity (an arbitrary byte write breaks it
+even on an otherwise string-shaped buffer).
 
-`S` alone is likewise insufficient for the `Vec<T> → String` row: the
-consumer (`length_lattice::utf8_owned_fill_proof`, `slate-y0qs.4.4`) only
-lifts `StringOwned` when it can prove the buffer's content is valid UTF-8 at
-the malloc call site (single `memcpy` from a UTF-8 literal over `[0,len)`, one
+`S` alone is likewise insufficient for the `Vec<T> → String` row: the consumer
+(`length_lattice::utf8_owned_fill_proof`, `slate-y0qs.4.4`) only lifts
+`StringOwned` when it can prove the buffer's content is valid UTF-8 at the
+malloc call site (single `memcpy` from a UTF-8 literal over `[0,len)`, one
 ownership-transfer call, no other writes); otherwise it falls back to a raw
 pointer. `specialize_string` still keeps its `!write` guard so a callee that
-mutates the buffer stays `Vec`, since callee writes aren't yet proven
-char-safe — replacing that guard with a per-write validity fact
+mutates the buffer stays `Vec`, since callee writes aren't yet proven char-safe
+— replacing that guard with a per-write validity fact
 (`toupper`/`tolower`/literal sources) is the remaining part of `4.4`.
 
 Evaluation order: `E` first (short-circuits to `*mut T`/`*const T` by `W`,
-skipping everything else) → core table → `S` (buffer rows only) → `N` wraps
-the result in `Option<...>`.
+skipping everything else) → core table → `S` (buffer rows only) → `N` wraps the
+result in `Option<...>`.
 
 ## Why not SSA
 
 The lowered Rust AST preserves named locals. Building SSA solely for this
 analysis would change that representation without solving cross-binding
-aliasing: SSA gives a
-clean def/use-list for _one variable's own reassignments_, which the arena
-already provides for free (`Arena::def_use_neighbors`, `src/backend/engine/
-arena.rs:383`). The hard part of `UNIQUE` is _cross-binding_ aliasing, which
-SSA renaming doesn't touch in either representation.
+aliasing: SSA gives a clean def/use-list for _one variable's own reassignments_,
+which the arena already provides for free (`Arena::def_use_neighbors`,
+`src/backend/engine/ arena.rs:383`). The hard part of `UNIQUE` is
+_cross-binding_ aliasing, which SSA renaming doesn't touch in either
+representation.
 
 ## Monotonicity
 
-`W`/`O`/`F`/`E`/`N`/`S` are existential — once witnessed true, permanently
-true (only flip false→true). `U` is universal ("no alias exists yet") —
-starts true, only flips true→false once disproven. Every bit flips at most
-once, so total work is bounded by `7 × |bindings|` regardless of recursion
-depth or call-graph shape — same termination argument `interproc::run_worklist`
-already relies on for `string_params` (`WORKLIST_EDIT_BUDGET`).
+`W`/`O`/`F`/`E`/`N`/`S` are existential — once witnessed true, permanently true
+(only flip false→true). `U` is universal ("no alias exists yet") — starts true,
+only flips true→false once disproven. Every bit flips at most once, so total
+work is bounded by `7 × |bindings|` regardless of recursion depth or call-graph
+shape — same termination argument `interproc::run_worklist` already relies on
+for `string_params` (`WORKLIST_EDIT_BUDGET`).
 
 ## Two-phase design: interproc solve, then local consumption
 
-Splitting these matters because they run at different stages of the
-pipeline (`rewrite-engine-v2.md`'s whole-Program interproc phase runs
-_before_ the per-function arena is even built — see `engine::run_function`,
+Splitting these matters because they run at different stages of the pipeline
+(`rewrite-engine-v2.md`'s whole-Program interproc phase runs _before_ the
+per-function arena is even built — see `engine::run_function`,
 `src/backend/engine/mod.rs:99-104`):
 
 1. **Interproc solve** (`slate-y0qs.4.1`, implemented) operates on the
-   whole-`Program` AST, the same stage `string_params.rs` runs at. Output
-   is a flat `BTreeMap<PointerBinding, PointerFact>` — no per-use-site
-   `NodeId`s, because arena `NodeId`s don't exist yet at this stage (each
-   function gets its own `Arena` built later, one per `engine::run_function`
-   call). The fact only needs to answer "what type does this binding
-   resolve to," not "where are its uses" — that's the next phase's job.
+   whole-`Program` AST, the same stage `string_params.rs` runs at. Output is a
+   flat `BTreeMap<PointerBinding, PointerFact>` — no per-use-site `NodeId`s,
+   because arena `NodeId`s don't exist yet at this stage (each function gets its
+   own `Arena` built later, one per `engine::run_function` call). The fact only
+   needs to answer "what type does this binding resolve to," not "where are its
+   uses" — that's the next phase's job.
 
-2. **Local consumption** (`slate-y0qs.4.2`, implemented) turned out not to
-   run inside the per-function arena worklist as originally planned here.
-   Instead it's a whole-`Program` AST rewrite (`pointer_lattice::apply()`),
-   run at the same interproc stage as `solve()` itself, right before the
-   arena/`NodeRule` pipeline starts (`engine::apply()`,
-   `src/backend/engine/mod.rs:67-68`). It looks up each candidate param's
-   `PointerBinding` in the solved table, retypes the declared param, and
-   walks the function body converting uses (derefs stay bare for `&T`/
-   `&mut T`/`Box<T>` since Rust's own `Deref`/`DerefMut` cover them; a
-   `.as_ptr()`/`.as_mut_ptr()`-shaped raw-pointer fallback is synthesized
-   at call sites that still need a raw pointer). There's no separate
-   accessor-_cleanup_ rule as originally envisioned — the decision of
-   "does this call site need a raw pointer or can it take the lifted type
-   directly" (`callee_accepts_directly`) is made once, at rewrite time,
-   instead of inserted-then-deleted in two passes.
+2. **Local consumption** (`slate-y0qs.4.2`, implemented) turned out not to run
+   inside the per-function arena worklist as originally planned here. Instead
+   it's a whole-`Program` AST rewrite (`pointer_lattice::apply()`), run at the
+   same interproc stage as `solve()` itself, right before the arena/`NodeRule`
+   pipeline starts (`engine::apply()`, `src/backend/engine/mod.rs:67-68`). It
+   looks up each candidate param's `PointerBinding` in the solved table, retypes
+   the declared param, and walks the function body converting uses (derefs stay
+   bare for `&T`/ `&mut T`/`Box<T>` since Rust's own `Deref`/`DerefMut` cover
+   them; a `.as_ptr()`/`.as_mut_ptr()`-shaped raw-pointer fallback is
+   synthesized at call sites that still need a raw pointer). There's no separate
+   accessor-_cleanup_ rule as originally envisioned — the decision of "does this
+   call site need a raw pointer or can it take the lifted type directly"
+   (`callee_accepts_directly`) is made once, at rewrite time, instead of
+   inserted-then-deleted in two passes.
 
 `lift_kind()` currently produces two of the four `LiftKind`s:
 
-- `Scalar` (`&T`/`&mut T`, the `Ref`/`RefMut` rows) — pure accessor
-  insertion, no allocation semantics.
-- `Owned` (`Box<T>`, the `Owned` row) — the harder case. Bridges a raw
-  pointer into `Box<T>` at call sites via `unsafe { Box::from_raw(...) }`
-  (gated to bare-`Var` args only in `arg_is_provably_bridgeable`, not
-  arbitrary exprs, to keep the shape predictable), and — critically —
-  deletes the C `free()` call that justified the `FREE` bit in the first
-  place (`is_owned_free_stmt`/`collect_owned_aliases`), relying on `Box`'s
-  own `Drop` instead. Skipping that deletion would double-free: the
-  lifted `Box<T>` frees on scope exit _and_ the untouched `free()` call
-  would free the same allocation again. `collect_owned_aliases` exists
-  because generated Rust can hoist parameter derefs through an intermediate
-  local (`let mut y: *mut i32 = arg0; ...; free(y);`) rather than
-  dereferencing the param directly — the `free()` call's argument has to
-  be traced back through that alias to the lifted binding, not just
-  matched by name.
+- `Scalar` (`&T`/`&mut T`, the `Ref`/`RefMut` rows) — pure accessor insertion,
+  no allocation semantics.
+- `Owned` (`Box<T>`, the `Owned` row) — the harder case. Bridges a raw pointer
+  into `Box<T>` at call sites via `unsafe { Box::from_raw(...) }` (gated to
+  bare-`Var` args only in `arg_is_provably_bridgeable`, not arbitrary exprs, to
+  keep the shape predictable), and — critically — deletes the C `free()` call
+  that justified the `FREE` bit in the first place
+  (`is_owned_free_stmt`/`collect_owned_aliases`), relying on `Box`'s own `Drop`
+  instead. Skipping that deletion would double-free: the lifted `Box<T>` frees
+  on scope exit _and_ the untouched `free()` call would free the same allocation
+  again. `collect_owned_aliases` exists because generated Rust can hoist
+  parameter derefs through an intermediate local
+  (`let mut y: *mut i32 = arg0; ...; free(y);`) rather than dereferencing the
+  param directly — the `free()` call's argument has to be traced back through
+  that alias to the lifted binding, not just matched by name.
 
 `Cell` and `Buffer` are deliberately **not** produced by `lift_kind()`:
 
-- `Cell` (`&Cell<T>`, the `RefCell` row): implemented in `to_raw_pointer_as`
-  and the rewrite side (`.get()`/`.set()` synthesis), but never wired up.
-  Session decision: `RefCell` only saves you the `unsafe` keyword at the
-  deref site — every raw-pointer-needing use still falls back to
-  `.as_ptr()`, which is exactly as unsafe-shaped as the raw pointer it
-  replaces. The `UNIQUE`-disproving signal that gates this row
-  (`ClassifyCtx::try_alias`'s use-count heuristic) is also unreliable in
-  practice — hand constructing a case that disproves `unique` without
-  disproving it in ways that reflect real aliasing took real effort in
-  this session and still didn't reliably fire. Not worth the added
-  decl-site/call-site/free-alias machinery for a row whose only payoff is
-  cosmetic. Revisit only if a real corpus shows this row firing often and
-  usefully.
+- `Cell` (`&Cell<T>`, the `RefCell` row): implemented in `to_raw_pointer_as` and
+  the rewrite side (`.get()`/`.set()` synthesis), but never wired up. Session
+  decision: `RefCell` only saves you the `unsafe` keyword at the deref site —
+  every raw-pointer-needing use still falls back to `.as_ptr()`, which is
+  exactly as unsafe-shaped as the raw pointer it replaces. The
+  `UNIQUE`-disproving signal that gates this row (`ClassifyCtx::try_alias`'s
+  use-count heuristic) is also unreliable in practice — hand constructing a case
+  that disproves `unique` without disproving it in ways that reflect real
+  aliasing took real effort in this session and still didn't reliably fire. Not
+  worth the added decl-site/call-site/free-alias machinery for a row whose only
+  payoff is cosmetic. Revisit only if a real corpus shows this row firing often
+  and usefully.
 - `Buffer` (`&[T]`/`&mut [T]`/`&str`/`Vec<T>`/`String`, the `Slice`/
   `SliceMut`/`Str`/`Vec`/`StringOwned` rows): these rows are consumed by
   `interproc/length_lattice.rs`, after the capability solve, rather than by
@@ -193,14 +190,14 @@ _before_ the per-function arena is even built — see `engine::run_function`,
   pointer+length signature lifts, owned `Vec` and UTF-8-gated `String` lifts,
   constant usage-bound lifts without a length parameter, and return-position
   buffer ownership/retention across forwarding calls. Internal slice views are
-  used when changing a signature would be unsound or would discard side
-  effects. Unknown forwarding, insufficient allocation length, invalid UTF-8
-  content, or unsupported writes still fail closed to raw pointers.
-  A constant usage-bound lift needs every offset of the pointer to sit in the
-  body of a loop guarded by `idx < N` on that offset's index, after the guard
-  (the loop's statements past an `if !(idx < N) { break; }`). The slice is the
-  largest such `N`, so an access before or after the loop, or one indexed by a
-  same-named variable that only an unrelated loop guards, keeps the pointer raw.
+  used when changing a signature would be unsound or would discard side effects.
+  Unknown forwarding, insufficient allocation length, invalid UTF-8 content, or
+  unsupported writes still fail closed to raw pointers. A constant usage-bound
+  lift needs every offset of the pointer to sit in the body of a loop guarded by
+  `idx < N` on that offset's index, after the guard (the loop's statements past
+  an `if !(idx < N) { break; }`). The slice is the largest such `N`, so an
+  access before or after the loop, or one indexed by a same-named variable that
+  only an unrelated loop guards, keeps the pointer raw.
 
 Requeueing/accessor-cleanup machinery from the original two-`NodeRule` plan
 turned out unnecessary given the whole-Program-rewrite shape that actually
@@ -208,62 +205,61 @@ shipped — there's nothing to requeue since there's no arena at this stage.
 
 ## Interprocedural propagation
 
-Nodes = functions (candidates: private, non-variadic, non-`unsafe`, no
-foreign `abi`, with at least one raw-pointer parameter — same eligibility
-gate `string_params.rs`'s `candidate_for` uses, generalized past `char*`).
-Edges = call sites. `CallGraph`/`scc_order`/`run_worklist`
+Nodes = functions (candidates: private, non-variadic, non-`unsafe`, no foreign
+`abi`, with at least one raw-pointer parameter — same eligibility gate
+`string_params.rs`'s `candidate_for` uses, generalized past `char*`). Edges =
+call sites. `CallGraph`/`scc_order`/`run_worklist`
 (`src/backend/interproc/mod.rs`) are reused unchanged.
 
-Unlike `string_params` (whose eligibility only flows caller→callee),
-capability evidence flows **both ways** through a call site:
+Unlike `string_params` (whose eligibility only flows caller→callee), capability
+evidence flows **both ways** through a call site:
 
-- **Backward**: if a callee writes/frees/offsets/fails-to-contain its
-  parameter, that taints the _caller's argument binding_ too — passing `p`
-  into a function that calls `free` on it makes `p` itself `FREE`.
-- **Forward**: the caller argument's own facts (e.g. already known
-  `nullable`) inform what the callee can assume about its parameter.
+- **Backward**: if a callee writes/frees/offsets/fails-to-contain its parameter,
+  that taints the _caller's argument binding_ too — passing `p` into a function
+  that calls `free` on it makes `p` itself `FREE`.
+- **Forward**: the caller argument's own facts (e.g. already known `nullable`)
+  inform what the callee can assume about its parameter.
 
-Both directions are the same bit-wise join/meet (`PointerFact::
-merge_evidence_from`), applied per call site inside `recompute(name)` for
-whichever endpoint (`name`) the worklist is currently visiting — each call
-site's merge is symmetric and idempotent, so it's safe for both the caller's
-and the callee's `recompute` to independently re-apply it.
+Both directions are the same bit-wise join/meet
+(`PointerFact:: merge_evidence_from`), applied per call site inside
+`recompute(name)` for whichever endpoint (`name`) the worklist is currently
+visiting — each call site's merge is symmetric and idempotent, so it's safe for
+both the caller's and the callee's `recompute` to independently re-apply it.
 
-Return aliases add a second edge shape. An intraprocedural summary records
-when every return path aliases exactly one pointer parameter, including
+Return aliases add a second edge shape. An intraprocedural summary records when
+every return path aliases exactly one pointer parameter, including
 null-initialized return temporaries and forwarding calls through another
-summarized function. A known call result gets a synthetic local fact, and
-the worklist merges that fact bidirectionally with the returned parameter.
-This lets result uses in the caller inform the callee without treating the
-callee's proven return as `ESCAPE`. Returns that can select between multiple
-parameters remain unsummarized and raw.
+summarized function. A known call result gets a synthetic local fact, and the
+worklist merges that fact bidirectionally with the returned parameter. This lets
+result uses in the caller inform the callee without treating the callee's proven
+return as `ESCAPE`. Returns that can select between multiple parameters remain
+unsummarized and raw.
 
 ## Status
 
-`solve()` and `apply()` are both implemented and wired into
-`engine::apply()` (`slate-y0qs.4.2`). `apply()` lifts the `Scalar` and
-`Owned` rows; `length_lattice::apply()` handles the buffer rows in the same
-interprocedural phase. Verified via pointer, return-alias, pointer/length,
-owned-vector, owned-string, constant-bound, and provenance regression fixtures:
-`tests/fixtures/pointer_lattice.c` (all three lifted shapes — `&mut T`,
-`&T`, `Box<T>` — in one program), `pointer_return_alias.c` (direct,
-forwarded, const, mutable, and ambiguous return aliases), plus the two
-`ptr_lattice_*` regression fixtures from earlier bug-fix sessions. Known
-gaps, each tracked as its own follow-up rather than half-implemented here:
-`&mut str` (`slate-y0qs.4.4`), broader `Known`-libc-function semantics
-(`slate-y0qs.4.5`) — `classify_call_arg` currently only models
-`free`/`memcpy`/`memmove`/`memset`/the `str*` family and defaults every other
-call conservatively to `ESCAPE`.
+`solve()` and `apply()` are both implemented and wired into `engine::apply()`
+(`slate-y0qs.4.2`). `apply()` lifts the `Scalar` and `Owned` rows;
+`length_lattice::apply()` handles the buffer rows in the same interprocedural
+phase. Verified via pointer, return-alias, pointer/length, owned-vector,
+owned-string, constant-bound, and provenance regression fixtures:
+`tests/fixtures/pointer_lattice.c` (all three lifted shapes — `&mut T`, `&T`,
+`Box<T>` — in one program), `pointer_return_alias.c` (direct, forwarded, const,
+mutable, and ambiguous return aliases), plus the two `ptr_lattice_*` regression
+fixtures from earlier bug-fix sessions. Known gaps, each tracked as its own
+follow-up rather than half-implemented here: `&mut str` (`slate-y0qs.4.4`),
+broader `Known`-libc-function semantics (`slate-y0qs.4.5`) — `classify_call_arg`
+currently only models `free`/`memcpy`/`memmove`/`memset`/the `str*` family and
+defaults every other call conservatively to `ESCAPE`.
 
 ## Related
 
-- [rewrite-worklist-engine.md](../historical/rewrite-worklist-engine.md) — original lattice
-  proposal and the interproc-vs-local-worklist split.
-- [rewrite-engine-v2.md](rewrite-engine-v2.md) — the arena/worklist engine
-  this plugs into; interprocedural analyses run before local worklist rules.
-- [passes.md](../historical/passes.md) — the pass catalog; the interproc analyses (this
-  lattice, `length_lattice`, `string_params`) run before the per-function
-  worklist.
-- `wiki/log/2026-08-28-07-48.md` — the session that extended the lattice
-  past c2rust's original four facts (dropped `Box<[T]>`, added `&str`/
+- [rewrite-worklist-engine.md](../historical/rewrite-worklist-engine.md) —
+  original lattice proposal and the interproc-vs-local-worklist split.
+- [rewrite-engine-v2.md](rewrite-engine-v2.md) — the arena/worklist engine this
+  plugs into; interprocedural analyses run before local worklist rules.
+- [passes.md](../historical/passes.md) — the pass catalog; the interproc
+  analyses (this lattice, `length_lattice`, `string_params`) run before the
+  per-function worklist.
+- `wiki/log/2026-08-28-07-48.md` — the session that extended the lattice past
+  c2rust's original four facts (dropped `Box<[T]>`, added `&str`/
   `String`/`Option<...>`).

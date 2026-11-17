@@ -1,6 +1,7 @@
 # slate
 
-> Historical record. See the [archive index](index.md) for scope and source revision.
+> Historical record. See the [archive index](index.md) for scope and source
+> revision.
 
 <!-- toc -->
 
@@ -17,7 +18,8 @@
 `slate` translates C to Rust by lowering **ClangIR (CIR)** — Clang's MLIR-based
 IR — rather than LLVM IR. CIR is high enough to retain structured control flow,
 integer signedness, and named local variables, so this is _transpilation_, not
-decompilation. (See [slate-architecture.md](slate-architecture-cir.md) for more details)
+decompilation. (See [slate-architecture.md](slate-architecture-cir.md) for more
+details)
 
 ## Approach in one line
 
@@ -25,8 +27,8 @@ decompilation. (See [slate-architecture.md](slate-architecture-cir.md) for more 
 faithful Rust it can — `unsafe`, `libc`-backed, temp-heavy — and correctness is
 the only bar, checked by differential testing. Idiomatic, safer Rust is then
 recovered by an independently-verified ladder of fixup passes (see
-[passes.md](passes.md)); each fixup is optional in spirit, so disabling any
-one of them still leaves correct Rust.
+[passes.md](passes.md)); each fixup is optional in spirit, so disabling any one
+of them still leaves correct Rust.
 
 ## Current state
 
@@ -41,27 +43,25 @@ surface:
 - `tests/stdlib/<header>/*.c` — one probe per libc function, checked by
   `cargo nextest r --release --test stdlib_coverage`.
 - `bd list --status=open` - tracked gaps and in-flight idiomatization work.
-- `bd list --status=blocked` - blocked tasks by upstream clang IR or
-  rust.
+- `bd list --status=blocked` - blocked tasks by upstream clang IR or rust.
 
 Generated code shape is asserted in place via FileCheck directives embedded in
 each fixture (`SLATE-FILECHECK-BEGIN`/`END` blocks, see
-[differential-fixtures.md](../concepts/differential-fixtures.md)), so there is no separate
-`emit-fixtures`/`emit-lowered-fixtures` step to regenerate or inspect sibling
-`*.generated/` trees. To look at generated Rust directly, run
-`cargo run -- translate <file.c>` (or `translate-lowered` for raw lowered
-output before fixups) on the fixture in question.
+[differential-fixtures.md](../concepts/differential-fixtures.md)), so there is
+no separate `emit-fixtures`/`emit-lowered-fixtures` step to regenerate or
+inspect sibling `*.generated/` trees. To look at generated Rust directly, run
+`cargo run -- translate <file.c>` (or `translate-lowered` for raw lowered output
+before fixups) on the fixture in question.
 
 ## Not handled yet
 
 Tracked as beads (`bd list --status=open`), not maintained here, so this list
 doesn't rot. As of this writing, open gaps are mostly about widening the
 idiomatization ladder rather than baseline C coverage — e.g. fully
-target-complete scalar modeling, remaining printf
-edge cases (precision/width forms), further libc idiomatization (`fgets`/
-`fread`/`fwrite` on owned `FILE` handles), consumption of allocation metadata
-by the fact passes, and `enumerate()` recovery for slice loops with a live
-index use.
+target-complete scalar modeling, remaining printf edge cases (precision/width
+forms), further libc idiomatization (`fgets`/ `fread`/`fwrite` on owned `FILE`
+handles), consumption of allocation metadata by the fact passes, and
+`enumerate()` recovery for slice loops with a live index use.
 
 ## Pipeline
 
@@ -99,10 +99,10 @@ a failed case. Library modules do not use `String` as an error type.
 
 ## Docs
 
-- [fixups.md](fixups.md) — how to state
-  query-driven rewrite cases, proofs, typed recipes, definition lifecycles,
-  scheduling, and tracing.
-- [slate-architecture.md](slate-architecture-cir.md) — sources, IRs, pipeline, shared context.
+- [fixups.md](fixups.md) — how to state query-driven rewrite cases, proofs,
+  typed recipes, definition lifecycles, scheduling, and tracing.
+- [slate-architecture.md](slate-architecture-cir.md) — sources, IRs, pipeline,
+  shared context.
 - [passes.md](passes.md) — the pass catalog: what runs, in what order, how.
 - [facts.md](facts.md) — the salsa-memoized facts analysis layer: what each
   collector proves and which rewrite pass consumes it.
@@ -119,9 +119,9 @@ also require `SLATE_ANDROID_API=<level>`; the 64-bit Bionic baseline starts at
 API 21. `SLATE_TARGET=aarch64-apple-darwin` selects the narrow AArch64 macOS
 profile at the macOS 11.0 deployment baseline.
 
-Slate defaults to GNU C23. Legacy inputs that rely on pre-C23 semantics, such
-as unspecified parameter lists written as `int (*)()`, can select an older
-mode explicitly without changing the default:
+Slate defaults to GNU C23. Legacy inputs that rely on pre-C23 semantics, such as
+unspecified parameter lists written as `int (*)()`, can select an older mode
+explicitly without changing the default:
 
 ```bash
 cargo run -- translate -std=gnu17 legacy.c
@@ -130,13 +130,12 @@ cargo run -- translate -std=gnu17 legacy.c
 Frontend flags precede the input path and apply consistently to preprocessing,
 CIR emission, and Clang AST extraction.
 
-The vendored c-testsuite corpus is compiled and translated uniformly as GNU
-C17 because it predates C23 and includes declarations whose meaning changed in
-C23.
+The vendored c-testsuite corpus is compiled and translated uniformly as GNU C17
+because it predates C23 and includes declarations whose meaning changed in C23.
 
 `translate-project` requires one or more compilation databases. Each command
-supplies its own target and flags, so a project can carry target variants in
-one generated crate; the crate is a binary when any unit defines `main`, and a
+supplies its own target and flags, so a project can carry target variants in one
+generated crate; the crate is a binary when any unit defines `main`, and a
 library otherwise.
 
 ```bash
@@ -155,16 +154,17 @@ cargo run -- translate-project \
 
 Each command is normalized into a translation unit, target, and semantic Clang
 arguments. Compiler, output, dependency-file, and source operands are removed;
-relative paths are resolved against the command's `directory`. Slate prefers
-the JSON `arguments` form and shell-splits `command` as a fallback. Commands
-for different targets remain separate through CIR and AST lowering and are
-merged into cfg-gated Rust. Translation units present in only some databases
-produce cfg-gated modules. Two different command configurations for the same
-translation unit and Rust target are rejected because Slate cannot express
-that distinction as a target cfg.
+relative paths are resolved against the command's `directory`. Slate prefers the
+JSON `arguments` form and shell-splits `command` as a fallback. Commands for
+different targets remain separate through CIR and AST lowering and are merged
+into cfg-gated Rust. Translation units present in only some databases produce
+cfg-gated modules. Two different command configurations for the same translation
+unit and Rust target are rejected because Slate cannot express that distinction
+as a target cfg.
 
 The external pinned Microsoft CRT and UCRT header oracle used for MSVC work is
-bootstrapped under `target/`; see [msvc reference sysroot](msvc-reference-sysroot.md).
+bootstrapped under `target/`; see
+[msvc reference sysroot](msvc-reference-sysroot.md).
 
 The macOS ABI oracle uses an externally installed SDK plus pinned Apple public
 Libc and XNU sources under `target/`; see

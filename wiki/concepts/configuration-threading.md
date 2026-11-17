@@ -1,30 +1,30 @@
 # Configuration threading
 
 <!-- toc -->
+
 - [`Dialect` owns it](#dialect-owns-it)
 - [Accessors](#accessors)
 - [Where a rule goes](#where-a-rule-goes)
 - [Checker vs lowering](#checker-vs-lowering)
 <!-- /toc -->
 
-How flavor, standard, target, and flags reach each stage, and where a
-per-flavor or per-target rule belongs. The meaning of individual flags is
-in [compiler-arg-rules](compiler-arg-rules.md),
-[compiler-flags](compiler-flags.md), and
-[adding-a-target](adding-a-target.md).
+How flavor, standard, target, and flags reach each stage, and where a per-flavor
+or per-target rule belongs. The meaning of individual flags is in
+[compiler-arg-rules](compiler-arg-rules.md),
+[compiler-flags](compiler-flags.md), and [adding-a-target](adding-a-target.md).
 
 ## `Dialect` owns it
 
 `Dialect` (`src/dialect.rs`) holds `flavor`, `standard`, `features`
-(`StandardFeatures::for_compiler(standard, flavor, &target)`), `target`,
-and `options` (`CompilerOptions`).
+(`StandardFeatures::for_compiler(standard, flavor, &target)`), `target`, and
+`options` (`CompilerOptions`).
 
-- `dialect.target()` is the effective target: `Dialect::new` has already
-  applied `-mlong-double-*` and the stack alignment. Never read
-  `CompilerArgs.target` after that point.
-- The ISA (`TargetInfo.isa`) is resolved once, in
-  `CompilerArgParser::parse`. The flavor/triple pair is validated there
-  too (`TargetInfo::for_triple_and_flavor`).
+- `dialect.target()` is the effective target: `Dialect::new` has already applied
+  `-mlong-double-*` and the stack alignment. Never read `CompilerArgs.target`
+  after that point.
+- The ISA (`TargetInfo.isa`) is resolved once, in `CompilerArgParser::parse`.
+  The flavor/triple pair is validated there too
+  (`TargetInfo::for_triple_and_flavor`).
 - The IR records the target, but not the flavor or flags.
 
 ```text
@@ -53,13 +53,13 @@ Only `context.region` (FP pragmas) changes within a translation unit.
 
 Ask questions with the shared helpers, never by comparing values:
 
-- Flavor: `flavor.is_gcc()`, `.is_clang()`, `.is_msvc()`; a `match` when
-  every flavor has its own arm.
-- Standard: `standard.at_least_c99()`, `.at_least_c11()`,
-  `.at_least_c23()`. Read `stdc_version()` only for the macro's value.
-  Grammar and keyword gates belong in `StandardFeatures`.
-- Target: `target.family.is_x86()` for either x86 width; single families
-  compare with `==`.
+- Flavor: `flavor.is_gcc()`, `.is_clang()`, `.is_msvc()`; a `match` when every
+  flavor has its own arm.
+- Standard: `standard.at_least_c99()`, `.at_least_c11()`, `.at_least_c23()`.
+  Read `stdc_version()` only for the macro's value. Grammar and keyword gates
+  belong in `StandardFeatures`.
+- Target: `target.family.is_x86()` for either x86 width; single families compare
+  with `==`.
 
 ## Where a rule goes
 
@@ -79,11 +79,10 @@ Ask questions with the shared helpers, never by comparing values:
 
 ## Checker vs lowering
 
-A per-flavor rule belongs in the checker, or in a rule function both
-passes call (`function_symbol`, `declared_linkage`); lowering maps
-rejections to `Internal`
+A per-flavor rule belongs in the checker, or in a rule function both passes call
+(`function_symbol`, `declared_linkage`); lowering maps rejections to `Internal`
 ([sema-passes](sema-passes.md#resolveerror-policy)).
 
-Oracles disagree often. Check all three before encoding a rule. The
-fixture directory picks the flavor ([fixture-layout](fixture-layout.md)),
-so a rule that differs per flavor needs one fixture per flavor.
+Oracles disagree often. Check all three before encoding a rule. The fixture
+directory picks the flavor ([fixture-layout](fixture-layout.md)), so a rule that
+differs per flavor needs one fixture per flavor.

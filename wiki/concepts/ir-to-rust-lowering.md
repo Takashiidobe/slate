@@ -1,6 +1,7 @@
 # IR-to-Rust lowering
 
 <!-- toc -->
+
 - [Types and storage](#types-and-storage)
 - [Atomics](#atomics)
 - [Control flow](#control-flow)
@@ -9,47 +10,49 @@
 
 ## Types and storage
 
-| Parser IR                                                                                              | Rust                                                                                                                                                                                                                                                         |
-| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Incomplete array                                                                                       | `[T; 0]`, retaining element alignment                                                                                                                                                                                                                        |
-| `vla<T, %e>` (pointee)                                                                                 | `[T; 0]`; only reached through raw pointers                                                                                                                                                                                                                  |
-| VLA local                                                                                              | Zero-filled `Vec<E>` of the innermost fixed element, sized by the captured extents; the place is `*(v.as_mut_ptr() as *mut [T; 0])`                                                                                                                          |
-| Flexible record member                                                                                 | Zero-length field at the parser-provided offset                                                                                                                                                                                                              |
-| Flexible-array decay                                                                                   | Raw field address cast to an element pointer                                                                                                                                                                                                                 |
-| C function pointer                                                                                     | `Option<unsafe extern "C-unwind" fn(...) -> R>`                                                                                                                                                                                                              |
-| Variadic C function pointer                                                                            | Fixed parameters followed by `...`                                                                                                                                                                                                                           |
-| `storage=thread` global                                                                                | `#[thread_local] static mut` (crate `#![feature(thread_local)]`); exported ones add `#[unsafe(no_mangle)]`, imports are `#[thread_local]` statics in the extern block                                                                                        |
-| `[const]` static definition (not thread, atomic, common, selectany, flexible, or address image)       | Immutable `static`, so LLVM emits a constant global and folds loads from it (kernel `BUILD_BUG_ON` over `static const` tables). A type that may hold pointers (not provably `Sync`) and has no align wrapper is wrapped in `__SlateConst<T>` (`#[repr(transparent)]`, `unsafe impl Sync`); the place is `.0`. A mutable address of such a place is `(&raw const X).cast_mut()`; writing through it faults, as the C object is in `.rodata` (`const_table_folds.c`, `const_table_address_cast.c`) |
-| Global, local, or dispatch slot whose `align` exceeds its type's natural alignment                     | `__SlateAlignN<T>` (`#[repr(C, align(N))]` newtype, `unsafe impl Sync`); the place is `.0`. Includes the x86-64 ABI 16-byte alignment of arrays of 16+ bytes, which clang's vector loads rely on (`object_alignment.c`); extern declarations stay unwrapped                      |
-| Static whose initializer gives its flexible array member N elements                                    | `__SlateStorage_<name>`, a copy of the record with that member as `[T; N]`; the place is `*(&raw mut name as *mut Record)`, so `sizeof` and field offsets stay C's. Over-aligned or bit-field records stay a barrier (`flexible_array_static_initializer.c`) |
+| Parser IR                                                                                                         | Rust                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Incomplete array                                                                                                  | `[T; 0]`, retaining element alignment                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `vla<T, %e>` (pointee)                                                                                            | `[T; 0]`; only reached through raw pointers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| VLA local                                                                                                         | Zero-filled `Vec<E>` of the innermost fixed element, sized by the captured extents; the place is `*(v.as_mut_ptr() as *mut [T; 0])`                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Flexible record member                                                                                            | Zero-length field at the parser-provided offset                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Flexible-array decay                                                                                              | Raw field address cast to an element pointer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| C function pointer                                                                                                | `Option<unsafe extern "C-unwind" fn(...) -> R>`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Variadic C function pointer                                                                                       | Fixed parameters followed by `...`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `storage=thread` global                                                                                           | `#[thread_local] static mut` (crate `#![feature(thread_local)]`); exported ones add `#[unsafe(no_mangle)]`, imports are `#[thread_local]` statics in the extern block                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `[const]` static definition (not thread, atomic, common, selectany, flexible, or address image)                   | Immutable `static`, so LLVM emits a constant global and folds loads from it (kernel `BUILD_BUG_ON` over `static const` tables). A type that may hold pointers (not provably `Sync`) and has no align wrapper is wrapped in `__SlateConst<T>` (`#[repr(transparent)]`, `unsafe impl Sync`); the place is `.0`. A mutable address of such a place is `(&raw const X).cast_mut()`; writing through it faults, as the C object is in `.rodata` (`const_table_folds.c`, `const_table_address_cast.c`)                                                                                                    |
+| Global, local, or dispatch slot whose `align` exceeds its type's natural alignment                                | `__SlateAlignN<T>` (`#[repr(C, align(N))]` newtype, `unsafe impl Sync`); the place is `.0`. Includes the x86-64 ABI 16-byte alignment of arrays of 16+ bytes, which clang's vector loads rely on (`object_alignment.c`); extern declarations stay unwrapped                                                                                                                                                                                                                                                                                                                                         |
+| Static whose initializer gives its flexible array member N elements                                               | `__SlateStorage_<name>`, a copy of the record with that member as `[T; N]`; the place is `*(&raw mut name as *mut Record)`, so `sizeof` and field offsets stay C's. Over-aligned or bit-field records stay a barrier (`flexible_array_static_initializer.c`)                                                                                                                                                                                                                                                                                                                                        |
 | Static whose initializer stores a constant address in a pointer-width integer (`(size_t)fn`, `(uintptr_t)&x + k`) | `MaybeUninit<__SlateImage_<name>>`, the alias naming the C storage type. Const eval cannot turn an address into an integer, so the initializer zeroes the image, fills it in place, and writes each such leaf through `*mut *const ()` (offsets via `wrapping_byte_offset`), keeping the relocation. The place is `*(&raw mut name as *mut __SlateImage_<name>)`; reads see the integer at run time. Other units link to it as a plain integer static. Narrower integers, other arithmetic, and leaves in bit-fields or range designators are not covered (`static_address_integer_initializers.c`) |
-| `[visibility=...]` global                                                                              | Ignored, as for functions: an exported static gets default visibility (`global_visibility_internal.c`)                                                                                                                                                       |
-| Const-qualified address                                                                                | `&raw const`; mutable addresses use `&raw mut`                                                                                                                                                                                                               |
-| Volatile read / write                                                                                  | `ptr::read_volatile` / `ptr::write_volatile` on raw addresses                                                                                                                                                                                                |
-| f32 / f64 classification                                                                               | Float classification methods; zero compares equal to either signed zero                                                                                                                                                                                      |
-| `rounding=environment` f32/f64 `add`/`sub`/`mul`/`div`, f64→f32 `float_narrow`, inexact `int_to_float` | `__slate_fenv_*` C bridge (`frontend/shims/fenv.c`); 128-bit sources reduce to i64 in `__slate_rounding` and call the same bridge                                                                                                                            |
-| Scalar `__builtin_clz*` / `ctz*` / `popcount*` calls                                                   | Unsigned operand's `leading_zeros()` / `trailing_zeros()` / `count_ones()`, cast to the C result type                                                                                                                                                        |
-| `__builtin_expect`, `expect_with_probability`, `unpredictable`                                         | The first operand (IR operands are side-effect free)                                                                                                                                                                                                         |
-| `__builtin_prefetch`                                                                                   | Empty block                                                                                                                                                                                                                                                  |
-| `__builtin_unreachable`                                                                                | `unsafe { std::hint::unreachable_unchecked() }`                                                                                                                                                                                                              |
-| `__builtin_assume(c)`, MSVC `__assume(c)`                                                              | `unsafe { std::hint::assert_unchecked(c) }`; the parser has already replaced a side-effecting `c` with `true`                                                                                                                                                |
-| `__builtin_assume_aligned(p, align[, offset])`                                                         | `p` cast to the result type; the alignment is not asserted                                                                                                                                                                                                   |
-| `__builtin_abort`, `nan*`, `memcpy`, `memmove`, `memset`, `memcmp`                                     | Extern with the library `link_name`                                                                                                                                                                                                                          |
-| `target("...")` function                                                                               | `#[target_feature(enable = ...)] unsafe fn` (clang names mapped to rustc: `bmi`→`bmi1`, `pclmul`→`pclmulqdq`, `cx16`→`cmpxchg16b`, `rdrnd`→`rdrand`; aarch64 `+sve`→`sve`, gcc `rdma`→`rdm`, `simd`→`neon`); `rtm` adds `#![feature(rtm_target_feature)]`                                                           |
-| `__builtin_cpu_supports("x")` / `__builtin_cpu_init()`                                                 | `std::arch::is_x86_feature_detected!("x")` / empty block                                                                                                                                                                                                     |
-| f80 classification                                                                                     | `__slate_f80_is_fp_class(x, llvm fpclass mask)` / `__slate_f80_signbit`; signaling-NaN tests remain barriers                                                                                                                                                 |
-| Infinity constructors                                                                                  | `f32::INFINITY` / `f64::INFINITY` / x87 +inf `LongDouble` literal                                                                                                                                                                                            |
-| NaN constructors                                                                                       | libc `nan` / `nanf` / `nanl`, preserving payload and argument evaluation                                                                                                                                                                                     |
+| `[visibility=...]` global                                                                                         | Ignored, as for functions: an exported static gets default visibility (`global_visibility_internal.c`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Const-qualified address                                                                                           | `&raw const`; mutable addresses use `&raw mut`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Volatile read / write                                                                                             | `ptr::read_volatile` / `ptr::write_volatile` on raw addresses                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| f32 / f64 classification                                                                                          | Float classification methods; zero compares equal to either signed zero                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `rounding=environment` f32/f64 `add`/`sub`/`mul`/`div`, f64→f32 `float_narrow`, inexact `int_to_float`            | `__slate_fenv_*` C bridge (`frontend/shims/fenv.c`); 128-bit sources reduce to i64 in `__slate_rounding` and call the same bridge                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Scalar `__builtin_clz*` / `ctz*` / `popcount*` calls                                                              | Unsigned operand's `leading_zeros()` / `trailing_zeros()` / `count_ones()`, cast to the C result type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `__builtin_expect`, `expect_with_probability`, `unpredictable`                                                    | The first operand (IR operands are side-effect free)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `__builtin_prefetch`                                                                                              | Empty block                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `__builtin_unreachable`                                                                                           | `unsafe { std::hint::unreachable_unchecked() }`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `__builtin_assume(c)`, MSVC `__assume(c)`                                                                         | `unsafe { std::hint::assert_unchecked(c) }`; the parser has already replaced a side-effecting `c` with `true`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `__builtin_assume_aligned(p, align[, offset])`                                                                    | `p` cast to the result type; the alignment is not asserted                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `__builtin_abort`, `nan*`, `memcpy`, `memmove`, `memset`, `memcmp`                                                | Extern with the library `link_name`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `target("...")` function                                                                                          | `#[target_feature(enable = ...)] unsafe fn` (clang names mapped to rustc: `bmi`→`bmi1`, `pclmul`→`pclmulqdq`, `cx16`→`cmpxchg16b`, `rdrnd`→`rdrand`; aarch64 `+sve`→`sve`, gcc `rdma`→`rdm`, `simd`→`neon`); `rtm` adds `#![feature(rtm_target_feature)]`                                                                                                                                                                                                                                                                                                                                           |
+| `__builtin_cpu_supports("x")` / `__builtin_cpu_init()`                                                            | `std::arch::is_x86_feature_detected!("x")` / empty block                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| f80 classification                                                                                                | `__slate_f80_is_fp_class(x, llvm fpclass mask)` / `__slate_f80_signbit`; signaling-NaN tests remain barriers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Infinity constructors                                                                                             | `f32::INFINITY` / `f64::INFINITY` / x87 +inf `LongDouble` literal                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| NaN constructors                                                                                                  | libc `nan` / `nanf` / `nanl`, preserving payload and argument evaluation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 - Record size, alignment, offsets, and pointer strides must match the C layout.
 - Aggregate initialization must account for zero-length flexible fields even
   though C does not provide initializers for them.
 - Static address constants may use recursively constant arithmetic for pointer
   offsets and indices; aggregate members follow the same rule.
-- Explicit function addresses and function decay share lowering and ABI tracking.
+- Explicit function addresses and function decay share lowering and ABI
+  tracking.
 - Indirect variadic calls use the parser's explicit default argument promotions.
 - Variadic function-pointer arguments travel as raw pointer representations;
-  `VaArg` reads that representation and restores the nullable function-pointer type.
+  `VaArg` reads that representation and restores the nullable function-pointer
+  type.
 - VLA storage lives until the enclosing Rust block ends, so a VLA in a loop body
   is freed each iteration as in C. Decay and `addr_of` of a VLA place cast the
   storage pointer, never a reference to the zero-length array. `ptr_offset` and
@@ -59,44 +62,47 @@
   slot would never be freed.
 - `rounding=environment` arithmetic goes through opaque C calls because rustc
   assumes round-to-nearest: it folds `1.0 / 3.0` and may move a float op across
-  `fesetround`. An extern call it cannot see into blocks both. `black_box` on the
-  operands stops folding but not code motion. The shims stay opaque under
+  `fesetround`. An extern call it cannot see into blocks both. `black_box` on
+  the operands stops folding but not code motion. The shims stay opaque under
   cross-language LTO (`-Clinker-plugin-lto` with clang `-flto`): each is
   `noinline`, and under clang `#pragma STDC FENV_ACCESS ON` makes it `strictfp`
   with constrained ops. Without the pragma LLVM infers `memory(none)` for a
   `noinline` shim and may move or fold the call. gcc and cl.exe objects cannot
-  join rustc's LTO. Ops that do not depend on the mode
-  (compares, `neg`, exact conversions) stay native; f80 already runs in
-  `long_double.c`. f16 arithmetic is not routed yet.
+  join rustc's LTO. Ops that do not depend on the mode (compares, `neg`, exact
+  conversions) stay native; f80 already runs in `long_double.c`. f16 arithmetic
+  is not routed yet.
 - Null-based field-address differences use parser layout offsets, avoiding Rust
   null dereferences and pointer arithmetic.
-- Leading-zero counts preserve the C operand width; zero input is undefined in C.
-- `__builtin_ffs`/`ffsl`/`ffsll` open-code as `trailing_zeros() + 1`, or 0
-  for a zero operand.
+- Leading-zero counts preserve the C operand width; zero input is undefined in
+  C.
+- `__builtin_ffs`/`ffsl`/`ffsll` open-code as `trailing_zeros() + 1`, or 0 for a
+  zero operand.
 - A call to an extern codegen-only builtin with neither a lowering nor a
-  `c_builtin_library` name is a barrier: clang expands those in codegen, so the symbol
-  never links (and `lowering-barriers` would otherwise report the function as
-  ok). Codegen-only means any `__builtin_*` name, a `c_builtin_kind` other than
-  `library`, or a `c_builtin_header` ending in `intrin.h` (`_mm_pause`,
-  `__readfsdword`); `codegen_only_builtin_extern.c` is unsupported.
+  `c_builtin_library` name is a barrier: clang expands those in codegen, so the
+  symbol never links (and `lowering-barriers` would otherwise report the
+  function as ok). Codegen-only means any `__builtin_*` name, a `c_builtin_kind`
+  other than `library`, or a `c_builtin_header` ending in `intrin.h`
+  (`_mm_pause`, `__readfsdword`); `codegen_only_builtin_extern.c` is
+  unsupported.
 - `target` features: `no-x`, `tune=`, `branch-protection=`, and `default` are
   ignored (codegen only); `arch=` and features without a rustc mapping are
-  barriers. Target functions are `unsafe fn` because callers may lack the feature.
+  barriers. Target functions are `unsafe fn` because callers may lack the
+  feature.
 - Volatile record fields keep ordinary C storage layout; qualification belongs
   to the memory operation. Volatile bit-field access remains a barrier.
 - A record is `#[repr(C, packed(A))]`, A = the record's IR alignment, when an
   ordinary field's natural alignment exceeds A or its offset is misaligned
   (`packed`, `#pragma pack`, packed members). Fields are placed at
-  `min(field_align, A)` plus explicit padding. Packed field updates are read
-  and write of the copied value, never references. A field whose type is or
-  holds a `repr(align)` type (`LongDouble`, a raised record) is erased to
+  `min(field_align, A)` plus explicit padding. Packed field updates are read and
+  write of the copied value, never references. A field whose type is or holds a
+  `repr(align)` type (`LongDouble`, a raised record) is erased to
   `MaybeUninit<[uN; _]>`, `uN` the unsigned integer whose Rust alignment is
   `min(field_align, A)` (bytes, and alignment 1, when none matches), and
-  accessed through a cast pointer. `field_align` is always Rust's alignment
-  for the scalar (the triple's base `TargetInfo`), not the IR's: flags such
-  as `-malign-double` raise the C alignment while Rust's `f64` keeps its own,
-  so the difference becomes explicit padding and `repr(align)`. Still barriers: packed
-  plus a raised record alignment (`packed, aligned(N)`; Rust rejects
+  accessed through a cast pointer. `field_align` is always Rust's alignment for
+  the scalar (the triple's base `TargetInfo`), not the IR's: flags such as
+  `-malign-double` raise the C alignment while Rust's `f64` keeps its own, so
+  the difference becomes explicit padding and `repr(align)`. Still barriers:
+  packed plus a raised record alignment (`packed, aligned(N)`; Rust rejects
   `packed` with `align`), and packed records transitively containing a
   `repr(align)` record (E0588).
 
@@ -118,16 +124,16 @@
 - `f32` / `f64` atomics use `AtomicU32` / `AtomicU64` on the bit representation
   (`to_bits` / `from_bits`), for access, updates, and compare-exchange.
 - `update<T, result=old|new, atomic=o>(place, f(old))`: when `f` is
-  `add|sub|and|or|xor(old, x)` (add/and/or/xor also commuted), `not(and(old, x))`,
-  or ignores `old`, x is bound once and the update is `fetch_add` / `fetch_sub` /
-  `fetch_and` / `fetch_or` / `fetch_xor` / `fetch_nand` / `swap` (clang's
-  `atomicrmw`). `result=new` recombines the old value and x (`wrapping_*` for
-  add/sub). Any other `f` (mul, shifts, floats, pointer offsets, `_Atomic`
-  compound assignment) is a `fetch_update` CAS loop with `old` bound to the
-  closure argument; the loop's fetch order drops the release half. It applies
-  only when `f` is pure (constants, `old`, conversions, arithmetic, compares,
-  conditionals, pointer offsets, non-volatile non-atomic reads), since the loop
-  re-evaluates `f`.
+  `add|sub|and|or|xor(old, x)` (add/and/or/xor also commuted),
+  `not(and(old, x))`, or ignores `old`, x is bound once and the update is
+  `fetch_add` / `fetch_sub` / `fetch_and` / `fetch_or` / `fetch_xor` /
+  `fetch_nand` / `swap` (clang's `atomicrmw`). `result=new` recombines the old
+  value and x (`wrapping_*` for add/sub). Any other `f` (mul, shifts, floats,
+  pointer offsets, `_Atomic` compound assignment) is a `fetch_update` CAS loop
+  with `old` bound to the closure argument; the loop's fetch order drops the
+  release half. It applies only when `f` is pure (constants, `old`, conversions,
+  arithmetic, compares, conditionals, pointer offsets, non-volatile non-atomic
+  reads), since the loop re-evaluates `f`.
 - `compare_exchange` / `compare_exchange_weak`: `form=write_back` assigns the
   observed value through the expected pointer only on failure; `success` is
   `is_ok()`; `old` returns either variant's value.
@@ -138,15 +144,18 @@
 ## Control flow
 
 - Source: `crates/slate/src/frontend/lowerer/control_flow.rs`.
-- Input: slate-parser structured statements and resolved binding/loop/switch IDs.
+- Input: slate-parser structured statements and resolved binding/loop/switch
+  IDs.
 - Functions with ordinary labels/gotos use a function-local CFG and Rust
-  `loop { match state { ... } }` dispatch; other functions retain structured lowering.
+  `loop { match state { ... } }` dispatch; other functions retain structured
+  lowering.
 - Switches with statements before their first case also use dispatch: direct
   case entry skips those statements and their initializers.
-- Before emission, thread forwarding jumps, prune unreachable nodes, and coalesce
-  straight-line chains into basic blocks with one terminator each.
+- Before emission, thread forwarding jumps, prune unreachable nodes, and
+  coalesce straight-line chains into basic blocks with one terminator each.
 - Function entry, joins, and branch/switch successors start blocks. Forwarding
-  cycles retain a self-loop; effectful cycles retain their operations and backedges.
+  cycles retain a self-loop; effectful cycles retain their operations and
+  backedges.
 
 | IR                      | CFG behavior                                                             |
 | ----------------------- | ------------------------------------------------------------------------ |
@@ -157,29 +166,29 @@
 | Switch / case / default | Discriminant evaluated once; cases enter their original nested positions |
 | Break / continue        | Resolved owner ID selects the successor                                  |
 
-- Every local and synthetic temporary has hoisted `MaybeUninit<T>` storage
-  and a stable raw pointer; parameters retain their existing representation.
-- Declaration initializers execute in their original states through `ptr::write`;
-  a jump past a declaration skips initialization.
+- Every local and synthetic temporary has hoisted `MaybeUninit<T>` storage and a
+  stable raw pointer; parameters retain their existing representation.
+- Declaration initializers execute in their original states through
+  `ptr::write`; a jump past a declaration skips initialization.
 - Raw slot pointers avoid creating fresh mutable references that could
   invalidate C pointers retained across states.
 - CFG construction borrows parser IR and preserves source sites for ordinary
   statement lowering.
 - An asm goto label block only sets the local `__slate_asm_target` (a bool for
-  one label, else the 1-based label index). An ordinary `if` after the asm
-  jumps to the label's state. Goto structuring never sees a state assignment
-  inside an asm operand, so the function is structured like any other, and
-  LLVM folds the flag into the asm's direct jump (objtool needs direct edges to
-  follow stac/clac regions and emit ORC for every instruction).
+  one label, else the 1-based label index). An ordinary `if` after the asm jumps
+  to the label's state. Goto structuring never sees a state assignment inside an
+  asm operand, so the function is structured like any other, and LLVM folds the
+  flag into the asm's direct jump (objtool needs direct edges to follow
+  stac/clac regions and emit ORC for every instruction).
 - `label_addr` lowers to the constant pointer `label id + 1`, so label tables
   (`static void *t[] = {&&a}`) and label deltas (`&&a - &&b`, folded to an
   integer) are constant initializers; offsets from a label address use
-  `wrapping_offset`. Computed goto matches `target as usize` against every
-  label in the function, each arm jumping to that label's state. The default
-  arm of that match and of the `__slate_state` match is `unreachable!()` in a
-  std crate and `core::hint::unreachable_unchecked()` in a core-only crate,
-  where a panic call is unwanted (kernel objtool flags any call out of
-  `.noinstr.text` or with UACCESS on).
+  `wrapping_offset`. Computed goto matches `target as usize` against every label
+  in the function, each arm jumping to that label's state. The default arm of
+  that match and of the `__slate_state` match is `unreachable!()` in a std crate
+  and `core::hint::unreachable_unchecked()` in a core-only crate, where a panic
+  call is unwanted (kernel objtool flags any call out of `.noinstr.text` or with
+  UACCESS on).
 - Dispatch can retain costly copies of locals at the common loop merge even in
   release builds; inspect optimized code before relying on elimination.
 - Retained Rust-to-Rust structuring and proposed tail-call optimization are in

@@ -1,6 +1,7 @@
 # C corpus
 
 <!-- toc -->
+
 - [Layout](#layout)
 - [Setup](#setup)
 - [Recipes](#recipes)
@@ -14,9 +15,9 @@
 - [Gotchas](#gotchas)
 <!-- /toc -->
 
-`~/c-corpus` (override with `SLATE_CORPUS`) holds real-world C projects as
-git checkouts. The goal: every TU that `clang -fsyntax-only` accepts goes
-through `slate-parser ir --flavor=clang` on `x86_64-unknown-linux-gnu`.
+`~/c-corpus` (override with `SLATE_CORPUS`) holds real-world C projects as git
+checkouts. The goal: every TU that `clang -fsyntax-only` accepts goes through
+`slate-parser ir --flavor=clang` on `x86_64-unknown-linux-gnu`.
 
 ## Layout
 
@@ -26,12 +27,12 @@ through `slate-parser ir --flavor=clang` on `x86_64-unknown-linux-gnu`.
 ~/c-corpus/.venv                                            python for code generators
 ```
 
-- Each flavor's database comes from a build with that compiler, so
-  configure results (`config.h`, feature probes) match it.
+- Each flavor's database comes from a build with that compiler, so configure
+  results (`config.h`, feature probes) match it.
 - The sweep reads the selected flavor's build database and checks acceptance
   with the corresponding compiler.
-- Older `compile_commands.json` files at a project's top level or in
-  `build/` came from `cc` (gcc) and are ignored.
+- Older `compile_commands.json` files at a project's top level or in `build/`
+  came from `cc` (gcc) and are ignored.
 
 ## Setup
 
@@ -39,56 +40,54 @@ through `slate-parser ir --flavor=clang` on `x86_64-unknown-linux-gnu`.
 python3 tools/c_corpus_setup.py [PROJECT ...] [--flavor clang|gcc|msvc|clang-aarch64 ...]
 ```
 
-- Recreates `build-<flavor>/` and runs the whole build, so generated
-  sources and headers exist (mbedtls test suites, curl's
-  `tool_hugehelp.c`, sqlite's `parse.c`). "database written, build
-  incomplete" means the build failed after the database was written.
+- Recreates `build-<flavor>/` and runs the whole build, so generated sources and
+  headers exist (mbedtls test suites, curl's `tool_hugehelp.c`, sqlite's
+  `parse.c`). "database written, build incomplete" means the build failed after
+  the database was written.
 - CMake projects build out of tree with Ninja and
-  `CMAKE_EXPORT_COMPILE_COMMANDS`. Autoconf-style projects build out of
-  tree under `bear`. Makefile-only projects build in tree under `bear`
-  after their clean target. Flavors run gcc, msvc, clang, so an in-tree
-  project ends with clang's generated files.
-- msvc: msvc-wine's `bin/x64` on `PATH` ([msvc-oracle](msvc-oracle.md)),
-  CMake with `CMAKE_SYSTEM_NAME=Windows`, or `nmake` for sqlite (its
-  database is parsed from the `nmake` log).
+  `CMAKE_EXPORT_COMPILE_COMMANDS`. Autoconf-style projects build out of tree
+  under `bear`. Makefile-only projects build in tree under `bear` after their
+  clean target. Flavors run gcc, msvc, clang, so an in-tree project ends with
+  clang's generated files.
+- msvc: msvc-wine's `bin/x64` on `PATH` ([msvc-oracle](msvc-oracle.md)), CMake
+  with `CMAKE_SYSTEM_NAME=Windows`, or `nmake` for sqlite (its database is
+  parsed from the `nmake` log).
 - A full setup takes about 30 minutes.
 
 ## Recipes
 
-| Project                                                           | Build                                                                                                                                   | msvc                                                 |
-| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| cJSON, libexpat (`expat/`), libuv, libyaml, mimalloc, pcre2, zlib | CMake                                                                                                                                   | CMake                                                |
-| yyjson                                                            | CMake, `YYJSON_BUILD_TESTS=ON`                                                                                                          | CMake                                                |
-| utf8proc                                                          | CMake, `UTF8PROC_ENABLE_TESTING=ON` (downloads the Unicode test data)                                                                   | CMake                                                |
-| libdeflate                                                        | CMake, `LIBDEFLATE_BUILD_TESTS=ON`                                                                                                      | CMake                                                |
-| xxHash                                                            | CMake in `build/cmake`, `DISPATCH=ON` (adds `xxh_x86dispatch.c`)                                                                        | CMake                                                |
-| lz4, zstd                                                         | CMake in `build/cmake`                                                                                                                  | CMake                                                |
-| curl                                                              | CMake                                                                                                                                   | CMake with Schannel, no optional dependencies        |
-| libpng                                                            | CMake against the corpus zlib (`zlib/build-<flavor>`)                                                                                   | same                                                 |
-| mbedtls                                                           | CMake, testing and programs on; generators run from `.venv`                                                                             | same                                                 |
-| sqlite                                                            | `configure` + `make all testfixture`                                                                                                    | `nmake /f ..\Makefile.msc TOP=.. USE_AMALGAMATION=0` |
-| musl, tinycc, cpython                                             | `configure` out of tree                                                                                                                 | none                                                 |
-| libsodium                                                         | `autogen.sh -s` in tree, then `configure` out of tree + `make check`                                                                    | none                                                 |
-| nginx                                                             | `auto/configure --builddir=build-<flavor>/objs`                                                                                         | none                                                 |
-| redis, lua, quickjs, chibicc, giflib                              | `make CC=` in tree                                                                                                                      | none                                                 |
-| oniguruma                                                         | CMake                                                                                                                                   | CMake, untested                                      |
-| c-ares                                                            | CMake, `CARES_BUILD_TESTS=ON` (needs gtest)                                                                                             | CMake, untested                                      |
-| cglm                                                              | CMake, `CGLM_USE_TEST=ON`                                                                                                               | CMake, untested                                      |
-| libevent                                                          | CMake, OpenSSL and Mbed TLS off, `EVENT__LIBRARY_TYPE=STATIC`                                                                           | CMake, untested                                      |
-| jq                                                                | `autoreconf -i` in tree, then `configure --with-oniguruma=builtin --disable-docs` out of tree                                           | none                                                 |
-| lmdb                                                              | `make -C libraries/liblmdb CC=` in tree                                                                                                 | none                                                 |
-| stb                                                               | `make -i -C tests CC=` in tree: upstream's driver TUs define each header's `*_IMPLEMENTATION`; `-i` gets past the C++ TU's link failure | none                                                 |
-| postgres                                                          | `configure` out of tree + `make world-bin` (contrib included)                                                                           | none                                                 |
-| numpy                                                             | vendored Meson + Ninja; Cython in `.venv`, CPython development headers required                                                       | none                                                 |
-| openblas                                                          | `make CC=` under Bear (default pthread backend)                                                                                        | none                                                 |
+| Project                                                           | Build                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | msvc                                                 |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------- |
+| cJSON, libexpat (`expat/`), libuv, libyaml, mimalloc, pcre2, zlib | CMake                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | CMake                                                |
+| yyjson                                                            | CMake, `YYJSON_BUILD_TESTS=ON`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | CMake                                                |
+| utf8proc                                                          | CMake, `UTF8PROC_ENABLE_TESTING=ON` (downloads the Unicode test data)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | CMake                                                |
+| libdeflate                                                        | CMake, `LIBDEFLATE_BUILD_TESTS=ON`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | CMake                                                |
+| xxHash                                                            | CMake in `build/cmake`, `DISPATCH=ON` (adds `xxh_x86dispatch.c`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | CMake                                                |
+| lz4, zstd                                                         | CMake in `build/cmake`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | CMake                                                |
+| curl                                                              | CMake                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | CMake with Schannel, no optional dependencies        |
+| libpng                                                            | CMake against the corpus zlib (`zlib/build-<flavor>`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | same                                                 |
+| mbedtls                                                           | CMake, testing and programs on; generators run from `.venv`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | same                                                 |
+| sqlite                                                            | `configure` + `make all testfixture`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | `nmake /f ..\Makefile.msc TOP=.. USE_AMALGAMATION=0` |
+| musl, tinycc, cpython                                             | `configure` out of tree                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | none                                                 |
+| libsodium                                                         | `autogen.sh -s` in tree, then `configure` out of tree + `make check`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | none                                                 |
+| nginx                                                             | `auto/configure --builddir=build-<flavor>/objs`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | none                                                 |
+| redis, lua, quickjs, chibicc, giflib                              | `make CC=` in tree                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | none                                                 |
+| oniguruma                                                         | CMake                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | CMake, untested                                      |
+| c-ares                                                            | CMake, `CARES_BUILD_TESTS=ON` (needs gtest)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | CMake, untested                                      |
+| cglm                                                              | CMake, `CGLM_USE_TEST=ON`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | CMake, untested                                      |
+| libevent                                                          | CMake, OpenSSL and Mbed TLS off, `EVENT__LIBRARY_TYPE=STATIC`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | CMake, untested                                      |
+| jq                                                                | `autoreconf -i` in tree, then `configure --with-oniguruma=builtin --disable-docs` out of tree                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | none                                                 |
+| lmdb                                                              | `make -C libraries/liblmdb CC=` in tree                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | none                                                 |
+| stb                                                               | `make -i -C tests CC=` in tree: upstream's driver TUs define each header's `*_IMPLEMENTATION`; `-i` gets past the C++ TU's link failure                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | none                                                 |
+| postgres                                                          | `configure` out of tree + `make world-bin` (contrib included)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | none                                                 |
+| numpy                                                             | vendored Meson + Ninja; Cython in `.venv`, CPython development headers required                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | none                                                 |
+| openblas                                                          | `make CC=` under Bear (default pthread backend)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | none                                                 |
 | linux                                                             | shallow clone; `make O=build-<flavor> CC= HOSTCC= defconfig`; `scripts/config --file build-<flavor>/.config -e EXPERT -d RANDOMIZE_KSTACK_OFFSET` and `make ... olddefconfig` (the option needs `EXPERT`; it puts alloca in the syscall entry units, a core-only barrier); then the full build (about 4 minutes). Generate `build-<flavor>/compile_commands.json` with `scripts/clang-tools/gen_compile_commands.py -d build-<flavor>` with its `_LINE_PATTERN` widened from `\.o :=` to `\.[os] :=`: `make compile_commands.json` covers only vmlinux.a (no arch/x86/boot) and the stock pattern drops the `-S` units (asm-offsets.c, bounds.c) | none                                                 |
 
-msvc covers only projects whose upstream ships a Windows build. musl,
-nginx, redis, lua, quickjs, chibicc, giflib and tinycc have no MSVC build
-system to drive, so there is no msvc database for them rather than an
-invented one.
-CPython ships an MSBuild project (`PCbuild/`) that setup does not drive
-yet.
+msvc covers only projects whose upstream ships a Windows build. musl, nginx,
+redis, lua, quickjs, chibicc, giflib and tinycc have no MSVC build system to
+drive, so there is no msvc database for them rather than an invented one.
+CPython ships an MSBuild project (`PCbuild/`) that setup does not drive yet.
 
 ## Sweep
 
@@ -96,34 +95,34 @@ yet.
 python3 tools/c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs N] [--trophies]
 ```
 
-- Deduplicates each database by file and drops entries whose file is
-  gone (`bear` also records configure probes). gcc and clang get the full
-  compile command, minus the compiler and the source file; relative paths
-  resolve because both sides run in the entry's directory. The oracle also
-  drops dependency output (`-M*`, `-MF`/`-MT`/`-MQ`/`-MJ`, `-Wp,-M…`), which
-  would rewrite the build's `.d` files. Pins `-std=gnu17` when absent
+- Deduplicates each database by file and drops entries whose file is gone
+  (`bear` also records configure probes). gcc and clang get the full compile
+  command, minus the compiler and the source file; relative paths resolve
+  because both sides run in the entry's directory. The oracle also drops
+  dependency output (`-M*`, `-MF`/`-MT`/`-MQ`/`-MJ`, `-Wp,-M…`), which would
+  rewrite the build's `.d` files. Pins `-std=gnu17` when absent
   (slate-parser-6x05.6).
 - msvc databases use `/` spellings, so they still go through
-  `pp_diff.kept_args`: `-D`, `-U`, the include flags, `-include`,
-  `-imacros`, `-std`, target `-m` flags and `pp_diff.SEMANTIC_FLAGS`.
-  `pp_diff.py` and `tools/corpus/e2e.py` also still use `kept_args`.
-- Every flag a real build passes needs handling in `compiler_args`. Never
-  skip TUs or drop a flag to make a project pass. `flag_probe.py`
+  `pp_diff.kept_args`: `-D`, `-U`, the include flags, `-include`, `-imacros`,
+  `-std`, target `-m` flags and `pp_diff.SEMANTIC_FLAGS`. `pp_diff.py` and
+  `tools/corpus/e2e.py` also still use `kept_args`.
+- Every flag a real build passes needs handling in `compiler_args`. Never skip
+  TUs or drop a flag to make a project pass. `flag_probe.py`
   ([compiler-arg-rules](compiler-arg-rules.md#adding-an-option)) checks a
   rejected flag against the oracles.
 - `--flavor` selects `build-<flavor>`, the Slate flavor, and the compiler
   oracle; it defaults to clang. MSVC uses `cl.exe /Zs` and the Windows x64
   target.
-- Clang and GCC use `-fsyntax-only -w` against host headers. Slate uses its
-  own sysroot.
-- Status per TU: `ok`, `internal`, `unimplemented`, `rejected` (from the
-  first detailed `×` diagnostic), `timeout` (300 s), `missing-dependency`,
+- Clang and GCC use `-fsyntax-only -w` against host headers. Slate uses its own
+  sysroot.
+- Status per TU: `ok`, `internal`, `unimplemented`, `rejected` (from the first
+  detailed `×` diagnostic), `timeout` (300 s), `missing-dependency`,
   `oracle-rejects`.
 - Writes `target/c-corpus-sweep.md` (per-project table, failure clusters,
   slowest TUs) and `target/c-corpus-sweep.json`.
-- `--trophies` prints the README trophy-case table: projects where every
-  TU is `ok`. An `oracle-rejects` disqualifies, since it means the setup
-  is wrong, not slate.
+- `--trophies` prints the README trophy-case table: projects where every TU is
+  `ok`. An `oracle-rejects` disqualifies, since it means the setup is wrong, not
+  slate.
 - A full run takes about 3 minutes.
 
 ## End to end
@@ -132,12 +131,11 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs 
 python3 tools/corpus/e2e.py PROJECT [--mode clang|gcc|clang-aarch64] [--setup] [--until STAGE] [--bench-runs N] [-- runtest args]
 ```
 
-Translates one project's target with `slate translate-project`, links it
-against the native build's libraries, benchmarks it against the native
-binary, and runs the project's tests. Reports go to
-`target/corpus/<project>/<mode>/` (`summary.json` plus per-stage logs).
-The run stops at the first failing stage. The barrier report is always
-written once translation units are known.
+Translates one project's target with `slate translate-project`, links it against
+the native build's libraries, benchmarks it against the native binary, and runs
+the project's tests. Reports go to `target/corpus/<project>/<mode>/`
+(`summary.json` plus per-stage logs). The run stops at the first failing stage.
+The barrier report is always written once translation units are known.
 
 | Stage     | What                                                                                                                                                                                                | Report                                            |
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
@@ -149,10 +147,10 @@ written once translation units are known.
 | bench     | the project's benchmark against the native and translated binaries: one warmup each, then alternating samples, medians                                                                              | `bench.{json,md}`, `geomean_ratio`                |
 | test      | the project's test command in a sandbox copy of its test tree, with the target binary swapped in; then the same command against the native binary in a second sandbox (`--no-native-test` skips it) | `test.log`, `test-native.log`, `test_over_native` |
 
-- Translation should take about as long as the native compile, the
-  translated binary should benchmark about as fast as the native one, and
-  the test suite should take about as long against either binary.
-  `cargo build` time is not compared.
+- Translation should take about as long as the native compile, the translated
+  binary should benchmark about as fast as the native one, and the test suite
+  should take about as long against either binary. `cargo build` time is not
+  compared.
 - redis: the target is `REDIS_SERVER_OBJ` + `REDIS_VEC_SETS_OBJ`. Its
   `build-clang` database records the `src/*.c` TUs only as `-MM` entries; the
   harness keeps the first existing source per object, so
@@ -160,145 +158,140 @@ written once translation units are known.
   benchmark is pipelined `redis-benchmark` (`-P 16 -c 50`). The test sandbox
   links `redis-server`/`redis-check-*` to the translated binary and
   `redis-cli`/`redis-benchmark` to the native ones.
-- lua: the target is `LUA_O` + `CORE_O` + `AUX_O` + `LIB_O` (34 TUs),
-  linked with `-Wl,-E -ldl` so `testes/libs/*.so` resolve the API from the
-  binary. The test is `../lua all.lua` in the sandbox's `testes/` (after
-  `make -C testes/libs`), with stdin a closed pipe because `files.lua`
-  expects seeking stdin to fail. `test_patches` drops the
-  `sh -c 'kill -s HUP $$'` row of `files.lua`: it expects `exit`, but bash
-  as `/bin/sh` execs the last command and reports `signal`, failing natively
-  too. The benchmark times five `lua -e` scripts (fib, table, string, sort,
-  closure). 2026-10-05: `final OK`, 4.7s vs 4.5s native; benchmark geomean
-  1.56x native (fib 2.8x).
-- tinycc: the target is `TCC_FILES` from the out-of-tree `build-clang`
-  (11 TUs). The sandbox copies `build-clang` with its `.o` files
-  (`test_keep_objects`: the `-b` tests link `bcheck.o`, `bt-log.o` and
-  `runmain.o`) and replaces `build-clang/tcc` with the translated binary,
-  then runs `make -C build-clang/tests -k CC=gcc` (`-o tcc -o libtcc1.a` so
-  make does not rebuild them). `CC=gcc` is needed because clang 22 rejects
-  `tcctest.c`'s `old_style_f((void *)1, ...)`, so `test.ref` fails natively
-  too. That runs `make test`: hello-exe/run, libtest, test3 (tcc compiling
-  `tcctest.c` and tcc.c itself), abitest, 129 `tests2` cases, pp, memtest,
-  dlltest, cross-test, btest and tccb. `libtest` links the native
-  `libtcc.a`, so it does not cover the translated library. 2026-11-13: 0
-  barriers, `ALL TESTS PASSED` translated and native in 5.7s vs 5.6s.
-  The 2026-10-05 barriers (K&R `gind`, `asm_instrs` initializer) are gone.
-- jq: the target is `jq_OBJECTS` + `libjq_la_OBJECTS` (22 TUs, libtool
-  `.lo` names matched by stem), read from `build-clang`'s Makefile; the
-  vendored oniguruma stays native (`libonig.a`). The test runs the nine
-  `TESTS` scripts, which find the binary at `$JQBASEDIR/jq`, so the sandbox
-  links `jq` at its root. The native side of a `target` link is the recipe's
-  `make_dir/target` (here the libtool wrapper `build-clang/jq`).
-  2026-11-08: 0 barriers, 9/9 suites pass translated and native. Native
-  takes 6.9s vs 3.1s translated because each run goes through the libtool
-  wrapper script, so `test_over_native` is not meaningful.
+- lua: the target is `LUA_O` + `CORE_O` + `AUX_O` + `LIB_O` (34 TUs), linked
+  with `-Wl,-E -ldl` so `testes/libs/*.so` resolve the API from the binary. The
+  test is `../lua all.lua` in the sandbox's `testes/` (after
+  `make -C testes/libs`), with stdin a closed pipe because `files.lua` expects
+  seeking stdin to fail. `test_patches` drops the `sh -c 'kill -s HUP $$'` row
+  of `files.lua`: it expects `exit`, but bash as `/bin/sh` execs the last
+  command and reports `signal`, failing natively too. The benchmark times five
+  `lua -e` scripts (fib, table, string, sort, closure). 2026-10-05: `final OK`,
+  4.7s vs 4.5s native; benchmark geomean 1.56x native (fib 2.8x).
+- tinycc: the target is `TCC_FILES` from the out-of-tree `build-clang` (11 TUs).
+  The sandbox copies `build-clang` with its `.o` files (`test_keep_objects`: the
+  `-b` tests link `bcheck.o`, `bt-log.o` and `runmain.o`) and replaces
+  `build-clang/tcc` with the translated binary, then runs
+  `make -C build-clang/tests -k CC=gcc` (`-o tcc -o libtcc1.a` so make does not
+  rebuild them). `CC=gcc` is needed because clang 22 rejects `tcctest.c`'s
+  `old_style_f((void *)1, ...)`, so `test.ref` fails natively too. That runs
+  `make test`: hello-exe/run, libtest, test3 (tcc compiling `tcctest.c` and
+  tcc.c itself), abitest, 129 `tests2` cases, pp, memtest, dlltest, cross-test,
+  btest and tccb. `libtest` links the native `libtcc.a`, so it does not cover
+  the translated library. 2026-11-13: 0 barriers, `ALL TESTS PASSED` translated
+  and native in 5.7s vs 5.6s. The 2026-10-05 barriers (K&R `gind`, `asm_instrs`
+  initializer) are gone.
+- jq: the target is `jq_OBJECTS` + `libjq_la_OBJECTS` (22 TUs, libtool `.lo`
+  names matched by stem), read from `build-clang`'s Makefile; the vendored
+  oniguruma stays native (`libonig.a`). The test runs the nine `TESTS` scripts,
+  which find the binary at `$JQBASEDIR/jq`, so the sandbox links `jq` at its
+  root. The native side of a `target` link is the recipe's `make_dir/target`
+  (here the libtool wrapper `build-clang/jq`). 2026-11-08: 0 barriers, 9/9
+  suites pass translated and native. Native takes 6.9s vs 3.1s translated
+  because each run goes through the libtool wrapper script, so
+  `test_over_native` is not meaningful.
 
 - oniguruma: upstream's CMake registers no tests (`make test` in
   `test/Makefile.am` runs the executables), so `ctest=False` and
   `oniguruma_suite` runs the seven `test/` executables (`test_utf8`,
-  `test_syntax`, `test_options`, `testc`, `testcu`, `test_regset`,
-  `test_back`), each translated as its own crate against the translated
-  `cdylib` (`translate_tests`). A case passes when the exit code and the
+  `test_syntax`, `test_options`, `testc`, `testcu`, `test_regset`, `test_back`),
+  each translated as its own crate against the translated `cdylib`
+  (`translate_tests`). A case passes when the exit code and the
   `RESULT SUCC/FAIL` stdout match the native run. `testp` needs
-  `ENABLE_POSIX_API`, which the corpus build leaves off. 2026-11-13: 0
-  barriers, 7/7 pass (4565 checks, 0 failures).
+  `ENABLE_POSIX_API`, which the corpus build leaves off. 2026-11-13: 0 barriers,
+  7/7 pass (4565 checks, 0 failures).
 
 ### CMake libraries
 
-`CMakeLibrary` recipes (cJSON, libyaml, zlib) cover CMake/ninja projects
-whose product is a library. Their optional `benchmark` runs after the test
-stage, against the relinked tools in `test-tree/`.
+`CMakeLibrary` recipes (cJSON, libyaml, zlib) cover CMake/ninja projects whose
+product is a library. Their optional `benchmark` runs after the test stage,
+against the relinked tools in `test-tree/`.
 
-- native: the library's TUs are the objects `ninja -t query <library>`
-  lists (symlinks such as `libcjson.so` are resolved first), plus those of
-  its `components` (libevent's `_extra` and `_pthreads` archives next to
-  `_core`), matched to `compile_commands.json` entries by `output`.
-- translate/build: `translate-project --crate-type staticlib` (also
-  `cdylib` with `translate_tests`).
+- native: the library's TUs are the objects `ninja -t query <library>` lists
+  (symlinks such as `libcjson.so` are resolved first), plus those of its
+  `components` (libevent's `_extra` and `_pthreads` archives next to `_core`),
+  matched to `compile_commands.json` entries by `output`.
+- translate/build: `translate-project --crate-type staticlib` (also `cdylib`
+  with `translate_tests`).
 - test: every CTest executable plus the recipe's `tools`, rebuilt into
   `test-tree/`. By default each is relinked from its native link command
-  (`ninja -t commands`) with the library, its components and its
-  `variants` (other builds of it, such as zlib's `libz.so` next to
-  `libz.a`) swapped for the translated archive and Rust's native libs
-  appended. A ctest case passes when it exits 0 and its stdout matches the
-  native run; it runs with its `ENVIRONMENT` property, and cases run in
-  parallel (`--jobs`), each native then translated. The executable is
-  `argv[0]`, or `argv[2]` behind a `bash`/`sh` wrapper script (libexpat's
-  `run.sh`). A case that runs a `sh` script from the build tree (pcre2's
-  `pcre2_test.sh`) runs a copy in its own directory with every
-  `build/<tool>` path rewritten to the relinked tool. Cases whose executable is not in the build tree (zlib's
-  `cmake` packaging and `llvm-cov` cases) are listed as skipped. Each
-  `Differential` then runs a tool over every input glob with the same
-  `argv[0]` for both builds and must match the native exit code and
-  stdout. An `{output}` argument is a fresh directory per run whose files
-  are compared too (`xmlwf -d`).
+  (`ninja -t commands`) with the library, its components and its `variants`
+  (other builds of it, such as zlib's `libz.so` next to `libz.a`) swapped for
+  the translated archive and Rust's native libs appended. A ctest case passes
+  when it exits 0 and its stdout matches the native run; it runs with its
+  `ENVIRONMENT` property, and cases run in parallel (`--jobs`), each native then
+  translated. The executable is `argv[0]`, or `argv[2]` behind a `bash`/`sh`
+  wrapper script (libexpat's `run.sh`). A case that runs a `sh` script from the
+  build tree (pcre2's `pcre2_test.sh`) runs a copy in its own directory with
+  every `build/<tool>` path rewritten to the relinked tool. Cases whose
+  executable is not in the build tree (zlib's `cmake` packaging and `llvm-cov`
+  cases) are listed as skipped. Each `Differential` then runs a tool over every
+  input glob with the same `argv[0]` for both builds and must match the native
+  exit code and stdout. An `{output}` argument is a fresh directory per run
+  whose files are compared too (`xmlwf -d`).
 - `translate_tests` (cJSON): its unity tests `#include "../cJSON.c"`, so
-  relinking would only test native code. Instead each test executable
-  (its objects plus in-build archives such as `libunity.a`) is translated
-  as its own binary crate, linked against the translated `cdylib` in
-  place of the native `.so`, which keeps the native rule that the test's
-  own definitions win.
-- cJSON (2026-10-05): 1 TU, 19/19 ctest. libyaml: 8 TUs, 3/3 ctest, and
-  100/100 differential runs (`run-*`/`example-*` over `examples/*.yaml`
-  and `regression-inputs/*`).
-- zlib (2026-10-05): 15 TUs from `libz.a`, 5/5 ctest (examples, static
-  examples, `infcover`), 10 skipped, and 210/210 byte-identical
-  `minigzip -c` runs (default, `-1`, `-9`, `-h`, `-r`, `-f`). The benchmark
-  pipes a 64 MiB input built from the sources and `zlib.3.pdf` through
-  `minigzip`, `minigzip -9`, and `minigzip -d`, and requires identical
-  output: geomean 1.04x native.
+  relinking would only test native code. Instead each test executable (its
+  objects plus in-build archives such as `libunity.a`) is translated as its own
+  binary crate, linked against the translated `cdylib` in place of the native
+  `.so`, which keeps the native rule that the test's own definitions win.
+- cJSON (2026-10-05): 1 TU, 19/19 ctest. libyaml: 8 TUs, 3/3 ctest, and 100/100
+  differential runs (`run-*`/`example-*` over `examples/*.yaml` and
+  `regression-inputs/*`).
+- zlib (2026-10-05): 15 TUs from `libz.a`, 5/5 ctest (examples, static examples,
+  `infcover`), 10 skipped, and 210/210 byte-identical `minigzip -c` runs
+  (default, `-1`, `-9`, `-h`, `-r`, `-f`). The benchmark pipes a 64 MiB input
+  built from the sources and `zlib.3.pdf` through `minigzip`, `minigzip -9`, and
+  `minigzip -d`, and requires identical output: geomean 1.04x native.
 - libpng (2026-11-13): 16 TUs from `libpng18.so`, 0 barriers (the SSE2 filter
   code and the `row_mask`/`display_mask` tables from the October probe now
   translate). 37/37 ctest (`pngtest`, `pngvalid`, `pngstest`, `pngunknown`,
   `pngimage`, `pnggetset`), each translated as its own crate
-  (`translate_tests`). Its cases run `cmake -DTEST_COMMAND=<exe> -P
-  <case>.cmake`, so `ctest_executable` swaps the path inside the
-  `-DTEST_COMMAND=` argument; `compare_stdout=False` because cmake echoes
-  that path. 70.9s translated vs 81.1s native.
+  (`translate_tests`). Its cases run
+  `cmake -DTEST_COMMAND=<exe> -P <case>.cmake`, so `ctest_executable` swaps the
+  path inside the `-DTEST_COMMAND=` argument; `compare_stdout=False` because
+  cmake echoes that path. 70.9s translated vs 81.1s native.
 
-- zstd (2026-11-13): 30 TUs from `libzstd.so`, 0 barriers. The corpus build
-  has `ZSTD_BUILD_TESTS=OFF`, so there is no ctest: 175 differential
-  compressions (`-T2 -5`, `--rsyncable`, `--ultra -22` over sources and docs)
-  and `zstd_suite`, 366 round trips over six modes with sources, an empty
-  file and noise. The `zstd` CLI crate needed the pointer-lattice fixes in
+- zstd (2026-11-13): 30 TUs from `libzstd.so`, 0 barriers. The corpus build has
+  `ZSTD_BUILD_TESTS=OFF`, so there is no ctest: 175 differential compressions
+  (`-T2 -5`, `--rsyncable`, `--ultra -22` over sources and docs) and
+  `zstd_suite`, 366 round trips over six modes with sources, an empty file and
+  noise. The `zstd` CLI crate needed the pointer-lattice fixes in
   slate-dghn.51.1. 1.38x native time over the test stage.
 
-- xxHash (2026-11-13): 2 TUs (`xxhash.c`, `xxh_x86dispatch.c`) of
-  `libxxhash.so` and `xxhsum`, 0 barriers after sema expanded
-  `pmuludq`/`pmuldq`, `pshufd` and the `select*` lane selects (the dispatch TU
-  carries SSE2, AVX2 and AVX-512 bodies). 53 differential hashes
-  (`-H0`..`-H3` over sources) and `xxhsum_suite`: 12 checksum-file round trips
-  (`-H0`..`-H3` with plain, `--tag`, `--little-endian`; native cannot `-c` its
-  own `--little-endian` output, so that format is compared only), stdin
-  hashing, and a `-b -i1` exit-code match. No ctest in this build.
+- xxHash (2026-11-13): 2 TUs (`xxhash.c`, `xxh_x86dispatch.c`) of `libxxhash.so`
+  and `xxhsum`, 0 barriers after sema expanded `pmuludq`/`pmuldq`, `pshufd` and
+  the `select*` lane selects (the dispatch TU carries SSE2, AVX2 and AVX-512
+  bodies). 53 differential hashes (`-H0`..`-H3` over sources) and
+  `xxhsum_suite`: 12 checksum-file round trips (`-H0`..`-H3` with plain,
+  `--tag`, `--little-endian`; native cannot `-c` its own `--little-endian`
+  output, so that format is compared only), stdin hashing, and a `-b -i1`
+  exit-code match. No ctest in this build.
 
-- mimalloc (2026-11-13): 21 TUs of `libmimalloc.so`/`libmimalloc.a`, 0
-  barriers (the atomic pointer array, `assume_aligned` and `umull_overflow`
-  gaps in the original probe were closed by slate-dghn.33/.34). The only
-  failure was rustc's `deref_nullptr` deny lint on the dead arm of
+- mimalloc (2026-11-13): 21 TUs of `libmimalloc.so`/`libmimalloc.a`, 0 barriers
+  (the atomic pointer array, `assume_aligned` and `umull_overflow` gaps in the
+  original probe were closed by slate-dghn.33/.34). The only failure was rustc's
+  `deref_nullptr` deny lint on the dead arm of
   `mi_arena_start_idx(...) : ((mi_arena_t*)NULL)->arena_idx` in
-  `_mi_arenas_visit`; sema's `Hoister::branch` now keeps only the taken arm of
-  a `?:` whose condition compares two null constants. ctest 5 of 5 (the
+  `_mi_arenas_visit`; sema's `Hoister::branch` now keeps only the taken arm of a
+  `?:` whose condition compares two null constants. ctest 5 of 5 (the
   `test-stress-{heaps,static,dynamic}` cases run cmake and are skipped); the
   recipe has no extra suite.
 
 - `test_env` adds environment to every ctest case (c-ares sets
-  `GTEST_PRINT_TIME=0`, since gtest's per-test timings differ run to
-  run). `compare_stdout=False` judges cases by exit code alone, for
-  suites whose native output is not reproducible (libevent prints
-  timestamps, CPU usage and pointers).
-- 2026-10-05: utf8proc 1 TU, 10/10 ctest. libexpat (`translate_tests`,
-  since `runtests` compiles its own copy of `lib/*.c`): 7 TUs, 1/1 ctest,
-  and 36/36 `xmlwf -d` runs (default, `-n`, `-m`, `-N -p`) over
+  `GTEST_PRINT_TIME=0`, since gtest's per-test timings differ run to run).
+  `compare_stdout=False` judges cases by exit code alone, for suites whose
+  native output is not reproducible (libevent prints timestamps, CPU usage and
+  pointers).
+- 2026-10-05: utf8proc 1 TU, 10/10 ctest. libexpat (`translate_tests`, since
+  `runtests` compiles its own copy of `lib/*.c`): 7 TUs, 1/1 ctest, and 36/36
+  `xmlwf -d` runs (default, `-n`, `-m`, `-N -p`) over
   `testdata/largefiles/*.xml` and `doc/xmlwf.xml`. c-ares: 93 TUs from
-  `libcares.so`, 3/3 ctest (`arestest`'s 1219 gtest cases, live DNS
-  included, plus both fuzz corpora). libevent (static build): 28 TUs from
-  `_core`, `_extra` and `_pthreads`, 84/84 ctest by exit code, 25 minutes
-  of test time.
-- yyjson (2026-10-05): 1 TU, 12/12 ctest. pcre2: 32 TUs from
-  `libpcre2-8.a` and `libpcre2-posix.a`, with `pcre2test` and `pcre2grep`
-  relinked (`/usr/include` for `readline`, `zlib` and `bzlib`): 3/3 ctest,
-  `RunTest` and `RunGrepTest` stdout identical to native.
+  `libcares.so`, 3/3 ctest (`arestest`'s 1219 gtest cases, live DNS included,
+  plus both fuzz corpora). libevent (static build): 28 TUs from `_core`,
+  `_extra` and `_pthreads`, 84/84 ctest by exit code, 25 minutes of test time.
+- yyjson (2026-10-05): 1 TU, 12/12 ctest. pcre2: 32 TUs from `libpcre2-8.a` and
+  `libpcre2-posix.a`, with `pcre2test` and `pcre2grep` relinked (`/usr/include`
+  for `readline`, `zlib` and `bzlib`): 3/3 ctest, `RunTest` and `RunGrepTest`
+  stdout identical to native.
 
 ### Translation-only projects
 
@@ -311,28 +304,28 @@ initializers fail Rust const evaluation. See the e2e summaries under
 `target/corpus/{numpy,openblas}/clang/`.
 
 `clang-aarch64` is a cross flavor for Meson recipes (NumPy): setup writes
-`build-clang-aarch64/cross.ini` (`clang --target=aarch64-linux-gnu
---sysroot=/usr/aarch64-linux-gnu`, host `cpu_family = 'aarch64'`, the recipe's
-`meson_cross` properties) so NumPy builds its ASIMD dispatch variants instead of
-the x86 ones. The host Python's headers stand in for an aarch64 CPython, which
-is enough for translation-only runs; nothing built for it is run.
+`build-clang-aarch64/cross.ini`
+(`clang --target=aarch64-linux-gnu --sysroot=/usr/aarch64-linux-gnu`, host
+`cpu_family = 'aarch64'`, the recipe's `meson_cross` properties) so NumPy builds
+its ASIMD dispatch variants instead of the x86 ones. The host Python's headers
+stand in for an aarch64 CPython, which is enough for translation-only runs;
+nothing built for it is run.
 
 ### Make libraries
 
-`MakeLibrary` recipes (giflib, lmdb) cover in-tree Make builds whose
-product is a static library and a set of tools.
+`MakeLibrary` recipes (giflib, lmdb) cover in-tree Make builds whose product is
+a static library and a set of tools.
 
-- native: the TUs are the members of the recipe's `archives` (`ar t`),
-  matched to the `bear` database by source stem. Tool names come from a
-  make variable (`UTILS`, `PROGS`), expanded with a print goal passed via
-  `--eval`, because `make -pn` prints values unexpanded
-  (`OBJECTS = $(SOURCES:.c=.o)`). Make `Recipe`s read their object lists
-  the same way.
-- test: each tool is relinked from the last line of `make -Bn <tool>`
-  whose `-o` names it, with the archives swapped for the translated
-  archive, into `translated-tools/`. The test command then runs twice, in
-  `test-tree/` with the translated tools linked in and in
-  `test-tree-native/` with the native ones, and must exit 0.
+- native: the TUs are the members of the recipe's `archives` (`ar t`), matched
+  to the `bear` database by source stem. Tool names come from a make variable
+  (`UTILS`, `PROGS`), expanded with a print goal passed via `--eval`, because
+  `make -pn` prints values unexpanded (`OBJECTS = $(SOURCES:.c=.o)`). Make
+  `Recipe`s read their object lists the same way.
+- test: each tool is relinked from the last line of `make -Bn <tool>` whose `-o`
+  names it, with the archives swapped for the translated archive, into
+  `translated-tools/`. The test command then runs twice, in `test-tree/` with
+  the translated tools linked in and in `test-tree-native/` with the native
+  ones, and must exit 0.
 - giflib (2026-10-05): 10 TUs from `libgif.a` and `libutil.a`, 14 tools;
   `make test` in `tests/` passes 51/51, with the same TAP output as native.
 - lmdb (2026-10-05): 3 TUs from `liblmdb.a`, 10 tools (`PROGS`). Upstream's
@@ -350,55 +343,51 @@ python3 tools/corpus/msvc_library.py PROJECT [--arch x86_64|i686 ...]
 
 `MsvcLibrary` recipes build a Windows library with msvc-wine's `cl.exe` and
 `lib.exe` (`MSVC_WINE_ROOT`) straight from the recipe's source globs, with no
-CMake. The same `cl.exe` arguments, plus `--target=<arch>-pc-windows-msvc`,
-go into a compile database for `translate-project --crate-type staticlib`,
-and the crate is built for that target with `+crt-static` to match `/MT`.
-Each driver under `tools/corpus/msvc/` is linked by `cl.exe` once against the
-native `.lib` and once against the translated one (plus the
-`native-static-libs` rustc prints), run under wine, and the stdout and exit
-code must match. Output lands in `target/corpus/<project>/msvc/<arch>/`.
+CMake. The same `cl.exe` arguments, plus `--target=<arch>-pc-windows-msvc`, go
+into a compile database for `translate-project --crate-type staticlib`, and the
+crate is built for that target with `+crt-static` to match `/MT`. Each driver
+under `tools/corpus/msvc/` is linked by `cl.exe` once against the native `.lib`
+and once against the translated one (plus the `native-static-libs` rustc
+prints), run under wine, and the stdout and exit code must match. Output lands
+in `target/corpus/<project>/msvc/<arch>/`.
 
 - minhook (2026-11-08): `src/*.c` and both hde decoders, x86_64 and i686.
   `minhook_driver.c` hooks two local functions (one with a RIP-relative
   prologue) and two kernel32 APIs, calls through the trampolines, uses the
-  queued enable/disable path, and checks every error status it can reach
-  (not initialized, already created, not executable, enabled/disabled,
+  queued enable/disable path, and checks every error status it can reach (not
+  initialized, already created, not executable, enabled/disabled,
   module/function not found). 50 lines identical to native on both arches.
 
 ## Missing dependencies
 
 Third-party headers absent from the slate sysroot (`crypt.h`, `bzlib.h`,
 `readline/readline.h`) are reported as `missing-dependency`, not as slate
-failures. The sysroot holds only the C library and compiler headers and
-gets no more: a project that needs a host library is given its include
-directory explicitly, as a user would pass `-idirafter` to `slate-parser`
-or `slate translate-project`.
+failures. The sysroot holds only the C library and compiler headers and gets no
+more: a project that needs a host library is given its include directory
+explicitly, as a user would pass `-idirafter` to `slate-parser` or
+`slate translate-project`.
 
-- `HOST_INCLUDE_DIRS` in the sweep is that manual list, appended as
-  `-idirafter` so the sysroot still wins for libc headers. redis needs
-  `/usr/include` for `systemd/sd-daemon.h` (its build detects systemd on
-  the host). pcre2 needs it for `bzlib.h` (`pcre2grep.c`) and
-  `readline/readline.h` (`pcre2test.c`), nginx for `crypt.h`, linux for
-  its host tools (`gelf.h`, `openssl/bio.h`), cpython
-  for its optional modules' libraries (ssl, bz2, lzma, readline, ncurses,
-  ffi).
-- Where a corpus project provides the header (`zlib`), the sweep appends
-  its source and build directories as `-idirafter` for every other
-  project, and libpng is built against that zlib so clang and slate read
-  the same header.
+- `HOST_INCLUDE_DIRS` in the sweep is that manual list, appended as `-idirafter`
+  so the sysroot still wins for libc headers. redis needs `/usr/include` for
+  `systemd/sd-daemon.h` (its build detects systemd on the host). pcre2 needs it
+  for `bzlib.h` (`pcre2grep.c`) and `readline/readline.h` (`pcre2test.c`), nginx
+  for `crypt.h`, linux for its host tools (`gelf.h`, `openssl/bio.h`), cpython
+  for its optional modules' libraries (ssl, bz2, lzma, readline, ncurses, ffi).
+- Where a corpus project provides the header (`zlib`), the sweep appends its
+  source and build directories as `-idirafter` for every other project, and
+  libpng is built against that zlib so clang and slate read the same header.
 
 ## Gotchas
 
-- clang demotes a directory given as both `-I` and `-idirafter` to a
-  system directory, which broke zlib's own TUs; the provider directories
-  are never added to the provider itself.
-- msvc: don't export `CC=cl`. mbedtls's generators compile and run probes
-  with `$CC`, and a Windows executable can't run on the host. CMake gets
-  `cl` through `CMAKE_C_COMPILER`. Setting `CMAKE_CXX_COMPILER` breaks
-  zstd, whose flag checks test C++ when a C++ compiler is named.
-- sqlite under `nmake`: `/I`, not `/K`, since Wine's `del` of a missing
-  file fails; a relative `TOP` keeps command lines under `nmake`'s length
-  limit.
+- clang demotes a directory given as both `-I` and `-idirafter` to a system
+  directory, which broke zlib's own TUs; the provider directories are never
+  added to the provider itself.
+- msvc: don't export `CC=cl`. mbedtls's generators compile and run probes with
+  `$CC`, and a Windows executable can't run on the host. CMake gets `cl` through
+  `CMAKE_C_COMPILER`. Setting `CMAKE_CXX_COMPILER` breaks zstd, whose flag
+  checks test C++ when a C++ compiler is named.
+- sqlite under `nmake`: `/I`, not `/K`, since Wine's `del` of a missing file
+  fails; a relative `TOP` keeps command lines under `nmake`'s length limit.
 - mbedtls's generators need `jsonschema` and `jinja2`; setup installs its
   `basic.requirements.txt` into `~/c-corpus/.venv`.
 - giflib: `MAKE=true` skips the docs step (`xmlto`).

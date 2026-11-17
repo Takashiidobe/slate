@@ -1,6 +1,7 @@
 # Porting a backend pass
 
 <!-- toc -->
+
 - [Choose and implement](#choose-and-implement)
 - [Verify](#verify)
 - [Measure](#measure)
@@ -8,22 +9,33 @@
 
 ## Choose and implement
 
-- Use `crates/slate/src/backend/engine/rules/mod.rs` and current failures to choose work; track it with `bd`.
+- Use `crates/slate/src/backend/engine/rules/mod.rs` and current failures to
+  choose work; track it with `bd`.
 - Read the nearest registered sibling rule before adapting an algorithm.
-- Match current Rust AST nodes and preserve conservative preconditions, edit shape and fact invalidation.
+- Match current Rust AST nodes and preserve conservative preconditions, edit
+  shape and fact invalidation.
 - Register the rule with an order consistent with its dependencies.
-- [Rewrite engine](rewrite-engine-v2.md) defines the current boundary; the [historical index](../historical/index.md) preserves earlier implementations and rationale.
+- [Rewrite engine](rewrite-engine-v2.md) defines the current boundary; the
+  [historical index](../historical/index.md) preserves earlier implementations
+  and rationale.
 
 ## Verify
 
 - Start changed behavior with a failing C differential fixture.
-- Exercise `translate` for backend work. The Slate profile runs every fixture through `translate`, so rewrites are always on.
-- Run `cargo clippy -p slate-c2rust --allow-dirty --fix`, `cargo fmt` and `cargo nextest r --release --profile slate` from the workspace root.
-- Judge semantic correctness by executed C/Rust parity. To check that a rewrite fires, regenerate the fixture's checks with `crates/slate/tools/update_filecheck.py` and read the diff ([FileCheck](differential-fixtures.md#filecheck)).
+- Exercise `translate` for backend work. The Slate profile runs every fixture
+  through `translate`, so rewrites are always on.
+- Run `cargo clippy -p slate-c2rust --allow-dirty --fix`, `cargo fmt` and
+  `cargo nextest r --release --profile slate` from the workspace root.
+- Judge semantic correctness by executed C/Rust parity. To check that a rewrite
+  fires, regenerate the fixture's checks with
+  `crates/slate/tools/update_filecheck.py` and read the diff
+  ([FileCheck](differential-fixtures.md#filecheck)).
 
 ## Measure
 
 - Compare binaries with and without the rule on the same input and flags.
 - Use isolated worktrees when both implementations need to remain available.
-- Project benchmarks must use a supported executable, unique module stems and one configuration per translation unit.
-- Historical timings and pass cost tables are context, not a baseline for the current frontend.
+- Project benchmarks must use a supported executable, unique module stems and
+  one configuration per translation unit.
+- Historical timings and pass cost tables are context, not a baseline for the
+  current frontend.

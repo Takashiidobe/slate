@@ -1,6 +1,7 @@
 # Target-qualified FileCheck is independent of fixture flavor
 
-> Historical record. See the [archive index](index.md) for scope and source revision.
+> Historical record. See the [archive index](index.md) for scope and source
+> revision.
 
 _created 2026-08-24_
 
@@ -8,8 +9,8 @@ _created 2026-08-24_
 setup. It is not a general code-generation target abstraction.
 
 Target-specific source checks use conjunctive FileCheck prefixes such as
-`REWRITES-MACOS` or `LOWERING-BIONIC-X86_64`. The runner enables only the
-prefix for both the active nextest profile and translation target.
+`REWRITES-MACOS` or `LOWERING-BIONIC-X86_64`. The runner enables only the prefix
+for both the active nextest profile and translation target.
 
 The C compiler may require a versioned target triple while Slate accepts a
 canonical triple, so each platform flavor supplies those values separately.

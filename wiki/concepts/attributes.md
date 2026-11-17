@@ -1,6 +1,7 @@
 # Attribute pipeline
 
 <!-- toc -->
+
 - [Stages](#stages)
 - [Parsing](#parsing)
   - [C23 placement](#c23-placement)
@@ -32,34 +33,34 @@ How an attribute gets from source to the IR. AST shape:
 
 `parse_attribute_groups` reads any run of these, in any order:
 
-| Syntax                                                                              | Handling                                                                                                                                                  |
-| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `__cdecl`, `__stdcall`, `__fastcall`, `__vectorcall`, `__thiscall` (and `_x` forms) | `CallingConvention`                                                                                                                                       |
-| `__declspec(a b(x) ...)`                                                            | `align` → `aligned`, `allocate` → `section`; unregistered → `IgnoredDeclspec`                                                                             |
-| `_Alignas(...)` / `alignas(...)`                                                    | `AlignAs(Type \| Expr)`; a type name is tried first                                                                                                       |
-| `__attribute__((...))` / `__attribute((...))`                                       | unregistered → `Unknown`                                                                                                                                  |
-| `__arm_streaming`, `__arm_streaming_compatible`, `__arm_locally_streaming`, `__arm_new("za")`, `__arm_in`/`out`/`inout`/`preserves` | AArch64 only: `Sme(SmeAttribute)`; gcc's `[[arm::...]]` expansion maps to the same |
-| `[[name]]`, `[[scope::name]]`                                                       | `c23_attribute_name` maps standard names, `gnu::` / `clang::` names, `msvc::noinline`, `msvc::forceinline` (→ `always_inline`); anything else → `Unknown` |
+| Syntax                                                                                                                              | Handling                                                                                                                                                  |
+| ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `__cdecl`, `__stdcall`, `__fastcall`, `__vectorcall`, `__thiscall` (and `_x` forms)                                                 | `CallingConvention`                                                                                                                                       |
+| `__declspec(a b(x) ...)`                                                                                                            | `align` → `aligned`, `allocate` → `section`; unregistered → `IgnoredDeclspec`                                                                             |
+| `_Alignas(...)` / `alignas(...)`                                                                                                    | `AlignAs(Type \| Expr)`; a type name is tried first                                                                                                       |
+| `__attribute__((...))` / `__attribute((...))`                                                                                       | unregistered → `Unknown`                                                                                                                                  |
+| `__arm_streaming`, `__arm_streaming_compatible`, `__arm_locally_streaming`, `__arm_new("za")`, `__arm_in`/`out`/`inout`/`preserves` | AArch64 only: `Sme(SmeAttribute)`; gcc's `[[arm::...]]` expansion maps to the same                                                                        |
+| `[[name]]`, `[[scope::name]]`                                                                                                       | `c23_attribute_name` maps standard names, `gnu::` / `clang::` names, `msvc::noinline`, `msvc::forceinline` (→ `always_inline`); anything else → `Unknown` |
 
-- `parse_attribute_value` matches the unwrapped name (`__name__` → `name`)
-  and argument shape. A modeled name with the wrong arguments is
-  `Invalid`; an unmodeled name is `Unknown` with its argument tokens.
-- `parse_attribute` runs under a parser checkpoint that is committed only
-  when the result is not `Invalid`, so a failed argument parse leaves no
-  name or annotation changes.
+- `parse_attribute_value` matches the unwrapped name (`__name__` → `name`) and
+  argument shape. A modeled name with the wrong arguments is `Invalid`; an
+  unmodeled name is `Unknown` with its argument tokens.
+- `parse_attribute` runs under a parser checkpoint that is committed only when
+  the result is not `Invalid`, so a failed argument parse leaves no name or
+  annotation changes.
 - Bare `aligned` reads `__BIGGEST_ALIGNMENT__` in the parser
   (`biggest_alignment`).
 - Every attribute keeps its span and placement (specifiers, declarator,
   init-declarator, tag, enumerator, statement, file-scope attribute
   declaration). `vector_size`, `ext_vector_type`,
-  `neon_vector_type`/`neon_polyvector_type`, and `mode` in specifier position wrap the type
-  specifier ([ast-spec](ast-spec.md#vector_size-and-mode)).
+  `neon_vector_type`/`neon_polyvector_type`, and `mode` in specifier position
+  wrap the type specifier ([ast-spec](ast-spec.md#vector_size-and-mode)).
 - Which syntax was used is not kept.
 
 ### C23 placement
 
-`[[...]]` is accepted wherever C23 allows it, in every mode (gcc and clang
-only warn before C23; see
+`[[...]]` is accepted wherever C23 allows it, in every mode (gcc and clang only
+warn before C23; see
 [ast-spec](ast-spec.md#post-c89-constructs-in-older-modes)):
 
 | Written                                 | C23 appertains to       | AST                                | slate treats it as                                             |
@@ -74,64 +75,62 @@ only warn before C23; see
 - Type-position attributes are treated like GNU declaration attributes
   (permissive, decided 2026-09-29). gcc and clang drop declaration-only
   attributes there with "ignored" (clang errors on some, e.g.
-  `int [[deprecated]] v`), and honor type ones (`format`, `nonnull`,
-  `access`, `reproducible`, `unsequenced`, `aligned`, conventions). slate
-  applies both kinds and emits none of those warnings. A layout attribute
-  on a nested position (`int *[[gnu::aligned(16)]] *pp`) applies to the
-  declaration, as GNU `*__attribute__` already does.
+  `int [[deprecated]] v`), and honor type ones (`format`, `nonnull`, `access`,
+  `reproducible`, `unsequenced`, `aligned`, conventions). slate applies both
+  kinds and emits none of those warnings. A layout attribute on a nested
+  position (`int *[[gnu::aligned(16)]] *pp`) applies to the declaration, as GNU
+  `*__attribute__` already does.
 - `DeclarationSpecifiers::attributes_with(declarator, trailing)` is the one
-  declaration list: specifiers, trailing, then every `Attributed` layer
-  except calling conventions, which `derive` applies to the type. Field
-  layout reads the same layers through `field_request`.
+  declaration list: specifiers, trailing, then every `Attributed` layer except
+  calling conventions, which `derive` applies to the type. Field layout reads
+  the same layers through `field_request`.
 
 ## Registration
 
 `src/attribute_support.rs`; the parser asks before building a variant.
 
-- `GNU_ATTRIBUTES`: hand table of modeled `__attribute__` names, each with
-  a clang, gcc, msvc `Gate` (`Always`, `Never`, `Windows`, `NotWindows`,
-  `X86`, `X86OrArm32`, `NotAArch64`, `NotArm32`, `Arm32`). msvc gates are
-  `Never` (cl has no `__attribute__`).
-- Unmodeled names fall back to `attribute_support/registered.rs`, generated
-  by `tools/generate_attribute_lists.py` from each compiler's
-  `__has_attribute` / `__has_c_attribute` over identifiers in its
-  binaries. These ignore the target, so e.g. clang's Windows-only `guard`
-  is registered everywhere (permissive).
+- `GNU_ATTRIBUTES`: hand table of modeled `__attribute__` names, each with a
+  clang, gcc, msvc `Gate` (`Always`, `Never`, `Windows`, `NotWindows`, `X86`,
+  `X86OrArm32`, `NotAArch64`, `NotArm32`, `Arm32`). msvc gates are `Never` (cl
+  has no `__attribute__`).
+- Unmodeled names fall back to `attribute_support/registered.rs`, generated by
+  `tools/generate_attribute_lists.py` from each compiler's `__has_attribute` /
+  `__has_c_attribute` over identifiers in its binaries. These ignore the target,
+  so e.g. clang's Windows-only `guard` is registered everywhere (permissive).
 - `[[scope::name]]` is registered per name: clang has `gnu::packed` but not
-  `clang::packed`, `clang::overloadable` but not `gnu::overloadable`, and
-  only `msvc::noinline`; gcc has only `gnu::`; msvc accepts any `msvc::`
-  name. Unscoped C23 names are always registered.
+  `clang::packed`, `clang::overloadable` but not `gnu::overloadable`, and only
+  `msvc::noinline`; gcc has only `gnu::`; msvc accepts any `msvc::` name.
+  Unscoped C23 names are always registered.
 - `__declspec` (`declspec_registered`): clang uses `CLANG_DECLSPECS` (no
-  `__name__` unwrapping; `dllimport`/`dllexport` only on Windows); gcc
-  treats `__declspec(x)` as `__attribute__((x))`, as mingw does; msvc
-  accepts every name.
-- An unregistered modeled spelling never reaches lowering (no `dllimport`
-  on ELF).
-- Measured (clang 22.1.8 over 13 triples, gcc 16.2.1 x86_64/aarch64, cl
-  19.51): clang lacks `noipa`, `noclone`, `optimize`,
-  `scalar_storage_order`; registers `dllimport` only on Windows and
-  `interrupt` everywhere but aarch64. gcc on aarch64 lacks `naked`,
-  `interrupt`, x86 conventions.
+  `__name__` unwrapping; `dllimport`/`dllexport` only on Windows); gcc treats
+  `__declspec(x)` as `__attribute__((x))`, as mingw does; msvc accepts every
+  name.
+- An unregistered modeled spelling never reaches lowering (no `dllimport` on
+  ELF).
+- Measured (clang 22.1.8 over 13 triples, gcc 16.2.1 x86_64/aarch64, cl 19.51):
+  clang lacks `noipa`, `noclone`, `optimize`, `scalar_storage_order`; registers
+  `dllimport` only on Windows and `interrupt` everywhere but aarch64. gcc on
+  aarch64 lacks `naked`, `interrupt`, x86 conventions.
 - Fixtures: `sema/unknown_attributes_{clang_linux,clang_windows,gcc_aarch64}.c`.
 
 ## Early validation
 
-`validate.rs::check_attributes` runs in `analyze` on every attribute
-position without resolving names:
+`validate.rs::check_attributes` runs in `analyze` on every attribute position
+without resolving names:
 
 - `Invalid` → "invalid arguments for attribute".
 - `alloc_size` takes one or two arguments.
-- Layout operands (`aligned`, `vector_size`, `_Alignas`) are not checked
-  here: an enumerator or typedef operand needs name resolution. They are
-  folded where consumed (`requested_alignment`, `resolve_declarator`), and
-  the checker reports a non-constant operand. Name resolution walks every
-  attribute position, including tag, field, and `_Alignas(type)` operands.
+- Layout operands (`aligned`, `vector_size`, `_Alignas`) are not checked here:
+  an enumerator or typedef operand needs name resolution. They are folded where
+  consumed (`requested_alignment`, `resolve_declarator`), and the checker
+  reports a non-constant operand. Name resolution walks every attribute
+  position, including tag, field, and `_Alignas(type)` operands.
 
 ## Applicability
 
-`sema/attributes.rs::declaration_use(attribute, subject) -> Use`.
-`Subject` is `Function`, `Object { automatic }`, `Parameter`, `Typedef`,
-`Field`, or `Record { union }`.
+`sema/attributes.rs::declaration_use(attribute, subject) -> Use`. `Subject` is
+`Function`, `Object { automatic }`, `Parameter`, `Typedef`, `Field`, or
+`Record { union }`.
 
 | `Use`                                   | Meaning                                                                          | Effect in `check_attributes`                                 |
 | --------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------ |
@@ -147,21 +146,21 @@ position without resolving names:
 - Order: `inapplicable` first, then per-subject rules (`parameter_use`,
   `member_use`), then `general_use`.
 - `general_use` is exhaustive over `Attribute`.
-- `IgnoredMode` (gcc `mode` with a non-identifier argument) is
-  `Inapplicable` on every subject: "'mode' attribute ignored".
-- `Ignored` includes `mode`, `address_space`, `cleanup`,
-  `scalar_storage_order`, `transparent_union` (the calling convention is
-  not modeled; a call needing it fails in argument conversion). `Ignored`
-  only means no symbol or layout effect; `cleanup` has its own consumer, and
-  `uninitialized` on an automatic local suppresses `Variable::auto_init`
-  (`sema/module.rs`). gcc also honors `[[gnu::uninitialized]]`; clang has no
-  C spelling in `[[...]]` form, so every scoped spelling is unknown there.
+- `IgnoredMode` (gcc `mode` with a non-identifier argument) is `Inapplicable` on
+  every subject: "'mode' attribute ignored".
+- `Ignored` includes `mode`, `address_space`, `cleanup`, `scalar_storage_order`,
+  `transparent_union` (the calling convention is not modeled; a call needing it
+  fails in argument conversion). `Ignored` only means no symbol or layout
+  effect; `cleanup` has its own consumer, and `uninitialized` on an automatic
+  local suppresses `Variable::auto_init` (`sema/module.rs`). gcc also honors
+  `[[gnu::uninitialized]]`; clang has no C spelling in `[[...]]` form, so every
+  scoped spelling is unknown there.
 - Attributes before the tag keyword of a declarator-less declaration
-  (`__attribute__((packed)) struct S {...};`) never reach the tag; ignored
-  with a warning, as clang does.
+  (`__attribute__((packed)) struct S {...};`) never reach the tag; ignored with
+  a warning, as clang does.
 
-clang 22.1.8 subject behavior; `ok` accepted, `ign`
-`-Wignored-attributes`, `err` error:
+clang 22.1.8 subject behavior; `ok` accepted, `ign` `-Wignored-attributes`,
+`err` error:
 
 | Written on                                               | object                 | function | typedef | parameter |
 | -------------------------------------------------------- | ---------------------- | -------- | ------- | --------- |
@@ -183,22 +182,22 @@ clang 22.1.8 subject behavior; `ok` accepted, `ign`
 | `malloc`, `cold`, `noinline`, …                                            | `ign`           | `ign`                        |
 | `noreturn`, `format`, `nonnull`, `alloc_size`, `alloc_align`               | by type (below) | `ign`                        |
 
-- `noreturn`, `format`, `nonnull`, `alloc_size`, and `alloc_align` depend on
-  the declared type, not the `Subject` (`attributes.rs::function_type_attribute`).
+- `noreturn`, `format`, `nonnull`, `alloc_size`, and `alloc_align` depend on the
+  declared type, not the `Subject` (`attributes.rs::function_type_attribute`).
   `inapplicable` only warns for them on a struct/union definition; otherwise
   `TypeResolver::check_function_type_attributes` checks them after type
   resolution (declarations, parameters, fields), with `-Wignored-attributes`
   when they do not apply. Rules, measured against clang 22 and gcc:
-  - `format`, `nonnull`, `alloc_size`, `alloc_align` (both flavors): the type
-    is a function or a pointer to a function, typedefs included
-    (`list_cmp_func_t`, dis-asm `fprintf_ftype`); `(**p)` and arrays warn.
+  - `format`, `nonnull`, `alloc_size`, `alloc_align` (both flavors): the type is
+    a function or a pointer to a function, typedefs included (`list_cmp_func_t`,
+    dis-asm `fprintf_ftype`); `(**p)` and arrays warn.
   - `nonnull` on a parameter: clang accepts any pointer (or array/function,
-    adjusted to a pointer) and warns "pointer arguments" otherwise; gcc
-    applies the function-pointer rule above.
+    adjusted to a pointer) and warns "pointer arguments" otherwise; gcc applies
+    the function-pointer rule above.
   - `noreturn`: clang accepts when peeling pointers and arrays reaches a
     function type (`void noreturn (*table[2])(int)`); gcc only on a function
-    declaration or a pointer to a function, so `(**p)`, arrays, and a
-    function typedef warn.
+    declaration or a pointer to a function, so `(**p)`, arrays, and a function
+    typedef warn.
   - Attributes on a pointer declarator chunk (`FP *__attribute__((noreturn)) p`,
     `int *__attribute__((nonnull)) p`) are never checked; gcc warns on them.
   - None of them reaches the IR for a call through a pointer.
@@ -211,29 +210,29 @@ Fixtures: `sema/ir_attribute_applicability.c`,
 
 ## Checker and lowering
 
-- Checker: `TypeResolver::attribute_error` returns only `Use::Rejected`
-  (the warning-free half), called from `assertion.rs` for typedefs,
-  objects, functions, and parameters.
-- Lowering: `TypeResolver::check_attributes` emits the warnings and
-  returns `Rejected` / `Unimplemented`; called from `module.rs` for
-  functions, parameters, typedefs, and objects, and from `define_tag` for
-  records and fields. It lives on the resolver because it owns the warning
-  sink (`Lowerer::warn` forwards) and `define_tag` runs once per tag.
-- Before a consumer reads a list, call sites drop inapplicable attributes
-  with `module::applies`.
-- Rule functions shared by both passes: `symbol_attributes`,
-  `function_symbol` ([sema-passes](sema-passes.md#checker-owned-rules)).
-- `cleanup(f)`: the argument is an identifier `Expr`, name-resolved like
-  any reference. `Checker::cleanup` (automatic objects) requires a
-  function with one prototyped parameter (variadic allowed; gcc also takes
-  an unprototyped one) and classifies `&var` → parameter as an argument
-  conversion: clang rejects every mismatch except dropped qualifiers, gcc
-  applies the conversion warning's default severity.
-- Name arguments are resolved references (`Expr` → `BindingId`) when they
-  name a C entity (`cleanup`, `malloc` deallocator), and strings only when
-  they name an assembler symbol (`alias`, `weakref`, `ifunc`).
-- `malloc(f[, n])`: `f` resolves like a callee (`Resolver::implicit_builtin`
-  for undeclared builtins); `deallocator_argument` (shared) validates `n`
+- Checker: `TypeResolver::attribute_error` returns only `Use::Rejected` (the
+  warning-free half), called from `assertion.rs` for typedefs, objects,
+  functions, and parameters.
+- Lowering: `TypeResolver::check_attributes` emits the warnings and returns
+  `Rejected` / `Unimplemented`; called from `module.rs` for functions,
+  parameters, typedefs, and objects, and from `define_tag` for records and
+  fields. It lives on the resolver because it owns the warning sink
+  (`Lowerer::warn` forwards) and `define_tag` runs once per tag.
+- Before a consumer reads a list, call sites drop inapplicable attributes with
+  `module::applies`.
+- Rule functions shared by both passes: `symbol_attributes`, `function_symbol`
+  ([sema-passes](sema-passes.md#checker-owned-rules)).
+- `cleanup(f)`: the argument is an identifier `Expr`, name-resolved like any
+  reference. `Checker::cleanup` (automatic objects) requires a function with one
+  prototyped parameter (variadic allowed; gcc also takes an unprototyped one)
+  and classifies `&var` → parameter as an argument conversion: clang rejects
+  every mismatch except dropped qualifiers, gcc applies the conversion warning's
+  default severity.
+- Name arguments are resolved references (`Expr` → `BindingId`) when they name a
+  C entity (`cleanup`, `malloc` deallocator), and strings only when they name an
+  assembler symbol (`alias`, `weakref`, `ifunc`).
+- `malloc(f[, n])`: `f` resolves like a callee (`Resolver::implicit_builtin` for
+  undeclared builtins); `deallocator_argument` (shared) validates `n`
   ([ir/declarations](ir/declarations.md#function-semantics)).
 - An `always_inline` / `noinline` conflict is accepted: `record_function` keeps
   the first one seen, as gcc does after its "ignoring attribute" warning.
@@ -260,44 +259,42 @@ Fixtures: `sema/ir_attribute_applicability.c`,
 | function type                                 | `CallingConvention`                                                                                                                             | x86 conventions in the type ([calling conventions](ir/calls-abi.md#calling-conventions))                                                                                                                                                                                           |
 
 Statement attributes: the checker validates `[[fallthrough]]` placement;
-lowering drops statement attributes
-([control-flow](ir/control-flow.md)).
+lowering drops statement attributes ([control-flow](ir/control-flow.md)).
 
 ## Preprocessor queries
 
-- `__has_attribute` → `attribute_support::has_attribute`: the same
-  registry as the parser. gcc's also counts standard attributes without a
-  GNU spelling (`nodiscard`, `maybe_unused`, `unsequenced`, …).
-- `__has_c_attribute` → `has_c_attribute`: a registered scoped name is 1
-  (0 under msvc); standard attributes come from `STANDARD_ATTRIBUTES`.
-  clang: each attribute's own date (`deprecated` 201904, `nodiscard`
-  202003, …), 0 for `unsequenced`/`reproducible`. gcc: 202311 for all.
-  cl: only in C23, 202311 for `fallthrough`, `maybe_unused`, `nodiscard`,
-  else 0. Pre-C23 cl rejects scoped operands (C2278); slate answers 0
-  (permissive). Fixtures: `has-c-attribute-{clang,gcc,msvc-c23,msvc-c17}.c`.
+- `__has_attribute` → `attribute_support::has_attribute`: the same registry as
+  the parser. gcc's also counts standard attributes without a GNU spelling
+  (`nodiscard`, `maybe_unused`, `unsequenced`, …).
+- `__has_c_attribute` → `has_c_attribute`: a registered scoped name is 1 (0
+  under msvc); standard attributes come from `STANDARD_ATTRIBUTES`. clang: each
+  attribute's own date (`deprecated` 201904, `nodiscard` 202003, …), 0 for
+  `unsequenced`/`reproducible`. gcc: 202311 for all. cl: only in C23, 202311 for
+  `fallthrough`, `maybe_unused`, `nodiscard`, else 0. Pre-C23 cl rejects scoped
+  operands (C2278); slate answers 0 (permissive). Fixtures:
+  `has-c-attribute-{clang,gcc,msvc-c23,msvc-c17}.c`.
 - `__has_cpp_attribute` (gcc only): `__has_c_attribute`, falling back to
   `__has_attribute` for an unscoped name (`packed` 1, `__packed__` 1,
   `gnu::packed` 1, `nodiscard` 202311, unknown 0; gcc 16.2 in C11 and C89).
   clang leaves it undefined in C. Fixture: `gcc-dg/.../c23-attr-syntax-8.c`.
-- Visible to `#ifdef` / `defined`: clang and gcc define
-  `__has_include(_next)`, `__has_embed`, `__has_attribute`,
-  `__has_c_attribute`, `__has_builtin`, `__has_feature`,
-  `__has_extension` (+ `__building_module` clang, `__has_cpp_attribute`
-  gcc); cl only `__has_include`, `__has_c_attribute`. Unevaluated clang
-  operators (`__has_declspec_attribute`, `__has_warning`,
+- Visible to `#ifdef` / `defined`: clang and gcc define `__has_include(_next)`,
+  `__has_embed`, `__has_attribute`, `__has_c_attribute`, `__has_builtin`,
+  `__has_feature`, `__has_extension` (+ `__building_module` clang,
+  `__has_cpp_attribute` gcc); cl only `__has_include`, `__has_c_attribute`.
+  Unevaluated clang operators (`__has_declspec_attribute`, `__has_warning`,
   `__is_identifier`) stay undefined. glibc `<string.h>` gates its C23
-  `strchr`/`memchr`/`strstr` wrappers on `#ifdef __has_extension`.
-  Fixtures: `has-operators-defined-{clang,gcc,msvc}.c`.
+  `strchr`/`memchr`/`strstr` wrappers on `#ifdef __has_extension`. Fixtures:
+  `has-operators-defined-{clang,gcc,msvc}.c`.
 
 ## Adding an attribute
 
-1. Add the `Attribute` variant ([ast-enum-touchpoints](ast-enum-touchpoints.md#adding-an-attribute-variant)).
+1. Add the `Attribute` variant
+   ([ast-enum-touchpoints](ast-enum-touchpoints.md#adding-an-attribute-variant)).
 2. Parse its arguments in `parse_attribute_value`.
 3. Add it to `GNU_ATTRIBUTES` with per-flavor gates (check each oracle's
-   `__has_attribute` per target), or to `CLANG_DECLSPECS` / the C23 name
-   map.
-4. Classify it in `general_use`, and in `inapplicable` if clang restricts
-   its subjects.
-5. Consume it: a `SymbolAttributes` field, `record_function`, a layout
-   request, or nothing (it still appears in `c_attributes`).
+   `__has_attribute` per target), or to `CLANG_DECLSPECS` / the C23 name map.
+4. Classify it in `general_use`, and in `inapplicable` if clang restricts its
+   subjects.
+5. Consume it: a `SymbolAttributes` field, `record_function`, a layout request,
+   or nothing (it still appears in `c_attributes`).
 6. Update the IR docs and grammar if it changes printed output.

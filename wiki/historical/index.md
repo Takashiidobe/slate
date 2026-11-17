@@ -2,16 +2,26 @@
 
 These pages preserve earlier designs and point-in-time audits. Current Slate
 architecture and usage are in [architecture](../concepts/slate-architecture.md),
-[overview](../concepts/slate-overview.md) and [differential fixtures](../concepts/differential-fixtures.md).
+[overview](../concepts/slate-overview.md) and
+[differential fixtures](../concepts/differential-fixtures.md).
 
 ## Source revisions
 
-- Last commit with the CIR frontend under `crates/slate/src/frontend/`: [`cc4314755`](https://github.com/takashiidobe/slate/tree/cc4314755e3946892ced5bb1fc9e783e54d3665c/crates/slate/src/frontend).
-- Last commit with single-file directive expansion (`src/frontend/{directive_translate,preprocess}.rs`, `record-cfg`): [`8af703200`](https://github.com/takashiidobe/slate/tree/8af7032004040d224b9d1bc46848a266b86c8a1a/crates/slate/src/frontend).
-- Removal and parser-frontend rename: [`c8ad97815`](https://github.com/takashiidobe/slate/commit/c8ad9781537353e56bd3514d37d0ca97943e5e42).
-- At current HEAD, `src/frontend/` refers to the parser-backed frontend. Archived references to files with the same names refer to their recorded revision.
-- Some records predate the Cargo workspace move; older source layouts and performance numbers must be read at the revision recorded in the page.
-- The Rust rewrite engine is retained; [current engine guidance](../concepts/rewrite-engine-v2.md) describes its present boundary and validation.
+- Last commit with the CIR frontend under `crates/slate/src/frontend/`:
+  [`cc4314755`](https://github.com/takashiidobe/slate/tree/cc4314755e3946892ced5bb1fc9e783e54d3665c/crates/slate/src/frontend).
+- Last commit with single-file directive expansion
+  (`src/frontend/{directive_translate,preprocess}.rs`, `record-cfg`):
+  [`8af703200`](https://github.com/takashiidobe/slate/tree/8af7032004040d224b9d1bc46848a266b86c8a1a/crates/slate/src/frontend).
+- Removal and parser-frontend rename:
+  [`c8ad97815`](https://github.com/takashiidobe/slate/commit/c8ad9781537353e56bd3514d37d0ca97943e5e42).
+- At current HEAD, `src/frontend/` refers to the parser-backed frontend.
+  Archived references to files with the same names refer to their recorded
+  revision.
+- Some records predate the Cargo workspace move; older source layouts and
+  performance numbers must be read at the revision recorded in the page.
+- The Rust rewrite engine is retained;
+  [current engine guidance](../concepts/rewrite-engine-v2.md) describes its
+  present boundary and validation.
 
 ## Records
 

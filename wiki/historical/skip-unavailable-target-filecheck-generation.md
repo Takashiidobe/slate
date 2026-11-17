@@ -1,6 +1,7 @@
 # Skip unavailable target FileCheck generation
 
-> Historical record. See the [archive index](index.md) for scope and source revision.
+> Historical record. See the [archive index](index.md) for scope and source
+> revision.
 
 _created 2026-08-29_
 

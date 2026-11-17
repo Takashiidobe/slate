@@ -1,33 +1,29 @@
 # Architecture
 
-> Historical record. See the [archive index](index.md) for scope and source revision.
+> Historical record. See the [archive index](index.md) for scope and source
+> revision.
 
 <!-- toc -->
 
 - [The pipeline at a glance](#the-pipeline-at-a-glance)
 - [Why CIR, not LLVM IR](#why-cir-not-llvm-ir)
-- [The clang-ir crate (CIR
-  ingestion)](#the-clang-ir-crate-cir-ingestion)
-- [The three sources, joined by
-  location](#the-three-sources-joined-by-location)
+- [The clang-ir crate (CIR ingestion)](#the-clang-ir-crate-cir-ingestion)
+- [The three sources, joined by location](#the-three-sources-joined-by-location)
   - [Provenance from the plugin](#provenance-from-the-plugin)
-- [libc-shim (what "the system headers"
-  are)](#libc-shim-what-the-system-headers-are)
-- [Target-conditional translation (`#if`/`#cfg`
-  reconstruction)](#target-conditional-translation-ifcfg-reconstruction)
-- [Lowering (CIR + AST → baseline Rust
-  AST)](#lowering-cir--ast--baseline-rust-ast)
-- [Rewriting (baseline Rust AST → idiomatic Rust
-  AST)](#rewriting-baseline-rust-ast--idiomatic-rust-ast)
+- [libc-shim (what "the system headers" are)](#libc-shim-what-the-system-headers-are)
+- [Target-conditional translation (`#if`/`#cfg` reconstruction)](#target-conditional-translation-ifcfg-reconstruction)
+- [Lowering (CIR + AST → baseline Rust AST)](#lowering-cir--ast--baseline-rust-ast)
+- [Rewriting (baseline Rust AST → idiomatic Rust AST)](#rewriting-baseline-rust-ast--idiomatic-rust-ast)
 - [Verification](#verification)
 - [Where to target a fix](#where-to-target-a-fix)
 <!-- /toc -->
 
 A one-stop map of the pipeline: what each stage consumes and produces, which
 crate or module owns it, and **where to target a given fix**. Deep-dives live in
-[lowerer-internals.md](lowerer-internals.md), [rewrite-engine-v2.md](rewrite-engine-v2-design.md),
-[passes.md](passes.md), and [differential-fixtures.md](../concepts/differential-fixtures.md); this
-page is the index that gets you to the right one.
+[lowerer-internals.md](lowerer-internals.md),
+[rewrite-engine-v2.md](rewrite-engine-v2-design.md), [passes.md](passes.md), and
+[differential-fixtures.md](../concepts/differential-fixtures.md); this page is
+the index that gets you to the right one.
 
 ## The pipeline at a glance
 
@@ -88,24 +84,24 @@ another must be recognized as cross-block-live during lowering.)
 
 Slate does not parse C or CIR by hand. The sibling `clang-ir` workspace
 (`../clang-ir`, path dependency in `Cargo.toml`) owns everything about turning
-CIR text into typed Rust values. Keep the split in mind but treat it as a
-black box unless you're adding a CIR op:
+CIR text into typed Rust values. Keep the split in mind but treat it as a black
+box unless you're adding a CIR op:
 
 - **`clang-ir-types-gen`** is a code generator that emits the **op / type /
-  attribute / enum model** — the `Op` enum and per-op structs like `GetMember {
-addr, result, .. }` that lowering matches on. When a CIR op Slate needs isn't
-  in the model yet, that generator is what grows to add it (regenerate, don't
-  hand-edit the generated `clang-ir-types` output).
+  attribute / enum model** — the `Op` enum and per-op structs like
+  `GetMember { addr, result, .. }` that lowering matches on. When a CIR op Slate
+  needs isn't in the model yet, that generator is what grows to add it
+  (regenerate, don't hand-edit the generated `clang-ir-types` output).
 - **`clang-ir`** holds the parsing helpers and `toolchain.rs`: it runs
   `clang`/`cir-opt`, lexes the MLIR generic form, builds a generic `Operation`
   tree, and converts function bodies into the generated `Op` model. Slate
   dispatches directly on that generated enum; it has no separate operation-kind
   taxonomy.
 
-Slate consumes the **MLIR generic form** (`"op"(operands) <{attrs}> ({regions})
-: type`) precisely because it is fully regular, which makes a stable,
-op-agnostic parser possible. `src/frontend/cir_input.rs` drives emission and
-hands lowering a `Module`.
+Slate consumes the **MLIR generic form**
+(`"op"(operands) <{attrs}> ({regions}) : type`) precisely because it is fully
+regular, which makes a stable, op-agnostic parser possible.
+`src/frontend/cir_input.rs` drives emission and hands lowering a `Module`.
 
 ## The three sources, joined by location
 
@@ -157,10 +153,10 @@ and header work is exercised by the `libc` nextest profile — see
 
 ## Target-conditional translation (`#if`/`#cfg` reconstruction)
 
-Preprocessing is its own producer, kept separate from lowering. `src/frontend/
-preprocess.rs` records the translation unit's directive structure — `#if` /
-`#ifdef` / `#elif` chains, `#error`/`#warning`, pragmas — as `Branch` /
-`CondChain` records, and maps each condition to a Rust `Cfg`
+Preprocessing is its own producer, kept separate from lowering.
+`src/frontend/ preprocess.rs` records the translation unit's directive structure
+— `#if` / `#ifdef` / `#elif` chains, `#error`/`#warning`, pragmas — as `Branch`
+/ `CondChain` records, and maps each condition to a Rust `Cfg`
 (`src/backend/rust_ast.rs`). Active `#error`/`#warning` on the selected config
 become `compile_error!` items so the failure survives translation. The
 `translate` uses these records to reconstruct **one Rust source carrying
@@ -206,15 +202,16 @@ Key mechanics a fix usually touches: **op dispatch** (`lower_op` routes each
 (`materialize_expr` decides `let __vN = ..` vs a hoisted `let mut`), **place
 inlining** (`get_member`/`get_element` are stashed as `member_ptr`/`element_ptr`
 and expanded at each use rather than bound), **goto dispatch** (`lower_dispatch`
-turns flattened blocks into a `loop { match state }`, with `cross_block_live_
-values` deciding which SSA temps must be hoisted across states), and the
-**diagnostics fallback** — an unhandled op lowers to a marked `todo!()` / `unsafe`
-libc call / comment and records a `Ctx` diagnostic instead of crashing, which is
-what keeps the pipeline runnable as coverage grows. This also functions as
-upstream-churn detection: clang-ir's CIR op set is not stable across pulls (ops
-get renamed or change semantics; e.g. the `IndirectBr`/`IndirectGoto` rename),
-and a grep-able `todo!()` diagnostic on a previously-handled construct is how
-that surfaces, alongside fixture regressions for silent semantic changes.
+turns flattened blocks into a `loop { match state }`, with
+`cross_block_live_ values` deciding which SSA temps must be hoisted across
+states), and the **diagnostics fallback** — an unhandled op lowers to a marked
+`todo!()` / `unsafe` libc call / comment and records a `Ctx` diagnostic instead
+of crashing, which is what keeps the pipeline runnable as coverage grows. This
+also functions as upstream-churn detection: clang-ir's CIR op set is not stable
+across pulls (ops get renamed or change semantics; e.g. the
+`IndirectBr`/`IndirectGoto` rename), and a grep-able `todo!()` diagnostic on a
+previously-handled construct is how that surfaces, alongside fixture regressions
+for silent semantic changes.
 
 ## Rewriting (baseline Rust AST → idiomatic Rust AST)
 
@@ -247,10 +244,10 @@ and call-site propagation; `length_lattice` pairs pointer+length params into
 slices; `string_params` lifts C strings. A rule is a `NodeRule` matched by node
 kind (and optional call anchor); the worklist reruns only affected nodes to a
 fixed point. Full authoring contract and the pass catalog:
-[rewrite-engine-v2.md](rewrite-engine-v2-design.md) and [passes.md](passes.md); the
-pointer-representation lattice has its own canonical reference,
-[pointer-capability-lattice.md](../concepts/pointer-capability-lattice.md). (The older
-`src/backend/query/` + salsa engine these replaced is documented under
+[rewrite-engine-v2.md](rewrite-engine-v2-design.md) and [passes.md](passes.md);
+the pointer-representation lattice has its own canonical reference,
+[pointer-capability-lattice.md](../concepts/pointer-capability-lattice.md). (The
+older `src/backend/query/` + salsa engine these replaced is documented under
 `wiki/historical/`.)
 
 ## Verification
@@ -260,8 +257,8 @@ source and the generated Rust, require identical stdout and exit code. FileCheck
 directives add generated-Rust _shape_ assertions on top. Every feature and fixup
 starts from a fixture in `tests/fixtures/` and a failing differential test —
 never hand-verify output by eye. See
-[differential-fixtures.md](../concepts/differential-fixtures.md) for markers, the
-`update_filecheck.py` scaffolder, and per-fixture clang-arg overrides.
+[differential-fixtures.md](../concepts/differential-fixtures.md) for markers,
+the `update_filecheck.py` scaffolder, and per-fixture clang-arg overrides.
 
 ## Where to target a fix
 

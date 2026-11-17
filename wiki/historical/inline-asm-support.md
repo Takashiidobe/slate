@@ -1,34 +1,32 @@
 # GNU inline asm support
 
-> Historical record. See the [archive index](index.md) for scope and source revision.
+> Historical record. See the [archive index](index.md) for scope and source
+> revision.
 
 <!-- toc -->
 
 - [Direction](#direction)
 - [Storage class](#storage-class)
-  - [Output wiring for addressed (`maybe_memory`)
-    operands](#output-wiring-for-addressed-maybe_memory-operands)
-- [`ebx`/`rbx` handling (from zstd to work around gcc's
-  limitation)](#ebxrbx-handling-from-zstd-to-work-around-gccs-limitation)
+  - [Output wiring for addressed (`maybe_memory`) operands](#output-wiring-for-addressed-maybe_memory-operands)
+- [`ebx`/`rbx` handling (from zstd to work around gcc's limitation)](#ebxrbx-handling-from-zstd-to-work-around-gccs-limitation)
 - [Byte-sized `Q`/`q` widen hack](#byte-sized-qq-widen-hack)
-- [Explicit / non-constraint
-  operands](#explicit--non-constraint-operands)
+- [Explicit / non-constraint operands](#explicit--non-constraint-operands)
 - [Known x86 gaps](#known-x86-gaps)
 - [AArch64](#aarch64)
 - [ARM (32-bit)](#arm-32-bit)
 - [Fixture layout](#fixture-layout)
 <!-- /toc -->
 
-How Slate resolves a GCC/Clang inline-asm constraint to a concrete Rust
-`asm!` operand. Epic: `slate-3f8g.4.15` (extends `slate-3f8g.4`). Code:
+How Slate resolves a GCC/Clang inline-asm constraint to a concrete Rust `asm!`
+operand. Epic: `slate-3f8g.4.15` (extends `slate-3f8g.4`). Code:
 `src/frontend/lowerer/asm.rs`, `intrinsics.rs::lower_extended_asm`.
 
-Rust's `asm!` has no virtual constraint language — every operand is one
-concrete kind. GCC's constraint letters admit alternatives (register, memory,
-immediate) the compiler picks among; Slate must resolve that choice ahead of
-time. Two orthogonal lattices do this: **direction** (read/write/tie) and
-**storage class** (register/immediate/memory). A third table handles the one
-x86-specific register Rust reserves that C compilers don't.
+Rust's `asm!` has no virtual constraint language — every operand is one concrete
+kind. GCC's constraint letters admit alternatives (register, memory, immediate)
+the compiler picks among; Slate must resolve that choice ahead of time. Two
+orthogonal lattices do this: **direction** (read/write/tie) and **storage
+class** (register/immediate/memory). A third table handles the one x86-specific
+register Rust reserves that C compilers don't.
 
 ## Direction
 
@@ -44,11 +42,11 @@ Total function — no error rows.
 
 ## Storage class
 
-Whenever a constraint's alternative set includes `r`, `reg` is sound
-regardless of what else is in the set — the compiler that accepted the
-constraint already proved a register substitution works for how the template
-uses the operand. That's why `g`/`imr` resolve to `reg` outright rather than
-needing a register-pressure heuristic.
+Whenever a constraint's alternative set includes `r`, `reg` is sound regardless
+of what else is in the set — the compiler that accepted the constraint already
+proved a register substitution works for how the template uses the operand.
+That's why `g`/`imr` resolve to `reg` outright rather than needing a
+register-pressure heuristic.
 
 | Constraint                                                                                                         | Resolves to                                                                                                                                                                                                   |
 | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -69,53 +67,53 @@ needing a register-pressure heuristic.
 | `y` (MMX register), `A` (edx:eax pair)                                                                             | **error** — see below                                                                                                                                                                                         |
 
 Fixed-width x86 vector operands using `x` are bridged from Slate's array
-representation to `core::arch::x86`/`x86_64` `__m128`/`__m128d`/`__m128i`
-types at the asm boundary, then transmuted back after register outputs. Scalar
-SSE operands continue to bind directly to `xmm_reg`.
+representation to `core::arch::x86`/`x86_64` `__m128`/`__m128d`/`__m128i` types
+at the asm boundary, then transmuted back after register outputs. Scalar SSE
+operands continue to bind directly to `xmm_reg`.
 
-CIR evidence for the memory row: an `m`/`g`/`imr` operand arrives as an
-address (`!cir.ptr<T>`, `maybe_memory` marker) rather than a plain SSA value,
-for both directions — Clang has already resolved "register or memory" down
-to a concrete address, deferring only the reg-vs-mem choice (which Slate
-never makes; it always takes the register/address-in-register form since
-memory has no direct Rust operand kind).
+CIR evidence for the memory row: an `m`/`g`/`imr` operand arrives as an address
+(`!cir.ptr<T>`, `maybe_memory` marker) rather than a plain SSA value, for both
+directions — Clang has already resolved "register or memory" down to a concrete
+address, deferring only the reg-vs-mem choice (which Slate never makes; it
+always takes the register/address-in-register form since memory has no direct
+Rust operand kind).
 
 ### Output wiring for addressed (`maybe_memory`) operands
 
-CIR groups `cir.asm` operands as `out = [...], in = [...], in_out = [...]`.
-Only operands passed by address ever appear in `out`; a register output never
-does — it only ever comes through `op.res`/`op.res_ty` (packed into a struct
-when there is more than one). This means the `out` group's length is exactly
-the count of addressed outputs, and `register_output_count = total_output_count
+CIR groups `cir.asm` operands as `out = [...], in = [...], in_out = [...]`. Only
+operands passed by address ever appear in `out`; a register output never does —
+it only ever comes through `op.res`/`op.res_ty` (packed into a struct when there
+is more than one). This means the `out` group's length is exactly the count of
+addressed outputs, and `register_output_count = total_output_count
 
-- out.len()`where`total_output_count`is the number of raw constraints
-starting with`=` (flag outputs included).
+- out.len()`where`total_output_count`is the number of raw constraints starting with`=`
+  (flag outputs included).
 
 A raw output constraint's leading `*` (after stripping `=`/`&`) is CIR's own
 signal that this operand is addressed — independent of whether the letter set
 also contains `r`. `Constraint::Reg` carries this as `indirect: bool`.
-Addressed + register-eligible outputs (`=g`, `=imr`, `+g`, ...) bind directly
-to the target place via `place_or_deref_expr`, so `out(reg) x` or
+Addressed + register-eligible outputs (`=g`, `=imr`, `+g`, ...) bind directly to
+the target place via `place_or_deref_expr`, so `out(reg) x` or
 `inlateout(reg) tied_input => x` writes straight into the real variable — no
 temp, no separate write-back statement, and (for the tied case) the read-side
-value already arrives pre-loaded through `in_out` as a plain SSA value, not
-as another address to dereference. Addressed outputs with no `r` alternative
-(pure `m`/`o`/`V`) fall back to the existing address-passthrough form (a plain
+value already arrives pre-loaded through `in_out` as a plain SSA value, not as
+another address to dereference. Addressed outputs with no `r` alternative (pure
+`m`/`o`/`V`) fall back to the existing address-passthrough form (a plain
 `in(reg)` of the address with the template deref-wrapped) since there's no
 Rust-visible result to bind at all.
 
 Before this wiring existed, `out`-group entries were flattened together with
-`in`/`in_out` into one `input_operands` list with no group boundary tracked;
-an addressed output with a register alternative (`=g`/`=imr`) silently landed
-in the _input_ constraint slot instead, reading the address as data with no
-deref — no error, just a wrong runtime result. Fixed in `slate-3f8g.4.15.4`.
+`in`/`in_out` into one `input_operands` list with no group boundary tracked; an
+addressed output with a register alternative (`=g`/`=imr`) silently landed in
+the _input_ constraint slot instead, reading the address as data with no deref —
+no error, just a wrong runtime result. Fixed in `slate-3f8g.4.15.4`.
 
 ## `ebx`/`rbx` handling (from zstd to work around gcc's limitation)
 
-Applies after storage-class resolves to an explicit register in the `b`
-family. rustc rejects `ebx`/`rbx` as an explicit `asm!` operand
-unconditionally (`rbx is used internally by LLVM`) — a Rust-target
-restriction, not one either C compiler imposes.
+Applies after storage-class resolves to an explicit register in the `b` family.
+rustc rejects `ebx`/`rbx` as an explicit `asm!` operand unconditionally
+(`rbx is used internally by LLVM`) — a Rust-target restriction, not one either C
+compiler imposes.
 
 | Resolved register              | Result                                                                                                                                                                                    |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -125,19 +123,18 @@ restriction, not one either C compiler imposes.
 ## Byte-sized `Q`/`q` widen hack
 
 `reg_abcd` has no `i8` arm (only `i16/i32/i64/f16/f32/f64`), and naming
-`ah`/`bh`/`ch`/`dh` as an explicit register operand is rejected by rustc
-("high byte registers cannot be used as an operand on x86_64"). Byte-sized
-`Q` (any mode) and byte-sized `q` (32-bit target only) are handled by
-widening to an `i32` temp bound via `reg_abcd`, then narrowing:
+`ah`/`bh`/`ch`/`dh` as an explicit register operand is rejected by rustc ("high
+byte registers cannot be used as an operand on x86_64"). Byte-sized `Q` (any
+mode) and byte-sized `q` (32-bit target only) are handled by widening to an
+`i32` temp bound via `reg_abcd`, then narrowing:
 
-- low-byte view (`%b`/bare `%N` on a byte operand): zero/sign-extend in,
-  `{N:l}` in the template, truncate out.
-- high-byte view (`%h` on a byte-sized `Q`/`q` operand): **unsupported** —
-  real Clang's own data movement never populates the high byte for a
-  byte-typed operand regardless of template modifier, so there is no
-  faithful translation to bind. `%h` on a wide (>=32-bit) operand is a
-  different, already-supported path (register-width modifier, not a byte
-  widen).
+- low-byte view (`%b`/bare `%N` on a byte operand): zero/sign-extend in, `{N:l}`
+  in the template, truncate out.
+- high-byte view (`%h` on a byte-sized `Q`/`q` operand): **unsupported** — real
+  Clang's own data movement never populates the high byte for a byte-typed
+  operand regardless of template modifier, so there is no faithful translation
+  to bind. `%h` on a wide (>=32-bit) operand is a different, already-supported
+  path (register-width modifier, not a byte widen).
 
 Fixtures: `tests/fixtures/x86_64/asm_byte_abcd_widen_hack.c`,
 `tests/fixtures/x86_64/asm_x86_high_byte_view_wide_operand.c`.
@@ -153,24 +150,24 @@ Fixtures: `tests/fixtures/x86_64/asm_byte_abcd_widen_hack.c`,
 
 ## Known x86 gaps
 
-- **`y`** (MMX register): unconditional error. Rust's `mmx_reg` register
-  class can only be used as a clobber, never bound as an input or output
-  (`rustc`: "register class `mmx_reg` can only be used as a clobber") — no
-  lowering is possible against stable `asm!`, so this is a permanent
-  language-level block, not a scoping choice.
+- **`y`** (MMX register): unconditional error. Rust's `mmx_reg` register class
+  can only be used as a clobber, never bound as an input or output (`rustc`:
+  "register class `mmx_reg` can only be used as a clobber") — no lowering is
+  possible against stable `asm!`, so this is a permanent language-level block,
+  not a scoping choice.
 - **`A`** (edx:eax pair): unconditional error, declined rather than deferred.
-  One constraint spanning two tied registers is a different lattice shape
-  than every other row in the storage-class table (which map one constraint
-  to one operand). GitHub code search confirmed this is legacy-only, all
-  hits the old `rdtsc` idiom, superseded everywhere in practice by writing
-  `"=a","=d"` directly — not worth the new lattice shape.
+  One constraint spanning two tied registers is a different lattice shape than
+  every other row in the storage-class table (which map one constraint to one
+  operand). GitHub code search confirmed this is legacy-only, all hits the old
+  `rdtsc` idiom, superseded everywhere in practice by writing `"=a","=d"`
+  directly — not worth the new lattice shape.
 
 `o`/`V` are CIR-identical to `m`: `strip_memory_marker` treats
 `Offsettable`/`NonOffsettable` atoms as memory-like alongside `Memory`, so
 `o`/`V` (and their `+o`/`+V` ties) fold into the same `Constraint::Memory`
-address-passthrough path as `m` — no distinct offsettable-vs-not handling
-exists or is needed, since Slate always materializes the address in a
-register rather than picking a displacement form.
+address-passthrough path as `m` — no distinct offsettable-vs-not handling exists
+or is needed, since Slate always materializes the address in a register rather
+than picking a displacement form.
 
 Tracked separately in `bd` (not duplicated here since these move faster than
 this doc): `slate-os0h.3.1.66` and children cover no-template memory/
@@ -195,22 +192,21 @@ Slate's array representation afterward.
 
 `y` (GCC's `FP_LO8_REGS`, V0-V7 — a plain NEON register subset used by some
 narrow-encoded AdvSIMD instructions, _not_ SVE; confirmed against
-`gcc/config/aarch64/constraints.md` and against real CIR codegen, which
-accepts `"y"` on an ordinary 128-bit vector operand with no SVE type
-involved) is unsupported, but not because of anything SVE-related — an
-earlier version of this doc conflated it with ARM32's iWMMXt-era `y`/`z`
-letters. The real blocker: Rust's AArch64 `asm!` only exposes `vreg`
-(V0-V31) and `vreg_low16` (V0-V15) — there is no `vreg_low8` equivalent to
-GCC's V0-V7 restriction. Unlike the x86 `g`/`imr` widening (sound because
-"any register works whenever a register alternative was offered"), `y`
-narrows in the _other_ direction: the instruction's encoding hard-requires
-a 3-bit register field, so binding the wider `vreg_low16` class could let
-Rust's allocator pick V8-V15, which the real instruction can't encode —
-unsound, not just imprecise. `'y'` constraints correctly hit
-`Constraint::Unsupported` today (verified: `"=y,y,y"` on a NEON `float32x4_t`
-add produces a clear "unsupported inline asm output constraint" lowering
-error, not silently-wrong codegen). Revisit only if Rust ever stabilizes a
-narrower vreg class.
+`gcc/config/aarch64/constraints.md` and against real CIR codegen, which accepts
+`"y"` on an ordinary 128-bit vector operand with no SVE type involved) is
+unsupported, but not because of anything SVE-related — an earlier version of
+this doc conflated it with ARM32's iWMMXt-era `y`/`z` letters. The real blocker:
+Rust's AArch64 `asm!` only exposes `vreg` (V0-V31) and `vreg_low16` (V0-V15) —
+there is no `vreg_low8` equivalent to GCC's V0-V7 restriction. Unlike the x86
+`g`/`imr` widening (sound because "any register works whenever a register
+alternative was offered"), `y` narrows in the _other_ direction: the
+instruction's encoding hard-requires a 3-bit register field, so binding the
+wider `vreg_low16` class could let Rust's allocator pick V8-V15, which the real
+instruction can't encode — unsound, not just imprecise. `'y'` constraints
+correctly hit `Constraint::Unsupported` today (verified: `"=y,y,y"` on a NEON
+`float32x4_t` add produces a clear "unsupported inline asm output constraint"
+lowering error, not silently-wrong codegen). Revisit only if Rust ever
+stabilizes a narrower vreg class.
 
 Fixture: `tests/fixtures/aarch64/asm_aarch64_fp_register_constraint.c`.
 
@@ -222,22 +218,21 @@ letters (`slate-3f8g.4.15.7`), with no per-letter GCC encoding-range
 re-validation (trust the upstream compiler). Confirmed via CIR dump that `I`
 (add/sub 12-bit imm), `K`/`L` (32-/64-bit logical bitmask imm) all arrive as
 plain constant SSA values, identical in shape to `J`/`M`/`N`/`O`. `Y`
-(floating-point constant zero) and `Z` (integer constant zero) were added as
-new `ConstantEligible` atoms, gated to `Arm64` since the letters aren't used
-elsewhere. `Z` lowers through the existing integer `known_arith_value` path
-with no code changes needed; `Y` is parsed but not exercisable end-to-end —
-`known_arith_value` returns `Option<i128>` (no float-constant tracking
-exists anywhere in the lowerer), so a real `Y` operand today falls through
-to the "not a known constant" error. Filed as follow-up (needs an
-`f64`-valued sibling to `known_arith_value`, likely shared with any future
-x86 float-immediate work).
+(floating-point constant zero) and `Z` (integer constant zero) were added as new
+`ConstantEligible` atoms, gated to `Arm64` since the letters aren't used
+elsewhere. `Z` lowers through the existing integer `known_arith_value` path with
+no code changes needed; `Y` is parsed but not exercisable end-to-end —
+`known_arith_value` returns `Option<i128>` (no float-constant tracking exists
+anywhere in the lowerer), so a real `Y` operand today falls through to the "not
+a known constant" error. Filed as follow-up (needs an `f64`-valued sibling to
+`known_arith_value`, likely shared with any future x86 float-immediate work).
 
-`S` (absolute symbolic address) is out of scope: CIR does not preserve
-symbol identity through an `S` operand — `"S"(global_var)` lowers to a
-`cir.get_global` + `cir.load`, i.e. the _value_ of the global, not an
-address reference Slate could bind to a real Rust symbol/global-asm operand.
-There is no CIR-side hook to recover the original symbol name once lowering
-reaches this point.
+`S` (absolute symbolic address) is out of scope: CIR does not preserve symbol
+identity through an `S` operand — `"S"(global_var)` lowers to a
+`cir.get_global` + `cir.load`, i.e. the _value_ of the global, not an address
+reference Slate could bind to a real Rust symbol/global-asm operand. There is no
+CIR-side hook to recover the original symbol name once lowering reaches this
+point.
 
 Fixing `S` surfaced a real latent bug: `'a'`/`'b'`/`'c'`/`'d'`/`'S'`/`'D'` in
 `parse_constraint_atoms` matched unconditionally as x86 `FixedReg` letters
@@ -261,29 +256,29 @@ toolchain independent of the `known_arith_value` gap above.
 Fixture: `tests/fixtures/aarch64/asm_aarch64_immediate_constant_constraints.c`
 (`I`, `K`, `L`).
 
-AArch64 memory constraints: `Q` (plain base-register address, no
-offset/index — required by `ldxr`/`stxr` exclusive-access instructions) now
-maps to `ConstraintAtom::Memory` (gated to `Arm64`, since `Q` collides with
-x86's byte-addressable-abcd letter). No distinct handling beyond the
-existing `m`/`o`/`V` address-passthrough path was needed: Slate always
-materializes the operand's address in a plain register with no
-displacement, which already satisfies `Q`'s no-offset restriction. Before
-this fix, `Q` on AArch64 fell through to the x86 `ByteAddressableAbcd` reg
-class (`reg_abcd`, which doesn't exist on AArch64 in Rust's `asm!`), which
-would have failed loudly at `rustc` time rather than miscompiling — but the
-Slate-level constraint tracking was still wrong.
+AArch64 memory constraints: `Q` (plain base-register address, no offset/index —
+required by `ldxr`/`stxr` exclusive-access instructions) now maps to
+`ConstraintAtom::Memory` (gated to `Arm64`, since `Q` collides with x86's
+byte-addressable-abcd letter). No distinct handling beyond the existing
+`m`/`o`/`V` address-passthrough path was needed: Slate always materializes the
+operand's address in a plain register with no displacement, which already
+satisfies `Q`'s no-offset restriction. Before this fix, `Q` on AArch64 fell
+through to the x86 `ByteAddressableAbcd` reg class (`reg_abcd`, which doesn't
+exist on AArch64 in Rust's `asm!`), which would have failed loudly at `rustc`
+time rather than miscompiling — but the Slate-level constraint tracking was
+still wrong.
 
 The multi-referenced-memory-slot restriction (a `Constraint::Memory` operand
 referenced more than once in the template is unsupported — see the x86
-storage-class table above) applies equally to `Q`; the canonical
-`ldxr`/`stxr` idiom that ties one `+Q` operand to both instructions hits it.
-Worked around in the fixture by passing the same C lvalue as two distinct
-`+Q` operands (two independent address-materializations of the same
-pointer) rather than referencing one operand slot twice — legal C, and each
-slot is referenced exactly once in the template.
+storage-class table above) applies equally to `Q`; the canonical `ldxr`/`stxr`
+idiom that ties one `+Q` operand to both instructions hits it. Worked around in
+the fixture by passing the same C lvalue as two distinct `+Q` operands (two
+independent address-materializations of the same pointer) rather than
+referencing one operand slot twice — legal C, and each slot is referenced
+exactly once in the template.
 
-`Ush` (adrp-range symbol constraint) is out of scope: rejected outright by
-the CIR-enabled Clang frontend before CIR generation
+`Ush` (adrp-range symbol constraint) is out of scope: rejected outright by the
+CIR-enabled Clang frontend before CIR generation
 (`invalid input constraint 'Ush' in asm`), the same category as ARM32's `k`
 stack-pointer constraint — no CIR ever reaches Slate for it, so there is no
 possible workaround on Slate's side.
@@ -291,43 +286,43 @@ possible workaround on Slate's side.
 Fixture: `tests/fixtures/aarch64/asm_aarch64_exclusive_memory_constraint.c`.
 
 AArch64 SVE predicate-register constraints `Upl` (P0-P7) and `Upa` (P0-P15):
-declined, not deferred. Real-usage audit (web/code search) found no
-concrete non-GCC-internal example of either letter in the wild — SVE inline
-asm is inherently rare (server/HPC-only hardware, needs `-march=+sve`), same
-frequency class as x86's `y`/`A`. More fundamentally, Arm's own inline-SVE-asm
-guidance states SVE vector/predicate values cannot appear as ordinary
-asm _outputs_ at all and must stay internal to the asm block — the same
-"can only be a clobber, not a bound operand" shape as x86 `y` (`mmx_reg`).
-Slate also has no scalable-vector type representation to give a `Upl`/`Upa`
-operand a Rust type in the first place, the identical blocker already
-recorded above for NEON's `y` (SVE) constraint. No follow-up filed;
-revisit only if a concrete fixture/corpus case demands it.
+declined, not deferred. Real-usage audit (web/code search) found no concrete
+non-GCC-internal example of either letter in the wild — SVE inline asm is
+inherently rare (server/HPC-only hardware, needs `-march=+sve`), same frequency
+class as x86's `y`/`A`. More fundamentally, Arm's own inline-SVE-asm guidance
+states SVE vector/predicate values cannot appear as ordinary asm _outputs_ at
+all and must stay internal to the asm block — the same "can only be a clobber,
+not a bound operand" shape as x86 `y` (`mmx_reg`). Slate also has no
+scalable-vector type representation to give a `Upl`/`Upa` operand a Rust type in
+the first place, the identical blocker already recorded above for NEON's `y`
+(SVE) constraint. No follow-up filed; revisit only if a concrete fixture/corpus
+case demands it.
 
 ## ARM (32-bit)
 
-Supported: `r` and `l` (Thumb1 low regs r0-r7, alias for `r` elsewhere) both
--> `reg`. Sound without tracking ARM/Thumb state: Rust's ARM `reg` class
-already narrows to r0-r7 under Thumb1 and expands under Thumb2/ARM. No
-register-width modifier on ARM32.
+Supported: `r` and `l` (Thumb1 low regs r0-r7, alias for `r` elsewhere) both ->
+`reg`. Sound without tracking ARM/Thumb state: Rust's ARM `reg` class already
+narrows to r0-r7 under Thumb1 and expands under Thumb2/ARM. No register-width
+modifier on ARM32.
 
-Limitation: `h` (Thumb r8-r15) is unsupported (clear error, not silently
-wrong) — Rust has no register class for that set, and unlike `l` it isn't a
-subset of `reg`, so mapping it there would be unsound.
+Limitation: `h` (Thumb r8-r15) is unsupported (clear error, not silently wrong)
+— Rust has no register class for that set, and unlike `l` it isn't a subset of
+`reg`, so mapping it there would be unsound.
 
 Fixture: `tests/fixtures/arm/asm_arm_general_low_reg.c`.
 
 Memory constraints: `Uv`, `Uy`, and `Uq` are canonicalized by CIR as
-`*^Uv`/`*^Uy`/`*^Uq` and reuse the `Constraint::Memory` address-passthrough
-path used by `m`/`o`/`V`. ARM templates render the materialized address with
-`[reg]` rather than x86's `(reg)` syntax. The ARM stack-pointer constraint `k`
-is rejected by the current CIR-enabled Clang before CIR generation, so it has
-no Slate-side workaround.
+`*^Uv`/`*^Uy`/`*^Uq` and reuse the `Constraint::Memory` address-passthrough path
+used by `m`/`o`/`V`. ARM templates render the materialized address with `[reg]`
+rather than x86's `(reg)` syntax. The ARM stack-pointer constraint `k` is
+rejected by the current CIR-enabled Clang before CIR generation, so it has no
+Slate-side workaround.
 
 Fixture: `tests/fixtures/arm/asm_arm_vfp_memory_constraint.c`.
 
 VFP/NEON register constraints: `w` selects the full Rust ARM `sreg`/`dreg`/
-`qreg` class for 32-/64-/128-bit operands. `t` selects `sreg`, `dreg_low16`,
-or `qreg_low8`; `x` selects `sreg_low16`, `dreg_low8`, or `qreg_low4`.
+`qreg` class for 32-/64-/128-bit operands. `t` selects `sreg`, `dreg_low16`, or
+`qreg_low8`; `x` selects `sreg_low16`, `dreg_low8`, or `qreg_low4`.
 
 Fixture: `tests/fixtures/arm/asm_arm_vfp_register_constraint.c`.
 
@@ -352,4 +347,8 @@ Rust `asm!` has no equivalent vector-constant operand class.
 
 ## Fixture layout
 
-Arch-exclusive fixtures live in `tests/fixtures/{arm,aarch64,x86_64}/` (mirrors `bionic`/`macos`/`msvc`) instead of by-name skip-lists or FileCheck-prefix tricks; each differential runner reads only its own directory plus the shared root, and `update_filecheck.py` auto-generates single-target checks for paths under them.
+Arch-exclusive fixtures live in `tests/fixtures/{arm,aarch64,x86_64}/` (mirrors
+`bionic`/`macos`/`msvc`) instead of by-name skip-lists or FileCheck-prefix
+tricks; each differential runner reads only its own directory plus the shared
+root, and `update_filecheck.py` auto-generates single-target checks for paths
+under them.

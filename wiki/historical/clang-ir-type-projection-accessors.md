@@ -1,11 +1,12 @@
 # clang-ir type projection accessors
 
-> Historical record. See the [archive index](index.md) for scope and source revision.
+> Historical record. See the [archive index](index.md) for scope and source
+> revision.
 
 _created 2026-08-24_
 
-`clang-ir-types-gen` owns structural projections on generated `Type` values.
-The generated API provides `as_array`, `as_vector`, `as_integer`, `pointee`,
+`clang-ir-types-gen` owns structural projections on generated `Type` values. The
+generated API provides `as_array`, `as_vector`, `as_integer`, `pointee`,
 `as_function`, and `record_name`; the hand-maintained clang-ir parser tests
 exercise those methods against parsed CIR syntax.
 

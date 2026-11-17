@@ -1,30 +1,27 @@
 # Debugging the gcc-torture (and sibling) unsupported corpora
 
-> Historical record. See the [archive index](index.md) for scope and source revision.
+> Historical record. See the [archive index](index.md) for scope and source
+> revision.
 
 <!-- toc -->
 
 - [The three-test pattern](#the-three-test-pattern)
   - [Reproducing one case](#reproducing-one-case)
-  - [Directory layout (this varies per suite — check before
-    assuming)](#directory-layout-this-varies-per-suite--check-before-assuming)
+  - [Directory layout (this varies per suite — check before assuming)](#directory-layout-this-varies-per-suite--check-before-assuming)
   - [The `.ignored` bucket](#the-ignored-bucket)
 - [How to dig into one failing case](#how-to-dig-into-one-failing-case)
-  - [Where the actually-compiled batch binary
-    lives](#where-the-actually-compiled-batch-binary-lives)
-- [Why the `lowering` profile
-  matters](#why-the-lowering-profile-matters)
+  - [Where the actually-compiled batch binary lives](#where-the-actually-compiled-batch-binary-lives)
+- [Why the `lowering` profile matters](#why-the-lowering-profile-matters)
 - [Signs to look for](#signs-to-look-for)
-- [Testing strategy: corpora over formal
-  verification/fuzzing](#testing-strategy-corpora-over-formal-verificationfuzzing)
+- [Testing strategy: corpora over formal verification/fuzzing](#testing-strategy-corpora-over-formal-verificationfuzzing)
 - [Filing focused bugs](#filing-focused-bugs)
 <!-- /toc -->
 
 > Scope: working `slate-os0h.3.1` (triage the gcc-torture unsupported corpus
 > into focused bugs) and its children, or the equivalent triage epics for
 > `c-testsuite`, `chibicc`, and `libc-test/functional`. Read
-> [lowerer internals](lowerer-internals.md) first if the bug turns out to be in lowering, not
-> just test plumbing.
+> [lowerer internals](lowerer-internals.md) first if the bug turns out to be in
+> lowering, not just test plumbing.
 
 ## The three-test pattern
 
@@ -42,8 +39,8 @@ only has the first test — no unsupported-corpus tests exist for it yet).
 **Always run through `cargo nextest r --release --profile lowering`** (never
 `cargo test`, per the top-level `CLAUDE.md`) while working this epic — see
 [Why the `lowering` profile matters](#why-the-lowering-profile-matters) below.
-Prefer running the whole profile over cherry-picking a single test name: it
-also re-confirms the supported corpus didn't regress, and it's what
+Prefer running the whole profile over cherry-picking a single test name: it also
+re-confirms the supported corpus didn't regress, and it's what
 `gcc_torture_unsupported_tests_still_fail` needs to actually report newly
 promotable cases.
 
@@ -79,33 +76,32 @@ command. Never hand-copy a fixture; `git mv` preserves history.
 `tests/fixtures.chibicc/ignored/` (nested, same shape as `supported/` and
 `unsupported/`) hold cases that are not a Slate lowering gap at all -- either
 genuinely undefined behavior per the C standard, e.g. `strlen-5`, which reads
-past one array/struct member's declared bound into an adjacent sibling
-member by relying on incidental memory layout (C11 6.5.6p8), unlike the
+past one array/struct member's declared bound into an adjacent sibling member by
+relying on incidental memory layout (C11 6.5.6p8), unlike the
 struct-hack/flexible-array-member idiom (also technically UB pre-C99, but
-universally treated as a de facto supported contract, which Slate does
-support); or a genuine toolchain limitation upstream of Slate entirely, e.g.
-chibicc's `include_macro`, which relies on a GCC-specific preprocessor
-whitespace-trimming behavior for macro-expanded `#include` header-names that
-clang itself (with or without CIR) doesn't implement -- reproduces with plain
-`clang -E`, before Slate's pipeline ever sees the file. This is not the same
-as "unsupported": `.unsupported/` is tracked work we intend to eventually
-fix; `.ignored/` is work we've decided not to chase because the failure
-isn't Slate's to fix. No test suite scans these directories, so cases there
-don't count against `.unsupported` triage progress. Every fixture moved here
-needs a top-of-file comment explaining why: which standard clause makes it
-UB (and why it's not the same as an idiom Slate does support), or which
-toolchain limitation is at fault and how it was confirmed to reproduce
-upstream of Slate.
+universally treated as a de facto supported contract, which Slate does support);
+or a genuine toolchain limitation upstream of Slate entirely, e.g. chibicc's
+`include_macro`, which relies on a GCC-specific preprocessor whitespace-trimming
+behavior for macro-expanded `#include` header-names that clang itself (with or
+without CIR) doesn't implement -- reproduces with plain `clang -E`, before
+Slate's pipeline ever sees the file. This is not the same as "unsupported":
+`.unsupported/` is tracked work we intend to eventually fix; `.ignored/` is work
+we've decided not to chase because the failure isn't Slate's to fix. No test
+suite scans these directories, so cases there don't count against `.unsupported`
+triage progress. Every fixture moved here needs a top-of-file comment explaining
+why: which standard clause makes it UB (and why it's not the same as an idiom
+Slate does support), or which toolchain limitation is at fault and how it was
+confirmed to reproduce upstream of Slate.
 
 ## How to dig into one failing case
 
 1. **`cargo run -- translate <file.c>`** — full pipeline output: lowering +
    fixups, exactly what the differential test compiles. Read this first.
-2. **`cargo run -- translate-lowered <file.c>`** — raw lowering, fixups
-   skipped entirely. If a bug disappears here, it's a fixup bug
-   ([writing a query-driven fixup](writing-a-query-driven-fixup.md)), not a lowering bug
-   ([lowerer internals](lowerer-internals.md)). This is the fastest lowering-vs-fixup triage
-   step — do it before reading any lowerer code.
+2. **`cargo run -- translate-lowered <file.c>`** — raw lowering, fixups skipped
+   entirely. If a bug disappears here, it's a fixup bug
+   ([writing a query-driven fixup](writing-a-query-driven-fixup.md)), not a
+   lowering bug ([lowerer internals](lowerer-internals.md)). This is the fastest
+   lowering-vs-fixup triage step — do it before reading any lowerer code.
 3. **`cargo run -- emit-cir <file.c>`** — the generic-form CIR text the
    lowerer's parser actually consumes. If you need clang's own diagnostics
    (warnings, `not yet implemented` errors) instead of the parsed tree, run
@@ -117,10 +113,11 @@ upstream of Slate.
    `grep` the `.mlir` file for the symbol/op you care about — e.g.
    `#cir.global_view<`, `cir.get_member`, a specific `sym_name`.
 4. **Clang AST**, when CIR alone doesn't disambiguate (e.g. anonymous struct
-   member names, signedness on a typedef): `$SLATE_CLANG -Xclang -ast-dump=json -fsyntax-only <file.c>`.
+   member names, signedness on a typedef):
+   `$SLATE_CLANG -Xclang -ast-dump=json -fsyntax-only <file.c>`.
 5. Compare the baseline and full outputs directly when step 2 shows the bug is
-   fixup-introduced. The old `fixup-debug` command and pass-isolation flags
-   were removed with the retired pass engine; see `passes.md` for the current
+   fixup-introduced. The old `fixup-debug` command and pass-isolation flags were
+   removed with the retired pass engine; see `passes.md` for the current
    worklist catalog.
 
 ### Where the actually-compiled batch binary lives
@@ -143,22 +140,22 @@ the harness's one-line diff isn't enough:
 RUST_BACKTRACE=1 target/test-cache/target-gcc-torture-suite-unsupported-batch-cargo/debug/<name>
 ```
 
-This gets you a real panic message and Rust backtrace instead of just "exit
-code differs." It's debug-mode (`cargo build`, not `--release`), so Rust's
+This gets you a real panic message and Rust backtrace instead of just "exit code
+differs." It's debug-mode (`cargo build`, not `--release`), so Rust's
 `#[cfg(debug_assertions)]` UB checks (misaligned/overlapping
 `copy_nonoverlapping`, etc.) are active — genuinely useful here, not noise.
 
 ## Why the `lowering` profile matters
 
-`src/backend/mod.rs`'s `apply_with` becomes a no-op — skipping every fixup
-pass — whenever `NEXTEST_PROFILE=lowering` (which `cargo nextest r --profile
-lowering` sets automatically) or `SLATE_RAW_LOWER` is set. So the _same_
-`gcc_torture_supported_tests_match_c` test exercises raw lowering output under
-`--profile lowering` and lowering-plus-fixups under `--profile rewrites` (or
-plain `cargo nextest run`). Since gcc-torture triage is a lowering-focused
-epic, always use `--profile lowering` — it's faster (no fixup passes to run)
-and it isolates lowering bugs from fixup bugs by construction. Don't use
-`cargo test` or `cargo nextest run` with no profile; see the top-level
+`src/backend/mod.rs`'s `apply_with` becomes a no-op — skipping every fixup pass
+— whenever `NEXTEST_PROFILE=lowering` (which
+`cargo nextest r --profile lowering` sets automatically) or `SLATE_RAW_LOWER` is
+set. So the _same_ `gcc_torture_supported_tests_match_c` test exercises raw
+lowering output under `--profile lowering` and lowering-plus-fixups under
+`--profile rewrites` (or plain `cargo nextest run`). Since gcc-torture triage is
+a lowering-focused epic, always use `--profile lowering` — it's faster (no fixup
+passes to run) and it isolates lowering bugs from fixup bugs by construction.
+Don't use `cargo test` or `cargo nextest run` with no profile; see the top-level
 `CLAUDE.md` for why.
 
 ## Signs to look for
@@ -169,68 +166,66 @@ and it isolates lowering bugs from fixup bugs by construction. Don't use
   branch that doesn't match your case's CIR text, falling through to a final
   `else` that just returns `None` and skips insertion. `#cir.ptr<N : iM>`
   (integer-to-pointer constants) and `#cir.global_view<..>` with an index list
-  both hit exactly this failure mode historically — see `parse_cir_int_ptr`
-  and `parse_cir_global_view`/`parse_cir_global_view_indices` in
+  both hit exactly this failure mode historically — see `parse_cir_int_ptr` and
+  `parse_cir_global_view`/`parse_cir_global_view_indices` in
   `src/frontend/lowerer/constants.rs`.
 - **A garbled/mangled identifier in the generated Rust** (e.g.
   `Upgrade_items___1___i32_`) — a string parser swallowed more of a raw CIR
-  attribute than intended, usually because it searched for the _last_ or
-  _any_ delimiter instead of the _first_ relevant one. Compare the parser's
-  terminator logic against the actual attribute grammar (`cir-opt`'s `.mlir`
-  dump is the ground truth) rather than guessing from the garbled output.
+  attribute than intended, usually because it searched for the _last_ or _any_
+  delimiter instead of the _first_ relevant one. Compare the parser's terminator
+  logic against the actual attribute grammar (`cir-opt`'s `.mlir` dump is the
+  ground truth) rather than guessing from the garbled output.
 - **Correct in isolation, wrong when referenced out of module order** — any
   lookup keyed by a symbol name that's only populated by a single sequential
-  pass over the module (e.g. `Lowerer::globals`, populated by
-  `collect_global` in CIR module order) breaks if something earlier in that
-  same pass needs to look up something declared _later_. Check whether the
-  lookup needs a name/type index built in a separate pre-pass instead (see
-  `global_sym_types` in `lowerer.rs` for the pattern).
+  pass over the module (e.g. `Lowerer::globals`, populated by `collect_global`
+  in CIR module order) breaks if something earlier in that same pass needs to
+  look up something declared _later_. Check whether the lookup needs a name/type
+  index built in a separate pre-pass instead (see `global_sym_types` in
+  `lowerer.rs` for the pattern).
 - **`exit code differs: C=Some(0) Rust=None`** — the Rust binary did not exit
   normally; it was killed by a signal (panic-abort, segfault) or, less often,
   the test's own timeout wrapper. `tests/support::run_with_config` reports a
   distinct `"... timed out after Ns"` message for actual timeouts, so a bare
-  `Rust=None` diff usually means a real crash — go run the batch binary
-  directly (see above) to get the panic and backtrace. This is a genuine
-  runtime bug, not a translation-plumbing bug; don't assume the fixture is
-  merely mis-triaged.
-- **`unsafe precondition(s) violated: ptr::copy_nonoverlapping requires ...`**
-  — almost always a real aliasing bug in the generated code, not test noise:
-  the debug-mode UB checks caught the lowerer emitting a `memcpy`-shaped copy
-  (`copy_nonoverlapping`) where C semantics required a `memmove`-safe copy or
-  an intermediate temporary (e.g. an sret return value written straight into
-  a destination that can alias its source). Don't paper over it with
+  `Rust=None` diff usually means a real crash — go run the batch binary directly
+  (see above) to get the panic and backtrace. This is a genuine runtime bug, not
+  a translation-plumbing bug; don't assume the fixture is merely mis-triaged.
+- **`unsafe precondition(s) violated: ptr::copy_nonoverlapping requires ...`** —
+  almost always a real aliasing bug in the generated code, not test noise: the
+  debug-mode UB checks caught the lowerer emitting a `memcpy`-shaped copy
+  (`copy_nonoverlapping`) where C semantics required a `memmove`-safe copy or an
+  intermediate temporary (e.g. an sret return value written straight into a
+  destination that can alias its source). Don't paper over it with
   `copy_nonoverlapping` -> `copy`; understand why the aliasing is reachable
-  first, since a blanket switch could mask a genuine correctness bug
-  elsewhere.
+  first, since a blanket switch could mask a genuine correctness bug elsewhere.
 - **A CIR error like `not yet implemented`** straight from clang (not from
-  Slate) — this is an upstream ClangIR gap, not a Slate bug. Reproduce with
-  bare `$SLATE_CLANG -fclangir -emit-cir` (no slate involved) to confirm, then
-  record the upstream disposition on the bd issue and leave the fixture
-  unsupported; don't try to work around it in the lowerer.
+  Slate) — this is an upstream ClangIR gap, not a Slate bug. Reproduce with bare
+  `$SLATE_CLANG -fclangir -emit-cir` (no slate involved) to confirm, then record
+  the upstream disposition on the bd issue and leave the fixture unsupported;
+  don't try to work around it in the lowerer.
 
 ## Testing strategy: corpora over formal verification/fuzzing
 
 Regression-catching strategy shifted deliberately (2026-08-11,
 `wiki/log/2026-08-11-00-00.md`) from formal-verification and grammar-fuzzing
 tooling toward large real-world C corpora. `tests/alive_regression.rs` (an
-alive2 translation-validation harness for fixup passes) and
-`tests/bnf_fuzz.rs` (a BNF-grammar-driven C fuzzer) were removed outright —
-they weren't finding bugs proportionate to their maintenance cost. gcc-torture
-and c-testsuite were vendored and wired into the default `cargo nextest r`
-run in the same window; libc-test (`tests/fixtures.libc-test/`) started as a
-port shortly after and grew into the dedicated `libc` nextest profile.
+alive2 translation-validation harness for fixup passes) and `tests/bnf_fuzz.rs`
+(a BNF-grammar-driven C fuzzer) were removed outright — they weren't finding
+bugs proportionate to their maintenance cost. gcc-torture and c-testsuite were
+vendored and wired into the default `cargo nextest r` run in the same window;
+libc-test (`tests/fixtures.libc-test/`) started as a port shortly after and grew
+into the dedicated `libc` nextest profile.
 
 A generated-program fuzzer was added back later on different terms:
-`tests/yarpgen.rs` (2026-08-20, `wiki/log/2026-08-20-00-00_2.md`, run
-via `tools/yarpgen-fuzz.sh`) wraps the [yarpgen](https://github.com/intel/yarpgen)
-random-C-program generator through the same differential contract as the
-rest of the suite (generate → compile+run C → translate+compile+run Rust →
-diff stdout/exit code), reporting which pipeline stage failed
+`tests/yarpgen.rs` (2026-08-20, `wiki/log/2026-08-20-00-00_2.md`, run via
+`tools/yarpgen-fuzz.sh`) wraps the [yarpgen](https://github.com/intel/yarpgen)
+random-C-program generator through the same differential contract as the rest of
+the suite (generate → compile+run C → translate+compile+run Rust → diff
+stdout/exit code), reporting which pipeline stage failed
 (`YarpgenGen`/`CCompile`/`CRuntime`/`SlateTranslate`/`RustCargo`/`RustRuntime`/
-`OutputMismatch`). Unlike the removed BNF fuzzer, this generates whole
-realistic programs and differentially runs them rather than validating
-individual IR transforms in isolation — different failure surface than the
-fixed corpora, since it isn't limited to cases someone already wrote down.
+`OutputMismatch`). Unlike the removed BNF fuzzer, this generates whole realistic
+programs and differentially runs them rather than validating individual IR
+transforms in isolation — different failure surface than the fixed corpora,
+since it isn't limited to cases someone already wrote down.
 `tests/yarpgen-seeds.txt` records known-good generator seeds, not curated
 regressions; failures found this way get exported as real fixtures
 (`--export-fixture`) into the regular corpus instead of staying fuzzer-only.
@@ -242,9 +237,9 @@ one focused `bd` bug (child of `slate-os0h.3.1`), listing every case name it
 covers, with acceptance criteria requiring every listed case to translate,
 compile, match C's stdout/exit code, and be promoted (`git mv`) into the
 supported dir — or, for a confirmed upstream CIR limitation, to record that
-disposition and stay mapped under the bug until CIR fixes it. If fixing one
-case in a bug's list exposes an unrelated bug in a _different_ case from that
-same list (as happened with `pr43784`'s sret-aliasing issue surfacing after
-its `global_view` bug was fixed), split the unrelated case into its own new
-bug rather than stretching the original bug's scope — keep `bd close`'s
-reason and the new bug's description explicit about why the split happened.
+disposition and stay mapped under the bug until CIR fixes it. If fixing one case
+in a bug's list exposes an unrelated bug in a _different_ case from that same
+list (as happened with `pr43784`'s sret-aliasing issue surfacing after its
+`global_view` bug was fixed), split the unrelated case into its own new bug
+rather than stretching the original bug's scope — keep `bd close`'s reason and
+the new bug's description explicit about why the split happened.

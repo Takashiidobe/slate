@@ -1,6 +1,7 @@
 # Cross-target toolchains
 
 <!-- toc -->
+
 - [Translation](#translation)
 - [Building generated Rust](#building-generated-rust)
 - [Coverage](#coverage)
@@ -8,8 +9,10 @@
 
 ## Translation
 
-- slate-parser models target facts from its registry and reads target headers from slate-sysroots.
-- [Target configuration](slate-target-queries.md) defines defaults and compiler argument precedence.
+- slate-parser models target facts from its registry and reads target headers
+  from slate-sysroots.
+- [Target configuration](slate-target-queries.md) defines defaults and compiler
+  argument precedence.
 - Install headers for each target before translating:
 
 ```bash
@@ -18,32 +21,184 @@ cargo run --release -p slate-c2rust -- translate \
   --target=aarch64-unknown-linux-gnu input.c
 ```
 
-- `translate --targets=<triple>,<triple> input.c` translates each target and merges them with the `translate-project --merge` engine.
-- `translate-project` consumes compile commands. When a file has commands with different arguments, it translates one build target, named by the directory of each entry's object file (`zlibstatic.dir` is `zlibstatic`, Meson's `libz.so.p` is `libz.so`). It prefers targets with no `main`, then the most files, then no `-fPIC`, then the first name, and prints the choice; `--build-target <name>` overrides this and also applies without a conflict. It does not generate a merged multi-target project.
-- A manifest (version 1) maps each target name to a triple, flavor, optional sysroot, its own `compile_commands.json` (relative to the project directory) and optional CMake `build_target`, plus `features` (name to defines) and `invalid_features`. It is written with `slate project target|feature add|remove|conflict`; `tools/corpus/manifests/zlib.json` is the zlib example (CMake `build-clang` and `build-msvc`, `zlibstatic`). Targets may compile different sources: a unit missing on some targets has its `mod` gated with `TargetConditions::select`. A feature macro already set by a target's commands, or a command `--target` that disagrees with the manifest triple, is an error.
-- `translate-project --manifest <file> --manifest-target <name> [--features a,b] <project> <crate>` translates one target and feature set.
-- `translate-project --plan --manifest <file> [--manifest-target <name>] <project>` prints, per target and translation unit, the feature configurations to compile, using only the preprocessor plus a parse and sema check of the chosen ones. It exits nonzero if a unit cannot be planned. `--plan-exhaustive` also tries every feature subset (at most 16 features) and reports what the plan missed.
-- `translate-project --merge --manifest <file> [--manifest-target a,b] [--check-projection all|<count>] [--projection-triples a,b] <project> <crate>` writes one crate covering the selected targets and features, and writes the report it prints to `merge-report.txt` in the crate directory. Each unit is preprocessed alone under every valid assignment of the features its preprocessor trace says it depends on, and compiled with `Exports::Fixed` unless its preprocessed output (tokens, comments, spans, file paths, `__BIGGEST_ALIGNMENT__`, directive diagnostics) matches an assignment already seen for that target and unit, which then reuses that result. Each item's `#[cfg]` is minimized over those assignments, and those that fail to translate with `#error` or sema are don't-cares. Every assignment is seen, because selecting a subset and inferring the rest silently dropped code that only one unseen assignment contains (`#if A && B && !C`). On zlib, 16 targets, this takes 2544 compiles out of 2976 assignments and about 33s on 6 workers. Each worker thread reuses lexed tokens per source text during `--merge`. An assignment preprocessed while finding a unit's relevant features is compiled from that output, so about 1618 of the 2976 are preprocessed once, with a trace, and the rest without one. Compiled items are interned per target and unit, not across targets, because `NamedPrim` equality ignores the resolved width that the signature check reads (`c_long` is 32 bits on i686 and 64 on x86_64). There is no `__slate_types` module, because `Exports::Fixed` never hoists types. The crate root has a `compile_error!` gated on `not` of the selected targets' cfgs, so any other target fails, with that message as its first error but followed by whatever else no longer resolves. The guard only sees `target_arch`, the OS and `target_env`, so a target that shares all three with a selected one, such as x32 with x86_64 linux gnu, still passes it. `--check-projection` is an independent check: it translates whole-project configurations directly and requires the items the merged crate resolves to for that configuration; `all` covers every valid feature subset, and `--projection-triples` limits the check to manifest targets with those triples. A distinct `link_section` depends on other units' address-taken symbols, so the merge protects any symbol taken in any compile of the target; the check allows this extra protection and rejects lost protection. The merge also fails if a symbol shared between units has incompatible signatures in any valid feature assignment. The signature check compares by-value layouts and pointee names, and accepts what C allows across units: an unprototyped declaration, an unsized `extern` array, a pointer to an opaque record, and the alignment wrapper on a definition. A third unit's `#error` can make the reported assignment impossible, so a report can be a false positive. Two pointers to records of the same name match even if the record differs between units, which has no effect on the call.
+- `translate --targets=<triple>,<triple> input.c` translates each target and
+  merges them with the `translate-project --merge` engine.
+- `translate-project` consumes compile commands. When a file has commands with
+  different arguments, it translates one build target, named by the directory of
+  each entry's object file (`zlibstatic.dir` is `zlibstatic`, Meson's
+  `libz.so.p` is `libz.so`). It prefers targets with no `main`, then the most
+  files, then no `-fPIC`, then the first name, and prints the choice;
+  `--build-target <name>` overrides this and also applies without a conflict. It
+  does not generate a merged multi-target project.
+- A manifest (version 1) maps each target name to a triple, flavor, optional
+  sysroot, its own `compile_commands.json` (relative to the project directory)
+  and optional CMake `build_target`, plus `features` (name to defines) and
+  `invalid_features`. It is written with
+  `slate project target|feature add|remove|conflict`;
+  `tools/corpus/manifests/zlib.json` is the zlib example (CMake `build-clang`
+  and `build-msvc`, `zlibstatic`). Targets may compile different sources: a unit
+  missing on some targets has its `mod` gated with `TargetConditions::select`. A
+  feature macro already set by a target's commands, or a command `--target` that
+  disagrees with the manifest triple, is an error.
+- `translate-project --manifest <file> --manifest-target <name> [--features a,b] <project> <crate>`
+  translates one target and feature set.
+- `translate-project --plan --manifest <file> [--manifest-target <name>] <project>`
+  prints, per target and translation unit, the feature configurations to
+  compile, using only the preprocessor plus a parse and sema check of the chosen
+  ones. It exits nonzero if a unit cannot be planned. `--plan-exhaustive` also
+  tries every feature subset (at most 16 features) and reports what the plan
+  missed.
+- `translate-project --merge --manifest <file> [--manifest-target a,b] [--check-projection all|<count>] [--projection-triples a,b] <project> <crate>`
+  writes one crate covering the selected targets and features, and writes the
+  report it prints to `merge-report.txt` in the crate directory. Each unit is
+  preprocessed alone under every valid assignment of the features its
+  preprocessor trace says it depends on, and compiled with `Exports::Fixed`
+  unless its preprocessed output (tokens, comments, spans, file paths,
+  `__BIGGEST_ALIGNMENT__`, directive diagnostics) matches an assignment already
+  seen for that target and unit, which then reuses that result. Each item's
+  `#[cfg]` is minimized over those assignments, and those that fail to translate
+  with `#error` or sema are don't-cares. Every assignment is seen, because
+  selecting a subset and inferring the rest silently dropped code that only one
+  unseen assignment contains (`#if A && B && !C`). On zlib, 16 targets, this
+  takes 2544 compiles out of 2976 assignments and about 33s on 6 workers. Each
+  worker thread reuses lexed tokens per source text during `--merge`. An
+  assignment preprocessed while finding a unit's relevant features is compiled
+  from that output, so about 1618 of the 2976 are preprocessed once, with a
+  trace, and the rest without one. Compiled items are interned per target and
+  unit, not across targets, because `NamedPrim` equality ignores the resolved
+  width that the signature check reads (`c_long` is 32 bits on i686 and 64 on
+  x86_64). There is no `__slate_types` module, because `Exports::Fixed` never
+  hoists types. The crate root has a `compile_error!` gated on `not` of the
+  selected targets' cfgs, so any other target fails, with that message as its
+  first error but followed by whatever else no longer resolves. The guard only
+  sees `target_arch`, the OS and `target_env`, so a target that shares all three
+  with a selected one, such as x32 with x86_64 linux gnu, still passes it.
+  `--check-projection` is an independent check: it translates whole-project
+  configurations directly and requires the items the merged crate resolves to
+  for that configuration; `all` covers every valid feature subset, and
+  `--projection-triples` limits the check to manifest targets with those
+  triples. A distinct `link_section` depends on other units' address-taken
+  symbols, so the merge protects any symbol taken in any compile of the target;
+  the check allows this extra protection and rejects lost protection. The merge
+  also fails if a symbol shared between units has incompatible signatures in any
+  valid feature assignment. The signature check compares by-value layouts and
+  pointee names, and accepts what C allows across units: an unprototyped
+  declaration, an unsized `extern` array, a pointer to an opaque record, and the
+  alignment wrapper on a definition. A third unit's `#error` can make the
+  reported assignment impossible, so a report can be a false positive. Two
+  pointers to records of the same name match even if the record differs between
+  units, which has no effect on the call.
 
-  The file holds `sources` and `args`, relative to `<project>`; `targets` (`name`, `triple`, `flavor`, optional `sysroot` and `args`, with generated headers given as `-I` in `args`); `features` (`name`, used as the Cargo feature name, and `defines`); and `invalid_features`, groups that cannot be selected together. Arguments apply in the order target, project, features. Leave out macros that are not real variants: zlib's `Z_PREFIX` is a rename, `MAKECRCH` adds a table-generator `main`, and `Z_SOLO` and `NO_STRERROR` do not compile under clang either.
-- A function whose variants differ in one value (a literal, or a primitive type at any number of positions) keeps one shared body that names one `#[cfg]`-gated module-level `const __SLATE_HOIST_<fn>` or `type __SlateHoist_<fn>` (`src/project_hoist.rs`). A literal's const needs a type that every use agrees on, from its suffix or its context (return, typed `let`, direct cast, arithmetic). `--check-projection` expands the bindings before comparing.
-- Other variants are spliced into one item (`src/project_splice.rs`). Function bodies are aligned as trees, statement by statement, comparing generated names (`__v12`, `__join_3`, `__slate_slot_4`) up to renaming, because those names are counters that shift with unrelated code. A statement in only some variants gets `#[cfg]`; a nested statement's condition is minimized relative to its parent. A differing parameter or return type becomes a gated `type __SlateParam_<fn>_<n>` or `__SlateRet_<fn>`, a section held by only some variants becomes `cfg_attr`, and record fields get `#[cfg]`. Alignment affects only output size: conditions come from the truth table, so any alignment projects back to each variant, and `--check-projection` resolves the gates and compares up to renaming and comments. A function with no shared code stays duplicated, as does any change in a `match`'s arm list or an `if`'s condition at that statement, an array initializer, and a same-named `static`.
-- A labeled block one variant has and another lacks (a switch case under `#ifdef` adds a level to the case ladder) does not block alignment: the other variant's run of statements is aligned into the block's body, and the block is kept unconditionally, since nothing in that variant breaks to its label. The run must hold no top-level `let`, tail expression, or unlabeled `break`/`continue` (Rust rejects those inside a labeled block), including through a lifted macro whose body has one. Before aligning, every unlabeled loop gets a fresh `__loop_N` label and its direct jumps point at it, so a variant whose structurer elided the label still matches; introduced labels are elided again after emission where every jump is direct. `--check-projection` flattens unreferenced, `let`-free labeled blocks and labels every loop on both sides before comparing.
-- Named C types come from outside the unit. `c_char`, `c_long` and `c_ulong` import from `core::ffi`; other typedefs import from `vendor/slate-support`, which is written into every generated crate. `named_prim_item` in `lowerer/types.rs` compares the shared definition with what C resolved for that compile, and keeps a local `type` alias if they differ, so `-funsigned-char` gives `type c_char = u8` on that target and the import on the others. Its matcher repeats the crate's definitions by hand. A wrong entry that disagrees with C only falls back to the alias, but one that disagrees with the crate can pick the wrong type, so add a type to both and `cargo check` each target. Every name in `NAMED_TYPEDEFS` is covered; values were taken from what C resolved on all 16 matrix targets. `ino_t` is the one that splits by architecture on Darwin (`u32` on x86_64, `u64` on aarch64), and 32-bit Android values follow the headers' rules but are untested, since those triples are unsupported. Rust's own `c_char` follows the triple rather than the flags, which is why `cstr_literal` keeps the cast on `c"..".as_ptr()` under `-funsigned-char`.
-- Generated crates reach libc only through `slate_support`, which re-exports a vendored `vendor/libc` and adds what libc lacks, so every suite exercises the crate. Local items shadow the glob import, which is how `size_t` stays `u64` beside libc's `usize`.
-- Stdio is bound by a table in `lowerer/stdio.rs`, so call sites read the same on every libc: `slate_support::fprintf(slate_support::stderr(), ..)` and `*mut slate_support::FILE`. The record is `_IO_FILE`, `__sFILE` or `_iobuf`, and a stream is a read of `stderr` (Linux) or `__stderrp` (Darwin, FreeBSD), `&__sF[2]` (Android), or `__acrt_iob_func(2)` (Windows). A bound function must come from a system header and match the table's signature, and it needs no body unless it is `__sputc` or a Windows inline. The accessor reads the stream on each call, so `stderr = stdout` on glibc is seen; the write itself still goes through the extern static. Any use of the FILE layout (a by-value `FILE`, a field access, the address of a bound function) re-lowers the whole unit without bindings, which keeps the real record and libc's own declarations. Bindings are also off when `-funsigned-char` makes the target's `char` disagree with Rust's, since libc's signatures would not match. `fflush` is not bound because the printf flush rewrite injects its own declaration; `fwrite` and `fread` are not bound because their `usize` and `void*` parameters need their own argument kinds.
-- Removing a bound function's body leaves its helpers (`_vfprintf_l`, `__stdio_common_vfprintf`, `__swbuf`) and the stream externs unused. After the first lowering, `unreachable_stdio_helpers` walks the lowered items from everything that is not a system-header inline, extern or stream global, and the unit is lowered again without the rest, so their types go too. Units with top-level asm skip this, since asm text can name a symbol.
+  The file holds `sources` and `args`, relative to `<project>`; `targets`
+  (`name`, `triple`, `flavor`, optional `sysroot` and `args`, with generated
+  headers given as `-I` in `args`); `features` (`name`, used as the Cargo
+  feature name, and `defines`); and `invalid_features`, groups that cannot be
+  selected together. Arguments apply in the order target, project, features.
+  Leave out macros that are not real variants: zlib's `Z_PREFIX` is a rename,
+  `MAKECRCH` adds a table-generator `main`, and `Z_SOLO` and `NO_STRERROR` do
+  not compile under clang either.
+
+- A function whose variants differ in one value (a literal, or a primitive type
+  at any number of positions) keeps one shared body that names one
+  `#[cfg]`-gated module-level `const __SLATE_HOIST_<fn>` or
+  `type __SlateHoist_<fn>` (`src/project_hoist.rs`). A literal's const needs a
+  type that every use agrees on, from its suffix or its context (return, typed
+  `let`, direct cast, arithmetic). `--check-projection` expands the bindings
+  before comparing.
+- Other variants are spliced into one item (`src/project_splice.rs`). Function
+  bodies are aligned as trees, statement by statement, comparing generated names
+  (`__v12`, `__join_3`, `__slate_slot_4`) up to renaming, because those names
+  are counters that shift with unrelated code. A statement in only some variants
+  gets `#[cfg]`; a nested statement's condition is minimized relative to its
+  parent. A differing parameter or return type becomes a gated
+  `type __SlateParam_<fn>_<n>` or `__SlateRet_<fn>`, a section held by only some
+  variants becomes `cfg_attr`, and record fields get `#[cfg]`. Alignment affects
+  only output size: conditions come from the truth table, so any alignment
+  projects back to each variant, and `--check-projection` resolves the gates and
+  compares up to renaming and comments. A function with no shared code stays
+  duplicated, as does any change in a `match`'s arm list or an `if`'s condition
+  at that statement, an array initializer, and a same-named `static`.
+- A labeled block one variant has and another lacks (a switch case under
+  `#ifdef` adds a level to the case ladder) does not block alignment: the other
+  variant's run of statements is aligned into the block's body, and the block is
+  kept unconditionally, since nothing in that variant breaks to its label. The
+  run must hold no top-level `let`, tail expression, or unlabeled
+  `break`/`continue` (Rust rejects those inside a labeled block), including
+  through a lifted macro whose body has one. Before aligning, every unlabeled
+  loop gets a fresh `__loop_N` label and its direct jumps point at it, so a
+  variant whose structurer elided the label still matches; introduced labels are
+  elided again after emission where every jump is direct. `--check-projection`
+  flattens unreferenced, `let`-free labeled blocks and labels every loop on both
+  sides before comparing.
+- Named C types come from outside the unit. `c_char`, `c_long` and `c_ulong`
+  import from `core::ffi`; other typedefs import from `vendor/slate-support`,
+  which is written into every generated crate. `named_prim_item` in
+  `lowerer/types.rs` compares the shared definition with what C resolved for
+  that compile, and keeps a local `type` alias if they differ, so
+  `-funsigned-char` gives `type c_char = u8` on that target and the import on
+  the others. Its matcher repeats the crate's definitions by hand. A wrong entry
+  that disagrees with C only falls back to the alias, but one that disagrees
+  with the crate can pick the wrong type, so add a type to both and
+  `cargo check` each target. Every name in `NAMED_TYPEDEFS` is covered; values
+  were taken from what C resolved on all 16 matrix targets. `ino_t` is the one
+  that splits by architecture on Darwin (`u32` on x86_64, `u64` on aarch64), and
+  32-bit Android values follow the headers' rules but are untested, since those
+  triples are unsupported. Rust's own `c_char` follows the triple rather than
+  the flags, which is why `cstr_literal` keeps the cast on `c"..".as_ptr()`
+  under `-funsigned-char`.
+- Generated crates reach libc only through `slate_support`, which re-exports a
+  vendored `vendor/libc` and adds what libc lacks, so every suite exercises the
+  crate. Local items shadow the glob import, which is how `size_t` stays `u64`
+  beside libc's `usize`.
+- Stdio is bound by a table in `lowerer/stdio.rs`, so call sites read the same
+  on every libc: `slate_support::fprintf(slate_support::stderr(), ..)` and
+  `*mut slate_support::FILE`. The record is `_IO_FILE`, `__sFILE` or `_iobuf`,
+  and a stream is a read of `stderr` (Linux) or `__stderrp` (Darwin, FreeBSD),
+  `&__sF[2]` (Android), or `__acrt_iob_func(2)` (Windows). A bound function must
+  come from a system header and match the table's signature, and it needs no
+  body unless it is `__sputc` or a Windows inline. The accessor reads the stream
+  on each call, so `stderr = stdout` on glibc is seen; the write itself still
+  goes through the extern static. Any use of the FILE layout (a by-value `FILE`,
+  a field access, the address of a bound function) re-lowers the whole unit
+  without bindings, which keeps the real record and libc's own declarations.
+  Bindings are also off when `-funsigned-char` makes the target's `char`
+  disagree with Rust's, since libc's signatures would not match. `fflush` is not
+  bound because the printf flush rewrite injects its own declaration; `fwrite`
+  and `fread` are not bound because their `usize` and `void*` parameters need
+  their own argument kinds.
+- Removing a bound function's body leaves its helpers (`_vfprintf_l`,
+  `__stdio_common_vfprintf`, `__swbuf`) and the stream externs unused. After the
+  first lowering, `unreachable_stdio_helpers` walks the lowered items from
+  everything that is not a system-header inline, extern or stream global, and
+  the unit is lowered again without the rest, so their types go too. Units with
+  top-level asm skip this, since asm text can name a symbol.
 
 ## Building generated Rust
 
 - Install the matching Rust target, linker and target C libraries.
-- Generated crates with C runtime bridges also need a C cross compiler configured for the `cc` build dependency.
+- Generated crates with C runtime bridges also need a C cross compiler
+  configured for the `cc` build dependency.
 - Run cross-built binaries on the target or with a suitable user-mode emulator.
 
 ## Coverage
 
 - The `slate` nextest profile executes x86_64 Linux differential suites.
-- `slate-i686`, `slate-aarch64` and `slate-targets` run `tests/fixtures` for other Linux targets, under `qemu-aarch64-static` for aarch64 ([targets](differential-fixtures.md#targets)). aarch64 needs `aarch64-linux-gnu-gcc` and its sysroot in `/usr/aarch64-linux-gnu`.
-- Other environments and OSes are tracked in `slate-5vj0.8`; corpus suites remain host-only.
+- `slate-i686`, `slate-aarch64` and `slate-targets` run `tests/fixtures` for
+  other Linux targets, under `qemu-aarch64-static` for aarch64
+  ([targets](differential-fixtures.md#targets)). aarch64 needs
+  `aarch64-linux-gnu-gcc` and its sysroot in `/usr/aarch64-linux-gnu`.
+- Other environments and OSes are tracked in `slate-5vj0.8`; corpus suites
+  remain host-only.
 - Successful translation alone is not cross-target runtime validation.
-- `tools/corpus/validate_merge.py --crate <merged zlib> --work <dir>` links zlib's `example`, `infcover`, `minigzip` and `zpipe` against the merged crate built as a staticlib and compares exit codes and stdout with the same programs on zlib built from C, for linux x86_64, i686, aarch64 and armv7 (qemu for the last two) and windows x86_64 and i686 (cl.exe under wine). `--codegen` compiles every other target; `cargo check` is not enough, because a duplicate symbol only fails in codegen. `--layouts` appends `size_of`, `align_of` and `offset_of!` assertions, taken from clang's `-fdump-record-layouts-complete`, to each unit and runs `cargo check`, on all 16 targets. `--control` must fail: it builds the C with `FASTEST` while the Rust has no features, or shifts every expected size by one for `--layouts`. Stderr is not compared, so `zlib-debug` traces are not checked.
+- `tools/corpus/validate_merge.py --crate <merged zlib> --work <dir>` links
+  zlib's `example`, `infcover`, `minigzip` and `zpipe` against the merged crate
+  built as a staticlib and compares exit codes and stdout with the same programs
+  on zlib built from C, for linux x86_64, i686, aarch64 and armv7 (qemu for the
+  last two) and windows x86_64 and i686 (cl.exe under wine). `--codegen`
+  compiles every other target; `cargo check` is not enough, because a duplicate
+  symbol only fails in codegen. `--layouts` appends `size_of`, `align_of` and
+  `offset_of!` assertions, taken from clang's `-fdump-record-layouts-complete`,
+  to each unit and runs `cargo check`, on all 16 targets. `--control` must fail:
+  it builds the C with `FASTEST` while the Rust has no features, or shifts every
+  expected size by one for `--layouts`. Stderr is not compared, so `zlib-debug`
+  traces are not checked.

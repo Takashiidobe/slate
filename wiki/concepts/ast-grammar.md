@@ -1,6 +1,7 @@
 # AST Grammar
 
 <!-- toc -->
+
 - [Notation](#notation)
 - [Lexical](#lexical)
 - [Dump](#dump)
@@ -23,28 +24,28 @@
 EBNF of the AST dump printed by `slate-parser parse source.c`. Meaning:
 [AST Spec](ast-spec.md).
 
-Source of truth: the types in `src/ast.rs` and `src/const_expr.rs`, printed
-as their `Debug` form (derived, or `custom_debug` where fields are skipped)
-through `src/render.rs`. Update this page with any change to them.
+Source of truth: the types in `src/ast.rs` and `src/const_expr.rs`, printed as
+their `Debug` form (derived, or `custom_debug` where fields are skipped) through
+`src/render.rs`. Update this page with any change to them.
 
 ## Notation
 
-- `a = ... ;` defines `a`; `|` separates choices; `[ x ]` is optional;
-  `{ x }` is zero or more; `( ... )` groups; `(* ... *)` is a comment.
+- `a = ... ;` defines `a`; `|` separates choices; `[ x ]` is optional; `{ x }`
+  is zero or more; `( ... )` groups; `(* ... *)` is a comment.
 - Node shapes are written as they print:
   - `Name { f: t, g: t }` is a struct or struct variant.
   - `Name(t)` is a tuple variant.
   - A bare `Name` is a unit variant.
   - A field written `g?: t` is omitted when it is empty, `None`, `false` or
-    default. When it is printed it is `t`, so `g?: Some(t)` means the field
-    is absent or `Some(..)`, and `g?: true` means absent or `true`.
+    default. When it is printed it is `t`, so `g?: Some(t)` means the field is
+    absent or `Some(..)`, and `g?: true` means absent or `true`.
 - `opt<t>` is `"Some(" t ")" | "None"`, `vec<t>` is `"[" [ t { "," t } ] "]"`,
   and `span<t>` is a [spanned node](#spans) holding `t`.
 - `Box` is transparent. `expr` is `span<ExprKind>` and `stmt` is
   `span<StmtKind>`.
-- Layout: the renderer prints one field or element per line, indented 4
-  spaces per level, with a trailing `,` after each. The productions use the
-  flat form; whitespace and trailing commas are layout.
+- Layout: the renderer prints one field or element per line, indented 4 spaces
+  per level, with a trailing `,` after each. The productions use the flat form;
+  whitespace and trailing commas are layout.
 
 ## Lexical
 
@@ -65,11 +66,11 @@ tag_line  = "tag[" int "]" [ " #" int ] ": " span<TagDefinition> ;
 decl_line = "decl[" int "]" [ " #" int ] ": " span<DeclKind> ;
 ```
 
-- All tag definitions print first, ordered by `TagId`; the index in
-  `tag[N]` is the `TagId`. Declarations follow in source order, `decl[N]`
-  being the position.
-- The `TranslationUnit`'s `dialect` (flavor, standard, target, options) is
-  not printed.
+- All tag definitions print first, ordered by `TagId`; the index in `tag[N]` is
+  the `TagId`. Declarations follow in source order, `decl[N]` being the
+  position.
+- The `TranslationUnit`'s `dialect` (flavor, standard, target, options) is not
+  printed.
 - Without `--show-comments`, `Comment` items are removed from declarations,
   function bodies, records and enums, and parameter `comments` are cleared,
   before printing.
@@ -78,16 +79,16 @@ decl_line = "decl[" int "]" [ " #" int ] ": " span<DeclKind> ;
 
 `slate-parser parse <source.c> --sexpr` uses `render::SExprRenderer` to expose
 the AST as nested lists. The browser AST tab uses this format. Each Rust debug
-variant or struct becomes a list headed by its name; fields become `(field value)`
-lists, vectors use `[...]`, and maps use `{(key value) ...}`. Unit variants are
-single-item lists. Scalar values keep their Rust debug spelling. For example,
-`Binary { op: Add, left: ..., right: ... }` becomes
+variant or struct becomes a list headed by its name; fields become
+`(field value)` lists, vectors use `[...]`, and maps use `{(key value) ...}`.
+Unit variants are single-item lists. Scalar values keep their Rust debug
+spelling. For example, `Binary { op: Add, left: ..., right: ... }` becomes
 `(Binary (op (Add)) (left ...) (right ...))`.
 
 The translation unit prints source declarations and tags before dialect
-metadata. Top-level nodes originating in system headers are omitted and counted in
-`(system-header-nodes-omitted N)` so included headers do not obscure the input
-program.
+metadata. Top-level nodes originating in system headers are omitted and counted
+in `(system-header-nodes-omitted N)` so included headers do not obscure the
+input program.
 
 ## Spans
 
@@ -100,9 +101,9 @@ Provenance = "Provenance {" "file:" FileId "," "kind:" ( "System" | "User" ) ","
 
 - `#N` is the `NodeId`, printed only with `--show-ids`. The line label then
   repeats it: `decl[2] #2869: #2869 Declaration(..)`.
-- A span prints bare unless it came from a system header, in which case it
-  is wrapped in `Spanned` with its provenance. Locations (`spelling`,
-  `expansion`) and macro origins are never printed.
+- A span prints bare unless it came from a system header, in which case it is
+  wrapped in `Spanned` with its provenance. Locations (`spelling`, `expansion`)
+  and macro origins are never printed.
 
 ## Declarations
 
@@ -136,8 +137,8 @@ Comment       = Comment { text: vec<string>, loc: Loc } ;
 Loc          = Loc { file: FileId, offset: int, length: int } ;
 ```
 
-- There is no typedef, record or enum declaration: `typedef` is a storage
-  class, and tag bodies are in `tag[..]` lines, referenced by `TagId`.
+- There is no typedef, record or enum declaration: `typedef` is a storage class,
+  and tag bodies are in `tag[..]` lines, referenced by `TagId`.
 - A `FunctionDefinition` with an empty body prints without `body`.
 
 ## Specifiers
@@ -214,13 +215,13 @@ TagKind      = "Struct" | "Union" | "Enum" ;
   `unsigned char`. `Ranked { signed: None }` is a signed type written without
   `signed` (`int`, `long`, `__int128_t`); gcc's `-funsigned-bitfields` makes
   only those bit-fields unsigned.
-- `Named` is a typedef name; `TargetBuiltin` is a compiler-provided type
-  name, currently only `__builtin_va_list`. `__m128`, `__m256i` and the
-  like are `Named`: no compiler predeclares them, the intrinsics headers
-  typedef them. `Inferred` is `__auto_type`, or C23
-  `auto` with no type specifier (alone or beside another storage class).
-- `Definition(TagId(N))` is where a tag body was written; the body is
-  `tag[N]`. `Reference` names a tag without a body.
+- `Named` is a typedef name; `TargetBuiltin` is a compiler-provided type name,
+  currently only `__builtin_va_list`. `__m128`, `__m256i` and the like are
+  `Named`: no compiler predeclares them, the intrinsics headers typedef them.
+  `Inferred` is `__auto_type`, or C23 `auto` with no type specifier (alone or
+  beside another storage class).
+- `Definition(TagId(N))` is where a tag body was written; the body is `tag[N]`.
+  `Reference` names a tag without a body.
 
 ## Declarators
 
@@ -250,17 +251,17 @@ ParameterDeclarationKind = ParameterDeclarationKind {
                              comments?: vec<span<CommentGroup>> } ;
 ```
 
-- Declarators keep the written nesting, not the derivation order:
-  `int *a[3]` (an array of pointers) is
-  `Array { inner: Pointer { inner: Name("a") } }`, and `int (*fp)(int)` is
-  `Function { inner: Grouped(Pointer { inner: Name("fp") }) }`. `Grouped` is
-  a parenthesized declarator. `Attributed` is attributes written inside
-  the declarator: GNU or keyword attributes after `(`, or `[[...]]` after
-  the identifier or an array/function suffix (`f(void) [[x]]` is
+- Declarators keep the written nesting, not the derivation order: `int *a[3]`
+  (an array of pointers) is `Array { inner: Pointer { inner: Name("a") } }`, and
+  `int (*fp)(int)` is
+  `Function { inner: Grouped(Pointer { inner: Name("fp") }) }`. `Grouped` is a
+  parenthesized declarator. `Attributed` is attributes written inside the
+  declarator: GNU or keyword attributes after `(`, or `[[...]]` after the
+  identifier or an array/function suffix (`f(void) [[x]]` is
   `Attributed { inner: Function {..} }`).
 - `Void` is `(void)`; `Empty` is `()`, an unprototyped list.
-- `IdentifierList` is a K&R definition; its parameters keep the declared
-  types, and promotion happens in sema.
+- `IdentifierList` is a K&R definition; its parameters keep the declared types,
+  and promotion happens in sema.
 
 ## Tags
 
@@ -341,8 +342,8 @@ OmpSchedule = OmpSchedule { kind: ("Static" | "Dynamic" | "Guided" | "Auto" | "R
                             chunk: option<expr> } ;
 ```
 
-- `Attribute` is an attribute declaration (`[[fallthrough]];`);
-  `Attributed` is attributes applied to the statement that follows.
+- `Attribute` is an attribute declaration (`[[fallthrough]];`); `Attributed` is
+  attributes applied to the statement that follows.
 - `For.init` is an expression or declaration statement.
 - `LocalLabelDecl` is GNU `__label__`; `ComputedGoto` is `goto *e`.
 
@@ -443,8 +444,8 @@ StringLiteral = StringLiteral { encoding: Encoding, code_units: vec<int>,
 Encoding      = "Plain" | "Utf8" | "Utf16" | "Utf32" | "Wide" ;
 ```
 
-- An integer literal's `value` is the decoded magnitude in decimal; its type
-  is not resolved in the AST.
+- An integer literal's `value` is the decoded magnitude in decimal; its type is
+  not resolved in the AST.
 - A float literal keeps only its spelling; sema interprets it at the target
   precision.
 - `pieces` are the adjacent string tokens that were concatenated, in order.
@@ -484,11 +485,11 @@ StackAction = "Push" | "Pop" | "Show" | "Set" ;
 ```
 
 `Opaque` holds the text of any pragma without a typed form, including a
-recognized pragma given an argument it does not accept -- `#pragma ms_struct
-push` and `#pragma STDC FP_CONTRACT maybe` both land there.
+recognized pragma given an argument it does not accept --
+`#pragma ms_struct push` and `#pragma STDC FP_CONTRACT maybe` both land there.
 
-`Pack`'s `label` is the MSVC named slot: `#pragma pack(push, lbl, 1)` fills
-both `label` and `alignment`, `#pragma pack(pop, lbl)` only `label`.
+`Pack`'s `label` is the MSVC named slot: `#pragma pack(push, lbl, 1)` fills both
+`label` and `alignment`, `#pragma pack(pop, lbl)` only `label`.
 
 ## Inline assembly
 
@@ -534,13 +535,13 @@ ArmWidth     = "Bits32" | "Bits64" | "Bits128" ;
 ```
 
 - `operands` is absent for basic asm (`asm("...")` without colons).
-- `pieces` is the template split into text and `%` references; `Label(N)`
-  is a reference to a goto label, as an index into `labels`.
+- `pieces` is the template split into text and `%` references; `Label(N)` is a
+  reference to a goto label, as an index into `labels`.
 - `DialectAlternatives` is a bare `{att|intel|...}` in an x86 template; the
-  escapes `%{`, `%|` and `%}` are literal text. On other targets braces and
-  `|` are always text.
-- `AsmLabel` is a declarator's `asm("name")`: a symbol name, or a register
-  for a GNU register variable.
+  escapes `%{`, `%|` and `%}` are literal text. On other targets braces and `|`
+  are always text.
+- `AsmLabel` is a declarator's `asm("name")`: a symbol name, or a register for a
+  GNU register variable.
 
 ```ebnf
 MsAsm            = MsAsm { instructions: vec<span<MsAsmInstruction>> } ;
@@ -574,15 +575,15 @@ MsAsmOperator = "Offset" | "Type" | "Length" | "Size" | "Short" ;
 ```
 
 - `MsAsm` is one MSVC `__asm` statement, after merging (see
-  [MSVC inline asm](msvc-asm.md)). An instruction with only `label` is a
-  label on its own line; `a: b: nop` gives a label-only instruction for `a`.
-- `Register` is always `X86`, and `spelling` keeps the source case. `St(n)`
-  is `st(n)`; a bare `st` is `St(0)`. `Name` is anything else: a C name, an
-  asm label or a field, resolved by sema.
+  [MSVC inline asm](msvc-asm.md)). An instruction with only `label` is a label
+  on its own line; `a: b: nop` gives a label-only instruction for `a`.
+- `Register` is always `X86`, and `spelling` keeps the source case. `St(n)` is
+  `st(n)`; a bare `st` is `St(0)`. `Name` is anything else: a C name, an asm
+  label or a field, resolved by sema.
 - `Number` is already folded from its MASM radix suffix or C spelling.
-- `Index` is MASM's `x[4]`, a byte offset, not a C subscript. A `(...)`
-  group prints as its contents. `[eax]T.f` prints as `Binary` `Add` of the
-  bracket and `T.f`.
+- `Index` is MASM's `x[4]`, a byte offset, not a C subscript. A `(...)` group
+  prints as its contents. `[eax]T.f` prints as `Binary` `Add` of the bracket and
+  `T.f`.
 
 ## Attributes
 
@@ -637,15 +638,14 @@ CallingConvention = "Cdecl" | "Stdcall" | "Fastcall" | "Vectorcall"
                   | "Pcs(" ( "Aapcs" | "AapcsVfp" ) ")" ;
 ```
 
-- Every attribute syntax (GNU `__attribute__`, C23 `[[...]]`, keywords such
-  as `_Alignas` and `__cdecl`) produces an `Attribute`; which syntax was
-  used is not kept.
-- `Unknown` is an attribute the parser does not model, or one the flavor
-  does not register for the target (`src/attribute_support.rs`), kept by
-  name with its argument token spellings. `IgnoredDeclspec` is a
-  `__declspec` entry the flavor does not register for the target, which
-  clang ignores as "not supported" even when the name is a GNU attribute.
-  `IgnoredMode` is a gcc-flavor `mode` whose single argument is not an
-  identifier, which gcc ignores with a warning.
-  `Invalid` is a known attribute whose
-  arguments did not fit its form.
+- Every attribute syntax (GNU `__attribute__`, C23 `[[...]]`, keywords such as
+  `_Alignas` and `__cdecl`) produces an `Attribute`; which syntax was used is
+  not kept.
+- `Unknown` is an attribute the parser does not model, or one the flavor does
+  not register for the target (`src/attribute_support.rs`), kept by name with
+  its argument token spellings. `IgnoredDeclspec` is a `__declspec` entry the
+  flavor does not register for the target, which clang ignores as "not
+  supported" even when the name is a GNU attribute. `IgnoredMode` is a
+  gcc-flavor `mode` whose single argument is not an identifier, which gcc
+  ignores with a warning. `Invalid` is a known attribute whose arguments did not
+  fit its form.

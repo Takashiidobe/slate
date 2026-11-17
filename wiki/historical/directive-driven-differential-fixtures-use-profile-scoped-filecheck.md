@@ -1,6 +1,7 @@
 # Directive-driven differential fixtures use profile-scoped FileCheck
 
-> Historical record. See the [archive index](index.md) for scope and source revision.
+> Historical record. See the [archive index](index.md) for scope and source
+> revision.
 
 _created 2026-08-24_
 
@@ -16,4 +17,5 @@ bounded by the function's column-zero closing brace, so neither function order
 nor a match in a later function can satisfy it.
 
 Runtime C-versus-Rust stdout and exit-status comparison remains the correctness
-oracle. See [differential fixtures](../concepts/differential-fixtures.md) for syntax.
+oracle. See [differential fixtures](../concepts/differential-fixtures.md) for
+syntax.

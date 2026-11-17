@@ -1,55 +1,53 @@
 # Declarations, linkage, and attributes
 
 <!-- toc -->
+
 - [Globals, statics, and linkage](#globals-statics-and-linkage)
 - [Redeclaration conflicts](#redeclaration-conflicts)
 - [Implicit declarations](#implicit-declarations)
 - [Overloadable functions](#overloadable-functions)
 - [Symbol attributes](#symbol-attributes)
 - [Object properties](#object-properties)
-- [Declaration attribute
-  classification](#declaration-attribute-classification)
+- [Declaration attribute classification](#declaration-attribute-classification)
 - [Function semantics](#function-semantics)
 <!-- /toc -->
 
-Part of the [IR spec](../ir-spec.md). Merged per-entity state is described
-in the [declared-entity model](../entity-model.md); `SymbolAttributes`
-printing in the [grammar](../ir-grammar.md#globals).
+Part of the [IR spec](../ir-spec.md). Merged per-entity state is described in
+the [declared-entity model](../entity-model.md); `SymbolAttributes` printing in
+the [grammar](../ir-grammar.md#globals).
 
 ## Globals, statics, and linkage
 
-- Name resolution gives every declaration its binding. Every declaration
-  with linkage (file-scope objects and functions, block-scope `extern`
-  objects and prototypes) shares one binding per name, even when the
-  block-scope one comes first or is shadowed.
-- Lowering merges redeclarations by `BindingId`: one `Global` per object
-  (arrays complete, initializer from whichever has one, `definition` set by
-  any non-`extern` declaration, initializer, or `alias`) and one `Function`
-  per function (body and parameters from the definition, else the first
-  prototype). Linkage stays internal once any declaration is `static`.
-- The merged node's span (spelling, expansion, provenance) is its
-  definition's: the function body, else the global's initializer, else its
-  first non-`extern` declaration, else the first declaration. Its `NodeId`,
-  and so its metadata, stays the first declaration's. Slate's directive
-  translation uses the span to place each item in its `#if` branch.
-  Fixture: `definition_spans.c`.
+- Name resolution gives every declaration its binding. Every declaration with
+  linkage (file-scope objects and functions, block-scope `extern` objects and
+  prototypes) shares one binding per name, even when the block-scope one comes
+  first or is shadowed.
+- Lowering merges redeclarations by `BindingId`: one `Global` per object (arrays
+  complete, initializer from whichever has one, `definition` set by any
+  non-`extern` declaration, initializer, or `alias`) and one `Function` per
+  function (body and parameters from the definition, else the first prototype).
+  Linkage stays internal once any declaration is `static`.
+- The merged node's span (spelling, expansion, provenance) is its definition's:
+  the function body, else the global's initializer, else its first non-`extern`
+  declaration, else the first declaration. Its `NodeId`, and so its metadata,
+  stays the first declaration's. Slate's directive translation uses the span to
+  place each item in its `#if` branch. Fixture: `definition_spans.c`.
 - Tentative definitions and `extern`s merge into one global; an incomplete
   tentative array completes to one element.
-- A `dllimport` variable without an initializer is a declaration (`extern`)
-  even without `extern`, as in clang and cl.exe. Fixture:
+- A `dllimport` variable without an initializer is a declaration (`extern`) even
+  without `extern`, as in clang and cl.exe. Fixture:
   `msvc/windows/x86_64/dllimport_tentative.c`.
 - `dllexport` beats `dllimport`, both on one declaration and across
   redeclarations, as in clang.
 - A block-scope `static` is a module `Global` with `storage=static`,
   `linkage=internal`, and its own binding; no statement at the declaration.
   Same-named statics stay distinct.
-- `_Thread_local`, `__thread`, `__declspec(thread)` give `storage=thread`
-  at file scope and on block-scope `static`/`extern`; invalid on an
-  automatic local.
-- `constexpr` (`Variable.constexpr`): implicitly const, internal linkage at
-  file scope, initializer required and kept as structured IR. One that
-  folds is usable in integer constant expressions (`constexpr int w = 7;
-int a[w];`).
+- `_Thread_local`, `__thread`, `__declspec(thread)` give `storage=thread` at
+  file scope and on block-scope `static`/`extern`; invalid on an automatic
+  local.
+- `constexpr` (`Variable.constexpr`): implicitly const, internal linkage at file
+  scope, initializer required and kept as structured IR. One that folds is
+  usable in integer constant expressions (`constexpr int w = 7; int a[w];`).
 - Pre-C23 `f()` is unprototyped; C23 `f()` and `f(void)` are zero-parameter
   prototypes.
 - Fixtures: `ir_globals_linkage.c`, `static_locals.c`.
@@ -57,8 +55,7 @@ int a[w];`).
 ## Redeclaration conflicts
 
 One rule, checked against clang 22, gcc, and MSVC: where all three reject,
-reject; where one only warns (always MSVC), accept with
-`-Wconflicting-types`.
+reject; where one only warns (always MSVC), accept with `-Wconflicting-types`.
 
 | Conflict                                                           | Result                                 |
 | ------------------------------------------------------------------ | -------------------------------------- |
@@ -69,90 +66,89 @@ reject; where one only warns (always MSVC), accept with
 | struct/union/enum redefined in the same scope                      | error                                  |
 | same, C23, with matching members or enumerators                    | accepted, reuses the first             |
 
-- `TypeResolver::merge_redeclaration` (`src/sema/types.rs`) decides on C
-  types. Compatible declarations merge into the composite (completing
-  `int a[]; int a[5];`). Otherwise `types::same_layout` (lowered types,
-  ignoring signedness) separates the warning from the error, which is MSVC's
-  own C4142/C2371 split: on LLP64 `int x; long x;` warns, on LP64 it errors.
+- `TypeResolver::merge_redeclaration` (`src/sema/types.rs`) decides on C types.
+  Compatible declarations merge into the composite (completing
+  `int a[]; int a[5];`). Otherwise `types::same_layout` (lowered types, ignoring
+  signedness) separates the warning from the error, which is MSVC's own
+  C4142/C2371 split: on LLP64 `int x; long x;` warns, on LP64 it errors.
 - A `[]` definition after a sized declaration takes the composite before its
-  initializer is counted (`Checker::previously_sized`): `T a[64]; T a[] =
-{x, y};` has 64 elements, zero-filled (CPython's `pyexpat.c`).
+  initializer is counted (`Checker::previously_sized`):
+  `T a[64]; T a[] = {x, y};` has 64 elements, zero-filled (CPython's
+  `pyexpat.c`).
 - Tag redefinitions: `TypeResolver::define_tag`.
 - Typedef redefinition (any scope, C11 6.7p3): `bind_ordinary` reuses the
   binding, and `define_alias` rejects "typedef redefinition with different
   types" unless the types are compatible. The msvc flavor also accepts a
-  same-layout difference (`unsigned int` vs `int`, cl.exe's C4142 warning,
-  not emitted). If either the old or the new type is variably modified, the
-  checker rejects the redefinition
-  (`reject_variably_modified_redefinition`), as clang and gcc do.
+  same-layout difference (`unsigned int` vs `int`, cl.exe's C4142 warning, not
+  emitted). If either the old or the new type is variably modified, the checker
+  rejects the redefinition (`reject_variably_modified_redefinition`), as clang
+  and gcc do.
 - Fixtures: `ir_redeclaration_conflicts.c`, `ir_redeclaration_compatible.c`,
   `array_redeclaration_composite_extent.c`,
   `x86_64-pc-windows-msvc/ir_redeclaration_layout.c`.
 
 ## Implicit declarations
 
-- A call whose callee is an undeclared identifier declares `extern int
-  name()` (unprototyped, `c_implicit` metadata) at file scope, reused by
-  later calls (`names.rs` `declare_implicit_function`, `module.rs`
-  `declare_implicit_function`). This holds for every flavor and standard
-  except clang C23, where the name stays unresolved ("use of undeclared
-  identifier"). Calls through it skip clang's `deprecated-non-prototype`
-  warning, as clang does.
+- A call whose callee is an undeclared identifier declares `extern int name()`
+  (unprototyped, `c_implicit` metadata) at file scope, reused by later calls
+  (`names.rs` `declare_implicit_function`, `module.rs`
+  `declare_implicit_function`). This holds for every flavor and standard except
+  clang C23, where the name stays unresolved ("use of undeclared identifier").
+  Calls through it skip clang's `deprecated-non-prototype` warning, as clang
+  does.
 - Whether it is an error is the `implicit-function-declaration` diagnostic
-  ([severities](../diagnostic-severity.md#warnings)): silent in C89, error
-  by default from C99 for gcc and clang, ignored for msvc. Messages follow
-  each compiler: gcc `implicit declaration of function 'f'`, clang C99+
-  `call to undeclared function 'f'; ISO C99 and later do not support
-  implicit function declarations`. A clang `__builtin_*` name that is not
-  a builtin is `use of unknown builtin` and an error by default in every
-  mode before C23.
+  ([severities](../diagnostic-severity.md#warnings)): silent in C89, error by
+  default from C99 for gcc and clang, ignored for msvc. Messages follow each
+  compiler: gcc `implicit declaration of function 'f'`, clang C99+
+  `call to undeclared function 'f'; ISO C99 and later do not support implicit function declarations`.
+  A clang `__builtin_*` name that is not a builtin is `use of unknown builtin`
+  and an error by default in every mode before C23.
 - Implicit `int` (`static x;`, `f(a) {}`, a qualifier-only type name such as
-  `(const) 0`) follows the `implicit-int` diagnostic the same way: the
-  parser accepts it unless its severity is error
-  (`Dialect::new` sets `StandardFeatures::implicit_int`), and clang C23
-  never accepts it.
-- Not modelled: gcc accepts a later declaration that conflicts with the
-  implicit one with only a warning; slate rejects it as clang does.
+  `(const) 0`) follows the `implicit-int` diagnostic the same way: the parser
+  accepts it unless its severity is error (`Dialect::new` sets
+  `StandardFeatures::implicit_int`), and clang C23 never accepts it.
+- Not modelled: gcc accepts a later declaration that conflicts with the implicit
+  one with only a warning; slate rejects it as clang does.
 
 ## Overloadable functions
 
-clang's `__attribute__((overloadable))` lets C functions share a name. The
-Linux kernel's `context_lock_struct` helpers and clang's `<tgmath.h>` rely
-on it.
+clang's `__attribute__((overloadable))` lets C functions share a name. The Linux
+kernel's `context_lock_struct` helpers and clang's `<tgmath.h>` rely on it.
 
-- Name resolution (`names::Resolver::bind_function`) gives every
-  `overloadable` function declaration its own binding, because it runs
-  before types are known. A plain function already in scope joins the set and
-  keeps its C name, which clang allows for one unmarked overload.
-  `NameResolution::overload_sets` maps each overload to the overloads visible
-  when it is declared, so a call sees only earlier declarations.
+- Name resolution (`names::Resolver::bind_function`) gives every `overloadable`
+  function declaration its own binding, because it runs before types are known.
+  A plain function already in scope joins the set and keeps its C name, which
+  clang allows for one unmarked overload. `NameResolution::overload_sets` maps
+  each overload to the overloads visible when it is declared, so a call sees
+  only earlier declarations.
 - `TypeResolver::resolve_overload`, called from `call_signature` in both the
   checker and lowering, ranks each argument against each candidate:
   - exact match, including adding pointee qualifiers;
   - integer or `float` to `double` promotion;
-  - conversion: arithmetic, `void *`, a null pointer constant, pointer to `_Bool`;
+  - conversion: arithmetic, `void *`, a null pointer constant, pointer to
+    `_Bool`;
   - incompatible pointer;
   - dropped pointee qualifiers;
-  - variadic argument.
-    The candidate that is at least as good on every argument and better on one
-    wins. On a tie, a candidate with a `pass_object_size` parameter beats one
-    without, as in clang. It is written into `references` for the callee. Ambiguous calls and
-    calls with no viable candidate are rejected, as clang does.
+  - variadic argument. The candidate that is at least as good on every argument
+    and better on one wins. On a tie, a candidate with a `pass_object_size`
+    parameter beats one without, as in clang. It is written into `references`
+    for the callee. Ambiguous calls and calls with no viable candidate are
+    rejected, as clang does.
 - `pass_object_size` on any parameter (`NameResolution::passes_object_size`)
   distinguishes overloads of the same type, so glibc's clang fortify wrappers
   (`static` overloadable `fprintf`, `snprintf`, ...) don't redeclare the plain
-  prototype. The hidden object-size argument clang passes is not modeled: in
-  the callee `__builtin_object_size` of the parameter is an ordinary query,
-  so it is unknown and the `_chk` call never traps.
+  prototype. The hidden object-size argument clang passes is not modeled: in the
+  callee `__builtin_object_size` of the parameter is an ordinary query, so it is
+  unknown and the `_chk` call never traps.
 - `Unimplemented`: a non-call use of a name with several overloads (clang
-  resolves `&f` from the target type), and redeclaring an overload with the
-  same type (the second binding would need merging into the first). Also
+  resolves `&f` from the target type), and redeclaring an overload with the same
+  type (the second binding would need merging into the first). Also
   `Unimplemented` (slate-parser-6x05.41): calling or defining an extern
-  overload, whose symbol is the Itanium-mangled name. An unused extern
-  prototype is lowered. An `extern inline` definition with `gnu_inline` (or
-  under gnu89 `SupressDef` semantics) is exempt: it never emits a symbol, so
-  it needs no mangling (`Checker::extern_inline_only`, slate-parser-6x05.50;
-  glibc's clang fortify `open`).
+  overload, whose symbol is the Itanium-mangled name. An unused extern prototype
+  is lowered. An `extern inline` definition with `gnu_inline` (or under gnu89
+  `SupressDef` semantics) is exempt: it never emits a symbol, so it needs no
+  mangling (`Checker::extern_inline_only`, slate-parser-6x05.50; glibc's clang
+  fortify `open`).
 - Each overload prints `[overloadable]` and keeps its C name. Consumers must
   name it by binding (see the [grammar](../ir-grammar.md#functions)).
 - gcc and msvc don't register the attribute, so overloads there conflict as
@@ -165,52 +161,51 @@ on it.
 `SymbolAttributes` sits on both `Global` and `Function`, printed after the
 linkage and merged across redeclarations (first value wins, flags OR):
 `asm_name` (from `asm("sym")`), `visibility`, `weak`, `alias`, `section`,
-`used`, `retain`, `tls_model`, `dllimport`/`dllexport`, `weakref`,
-`ifunc`, `selectany`, `fallback`, `include`.
+`used`, `retain`, `tls_model`, `dllimport`/`dllexport`, `weakref`, `ifunc`,
+`selectany`, `fallback`, `include`.
 
 - An unknown `visibility("x")` argument is ignored on clang (it warns) and
   rejected on gcc. Fixtures: `ir_visibility_bogus.c`.
-- Conflicting `always_inline`/`noinline` across declarations keep the first
-  and are accepted on clang and gcc. Fixture: `ir_inline_conflict.c`.
+- Conflicting `always_inline`/`noinline` across declarations keep the first and
+  are accepted on clang and gcc. Fixture: `ir_inline_conflict.c`.
 
-- Slate lowers a `weak` object declaration as `#[linkage = "extern_weak"]
-  static X: *mut T`, which holds the address. On ELF, a static initializer
-  that takes its address uses a second declaration of the same symbol,
-  `#[link_name = "x"] static mut __slate_weak_address_X: T`, plus
-  `global_asm!(".weak {}", sym ...)` in the same module. rustc keeps a
-  module's non-generic items in one codegen unit, so the only strong
-  reference sits next to its `.weak`. Thread-locals and non-ELF targets
-  still reject it. Fixture: `static_init_weak_extern_address.c`.
-- `weakref("t")` is not `weak` + `alias`: it defines no symbol, and its
-  uses resolve to an `extern_weak` reference to `t`. It prints as `extern`
-  with `[weakref="t"]`, needs internal linkage, and applies to functions
-  and objects.
+- Slate lowers a `weak` object declaration as
+  `#[linkage = "extern_weak"] static X: *mut T`, which holds the address. On
+  ELF, a static initializer that takes its address uses a second declaration of
+  the same symbol, `#[link_name = "x"] static mut __slate_weak_address_X: T`,
+  plus `global_asm!(".weak {}", sym ...)` in the same module. rustc keeps a
+  module's non-generic items in one codegen unit, so the only strong reference
+  sits next to its `.weak`. Thread-locals and non-ELF targets still reject it.
+  Fixture: `static_init_weak_extern_address.c`.
+- `weakref("t")` is not `weak` + `alias`: it defines no symbol, and its uses
+  resolve to an `extern_weak` reference to `t`. It prints as `extern` with
+  `[weakref="t"]`, needs internal linkage, and applies to functions and objects.
 - A bare `weakref` takes its target from `alias("t")` (which then defines
-  nothing). clang: the alias must be in the same declaration, and a
-  definition is rejected. gcc: from any redeclaration (`bare_weakrefs`,
-  resolved in `resolve_object_requests`); without a target, or on a
-  function body or initialized object, it is ignored (with a target on an
-  initialized object, rejected). With both `weakref("t")` and `alias("s")`
-  the IR uses `t` (clang); gcc uses `s`.
-- `ifunc("r")` names the resolver's assembler symbol; the declaration is
-  printed as a bodiless `fn` with `[ifunc="r"]`. Slate emits a
-  `global_asm!` block (`.type SYM, @gnu_indirect_function` / `.set SYM,
-{sym resolver}`) on ELF targets and keeps the extern declaration; a static
-  ifunc is exported hidden as `__slate_ifunc_<name>`. Not checked (both oracles reject): an undefined resolver,
-  a body on the same function, `weak` (gcc).
+  nothing). clang: the alias must be in the same declaration, and a definition
+  is rejected. gcc: from any redeclaration (`bare_weakrefs`, resolved in
+  `resolve_object_requests`); without a target, or on a function body or
+  initialized object, it is ignored (with a target on an initialized object,
+  rejected). With both `weakref("t")` and `alias("s")` the IR uses `t` (clang);
+  gcc uses `s`.
+- `ifunc("r")` names the resolver's assembler symbol; the declaration is printed
+  as a bodiless `fn` with `[ifunc="r"]`. Slate emits a `global_asm!` block
+  (`.type SYM, @gnu_indirect_function` / `.set SYM, {sym resolver}`) on ELF
+  targets and keeps the extern declaration; a static ifunc is exported hidden as
+  `__slate_ifunc_<name>`. Not checked (both oracles reject): an undefined
+  resolver, a body on the same function, `weak` (gcc).
 - `selectany` (clang: `weak_odr` + COMDAT) needs external linkage.
-- `fallback("t")` comes from MSVC `#pragma comment(linker,
-  "/alternatename:a=t")` (msvc flavor only; on 32-bit x86 one leading `_` is
-  stripped from both names). Slate passes the option through `.drectve`, so
-  link.exe resolves it: a strong `a` in any object or library wins, otherwise
-  `a` links to `t`. `t` is marked `include`, so a defined external `t` is
-  exported. Not handled: stdcall/fastcall decorated names on i686.
-  Fixtures: `msvc/windows/x86_64/pragma_alternatename.c`,
+- `fallback("t")` comes from MSVC
+  `#pragma comment(linker, "/alternatename:a=t")` (msvc flavor only; on 32-bit
+  x86 one leading `_` is stripped from both names). Slate passes the option
+  through `.drectve`, so link.exe resolves it: a strong `a` in any object or
+  library wins, otherwise `a` links to `t`. `t` is marked `include`, so a
+  defined external `t` is exported. Not handled: stdcall/fastcall decorated
+  names on i686. Fixtures: `msvc/windows/x86_64/pragma_alternatename.c`,
   `crates/slate/tests/fixtures/msvc/{x86_64,i686}/pragma_alternatename.c`.
 - `include` comes from MSVC `#pragma comment(linker, "/include:sym")` (msvc
-  flavor only; one leading `_` stripped on 32-bit x86). Slate exports a
-  defined external `sym` like a project export (`#[unsafe(no_mangle)]`), so
-  the linker keeps it. Fixtures: `msvc/windows/x86_64/pragma_include.c`,
+  flavor only; one leading `_` stripped on 32-bit x86). Slate exports a defined
+  external `sym` like a project export (`#[unsafe(no_mangle)]`), so the linker
+  keeps it. Fixtures: `msvc/windows/x86_64/pragma_include.c`,
   `crates/slate/tests/fixtures/msvc/{x86_64,i686}/pragma_include.c`.
 - Every other MSVC `#pragma comment(linker, ...)` option (`/export`,
   `/defaultlib`, ...) is kept verbatim in `Module.linker_options` (printed
@@ -218,54 +213,52 @@ linkage and merged across redeclarations (first value wins, flags OR):
   space-separated, which is what cl.exe writes, so lld-link applies them.
   `/export:name[=internal][,DATA]` and `/entry:sym` also mark the internal
   symbol `include`. A custom `/entry` still needs the CRT: Rust's std does not
-  link without the startup objects, so fixtures call `mainCRTStartup`.
-  Fixtures: `msvc/windows/x86_64/pragma_{export,defaultlib}.c`,
+  link without the startup objects, so fixtures call `mainCRTStartup`. Fixtures:
+  `msvc/windows/x86_64/pragma_{export,defaultlib}.c`,
   `crates/slate/tests/fixtures/msvc/{x86_64,i686}/pragma_{export,defaultlib}.c`.
 
 ## Object properties
 
-Resolved after all redeclarations merge, on `Global` (and `let` for
-alignment):
+Resolved after all redeclarations merge, on `Global` (and `let` for alignment):
 
 - `[align=N]` from `aligned`, `_Alignas`, `__declspec(align)`, taking the
-  largest request, printed only when it differs from natural. clang honors
-  it below natural (`aligned(1)` on `int` gives `align=1`, as its LLVM IR
-  shows); gcc and MSVC take the max with natural.
-- `__alignof__` of an object reports the declared request even below
-  natural under clang and gcc (gcc lays out `aligned(1) int` at 4 but
-  reports 1); MSVC raises it to natural. Hence
-  `TypeResolver::declared_alignment` beside `effective_alignment`, both
-  reading one request per `BindingId`. `_Static_assert` sees the same merged
-  entities. `__alignof__` of a member is its laid-out alignment (`packed` 1,
-  `packed, aligned(2)` 2). A typedef redeclared in one scope keeps its
-  largest `aligned`.
-- `alignof` of an incomplete array is its element's (`TypeResolver::
-measured_storage`): `__alignof__(tfm->ctx)` of a flexible array member
-  gives the member's laid-out alignment (the kernel's
-  `crypto_tfm_ctx_alignment`), and clang's `__alignof__(short[])` is 2.
-  `sizeof` of one is still rejected (`ir_alignof_flexible_array.c`).
-- An object whose type stays incomplete has no natural alignment, so its
-  request prints as is: `extern struct rq rq __attribute__((aligned(64)))`
-  gives `[align=64]`. clang ignores a typedef's `aligned` there (its LLVM IR
-  says `align 1`); gcc keeps it and takes the larger of the two
+  largest request, printed only when it differs from natural. clang honors it
+  below natural (`aligned(1)` on `int` gives `align=1`, as its LLVM IR shows);
+  gcc and MSVC take the max with natural.
+- `__alignof__` of an object reports the declared request even below natural
+  under clang and gcc (gcc lays out `aligned(1) int` at 4 but reports 1); MSVC
+  raises it to natural. Hence `TypeResolver::declared_alignment` beside
+  `effective_alignment`, both reading one request per `BindingId`.
+  `_Static_assert` sees the same merged entities. `__alignof__` of a member is
+  its laid-out alignment (`packed` 1, `packed, aligned(2)` 2). A typedef
+  redeclared in one scope keeps its largest `aligned`.
+- `alignof` of an incomplete array is its element's
+  (`TypeResolver:: measured_storage`): `__alignof__(tfm->ctx)` of a flexible
+  array member gives the member's laid-out alignment (the kernel's
+  `crypto_tfm_ctx_alignment`), and clang's `__alignof__(short[])` is 2. `sizeof`
+  of one is still rejected (`ir_alignof_flexible_array.c`).
+- An object whose type stays incomplete has no natural alignment, so its request
+  prints as is: `extern struct rq rq __attribute__((aligned(64)))` gives
+  `[align=64]`. clang ignores a typedef's `aligned` there (its LLVM IR says
+  `align 1`); gcc keeps it and takes the larger of the two
   (`ir_incomplete_aligned_extern.c`).
-- `[common]` marks an external tentative definition: no initializer
-  anywhere, not thread-local, not `alias`/`section`/`weak`/`selectany`.
-  `common` on any declaration beats `nocommon`, which beats
-  `-f[no-]common` (default off, rejected under MSVC). On MSVC targets an
-  alignment request opts out.
+- `[common]` marks an external tentative definition: no initializer anywhere,
+  not thread-local, not `alias`/`section`/`weak`/`selectany`. `common` on any
+  declaration beats `nocommon`, which beats `-f[no-]common` (default off,
+  rejected under MSVC). On MSVC targets an alignment request opts out.
 - Fixtures: `ir_object_attributes.c`, `ir_object_attributes_fcommon.c`,
   `ir_object_alignment_gcc.c`, `ir_object_alignment_sites.c`,
   `ir_entity_sites.c`, `x86_64-pc-windows-msvc/ir_selectany.c`.
 
 ## Declaration attribute classification
 
-- Classification (`declaration_use`) and consumers: [attribute pipeline](../attributes.md).
-- Function attributes are kept as `c_attributes` metadata (integer
-  constant arguments folded). Keeping an attribute is not implementing it.
+- Classification (`declaration_use`) and consumers:
+  [attribute pipeline](../attributes.md).
+- Function attributes are kept as `c_attributes` metadata (integer constant
+  arguments folded). Keeping an attribute is not implementing it.
 - `asm("sym")` is ignored on a typedef and an automatic local (as clang); a
-  register label (`register int x asm("eax")`) keeps the register spelling
-  on the binding.
+  register label (`register int x asm("eax")`) keeps the register spelling on
+  the binding.
 - Fixture: `ir_declaration_attributes.c`.
 
 ## Function semantics
@@ -276,42 +269,43 @@ control-flow facts:
 - Preference: `hint`, `always` (`always_inline`), `never` (`noinline`);
   contradictions are diagnosed.
 - `InlineSemantics::SupressDef` makes an external `extern inline` body
-  inline-only; `ProvideDef` makes it supply the definition. The standard
-  picks the default; `-f[no-]gnu89-inline` (last wins) and `gnu_inline`
-  override, and the preprocessor's inline macros follow. Any file-scope
-  declaration without `inline`, or with `extern`, requires an external
-  definition. `static inline` keeps internal linkage and a definition.
-  Rules follow [GCC's inline docs](https://gcc.gnu.org/onlinedocs/gcc/Inline.html).
-- windows-msvc (any flavor): neither mode applies unless `gnu_inline`;
-  clang gives every inline definition its own comdat, so none is inline-only
+  inline-only; `ProvideDef` makes it supply the definition. The standard picks
+  the default; `-f[no-]gnu89-inline` (last wins) and `gnu_inline` override, and
+  the preprocessor's inline macros follow. Any file-scope declaration without
+  `inline`, or with `extern`, requires an external definition. `static inline`
+  keeps internal linkage and a definition. Rules follow
+  [GCC's inline docs](https://gcc.gnu.org/onlinedocs/gcc/Inline.html).
+- windows-msvc (any flavor): neither mode applies unless `gnu_inline`; clang
+  gives every inline definition its own comdat, so none is inline-only
   (`clang/windows/x86_64/ir_inline.c`). `weak_odr`, with `dllexport` or an
   explicit `extern` on any declaration, prints `[definition=weak_odr]`: the
-  symbol is exported, and several units may define it. Otherwise
-  `linkonce_odr` prints `[definition=discardable]`: every unit that uses the
-  function supplies it, and no other unit can need its symbol, so Slate
-  keeps it private. In a project Slate keeps the first unit's definition of
-  either kind and imports it into the other units, so `static` locals are
-  shared as in clang; a unit whose signature types differ from the first
-  keeps a private copy.
-- `noreturn` merges `_Noreturn`, `[[noreturn]]`, and the GNU attribute
-  across declarations. GNU `const`/`pure` become `[memory=none]`/
-  `[memory=read]` (`const` wins).
+  symbol is exported, and several units may define it. Otherwise `linkonce_odr`
+  prints `[definition=discardable]`: every unit that uses the function supplies
+  it, and no other unit can need its symbol, so Slate keeps it private. In a
+  project Slate keeps the first unit's definition of either kind and imports it
+  into the other units, so `static` locals are shared as in clang; a unit whose
+  signature types differ from the first keeps a private copy.
+- `noreturn` merges `_Noreturn`, `[[noreturn]]`, and the GNU attribute across
+  declarations. GNU `const`/`pure` become `[memory=none]`/ `[memory=read]`
+  (`const` wins).
 - `malloc(f[, n])` on a function returning a pointer becomes
-  `[deallocator=%f, argument=n-1]`, one per distinct pair across
-  declarations. `f` resolves like a callee (an undeclared builtin such as
-  `__builtin_free` gets its builtin declaration). A non-function `f` is
-  rejected; a bad `n` (out of range, non-pointer parameter) is rejected
-  under clang and dropped under gcc. clang ignores the attribute but
-  validates it; it is kept for Slate either way.
+  `[deallocator=%f, argument=n-1]`, one per distinct pair across declarations.
+  `f` resolves like a callee (an undeclared builtin such as `__builtin_free`
+  gets its builtin declaration). A non-function `f` is rejected; a bad `n` (out
+  of range, non-pointer parameter) is rejected under clang and dropped under
+  gcc. clang ignores the attribute but validates it; it is kept for Slate either
+  way.
 - `naked` is in [asm](asm.md#naked-functions).
 - `target("...")` becomes `[target=...]` (grammar in
   [ir-grammar](../ir-grammar.md#functions)); `target_clones`, `cpu_dispatch`,
   and `cpu_specific` multiversioning are not lowered.
 - The SME keyword attributes (`__arm_streaming`, `__arm_streaming_compatible`,
-  `__arm_locally_streaming`, `__arm_new("za")`, `__arm_in`/`out`/`inout`/`preserves`) become
-  `[sme=...]` entries on AArch64. gcc spells them as `[[arm::...]]` macros, so the C23
-  group accepts `arm::` names and a leading `__extension__`. A bad state string is an
-  invalid attribute. They are recorded on declarations and definitions; on function
-  pointer and typedef declarators they parse and are dropped. slate refuses any function
-  carrying one ("SME function state"). Fixtures: `sme_keyword_attributes.c`.
+  `__arm_locally_streaming`, `__arm_new("za")`,
+  `__arm_in`/`out`/`inout`/`preserves`) become `[sme=...]` entries on AArch64.
+  gcc spells them as `[[arm::...]]` macros, so the C23 group accepts `arm::`
+  names and a leading `__extension__`. A bad state string is an invalid
+  attribute. They are recorded on declarations and definitions; on function
+  pointer and typedef declarators they parse and are dropped. slate refuses any
+  function carrying one ("SME function state"). Fixtures:
+  `sme_keyword_attributes.c`.
 - Fixtures: `ir_inline*.c`, `ir_function_specifiers.c`, `ir_target_attribute.c`.

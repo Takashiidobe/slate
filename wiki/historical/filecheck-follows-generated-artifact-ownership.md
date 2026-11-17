@@ -1,11 +1,12 @@
 # FileCheck follows generated artifact ownership
 
-> Historical record. See the [archive index](index.md) for scope and source revision.
+> Historical record. See the [archive index](index.md) for scope and source
+> revision.
 
 _created 2026-08-24_
 
-FileCheck consumes text; the producing harness decides which artifact a
-fixture owns.
+FileCheck consumes text; the producing harness decides which artifact a fixture
+owns.
 
 Single-TU directives check the generated Rust file. In multi-TU and library
 projects, `foo.c` checks `src/foo.rs`, so assertions stay beside the source
@@ -19,9 +20,9 @@ shim, or export, checking that reference and compiling the complete generated
 crate already verifies the project-level property without a duplicate harness
 assertion.
 
-Target-conditional `translate` checks use an explicit `DIRECTIVES` prefix.
-They do not reuse `LOWERING` because conditional-compilation reconstruction is
-a separate producer.
+Target-conditional `translate` checks use an explicit `DIRECTIVES` prefix. They
+do not reuse `LOWERING` because conditional-compilation reconstruction is a
+separate producer.
 
 Rewrite directives are checked against the new worklist engine's generated
 artifacts. The baseline contains only assertions satisfied by that engine.

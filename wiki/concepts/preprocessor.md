@@ -1,6 +1,7 @@
 # Preprocessor
 
 <!-- toc -->
+
 - [Pipeline](#pipeline)
 - [Predefines](#predefines)
 - [Includes](#includes)
@@ -14,9 +15,8 @@
 - [Oracle](#oracle)
 <!-- /toc -->
 
-`src/pp/`: one preprocessing run per configuration, producing a flat
-stream of `PPNode`s (`Code`, `Comment`, `Pragma`) that the parser reads as
-`ParserInput`.
+`src/pp/`: one preprocessing run per configuration, producing a flat stream of
+`PPNode`s (`Code`, `Comment`, `Pragma`) that the parser reads as `ParserInput`.
 
 | File            | Contents                                                                                                                                                             |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -30,8 +30,8 @@ stream of `PPNode`s (`Code`, `Comment`, `Pragma`) that the parser reads as
 | `embed.rs`      | `#embed` and `__has_embed`, sharing one embed-parameter parser                                                                                                       |
 | `has_checks.rs` | hand-maintained `__has_builtin` / `__has_feature` / … answers, seeded from clang tablegen and extended per flavor ([attributes](attributes.md#preprocessor-queries)) |
 
-Include directories come from `compiler_headers.rs` and `sysroot.rs`,
-which point at headers installed by the `slate-sysroots` workspace package.
+Include directories come from `compiler_headers.rs` and `sysroot.rs`, which
+point at headers installed by the `slate-sysroots` workspace package.
 
 ## Pipeline
 
@@ -46,76 +46,73 @@ parse_file → parse_source
 ```
 
 A text line becomes one group. Expansion reads that line's tokens, and an
-invocation whose `(` or arguments lie on later lines pulls those lines into
-the same group, so a group is one physical line unless a macro call spans
-lines. Its Code node takes the first line's provenance. Comments of the
-first line come before the node, comments of pulled lines after it, then
-any nodes produced by directives met inside the arguments.
+invocation whose `(` or arguments lie on later lines pulls those lines into the
+same group, so a group is one physical line unless a macro call spans lines. Its
+Code node takes the first line's provenance. Comments of the first line come
+before the node, comments of pulled lines after it, then any nodes produced by
+directives met inside the arguments.
 
 Files are read as UTF-8. For msvc, `parse_source` then applies
-`Lexer::decoding(Dialect::source_charset())`: windows-1252 by default (the
-ANSI code page under wine) or UTF-8 under `/source-charset:utf-8` or
-`/utf-8`. A file with a byte order mark is always UTF-8, as cl.exe reads it.
-Under windows-1252 each byte of a non-ASCII character becomes its own
-windows-1252 character, so `"é"` (C3 A9) is the two characters `Ã©` and
-`L"é"` has two units. The decoded characters keep the original byte offsets,
-so locations and the stored source are unchanged. Literal spellings, and
-`-E` output, show the decoded text; cl.exe's `/E` writes it back in the code
-page instead. The execution charset is separate:
-`TargetInfo::execution_charset` encodes plain string and character literals
-(`const_expr::execution_units`), windows-1252 by default for msvc, with `?`
-for an unrepresentable character as cl.exe writes it (no C4566 warning).
+`Lexer::decoding(Dialect::source_charset())`: windows-1252 by default (the ANSI
+code page under wine) or UTF-8 under `/source-charset:utf-8` or `/utf-8`. A file
+with a byte order mark is always UTF-8, as cl.exe reads it. Under windows-1252
+each byte of a non-ASCII character becomes its own windows-1252 character, so
+`"é"` (C3 A9) is the two characters `Ã©` and `L"é"` has two units. The decoded
+characters keep the original byte offsets, so locations and the stored source
+are unchanged. Literal spellings, and `-E` output, show the decoded text;
+cl.exe's `/E` writes it back in the code page instead. The execution charset is
+separate: `TargetInfo::execution_charset` encodes plain string and character
+literals (`const_expr::execution_units`), windows-1252 by default for msvc, with
+`?` for an unrepresentable character as cl.exe writes it (no C4566 warning).
 
-`Lexer::with_offset` skips a leading UTF-8 byte order mark (all three
-flavors, main files and headers; offsets still count it), then runs
-translation phases 1 and 2 before scanning:
-trigraphs (when `StandardFeatures::trigraphs`), then backslash-newline
-splices, so `??/` before a newline splices. gcc and clang also splice a
-backslash followed by spaces, tabs, form feeds or vertical tabs and then a
-newline; msvc does not (`StandardFeatures::whitespace_line_splice`). Trigraphs are on in ISO modes
-before C23 for gcc and clang, off for msvc; `-trigraphs` (gcc, clang) and
-`-ftrigraphs`/`-fno-trigraphs` (clang) override that, last wins. A
-replaced character keeps its three-byte source span.
+`Lexer::with_offset` skips a leading UTF-8 byte order mark (all three flavors,
+main files and headers; offsets still count it), then runs translation phases 1
+and 2 before scanning: trigraphs (when `StandardFeatures::trigraphs`), then
+backslash-newline splices, so `??/` before a newline splices. gcc and clang also
+splice a backslash followed by spaces, tabs, form feeds or vertical tabs and
+then a newline; msvc does not (`StandardFeatures::whitespace_line_splice`).
+Trigraphs are on in ISO modes before C23 for gcc and clang, off for msvc;
+`-trigraphs` (gcc, clang) and `-ftrigraphs`/`-fno-trigraphs` (clang) override
+that, last wins. A replaced character keeps its three-byte source span.
 
-Digraphs (`<: :> <% %> %: %:%:`) lex as `[ ] { } # ##` with
-`Span::digraph` set, everywhere except strict C89 (`-std=c89`; on in
-C94 and gnu89); clang's `-fdigraphs`/`-fno-digraphs` override. So `%:`
-starts a directive and is the stringify operator. Stringify, `##` re-lex
-and `pp` output go through `token_spelling`, which keeps the digraph
-spelling (`STR(<:)` is `"<:"`, as in gcc and clang).
+Digraphs (`<: :> <% %> %: %:%:`) lex as `[ ] { } # ##` with `Span::digraph` set,
+everywhere except strict C89 (`-std=c89`; on in C94 and gnu89); clang's
+`-fdigraphs`/`-fno-digraphs` override. So `%:` starts a directive and is the
+stringify operator. Stringify, `##` re-lex and `pp` output go through
+`token_spelling`, which keeps the digraph spelling (`STR(<:)` is `"<:"`, as in
+gcc and clang).
 
-`::` lexes as one `Token::ColonColon` (`StandardFeatures::scope_token`) in
-clang and msvc always and in gcc only for gnu modes and C23, so
-`: ## :` pastes to `::` there. Strict gcc C89..C17 lexes two `Token::Colon`s.
-The consumers that need `::` (`[[ns::attr]]`, `#embed` vendor parameters,
-`__has_c_attribute`) take either form through `TokenSpanExt::scope_len_at`;
-GNU asm treats `::` as two section separators
-(`consume_asm_colon`).
+`::` lexes as one `Token::ColonColon` (`StandardFeatures::scope_token`) in clang
+and msvc always and in gcc only for gnu modes and C23, so `: ## :` pastes to
+`::` there. Strict gcc C89..C17 lexes two `Token::Colon`s. The consumers that
+need `::` (`[[ns::attr]]`, `#embed` vendor parameters, `__has_c_attribute`) take
+either form through `TokenSpanExt::scope_len_at`; GNU asm treats `::` as two
+section separators (`consume_asm_colon`).
 
 A `##` whose result is not one token (`+ ## ;`, strict-gcc `: ## :`) is a
-`PPErrorKind::InvalidPaste` error in gcc and clang, each with its own
-wording; msvc accepts it and keeps the two tokens. `, ## __VA_ARGS__` is
-the GNU comma extension, not a paste, and is exempt (`paste` in `expand.rs`).
+`PPErrorKind::InvalidPaste` error in gcc and clang, each with its own wording;
+msvc accepts it and keeps the two tokens. `, ## __VA_ARGS__` is the GNU comma
+extension, not a paste, and is exempt (`paste` in `expand.rs`).
 
-A directive is a line whose first non-comment token is `#`. Conditionals
-are evaluated when the stream reaches them. `skip_group` reads only the
-directives of a skipped group. It tracks nesting and `#else` ordering there,
-and evaluates a later `#elif` of its own conditional only while no branch
-has been taken. Structural errors (stray `#endif`, `#else` after `#else`,
-unterminated `#if`) surface where the stream reaches them. Earlier
-evaluation errors take precedence.
+A directive is a line whose first non-comment token is `#`. Conditionals are
+evaluated when the stream reaches them. `skip_group` reads only the directives
+of a skipped group. It tracks nesting and `#else` ordering there, and evaluates
+a later `#elif` of its own conditional only while no branch has been taken.
+Structural errors (stray `#endif`, `#else` after `#else`, unterminated `#if`)
+surface where the stream reaches them. Earlier evaluation errors take
+precedence.
 
-Unknown directives are `UnsupportedDirective`; `#ident` and `#` are
-ignored. `#elifdef` and `#elifndef` are directives under clang in every
-mode, under gcc in gnu modes and C23, and under msvc only in C23
-(`/std:clatest`). Otherwise `TokenSource` names them `Unknown`
-(`StandardFeatures::elifdef_directives`): ignored in a skipped group, an
-error in a taken one, as in gcc's strict ISO modes and cl's C7730.
+Unknown directives are `UnsupportedDirective`; `#ident` and `#` are ignored.
+`#elifdef` and `#elifndef` are directives under clang in every mode, under gcc
+in gnu modes and C23, and under msvc only in C23 (`/std:clatest`). Otherwise
+`TokenSource` names them `Unknown` (`StandardFeatures::elifdef_directives`):
+ignored in a skipped group, an error in a taken one, as in gcc's strict ISO
+modes and cl's C7730.
 
 ## Predefines
 
-Seeded in order; each group is parsed as `#define`s under a pseudo-file.
-Later groups remove earlier definitions of the names they set.
+Seeded in order; each group is parsed as `#define`s under a pseudo-file. Later
+groups remove earlier definitions of the names they set.
 
 | Pseudo-file                        | Kind   | Contents                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | ---------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -127,73 +124,69 @@ Later groups remove earlier definitions of the names they set.
 | `<target options>`                 | User   | long-double and ISA macros (not for msvc on Windows), `__ROUNDING_MATH__` (gcc, `-frounding-math`), msvc explicit `__STDC_VERSION__`, inline-semantics swap; gcc/clang option deltas from the snapshot: `__STDC_HOSTED__`, `stdc-predef.h` macros, `__GCC_HAVE_DWARF2_CFI_ASM`, char signedness, `wchar_t` macros, PIC/PIE, `__SSP*__`, `__CET__`, macros of disabled x86 features, clang `__FLT_EVAL_METHOD__` (`option_predefines`) |
 | `<command line>`                   | User   | `-D` / `-U` in order                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
-Forced files (`-imacros`, `-include`) follow, resolved as quoted includes
-from `<command line>` ([compiler-arg-rules](compiler-arg-rules.md#forced-files-and-macros)).
+Forced files (`-imacros`, `-include`) follow, resolved as quoted includes from
+`<command line>`
+([compiler-arg-rules](compiler-arg-rules.md#forced-files-and-macros)).
 
 ## Includes
 
-- Search order: [compiler-arg-rules](compiler-arg-rules.md). A quoted
-  include tries the includer's directory first and inherits its
-  `HeaderKind`; `#include_next` resumes after the current file's
-  directory.
+- Search order: [compiler-arg-rules](compiler-arg-rules.md). A quoted include
+  tries the includer's directory first and inherits its `HeaderKind`;
+  `#include_next` resumes after the current file's directory.
 - A header name spelled before expansion (`"..."`, or `<` with a `>` on the
-  line) is used as is, and tokens after it are ignored. Otherwise the
-  operands are expanded first (`#include <foo` with `#define foo stddef.h>`).
-  Angled names come from raw source between `<` and `>`, or, when either
-  bracket came from a macro, from the tokens joined with their leading
-  spaces.
+  line) is used as is, and tokens after it are ignored. Otherwise the operands
+  are expanded first (`#include <foo` with `#define foo stddef.h>`). Angled
+  names come from raw source between `<` and `>`, or, when either bracket came
+  from a macro, from the tokens joined with their leading spaces.
 - `#pragma once` keys on the canonical path.
 - `#import` (gcc and clang; MSVC's type-library `#import` stays unsupported)
   includes the header only if no earlier `#include` or `#import` entered it,
-  then marks it once-only, so a later `#include` is skipped even after its
-  guard macro is `#undef`ed. gcc's `-Wdeprecated` and clang's pedantic
-  warnings are not emitted.
-- `#embed` and `__has_embed` parse the same parameter sequence:
-  `limit`, `prefix`, `suffix`, `if_empty` (also `__x__`), and `offset` under
-  the flavor's vendor prefix (`gnu::` for gcc, `clang::` for clang, none for
-  msvc). `limit`/`offset` take an `#if`-style constant expression; the offset
-  applies before the limit whatever their order. A missing clause or a
-  negative operand is an error in both. An unknown or foreign-vendor
-  parameter is an error in `#embed` and makes `__has_embed` 0. Otherwise
-  `__has_embed` is 2 when the window left after offset and limit is empty,
-  else 1. Only quoted resource names are supported; `<...>` searches
-  `--embed-dir`, which is not modeled.
+  then marks it once-only, so a later `#include` is skipped even after its guard
+  macro is `#undef`ed. gcc's `-Wdeprecated` and clang's pedantic warnings are
+  not emitted.
+- `#embed` and `__has_embed` parse the same parameter sequence: `limit`,
+  `prefix`, `suffix`, `if_empty` (also `__x__`), and `offset` under the flavor's
+  vendor prefix (`gnu::` for gcc, `clang::` for clang, none for msvc).
+  `limit`/`offset` take an `#if`-style constant expression; the offset applies
+  before the limit whatever their order. A missing clause or a negative operand
+  is an error in both. An unknown or foreign-vendor parameter is an error in
+  `#embed` and makes `__has_embed` 0. Otherwise `__has_embed` is 2 when the
+  window left after offset and limit is empty, else 1. Only quoted resource
+  names are supported; `<...>` searches `--embed-dir`, which is not modeled.
 - Multiple-include optimization, as in clang: a file whose only code and
   directives are one `#ifndef X` / `#if !defined(X)` group with no
-  `#elif`/`#else` at its level (comments may sit outside) records `X`
-  against its `FileId`. A later include of that `FileId` while `X` is
-  defined returns nothing without reading or lexing the file. Repeat
-  includes therefore drop the comments outside the guard.
-- `MAX_INCLUDE_DEPTH = 200`. Cycles are detected only by the limit, as in
-  clang and gcc.
+  `#elif`/`#else` at its level (comments may sit outside) records `X` against
+  its `FileId`. A later include of that `FileId` while `X` is defined returns
+  nothing without reading or lexing the file. Repeat includes therefore drop the
+  comments outside the guard.
+- `MAX_INCLUDE_DEPTH = 200`. Cycles are detected only by the limit, as in clang
+  and gcc.
 
 ## Provenance
 
 `Provenance { file, kind, line, system_header }` on every token
 ([ast-spec](ast-spec.md#locations-and-provenance)).
 
-- `outermost_system_header` is set on entering the first System header
-  from user code and restored on leaving it, so every token below
-  `<stdio.h>` reports `<stdio.h>`. Slate uses it and `file` to recognize
-  libc declarations.
-- `emit_line` gives every token of a group the group's
-  provenance, including tokens spelled in a macro defined elsewhere.
+- `outermost_system_header` is set on entering the first System header from user
+  code and restored on leaving it, so every token below `<stdio.h>` reports
+  `<stdio.h>`. Slate uses it and `file` to recognize libc declarations.
+- `emit_line` gives every token of a group the group's provenance, including
+  tokens spelled in a macro defined elsewhere.
 
 ## Macro provenance
 
-`macro_origin` records which macro produced a token, so Slate can emit a
-named Rust constant (`CHAR_MAX`) instead of its value.
+`macro_origin` records which macro produced a token, so Slate can emit a named
+Rust constant (`CHAR_MAX`) instead of its value.
 
 - `origin_for_expansion`: a fresh token gets
-  `MacroOrigin { name, definition, inner: None }`. A token already carrying
-  an origin keeps its outer `name`/`definition` and gains an `inner` link,
-  so `name` is the macro written at the use site and `inner` chains toward
-  the innermost replacement.
-- `Stamp::apply` sets `expansion` to the invocation's location and the
-  origin on every replacement token. Substituted arguments keep their own
-  origin.
-- `Span::cover` keeps the origin only when all covered tokens share it, so
-  an expression built entirely from one macro carries it.
+  `MacroOrigin { name, definition, inner: None }`. A token already carrying an
+  origin keeps its outer `name`/`definition` and gains an `inner` link, so
+  `name` is the macro written at the use site and `inner` chains toward the
+  innermost replacement.
+- `Stamp::apply` sets `expansion` to the invocation's location and the origin on
+  every replacement token. Substituted arguments keep their own origin.
+- `Span::cover` keeps the origin only when all covered tokens share it, so an
+  expression built entirely from one macro carries it.
 
 ## Macro invocations
 
@@ -203,22 +196,22 @@ in user code, so Slate can fold an expansion back into a macro call. It reaches
 `PreprocessTrace.expansions`, which only `translate-project`'s planner enables
 and which has no argument ranges.
 
-- `MacroDefinition`: name, parameters, `variadic`, replacement text,
-  provenance and `comments`, one per `#define` that was invoked. `comments`
-  holds the locations of the comment run directly above the `#define` (own
-  line, no blank line between) and of the comments on its directive line. It
-  is empty for a `#define` in a system header. Reachability keeps those
-  comment declarations even in a header, and Slate places them on the macro's
-  `macro_rules!` ([comment placement](comment-placement.md#macro-definitions)).
+- `MacroDefinition`: name, parameters, `variadic`, replacement text, provenance
+  and `comments`, one per `#define` that was invoked. `comments` holds the
+  locations of the comment run directly above the `#define` (own line, no blank
+  line between) and of the comments on its directive line. It is empty for a
+  `#define` in a system header. Reachability keeps those comment declarations
+  even in a header, and Slate places them on the macro's `macro_rules!`
+  ([comment placement](comment-placement.md#macro-definitions)).
 - `MacroExpansion`: `definition`, `parent`, `empty` (the replacement list
   substituted to no tokens) and `spelled`. `parent` is the expansion whose body
   holds the call, or failing that the one whose argument is being prescanned.
-- `SpelledCall`: `site` (the name through the closing paren) and `arguments` (one
-  range per actual argument, zero-length when empty). It is set for a call written
-  in source and none for a call spelled in a macro body.
+- `SpelledCall`: `site` (the name through the closing paren) and `arguments`
+  (one range per actual argument, zero-length when empty). It is set for a call
+  written in source and none for a call spelled in a macro body.
 - An expansion to nothing leaves no tokens and no IR node, so this table is its
-  only record. `empty` is not set when tokens only vanish on rescan, as for `A` in
-  `#define A B` with an empty `B`.
+  only record. `empty` is not set when tokens only vanish on rescan, as for `A`
+  in `#define A B` with an empty `B`.
 
 Not recorded:
 
@@ -226,35 +219,35 @@ Not recorded:
   user code, such as `stderr`, is recorded.
 - Expansions for directives (`#if`, `#include`, `#embed`, `#line`,
   `#pragma omp`).
-- Calls whose name and parens do not all come from one place: a name from a macro
-  body (`G` after `#define F G`), or a call whose parens come from a macro
+- Calls whose name and parens do not all come from one place: a name from a
+  macro body (`G` after `#define F G`), or a call whose parens come from a macro
   (`f(x)` in `#define CALL(f, x) f(x)`, `G(1)` in `ID(G)(1)`).
 - A libc macro nested in a user macro, or a user macro nested in a libc one.
 
 Nodes join the table by label. `Span.macro_nesting` holds one link per expansion
-containing the token: the `MacroExpansionId` and whether the token is its body or
-which argument, with `enclosing` holding the labels the token already had. Body
-tokens start from the call name's label, so tokens from an unrecorded macro stay
-in the enclosing body. A `##` result is a new token labeled like the pasting
-macro's body, not like its operands, so `x0` from `CAT(N, 0)` with
+containing the token: the `MacroExpansionId` and whether the token is its body
+or which argument, with `enclosing` holding the labels the token already had.
+Body tokens start from the call name's label, so tokens from an unrecorded macro
+stay in the enclosing body. A `##` result is a new token labeled like the
+pasting macro's body, not like its operands, so `x0` from `CAT(N, 0)` with
 `#define CAT(N, I) N##I` is never an occurrence of an outer macro's `N`.
-`Span::cover` keeps an expansion only when every covered
-token is in it, and reports body when they disagree on the argument, so a node
-mixing two sibling calls (`M(1) + N(2)`) belongs to neither, and neither does
-`M(1);` when `;` is written after the call. Two calls in one body get separate
-ids, which location could not separate because their tokens share the outer
-site's `expansion`. `MacroInvocations::innermost_spelled` finds the last link
-written in source, which is the call whose region a node belongs to.
+`Span::cover` keeps an expansion only when every covered token is in it, and
+reports body when they disagree on the argument, so a node mixing two sibling
+calls (`M(1) + N(2)`) belongs to neither, and neither does `M(1);` when `;` is
+written after the call. Two calls in one body get separate ids, which location
+could not separate because their tokens share the outer site's `expansion`.
+`MacroInvocations::innermost_spelled` finds the last link written in source,
+which is the call whose region a node belongs to.
 
 After parsing, `parser/macro_nodes.rs` fills `MacroExpansion.cover` and
-`argument_uses` (one entry per occurrence of an argument in the expansion), a side
-table keyed by `NodeId` that leaves the AST shape alone. It compares contiguous
-runs of labeled tokens with the token range of each node in the final tree, so it
-does not depend on source locations:
+`argument_uses` (one entry per occurrence of an argument in the expansion), a
+side table keyed by `NodeId` that leaves the AST shape alone. It compares
+contiguous runs of labeled tokens with the token range of each node in the final
+tree, so it does not depend on source locations:
 
 - `Expr`, `Callee`, `Decl`: one node has exactly those tokens. `Callee` is an
-  expression that is a call's callee, through parens. A `;` written after the call
-  closes a `Decl`.
+  expression that is a call's callee, through parens. A `;` written after the
+  call closes a `Decl`.
 - `CallArguments`: the parenthesized list of one call, as for `x` in
   `#define TRACE(x) printf x` called as `TRACE(("%d", i))`.
 - `Statements`: one statement, or sibling statements of one block that tile the
@@ -263,92 +256,87 @@ does not depend on source locations:
 - `Type`: a type name, a declaration's specifiers, or its type specifiers.
   `long T` is `split` because `T` is only part of the specifier list.
 - `Name`: one identifier with no node, as for a field or declarator name.
-- `Split`: no such node, so `x` in `TIMES2(i + j)` with `#define TIMES2(x) x * 2`,
-  whose tokens parse as `i + (j * 2)`. Slate keeps an expansion with a split
-  argument inline, with reason `split_argument`.
+- `Split`: no such node, so `x` in `TIMES2(i + j)` with
+  `#define TIMES2(x) x * 2`, whose tokens parse as `i + (j * 2)`. Slate keeps an
+  expansion with a split argument inline, with reason `split_argument`.
 
-`--show-macros` prints these on IR dumps
-([ir-grammar](ir-grammar.md#metadata)). The fixtures are
-`clang/linux/x86_64/macro_invocations.c` and `macro_nodes.c`.
+`--show-macros` prints these on IR dumps ([ir-grammar](ir-grammar.md#metadata)).
+The fixtures are `clang/linux/x86_64/macro_invocations.c` and `macro_nodes.c`.
 
 ## Expansion
 
-Prosser's algorithm (as in chibicc's `expand_macro`). A `PPToken` is a
-token plus an interned `HideSet`; file tokens start empty.
+Prosser's algorithm (as in chibicc's `expand_macro`). A `PPToken` is a token
+plus an interned `HideSet`; file tokens start empty.
 
-- `Stream` is a pushback stack in front of an optional `FileInput`.
-  `next_raw` pops the stack; when reading an invocation it pulls further
-  physical lines from the file, running any directive it meets (so
-  `#ifdef` inside arguments selects an argument, as in gcc and clang).
+- `Stream` is a pushback stack in front of an optional `FileInput`. `next_raw`
+  pops the stack; when reading an invocation it pulls further physical lines
+  from the file, running any directive it meets (so `#ifdef` inside arguments
+  selects an argument, as in gcc and clang).
 - `expand_token` returns a final token, or pushes a replacement back:
-  - builtins (`__LINE__`, `__FILE__`, `__COUNTER__`, `__DATE__`,
-    `__TIME__`, `__TIMESTAMP__`, and for gcc and clang `__FILE_NAME__`,
-    `__BASE_FILE__`, `__INCLUDE_LEVEL__`) are entries in `macros` marked
-    `builtin`, seeded first by `configure`, so `defined`, `#undef`,
-    `#define` and `push_macro` see them. msvc ignores `#define`/`#undef` of
-    its builtins, of `defined`, and of the predefines in
-    `MSVC_RESERVED_PREDEFINES` while they are defined (`__STDC_VERSION__`,
-    `__STDC_HOSTED__`; C4117; `is_reserved_macro`); gcc and
+  - builtins (`__LINE__`, `__FILE__`, `__COUNTER__`, `__DATE__`, `__TIME__`,
+    `__TIMESTAMP__`, and for gcc and clang `__FILE_NAME__`, `__BASE_FILE__`,
+    `__INCLUDE_LEVEL__`) are entries in `macros` marked `builtin`, seeded first
+    by `configure`, so `defined`, `#undef`, `#define` and `push_macro` see them.
+    msvc ignores `#define`/`#undef` of its builtins, of `defined`, and of the
+    predefines in `MSVC_RESERVED_PREDEFINES` while they are defined
+    (`__STDC_VERSION__`, `__STDC_HOSTED__`; C4117; `is_reserved_macro`); gcc and
     clang reject `#define defined` / `#undef defined` as an error
-    (`reject_defined_name`). `__TIMESTAMP__` is the
-    current file's modification time. `__FILE__`, `__BASE_FILE__` and
-    `__FILE_NAME__` pass through `CompilerOptions::remap_macro_path`
-    (`-fmacro-prefix-map`, [compiler-flags](compiler-flags.md)). `__LINE__` differs per flavor when an invocation spans
-    lines: gcc reports the line of the outermost macro name, clang the line
-    of its closing `)` (a `PPToken`'s `end`, carried by `Stamp`), and msvc
-    how far the source has been read (`source_position`), even for a
+    (`reject_defined_name`). `__TIMESTAMP__` is the current file's modification
+    time. `__FILE__`, `__BASE_FILE__` and `__FILE_NAME__` pass through
+    `CompilerOptions::remap_macro_path` (`-fmacro-prefix-map`,
+    [compiler-flags](compiler-flags.md)). `__LINE__` differs per flavor when an
+    invocation spans lines: gcc reports the line of the outermost macro name,
+    clang the line of its closing `)` (a `PPToken`'s `end`, carried by `Stamp`),
+    and msvc how far the source has been read (`source_position`), even for a
     `__LINE__` written in an argument;
   - a name in its own hide set is final (painted);
   - object-like: the replacement gets `hs(name) ∪ {name}`;
-  - function-like: only if the next token is `(`. `Stream::next_is_lparen`
-    peeks the stack, else the file's next non-comment token, so a `#`
-    line in between means no invocation. The replacement gets
-    `(hs(name) ∩ hs(')')) ∪ {name}`. An unterminated call or a wrong
-    argument count pushes the tokens back and leaves the name.
-- Arguments are prescanned by `expand_isolated`, a stream without a file,
-  only where used outside `#`/`##` (all of them if `__VA_OPT__` appears).
-  `substitute_function_macro` handles `#`, `##` (re-lex; a paste that
-  doesn't form one token is an error in gcc and clang, msvc keeps both), `__VA_ARGS__`, `__VA_OPT__`. The
-  lexer scans numbers as pp-numbers (letters, digits, `_`, `.`, identifier
-  characters, and a sign after `e`/`p`), so `name##2_cb` pastes onto the
-  single token `2_cb`.
-- Identifiers take non-ASCII UTF-8 characters (`identifier_utf8`: every
-  flavor and mode except gcc before c99; never a raw invalid byte) and,
-  from c99, complete UCNs (`identifier_ucns`: `\u` with 4 hex digits, `\U`
-  with 8, `\u{...}`, `\N{...}`). The lexer decodes each UCN except
-  `\N{...}` (no name table yet) in an `Ident`, so `\u00C1`, `\u00c1`, and `Á` are one name, in macro lookup
-  and in the IR. A `\` that does not start a complete UCN (`\U0000000z`)
-  is a one-character token, so `str(\)` is a call, and in c89 `a\u00aa`
-  is `a` followed by `\`. gcc and clang drop a stringified result's
+  - function-like: only if the next token is `(`. `Stream::next_is_lparen` peeks
+    the stack, else the file's next non-comment token, so a `#` line in between
+    means no invocation. The replacement gets `(hs(name) ∩ hs(')')) ∪ {name}`.
+    An unterminated call or a wrong argument count pushes the tokens back and
+    leaves the name.
+- Arguments are prescanned by `expand_isolated`, a stream without a file, only
+  where used outside `#`/`##` (all of them if `__VA_OPT__` appears).
+  `substitute_function_macro` handles `#`, `##` (re-lex; a paste that doesn't
+  form one token is an error in gcc and clang, msvc keeps both), `__VA_ARGS__`,
+  `__VA_OPT__`. The lexer scans numbers as pp-numbers (letters, digits, `_`,
+  `.`, identifier characters, and a sign after `e`/`p`), so `name##2_cb` pastes
+  onto the single token `2_cb`.
+- Identifiers take non-ASCII UTF-8 characters (`identifier_utf8`: every flavor
+  and mode except gcc before c99; never a raw invalid byte) and, from c99,
+  complete UCNs (`identifier_ucns`: `\u` with 4 hex digits, `\U` with 8,
+  `\u{...}`, `\N{...}`). The lexer decodes each UCN except `\N{...}` (no name
+  table yet) in an `Ident`, so `\u00C1`, `\u00c1`, and `Á` are one name, in
+  macro lookup and in the IR. A `\` that does not start a complete UCN
+  (`\U0000000z`) is a one-character token, so `str(\)` is a call, and in c89
+  `a\u00aa` is `a` followed by `\`. gcc and clang drop a stringified result's
   final unescaped `\` (`str(\)` is `""`); msvc keeps it, as `cl /EP` does, and
-  rejects the program (`newline in string literal`, C2001) when the
-  backslashes at the end are an odd count.
+  rejects the program (`newline in string literal`, C2001) when the backslashes
+  at the end are an odd count.
 - Comma elision (`comma_elision`): gcc and clang drop the comma of
   `, ## __VA_ARGS__` when the variadic argument is omitted (`F(a)`, not
-  `F(a,)`); for a macro whose only parameter is `...`, `H()` counts as
-  omitted in gnu modes and msvc only, as cl's conforming preprocessor does.
-  cl's traditional preprocessor drops a comma before any empty
-  `__VA_ARGS__`; slate does not emulate it (see
-  [compiler-flags](compiler-flags.md)).
-- GNU named variadics (`#define F(fmt, args...)`): `#define` keeps `args`
-  out of the fixed parameters and rewrites its uses in the replacement to
-  `__VA_ARGS__`, so arity, `#`, `##` and comma elision share the
-  `__VA_ARGS__` paths. Linux's `bpf.h` (`___BPF_FUNC_MAPPER(FN, ctx...)`)
-  depends on it.
+  `F(a,)`); for a macro whose only parameter is `...`, `H()` counts as omitted
+  in gnu modes and msvc only, as cl's conforming preprocessor does. cl's
+  traditional preprocessor drops a comma before any empty `__VA_ARGS__`; slate
+  does not emulate it (see [compiler-flags](compiler-flags.md)).
+- GNU named variadics (`#define F(fmt, args...)`): `#define` keeps `args` out of
+  the fixed parameters and rewrites its uses in the replacement to
+  `__VA_ARGS__`, so arity, `#`, `##` and comma elision share the `__VA_ARGS__`
+  paths. Linux's `bpf.h` (`___BPF_FUNC_MAPPER(FN, ctx...)`) depends on it.
 - The first replacement token inherits the invocation's leading space.
 - A parameter with leading space that substitutes to nothing (not a `##`
   operand) passes the space to the next replacement token, so
-  `#define M(f, ...) m(f, __VA_ARGS__)` stringizes `M(3)` as `"m(3, )"`.
-  gcc and clang do this whether the argument is empty or only expands empty;
-  msvc only for an empty argument (`J(E)` of `j(x a)` gives `"j(x)"`).
-  Fixtures: `stringize-empty-argument-space.c`.
-- `#if`, `#include`, `#embed` and `#line` operands expand with
-  `expand_isolated` too (`expand_macros`), so they never read past the
-  directive.
-- `read_piece` takes each final token of a group and recognizes `_Pragma`
-  and `__pragma` there, with an expanded lookahead for `(`. The pragma
-  takes effect at that point, so a `pop_macro` changes the rest of the
-  line. `emit_line` classifies keywords per the dialect's features.
+  `#define M(f, ...) m(f, __VA_ARGS__)` stringizes `M(3)` as `"m(3, )"`. gcc and
+  clang do this whether the argument is empty or only expands empty; msvc only
+  for an empty argument (`J(E)` of `j(x a)` gives `"j(x)"`). Fixtures:
+  `stringize-empty-argument-space.c`.
+- `#if`, `#include`, `#embed` and `#line` operands expand with `expand_isolated`
+  too (`expand_macros`), so they never read past the directive.
+- `read_piece` takes each final token of a group and recognizes `_Pragma` and
+  `__pragma` there, with an expanded lookahead for `(`. The pragma takes effect
+  at that point, so a `pop_macro` changes the rest of the line. `emit_line`
+  classifies keywords per the dialect's features.
 
 ## Conditionals
 
@@ -356,115 +344,108 @@ token plus an interned `HideSet`; file tokens start empty.
   (`__has_include` etc. for the flavor).
 - `#if`: `expand_assertions` → `expand_condition` → `__has_embed` →
   `__has_include` → `expand_has_checks` →
-  `const_expr::Parser::evaluate_with_defined`.
-  Under msvc the evaluator uses cl.exe's grammar (`msvc_condition`): no
-  comma and no postfix operators. Tokens left after the top-level
-  expression are ignored with an `extra-tokens` warning (C4067), so
-  `#if UNDEF(1)` is false
-  ([diagnostic-severity](diagnostic-severity.md)).
-  `expand_condition` runs the stream expander over the directive, and a
-  `defined` or `__has_*` name takes its operand unexpanded from the stream.
-  Only names the flavor owns (`is_defined_operator`) are queries, in both
-  `expand_condition` and `expand_has_checks`. Under msvc `__has_builtin`,
-  `__has_feature`, `__has_extension` and `__has_attribute` are ordinary
-  identifiers, so a user `#define __has_builtin(x) 0` shim expands, as in
-  cl.exe (SQLite's `sqliteInt.h` relies on this).
-  That includes a `defined` an expansion produced, with its operand from
-  the expansion or from the directive after it, as gcc and clang do.
-  The exception is a query whose operand the compiler macro-expands
-  (`expands_has_operand`): the attribute queries under both flavors, plus
-  `__has_builtin`/`__has_feature`/`__has_extension` under gcc only, and
-  `__has_embed` (its parameters are ordinary text, and `__FILE__` names a
-  resource). These go through the expander like any token.
-- Running text: the expander evaluates every `__has_*` query the flavor
-  defines (`expand_has_check`), with the same operand rule, because gcc and
-  clang accept them outside directives. `__has_include`, `__has_include_next`
-  and `__has_embed` stay unevaluated, as both compilers reject them there.
-- gcc only: assertions (`#assert`, `#unassert`, `#if #pred(answer)`),
-  following libcpp `directives.cc`. `expand_assertions` replaces
-  `#pred` / `#pred(answer)` with 0 or 1 before macro expansion, so neither
-  the predicate nor the answer expands. An answer is the tokens up to the
-  first `)`, compared by token and by whether each token has leading space,
-  ignoring the first token's. `#unassert pred` drops every answer. Linux
-  targets seed `system(linux|unix|posix)` and `cpu`/`machine` = `x86_64`,
-  `i386` or `arm` (none on aarch64), as gcc's `config/linux.h`,
-  `i386-c.cc` and `arm-c.cc` do. clang rejects both forms, and so do the
-  clang and msvc flavors. gcc's `-Wdeprecated` warning and `-A` are not
-  implemented.
+  `const_expr::Parser::evaluate_with_defined`. Under msvc the evaluator uses
+  cl.exe's grammar (`msvc_condition`): no comma and no postfix operators. Tokens
+  left after the top-level expression are ignored with an `extra-tokens` warning
+  (C4067), so `#if UNDEF(1)` is false
+  ([diagnostic-severity](diagnostic-severity.md)). `expand_condition` runs the
+  stream expander over the directive, and a `defined` or `__has_*` name takes
+  its operand unexpanded from the stream. Only names the flavor owns
+  (`is_defined_operator`) are queries, in both `expand_condition` and
+  `expand_has_checks`. Under msvc `__has_builtin`, `__has_feature`,
+  `__has_extension` and `__has_attribute` are ordinary identifiers, so a user
+  `#define __has_builtin(x) 0` shim expands, as in cl.exe (SQLite's
+  `sqliteInt.h` relies on this). That includes a `defined` an expansion
+  produced, with its operand from the expansion or from the directive after it,
+  as gcc and clang do. The exception is a query whose operand the compiler
+  macro-expands (`expands_has_operand`): the attribute queries under both
+  flavors, plus `__has_builtin`/`__has_feature`/`__has_extension` under gcc
+  only, and `__has_embed` (its parameters are ordinary text, and `__FILE__`
+  names a resource). These go through the expander like any token.
+- Running text: the expander evaluates every `__has_*` query the flavor defines
+  (`expand_has_check`), with the same operand rule, because gcc and clang accept
+  them outside directives. `__has_include`, `__has_include_next` and
+  `__has_embed` stay unevaluated, as both compilers reject them there.
+- gcc only: assertions (`#assert`, `#unassert`, `#if #pred(answer)`), following
+  libcpp `directives.cc`. `expand_assertions` replaces `#pred` / `#pred(answer)`
+  with 0 or 1 before macro expansion, so neither the predicate nor the answer
+  expands. An answer is the tokens up to the first `)`, compared by token and by
+  whether each token has leading space, ignoring the first token's.
+  `#unassert pred` drops every answer. Linux targets seed
+  `system(linux|unix|posix)` and `cpu`/`machine` = `x86_64`, `i386` or `arm`
+  (none on aarch64), as gcc's `config/linux.h`, `i386-c.cc` and `arm-c.cc` do.
+  clang rejects both forms, and so do the clang and msvc flavors. gcc's
+  `-Wdeprecated` warning and `-A` are not implemented.
 - clang only: `__has_declspec_attribute` answers from
-  `attribute_support::declspec_registered`, and only with
-  `microsoft_extensions` (0 on Linux, as clang without `-fms-extensions`).
-  `__has_warning("-Wx")` and `__is_identifier(x)` answer from
-  `has_checks/clang.rs` (generated, [generated-sources](generated-sources.md)):
-  clang's warning groups, and its keywords sorted by the C modes that
-  reserve them (`asm` gnu only, `typeof` gnu or C23, `restrict` C99+).
-- clang only: `__is_target_arch/vendor/os/environment` answer from the
-  target triple with clang's `PPMacroExpansion.cpp` rules (case-insensitive;
-  `arm` matches `thumb`, `armv7` matches `thumbv7` but `armv6` does not;
-  `unknown` environment matches only a triple without one; unrecognised
-  names are 0). `__is_target_variant_os/environment` are always 0 because
-  slate has no Darwin target variant. `__has_builtin` reports all six
-  (`has_checks/target.rs`, fixtures `clang/*/*/is_target.c`).
-- `__has_feature` / `__has_extension` answer per flavor and standard,
-  probed against gcc and clang in every C mode. The C11 names (`c_alignas`,
+  `attribute_support::declspec_registered`, and only with `microsoft_extensions`
+  (0 on Linux, as clang without `-fms-extensions`). `__has_warning("-Wx")` and
+  `__is_identifier(x)` answer from `has_checks/clang.rs` (generated,
+  [generated-sources](generated-sources.md)): clang's warning groups, and its
+  keywords sorted by the C modes that reserve them (`asm` gnu only, `typeof` gnu
+  or C23, `restrict` C99+).
+- clang only: `__is_target_arch/vendor/os/environment` answer from the target
+  triple with clang's `PPMacroExpansion.cpp` rules (case-insensitive; `arm`
+  matches `thumb`, `armv7` matches `thumbv7` but `armv6` does not; `unknown`
+  environment matches only a triple without one; unrecognised names are 0).
+  `__is_target_variant_os/environment` are always 0 because slate has no Darwin
+  target variant. `__has_builtin` reports all six (`has_checks/target.rs`,
+  fixtures `clang/*/*/is_target.c`).
+- `__has_feature` / `__has_extension` answer per flavor and standard, probed
+  against gcc and clang in every C mode. The C11 names (`c_alignas`,
   `c_alignof`, `c_atomic`, `c_generic_selections`, `c_static_assert`,
-  `c_thread_local`, and clang's `objc_c_static_assert`) are features only
-  from C11 and extensions always. clang's `c_fixed_enum` and gcc's
+  `c_thread_local`, and clang's `objc_c_static_assert`) are features only from
+  C11 and extensions always. clang's `c_fixed_enum` and gcc's
   `cxx_binary_literals` are features only from C23. gcc answers from its own
-  short lists (`GCC_FEATURES`, `GCC_EXTENSIONS`, probed from the installed
-  gcc, whose source is `has_feature_table` in `c-family/c-common.cc`); clang from the
+  short lists (`GCC_FEATURES`, `GCC_EXTENSIONS`, probed from the installed gcc,
+  whose source is `has_feature_table` in `c-family/c-common.cc`); clang from the
   tablegen-seeded `KNOWN_FEATURES` / `KNOWN_EXTENSIONS`.
 
 ## Pragmas and line control
 
 - `_Pragma("...")` is destringized and re-lexed at the operator's location;
-  `__pragma(...)` (with `microsoft_extensions`) takes its balanced tokens.
-  Both are recognized in the expanded stream ([Expansion](#expansion)).
-  Both become `Pragma` nodes, like `#pragma`.
-- `record_pragma` acts on `push_macro`, `pop_macro`, `once`, and poison;
-  every other pragma passes through to the parser.
-- `#pragma GCC poison` (gcc, clang) and `#pragma clang poison` (clang)
-  record names in `poisoned` (`pp/define.rs`); a non-identifier operand is
-  "can only poison identifier tokens". `reject_poisoned` then fails with
-  "attempt to use a poisoned identifier" on a poisoned name lexed from a
-  file, in system headers too: active text lines (including lines pulled
-  in by `next_raw` for macro arguments), `#define`/`#undef` operands,
-  evaluated conditions, and other pragmas. Tokens from expanding a macro
-  defined before the poison are not checked, and neither is skipped text.
-  Flavor splits, matching each compiler: gcc also checks `#error`/`#warning`
-  text; clang also checks the `#elif`/`#elifdef` that ends the active
-  group, which it never evaluates. Clang's ungrouped "poisoning existing
-  macro" warning is not emitted.
+  `__pragma(...)` (with `microsoft_extensions`) takes its balanced tokens. Both
+  are recognized in the expanded stream ([Expansion](#expansion)). Both become
+  `Pragma` nodes, like `#pragma`.
+- `record_pragma` acts on `push_macro`, `pop_macro`, `once`, and poison; every
+  other pragma passes through to the parser.
+- `#pragma GCC poison` (gcc, clang) and `#pragma clang poison` (clang) record
+  names in `poisoned` (`pp/define.rs`); a non-identifier operand is "can only
+  poison identifier tokens". `reject_poisoned` then fails with "attempt to use a
+  poisoned identifier" on a poisoned name lexed from a file, in system headers
+  too: active text lines (including lines pulled in by `next_raw` for macro
+  arguments), `#define`/`#undef` operands, evaluated conditions, and other
+  pragmas. Tokens from expanding a macro defined before the poison are not
+  checked, and neither is skipped text. Flavor splits, matching each compiler:
+  gcc also checks `#error`/`#warning` text; clang also checks the
+  `#elif`/`#elifdef` that ends the active group, which it never evaluates.
+  Clang's ungrouped "poisoning existing macro" warning is not emitted.
 - gcc flavor only: `#pragma GCC optimize` applies fast-math options
-  (`"no-math-errno"` means `-fno-math-errno`) and an optimization level,
-  and `push_options` / `pop_options` / `reset_options` save, restore, or go
-  back to the command line (`pp/math.rs`, `PragmaMath`). Each changes only
-  the macros whose value differs: `__FAST_MATH__` (without gcc's
-  excess-precision condition), `__FINITE_MATH_ONLY__`, `__NO_MATH_ERRNO__`,
+  (`"no-math-errno"` means `-fno-math-errno`) and an optimization level, and
+  `push_options` / `pop_options` / `reset_options` save, restore, or go back to
+  the command line (`pp/math.rs`, `PragmaMath`). Each changes only the macros
+  whose value differs: `__FAST_MATH__` (without gcc's excess-precision
+  condition), `__FINITE_MATH_ONLY__`, `__NO_MATH_ERRNO__`,
   `__RECIPROCAL_MATH__`, `__NO_SIGNED_ZEROS__`, `__NO_TRAPPING_MATH__`,
   `__ASSOCIATIVE_MATH__`, `__ROUNDING_MATH__`, `__SUPPORT_SNAN__`,
   `__OPTIMIZE__`, `__OPTIMIZE_SIZE__`. `__NO_INLINE__` is never touched,
   matching gcc.
-  - Each `optimize` pragma restarts from the requested command-line
-    options, not from the previous pragma: `"fast-math"` then
-    `"no-math-errno"` leaves only errno. Unlike the command line,
-    `-fassociative-math` here is not disabled by trapping math
-    (`requested_associative_math`); `reset_options` returns to the
+  - Each `optimize` pragma restarts from the requested command-line options, not
+    from the previous pragma: `"fast-math"` then `"no-math-errno"` leaves only
+    errno. Unlike the command line, `-fassociative-math` here is not disabled by
+    trapping math (`requested_associative_math`); `reset_options` returns to the
     resolved command line instead.
   - Levels (`"O2"`, `"-Os"`, `"s"`, or `optimize 2`; last in a list wins):
-    `__OPTIMIZE__` is unset only for `O0`, `__OPTIMIZE_SIZE__` is set only
-    for `Os`/`Oz`/`s`. The command-line level is
-    `CodegenOptions::optimization`.
-  - `"Ofast"` applies fast-math and the speed level. A later non-`Ofast`
-    level in the same list drops the math flags it added; an explicit
-    `fast-math` is kept, and `no-fast-math` after `Ofast` clears it.
+    `__OPTIMIZE__` is unset only for `O0`, `__OPTIMIZE_SIZE__` is set only for
+    `Os`/`Oz`/`s`. The command-line level is `CodegenOptions::optimization`.
+  - `"Ofast"` applies fast-math and the speed level. A later non-`Ofast` level
+    in the same list drops the math flags it added; an explicit `fast-math` is
+    kept, and `no-fast-math` after `Ofast` clears it.
   - The pragma does not change IR operation contracts.
-- `#line` and GNU line markers set `line_overrides`, read by
-  `presumed_location` for `__LINE__` / `__FILE__`. An oversized `#line`
-  number follows each oracle: gcc wraps it modulo 2^32 (and warns), clang
-  rejects anything above 4294967295, and msvc rejects only a 64-bit overflow
-  (C2177) and wraps the rest to a signed 32-bit value, so a negative
-  `__LINE__` expands to `-` followed by the digits.
+- `#line` and GNU line markers set `line_overrides`, read by `presumed_location`
+  for `__LINE__` / `__FILE__`. An oversized `#line` number follows each oracle:
+  gcc wraps it modulo 2^32 (and warns), clang rejects anything above 4294967295,
+  and msvc rejects only a 64-bit overflow (C2177) and wraps the rest to a signed
+  32-bit value, so a negative `__LINE__` expands to `-` followed by the digits.
 - `#error` / `#warning` go to `directive_diagnostics`.
 
 ## Trace
@@ -505,23 +486,23 @@ macro may not change the token. Not recorded:
 - what a header in a skipped `#include` would have defined
 - `#include` targets computed from macros
 - `__has_include` results
-- a second inclusion dropped by an include guard, which leaves no record at
-  that site
+- a second inclusion dropped by an include guard, which leaves no record at that
+  site
 
 ## Oracle
 
-`slate-parser pp <file> [args]` prints the preprocessed stream: one line
-per `Code` node, `Pragma` nodes as `#pragma ...`, comments dropped. Keywords
-print with their source spelling (`__inline__`, not `inline`), and a space is
-inserted wherever adjacent tokens would otherwise relex as one.
+`slate-parser pp <file> [args]` prints the preprocessed stream: one line per
+`Code` node, `Pragma` nodes as `#pragma ...`, comments dropped. Keywords print
+with their source spelling (`__inline__`, not `inline`), and a space is inserted
+wherever adjacent tokens would otherwise relex as one.
 
 `tools/pp_diff.py` compares it with `clang -E -P`, token by token, ignoring
 whitespace and line breaks (`--corpus [project ...]`, `--compdb`, or
-`--file x.c -- args`). The report goes to `target/pp-diff.md`. Both sides
-are run under matching conditions:
+`--file x.c -- args`). The report goes to `target/pp-diff.md`. Both sides are
+run under matching conditions:
 
-- clang runs with `-nostdinc` over slate's own compiler headers and sysroot,
-  so both preprocess the same headers.
+- clang runs with `-nostdinc` over slate's own compiler headers and sysroot, so
+  both preprocess the same headers.
 - Without a `-std` in the compile command, both get `-std=gnu17`, which is
   clang's default and slate's clang-flavor default.
 - Pragmas that clang consumes (`once`, `push_macro`, `pop_macro`, `region`,

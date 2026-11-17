@@ -1,9 +1,9 @@
 # AST Spec
 
 <!-- toc -->
+
 - [Pipeline and responsibilities](#pipeline-and-responsibilities)
-- [Parser input and name
-  environment](#parser-input-and-name-environment)
+- [Parser input and name environment](#parser-input-and-name-environment)
 - [Invariants](#invariants)
 - [Locations and provenance](#locations-and-provenance)
 - [Translation unit](#translation-unit)
@@ -25,17 +25,15 @@
 - [Literals](#literals)
 - [Initializers](#initializers)
 - [Attributes and asm](#attributes-and-asm)
-- [Calling conventions and
-  `__declspec`](#calling-conventions-and-__declspec)
+- [Calling conventions and `__declspec`](#calling-conventions-and-__declspec)
 - [Early validation](#early-validation)
-- [Post-C89 constructs in older
-  modes](#post-c89-constructs-in-older-modes)
+- [Post-C89 constructs in older modes](#post-c89-constructs-in-older-modes)
 - [Migration](#migration)
 <!-- /toc -->
 
-The AST is the syntactic form of one preprocessed translation unit, close to
-the C grammar (specifiers + declarator lists), like clang's parser output
-before Sema. Update this page with any `src/ast.rs` or parser change.
+The AST is the syntactic form of one preprocessed translation unit, close to the
+C grammar (specifiers + declarator lists), like clang's parser output before
+Sema. Update this page with any `src/ast.rs` or parser change.
 
 - Printed syntax: [ast-grammar](ast-grammar.md).
 - Exhaustive match sites: [ast-enum-touchpoints](ast-enum-touchpoints.md).
@@ -56,71 +54,69 @@ pp ──▶ parser ──▶ AST ──▶ src/sema/ (validation + resolution +
 
 ## Parser input and name environment
 
-- `ParserInput` is one expanded token buffer with comments and pragmas
-  anchored between tokens. `PPNode` chunks are flattened once; their text
-  and line boundaries don't affect the grammar. Spans and provenance
-  survive without re-lexing.
-- Nested item parsers claim annotations in their token range. Leftover
-  pragmas inside an item precede it; interleaved comments follow it.
-- One ordinary-name environment for all grammar entry points. Lookup stops
-  at the nearest typedef or ordinary binding; tags and members are
-  separate. Scope guards restore bindings on success and error (blocks,
-  loops, bodies, prototype lists).
-- Objects and typedefs bind after their complete declarator, before
-  attributes, initializers, and later declarators; their own array bounds
-  see the enclosing binding. Parameters bind after their declarators;
-  enumerators after their definition.
+- `ParserInput` is one expanded token buffer with comments and pragmas anchored
+  between tokens. `PPNode` chunks are flattened once; their text and line
+  boundaries don't affect the grammar. Spans and provenance survive without
+  re-lexing.
+- Nested item parsers claim annotations in their token range. Leftover pragmas
+  inside an item precede it; interleaved comments follow it.
+- One ordinary-name environment for all grammar entry points. Lookup stops at
+  the nearest typedef or ordinary binding; tags and members are separate. Scope
+  guards restore bindings on success and error (blocks, loops, bodies, prototype
+  lists).
+- Objects and typedefs bind after their complete declarator, before attributes,
+  initializers, and later declarators; their own array bounds see the enclosing
+  binding. Parameters bind after their declarators; enumerators after their
+  definition.
 - Each parameter list has its own scope. The defining function's parameter
-  bindings (including enumerators) carry into its body; prototype and
-  nested lists don't leak.
+  bindings (including enumerators) carry into its body; prototype and nested
+  lists don't leak.
 - C99+: a `for` declaration is visible through condition, increment, body.
 
 ## Invariants
 
 - **Single configuration.** One `-D`/target set; no conditional nodes.
-- **Source form preserved.** No evaluation, folding, or rewriting: `2[a]`
-  stays, `A = 1 << 3` keeps the expression, `if (x) y;` ≠
-  `if (x) { y; }`.
-- **Nothing resolved.** Names stay names; the parser only tracks typedef
-  names (needed for `T * x;`).
-- **Nothing dropped.** Every declarator, initializer, specifier, and
-  attribute appears in the AST, or the parser errors.
+- **Source form preserved.** No evaluation, folding, or rewriting: `2[a]` stays,
+  `A = 1 << 3` keeps the expression, `if (x) y;` ≠ `if (x) { y; }`.
+- **Nothing resolved.** Names stay names; the parser only tracks typedef names
+  (needed for `T * x;`).
+- **Nothing dropped.** Every declarator, initializer, specifier, and attribute
+  appears in the AST, or the parser errors.
 - **Source order** after preprocessing.
-- **No analysis nodes.** No reachability; `__builtin_unreachable()` is a
-  call.
+- **No analysis nodes.** No reachability; `__builtin_unreachable()` is a call.
 
 ## Locations and provenance
 
 - `Loc { file, offset, length }`: byte range.
 - `Span<T> { id, value, spelling, expansion, provenance, macro_origin }`.
   `spelling` is where tokens are written (possibly in a macro definition);
-  `expansion` is where they appear in the including file. Every
-  declaration, declarator, statement, expression, and attribute is spanned.
+  `expansion` is where they appear in the including file. Every declaration,
+  declarator, statement, expression, and attribute is spanned.
 - `id: NodeId` is unique per node. `Span::new` / `Span::cover` allocate;
-  `with_value` / `map` keep the id; `derive` copies the location with a
-  fresh id. Tokens from one expansion share a `Loc` but get distinct ids
+  `with_value` / `map` keep the id; `derive` copies the location with a fresh
+  id. Tokens from one expansion share a `Loc` but get distinct ids
   ([node identity](ir/pipeline.md#node-identity-and-metadata)).
   `parse --show-ids` prints them; checked by
   `clang/linux/x86_64/node_ids_macro_expansion.c`
   (`// SLATE-FILECHECK-SHOW-IDS <prefix>`).
 - `Provenance { file, kind: System | User, line, system_header }` on every
-  `Span`. `system_header` is the first system header entered from user
-  code, kept through its include subtree; `None` for main-file and user
-  headers. `line` is 0-based. Payloads (`FunctionDefinition`,
-  `Declaration`) inherit the enclosing `Decl`/`Stmt` span. Debug output
-  shows provenance only when `system_header` is `Some`.
+  `Span`. `system_header` is the first system header entered from user code,
+  kept through its include subtree; `None` for main-file and user headers.
+  `line` is 0-based. Payloads (`FunctionDefinition`, `Declaration`) inherit the
+  enclosing `Decl`/`Stmt` span. Debug output shows provenance only when
+  `system_header` is `Some`.
 - `macro_origin: Option<Rc<MacroOrigin { name, definition, inner }>>`:
   `name`/`definition` are the outermost macro at the use site (`INT_MAX`);
   `inner` chains through its replacement (`__INT_MAX__`). Set in
-  `pp/expand.rs::expand_macros`; `Span::cover` keeps it only when all
-  covered tokens agree. Not printed by any dump. How both are computed:
+  `pp/expand.rs::expand_macros`; `Span::cover` keeps it only when all covered
+  tokens agree. Not printed by any dump. How both are computed:
   [preprocessor](preprocessor.md#provenance).
 - `Span::cover` over tokens of different origins widens `expansion` to include
   every covered token, not only the first and last. `x + x` from
   `#define TWICE(x) x + x` therefore reaches the invocation's name instead of
   looking like argument code.
-- `Loc::contains` and `Loc::end` compare ranges against
-  `TranslationUnit.macros` ([macro invocations](preprocessor.md#macro-invocations)).
+- `Loc::contains` and `Loc::end` compare ranges against `TranslationUnit.macros`
+  ([macro invocations](preprocessor.md#macro-invocations)).
 
 ## Translation unit
 
@@ -143,13 +139,13 @@ ExternalItem =
     | CommentGroup
 ```
 
-- `dialect.options` keeps grouped settings and ordered arguments; `target`
-  is the effective target. Sema resolves them into operation contracts and
-  formats; IR consumers never read arguments.
+- `dialect.options` keeps grouped settings and ordered arguments; `target` is
+  the effective target. Sema resolves them into operation contracts and formats;
+  IR consumers never read arguments.
 - Long-double literal spelling stays unresolved; sema interprets it at the
   target precision.
-- No `Typedef`, `Record`, or `Enum` item: `typedef` is a storage class and
-  tag definitions live in the specifier that wrote them.
+- No `Typedef`, `Record`, or `Enum` item: `typedef` is a storage class and tag
+  definitions live in the specifier that wrote them.
 
 ## Pragmas
 
@@ -158,12 +154,12 @@ ExternalItem =
   others are `PragmaKind::Opaque`.
 - STDC pragmas are typed only with uppercase `ON`/`OFF`/`DEFAULT`.
   `float_control` forms other than `({push|pop})` and
-  `({precise|except}[, {on|off}][, push])` are `FloatControl::Malformed`
-  for sema to reject per flavor.
-- `_Pragma` operands are destringized after expansion, keeping locations.
-  MS `__pragma(tokens)` (gated like MS keywords) uses its expanded operand
-  (`__pragma(pack(push, _CRT_PACKING))`). An operator inside a statement
-  is emitted before that statement; its span records the position.
+  `({precise|except}[, {on|off}][, push])` are `FloatControl::Malformed` for
+  sema to reject per flavor.
+- `_Pragma` operands are destringized after expansion, keeping locations. MS
+  `__pragma(tokens)` (gated like MS keywords) uses its expanded operand
+  (`__pragma(pack(push, _CRT_PACKING))`). An operator inside a statement is
+  emitted before that statement; its span records the position.
 - `push_macro` / `pop_macro` are executed and kept as nodes.
 - Computed include operands are expanded; written header names are not.
 
@@ -243,43 +239,43 @@ Decimal floating types are accepted in every mode and target
 
 ### MS and GNU keywords
 
-Gate: `microsoft_extensions` ([MS modes](compiler-flags.md#ms-modes)).
-Elsewhere these are identifiers.
+Gate: `microsoft_extensions` ([MS modes](compiler-flags.md#ms-modes)). Elsewhere
+these are identifiers.
 
-- `__intN` / `_intN`: `__int8/16/32` alias `char`/`short`/`int`; `__int64`
-  is a `long long` width (`__int64 unsigned int`, `long __int64` parse).
+- `__intN` / `_intN`: `__int8/16/32` alias `char`/`short`/`int`; `__int64` is a
+  `long long` width (`__int64 unsigned int`, `long __int64` parse).
 - `__forceinline`: `is_inline` + `AlwaysInline` attribute.
-- `__ptr32`, `__ptr64`, `__sptr`, `__uptr`: `Qualifiers::is_ptr32` etc.,
-  after `*` or in specifier position; sema resolves them against the target
+- `__ptr32`, `__ptr64`, `__sptr`, `__uptr`: `Qualifiers::is_ptr32` etc., after
+  `*` or in specifier position; sema resolves them against the target
   ([MS mixed-size pointers](ir/places-pointers.md#ms-mixed-size-pointers)).
-- `__unaligned`: `Qualifiers::is_unaligned`, a real qualifier for
-  compatibility and discard warnings. Sets `_Alignof` and declared-object
-  alignment to 1; never changes member layout. clang applies it to any
-  type, cl.exe only to pointers.
+- `__unaligned`: `Qualifiers::is_unaligned`, a real qualifier for compatibility
+  and discard warnings. Sets `_Alignof` and declared-object alignment to 1;
+  never changes member layout. clang applies it to any type, cl.exe only to
+  pointers.
 
 clang flavor only: `_Nonnull`, `_Nullable`, `_Null_unspecified` and
 `_Nullable_result` are accepted wherever a qualifier is and dropped by the
 parser, since they don't change layout or codegen. They stay ordinary
-identifiers under gcc and MSVC. The checks for a non-pointer type or
-conflicting specifiers aren't implemented, so the parser accepts both.
+identifiers under gcc and MSVC. The checks for a non-pointer type or conflicting
+specifiers aren't implemented, so the parser accepts both.
 
 gcc flavor, x86, gnu modes only: `__seg_fs` / `__seg_gs` are qualifiers
 (`Qualifiers::is_seg_fs` / `is_seg_gs`). Under clang they are macros for
 `address_space(257/256)`. Sema ignores both; `_Generic` doesn't distinguish
 them.
 
-Plain `asm`, `typeof` before C23 and `inline` before C99 are keywords in the
-gnu modes only, or wherever `-fasm` forces them, and identifiers under
-`-fno-asm` (`StandardFeatures::keyword_asm`). `__asm__`, `__typeof__` and
-`__inline__` are always keywords.
+Plain `asm`, `typeof` before C23 and `inline` before C99 are keywords in the gnu
+modes only, or wherever `-fasm` forces them, and identifiers under `-fno-asm`
+(`StandardFeatures::keyword_asm`). `__asm__`, `__typeof__` and `__inline__` are
+always keywords.
 
 ### `vector_size` and `mode`
 
 - Not written as specifiers. Each `vector_size`, `ext_vector_type`,
-  `neon_vector_type`, `neon_polyvector_type`, or `mode` attribute in specifier position wraps the specifier, in attribute
-  order, for all declarators.
-- On or inside a declarator (`int (__attribute__((mode(QI))) x)`) it stays
-  in the declarator's attributes and sema wraps a copy for that declarator
+  `neon_vector_type`, `neon_polyvector_type`, or `mode` attribute in specifier
+  position wraps the specifier, in attribute order, for all declarators.
+- On or inside a declarator (`int (__attribute__((mode(QI))) x)`) it stays in
+  the declarator's attributes and sema wraps a copy for that declarator
   (`TypeResolver::resolve_declarator`). Parameters and type names fold all
   attributes.
 - `mode(SI) vector_size(8)` is a vector of the mode type;
@@ -287,35 +283,33 @@ gnu modes only, or wherever `-fasm` forces them, and identifiers under
 
 Mode resolution (as clang):
 
-- Integer modes (`QI`/`byte`, `HI`, `SI`, `DI`, `TI`, `word`/`pointer`)
-  pick the first of `signed char`, `short`, `int`, `long`, `long long`,
-  `__int128` with that width (`DI` = `long` on LP64, `long long` on LLP64
-  and 32-bit).
-- Signedness from the base: plain `char` per target, `_Bool` unsigned,
-  enums via underlying type (result is the integer, not the enum).
+- Integer modes (`QI`/`byte`, `HI`, `SI`, `DI`, `TI`, `word`/`pointer`) pick the
+  first of `signed char`, `short`, `int`, `long`, `long long`, `__int128` with
+  that width (`DI` = `long` on LP64, `long long` on LLP64 and 32-bit).
+- Signedness from the base: plain `char` per target, `_Bool` unsigned, enums via
+  underlying type (result is the integer, not the enum).
 - `SF` = `float`, `DF` = `double`, `XF` = `long double` only if x87, `TF` =
   `long double` if binary128 else `__float128` on non-MSVC x86; otherwise
   errors.
-- Errors: integer mode on a floating base or vice versa; mode on a
-  pointer, array, or function declarator. Complex, vector (`V4SI`), `HF`
-  modes are unsupported.
+- Errors: integer mode on a floating base or vice versa; mode on a pointer,
+  array, or function declarator. Complex, vector (`V4SI`), `HF` modes are
+  unsupported.
 - gcc flavor: a single argument that is not an identifier (`mode(1)`,
-  `mode(vector_size(8))`) parses as `IgnoredMode { arguments }` and sema
-  warns "'mode' attribute ignored" (`-Wignored-attributes`). The argument
-  is not checked as an expression, unlike gcc. Other flavors, and a missing
-  or second argument, give `Invalid`.
+  `mode(vector_size(8))`) parses as `IgnoredMode { arguments }` and sema warns
+  "'mode' attribute ignored" (`-Wignored-attributes`). The argument is not
+  checked as an expression, unlike gcc. Other flavors, and a missing or second
+  argument, give `Invalid`.
 
 ### Floating keywords
 
-- gcc flavor (all modes): `_Float32`, `_Float64`, `_Float32x`,
-  `_Float64x`, `_Float128` are keywords; `__float80` on x86. Elsewhere
-  identifiers (glibc typedefs them for clang).
+- gcc flavor (all modes): `_Float32`, `_Float64`, `_Float32x`, `_Float64x`,
+  `_Float128` are keywords; `__float80` on x86. Elsewhere identifiers (glibc
+  typedefs them for clang).
 - `_Float32/64/32x/64x` are distinct from `float`/`double`/`long double`.
-  `_Float128` = `__float128`. `__float80` = x87 `long double`. `_Float64x`
-  is f80 on x86, f128 on aarch64; it and `_Float128` error where no format
-  exists (armv7).
-- Suffixes `f32`/`f64`/`f32x`/`f64x` give those types; `w` gives
-  `__float80`.
+  `_Float128` = `__float128`. `__float80` = x87 `long double`. `_Float64x` is
+  f80 on x86, f128 on aarch64; it and `_Float128` error where no format exists
+  (armv7).
+- Suffixes `f32`/`f64`/`f32x`/`f64x` give those types; `w` gives `__float80`.
 - gcc strict `-std=cNN` implies `-fno-asm`: `_Fract`/`_Accum`/`_Sat` are
   keywords only in gnu modes.
 
@@ -349,11 +343,10 @@ ParameterDeclaration { specifiers, declarator: Declarator, attributes, comments:
 `Function { inner: Grouped(Pointer { inner: Name("fp") }), parameters: [int] }`.
 
 GNU forward parameter declarations (gcc flavor only;
-`int f(int n; int (*a)[n], int n)`) keep every `;`-terminated list, in
-order, in `forward`; `parameters` is the list after the last `;`. Sema
-binds forward names first and gives a later parameter of the same name
-the forward declaration's binding, so bounds such as `[n]` read the real
-parameter.
+`int f(int n; int (*a)[n], int n)`) keep every `;`-terminated list, in order, in
+`forward`; `parameters` is the list after the last `;`. Sema binds forward names
+first and gives a later parameter of the same name the forward declaration's
+binding, so bounds such as `[n]` read the real parameter.
 
 `Attributed` holds attributes written inside a declarator:
 
@@ -363,24 +356,24 @@ parameter.
 | `a [[x]]` (after the identifier)               | `Attributed { inner: Name("a") }`                    |
 | `f(void) [[x]]`, `v[2] [[x]]` (after a suffix) | `Attributed { inner: Function {..} }` / `Array {..}` |
 
-Only `[[...]]` is read after the identifier or a suffix; GNU attributes
-there end the declarator and become `InitDeclarator.attributes`. `[[` never
-starts an array bound.
+Only `[[...]]` is read after the identifier or a suffix; GNU attributes there
+end the declarator and become `InitDeclarator.attributes`. `[[` never starts an
+array bound.
 
 K&R definitions (`f(a, b) int a; char b; { ... }`):
 
-- `IdentifierList` in identifier order, each with its declared type
-  (undeclared = implicit `int`). No promotion in the parser.
+- `IdentifierList` in identifier order, each with its declared type (undeclared
+  = implicit `int`). No promotion in the parser.
 - Sema gives an unprototyped type with default-promoted parameters, passes
-  promoted types in the ABI slots, and binds each body name to a local of
-  the declared type converted from the slot.
+  promoted types in the ABI slots, and binds each body name to a local of the
+  declared type converted from the slot.
 - Rejected in C23 (`identifier_list_definitions`); K&R fixtures pin
   `SLATE-FILECHECK-STD DEFAULT c17`.
-- Empty declarations in the parameter declaration list (`int;`,
-  `register;`) are skipped, as gcc does with a warning.
+- Empty declarations in the parameter declaration list (`int;`, `register;`) are
+  skipped, as gcc does with a warning.
 - In the gcc flavor before C23, a non-definition with an identifier list
-  (`extern int f (i);`) is an unprototyped declaration with an `Empty`
-  parameter list (gcc's `-Wdeclaration-missing-parameter-type`).
+  (`extern int f (i);`) is an unprototyped declaration with an `Empty` parameter
+  list (gcc's `-Wdeclaration-missing-parameter-type`).
 
 ### `TypeName`
 
@@ -388,21 +381,21 @@ K&R definitions (`f(a, b) int a; char b; { ... }`):
 TypeName { specifiers: DeclarationSpecifiers, declarator: Declarator }   // abstract declarator
 ```
 
-Used by casts, `sizeof`, `_Alignof`, compound literals, `va_arg`,
-`offsetof`, `_Generic`, `typeof`. `_Alignof`, `__alignof`, `__alignof__`
-are always the operator; `__alignof` and `__alignof__` set `preferred` on
-`AlignOf`/`AlignOfExpr` (i686 gives `long long`/`double` objects 8, not the ABI 4);
-`alignof` only with `keyword_alignof` (C23).
-`_Countof` is the operator only with `keyword_countof` (gcc and clang in
-every mode); msvc leaves it an identifier.
+Used by casts, `sizeof`, `_Alignof`, compound literals, `va_arg`, `offsetof`,
+`_Generic`, `typeof`. `_Alignof`, `__alignof`, `__alignof__` are always the
+operator; `__alignof` and `__alignof__` set `preferred` on
+`AlignOf`/`AlignOfExpr` (i686 gives `long long`/`double` objects 8, not the ABI
+4); `alignof` only with `keyword_alignof` (C23). `_Countof` is the operator only
+with `keyword_countof` (gcc and clang in every mode); msvc leaves it an
+identifier.
 
-- Compound literals accept `constexpr`, `register`, `static`, and
-  `thread_local` / `_Thread_local` from C23 in every flavor
-  (`compound_literal_storage`). Preserve `storage`, `is_constexpr`,
-  and `is_thread_local` in `TypeName.specifiers`.
+- Compound literals accept `constexpr`, `register`, `static`, and `thread_local`
+  / `_Thread_local` from C23 in every flavor (`compound_literal_storage`).
+  Preserve `storage`, `is_constexpr`, and `is_thread_local` in
+  `TypeName.specifiers`.
 - Ordinary compound literals and their AST shape are unchanged. Explicit
-  storage-class semantics are unimplemented; typing reports
-  `Unimplemented` rather than erasing the specifiers.
+  storage-class semantics are unimplemented; typing reports `Unimplemented`
+  rather than erasing the specifiers.
 - Reference: GCC `gcc.dg/c23-complit-{2,3,9}.c` and
   `c2y-register-array-{2,3}.c`.
 
@@ -419,8 +412,8 @@ FunctionDefinition {
 ```
 
 - `int *f(void) { ... }`: specifiers `int`, declarator
-  `Function { inner: Pointer { inner: Name("f") }, parameters: Void }`.
-  The return type is derived by sema.
+  `Function { inner: Pointer { inner: Name("f") }, parameters: Void }`. The
+  return type is derived by sema.
 - GNU nested functions are `FunctionDefinition`s in block item position.
 
 ## Tags
@@ -442,17 +435,17 @@ FieldDeclarator { declarator: Declarator, bit_width: Option<Expr>, attributes, p
 EnumItem = Enumerator { name, value: Option<Expr>, attributes, provenance } | CommentGroup
 ```
 
-- A stray `;` in a record body (`struct { int x; ; }`) is an `ExtraSemi`
-  item, one per `;`, spanning the token. It declares nothing; sema raises
-  `extra-semi` from it. gcc and clang accept it; msvc rejects it. A member
-  of only qualifiers and attributes (`const;`, `__attribute__((x));`) is
-  also an `ExtraSemi` spanning those tokens, since gcc and clang ignore it.
+- A stray `;` in a record body (`struct { int x; ; }`) is an `ExtraSemi` item,
+  one per `;`, spanning the token. It declares nothing; sema raises `extra-semi`
+  from it. gcc and clang accept it; msvc rejects it. A member of only qualifiers
+  and attributes (`const;`, `__attribute__((x));`) is also an `ExtraSemi`
+  spanning those tokens, since gcc and clang ignore it.
 - Outside msvc, the last member may omit its `;` (`union { int i; short s }`);
   gcc and clang only warn.
 - Definitions are stored once in `TranslationUnit.tags` and referenced by
-  `TagId`, so anonymous tags have identity (`struct { int y; } g1, g2;`
-  share one). Nested, block, and parameter-list definitions get their own
-  `TagId`; scope is sema's.
+  `TagId`, so anonymous tags have identity (`struct { int y; } g1, g2;` share
+  one). Nested, block, and parameter-list definitions get their own `TagId`;
+  scope is sema's.
 - `Reference` is by name; its `NodeId` keys the reference or forward
   declaration. Resolution is sema's.
 - Enumerator values are unevaluated; an omitted value is `None`.
@@ -536,42 +529,41 @@ OmpSchedule = { kind: Static | Dynamic | Guided | Auto | Runtime,
 
 - SEH: `__try`, `__except`, `__finally`, and `__leave` are keywords when
   `microsoft_extensions` is on (msvc, clang on `*-windows-msvc`,
-  `-fms-extensions`). Each body must be a compound statement.
-  The checker (`sema/assertion.rs`) matches clang: `__leave` needs an
-  enclosing `__try` body (a handler does not count, so `__leave` in a
-  nested `__finally` leaves the outer `__try`); the filter must have
-  integer type; `_exception_code` needs an enclosing `__except` filter or
-  block, `_exception_info` the filter. Not yet checked: jumps into a `__try`
-  or handler, and `-Wjump-seh-finally`.
+  `-fms-extensions`). Each body must be a compound statement. The checker
+  (`sema/assertion.rs`) matches clang: `__leave` needs an enclosing `__try` body
+  (a handler does not count, so `__leave` in a nested `__finally` leaves the
+  outer `__try`); the filter must have integer type; `_exception_code` needs an
+  enclosing `__except` filter or block, `_exception_info` the filter. Not yet
+  checked: jumps into a `__try` or handler, and `-Wjump-seh-finally`.
 
-- Selection declarations use `IfDeclaration` / `SwitchDeclaration`.
-  The spanned declaration stays in the selection scope; an absent
-  condition/discriminant means the declared object's value is tested.
-  A present expression follows the source semicolon. Availability:
-  C2y/GNU2y only in every flavor (`selection_declarations`).
-  Selection-specific constraints and IR lowering are unimplemented.
+- Selection declarations use `IfDeclaration` / `SwitchDeclaration`. The spanned
+  declaration stays in the selection scope; an absent condition/discriminant
+  means the declared object's value is tested. A present expression follows the
+  source semicolon. Availability: C2y/GNU2y only in every flavor
+  (`selection_declarations`). Selection-specific constraints and IR lowering are
+  unimplemented.
 - Grammar examples: `if (int x = f())`, `if (int x = f(); x > 0)`,
   `switch (int x = f())`, `switch (int x, y; x + y)`.
-- Reference cases: GCC `gcc.dg/c2y-if-decls-{1,4,8,11}.c` cover
-  attributes, inferred types, aggregate initializers, and nested clauses.
+- Reference cases: GCC `gcc.dg/c2y-if-decls-{1,4,8,11}.c` cover attributes,
+  inferred types, aggregate initializers, and nested clauses.
 - Named jumps preserve the target spelling and span
   (`StandardFeatures::named_loops`: every mode for gcc, C2y/GNU2y otherwise).
-  The checker resolves each to the innermost enclosing loop or switch its
-  label names, recorded in `TypeResolver::named_jumps`; `continue` needs a
-  loop. gcc lets every label in a chain of labels, `case`/`default` labels,
-  and attributes name the statement; clang only the label directly before it,
-  attributes allowed (`a: b: for` names it `b` only).
-- Control-flow bodies are one `Box<Stmt>`; braced bodies are `Block`.
-  `Null` is `;`; an empty compound is `Block([])`.
-- Scopes: C89/GNU89, only compound statements. C99+, each
-  selection/iteration statement has a scope and each body a nested one
-  (a braced body's `Block` is that scope). Condition and `for` clause
-  declarations belong to the control statement. Parser typedef
-  disambiguation and name resolution follow the same rules.
-- `Labeled` (goto) and `SwitchLabel` (case/default) are separate variants.
-  Both nest their target: `case 1: case 2: x;` is
-  `SwitchLabel(Case 1, SwitchLabel(Case 2, Expr x))`. A label with nothing
-  after it gets `Null`.
+  The checker resolves each to the innermost enclosing loop or switch its label
+  names, recorded in `TypeResolver::named_jumps`; `continue` needs a loop. gcc
+  lets every label in a chain of labels, `case`/`default` labels, and attributes
+  name the statement; clang only the label directly before it, attributes
+  allowed (`a: b: for` names it `b` only).
+- Control-flow bodies are one `Box<Stmt>`; braced bodies are `Block`. `Null` is
+  `;`; an empty compound is `Block([])`.
+- Scopes: C89/GNU89, only compound statements. C99+, each selection/iteration
+  statement has a scope and each body a nested one (a braced body's `Block` is
+  that scope). Condition and `for` clause declarations belong to the control
+  statement. Parser typedef disambiguation and name resolution follow the same
+  rules.
+- `Labeled` (goto) and `SwitchLabel` (case/default) are separate variants. Both
+  nest their target: `case 1: case 2: x;` is
+  `SwitchLabel(Case 1, SwitchLabel(Case 2, Expr x))`. A label with nothing after
+  it gets `Null`.
 - Cases are found by walking the body (Duff's device). Case expressions and
   range endpoints use the expression parser.
 - `For.init` is absent, a declaration, a `StaticAssert`, or an expression
@@ -590,29 +582,29 @@ Taxonomy and rationale: [comment-placement](comment-placement.md).
 
 - The preprocessor records each comment's layout from the source text
   (`pp::CommentLayout`): own line, after code on the same line, or on a
-  directive line; its column; and what follows it (a comment on the same or
-  next line, code, or a blank line / directive / `}` / end of file).
-  Conditional directives (`#if` … `#endif`) are looked through, so a comment
-  directly above `#ifndef X` still leads the declaration inside.
-- Comments after code on a line are emitted after that line's code, so they
-  sit after the item they trail.
+  directive line; its column; and what follows it (a comment on the same or next
+  line, code, or a blank line / directive / `}` / end of file). Conditional
+  directives (`#if` … `#endif`) are looked through, so a comment directly above
+  `#ifndef X` still leads the declaration inside.
+- Comments after code on a line are emitted after that line's code, so they sit
+  after the item they trail.
 - Comments on conditional-directive lines (`#endif /* X */`) are dropped;
   comments on other directive lines (`#define X 1 /* doc */`) are `Detached`.
 - Consecutive comments form one group unless a blank line separates them. A
-  `Trailing` group only absorbs following own-line comments at the same
-  column (a continuation). `text` keeps each comment's raw text; `loc` spans
-  first to last. Never spans files.
-- `attach`: `Trailing` if the group starts after code on its line; `Leading`
-  if it is on its own lines and code follows directly; otherwise `Detached`.
-  The owner of a `Leading` group is the next sibling; of a `Trailing` group,
-  the previous sibling (the enclosing item if there is none).
-- Comments inside a declaration, statement, or field (expressions,
-  initializers, multi-line calls) become `Trailing` siblings after it.
-- `doc`: the first comment starts with `/**`, `/*!`, `///`, or `//!`
-  (not `/**/`, `/***`, `////`).
-- Groups appear as `ExternalItem`, `BlockItem`, `MemberItem`, `EnumItem`,
-  and `ParameterDeclaration.comments`. A parameter takes the comments inside
-  its tokens and the `Trailing` comments after its comma.
+  `Trailing` group only absorbs following own-line comments at the same column
+  (a continuation). `text` keeps each comment's raw text; `loc` spans first to
+  last. Never spans files.
+- `attach`: `Trailing` if the group starts after code on its line; `Leading` if
+  it is on its own lines and code follows directly; otherwise `Detached`. The
+  owner of a `Leading` group is the next sibling; of a `Trailing` group, the
+  previous sibling (the enclosing item if there is none).
+- Comments inside a declaration, statement, or field (expressions, initializers,
+  multi-line calls) become `Trailing` siblings after it.
+- `doc`: the first comment starts with `/**`, `/*!`, `///`, or `//!` (not
+  `/**/`, `/***`, `////`).
+- Groups appear as `ExternalItem`, `BlockItem`, `MemberItem`, `EnumItem`, and
+  `ParameterDeclaration.comments`. A parameter takes the comments inside its
+  tokens and the `Trailing` comments after its comma.
 
 ## Expressions
 
@@ -649,11 +641,11 @@ Taxonomy and rationale: [comment-placement](comment-placement.md).
 | `Block(BlockLiteral)`                                                                          | clang `^ret(params){ ... }`, under `-fblocks`; see below                                |
 | `StaticAssert(Box<StaticAssert>)`                                                              | C2y `static_assert` expression; `void`                                                  |
 
-`BlockLiteral { signature: TypeName, deduced_return: bool, body }`:
-`signature` is always a function type name. `^{...}` and `^(int x){...}` get a
-placeholder `void` return with `deduced_return`, and sema replaces it with the
-type of the first `return value;` (`void` if none). `^int{...}` gets `(void)`
-parameters. `__block` sets `DeclarationSpecifiers.is_block`.
+`BlockLiteral { signature: TypeName, deduced_return: bool, body }`: `signature`
+is always a function type name. `^{...}` and `^(int x){...}` get a placeholder
+`void` return with `deduced_return`, and sema replaces it with the type of the
+first `return value;` (`void` if none). `^int{...}` gets `(void)` parameters.
+`__block` sets `DeclarationSpecifiers.is_block`.
 
 ```
 GenericControl = Expr(Expr) | Type(TypeName)
@@ -664,30 +656,29 @@ MemberDesignator = Vec<Field(Span<String>) | Index(Expr)>
 - `_Generic` keeps all associations; sema selects. An expression operand is
   lvalue-converted (decay, drop top-level qualifiers), so array-type
   associations never match. A type-name operand (C2y; gcc and clang accept
-  earlier) matches as written: `_Generic(const int, int: 1, const int: 2)`
-  is 2.
-- Variably modified association and controlling types retain their array
-  bounds as expressions or `*`, including bounds with side effects. Parsing
-  neither evaluates bounds nor selects an association. N3348 permits VM
-  associations in C2y; checking that constraint requires semantic type
-  resolution, including typedefs. VM matching and unevaluated bounds are
-  tracked in `slate-parser-cxg.20.17`.
-- Whether an identifier is a type (`_Generic`, `sizeof(x)`, `(x)(y)`) comes
-  from the typedef-name set.
+  earlier) matches as written: `_Generic(const int, int: 1, const int: 2)` is 2.
+- Variably modified association and controlling types retain their array bounds
+  as expressions or `*`, including bounds with side effects. Parsing neither
+  evaluates bounds nor selects an association. N3348 permits VM associations in
+  C2y; checking that constraint requires semantic type resolution, including
+  typedefs. VM matching and unevaluated bounds are tracked in
+  `slate-parser-cxg.20.17`.
+- Whether an identifier is a type (`_Generic`, `sizeof(x)`, `(x)(y)`) comes from
+  the typedef-name set.
 - `StaticAssert` expressions are gcc-only (`static_assert_expressions`): gcc
   accepts them in every mode, clang 23 in none. A statement or `for` init that
-  starts with the keyword is still the declaration form. The checker
-  evaluates the assertion wherever the expression appears, including
-  `typeof`; lowering emits `void`.
+  starts with the keyword is still the declaration form. The checker evaluates
+  the assertion wherever the expression appears, including `typeof`; lowering
+  emits `void`.
 
 ## Literals
 
 Lexical content is decoded; C types are assigned by sema.
 
-- Delimited `\o{...}`, `\x{...}`, and `\u{...}` escapes (C2y N3353)
-  decode in character constants, strings, and `#if`, including earlier modes.
-  Octal/hex escapes produce numeric code units; Unicode escapes encode a
-  character in the literal's encoding. Braces terminate the digits.
+- Delimited `\o{...}`, `\x{...}`, and `\u{...}` escapes (C2y N3353) decode in
+  character constants, strings, and `#if`, including earlier modes. Octal/hex
+  escapes produce numeric code units; Unicode escapes encode a character in the
+  literal's encoding. Braces terminate the digits.
 
 ```
 IntegerLiteral {
@@ -732,53 +723,51 @@ Designator indices are unevaluated.
 
 ## Attributes and asm
 
-- `Attribute` is a closed set of known GNU/C23 attributes with parsed
-  arguments. `Unknown { name, arguments }` covers unknown names and modeled
-  spellings the flavor doesn't register for the target
-  (`src/attribute_support.rs`, e.g. `dllimport` off Windows); malformed
-  ones are `Invalid`. Each keeps its span and placement (specifiers,
-  declarators, init-declarators, tag definitions, statements).
-- `GnuAsm`: decoded template, operands with constraints, clobbers, labels.
-  Asm string escapes decode per literal before concatenation and template analysis.
-- `MsAsm`: instructions of optional label, prefixes, mnemonic, MASM
-  operands. Registers, numbers, operators decoded; names left to sema.
-  Exception: `TYPE int` in the msvc flavor parses to `TypeKeyword`.
-  `Parser::mark_ms_asm_lines` first drops `;` comments and inserts
-  `Newline` tokens. See [msvc-asm](msvc-asm.md).
+- `Attribute` is a closed set of known GNU/C23 attributes with parsed arguments.
+  `Unknown { name, arguments }` covers unknown names and modeled spellings the
+  flavor doesn't register for the target (`src/attribute_support.rs`, e.g.
+  `dllimport` off Windows); malformed ones are `Invalid`. Each keeps its span
+  and placement (specifiers, declarators, init-declarators, tag definitions,
+  statements).
+- `GnuAsm`: decoded template, operands with constraints, clobbers, labels. Asm
+  string escapes decode per literal before concatenation and template analysis.
+- `MsAsm`: instructions of optional label, prefixes, mnemonic, MASM operands.
+  Registers, numbers, operators decoded; names left to sema. Exception:
+  `TYPE int` in the msvc flavor parses to `TypeKeyword`.
+  `Parser::mark_ms_asm_lines` first drops `;` comments and inserts `Newline`
+  tokens. See [msvc-asm](msvc-asm.md).
 
 ## Calling conventions and `__declspec`
 
-- `Attribute::CallingConvention`: `Cdecl`, `Stdcall`, `Fastcall`,
-  `Vectorcall`, `Thiscall`, `MsAbi`, `SysVAbi`, `RegParm(Expr)`,
-  `Pcs(Aapcs | AapcsVfp)`, from GNU attributes or MS keywords. Specifier
-  positions apply to the declaration; nested positions stay on
-  `Attributed`/`Pointer`; trailing ones in declarator attributes.
-  `regparm` stays unevaluated. Sema checks support and conflicts and puts
-  x86 conventions in the function type
+- `Attribute::CallingConvention`: `Cdecl`, `Stdcall`, `Fastcall`, `Vectorcall`,
+  `Thiscall`, `MsAbi`, `SysVAbi`, `RegParm(Expr)`, `Pcs(Aapcs | AapcsVfp)`, from
+  GNU attributes or MS keywords. Specifier positions apply to the declaration;
+  nested positions stay on `Attributed`/`Pointer`; trailing ones in declarator
+  attributes. `regparm` stays unevaluated. Sema checks support and conflicts and
+  puts x86 conventions in the function type
   ([calling conventions](ir/calls-abi.md#calling-conventions)).
 - `__declspec(...)`: single parentheses, space-separated entries.
   `dllimport`/`dllexport` → `DllImport`/`DllExport`; `align(expr)` →
   `Aligned(Expr)`. Registration per flavor
   (`attribute_support::declspec_registered`): clang only its own set
-  (dllimport/dllexport only on Windows, no `__name__` unwrapping); gcc
-  treats it as `__attribute__((x))` like mingw; msvc accepts every modeled
-  name. Unregistered names become `IgnoredDeclspec { name, arguments }`
-  with no effect. Registered unmodeled names are `Unknown`.
+  (dllimport/dllexport only on Windows, no `__name__` unwrapping); gcc treats it
+  as `__attribute__((x))` like mingw; msvc accepts every modeled name.
+  Unregistered names become `IgnoredDeclspec { name, arguments }` with no
+  effect. Registered unmodeled names are `Unknown`.
 
 ## Early validation
 
-- `src/sema/validate.rs` removes invalid items and reports structural
-  errors that need no name or type resolution. Surviving items aren't
-  guaranteed valid; the rest of `src/sema/` checks the remainder before
-  lowering.
+- `src/sema/validate.rs` removes invalid items and reports structural errors
+  that need no name or type resolution. Surviving items aren't guaranteed valid;
+  the rest of `src/sema/` checks the remainder before lowering.
 - The parser keeps all declarations; pruning is
   [reachability pruning](ir/pipeline.md#reachability-pruning).
 
 ## Post-C89 constructs in older modes
 
-Accepted in every mode as extensions (input is assumed to compile with the
-real compiler). clang 22.1 and gcc 16.2 over `c89 gnu89 c99 c11 c17 gnu17
-c23`, plain and `-pedantic`; `warn` = only under `-pedantic`.
+Accepted in every mode as extensions (input is assumed to compile with the real
+compiler). clang 22.1 and gcc 16.2 over `c89 gnu89 c99 c11 c17 gnu17 c23`, plain
+and `-pedantic`; `warn` = only under `-pedantic`.
 
 | Construct                                                        | Since        | clang before           | gcc before              | slate                                                                  |
 | ---------------------------------------------------------------- | ------------ | ---------------------- | ----------------------- | ---------------------------------------------------------------------- |
@@ -800,15 +789,15 @@ c23`, plain and `-pedantic`; `warn` = only under `-pedantic`.
 | `_Maxof` / `_Minof`                                              | C2y proposal | err                    | extension               | C2y/GNU2y in every flavor (`keyword_type_limits`); identifiers earlier |
 | digit separators (`1'000`)                                       | C23          | char constant          | char constant           | gated by `digit_separators`                                            |
 
-Digit separators are gated because pre-C23 `'` starts a character constant
-in valid code: gcc.dg's `#define m(x) 0` / `m(1'2)+(3'4)` is 0 in C11 and
-34 in C23. The lexer continues a pp-number through `'` only with
-`StandardFeatures::digit_separators`. A separator consumes the next
-character, so the `e`/`p` sign rule doesn't apply across it: `0x0'e-0xe` is
-`0x0'e`, `-`, `0xe`.
+Digit separators are gated because pre-C23 `'` starts a character constant in
+valid code: gcc.dg's `#define m(x) 0` / `m(1'2)+(3'4)` is 0 in C11 and 34 in
+C23. The lexer continues a pp-number through `'` only with
+`StandardFeatures::digit_separators`. A separator consumes the next character,
+so the `e`/`p` sign rule doesn't apply across it: `0x0'e-0xe` is `0x0'e`, `-`,
+`0xe`.
 
-- Integer type limits require a parenthesized type-name, including typedefs
-  and `_BitInt` widths. Reference: GCC `gcc.dg/maxof-bitint.c` and
+- Integer type limits require a parenthesized type-name, including typedefs and
+  `_BitInt` widths. Reference: GCC `gcc.dg/maxof-bitint.c` and
   `maxof-bitint575.c`. Integer-operand validation, result typing, range
   evaluation, and IR lowering remain unimplemented.
 

@@ -1,6 +1,7 @@
 # Slate architecture
 
 <!-- toc -->
+
 - [Pipeline](#pipeline)
 - [Ownership](#ownership)
 - [Commands](#commands)
@@ -17,15 +18,15 @@ C + target headers -> slate-parser -> ir::Module
   -> frontend::lowerer -> rust_ast::Program -> Rust source
 ```
 
-| Stage                   | Entry point                                                   | Responsibility                                                          |
-| ----------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Arguments and target    | `crates/slate/src/target.rs`                                  | Parser arguments, target default, layout options                        |
-| Preprocess, parse, sema | `crates/slate-parser` via `src/frontend.rs`                   | C semantics and typed IR                                                |
-| Rust lowering           | `src/frontend/lowerer.rs` and its modules                     | Translate typed values, places, statements and declarations             |
-| Multi-target merge      | `src/project/{merge,cfg,splice,hoist}.rs`                     | Merge per-target translations behind Rust cfg items                     |
-| C runtime bridges       | `src/frontend/{c_shim,long_double}.rs`, `src/frontend/shims/` | ABI bridges for values Rust cannot pass directly                        |
-| Backend                 | `src/backend/{rust_ast,codegen,engine,interproc}`             | Rust AST, emission, analyses and rewrites                               |
-| Project orchestration   | `src/main.rs`, `src/compile_commands.rs`                      | Parse translation units, export symbols, write a Cargo crate            |
+| Stage                   | Entry point                                                   | Responsibility                                               |
+| ----------------------- | ------------------------------------------------------------- | ------------------------------------------------------------ |
+| Arguments and target    | `crates/slate/src/target.rs`                                  | Parser arguments, target default, layout options             |
+| Preprocess, parse, sema | `crates/slate-parser` via `src/frontend.rs`                   | C semantics and typed IR                                     |
+| Rust lowering           | `src/frontend/lowerer.rs` and its modules                     | Translate typed values, places, statements and declarations  |
+| Multi-target merge      | `src/project/{merge,cfg,splice,hoist}.rs`                     | Merge per-target translations behind Rust cfg items          |
+| C runtime bridges       | `src/frontend/{c_shim,long_double}.rs`, `src/frontend/shims/` | ABI bridges for values Rust cannot pass directly             |
+| Backend                 | `src/backend/{rust_ast,codegen,engine,interproc}`             | Rust AST, emission, analyses and rewrites                    |
+| Project orchestration   | `src/main.rs`, `src/compile_commands.rs`                      | Parse translation units, export symbols, write a Cargo crate |
 
 Slate source paths in the table are relative to `crates/slate` unless prefixed
 with `crates/`.
@@ -33,11 +34,16 @@ with `crates/`.
 ## Ownership
 
 - C types, layout, conversions and evaluation order belong to slate-parser.
-- Slate consumes typed IR as a library; [IR semantics](ir-spec.md) define the boundary.
+- Slate consumes typed IR as a library; [IR semantics](ir-spec.md) define the
+  boundary.
 - Baseline Rust may use raw pointers, `unsafe`, `libc` and explicit temporaries.
-- Intrinsic generation and builtin dispatch: [intrinsic lowering](intrinsic-lowering.md).
-- Unsupported constructs produce source-located `Barrier` records. Broken IR invariants produce `InvalidIr`; they are bugs, not unsupported features.
-- The backend remains available. Its worklist and pointer analyses are described in [rewrite engine](rewrite-engine-v2.md) and [pointer capability lattice](pointer-capability-lattice.md).
+- Intrinsic generation and builtin dispatch:
+  [intrinsic lowering](intrinsic-lowering.md).
+- Unsupported constructs produce source-located `Barrier` records. Broken IR
+  invariants produce `InvalidIr`; they are bugs, not unsupported features.
+- The backend remains available. Its worklist and pointer analyses are described
+  in [rewrite engine](rewrite-engine-v2.md) and
+  [pointer capability lattice](pointer-capability-lattice.md).
 
 ## Commands
 
@@ -51,52 +57,87 @@ with `crates/`.
 ## Projects and targets
 
 - Headers come from [slate-sysroots](../../crates/slate-sysroots/README.md).
-- Target default and explicit argument precedence: [target queries](slate-target-queries.md).
-- Compilation databases supply per-unit flags and targets. Relative paths resolve against each command's `directory`.
-- Project translation requires exactly one unit defining `main`. Library projects, multiple configurations of one unit, and colliding module stems are rejected.
-- External definitions are exported for linker resolution across modules; tentative common globals have one owner.
-- Compilation database order is link order: units become modules in first-occurrence order, and the first COMDAT kept is the first in that order. Callers that link in a different order (the kernel harness uses `vmlinux.a` member order) reorder the database.
-- Link order is codegen-unit order. A crate is link-order sensitive when it is freestanding, has two or more units with file-scope `global_asm!`, or has `#[link_section]` statics that share a section or sit beside `global_asm!` (`link_order_sensitive` in `main.rs`). Such a crate's manifest sets `incremental = true` for release plus, scoped to the crate's own package through `profile-rustflags`, `codegen-units = 4096`, `-Zcodegen-source-order`, `-Zhuman-readable-cgu-names` and `-Zcross-crate-inline-threshold=never`. Under incremental, rustc keeps one codegen unit per module, named after it (`<crate>-__slate_unit_<stem>[-<submodule>]`), and `-Zcodegen-source-order` emits them in source order, so each C unit's asm and section statics stay in its own object in unit order. Nothing moves between modules. `CARGO_INCREMENTAL=0` overrides the profile and falls back to size-sorted `-cgu.NN` units, so callers must not set it.
-- Link-order crates also write `link-order.json` (`{"units": [{"file", "module"}]}` in link order; `module` is null for the root unit) so external linkers can place each unit's objects at that C unit's position. `tools/corpus/kernel_link.py` uses it to put each unit's `ld -r` object in the original `vmlinux.a` member's slot, and fails if an object is a numbered CGU, belongs to an unlisted module, or defines another module's items. C `__attribute__((used))` lowers to `#[used(compiler)]` (clang's `llvm.compiler.used`), not plain `#[used]`. Plain `#[used]` sets `SHF_GNU_RETAIN`, and `ld -r` then keeps separate output sections for the Rust and C halves of a section like `.init.setup`.
-- Project generation runs the backend control-flow registry; `--raw` emits the baseline. Exported C signatures remain intact. Target-conditional single-file translation is separate.
+- Target default and explicit argument precedence:
+  [target queries](slate-target-queries.md).
+- Compilation databases supply per-unit flags and targets. Relative paths
+  resolve against each command's `directory`.
+- Project translation requires exactly one unit defining `main`. Library
+  projects, multiple configurations of one unit, and colliding module stems are
+  rejected.
+- External definitions are exported for linker resolution across modules;
+  tentative common globals have one owner.
+- Compilation database order is link order: units become modules in
+  first-occurrence order, and the first COMDAT kept is the first in that order.
+  Callers that link in a different order (the kernel harness uses `vmlinux.a`
+  member order) reorder the database.
+- Link order is codegen-unit order. A crate is link-order sensitive when it is
+  freestanding, has two or more units with file-scope `global_asm!`, or has
+  `#[link_section]` statics that share a section or sit beside `global_asm!`
+  (`link_order_sensitive` in `main.rs`). Such a crate's manifest sets
+  `incremental = true` for release plus, scoped to the crate's own package
+  through `profile-rustflags`, `codegen-units = 4096`, `-Zcodegen-source-order`,
+  `-Zhuman-readable-cgu-names` and `-Zcross-crate-inline-threshold=never`. Under
+  incremental, rustc keeps one codegen unit per module, named after it
+  (`<crate>-__slate_unit_<stem>[-<submodule>]`), and `-Zcodegen-source-order`
+  emits them in source order, so each C unit's asm and section statics stay in
+  its own object in unit order. Nothing moves between modules.
+  `CARGO_INCREMENTAL=0` overrides the profile and falls back to size-sorted
+  `-cgu.NN` units, so callers must not set it.
+- Link-order crates also write `link-order.json`
+  (`{"units": [{"file", "module"}]}` in link order; `module` is null for the
+  root unit) so external linkers can place each unit's objects at that C unit's
+  position. `tools/corpus/kernel_link.py` uses it to put each unit's `ld -r`
+  object in the original `vmlinux.a` member's slot, and fails if an object is a
+  numbered CGU, belongs to an unlisted module, or defines another module's
+  items. C `__attribute__((used))` lowers to `#[used(compiler)]` (clang's
+  `llvm.compiler.used`), not plain `#[used]`. Plain `#[used]` sets
+  `SHF_GNU_RETAIN`, and `ld -r` then keeps separate output sections for the Rust
+  and C halves of a section like `.init.setup`.
+- Project generation runs the backend control-flow registry; `--raw` emits the
+  baseline. Exported C signatures remain intact. Target-conditional single-file
+  translation is separate.
 
 ## Macro templates
 
 Under `translate-project --merge`, a kept `Statement::MacroExpansion` lowers to
 one `macro_rules` template per distinct body, and each site becomes a call. Any
-other expansion stays inline, and `macro_keep.rs` records why in the merge report.
+other expansion stays inline, and `macro_keep.rs` records why in the merge
+report.
 
 - **Which expansions are kept**: `frontend/macro_keep.rs` decides on the IR,
-  before lowering. It rejects `goto` and `case`, a `break` or `continue` leaving the
-  body (lowered labels are hygienic, so the template could not name the caller's
-  loop), an argument that reads a local the body declares, `__block` locals and
-  capturing block literals in functions with a `goto` (dispatch lowering hoists
-  their storage out of the body), variadic or `#` macros, compound literals and temporary objects (a template's
-  block would end their C lifetime early), value expansions of type `void`, and place
-  holes that are not plain (bit-fields, volatile, atomic, reduced alignment).
-- **Caller locals**: Rust hygiene hides a caller's locals from a `macro_rules` body,
-  so `pass_caller_locals` turns each one a kept body reads or writes into a hidden
-  place parameter after the definition's own, named after the local: `BITS(n)`
-  becomes `BITS!(n, hold)`. It runs on the final IR, wrapping the binding in
-  `PlaceKind::MacroArg` and recording the list in `Module::macro_hidden_arguments`.
-  A nested macro's hidden argument is the enclosing template's own local or
-  parameter. Defining the macro inside each function was rejected because it gives
-  up sharing across functions, units and targets.
-- **Value templates**: a `ValueKind::MacroExpansion` lowers to an `Expr::Macro` in
-  value position. While the rules run its body ends in `Stmt::Return(value)`, and
-  `Item::MacroRules::value` tells that marker from a real `return` ending a statement
-  template; codegen prints the marker as the expression, or a block ending in it.
-- **`return`**: Rust's `return` crosses `macro_rules`, so a body containing one lifts.
-  A function calling such a template (`Item::MacroRules::returns`, which includes
-  templates nesting one) keeps its C signature in every lift, because the return
-  analyses cannot see that return.
-- **Identity**: two bodies are the same template when their parameters and printed
-  Rust match. Spans, local names and argument types do not count: a hole is an
-  opaque `$a()` to every rule, and filling it gives back that site's own body. Text
-  is the key because `NamedPrim`'s `Debug` includes the target width: a `c_ulong`
-  body merges across targets, and a body that lowers differently on one target gets
-  a variant. The key is taken before the rules run, so two bodies that only converge
-  under the rules stay separate names.
+  before lowering. It rejects `goto` and `case`, a `break` or `continue` leaving
+  the body (lowered labels are hygienic, so the template could not name the
+  caller's loop), an argument that reads a local the body declares, `__block`
+  locals and capturing block literals in functions with a `goto` (dispatch
+  lowering hoists their storage out of the body), variadic or `#` macros,
+  compound literals and temporary objects (a template's block would end their C
+  lifetime early), value expansions of type `void`, and place holes that are not
+  plain (bit-fields, volatile, atomic, reduced alignment).
+- **Caller locals**: Rust hygiene hides a caller's locals from a `macro_rules`
+  body, so `pass_caller_locals` turns each one a kept body reads or writes into
+  a hidden place parameter after the definition's own, named after the local:
+  `BITS(n)` becomes `BITS!(n, hold)`. It runs on the final IR, wrapping the
+  binding in `PlaceKind::MacroArg` and recording the list in
+  `Module::macro_hidden_arguments`. A nested macro's hidden argument is the
+  enclosing template's own local or parameter. Defining the macro inside each
+  function was rejected because it gives up sharing across functions, units and
+  targets.
+- **Value templates**: a `ValueKind::MacroExpansion` lowers to an `Expr::Macro`
+  in value position. While the rules run its body ends in `Stmt::Return(value)`,
+  and `Item::MacroRules::value` tells that marker from a real `return` ending a
+  statement template; codegen prints the marker as the expression, or a block
+  ending in it.
+- **`return`**: Rust's `return` crosses `macro_rules`, so a body containing one
+  lifts. A function calling such a template (`Item::MacroRules::returns`, which
+  includes templates nesting one) keeps its C signature in every lift, because
+  the return analyses cannot see that return.
+- **Identity**: two bodies are the same template when their parameters and
+  printed Rust match. Spans, local names and argument types do not count: a hole
+  is an opaque `$a()` to every rule, and filling it gives back that site's own
+  body. Text is the key because `NamedPrim`'s `Debug` includes the target width:
+  a `c_ulong` body merges across targets, and a body that lowers differently on
+  one target gets a variant. The key is taken before the rules run, so two
+  bodies that only converge under the rules stay separate names.
 - **Names**: templates carry a hash, `NAME__slate_template_<fnv16>`, through
   compilation so function merge compares equal across units and targets.
   `assign_template_names` renames them at the end of the merge to `NAME`,
@@ -111,49 +152,52 @@ other expansion stays inline, and `macro_keep.rs` records why in the merge repor
   `ADD_ONE` on a `u8` and an `int`, keep separate names. The projection check
   applies the same renaming to its direct translation.
 - **Holes**: an argument is a `$a()` call while the rules run, so that no rule
-  moves, merges, or drops its evaluation. `finish_holes` turns it into `$a` before
-  printing.
-- **Place parameters**: while the rules run, a parameter used as a place is passed
-  by address. The call is `M!(&raw mut n)` when the template writes it or takes its
-  mutable address, otherwise `M!(&raw const n)`, and the body uses `*$*n()`. Every
-  analysis already understands those forms, so none needs a per-template table.
-  `finish_holes` prints the body as `$n`, and `finish_place_arguments` strips the
-  address last, after the final `remove_mut` pass.
-- **Type, name and list parameters**: `finish_macro_site` replaces a type argument's
-  Rust type in `let`s and non-literal casts with `$T:ty`, and a name argument's field
-  accesses with `$f:ident`. Filling the parameter gives back that site's own body, so
-  this is sound even when an occurrence did not come from the argument. A parameter
-  with no occurrence is dropped, leaving the concrete spelling in the body:
-  `sizeof(T)`, a struct tag, a bit-field, or a callee naming a function. In a
-  `f args` list, the trailing run of elements passed unconverted as one call's last
-  arguments, each used once, becomes one repetition `$(, $args:expr)*` (or
-  `$($args:expr),*` when it is the only parameter), always the last parameter, so
-  every argument count shares a template. Earlier elements, and any element with a
-  conversion, stay separate `$args__N`; at most one list per template repeats.
-  One exception to keeping conversions in the template: a list element's
-  `reason=vararg` conversions (default argument promotions at a variadic position)
-  are lowered into the caller's argument (`narrow as i32`, `f as f64`), since they
-  depend on the argument's type, not the macro. The same goes for an implicit
-  truthiness test (`c != 0`, `!p.is_null()`) of a parameter used once, so int, bool
-  and pointer conditions share a template. Sema derives that compare from the
-  argument, so its macro nesting says `argN`, while a written `(c) != 0` says
-  `body` and stays in the template. A test under `!` also stays, so `!(p)` keeps
-  printing `$p.is_null()`. Other conversions stay in the template, because a plain
-  hole can occur more than once with one argument value.
-  Codegen prints the repetition as `__slate_macro_list_<name>`, which `format.rs`
-  turns back into `$($name),*`, or `$($name,)*` before a comma. Writes to bit-fields
-  stay inline.
+  moves, merges, or drops its evaluation. `finish_holes` turns it into `$a`
+  before printing.
+- **Place parameters**: while the rules run, a parameter used as a place is
+  passed by address. The call is `M!(&raw mut n)` when the template writes it or
+  takes its mutable address, otherwise `M!(&raw const n)`, and the body uses
+  `*$*n()`. Every analysis already understands those forms, so none needs a
+  per-template table. `finish_holes` prints the body as `$n`, and
+  `finish_place_arguments` strips the address last, after the final `remove_mut`
+  pass.
+- **Type, name and list parameters**: `finish_macro_site` replaces a type
+  argument's Rust type in `let`s and non-literal casts with `$T:ty`, and a name
+  argument's field accesses with `$f:ident`. Filling the parameter gives back
+  that site's own body, so this is sound even when an occurrence did not come
+  from the argument. A parameter with no occurrence is dropped, leaving the
+  concrete spelling in the body: `sizeof(T)`, a struct tag, a bit-field, or a
+  callee naming a function. In a `f args` list, the trailing run of elements
+  passed unconverted as one call's last arguments, each used once, becomes one
+  repetition `$(, $args:expr)*` (or `$($args:expr),*` when it is the only
+  parameter), always the last parameter, so every argument count shares a
+  template. Earlier elements, and any element with a conversion, stay separate
+  `$args__N`; at most one list per template repeats. One exception to keeping
+  conversions in the template: a list element's `reason=vararg` conversions
+  (default argument promotions at a variadic position) are lowered into the
+  caller's argument (`narrow as i32`, `f as f64`), since they depend on the
+  argument's type, not the macro. The same goes for an implicit truthiness test
+  (`c != 0`, `!p.is_null()`) of a parameter used once, so int, bool and pointer
+  conditions share a template. Sema derives that compare from the argument, so
+  its macro nesting says `argN`, while a written `(c) != 0` says `body` and
+  stays in the template. A test under `!` also stays, so `!(p)` keeps printing
+  `$p.is_null()`. Other conversions stay in the template, because a plain hole
+  can occur more than once with one argument value. Codegen prints the
+  repetition as `__slate_macro_list_<name>`, which `format.rs` turns back into
+  `$($name),*`, or `$($name,)*` before a comma. Writes to bit-fields stay
+  inline.
 - **Analyses**: `remove_mut` treats a template's plain arguments as reads.
   `inline_temps` will not inline into a template argument. `string_params` and
   `pointer_lattice` keep any pointer a template argument names raw, so lifting
-  never changes a type a template relies on. `length_lattice` rewrites calls inside
-  template arguments. A function named in a template body keeps its C signature in
-  every lift, because those passes do not rewrite template bodies. The name resolves
-  at the call site, so a template shared across units reaches each unit's own
-  `static` function of that name.
-- **Self-check**: with `SLATE_CHECK_MACRO_TEMPLATES=1` (set by the `project_merge`
-  tests), the lowerer re-lowers each outermost site without structure and compares
-  it to its expanded templates. A difference is `Invariant::MacroTemplateMismatch`.
+  never changes a type a template relies on. `length_lattice` rewrites calls
+  inside template arguments. A function named in a template body keeps its C
+  signature in every lift, because those passes do not rewrite template bodies.
+  The name resolves at the call site, so a template shared across units reaches
+  each unit's own `static` function of that name.
+- **Self-check**: with `SLATE_CHECK_MACRO_TEMPLATES=1` (set by the
+  `project_merge` tests), the lowerer re-lowers each outermost site without
+  structure and compares it to its expanded templates. A difference is
+  `Invariant::MacroTemplateMismatch`.
 
 ## Validation
 
@@ -164,17 +208,20 @@ cargo nextest r --release --profile slate
 - Run commands from the workspace root.
 - Browser demos: build with `bash www/build.sh` and `bash www-parser/build.sh`;
   run `node tools/check_web_demo.mjs <site>/dist` for each before deployment.
-- WASI runs the CLI directly with a 16 MiB linker stack; native CLI entry uses
-  a dedicated thread. Browser header archives must dereference symbolic and
-  hard links because the worker unpacker reads regular files only.
-- The profile exercises raw lowering through host differential fixtures and corpus suites.
+- WASI runs the CLI directly with a 16 MiB linker stack; native CLI entry uses a
+  dedicated thread. Browser header archives must dereference symbolic and hard
+  links because the worker unpacker reads regular files only.
+- The profile exercises raw lowering through host differential fixtures and
+  corpus suites.
 - Passing raw lowering tests does not establish rewrite-specific coverage.
 - Opt-in LLVM translation validation:
   `python3 tools/alive2/validate.py crates/slate/tests/fixtures`. Discovers
   functions and retains per-fixture artifacts; unsupported cases never count as
   validated. See [usage and proof scope](../../tools/alive2/README.md).
-- [Differential fixtures](differential-fixtures.md) defines the supported/unsupported ratchet and triage commands.
-- Prior design records are collected in the [historical index](../historical/index.md).
+- [Differential fixtures](differential-fixtures.md) defines the
+  supported/unsupported ratchet and triage commands.
+- Prior design records are collected in the
+  [historical index](../historical/index.md).
 
 ## System declarations
 
@@ -185,31 +232,33 @@ cargo nextest r --release --profile slate
   JSON, exposed through `slate_support::mach`. No hand-maintained symbol list;
   ambiguous names and failed ABI probes retain local declarations.
 - Windows maps only the C runtime through `libc`. Win32 API declarations stay
-  local: `windows-sys` paths could not merge cfgs much further, and their
-  record field types clashed with the C types slate lowers field writes to.
+  local: `windows-sys` paths could not merge cfgs much further, and their record
+  field types clashed with the C types slate lowers field writes to.
 - COFF import prefixes and i686 stdcall decoration are normalized only after
   signature checking.
 - MSVC compiler intrinsics are declared but not defined by MSVC headers.
   - x86 and x64 `_mm*` names import from `core::arch::{x86,x86_64}`.
-  - The table `src/msvc_simd_table.rs` is generated from the toolchain's
-    stdarch sources by `crates/slate/tools/gen_msvc_simd_table.py`. It covers
-    SSE through AVX2, AES, PCLMUL, SHA, FMA and F16C, and skips unstable
-    functions and those that take references.
+  - The table `src/msvc_simd_table.rs` is generated from the toolchain's stdarch
+    sources by `crates/slate/tools/gen_msvc_simd_table.py`. It covers SSE
+    through AVX2, AES, PCLMUL, SHA, FMA and F16C, and skips unstable functions
+    and those that take references.
   - The header's `__m128`/`__m128i`/`__m128d`/`__m256*` unions shape as the
     `core::arch` types. Arguments and returns are transmuted at the call.
   - Intrinsics whose Rust signature differs from MSVC's are `slate_support`
     helpers instead: `__movs*`/`__stos*`, `__cpuid`/`__cpuidex`,
     `_addcarry_u32/u64`, `_subborrow_u32/u64` and `_umul128`.
 - The catalogs contain names, destinations, translation-target eligibility and
-  each function's probed signature. Layouts, linker names and values stay in
-  the generator report.
-- A system function binds to its canonical path only when the unit's
-  signature equals the catalog's; feature macros such as `_GNU_SOURCE` can
-  change it (`setitimer`, GNU `strerror_r`), and a mismatch keeps a local extern.
+  each function's probed signature. Layouts, linker names and values stay in the
+  generator report.
+- A system function binds to its canonical path only when the unit's signature
+  equals the catalog's; feature macros such as `_GNU_SOURCE` can change it
+  (`setitimer`, GNU `strerror_r`), and a mismatch keeps a local extern.
 - Lookup uses the translation target, never the host compiler cfg. Unknown or
-  incompatible targets keep local declarations; canonical paths merge downstream.
+  incompatible targets keep local declarations; canonical paths merge
+  downstream.
 - User definitions and non-system declarations stay local. Sema retains named
-  system constant macro references in the IR; lowering maps the complete reference.
-  Expanded expression fragments and numeric literals are never matched.
+  system constant macro references in the IR; lowering maps the complete
+  reference. Expanded expression fragments and numeric literals are never
+  matched.
 - Vendored libc defaults to FreeBSD 15 and 64-bit file offsets/time on 32-bit
   glibc. Header probes and workspace libc builds select the matching settings.

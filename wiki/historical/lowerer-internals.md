@@ -1,23 +1,22 @@
 # Lowerer internals
 
-> Historical record. See the [archive index](index.md) for scope and source revision.
+> Historical record. See the [archive index](index.md) for scope and source
+> revision.
 
 <!-- toc -->
 
-- [Two-tier state: `Lowerer` vs
-  `FunctionLowerer`](#two-tier-state-lowerer-vs-functionlowerer)
+- [Two-tier state: `Lowerer` vs `FunctionLowerer`](#two-tier-state-lowerer-vs-functionlowerer)
 - [Op dispatch](#op-dispatch)
 - [Submodule map](#submodule-map)
-- [Constant global-initializer resolution
-  (`#cir.global_view`)](#constant-global-initializer-resolution-cirglobal_view)
+- [Constant global-initializer resolution (`#cir.global_view`)](#constant-global-initializer-resolution-cirglobal_view)
 - [Adding a new `cir.*` handler](#adding-a-new-cir-handler)
 <!-- /toc -->
 
 > This is the module-level map of `src/frontend/lowerer.rs` and
-> `src/frontend/lowerer/`. See [slate-architecture.md](slate-architecture-cir.md) for why the
-> lowerer exists and what it consumes; see [passes.md](passes.md) for where
-> `lower` sits in the overall pipeline. Read this before touching any `cir.*`
-> handler.
+> `src/frontend/lowerer/`. See
+> [slate-architecture.md](slate-architecture-cir.md) for why the lowerer exists
+> and what it consumes; see [passes.md](passes.md) for where `lower` sits in the
+> overall pipeline. Read this before touching any `cir.*` handler.
 
 ## Two-tier state: `Lowerer` vs `FunctionLowerer`
 
@@ -26,13 +25,13 @@ Lowering runs in two nested passes over one `Lowerer<'a>`:
 - **`Lowerer<'a>`** (`lowerer.rs`) holds translation-unit-wide state: collected
   globals (`globals`, `extern_globals`, `strings`, `const_arrays`), records and
   enums (`records`, `enums`), known function signatures
-  (`function_return_types`, `function_param_types`, `known_functions`),
-  bitfield storage layout (`bitfield_storages`), and misc feature-usage flags
+  (`function_return_types`, `function_param_types`, `known_functions`), bitfield
+  storage layout (`bitfield_storages`), and misc feature-usage flags
   (`uses_long_double`, `uses_complex`, ...) that decide which prelude items the
   final `Program` needs. `pub fn lower_with_project` constructs one `Lowerer`
   and calls `lower_module`, which:
-  1. Walks every top-level op once via `collect_global` (strings first, so
-     later globals that reference them by name resolve), `collect_bitfield_storages`,
+  1. Walks every top-level op once via `collect_global` (strings first, so later
+     globals that reference them by name resolve), `collect_bitfield_storages`,
      `collect_lifecycle_hooks`, `collect_used_symbols`, and builds
      `global_sym_types` (raw CIR `sym_type` per global symbol, needed because a
      global's _initializer_ can reference another global declared later in the
@@ -40,15 +39,15 @@ Lowering runs in two nested passes over one `Lowerer<'a>`:
   2. Lowers every function definition by building one `FunctionLowerer` per
      function and running it over the function body.
 
-- **`FunctionLowerer<'a, 'b>`** (`lowerer.rs` struct, methods spread across
-  most of `lowerer/*.rs`) holds `parent: &'a mut Lowerer<'b>` plus everything
-  scoped to the function currently being lowered: SSA-value bindings
+- **`FunctionLowerer<'a, 'b>`** (`lowerer.rs` struct, methods spread across most
+  of `lowerer/*.rs`) holds `parent: &'a mut Lowerer<'b>` plus everything scoped
+  to the function currently being lowered: SSA-value bindings
   (`values: BTreeMap<String, Val>`), alloca/slot tracking (`slots`,
   `slot_places`, `slot_types`), place trackers for pointer-typed SSA values
   (`member_ptrs`, `element_ptrs`), the output statement buffer (`body`), loop
-  and `goto`-dispatch state (`loop_stack`, `dispatch: Option<DispatchCtx>` —
-  the state-machine fallback for CFGs that don't reloop cleanly), and va_list /
-  asm / macro-const bookkeeping local to the function.
+  and `goto`-dispatch state (`loop_stack`, `dispatch: Option<DispatchCtx>` — the
+  state-machine fallback for CFGs that don't reloop cleanly), and va_list / asm
+  / macro-const bookkeeping local to the function.
 
 Free functions outside both structs are stateless typed-CIR analysis and type
 lowering helpers. They take the typed `Module`, `Function`, `Op`, or structural
@@ -58,8 +57,8 @@ type/attribute data they need instead of reading lowering state.
 
 Every op inside a function body funnels through `FunctionLowerer::lower_op`
 (`lowerer.rs`), a single match on clang-ir's generated `Op` that fans out to one
-`self.lower_xxx(op)` (or a handful of ops sharing one handler, e.g. every
-libm unary op routes through `lower_unary_method`/`lower_known_unary_method`).
+`self.lower_xxx(op)` (or a handful of ops sharing one handler, e.g. every libm
+unary op routes through `lower_unary_method`/`lower_known_unary_method`).
 Generic clang-ir `Operation` nodes are converted to the generated `Op` tree at
 the function boundary. Runtime handlers consume generated structs from the
 `inst` namespace and do not fall back to the generic operation. The handler
@@ -107,21 +106,21 @@ glob-imported, since their functions are reached as `self.method()`.
 `lowerer.rs` itself keeps the `Lowerer`/`FunctionLowerer`/`DispatchCtx`/
 `LoopFrame`/`MemberPtr`/`ElementPtr` state definitions, `lower_module`, global
 collection, record/enum emission, initializer rendering, layout logic, and a
-handful of tightly coupled helpers — e.g. `global_view_init_expr`
-/ `global_view_index_path` (constant address-of-global expressions, including
+handful of tightly coupled helpers — e.g. `global_view_init_expr` /
+`global_view_index_path` (constant address-of-global expressions, including
 indexed sub-object views: `&arr[i]`, `&record.field`, chained through nested
 arrays/records/unions) and `record_field_offset` (byte offset of a named field,
 used by fixups that need struct layout math).
 
 ## Constant global-initializer resolution (`#cir.global_view`)
 
-Worth calling out on its own because it's a recurring source of gcc-torture
-bugs (see [gcc-torture-triage.md](gcc-torture-triage-cir.md)): CIR represents a
+Worth calling out on its own because it's a recurring source of gcc-torture bugs
+(see [gcc-torture-triage.md](gcc-torture-triage-cir.md)): CIR represents a
 constant address-of-global expression — `&g`, `&arr[3]`, `&s.field`, or a chain
 of both — as `#cir.global_view<@symbol, [i0, i1, ...]>`. The indices are a
 **type-directed path** into `symbol`'s own declared type: each index selects an
-array element or the Nth positional record member (for a union, member offset
-is always 0, since union members overlay). `constants::parse_cir_global_view`
+array element or the Nth positional record member (for a union, member offset is
+always 0, since union members overlay). `constants::parse_cir_global_view`
 extracts just `symbol`; `constants::parse_cir_global_view_indices` extracts the
 index list. `Lowerer::global_view_index_path` walks those indices against
 `global_sym_types[symbol]` (not `self.globals[symbol].ty`, since the
@@ -134,23 +133,25 @@ initializers reject.
 ## Adding a new `cir.*` handler
 
 1. Add or extend a C fixture reproducing the missing op (see
-   [differential-fixtures.md](../concepts/differential-fixtures.md) for fixture and FileCheck
-   conventions; the same fixture-first rule applies to lowering features).
-2. Confirm it's a _lowering_ gap, not a fixup gap: `cargo run -- translate-lowered <file.c>`
-   shows raw lowering output with no fixup passes applied.
-3. Find the op's CIR name with `cargo run -- emit-cir <file.c>` (or `SLATE_CLANG`'s
-   `cir-opt --mlir-print-op-generic` directly for the exact generic-form text
-   the parser sees).
+   [differential-fixtures.md](../concepts/differential-fixtures.md) for fixture
+   and FileCheck conventions; the same fixture-first rule applies to lowering
+   features).
+2. Confirm it's a _lowering_ gap, not a fixup gap:
+   `cargo run -- translate-lowered <file.c>` shows raw lowering output with no
+   fixup passes applied.
+3. Find the op's CIR name with `cargo run -- emit-cir <file.c>` (or
+   `SLATE_CLANG`'s `cir-opt --mlir-print-op-generic` directly for the exact
+   generic-form text the parser sees).
 4. Confirm clang-ir's generated `Op` contains the operation and carries every
    operand, result, attribute, successor, and region the handler needs. Fix and
    regenerate clang-ir-types first if it does not.
 5. Add the `Op::X(value) => self.lower_x(&value)` arm in
    `FunctionLowerer::lower_op` (`lowerer.rs`).
-6. Implement `lower_x(&inst::X)` in whichever submodule matches the table above (new
-   arithmetic-shaped op -> `arithmetic.rs`; new place/pointer op -> `memory.rs`;
-   new control-flow op -> `control_flow.rs`; etc). Reuse `place_expr`/
-   `materialize_expr`/`push_stmt` from `memory.rs`/`values.rs` rather than
-   building `Expr`/`Stmt` nodes by hand where those helpers already cover the
-   shape.
-7. `cargo fmt`, then run the fixture through the relevant `cargo nextest r --release --profile lowering`
-   differential test.
+6. Implement `lower_x(&inst::X)` in whichever submodule matches the table above
+   (new arithmetic-shaped op -> `arithmetic.rs`; new place/pointer op ->
+   `memory.rs`; new control-flow op -> `control_flow.rs`; etc). Reuse
+   `place_expr`/ `materialize_expr`/`push_stmt` from `memory.rs`/`values.rs`
+   rather than building `Expr`/`Stmt` nodes by hand where those helpers already
+   cover the shape.
+7. `cargo fmt`, then run the fixture through the relevant
+   `cargo nextest r --release --profile lowering` differential test.

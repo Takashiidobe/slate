@@ -1,6 +1,7 @@
 # Architecture and principles
 
 <!-- toc -->
+
 - [Pipeline](#pipeline)
 - [Checker first, lowering trusts](#checker-first-lowering-trusts)
 - [What goes in the IR](#what-goes-in-the-ir)
@@ -11,8 +12,8 @@
 - [Browser explorer](#browser-explorer)
 <!-- /toc -->
 
-The decisions every change is judged against. The detail lives in the
-linked pages.
+The decisions every change is judged against. The detail lives in the linked
+pages.
 
 ## Pipeline
 
@@ -22,69 +23,69 @@ argv → Dialect → preprocess → parse → sema: names → check → lower �
 
 - One run means one configuration: flavor, standard, target, and flags
   ([configuration-threading](configuration-threading.md)).
-- slate-parser emits the IR, and Slate (`../slate`) turns it into Rust. We
-  own the IR, so we also own that boundary.
+- slate-parser emits the IR, and Slate (`../slate`) turns it into Rust. We own
+  the IR, so we also own that boundary.
 - Binding discovery opts out of header reachability filtering with
-  `Parser::with_all_declarations(true)` or CLI `--all-declarations`. Headers
-  are still preprocessed once; normal translation retains its existing roots.
+  `Parser::with_all_declarations(true)` or CLI `--all-declarations`. Headers are
+  still preprocessed once; normal translation retains its existing roots.
 
 ## Checker first, lowering trusts
 
-- The checker (`sema/assertion.rs` and friends; [sema-passes](sema-passes.md)) decides whether a
-  declaration or expression is valid. Put as much logic as possible there.
-- Lowering assumes checked input. A failure there is an `Internal` error,
-  which marks a gap in the checker, never a user diagnostic.
-- Lowering reads what the checker recorded for a node (result type,
-  operand conversions, initializer layout) and derives no C types or
-  conversions of its own. Shared _emitters_ (IR builders) are fine. Shared
-  _typing_ functions called from both passes are not: the helper is
-  shared, but each pass's code that picks which helper applies drifts
-  (the enum `?:` bug, slate-parser-ygrj).
+- The checker (`sema/assertion.rs` and friends; [sema-passes](sema-passes.md))
+  decides whether a declaration or expression is valid. Put as much logic as
+  possible there.
+- Lowering assumes checked input. A failure there is an `Internal` error, which
+  marks a gap in the checker, never a user diagnostic.
+- Lowering reads what the checker recorded for a node (result type, operand
+  conversions, initializer layout) and derives no C types or conversions of its
+  own. Shared _emitters_ (IR builders) are fine. Shared _typing_ functions
+  called from both passes are not: the helper is shared, but each pass's code
+  that picks which helper applies drifts (the enum `?:` bug, slate-parser-ygrj).
 - Invariant (since slate-parser-ygrj): lowering reads facts and derives no
-  types. Expression types, operand conversions, selections, initializer
-  plans and merged declaration types all come from the checker; a missing
-  fact is `Internal`. The only re-derivation is a variably modified type,
-  which lowering re-runs through the checker's own rule with bound extents.
-  A new rule goes in the checker with its result recorded; never add a
-  lowering-side copy or a shared typing helper.
+  types. Expression types, operand conversions, selections, initializer plans
+  and merged declaration types all come from the checker; a missing fact is
+  `Internal`. The only re-derivation is a variably modified type, which lowering
+  re-runs through the checker's own rule with bound extents. A new rule goes in
+  the checker with its result recorded; never add a lowering-side copy or a
+  shared typing helper.
 
 ## What goes in the IR
 
 - Emit something only if the Rust side can use it.
-- A source construct that changes semantic meaning must be represented in
-  the IR. This is source-to-source, not an optimizer, so dropping it is a
+- A source construct that changes semantic meaning must be represented in the
+  IR. This is source-to-source, not an optimizer, so dropping it is a
   miscompile.
 - If Rust can already express it through `extern` (for example an MSVC
   `fastcall` import), pass it through and let Slate handle it.
-- If Rust cannot express it directly, the IR must carry the resolved
-  meaning, so that the Rust lowering stays mechanical. Example: gcc and
-  clang give `_Atomic` aggregates different layouts and access rules, so
-  the IR emits a different shape per flavor instead of a bare "atomic".
+- If Rust cannot express it directly, the IR must carry the resolved meaning, so
+  that the Rust lowering stays mechanical. Example: gcc and clang give `_Atomic`
+  aggregates different layouts and access rules, so the IR emits a different
+  shape per flavor instead of a bare "atomic".
 
 ## `Unimplemented`
 
-`ResolveError::Unimplemented` is like LLVM's NYI: a construct we will
-model but haven't yet. It is not a rejection. A fixture that hits it
-records work still to do, not accepted behavior.
+`ResolveError::Unimplemented` is like LLVM's NYI: a construct we will model but
+haven't yet. It is not a rejection. A fixture that hits it records work still to
+do, not accepted behavior.
 
 ## Strictness policy
 
-- Too strict is a bug: if gcc, clang, or MSVC accepts the code with a
-  given flag set, slate-parser must accept it with the same flags. The
-  priority depends on how common the construct is.
-- Too permissive is fine. Accepting code that one of the three rejects is
-  P4 at most, since users compile their code with a real compiler first.
+- Too strict is a bug: if gcc, clang, or MSVC accepts the code with a given flag
+  set, slate-parser must accept it with the same flags. The priority depends on
+  how common the construct is.
+- Too permissive is fine. Accepting code that one of the three rejects is P4 at
+  most, since users compile their code with a real compiler first.
 - Error fixtures (`tests/fixtures/error/`) assert only that the input is
   rejected. Matching a compiler's wording is not a goal.
 
 ## Priorities
 
 - Get the clang flavor mostly complete first.
-- The yardstick is real-world C. zstd is a deliberately hard target.
-  Parse it under clang, then under gcc and MSVC.
+- The yardstick is real-world C. zstd is a deliberately hard target. Parse it
+  under clang, then under gcc and MSVC.
 - Rerun the sweeps (`tools/gcc_dg_sweep.py`, `tools/llvm_lit_sweep.py`,
-  `tools/corpus_sweep.py`, `tools/c_corpus_sweep.py`) once a good share of
-  an epic's beads is closed, not after every fix.
+  `tools/corpus_sweep.py`, `tools/c_corpus_sweep.py`) once a good share of an
+  epic's beads is closed, not after every fix.
 
 ## Oracles and inputs
 
@@ -101,8 +102,12 @@ Differences between versions of the same compiler are out of scope.
 
 ## Browser explorer
 
-- `www-parser/` mirrors the Slate demo in `www/`; see [build and hosting](../../www-parser/README.md).
+- `www-parser/` mirrors the Slate demo in `www/`; see
+  [build and hosting](../../www-parser/README.md).
 - `wasm32-wasip1` runs the CLI directly; native builds use a dedicated thread.
-- `www-parser/build.sh` reserves a 16 MiB WASM stack and packages lazy compiler/target headers.
-- The worker runs `parse` and `ir` separately per target; AST output survives IR failures.
-- Diagnostics use CLI text per output tab; source processing stays in the browser.
+- `www-parser/build.sh` reserves a 16 MiB WASM stack and packages lazy
+  compiler/target headers.
+- The worker runs `parse` and `ir` separately per target; AST output survives IR
+  failures.
+- Diagnostics use CLI text per output tab; source processing stays in the
+  browser.

@@ -6,10 +6,10 @@
 
 Use `src/backend/query/` when a rewrite can replace a selected expression,
 delete a definition, replace a function body, splice a run of adjacent
-statements, or replace the whole program. The query engine owns AST
-traversal, fact lookup, stable node locations, conflict detection, mutation,
-and tracing. The rule should contain only candidate selection, ordered
-preconditions, and anchored typed edits.
+statements, or replace the whole program. The query engine owns AST traversal,
+fact lookup, stable node locations, conflict detection, mutation, and tracing.
+The rule should contain only candidate selection, ordered preconditions, and
+anchored typed edits.
 
 ## Expression and call rules
 
@@ -76,8 +76,8 @@ evidence and earlier case rejections for `fixup-debug`.
 ## Recipes
 
 A case returns an `EditSet`, never rendered Rust. Keep detailed AST construction
-in `src/backend/query/recipe.rs` so the rule stays short, lower the recipe against
-the matched site, and anchor the result explicitly:
+in `src/backend/query/recipe.rs` so the rule stays short, lower the recipe
+against the matched site, and anchor the result explicitly:
 
 ```rust
 let replacement = case.lower_expr(
@@ -127,10 +127,10 @@ indexing and pointer-difference policy.
 
 For owned heap lifetimes, `heap_ownership_facts` exposes owner, allocation,
 size, alias, free, and reallocation bindings together with exact lifecycle and
-use statements. Allocation kind, extent, initialization, read safety, and
-resize direction remain independent observations. The rule decides Box/Vec
-eligibility and constructs the private recipe plan; the query never returns a
-rewrite plan or rewritten body.
+use statements. Allocation kind, extent, initialization, read safety, and resize
+direction remain independent observations. The rule decides Box/Vec eligibility
+and constructs the private recipe plan; the query never returns a rewrite plan
+or rewritten body.
 
 For signature rewrites, `parameter_function` relates a stable parameter handle
 to its function and `parameter_uses` exposes its binding uses.
@@ -174,8 +174,8 @@ pub(in crate::backend) fn helper() -> QueryRule<Definition> {
 ```
 
 The matcher composes `kind`, `name`, and `group` fields. Edit actions are
-`EditSet::delete_definition(...)` and
-`EditSet::replace_function_body(...)`. Preconditions are:
+`EditSet::delete_definition(...)` and `EditSet::replace_function_body(...)`.
+Preconditions are:
 
 - `zero_users()` for every symbol exported by one definition;
 - `zero_group_users()` for every definition in a header or support group.
@@ -251,10 +251,10 @@ changed
 ```
 
 Use `ItemPlanBuilder` and `plan.apply(&mut program, &incremental, logger)` for
-every matcher-driven rule, including expression, binding, definition,
-function, and statement matches. Add several rules to one builder only when
-they intentionally share a snapshot; overlapping edit sets are rejected across
-item kinds.
+every matcher-driven rule, including expression, binding, definition, function,
+and statement matches. Add several rules to one builder only when they
+intentionally share a snapshot; overlapping edit sets are rejected across item
+kinds.
 
 One accepted `EditSet` is transactional. Every anchor is validated against the
 unchanged input before mutation, and a missing or stale anchor rejects that
@@ -267,15 +267,15 @@ target. Reports count applied edit sets and deduplicate touched items.
 The fundamental edits replace a typed expression, statement range, complete
 function, or complete definition. Signature, parameter, and body changes use a
 lightweight `FunctionRef` to look up the snapshot `FnDef`, clone it only while
-constructing the accepted edit, and replace that function.
-Argument-list changes replace the anchored call expression. Binding declarations,
-initializers, nested blocks, and match arms use statement-range replacement;
-record fields and enum variants replace their enclosing definition. Definition
-deletion is definition replacement with no successor. Convenience constructors
-compose these operations and do not add pass-specific planner actions.
-Top-level insertion uses `EditSet::insert_items` with the immutable snapshot's
-item count, applies in reverse source order after removals, and marks touched
-items unbounded because insertion renumbers every later item.
+constructing the accepted edit, and replace that function. Argument-list changes
+replace the anchored call expression. Binding declarations, initializers, nested
+blocks, and match arms use statement-range replacement; record fields and enum
+variants replace their enclosing definition. Definition deletion is definition
+replacement with no successor. Convenience constructors compose these operations
+and do not add pass-specific planner actions. Top-level insertion uses
+`EditSet::insert_items` with the immutable snapshot's item count, applies in
+reverse source order after removals, and marks touched items unbounded because
+insertion renumbers every later item.
 
 Call `incremental.set_program(&program)` after applying edits. Tracked reads
 then derive from the current program directly, while salsa backdating stops
@@ -286,16 +286,16 @@ definition deletion after the final pass that can remove a user.
 ## Lowering-like rules
 
 Control-flow recovery and other lowering-like rewrites use the same query and
-edit protocol. Expose a semantic region view with stable statement anchors,
-then pass that view to a typed recipe that constructs replacement AST. Keep CFG
+edit protocol. Expose a semantic region view with stable statement anchors, then
+pass that view to a typed recipe that constructs replacement AST. Keep CFG
 analysis and structural emission in the recipe; the query rule only selects the
 region, requests the lowering, and returns one transactional `EditSet` for all
 affected anchors.
 
 Use multiple statement edits when a region is not contiguous. For example, a
-dispatch rewrite can replace its loop and delete an earlier state declaration
-in one edit set. Do not widen the replacement range across unrelated statements
-or move the lowering algorithm into matcher predicates.
+dispatch rewrite can replace its loop and delete an earlier state declaration in
+one edit set. Do not widen the replacement range across unrelated statements or
+move the lowering algorithm into matcher predicates.
 
 ## Program rules
 

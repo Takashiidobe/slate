@@ -1,14 +1,14 @@
 # Comment placement
 
 <!-- toc -->
+
 - [Problem](#problem)
 - [Ownership model](#ownership-model)
 - [Taxonomy](#taxonomy)
   - [Owned](#owned)
   - [Detached](#detached)
   - [Dropped](#dropped)
-- [Migration when an owner
-  disappears](#migration-when-an-owner-disappears)
+- [Migration when an owner disappears](#migration-when-an-owner-disappears)
 - [Doc vs regular comments](#doc-vs-regular-comments)
   - [Text normalization](#text-normalization)
   - [Rendering status](#rendering-status)
@@ -19,7 +19,8 @@
 <!-- /toc -->
 
 Where a C comment ends up in generated Rust, and whether it becomes a doc
-comment. Current IR shape: [pipeline](ir/pipeline.md#node-identity-and-metadata).
+comment. Current IR shape:
+[pipeline](ir/pipeline.md#node-identity-and-metadata).
 
 ## Problem
 
@@ -43,17 +44,16 @@ Text is also rendered raw: `// /*`, `// **`.
 
 ## Ownership model
 
-The preprocessor and parser classify every comment, since only they see
-newlines and blank lines. In the AST a comment stays a sibling item tagged
+The preprocessor and parser classify every comment, since only they see newlines
+and blank lines. In the AST a comment stays a sibling item tagged
 `attach: Leading | Trailing | Detached`; its owner is the next sibling
 (`Leading`) or the previous one (`Trailing`). Parameters have no sibling list,
 so `ParameterDeclaration.comments` holds theirs. Rules:
 [ast-spec](ast-spec.md#comments).
 
 From the IR on, owned comments become fields of their node in the IR and the
-Rust AST, so reordering and rewriting move them for free. Only detached
-comments are placed by position, and they anchor to a node id, never to an
-offset search.
+Rust AST, so reordering and rewriting move them for free. Only detached comments
+are placed by position, and they anchor to a node id, never to an offset search.
 
 ## Taxonomy
 
@@ -85,13 +85,13 @@ Requirement tags such as `EVIDENCE-OF:` and `IMP:` are content and stay.
 
 ## Migration when an owner disappears
 
-When lowering or a rewrite rule deletes or merges a node, its comments go to,
-in order: the replacement node, the next surviving sibling, the parent block's
+When lowering or a rewrite rule deletes or merges a node, its comments go to, in
+order: the replacement node, the next surviving sibling, the parent block's
 inner-trailing slot. This is one rule-engine helper (`Arena::retire`,
 `retire_subtree`, `release_comments`) used by every rule (`inline_temps`,
 `zero_init`, `for_range`, ...) rather than per-rule handling; dispatcher
-lowering does the slot case in `lower_dispatch`. A local hoisted into a `__slate_slot` carries its comment onto the
-synthesized slot `let`.
+lowering does the slot case in `lower_dispatch`. A local hoisted into a
+`__slate_slot` carries its comment onto the synthesized slot `let`.
 
 ## Doc vs regular comments
 
@@ -109,9 +109,9 @@ marker makes that certain.
 
 Positional promotion is the default for `translate-project` and single-file
 `translate` (it must not churn FileCheck fixtures, which render the parser IR,
-not Rust). Statement-level
-`///` would trigger `unused_doc_comments`, and a `///` with no following item
-or a `//!` after an item is a hard error; the ownership model rules both out.
+not Rust). Statement-level `///` would trigger `unused_doc_comments`, and a
+`///` with no following item or a `//!` after an item is a hard error; the
+ownership model rules both out.
 
 ### Text normalization
 
@@ -122,8 +122,8 @@ escaped for Markdown. Tool annotations (`FALLTHROUGH`, `NOTREACHED`, `ARGSUSED`,
 
 ### Rendering status
 
-- `translate-project --explicit-docs-only` disables positional promotion;
-  only explicit markers become `///`.
+- `translate-project --explicit-docs-only` disables positional promotion; only
+  explicit markers become `///`.
 - The prologue is emitted as `//!` right after the crate attributes.
 - A single-line trailing comment on a statement or local renders on the same
   line (`let r = 0; // sum`).
@@ -146,19 +146,19 @@ definition carry a leading comment, the definition's wins; the prototype's is
 the fallback. Typedef and tag comments for the same record merge the same way,
 definition first.
 
-Sema implements this in `attach_declaration_comments` with three sibling
-kinds: `Definition` (a later definition of an existing function, global, or
-record replaces the leading comments only when it has its own), `Forward` (a
-`struct S;` or `typedef struct S S;` parks its comments under the tag name),
-and `Record` (the tag's definition takes them as a fallback). Unused forward
+Sema implements this in `attach_declaration_comments` with three sibling kinds:
+`Definition` (a later definition of an existing function, global, or record
+replaces the leading comments only when it has its own), `Forward` (a
+`struct S;` or `typedef struct S S;` parks its comments under the tag name), and
+`Record` (the tag's definition takes them as a fallback). Unused forward
 comments become detached at their position.
 
 ## Macro definitions
 
-A `#define` owns the comment run directly above it (own line, no blank line)
-and the comments on its directive line. The preprocessor records their
-locations on `MacroDefinition.comments`; the parser still emits them as
-detached file-scope comments. When an expansion lifts to a `macro_rules!`,
+A `#define` owns the comment run directly above it (own line, no blank line) and
+the comments on its directive line. The preprocessor records their locations on
+`MacroDefinition.comments`; the parser still emits them as detached file-scope
+comments. When an expansion lifts to a `macro_rules!`,
 `claim_definition_comments` takes the matching detached comments, makes them
 leading (a trailing comment moves above, like a `#define`→`const`) and stores
 them on `Item::MacroRules`, which carries them through cfg merging and
@@ -168,6 +168,6 @@ statement comments and stay there. `#define`s in system headers own none.
 
 ## Item order
 
-Items from a source file are emitted in source order, functions included;
-Rust has no declare-before-use constraint. Section comments then land between
-their original neighbours.
+Items from a source file are emitted in source order, functions included; Rust
+has no declare-before-use constraint. Section comments then land between their
+original neighbours.

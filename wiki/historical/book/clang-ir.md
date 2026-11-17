@@ -1,23 +1,23 @@
 # clang-ir
 
-> Historical record. See the [archive index](../index.md) for scope and source revision.
+> Historical record. See the [archive index](../index.md) for scope and source
+> revision.
 
 Slate uses clang-ir (CIR), which is a recently upstreamed MLIR variant that's
-going to be used for improving diagnostics for editors (think clangd)
-and improving optimizations for C/C++ code.
+going to be used for improving diagnostics for editors (think clangd) and
+improving optimizations for C/C++ code.
 
-Clang-ir's instability means that for now, to use Slate, you have to
-pull down the project and build it yourself since most binary builds of
-clang you can get don't build it by default. That's a big con. Another
-big con is that the instructions themselves change quite often, in
-backwards incompatible ways. Every pull down of clang could break
-parsing logic (and it did for a while, when slate had a handwritten
-list of supported CIR operations).
+Clang-ir's instability means that for now, to use Slate, you have to pull down
+the project and build it yourself since most binary builds of clang you can get
+don't build it by default. That's a big con. Another big con is that the
+instructions themselves change quite often, in backwards incompatible ways.
+Every pull down of clang could break parsing logic (and it did for a while, when
+slate had a handwritten list of supported CIR operations).
 
-Given that, you might wonder why Slate doesn't just use clang-ast. It's
-stable, has been supported for ages, and is integrated into every clang
-build. [C2Rust uses it](https://crates.io/crates/c2rust-ast-exporter),
-and there's pretty good support for deserializing it:
+Given that, you might wonder why Slate doesn't just use clang-ast. It's stable,
+has been supported for ages, and is integrated into every clang build.
+[C2Rust uses it](https://crates.io/crates/c2rust-ast-exporter), and there's
+pretty good support for deserializing it:
 [clang-ast](https://crates.io/crates/clang-ast).
 
 Take a hello world example:
@@ -56,9 +56,8 @@ Over 800 lines. Here's a sample:
         `-StringLiteral 0x55a2a2292b30 <col:29> 'char[3]' lvalue "hi"
 ```
 
-We really only care about two things. The function prototype for
-`printf` since we want to export it to rust, and the definition of the
-main function.
+We really only care about two things. The function prototype for `printf` since
+we want to export it to rust, and the definition of the main function.
 
 Using CIR for the same code:
 
@@ -66,10 +65,10 @@ Using CIR for the same code:
 ~/llvm-project/build-cir/bin/clang -std=c11 -fclangir -emit-cir x.c -o
 ```
 
-You can see we basically only get what we need. In fact, there's only
-really 15 or so lines to read, because that shows us the entire
-function: the static strings (`%s\n` and `hi`), as well as the external
-`printf` and then main, which calls `printf` and returns 0.
+You can see we basically only get what we need. In fact, there's only really 15
+or so lines to read, because that shows us the entire function: the static
+strings (`%s\n` and `hi`), as well as the external `printf` and then main, which
+calls `printf` and returns 0.
 
 ```mlir
 !s32i = !cir.int<s, 32>
@@ -95,43 +94,41 @@ module @"/home/takashi/Projects/slate/x.c" attributes {cir.default_tls_model = #
 ...
 ```
 
-This representation is much more conducive to lowering to rust. There's
-much less to take care (thanks CIR folks!). Since they do a lot of hard
-work of resolving only what's necessary, as well as handling type
-definitions and even linkage. That allows slate to keep its lowering
-phase smaller than would be done through clang-ast, and simpler, so it's
-less prone to bugs.
+This representation is much more conducive to lowering to rust. There's much
+less to take care (thanks CIR folks!). Since they do a lot of hard work of
+resolving only what's necessary, as well as handling type definitions and even
+linkage. That allows slate to keep its lowering phase smaller than would be done
+through clang-ast, and simpler, so it's less prone to bugs.
 
 ## The Clang-ir crate
 
-That still leaves the issue of instability. Slate used to handwrite its
-own code to parse CIR, but because the ops changed definition/name
-often, pulling down llvm and rebuilding would often cause errors at
-compile time or worse, runtime, since the ops had changed their meaning.
-Thankfully, Slate's tests can catch most of these, but this isn't ideal.
-To get around this, parsing was factored out from Slate and put into
-another crate, unimaginatively called
+That still leaves the issue of instability. Slate used to handwrite its own code
+to parse CIR, but because the ops changed definition/name often, pulling down
+llvm and rebuilding would often cause errors at compile time or worse, runtime,
+since the ops had changed their meaning. Thankfully, Slate's tests can catch
+most of these, but this isn't ideal. To get around this, parsing was factored
+out from Slate and put into another crate, unimaginatively called
 [clang-ir](https://crates.io/crates/clang-ir).
 
-The crate provides some helpers to parse CIR into a structured
-form. The more interesting part is how to deal with breakage from
-handwriting types that correspond to CIR ops. CIR ops themselves are
-written in LLVM's own parsing language, `tablegen`, with definitions
-found in: `clang/include/clang/CIR/Dialect/IR` in `*.td` files
-(td = TableDefinition?). If we could parse those then we could grab
-their information and generate CIR op types. Of course, LLVM has a
-tablegen parser, and thankfully, there's a rust crate that has bindings
-to it: [tblgen](https://crates.io/crates/tblgen). So we can parse the
-tablegen definitions and then emit some rust types. If anything changes,
-we can run our script again and regenerate the crate.
+The crate provides some helpers to parse CIR into a structured form. The more
+interesting part is how to deal with breakage from handwriting types that
+correspond to CIR ops. CIR ops themselves are written in LLVM's own parsing
+language, `tablegen`, with definitions found in:
+`clang/include/clang/CIR/Dialect/IR` in `*.td` files (td = TableDefinition?). If
+we could parse those then we could grab their information and generate CIR op
+types. Of course, LLVM has a tablegen parser, and thankfully, there's a rust
+crate that has bindings to it: [tblgen](https://crates.io/crates/tblgen). So we
+can parse the tablegen definitions and then emit some rust types. If anything
+changes, we can run our script again and regenerate the crate.
 
-The crate that does this is called [clang-ir-types-gen](https://github.com/Takashiidobe/clang-ir/tree/main/clang-ir-types-gen)
+The crate that does this is called
+[clang-ir-types-gen](https://github.com/Takashiidobe/clang-ir/tree/main/clang-ir-types-gen)
 (also an imaginative name), and it generates the internal
-[clang-ir-types](https://crates.io/crates/clang-ir-types) that is
-exported through the parsing crate. This means that as long as the CIR
-ops that slate relies on aren't changed in a backwards incompatible way,
-then its code doesn't need to change. A nice perk is that comments are
-also preserved as doc comments, so for example for the Abs op:
+[clang-ir-types](https://crates.io/crates/clang-ir-types) that is exported
+through the parsing crate. This means that as long as the CIR ops that slate
+relies on aren't changed in a backwards incompatible way, then its code doesn't
+need to change. A nice perk is that comments are also preserved as doc comments,
+so for example for the Abs op:
 
 [Abs doc](https://docs.rs/clang-ir-types/latest/clang_ir_types/ops/arithmetic/struct.Abs.html)
 

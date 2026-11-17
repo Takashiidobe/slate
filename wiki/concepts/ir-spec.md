@@ -1,15 +1,16 @@
 # IR Spec
 
 <!-- toc -->
+
 - [Rules](#rules)
 - [Subpages](#subpages)
 - [Worked example](#worked-example)
 <!-- /toc -->
 
-What the IR means and what is implemented, split by area under
-[`ir/`](ir/). The printed syntax is in [IR Grammar](ir-grammar.md); the
-principles every IR change is judged against are in
-[architecture](parser-architecture.md). Epic: `slate-parser-lh7`.
+What the IR means and what is implemented, split by area under [`ir/`](ir/). The
+printed syntax is in [IR Grammar](ir-grammar.md); the principles every IR change
+is judged against are in [architecture](parser-architecture.md). Epic:
+`slate-parser-lh7`.
 
 The IR is not Clang IR and does not aim for CIR compatibility. It exists for
 translation to Rust, not optimization.
@@ -17,15 +18,15 @@ translation to Rust, not optimization.
 ## Rules
 
 1. **Shown types and ops are concrete and Rust-shaped.** `int` is `i32`,
-   `long double` is `f80`, a conversion is `widen<i32>(x)`. The Rust
-   lowering never needs C's conversion rules.
+   `long double` is `f80`, a conversion is `widen<i32>(x)`. The Rust lowering
+   never needs C's conversion rules.
 2. **C-specific information is metadata.** Original C type, typedef chain,
-   conversion reason, header provenance: kept, optional to read, never
-   needed to reconstruct semantics.
-3. **No temporaries or storage beyond the source's**, except `[synthetic]`
-   ones that side-effect hoisting needs.
-4. **Every semantic choice is explicit.** UB, rounding, flavor-specific
-   layout, and evaluation order are printed on the node they affect.
+   conversion reason, header provenance: kept, optional to read, never needed to
+   reconstruct semantics.
+3. **No temporaries or storage beyond the source's**, except `[synthetic]` ones
+   that side-effect hoisting needs.
+4. **Every semantic choice is explicit.** UB, rounding, flavor-specific layout,
+   and evaluation order are printed on the node they affect.
 5. **Prune what isn't useful.** C bookkeeping with no translation signal is
    dropped once resolved.
 

@@ -1,8 +1,9 @@
 # MSVC reference sysroot
 
 Slate uses a pinned xwin splat as an external oracle for Microsoft CRT and
-Windows UCRT headers. Review the [Microsoft license](https://go.microsoft.com/fwlink/?LinkId=2086102),
-then bootstrap it from the repository root with:
+Windows UCRT headers. Review the
+[Microsoft license](https://go.microsoft.com/fwlink/?LinkId=2086102), then
+bootstrap it from the repository root with:
 
 ```bash
 tools/bootstrap-msvc-sysroot.sh --accept-license
@@ -23,9 +24,10 @@ The ignored output is entirely under `target/`:
 | `target/msvc-sysroot/include-roots.json` | machine-readable target and include roots                |
 
 The script removes splatted libraries and the UM, WinRT, and C++/WinRT include
-trees. It finishes by asking the configured CIR Clang to parse `vcruntime.h`
-and `stdio.h` for `x86_64-pc-windows-msvc`. Set `SLATE_CLANG` when the compiler
-is not at the repository default described in [slate overview](slate-overview-cir.md).
+trees. It finishes by asking the configured CIR Clang to parse `vcruntime.h` and
+`stdio.h` for `x86_64-pc-windows-msvc`. Set `SLATE_CLANG` when the compiler is
+not at the repository default described in
+[slate overview](slate-overview-cir.md).
 
 The xwin release, immutable Visual Studio package-manifest URL and digest, CRT
 version, SDK version, architecture, and target triple are constants at the top

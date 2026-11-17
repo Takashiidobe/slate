@@ -1,6 +1,7 @@
 # Inline asm
 
 <!-- toc -->
+
 - [`Statement::Asm`](#statementasm)
 - [Operand kinds and directions](#operand-kinds-and-directions)
 - [Alternative selection](#alternative-selection)
@@ -22,536 +23,559 @@ Part of the [IR spec](../ir-spec.md). MSVC `__asm` parsing and effects are in
 ## `Statement::Asm`
 
 A GNU `asm` keeps everything the parser resolved: the raw template,
-`volatile`/`inline`/`goto`, resolved template pieces, outputs as places,
-inputs as values, clobbers, and goto labels as `BindingId`s. The
-instructions themselves are never parsed; Slate treats the template as text
-with holes.
+`volatile`/`inline`/`goto`, resolved template pieces, outputs as places, inputs
+as values, clobbers, and goto labels as `BindingId`s. The instructions
+themselves are never parsed; Slate treats the template as text with holes.
 
 - Templates and text pieces contain decoded C string characters, including
   newlines and tabs; the Rust emitter must not decode them again.
 - `InlineAsm::operands` is one list in GCC order (outputs, then inputs), so
   `AsmPiece::Operand { index }` is a direct subscript. A `Label(n)` piece
-  indexes the label list, so `%l1` and `%l[done]` both print `%l0` when
-  `done` is the first label.
-- gcc and clang number one hidden input per `+` output after the explicit
-  inputs and before the labels. The parser resolves a reference to one to
-  its output, which is the same location: with `"+a"(b)` and no inputs,
-  `%q1` is `%q0` (`ir_asm_read_write_operand_numbers.c`).
+  indexes the label list, so `%l1` and `%l[done]` both print `%l0` when `done`
+  is the first label.
+- gcc and clang number one hidden input per `+` output after the explicit inputs
+  and before the labels. The parser resolves a reference to one to its output,
+  which is the same location: with `"+a"(b)` and no inputs, `%q1` is `%q0`
+  (`ir_asm_read_write_operand_numbers.c`).
 - Constraints keep the parsed alternative list; the printer rebuilds the GNU
   spelling from it, so output round-trips the parse.
-- Operand effects hoist ahead of the statement: outputs first in operand
-  order, then inputs in source order, as clang and gcc evaluate them. A
-  tied input sits in its output's slot as an `AsmTiedInput` that keeps its
-  source operand number; `InlineAsm::inputs_in_source_order` rebuilds the
-  order (`tied_order` in `ir_asm.c`).
-- Each asm carries `AsmDialect::{Att, Intel}` on x86 (`None` elsewhere),
-  per statement because MSVC `__asm` and GNU asm share a unit. GNU asm is
-  AT&T until `-masm` is supported. `{att|intel}` alternations resolve during
-  lowering; `%{`, `%|`, `%}` are literal.
+- Operand effects hoist ahead of the statement: outputs first in operand order,
+  then inputs in source order, as clang and gcc evaluate them. A tied input sits
+  in its output's slot as an `AsmTiedInput` that keeps its source operand
+  number; `InlineAsm::inputs_in_source_order` rebuilds the order (`tied_order`
+  in `ir_asm.c`).
+- Each asm carries `AsmDialect::{Att, Intel}` on x86 (`None` elsewhere), per
+  statement because MSVC `__asm` and GNU asm share a unit. GNU asm is AT&T until
+  `-masm` is supported. `{att|intel}` alternations resolve during lowering;
+  `%{`, `%|`, `%}` are literal.
 
 ## Operand kinds and directions
 
 `AsmOperandKind`: `In(Value)`, `InPlace(place)`, `Out { place }`,
 `InOut { place, input }`, `Symbol(AsmSymbol)`, and MSVC's `Memory`.
 
-- Rust's forms are the inverse of the naive reading, since GCC's plain `=`
-  lets an input share the register: `"=r"` is `lateout`, `"=&r"` `out`,
-  `"+r"` `inlateout`, `"+&r"` `inout`. `=`/`+` come from the first
-  alternative; `&` in any alternative makes it early-clobber (always safe).
-- An input matching output `n` (`"0"`, `"[out]"`, or `"0,m"` when
-  alternative 0 is chosen) folds into `InOut { input: Some(tied) }` and
-  template pieces renumber. With no alternative chosen, only a tie in every
-  alternative folds. `+` is `InOut { input: None }`.
+- Rust's forms are the inverse of the naive reading, since GCC's plain `=` lets
+  an input share the register: `"=r"` is `lateout`, `"=&r"` `out`, `"+r"`
+  `inlateout`, `"+&r"` `inout`. `=`/`+` come from the first alternative; `&` in
+  any alternative makes it early-clobber (always safe).
+- An input matching output `n` (`"0"`, `"[out]"`, or `"0,m"` when alternative 0
+  is chosen) folds into `InOut { input: Some(tied) }` and template pieces
+  renumber. With no alternative chosen, only a tie in every alternative folds.
+  `+` is `InOut { input: None }`.
 - Parser rejections (both compilers agree): an output without `=`/`+`,
   `=`/`+`/`&` on an input, a match past the outputs or to a `+` output, two
   inputs tied to one output. `-` is rejected inside functions (`Pic` only
-  survives in `Module::asm`). clang also rejects an input matching two
-  outputs and counts any-alternative matches as ties; gcc only full ties.
+  survives in `Module::asm`). clang also rejects an input matching two outputs
+  and counts any-alternative matches as ties; gcc only full ties.
 
 ## Alternative selection
 
 Rust takes one class per operand, so lowering picks one alternative for the
 whole asm: the first where every operand has a usable class.
 
-- Within it, a constant input prefers the immediate (`"ri"(5)` prints `$5`
-  in both compilers), then a register class the width fits, then an
-  explicit register, then memory. For `rm`, gcc prefers the register and
-  clang memory; we take the register, which Rust expresses without a
-  pointer.
-- Unusable: unresolved letters; AMX, `st(2)`..`st(7)`, and `mm` hard
-  registers (clobber-only in Rust); an `=f` output (both compilers reject
-  it); a register the width doesn't fit; an immediate that isn't an integer
-  constant; a symbol that isn't a link-time address; a match on an output.
-- x87 `t`/`u`/`f` fit only `float`, `double`, and `long double` (clang
-  can't allocate `{st}` for an integer); MMX `y`/`Ym` fit 32 and 64 bits.
-  Rust can't bind either class, so Slate spills them through memory.
-- An operand naming a register variable (`register long r10 asm("r10")`)
-  whose chosen register class holds that register selects
-  `Explicit(r10)`, as clang emits `{r10}`; GCC guarantees only this use of
-  local register variables. The printer marks it `[reg] -> {r10}`. On
-  AArch64, `r` holds `x0`-`x30`, `w` `v0`-`v31`, `x` `v0`-`v15` and `y`
-  `v0`-`v7` (`ir_asm_register_variables.c`).
+- Within it, a constant input prefers the immediate (`"ri"(5)` prints `$5` in
+  both compilers), then a register class the width fits, then an explicit
+  register, then memory. For `rm`, gcc prefers the register and clang memory; we
+  take the register, which Rust expresses without a pointer.
+- Unusable: unresolved letters; AMX, `st(2)`..`st(7)`, and `mm` hard registers
+  (clobber-only in Rust); an `=f` output (both compilers reject it); a register
+  the width doesn't fit; an immediate that isn't an integer constant; a symbol
+  that isn't a link-time address; a match on an output.
+- x87 `t`/`u`/`f` fit only `float`, `double`, and `long double` (clang can't
+  allocate `{st}` for an integer); MMX `y`/`Ym` fit 32 and 64 bits. Rust can't
+  bind either class, so Slate spills them through memory.
+- An operand naming a register variable (`register long r10 asm("r10")`) whose
+  chosen register class holds that register selects `Explicit(r10)`, as clang
+  emits `{r10}`; GCC guarantees only this use of local register variables. The
+  printer marks it `[reg] -> {r10}`. On AArch64, `r` holds `x0`-`x30`, `w`
+  `v0`-`v31`, `x` `v0`-`v15` and `y` `v0`-`v7` (`ir_asm_register_variables.c`).
 - Recorded as `InlineAsm::alternative`, `AsmOperand::selected`, and
-  `AsmRejection`s. With nothing usable, `alternative` is `None` and
-  operands lower unselected (`ir_asm_alternatives.c`).
+  `AsmRejection`s. With nothing usable, `alternative` is `None` and operands
+  lower unselected (`ir_asm_alternatives.c`).
 
 ### Constraint letters
 
 - Letters resolve per target to `AsmOperandClass` (register class, explicit
-  register, memory, immediate), keeping the raw letters. `g` is reg + mem +
-  imm. `q` is `reg_abcd` on i686 but any register on x86-64; `R` is `reg` on
-  i686 but `reg_legacy` on x86-64.
-- Multi-letter: x86 `Y`/`W`/`j`/`B`, AArch64 `U` (three chars), Arm `U`.
-  `?`, `!`, `*`, `^`, `$` are hints and skipped; `#` ends the alternative.
-  `V` is memory like `m`/`o`. `p` (an address operand) is `reg`: clang
-  accepts it only under `%a` and lowers it `memory(none)`, so the pointer
-  rides in a register and the asm reads no C object. x86 `l` (index
-  register) is `reg`, which already excludes rsp in Rust. `Yi`/`Yt`/`Y2`
-  are `xmm_reg` (gcc rejects them; clang accepts), `Ym` is `mmx_reg`, and
-  `Yk` is `kreg`, which like it excludes k0.
-- x86 `X` offers imm | sym | reg | xmm_reg | mem. Both compilers put a
-  float or vector in an xmm register, an integer in a GPR, a constant as
-  an immediate, and an oversized aggregate in memory. gcc places `=X`
-  outputs in memory; we follow clang's register.
-- A scalar float (bf16/f16/f32/f64) ranks a GPR class below other
-  registers, so `rx` and `X` choose xmm as gcc does; `r` and `g` still
-  take the GPR.
-- x86 `A` offers `Pair { low: ax, high: dx }` (printed `{dx:ax}`) for an
-  operand twice the word width (u128 on x86-64, u64 on i686), else `{ax}`:
-  both compilers use only rax for a 64-bit `=A` on x86-64. Emission splits
-  the value into `ax`/`dx` halves and recombines outputs; a template
-  reference names the low register at word width.
-- x86 `@cc<cond>` is `Flags(cond)` (printed `cc(e)`), a flags output for
-  the 28 conditions both compilers accept (`pe`/`po` are rejected by
-  both). The parser rejects it on an input, with an unknown condition, or
-  beside `,` alternatives, as both compilers do. clang alone accepts `+`,
-  floats, and a template reference to the operand; those parse and
-  Slate barriers on them. AArch64 and ARM32 take the 16 Arm conditions.
-  On ARM32 only gcc accepts `=@cc`: clang rejects every `@` constraint
-  there, and gcc rejects `+@cc` (`gcc/.../armv7-*/ir_asm_flag_outputs.c`,
+  register, memory, immediate), keeping the raw letters. `g` is reg + mem + imm.
+  `q` is `reg_abcd` on i686 but any register on x86-64; `R` is `reg` on i686 but
+  `reg_legacy` on x86-64.
+- Multi-letter: x86 `Y`/`W`/`j`/`B`, AArch64 `U` (three chars), Arm `U`. `?`,
+  `!`, `*`, `^`, `$` are hints and skipped; `#` ends the alternative. `V` is
+  memory like `m`/`o`. `p` (an address operand) is `reg`: clang accepts it only
+  under `%a` and lowers it `memory(none)`, so the pointer rides in a register
+  and the asm reads no C object. x86 `l` (index register) is `reg`, which
+  already excludes rsp in Rust. `Yi`/`Yt`/`Y2` are `xmm_reg` (gcc rejects them;
+  clang accepts), `Ym` is `mmx_reg`, and `Yk` is `kreg`, which like it excludes
+  k0.
+- x86 `X` offers imm | sym | reg | xmm_reg | mem. Both compilers put a float or
+  vector in an xmm register, an integer in a GPR, a constant as an immediate,
+  and an oversized aggregate in memory. gcc places `=X` outputs in memory; we
+  follow clang's register.
+- A scalar float (bf16/f16/f32/f64) ranks a GPR class below other registers, so
+  `rx` and `X` choose xmm as gcc does; `r` and `g` still take the GPR.
+- x86 `A` offers `Pair { low: ax, high: dx }` (printed `{dx:ax}`) for an operand
+  twice the word width (u128 on x86-64, u64 on i686), else `{ax}`: both
+  compilers use only rax for a 64-bit `=A` on x86-64. Emission splits the value
+  into `ax`/`dx` halves and recombines outputs; a template reference names the
+  low register at word width.
+- x86 `@cc<cond>` is `Flags(cond)` (printed `cc(e)`), a flags output for the 28
+  conditions both compilers accept (`pe`/`po` are rejected by both). The parser
+  rejects it on an input, with an unknown condition, or beside `,` alternatives,
+  as both compilers do. clang alone accepts `+`, floats, and a template
+  reference to the operand; those parse and Slate barriers on them. AArch64 and
+  ARM32 take the 16 Arm conditions. On ARM32 only gcc accepts `=@cc`: clang
+  rejects every `@` constraint there, and gcc rejects `+@cc`
+  (`gcc/.../armv7-*/ir_asm_flag_outputs.c`,
   `error/*/linux/armv7-*/asm-flag-output*.c`).
-- ARM32 (ARM state): `l` is `reg` (both compilers alias it to `r` outside
-  Thumb; `h`, `N`, `O` are Thumb-only and stay `Unresolved`). `t`, `w`, `x`
-  resolve to `dreg_low16`, `dreg`, `dreg_low8`, and the operand width
-  narrows them to `sreg`/`sreg`/`sreg_low16` at 32 bits or widens them to
-  `qreg_low8`/`qreg`/`qreg_low4` at 128, as clang allocates. `Uv`, `Uy`,
-  `Uq`, `Ut`, `Um`, `Un`, `Us` are memory like `Q`. gcc prints an unmodified
-  d or q register by its first s register (`s2` for `d1`) and needs `%P`/`%q`
-  for the real name, so under gcc such a reference gets view `Bits(32)`;
-  `%P` and `%q` are views 64 and 128 (`armv7-*/ir_asm_classes.c`). A 64-bit
-  `r`/`l` operand is `reg_pair`: both compilers put it in a core register pair
-  (clang an even/odd one) and print the halves with `%Q`/`%R` and the second
-  register with `%H`. gcc prints a symbol operand without `%c` as `#sym`, so under
-  gcc that reference becomes `#` text plus `%c` (`gcc/.../armv7-*/ir_asm_modifiers.c`).
-- `<`, `>` (clang's backend fails), `E`/`F`/`C`/`G`, and `Y0` (clang
-  rejects their operands) stay `Unresolved`, never guessed.
-- `reg_legacy` and `vreg_low8` (AArch64 `y`) have no Rust class; emission
-  pins a free explicit register from the set, avoiding the asm's other
-  explicit operands and clobbers.
-- `x` is `xmm_reg`, widened to `ymm_reg`/`zmm_reg` by a 256/512-bit operand;
-  `v` is `zmm_reg`, the only Rust class reaching xmm16-31
-  (`ir_asm_classes.c`).
+- ARM32 (ARM state): `l` is `reg` (both compilers alias it to `r` outside Thumb;
+  `h`, `N`, `O` are Thumb-only and stay `Unresolved`). `t`, `w`, `x` resolve to
+  `dreg_low16`, `dreg`, `dreg_low8`, and the operand width narrows them to
+  `sreg`/`sreg`/`sreg_low16` at 32 bits or widens them to
+  `qreg_low8`/`qreg`/`qreg_low4` at 128, as clang allocates. `Uv`, `Uy`, `Uq`,
+  `Ut`, `Um`, `Un`, `Us` are memory like `Q`. gcc prints an unmodified d or q
+  register by its first s register (`s2` for `d1`) and needs `%P`/`%q` for the
+  real name, so under gcc such a reference gets view `Bits(32)`; `%P` and `%q`
+  are views 64 and 128 (`armv7-*/ir_asm_classes.c`). A 64-bit `r`/`l` operand is
+  `reg_pair`: both compilers put it in a core register pair (clang an even/odd
+  one) and print the halves with `%Q`/`%R` and the second register with `%H`.
+  gcc prints a symbol operand without `%c` as `#sym`, so under gcc that
+  reference becomes `#` text plus `%c` (`gcc/.../armv7-*/ir_asm_modifiers.c`).
+- `<`, `>` (clang's backend fails), `E`/`F`/`C`/`G`, and `Y0` (clang rejects
+  their operands) stay `Unresolved`, never guessed.
+- `reg_legacy` and `vreg_low8` (AArch64 `y`) have no Rust class; emission pins a
+  free explicit register from the set, avoiding the asm's other explicit
+  operands and clobbers.
+- `x` is `xmm_reg`, widened to `ymm_reg`/`zmm_reg` by a 256/512-bit operand; `v`
+  is `zmm_reg`, the only Rust class reaching xmm16-31 (`ir_asm_classes.c`).
 
 ### Immediates and symbols
 
-- AArch64 `Z` accepts only zero: when no other immediate letter
-  (`I`-`N`, `i`, `n`, `g`) sits beside it, a non-zero constant skips the
-  immediate, so `"rZ"(11)` takes a register as both compilers do
-  (`ir_asm_zero_register.c`).
-- `s`, x86 `Ws` and AArch64 `S` offer only `Symbol`. Both compilers print
-  an `S` operand as the bare symbol plus offset under no modifier, `%c` or
-  `%a` (`arr+8`), so `adrp %0, %1` and `:lo12:%1` lower to `sym`
+- AArch64 `Z` accepts only zero: when no other immediate letter (`I`-`N`, `i`,
+  `n`, `g`) sits beside it, a non-zero constant skips the immediate, so
+  `"rZ"(11)` takes a register as both compilers do (`ir_asm_zero_register.c`).
+- `s`, x86 `Ws` and AArch64 `S` offer only `Symbol`. Both compilers print an `S`
+  operand as the bare symbol plus offset under no modifier, `%c` or `%a`
+  (`arr+8`), so `adrp %0, %1` and `:lo12:%1` lower to `sym`
   (`ir_asm_symbol_operand.c`, slate `aarch64/asm_aarch64_symbol_operand.c`).
-- `i` (and `g`) offer `Symbol` besides `Immediate`; `n` and target
-  immediate letters offer only `Immediate`.
-- An input selects `Symbol` when it folds to a static-storage object or
-  function plus a constant offset, through `&`, decay, field and constant
-  index projections, constant pointer arithmetic, and pointer-width casts
-  (`(long)&g`, not `(int)(long)&g` on x86-64). String literals qualify;
-  automatics and non-constant indices don't; thread-locals only under gcc.
-  Functions are accepted though both compilers reject them under PIE, which
-  isn't modeled (`ir_asm_symbols*.c`).
-- An `Immediate` input becomes `In(const<ty>(n))`, since Rust's `const`
-  operand can't read a C object. The fold follows clang's evaluator: it
-  reads const non-volatile objects through their initializers (`static
-const int k = 2`, `table[1]`, `s.field`, string elements, `*ptr` to a
-  const, `(int)2.5`). gcc also reads a const tentative definition as zero,
-  modeled for gcc only. Volatile, non-const, extern, and non-constant
-  initializers stay unfolded (`ir_asm_const_objects*.c`).
-- Above `-O0` (`codegen.optimization`), both compilers also accept operands
-  that fold only after inlining and promoting locals, which `-O0` rejects.
+- `i` (and `g`) offer `Symbol` besides `Immediate`; `n` and target immediate
+  letters offer only `Immediate`.
+- An input selects `Symbol` when it folds to a static-storage object or function
+  plus a constant offset, through `&`, decay, field and constant index
+  projections, constant pointer arithmetic, and pointer-width casts (`(long)&g`,
+  not `(int)(long)&g` on x86-64). String literals qualify; automatics and
+  non-constant indices don't; thread-locals only under gcc. Functions are
+  accepted though both compilers reject them under PIE, which isn't modeled
+  (`ir_asm_symbols*.c`).
+- An `Immediate` input becomes `In(const<ty>(n))`, since Rust's `const` operand
+  can't read a C object. The fold follows clang's evaluator: it reads const
+  non-volatile objects through their initializers (`static const int k = 2`,
+  `table[1]`, `s.field`, string elements, `*ptr` to a const, `(int)2.5`). gcc
+  also reads a const tentative definition as zero, modeled for gcc only.
+  Volatile, non-const, extern, and non-constant initializers stay unfolded
+  (`ir_asm_const_objects*.c`).
+- Above `-O0` (`codegen.optimization`), both compilers also accept operands that
+  fold only after inlining and promoting locals, which `-O0` rejects.
   `Lowerer::constant_asm_operands` (`sema/asm_constants.rs`) runs after
   `complete_declaration_abis` and models this:
   - A rejected asm is selected again with known values for automatic,
     non-volatile locals and parameters that are only ever read (no write,
-    address, or projection), whose initializer folds to an integer or a
-    symbol (`auto __flags = BUGFLAG_WARNING | 3; "i"(__flags)`).
-  - A call to an `always_inline` function that is still unresolved, directly
-    or through its callees, whose arguments fold, gets a clone
-    `<name>__const<N>` with those parameters known. The clone is deduplicated
-    per argument set and kept only if it resolves fully. It is internal,
-    keeps the signature and arguments, and drops symbol attributes except
-    `section` (`arch_static_branch(&key, true)`).
+    address, or projection), whose initializer folds to an integer or a symbol
+    (`auto __flags = BUGFLAG_WARNING | 3; "i"(__flags)`).
+  - A call to an `always_inline` function that is still unresolved, directly or
+    through its callees, whose arguments fold, gets a clone `<name>__const<N>`
+    with those parameters known. The clone is deduplicated per argument set and
+    kept only if it resolves fully. It is internal, keeps the signature and
+    arguments, and drops symbol attributes except `section`
+    (`arch_static_branch(&key, true)`).
   - In functions that are still unresolved, an `if` or `?:` whose condition
-    folds to a constant loses its dead arm, unless that arm holds a label or
-    a case of an enclosing switch. clang's codegen never emits such an arm.
-    `__builtin_constant_p(param)` folds to 0 in a body that is not cloned,
-    so the asm it guards (`nf_hook`'s `static_key_false(&nf_hooks_needed[pf][hook])`,
-    `arch_test_bit_acquire`, `if (IS_ENABLED(...))`) stops blocking the
-    function, and the unresolved set is recomputed. That 0 answer prunes only
-    when the condition or the dropped arm holds a rejected asm operand or calls
-    an unresolved function; otherwise the `if` stays and LLVM answers the
-    query after inlining, so a `min()` `BUILD_BUG_ON` beside an unrelated
-    `"i"` asm stays guarded (`copy_string_kernel`, `tlb_flush_mmu`).
+    folds to a constant loses its dead arm, unless that arm holds a label or a
+    case of an enclosing switch. clang's codegen never emits such an arm.
+    `__builtin_constant_p(param)` folds to 0 in a body that is not cloned, so
+    the asm it guards (`nf_hook`'s
+    `static_key_false(&nf_hooks_needed[pf][hook])`, `arch_test_bit_acquire`,
+    `if (IS_ENABLED(...))`) stops blocking the function, and the unresolved set
+    is recomputed. That 0 answer prunes only when the condition or the dropped
+    arm holds a rejected asm operand or calls an unresolved function; otherwise
+    the `if` stays and LLVM answers the query after inlining, so a `min()`
+    `BUILD_BUG_ON` beside an unrelated `"i"` asm stays guarded
+    (`copy_string_kernel`, `tlb_flush_mmu`).
   - A parameter that is written later (`"=r"(p) : "i"(p)` in `rip_rel_ptr`)
-    keeps its argument value through the leading top-level statements, up to
-    and including the first `Write` or asm that writes it, and not past a
-    label (`ir_asm_dead_arm_entry_value.c`).
+    keeps its argument value through the leading top-level statements, up to and
+    including the first `Write` or asm that writes it, and not past a label
+    (`ir_asm_dead_arm_entry_value.c`).
   - Unresolved internal functions that are left unreferenced are dropped, as
     clang never emits them. A local's `cleanup` target counts as a call, both
-    for the unresolved propagation and as a reference, so a `guard()`
-    destructor whose own calls were specialized stays
-    (`ir_asm_cleanup_after_inlining.c`).
-  - Reselection keeps a tied input in its output's slot and keeps an
-    `InPlace` input in memory (its constraint narrowed to its memory classes),
-    so `"0"(x)` and `"g"(*p)` beside an `"i"` resolve. A block-scope `static`
-    is a module global, so every clone shares it
+    for the unresolved propagation and as a reference, so a `guard()` destructor
+    whose own calls were specialized stays (`ir_asm_cleanup_after_inlining.c`).
+  - Reselection keeps a tied input in its output's slot and keeps an `InPlace`
+    input in memory (its constraint narrowed to its memory classes), so `"0"(x)`
+    and `"g"(*p)` beside an `"i"` resolve. A block-scope `static` is a module
+    global, so every clone shares it
     (`ir_asm_constant_after_inlining_tied_inplace.c`, slate
     `x86_64/asm_immediate_after_inlining_tied_and_static.c`).
-  - Not handled: an MSVC `Memory` operand that is not memory-only, and
-    callees with nested functions (`ir_asm_constant_after_inlining.c`, slate
+  - Not handled: an MSVC `Memory` operand that is not memory-only, and callees
+    with nested functions (`ir_asm_constant_after_inlining.c`, slate
     `x86_64/asm_immediate_after_inlining.c`).
 
 ### Memory operands
 
 - A memory-class input (`m`, `o`, `V`, Arm `Q`, or `rm` whose register won't
   fit) on an addressable lvalue is `InPlace(place)`, emitted as
-  `in(reg) &raw const x`. An input that chose a register reads the place.
-  With no alternative chosen, any memory-capable constraint gives
-  `InPlace`.
+  `in(reg) &raw const x`. An input that chose a register reads the place. With
+  no alternative chosen, any memory-capable constraint gives `InPlace`.
 - A memory-selected place on a static-storage object at a constant offset
-  (`ops.f`, `tbl[2]`) also records `AsmOperand::address`, the binding plus
-  byte offset (`symbol_place`), printed `at<offset=N>(%b)`. Thread-locals and
-  places through a runtime pointer record nothing.
-- An unaddressable operand (bit-field, lane, register variable, temporary)
-  falls back to a value: compilers spill it, which an input can't tell from
-  a copy. Errors only where compilers agree, for memory-only constraints:
-  non-lvalues and bit-fields, and register variables under gcc. clang also
-  rejects bit-fields and lanes under any memory-capable constraint; we
-  follow gcc (`ir_asm.c` `memory()`, `ir_asm_memory_gcc.c`,
-  `error/asm-memory-*.c`).
-- gcc accepts some non-lvalue memory-only inputs, because its gimplifier
-  still finds memory for them. They are a non-void `?:`, a comma or
-  statement expression whose last operand qualifies, and an integer or
-  pointer cast that keeps the precision, applied to an operand that
-  qualifies. `-fsyntax-only` skips that check, so the real rule needs
-  `gcc -c` to see. The gcc flavor accepts these and lowers them as spilled
-  `In(value)` operands. clang rejects all of them
-  (`ir_asm_memory_gcc_rvalues.c`, `error/gcc/.../asm-memory-not-lvalue.c`).
+  (`ops.f`, `tbl[2]`) also records `AsmOperand::address`, the binding plus byte
+  offset (`symbol_place`), printed `at<offset=N>(%b)`. Thread-locals and places
+  through a runtime pointer record nothing.
+- An unaddressable operand (bit-field, lane, register variable, temporary) falls
+  back to a value: compilers spill it, which an input can't tell from a copy.
+  Errors only where compilers agree, for memory-only constraints: non-lvalues
+  and bit-fields, and register variables under gcc. clang also rejects
+  bit-fields and lanes under any memory-capable constraint; we follow gcc
+  (`ir_asm.c` `memory()`, `ir_asm_memory_gcc.c`, `error/asm-memory-*.c`).
+- gcc accepts some non-lvalue memory-only inputs, because its gimplifier still
+  finds memory for them. They are a non-void `?:`, a comma or statement
+  expression whose last operand qualifies, and an integer or pointer cast that
+  keeps the precision, applied to an operand that qualifies. `-fsyntax-only`
+  skips that check, so the real rule needs `gcc -c` to see. The gcc flavor
+  accepts these and lowers them as spilled `In(value)` operands. clang rejects
+  all of them (`ir_asm_memory_gcc_rvalues.c`,
+  `error/gcc/.../asm-memory-not-lvalue.c`).
 
 ## Widths and modifiers
 
 - Each operand carries `width`, its type's storage size in bits (x86-64
   `long double` is 128).
-- A width modifier resolves to an `AsmRegisterView`: x86 `b` 8, `w` 16,
-  `k` 32, `q` 64, `h` high byte, `x`/`t`/`g` 128/256/512; AArch64
-  `b`/`h`/`s`/`d`/`q` 8-128 and `w`/`x` 32/64. Others keep only the letter.
+- A width modifier resolves to an `AsmRegisterView`: x86 `b` 8, `w` 16, `k` 32,
+  `q` 64, `h` high byte, `x`/`t`/`g` 128/256/512; AArch64 `b`/`h`/`s`/`d`/`q`
+  8-128 and `w`/`x` 32/64. Others keep only the letter.
 - An unmodified x86 reference prints at the operand's width (`%dil` for a
-  `char`), but Rust's `{0}` prints the full register, so emission adds a
-  Rust modifier from the view or the width: GPR 8 `l`, 16 `x`, 32 `e`, 64
-  `r`, high `h`; vector ≤128 `x`, 256 `y`, 512 `z`; AArch64 `reg` 32 `w`,
-  64 `x`, `vreg` `b`/`h`/`s`/`d`/`q`. An x86 explicit register is named at
-  its width (`eax`).
-- AArch64 unmodified references print the full register whatever the width
-  (`x0` for an `int`, `v0` for a `float`, as clang and gcc do), which is
-  Rust's default; emission writes `{N:x}`/`{N:v}` explicitly so rustc's
+  `char`), but Rust's `{0}` prints the full register, so emission adds a Rust
+  modifier from the view or the width: GPR 8 `l`, 16 `x`, 32 `e`, 64 `r`, high
+  `h`; vector ≤128 `x`, 256 `y`, 512 `z`; AArch64 `reg` 32 `w`, 64 `x`, `vreg`
+  `b`/`h`/`s`/`d`/`q`. An x86 explicit register is named at its width (`eax`).
+- AArch64 unmodified references print the full register whatever the width (`x0`
+  for an `int`, `v0` for a `float`, as clang and gcc do), which is Rust's
+  default; emission writes `{N:x}`/`{N:v}` explicitly so rustc's
   `asm_sub_register` lint stays quiet. A `vreg_low8` (`y`) operand pins
-  `v0`-`v7` and is printed by name (`s3`, `v3`). An explicit register
-  (a register variable such as `register long x8 asm("x8")`) becomes
-  `in("x8")` and is printed by name the same way. Memory operands (`Q`)
-  print `[{N:x}]`, immediates print bare (`100`, no `#`), and unused
-  operands go in a `//` comment. A zero immediate (`"rZ"(0)`, `"i"(0)`)
-  takes no Rust operand: `%x`/`%w` write `xzr`/`wzr` and an unmodified
-  reference writes `0`, as gcc prints (clang moves the zero into a
-  register; both run the same).
-- A clobber of the Rust-reserved `x19` or `x29`/`fp` is saved and
-  restored around the template through a non-late `out(reg) _` scratch
-  (`mov {N:x}, x19` ... `mov x19, {N:x}`), which no input can share. clang
-  does the same with a stack spill. gcc and clang both leave a clobbered
-  `x29` unrestored when it is the frame pointer (clang warns), so the
-  fixture clobbers `x29` only in leaf functions
-  (`aarch64/asm_aarch64_reserved_clobbers.c`).
-- An `x19`/`x29` register-variable operand rides in a non-late `reg`
-  operand `s` beside a scratch `t`: `mov t, R` and (input) `mov R, s`
-  before the template, (output) `mov s, R` and `mov R, t` after it. The
-  template names the register itself (`x19`, `w19` under `%w`). One
-  operand per reserved register (`aarch64/asm_aarch64_reserved_operands.c`).
+  `v0`-`v7` and is printed by name (`s3`, `v3`). An explicit register (a
+  register variable such as `register long x8 asm("x8")`) becomes `in("x8")` and
+  is printed by name the same way. Memory operands (`Q`) print `[{N:x}]`,
+  immediates print bare (`100`, no `#`), and unused operands go in a `//`
+  comment. A zero immediate (`"rZ"(0)`, `"i"(0)`) takes no Rust operand:
+  `%x`/`%w` write `xzr`/`wzr` and an unmodified reference writes `0`, as gcc
+  prints (clang moves the zero into a register; both run the same).
+- A clobber of the Rust-reserved `x19` or `x29`/`fp` is saved and restored
+  around the template through a non-late `out(reg) _` scratch (`mov {N:x}, x19`
+  ... `mov x19, {N:x}`), which no input can share. clang does the same with a
+  stack spill. gcc and clang both leave a clobbered `x29` unrestored when it is
+  the frame pointer (clang warns), so the fixture clobbers `x29` only in leaf
+  functions (`aarch64/asm_aarch64_reserved_clobbers.c`).
+- An `x19`/`x29` register-variable operand rides in a non-late `reg` operand `s`
+  beside a scratch `t`: `mov t, R` and (input) `mov R, s` before the template,
+  (output) `mov s, R` and `mov R, t` after it. The template names the register
+  itself (`x19`, `w19` under `%w`). One operand per reserved register
+  (`aarch64/asm_aarch64_reserved_operands.c`).
 - SVE clobbers: `z<n>` canonicalizes to `v<n>`, and Rust's `out("v<n>") _`
   covers the whole `z` register (LLVM gives `Z<n>` no register units beyond
-  `Q<n>`'s). `p0`-`p15` and `ffr` become `out("p<n>") _`/`out("ffr") _`
-  (Rust's clobber-only `preg` class). clang rejects an `ffr` clobber and gcc
-  accepts it. SVE templates need `target("+sve")` on the function, which
-  lowers to `#[target_feature(enable = "sve")]`
-  (`aarch64/asm_aarch64_sve_clobbers.c`, `gcc/aarch64/asm_aarch64_sve_ffr_clobber.c`).
-- AArch64 Slate barriers: a second operand on the same reserved register,
-  `sp` clobbers, a `vg` clobber in a function that enables sve/sve2/sme or in a module whose
-  `-march` enables sve,
-  and memory modifiers. `za`/`zt0`/`fpmr` clobbers and a `vg` clobber elsewhere are dropped
-  (no Rust equivalent; clang rejects `vg`, so `gcc/aarch64/asm_aarch64_vg_clobber.c`).
-- ARM32 (`tests/fixtures/arm/asm_arm_*.c`): `reg`, `sreg`, `sreg_low16`, `dreg_low8`;
-  `dreg` lowers to `dreg_low16` (the armv7 Rust target has no d32, and clang's default
-  vfpv3-d16 allocates the same set). `qreg*` needs `target("neon")` on the function, which
-  lowers to `#[target_feature(enable = "neon")]` with `arm_target_feature`, and the value
+  `Q<n>`'s). `p0`-`p15` and `ffr` become `out("p<n>") _`/`out("ffr") _` (Rust's
+  clobber-only `preg` class). clang rejects an `ffr` clobber and gcc accepts it.
+  SVE templates need `target("+sve")` on the function, which lowers to
+  `#[target_feature(enable = "sve")]` (`aarch64/asm_aarch64_sve_clobbers.c`,
+  `gcc/aarch64/asm_aarch64_sve_ffr_clobber.c`).
+- AArch64 Slate barriers: a second operand on the same reserved register, `sp`
+  clobbers, a `vg` clobber in a function that enables sve/sve2/sme or in a
+  module whose `-march` enables sve, and memory modifiers. `za`/`zt0`/`fpmr`
+  clobbers and a `vg` clobber elsewhere are dropped (no Rust equivalent; clang
+  rejects `vg`, so `gcc/aarch64/asm_aarch64_vg_clobber.c`).
+- ARM32 (`tests/fixtures/arm/asm_arm_*.c`): `reg`, `sreg`, `sreg_low16`,
+  `dreg_low8`; `dreg` lowers to `dreg_low16` (the armv7 Rust target has no d32,
+  and clang's default vfpv3-d16 allocates the same set). `qreg*` needs
+  `target("neon")` on the function, which lowers to
+  `#[target_feature(enable = "neon")]` with `arm_target_feature`, and the value
   bridges through `core::arch::arm::uint8x16_t` (`stdarch_arm_neon_intrinsics`).
-  References print `{N}`; `%P` on a d register and `%q` on a q register are the same,
-  `%e`/`%f` on a q register print `{N:e}`/`{N:f}`, and the gcc `Bits(32)` view is a barrier.
-  Immediates print `#{N}` (`%c` drops the `#`); `%B` (bitwise inverse) and `%L` (low 16
-  bits) print the folded number without `#`. Symbols print `{N}` (the parser already added
-  gcc's `#`). Memory prints `[{N}]` and `%m` its base register `{N}`; unused operands go in
-  `@` comments. A `reg_pair` operand pins the first free even/odd pair of r0/r1, r2/r3,
-  r4/r5, r8/r9 as two explicit `u32` halves (`%Q`/unmodified print the low register,
-  `%R`/`%H` the high one), since Rust's `reg` takes no 64-bit value and `ldrexd`/`strexd`
-  need an even pair in ARM state (`arm/asm_arm_register_pairs.c`,
-  `gcc/arm/asm_arm_gcc_register_pairs.c`). Flags
-  outputs append `mov {N}, #0` and `mov<cond> {N}, #1`, which leave the flags intact.
-  Clobbers: `s`/`q` registers become the d registers covering them (Rust rejects overlapping
-  clobbers such as `s31` with `d15`); `r6` (LLVM's base pointer) and `r11` (the frame
-  pointer) are saved and restored around the template through a `reg` scratch, as are
-  register-variable operands on them; `r13`, `r15` and `vfpcc` are barriers.
-- A tied input keeps its own width at its reference sites on x86 (gcc
-  prints `"=r"(char) : "0"(int)` as `%dil` and `%edi`); clang rejects the
-  mismatch (`ir_asm_widths.c`).
-- Clobbers and explicit registers carry the source spelling and, when
-  recognized by the target's register table, the canonical name; width is
-  dropped. AArch64 names canonicalize to GCC's (`w1`/`r1` to `x1`,
-  `d3`/`s3` to `v3`, `lr` to `x30`, `fp` to `x29`). ARM32 core names
-  canonicalize to `r0`-`r15` (`a1`-`a4`, `v1`-`v7`, `sb`, `sl`, `fp`, `ip`,
-  `sp`, `lr`, `pc`, and gcc's numbers); `s0`-`s31`, `d0`-`d31`, `q0`-`q15`
-  and gcc's `vfpcc` keep their names. Both compilers' sets are accepted
-  (`ir_asm_clobbers.c`, `armv7-*/ir_asm_classes.c`).
+  References print `{N}`; `%P` on a d register and `%q` on a q register are the
+  same, `%e`/`%f` on a q register print `{N:e}`/`{N:f}`, and the gcc `Bits(32)`
+  view is a barrier. Immediates print `#{N}` (`%c` drops the `#`); `%B` (bitwise
+  inverse) and `%L` (low 16 bits) print the folded number without `#`. Symbols
+  print `{N}` (the parser already added gcc's `#`). Memory prints `[{N}]` and
+  `%m` its base register `{N}`; unused operands go in `@` comments. A `reg_pair`
+  operand pins the first free even/odd pair of r0/r1, r2/r3, r4/r5, r8/r9 as two
+  explicit `u32` halves (`%Q`/unmodified print the low register, `%R`/`%H` the
+  high one), since Rust's `reg` takes no 64-bit value and `ldrexd`/`strexd` need
+  an even pair in ARM state (`arm/asm_arm_register_pairs.c`,
+  `gcc/arm/asm_arm_gcc_register_pairs.c`). Flags outputs append `mov {N}, #0`
+  and `mov<cond> {N}, #1`, which leave the flags intact. Clobbers: `s`/`q`
+  registers become the d registers covering them (Rust rejects overlapping
+  clobbers such as `s31` with `d15`); `r6` (LLVM's base pointer) and `r11` (the
+  frame pointer) are saved and restored around the template through a `reg`
+  scratch, as are register-variable operands on them; `r13`, `r15` and `vfpcc`
+  are barriers.
+- A tied input keeps its own width at its reference sites on x86 (gcc prints
+  `"=r"(char) : "0"(int)` as `%dil` and `%edi`); clang rejects the mismatch
+  (`ir_asm_widths.c`).
+- Clobbers and explicit registers carry the source spelling and, when recognized
+  by the target's register table, the canonical name; width is dropped. AArch64
+  names canonicalize to GCC's (`w1`/`r1` to `x1`, `d3`/`s3` to `v3`, `lr` to
+  `x30`, `fp` to `x29`). ARM32 core names canonicalize to `r0`-`r15` (`a1`-`a4`,
+  `v1`-`v7`, `sb`, `sl`, `fp`, `ip`, `sp`, `lr`, `pc`, and gcc's numbers);
+  `s0`-`s31`, `d0`-`d31`, `q0`-`q15` and gcc's `vfpcc` keep their names. Both
+  compilers' sets are accepted (`ir_asm_clobbers.c`,
+  `armv7-*/ir_asm_classes.c`).
 
 ## Rust options
 
-A statement asm carries `InlineAsm::options: Some(AsmOptions)`; file-scope
-asm and asm in naked functions have `None`. Verified against clang
-`-emit-llvm` and gcc `-fdump-rtl-expand`:
+A statement asm carries `InlineAsm::options: Some(AsmOptions)`; file-scope asm
+and asm in naked functions have `None`. Verified against clang `-emit-llvm` and
+gcc `-fdump-rtl-expand`:
 
-| Option                                                          | Rule                                                                                                                                                                                                                                |
-| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `memory` (`None`/`ReadOnly`/`Any` = `nomem`/`readonly`/neither) | from operands: memory inputs read, memory outputs write. A `"memory"` clobber or basic asm forces `Any`. clang also forces `Any` for side-effecting asm (volatile, `goto`, no outputs); gcc keeps `nomem` for volatile extended asm |
-| `pure`                                                          | not volatile, not `goto`, has an output, and `memory` is not `Any`                                                                                                                                                                  |
+| Option                                                          | Rule                                                                                                                                                                                                                                                                       |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `memory` (`None`/`ReadOnly`/`Any` = `nomem`/`readonly`/neither) | from operands: memory inputs read, memory outputs write. A `"memory"` clobber or basic asm forces `Any`. clang also forces `Any` for side-effecting asm (volatile, `goto`, no outputs); gcc keeps `nomem` for volatile extended asm                                        |
+| `pure`                                                          | not volatile, not `goto`, has an output, and `memory` is not `Any`                                                                                                                                                                                                         |
 | `nostack`                                                       | on for extended GNU asm (neither compiler guarantees stack alignment or red zone); off for basic GNU asm, which may push, for MSVC `__asm`, and for x86 asm with an operand bound to the stack pointer (`"+r"(current_stack_pointer)`, the kernel's `ASM_CALL_CONSTRAINT`) |
-| `preserves_flags`                                               | never on x86; elsewhere unless `"cc"` is written (gcc aarch64 and 32-bit ARM add a CC clobber only for `"cc"`)                                                                                                                      |
-| `may_unwind`                                                    | an `"unwind"` clobber                                                                                                                                                                                                               |
+| `preserves_flags`                                               | never on x86; elsewhere unless `"cc"` is written (gcc aarch64 and 32-bit ARM add a CC clobber only for `"cc"`)                                                                                                                                                             |
+| `may_unwind`                                                    | an `"unwind"` clobber                                                                                                                                                                                                                                                      |
 
-Fixtures: `ir_asm_options.c`, `ir_asm_options_gcc.c`, and the aarch64 and
-armv7 variants.
+Fixtures: `ir_asm_options.c`, `ir_asm_options_gcc.c`, and the aarch64 and armv7
+variants.
 
 ## MSVC `__asm`
 
 `src/sema/ms_asm.rs` lowers `__asm` to the same `Statement::Asm`: volatile,
-Intel dialect, options `memory = Any` and nothing else (it may `push`/`pop`),
-or `None` in a naked function. `template` is rebuilt from the AST.
+Intel dialect, options `memory = Any` and nothing else (it may `push`/`pop`), or
+`None` in a naked function. `template` is rebuilt from the AST.
 
-- Operands carry no constraint; `selected` is derived from the kind (`Symbol`
-  to sym, `Memory` to mem, `In` to a general register, the implicit-return
-  `Out` keeps its explicit register) and `alternative` is `Some(0)` whenever
-  there are operands. Slate lowers these on i686 (`tests/fixtures/i686/`);
-  `bx` operands and clobbers are not lowered there. A `Memory` operand
-  becomes `in(reg)` of the object's address (`addr_of_mut!` unless the access
-  is `Read`), and `Address` prints `<size> ptr [{N}+base+index*scale+disp]`.
-  A `LocalLabel` becomes a numeric local label (`N:`, `Nf`/`Nb` by position;
-  numbers avoid all-0/1 digits); one defined outside its block is a barrier.
-  An `EntryLabel` is a label definition too, and a C `goto` to it enters through
-  an extra dispatch node: the same `asm!` with `jmp Nf` prepended, so the
-  block runs from the label (two copies of the template, one per entry).
-  Slate appends `return <Fallthrough::Return value>` to the function when its
-  last statement is not already a `return` (inside `unsafe` under dispatch).
-  Register clobbers are early (`out`) like every GNU clobber, so no address
-  input can land in a register the block writes.
+- Operands carry no constraint; `selected` is derived from the kind (`Symbol` to
+  sym, `Memory` to mem, `In` to a general register, the implicit-return `Out`
+  keeps its explicit register) and `alternative` is `Some(0)` whenever there are
+  operands. Slate lowers these on i686 (`tests/fixtures/i686/`); `bx` operands
+  and clobbers are not lowered there. A `Memory` operand becomes `in(reg)` of
+  the object's address (`addr_of_mut!` unless the access is `Read`), and
+  `Address` prints `<size> ptr [{N}+base+index*scale+disp]`. A `LocalLabel`
+  becomes a numeric local label (`N:`, `Nf`/`Nb` by position; numbers avoid
+  all-0/1 digits); one defined outside its block is a barrier. An `EntryLabel`
+  is a label definition too, and a C `goto` to it enters through an extra
+  dispatch node: the same `asm!` with `jmp Nf` prepended, so the block runs from
+  the label (two copies of the template, one per entry). Slate appends
+  `return <Fallthrough::Return value>` to the function when its last statement
+  is not already a `return` (inside `unsafe` under dispatch). Register clobbers
+  are early (`out`) like every GNU clobber, so no address input can land in a
+  register the block writes.
 - Each C object is one `Memory { place, access }` operand however often it
-  appears; the asm receives its address, and `AsmAccess::{Read, Write,
-ReadWrite}` joins every reference (`src/sema/ms_asm_effects.rs`).
-  Functions are `Symbol` operands; `offset x` is `In(AddressOf(x))`.
-- Each reference is `AsmPiece::Address { operand, displacement, base,
-index, size }`: `arr[4]`, `s.f`, `x + 4` are byte displacements. `size` is
-  the explicit `PTR`, or, where MASM infers it from the C type (no register
-  operand, or `movzx`/`movsx`, shifts, rotates, `shld`/`shrd`), the
-  innermost element size, matching the `dword ptr` clang inserts.
-- Labels: clang flavor `AsmPiece::LocalLabel(name)`, lowercased; MSVC
-  flavor `AsmPiece::EntryLabel { name, binding }` so a C `goto` can target
-  it. A jump to a C label is an asm-goto `%lN` piece.
-- Clobbers come from the effects table: written registers widened to 32
-  bits (`al` → `eax`), implicit defs, `st`..`st(7)` for any x87
-  instruction, `eax`/`ecx`/`edx` for `call`. Never `esp` or flags.
-- 32-bit x86 implicit returns: integer and pointer results ≤ 8 bytes add
-  EAX (and EDX above 4 bytes) `Out` operands writing shared synthetic `u32`
-  locals. A written return register is an early output and leaves the
-  clobber list. `Fallthrough::Return(Value)` (printed
-  `fallthrough=ret(value)`) combines `u64(eax) | (u64(edx) << 32)` at the
-  function end and converts it; narrow results truncate, `_Bool` takes the
-  low bit. Explicit returns bypass it. The capture locals are always zero-initialized,
-  so a path that skips the asm still returns a defined value. Naked functions have none; noreturn keeps `ub`. Float, aggregate,
-  wider, and x86-64 implicit returns are not lowered.
+  appears; the asm receives its address, and
+  `AsmAccess::{Read, Write, ReadWrite}` joins every reference
+  (`src/sema/ms_asm_effects.rs`). Functions are `Symbol` operands; `offset x` is
+  `In(AddressOf(x))`.
+- Each reference is
+  `AsmPiece::Address { operand, displacement, base, index, size }`: `arr[4]`,
+  `s.f`, `x + 4` are byte displacements. `size` is the explicit `PTR`, or, where
+  MASM infers it from the C type (no register operand, or `movzx`/`movsx`,
+  shifts, rotates, `shld`/`shrd`), the innermost element size, matching the
+  `dword ptr` clang inserts.
+- Labels: clang flavor `AsmPiece::LocalLabel(name)`, lowercased; MSVC flavor
+  `AsmPiece::EntryLabel { name, binding }` so a C `goto` can target it. A jump
+  to a C label is an asm-goto `%lN` piece.
+- Clobbers come from the effects table: written registers widened to 32 bits
+  (`al` → `eax`), implicit defs, `st`..`st(7)` for any x87 instruction,
+  `eax`/`ecx`/`edx` for `call`. Never `esp` or flags.
+- 32-bit x86 implicit returns: integer and pointer results ≤ 8 bytes add EAX
+  (and EDX above 4 bytes) `Out` operands writing shared synthetic `u32` locals.
+  A written return register is an early output and leaves the clobber list.
+  `Fallthrough::Return(Value)` (printed `fallthrough=ret(value)`) combines
+  `u64(eax) | (u64(edx) << 32)` at the function end and converts it; narrow
+  results truncate, `_Bool` takes the low bit. Explicit returns bypass it. The
+  capture locals are always zero-initialized, so a path that skips the asm still
+  returns a defined value. Naked functions have none; noreturn keeps `ub`.
+  Float, aggregate, wider, and x86-64 implicit returns are not lowered.
 - Fixtures: `sema/i686-pc-windows-msvc/ms_asm_*.c`.
 
 ## Naked functions
 
-`naked` on any declaration sets `FunctionSemantics::naked`, so the backend
-picks `naked_asm!` from the function, not from its body. Keyed on the
-attribute alone: clang accepts any number of asm statements (basic, or
-extended with operands referencing no parameter, like `"i"(42)`) plus null
-statements, and all fit one `naked_asm!`. clang rejects other statements;
-gcc accepts anything, and so do we (permissive), so a backend must check the
-body. Fallthrough is `ub`; inner asm has `options: None` (`ir_naked.c`).
+`naked` on any declaration sets `FunctionSemantics::naked`, so the backend picks
+`naked_asm!` from the function, not from its body. Keyed on the attribute alone:
+clang accepts any number of asm statements (basic, or extended with operands
+referencing no parameter, like `"i"(42)`) plus null statements, and all fit one
+`naked_asm!`. clang rejects other statements; gcc accepts anything, and so do we
+(permissive), so a backend must check the body. Fallthrough is `ub`; inner asm
+has `options: None` (`ir_naked.c`).
 
 ## File-scope asm
 
-File-scope `asm` lowers to `Module::asm`, a source-ordered list of
-`InlineAsm` printed before the type definitions. It declares no entity, so
-it stays out of `globals`/`functions`. It reuses `InlineAsm` because the GNU
-personality accepts operands there, bound like a statement asm's; labels are
-impossible.
+File-scope `asm` lowers to `Module::asm`, a source-ordered list of `InlineAsm`
+printed before the type definitions. It declares no entity, so it stays out of
+`globals`/`functions`. It reuses `InlineAsm` because the GNU personality accepts
+operands there, bound like a statement asm's; labels are impossible.
 
 ## Slate lowering
 
 - `slate/src/frontend/lowerer/asm.rs` consumes selected classes and pieces;
-  `backend/rust_ast.rs` stores operands/options and `backend/codegen.rs` emits `asm!`.
-- Core support: x86-64 `reg`/`reg_abcd`, integer `const` operands, and register clobbers.
-- Vector classes `xmm_reg`/`ymm_reg`/`zmm_reg`/`kreg`: values of up to 4 bytes ride in a `u32`
-  scratch (Rust's xmm classes take no 8/16-bit types), 8-byte values in `u64`, and 16/32/64-byte
-  values (GNU vectors, `__m128`) transmute to `core::arch::x86_64::__m{128,256,512}i`.
-  `kreg` keeps the exact width. References print `{N}` (the class's own register), and a
-  128/256/512-bit view prints `:x`/`:y`/`:z`. Rust needs the feature on the enclosing
-  function: `ymm_reg` needs avx (or a feature that implies it), `zmm_reg`/`kreg` need avx512f,
-  and a 32/64-bit `kreg` needs avx512bw. Without it the operand is a barrier, since the parser
-  widens `x`/`v` to ymm/zmm by width alone (`asm_sse_*.c`, `asm_avx_vector_operands.c`).
-- Register type bridges use unsigned 16/32/64-bit scratch operands. Bytes widen to 32 bits;
-  tied operands use the larger storage width and outputs truncate before writeback.
-- Integer/enum and raw pointer inputs cast; floats, nullable function pointers, and small
-  aggregates transmute through their storage-sized integer. `_Bool` inputs cast to a byte;
-  outputs test the byte against zero, matching Clang's asm storage/load behavior.
+  `backend/rust_ast.rs` stores operands/options and `backend/codegen.rs` emits
+  `asm!`.
+- Core support: x86-64 `reg`/`reg_abcd`, integer `const` operands, and register
+  clobbers.
+- Vector classes `xmm_reg`/`ymm_reg`/`zmm_reg`/`kreg`: values of up to 4 bytes
+  ride in a `u32` scratch (Rust's xmm classes take no 8/16-bit types), 8-byte
+  values in `u64`, and 16/32/64-byte values (GNU vectors, `__m128`) transmute to
+  `core::arch::x86_64::__m{128,256,512}i`. `kreg` keeps the exact width.
+  References print `{N}` (the class's own register), and a 128/256/512-bit view
+  prints `:x`/`:y`/`:z`. Rust needs the feature on the enclosing function:
+  `ymm_reg` needs avx (or a feature that implies it), `zmm_reg`/`kreg` need
+  avx512f, and a 32/64-bit `kreg` needs avx512bw. Without it the operand is a
+  barrier, since the parser widens `x`/`v` to ymm/zmm by width alone
+  (`asm_sse_*.c`, `asm_avx_vector_operands.c`).
+- Register type bridges use unsigned 16/32/64-bit scratch operands. Bytes widen
+  to 32 bits; tied operands use the larger storage width and outputs truncate
+  before writeback.
+- Integer/enum and raw pointer inputs cast; floats, nullable function pointers,
+  and small aggregates transmute through their storage-sized integer. `_Bool`
+  inputs cast to a byte; outputs test the byte against zero, matching Clang's
+  asm storage/load behavior.
 - Aggregates of any field shape transmute whole: Slate records spell padding as
-  `__slate_pad_N` byte fields, bit-field units are integer-backed, and locals start zeroed, so
-  every byte (including inactive union bytes) is initialized and no field-wise marshaling is
-  needed. Outputs normalize each byte that holds a `_Bool` field (through nested structs and
-  arrays, not unions or bit-fields) to 0/1 in the scratch integer before the transmute; a
-  `_Bool` field in a vector-register aggregate is a barrier (`asm_aggregate_field_bridge.c`).
-  Bytes C leaves uninitialized (malloc'd records) are uninitialized in Rust for every typed
-  copy, asm or not.
-- Outputs use scratch temporaries, then ordinary place writeback (including volatile stores).
-  Tied inputs retain their input expression; directions come from `AsmOperand::direction()`.
-- Register placeholders use the reference view or operand width. Literal braces escape;
-  percent pieces become `%`; ordinary AT&T constants and symbols receive `$`.
-- `%c`/`%P`/`%p` suppress the prefix; `%n` folds a negated integer per reference.
-  On x86_64 AT&T, `%a` prints a symbol as the memory reference `{N}+off(%rip)` and an
-  immediate as the bare constant, matching clang and gcc (per-cpu `%%gs:%a[var]`,
-  `asm_address_modifier.c`). i686, Intel dialect and arm targets keep `%a` on these
-  classes as a barrier (`slate-3f8g.4.40`).
-  Symbol operands use Rust `sym` item paths with signed byte offsets in the template;
-  functions retain the C ABI and string operands get named byte-array statics.
-- Unused operands get references in assembler comments to satisfy Rust's operand-use check.
-- Extended asm maps parser options directly. Basic asm escapes braces in its decoded
-  template instead of using `raw`, so symbol references can become `{N}`.
+  `__slate_pad_N` byte fields, bit-field units are integer-backed, and locals
+  start zeroed, so every byte (including inactive union bytes) is initialized
+  and no field-wise marshaling is needed. Outputs normalize each byte that holds
+  a `_Bool` field (through nested structs and arrays, not unions or bit-fields)
+  to 0/1 in the scratch integer before the transmute; a `_Bool` field in a
+  vector-register aggregate is a barrier (`asm_aggregate_field_bridge.c`). Bytes
+  C leaves uninitialized (malloc'd records) are uninitialized in Rust for every
+  typed copy, asm or not.
+- Outputs use scratch temporaries, then ordinary place writeback (including
+  volatile stores). Tied inputs retain their input expression; directions come
+  from `AsmOperand::direction()`.
+- Register placeholders use the reference view or operand width. Literal braces
+  escape; percent pieces become `%`; ordinary AT&T constants and symbols receive
+  `$`.
+- `%c`/`%P`/`%p` suppress the prefix; `%n` folds a negated integer per
+  reference. On x86_64 AT&T, `%a` prints a symbol as the memory reference
+  `{N}+off(%rip)` and an immediate as the bare constant, matching clang and gcc
+  (per-cpu `%%gs:%a[var]`, `asm_address_modifier.c`). i686, Intel dialect and
+  arm targets keep `%a` on these classes as a barrier (`slate-3f8g.4.40`).
+  Symbol operands use Rust `sym` item paths with signed byte offsets in the
+  template; functions retain the C ABI and string operands get named byte-array
+  statics.
+- Unused operands get references in assembler comments to satisfy Rust's
+  operand-use check.
+- Extended asm maps parser options directly. Basic asm escapes braces in its
+  decoded template instead of using `raw`, so symbol references can become
+  `{N}`.
 - `memory`/`cc`/`unwind` clobbers are represented by the computed options;
-  register clobbers become discarded early `out` operands: a GNU clobber never shares a
-  register with an input, while Rust lets an input take a `lateout("r1") _` register.
-- A GNU asm clobber or `register ... asm("name")` label that is not `memory`, `cc`, `unwind`, `redzone`, or a register of the target
-  is a parse error (`unknown register name '...' in asm`). `redzone` has no Rust `asm!` equivalent and is dropped.
-- Explicit GPR operands become `in("ax")` and friends, ordered after every positional operand
-  (Rust rejects positional operands after explicit ones). Rust forbids template references to
-  explicit registers, so references print the register name at the view or operand width
-  (`%eax`, `%r10d`, `%sil`).
-- `reg_legacy` pins the first of ax, cx, dx, si, di not named by another explicit operand or
-  clobber.
-- `{att|intel}` alternations are already resolved by the parser. Like GCC, Slate does not
-  track `.intel_syntax noprefix` switches inside a template; only `%V` (bare register) is
-  dialect-aware. LLVM rejects `%eax` under `noprefix` and Rust `att_syntax` always prints
-  `{N}` with `%`, so a `reg`/`reg_abcd` operand referenced by `%V` pins a free GPR (ax, cx,
-  dx, si, di, r8-r15; abcd: ax, cx, dx) and prints its bare name (`asm_dialect_switch.c`).
-- `%=` (GCC per-instance id, clang `${:uid}`) has no Rust form: rustc escapes `$`, and a
-  Slate-side counter breaks when LLVM duplicates the asm (inlining, unrolling). A label built
-  around `%=` (`.Lloop%=:`) becomes a numeric local label instead: each name gets a number not
-  already used as `N:` in the template (skipping 0/1-only numbers, which LLVM's Intel parser
-  reads as binary), its definition prints `N:`, and each reference prints `Nf` or `Nb` by
-  position. Every copy resolves to its own definition, including references across
-  `.pushsection` (`asm_unique_id.c`).
-- Where `%=` stops: these stay barriers, each with its own reason. A `%=` name without exactly
-  one `name:` definition (a bare number like `$%=`, a `.set`/`.equ` symbol, a duplicate
-  definition), a name used by a directive that needs a real symbol (`.globl`, `.type`,
-  `.size`, `.weak`, `.hidden`, `.local`, `.protected`, `.internal`, `.set`, `.equ`, `.equiv`,
-  `.symver`), and two `%=` in one name. Each needs a value unique per emitted copy, and only
-  the compiler can produce that.
-- LLVM reserves rbx: a `b` operand rides in a scratch `reg` swapped into rbx with `xchg` before
-  and after the template (inputs become `inout(..) => _`, outputs early), and an rbx clobber is
-  saved and restored with `mov` through an early `out(reg) _`. rbp gets the same treatment as an
-  operand (copied in and out through a scratch pair) and as a clobber; an rsp clobber is saved and
-  restored the same way. An rsp/esp operand (a stack-pointer register variable) passes no Rust
-  operand: a template reference prints the register by name, an unreferenced one is dropped (the
-  asm is not `nostack`, so Rust keeps the stack usable for a `call`), and a referenced output or
-  in-out stays a barrier (`asm_stack_pointer_operand.c`; i686 and aarch64 `sp`: `slate-3f8g.4.41`).
-- Memory operands pass their address `in(reg)`: `InPlace` as `&raw const`, memory `Out` and
-  `InOut` as `&raw mut`, and an unaddressable `In(value)` spills to a temporary first. A
-  reference prints `({N:r})` (AT&T) or `<size> ptr [{N:r}]` (Intel, size from the width);
-  `%H` adds 8. `%a` on a register operand prints the same reference without a size.
-- On x86_64 a memory operand with an `address` becomes `sym` instead, printed `{N}+off(%rip)`
-  (AT&T) or `<size> ptr [rip + {N}+off]`, as clang emits for a global. objtool resolves kernel
-  pv_ops calls (`call *pv_ops+N(%rip)`) only through that relocation. The static must not be
-  preemptible: internal linkage, hidden or protected visibility, or a `-fno-pic`/`-fPIE` unit;
-  weak, indirect, flexible-array and libc-support statics keep the register form
+  register clobbers become discarded early `out` operands: a GNU clobber never
+  shares a register with an input, while Rust lets an input take a
+  `lateout("r1") _` register.
+- A GNU asm clobber or `register ... asm("name")` label that is not `memory`,
+  `cc`, `unwind`, `redzone`, or a register of the target is a parse error
+  (`unknown register name '...' in asm`). `redzone` has no Rust `asm!`
+  equivalent and is dropped.
+- Explicit GPR operands become `in("ax")` and friends, ordered after every
+  positional operand (Rust rejects positional operands after explicit ones).
+  Rust forbids template references to explicit registers, so references print
+  the register name at the view or operand width (`%eax`, `%r10d`, `%sil`).
+- `reg_legacy` pins the first of ax, cx, dx, si, di not named by another
+  explicit operand or clobber.
+- `{att|intel}` alternations are already resolved by the parser. Like GCC, Slate
+  does not track `.intel_syntax noprefix` switches inside a template; only `%V`
+  (bare register) is dialect-aware. LLVM rejects `%eax` under `noprefix` and
+  Rust `att_syntax` always prints `{N}` with `%`, so a `reg`/`reg_abcd` operand
+  referenced by `%V` pins a free GPR (ax, cx, dx, si, di, r8-r15; abcd: ax, cx,
+  dx) and prints its bare name (`asm_dialect_switch.c`).
+- `%=` (GCC per-instance id, clang `${:uid}`) has no Rust form: rustc escapes
+  `$`, and a Slate-side counter breaks when LLVM duplicates the asm (inlining,
+  unrolling). A label built around `%=` (`.Lloop%=:`) becomes a numeric local
+  label instead: each name gets a number not already used as `N:` in the
+  template (skipping 0/1-only numbers, which LLVM's Intel parser reads as
+  binary), its definition prints `N:`, and each reference prints `Nf` or `Nb` by
+  position. Every copy resolves to its own definition, including references
+  across `.pushsection` (`asm_unique_id.c`).
+- Where `%=` stops: these stay barriers, each with its own reason. A `%=` name
+  without exactly one `name:` definition (a bare number like `$%=`, a
+  `.set`/`.equ` symbol, a duplicate definition), a name used by a directive that
+  needs a real symbol (`.globl`, `.type`, `.size`, `.weak`, `.hidden`, `.local`,
+  `.protected`, `.internal`, `.set`, `.equ`, `.equiv`, `.symver`), and two `%=`
+  in one name. Each needs a value unique per emitted copy, and only the compiler
+  can produce that.
+- LLVM reserves rbx: a `b` operand rides in a scratch `reg` swapped into rbx
+  with `xchg` before and after the template (inputs become `inout(..) => _`,
+  outputs early), and an rbx clobber is saved and restored with `mov` through an
+  early `out(reg) _`. rbp gets the same treatment as an operand (copied in and
+  out through a scratch pair) and as a clobber; an rsp clobber is saved and
+  restored the same way. An rsp/esp operand (a stack-pointer register variable)
+  passes no Rust operand: a template reference prints the register by name, an
+  unreferenced one is dropped (the asm is not `nostack`, so Rust keeps the stack
+  usable for a `call`), and a referenced output or in-out stays a barrier
+  (`asm_stack_pointer_operand.c`; i686 and aarch64 `sp`: `slate-3f8g.4.41`).
+- Memory operands pass their address `in(reg)`: `InPlace` as `&raw const`,
+  memory `Out` and `InOut` as `&raw mut`, and an unaddressable `In(value)`
+  spills to a temporary first. A reference prints `({N:r})` (AT&T) or
+  `<size> ptr [{N:r}]` (Intel, size from the width); `%H` adds 8. `%a` on a
+  register operand prints the same reference without a size.
+- On x86_64 a memory operand with an `address` becomes `sym` instead, printed
+  `{N}+off(%rip)` (AT&T) or `<size> ptr [rip + {N}+off]`, as clang emits for a
+  global. objtool resolves kernel pv_ops calls (`call *pv_ops+N(%rip)`) only
+  through that relocation. The static must not be preemptible: internal linkage,
+  hidden or protected visibility, or a `-fno-pic`/`-fPIE` unit; weak, indirect,
+  flexible-array and libc-support statics keep the register form
   (`asm_memory_operand_global_symbol.c`).
-- A naked function becomes `#[unsafe(naked)] extern "C-unwind" fn` with immutable parameters
-  and one `naked_asm!` joining every asm template with newlines; operand numbers continue
-  across statements. Only `const` and `sym` operands are allowed; basic templates escape
-  braces instead of using `raw`, and AT&T adds `att_syntax`. A body with anything but asm,
-  null statements, and comments is a barrier (`asm_naked_functions.c`).
-- A flags output becomes `out(reg_byte)` into a `u8` temporary with `set<cond> {N}` appended
-  to the template, decoded into the C place like other outputs (`_Bool` tests against zero,
-  integers zero-extend). gcc drops the setcc for `=&@cc`, so the differential fixture avoids
-  early clobbers (`gnu_asm_flag_outputs.c`).
-  On aarch64 the same constraint takes the 16 condition names (`eq ne cs cc hs lo mi pl vs vc
-  hi ls ge lt gt le`) and lowers to `out(reg)` into a `u32` with `cset {N:w}, <cond>` appended
-  (`asm_aarch64_flag_outputs.c`, all 16).
-  Clang-only on aarch64: the flags operand is NZCV itself. `+@cc<cond>` loads the place into
-  NZCV before the template (`msr nzcv, {N:x}` from a hidden `in(reg)`), and `%w0` prints
-  `nzcv` (no modifier is rejected by clang). gcc rejects `+@cc` on aarch64
-  (`clang_asm_aarch64_flag_readwrite.c`).
-  clang-only `+@cc<cond>` lowers the same way: clang ignores the tied input (the output is the
-  flags), so the input is dropped (`clang_asm_flag_output_readwrite.c`). A template reference to
-  a flags operand prints a 32-bit register whatever the place type (`{N:e}`, no modifiers):
-  `+@cc` adds a hidden `in(reg)` holding the place truncated to `u32`, `=@cc` a scratch
-  `out(reg) _` with unspecified contents. The hidden operand exists only when the template
-  names the operand (`clang_asm_flag_reference.c`).
-- aarch64 `za`, `zt0` and `fpmr` clobbers are dropped: the generated Rust never keeps a value in
-  SME or FP8 state, and rustc cannot name them. `sme`, `sme2` and `fp8` target features map to
-  rustc's and turn on `#![feature(aarch64_unstable_target_feature)]`
-  (`asm_aarch64_sme_state_clobbers.c`). That is sound because slate refuses functions that
-  carry SME keyword attributes (`__arm_inout("za")` etc.; see [declarations](declarations.md)).
-- x87 operands spill through temporaries passed `in(reg)`. Inputs sit where both compilers put
-  them: `t` at st(0), `u` at st(1), `f` inputs below in operand order, loaded deepest first with
-  `flds`/`fldl`/`fldt`. After the template, outputs (`=t`, then `=u`) are popped with
-  `fstp*` into their temporaries. Then every untied input whose register isn't clobbered (the
-  asm didn't pop it) is popped with `fstp %st(0)`. All eight `st` registers are clobbered, so
-  Rust guarantees an empty stack on entry and the spill code leaves it empty.
-- MMX operands pin a free `mm` register, loaded and stored with `movq` (`movd` at 32 bits),
-  and clobber it. References print `%st`, `%st(N)`, or `%mmN`. Spilled outputs drop `pure`
-  and the memory options; spilled inputs turn `nomem` into `readonly`
-  (`asm_x87_mmx_operands.c`, gcc-torture `990413-2`).
-- asm goto forces the dispatch loop and becomes a CFG node with the fallthrough plus one
-  successor per label. Slate sets `__slate_state` to the fallthrough before the `asm!`, and each
-  `%lN` is a `label { __slate_state = N; }` operand. A `()` label block resumes after the
-  `asm!`, so writebacks run once on every path, then `continue '__slate_dispatch`. rustc
-  assigns outputs before entering a label block; asm goto with outputs enables
-  `asm_goto_with_outputs` (`gnu_asm_goto.c`, gcc-dg `torture/pr58670`).
-- `Module::asm` joins into one `global_asm!` (source order kept; `att_syntax` for AT&T),
-  sharing the naked-function path: `const`/`sym` operands only.
-- Template text that names a C function or static defined in this unit (`counter(%rip)`,
-  `jmp twice`) is rewritten to a `sym` operand, in `asm!`, `naked_asm!`, and `global_asm!`.
-  This keeps internal linkage and tells rustc the item escapes. It is skipped for the
-  first word of a statement (a mnemonic or label; on x86 also the word after a `rep`/`lock`/
-  `data16`/`rex*` prefix), `%`-prefixed registers (including `%%ds`, where `%%` is its own
-  piece), quoted strings, thread-locals, and names defined twice
-  (`gnu_toplevel_asm_symbols.c`, `x86_64/asm_template_symbol_words.c`). Intel-syntax register
-  names carry no `%` and are still candidates (slate-yar4.46).
-- Other immediate modifiers,
-  and additional operand classes are tracked by the other `slate-3f8g.4.17` children.
+- A naked function becomes `#[unsafe(naked)] extern "C-unwind" fn` with
+  immutable parameters and one `naked_asm!` joining every asm template with
+  newlines; operand numbers continue across statements. Only `const` and `sym`
+  operands are allowed; basic templates escape braces instead of using `raw`,
+  and AT&T adds `att_syntax`. A body with anything but asm, null statements, and
+  comments is a barrier (`asm_naked_functions.c`).
+- A flags output becomes `out(reg_byte)` into a `u8` temporary with
+  `set<cond> {N}` appended to the template, decoded into the C place like other
+  outputs (`_Bool` tests against zero, integers zero-extend). gcc drops the
+  setcc for `=&@cc`, so the differential fixture avoids early clobbers
+  (`gnu_asm_flag_outputs.c`). On aarch64 the same constraint takes the 16
+  condition names (`eq ne cs cc hs lo mi pl vs vc hi ls ge lt gt le`) and lowers
+  to `out(reg)` into a `u32` with `cset {N:w}, <cond>` appended
+  (`asm_aarch64_flag_outputs.c`, all 16). Clang-only on aarch64: the flags
+  operand is NZCV itself. `+@cc<cond>` loads the place into NZCV before the
+  template (`msr nzcv, {N:x}` from a hidden `in(reg)`), and `%w0` prints `nzcv`
+  (no modifier is rejected by clang). gcc rejects `+@cc` on aarch64
+  (`clang_asm_aarch64_flag_readwrite.c`). clang-only `+@cc<cond>` lowers the
+  same way: clang ignores the tied input (the output is the flags), so the input
+  is dropped (`clang_asm_flag_output_readwrite.c`). A template reference to a
+  flags operand prints a 32-bit register whatever the place type (`{N:e}`, no
+  modifiers): `+@cc` adds a hidden `in(reg)` holding the place truncated to
+  `u32`, `=@cc` a scratch `out(reg) _` with unspecified contents. The hidden
+  operand exists only when the template names the operand
+  (`clang_asm_flag_reference.c`).
+- aarch64 `za`, `zt0` and `fpmr` clobbers are dropped: the generated Rust never
+  keeps a value in SME or FP8 state, and rustc cannot name them. `sme`, `sme2`
+  and `fp8` target features map to rustc's and turn on
+  `#![feature(aarch64_unstable_target_feature)]`
+  (`asm_aarch64_sme_state_clobbers.c`). That is sound because slate refuses
+  functions that carry SME keyword attributes (`__arm_inout("za")` etc.; see
+  [declarations](declarations.md)).
+- x87 operands spill through temporaries passed `in(reg)`. Inputs sit where both
+  compilers put them: `t` at st(0), `u` at st(1), `f` inputs below in operand
+  order, loaded deepest first with `flds`/`fldl`/`fldt`. After the template,
+  outputs (`=t`, then `=u`) are popped with `fstp*` into their temporaries. Then
+  every untied input whose register isn't clobbered (the asm didn't pop it) is
+  popped with `fstp %st(0)`. All eight `st` registers are clobbered, so Rust
+  guarantees an empty stack on entry and the spill code leaves it empty.
+- MMX operands pin a free `mm` register, loaded and stored with `movq` (`movd`
+  at 32 bits), and clobber it. References print `%st`, `%st(N)`, or `%mmN`.
+  Spilled outputs drop `pure` and the memory options; spilled inputs turn
+  `nomem` into `readonly` (`asm_x87_mmx_operands.c`, gcc-torture `990413-2`).
+- asm goto forces the dispatch loop and becomes a CFG node with the fallthrough
+  plus one successor per label. Slate sets `__slate_state` to the fallthrough
+  before the `asm!`, and each `%lN` is a `label { __slate_state = N; }` operand.
+  A `()` label block resumes after the `asm!`, so writebacks run once on every
+  path, then `continue '__slate_dispatch`. rustc assigns outputs before entering
+  a label block; asm goto with outputs enables `asm_goto_with_outputs`
+  (`gnu_asm_goto.c`, gcc-dg `torture/pr58670`).
+- `Module::asm` joins into one `global_asm!` (source order kept; `att_syntax`
+  for AT&T), sharing the naked-function path: `const`/`sym` operands only.
+- Template text that names a C function or static defined in this unit
+  (`counter(%rip)`, `jmp twice`) is rewritten to a `sym` operand, in `asm!`,
+  `naked_asm!`, and `global_asm!`. This keeps internal linkage and tells rustc
+  the item escapes. It is skipped for the first word of a statement (a mnemonic
+  or label; on x86 also the word after a `rep`/`lock`/ `data16`/`rex*` prefix),
+  `%`-prefixed registers (including `%%ds`, where `%%` is its own piece), quoted
+  strings, thread-locals, and names defined twice (`gnu_toplevel_asm_symbols.c`,
+  `x86_64/asm_template_symbol_words.c`). Intel-syntax register names carry no
+  `%` and are still candidates (slate-yar4.46).
+- Other immediate modifiers, and additional operand classes are tracked by the
+  other `slate-3f8g.4.17` children.

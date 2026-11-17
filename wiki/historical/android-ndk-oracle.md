@@ -15,9 +15,8 @@ tools/bootstrap-android-ndk.sh --accept-license
 `ANDROID_NDK_ACCEPT_LICENSE=1` is the non-interactive equivalent. The script
 pins the official archive name, byte size, URL, published SHA-1, and a derived
 SHA-256 checksum. It stores the archive in `target/android-ndk-cache`, unpacks
-the NDK into
-`target/android-ndk-oracle/ndk`, validates the revision and API-specific
-libraries, and records the target contract in
+the NDK into `target/android-ndk-oracle/ndk`, validates the revision and
+API-specific libraries, and records the target contract in
 `target/android-ndk-oracle/oracle.json`. A valid externally installed copy of
 the same NDK revision can be used without copying it:
 

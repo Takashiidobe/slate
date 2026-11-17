@@ -6,44 +6,42 @@
 
 `src/backend/facts/` is the analysis layer between baseline lowering and the
 fixup passes described in [passes.md](passes.md). It never mutates the AST: it
-reads an already-lowered `Program` and produces facts — purity,
-definition/use, provenance, loop shape, string/heap/file ownership, and more —
-that rewrite passes query instead of re-deriving the same information by
-re-walking the tree. Facts are computed and memoized by
-[salsa](https://github.com/salsa-rs/salsa): `src/backend/salsa.rs`'s
-`SalsaFacts` owns a `#[salsa::db]` `Database` and a singleton `ProgramInput`.
-`FunctionInput` is an interned `(ProgramInput, FunctionId)` key whose body and
-base-walk bindings, binding types, and loops are derived by tracked methods.
-Whole-program function and definition reductions are tracked methods on
-`ProgramInput`; no externally synchronized fact inputs are retained. Salsa
-reruns only the tracked functions whose inputs changed and backdates (skips
-invalidating dependents) when a rerun's output is value-equal to before.
+reads an already-lowered `Program` and produces facts — purity, definition/use,
+provenance, loop shape, string/heap/file ownership, and more — that rewrite
+passes query instead of re-deriving the same information by re-walking the tree.
+Facts are computed and memoized by [salsa](https://github.com/salsa-rs/salsa):
+`src/backend/salsa.rs`'s `SalsaFacts` owns a `#[salsa::db]` `Database` and a
+singleton `ProgramInput`. `FunctionInput` is an interned
+`(ProgramInput, FunctionId)` key whose body and base-walk bindings, binding
+types, and loops are derived by tracked methods. Whole-program function and
+definition reductions are tracked methods on `ProgramInput`; no externally
+synchronized fact inputs are retained. Salsa reruns only the tracked functions
+whose inputs changed and backdates (skips invalidating dependents) when a
+rerun's output is value-equal to before.
 
 This doc is a reference for what each collector proves and which rewrite pass
-(named as in passes.md's [pass sequence](passes.md#the-pass-sequence)) reads
-it. _"A rewrite should consume facts plus local AST shape; if it needs
-information that is not already available as a fact, add a fact collector
-first."_
+(named as in passes.md's [pass sequence](passes.md#the-pass-sequence)) reads it.
+_"A rewrite should consume facts plus local AST shape; if it needs information
+that is not already available as a fact, add a fact collector first."_
 
 ## Why a separate layer
 
-Fixups must stay conservative
-before moving, dropping, or folding code they need to know things the AST
-shape alone doesn't answer - "is this expression pure," "is this the last
-read of this binding," "does this pointer alias anything else," "did this
-buffer ever get indexed." Answering those per-pass, by hand, is exactly the
-kind of pass-local walker `writing-a-query-driven-fixup.md` warns against. Each fact is
-computed once, in one dedicated module, so every pass gets the same answer
-through the same query methods on `QueryContext` (`def_use`, `effect`,
-`place`, `has_value`, `string_buffer`, ...; see the full list in
+Fixups must stay conservative before moving, dropping, or folding code they need
+to know things the AST shape alone doesn't answer - "is this expression pure,"
+"is this the last read of this binding," "does this pointer alias anything
+else," "did this buffer ever get indexed." Answering those per-pass, by hand, is
+exactly the kind of pass-local walker `writing-a-query-driven-fixup.md` warns
+against. Each fact is computed once, in one dedicated module, so every pass gets
+the same answer through the same query methods on `QueryContext` (`def_use`,
+`effect`, `place`, `has_value`, `string_buffer`, ...; see the full list in
 `src/backend/query/context.rs`), which is itself a thin, `#[salsa::tracked]`
 memoization-backed adapter over `SalsaFacts`.
 
 ## Addressing scheme
 
-Facts don't hold references into the tree — a `Program` gets rebuilt by
-value between rewrites, so borrows wouldn't survive. Instead every fact keys
-off small, `Copy`, structural identifiers:
+Facts don't hold references into the tree — a `Program` gets rebuilt by value
+between rewrites, so borrows wouldn't survive. Instead every fact keys off
+small, `Copy`, structural identifiers:
 
 - **`FunctionId` / `BindingId` / `LoopId` / `SignatureId`** — dense indices
   assigned once, in traversal order, by the base program walk
@@ -52,26 +50,26 @@ off small, `Copy`, structural identifiers:
   `#[salsa::tracked]` method on `ProgramInput` (`ProgramInput::base_walk` in
   `src/backend/salsa.rs`): every edit reruns it fresh from the whole `Program`,
   and salsa backdates the result when the derived ids are unchanged, so a
-  `FunctionId` stays a valid interning key for `FunctionInput` across
-  `Program` revisions without any hand-written re-sync step. Later collectors
-  look bindings up by `(function, name)` or `(function, declaration path)`
-  rather than re-minting IDs.
+  `FunctionId` stays a valid interning key for `FunctionInput` across `Program`
+  revisions without any hand-written re-sync step. Later collectors look
+  bindings up by `(function, name)` or `(function, declaration path)` rather
+  than re-minting IDs.
 - **`AstPath` / `PathSegment`** — a route from a function body down to a
   specific statement or expression (`Stmt(2)`, `Then`, `LoopBody`,
   `MatchArm(0)`, `Expr(1)`, ...). A `Site { function, path }` is "this fact is
   about the node at this path in this function." Because rewrites preserve
-  statement order except where they explicitly restructure it, a path
-  computed by one collector still resolves correctly for the next, within the
-  same `Program` revision.
+  statement order except where they explicitly restructure it, a path computed
+  by one collector still resolves correctly for the next, within the same
+  `Program` revision.
 - **`walk::paths_overlap`** — reads are sometimes recorded at whole-statement
-  granularity (a call argument's read is attributed to the enclosing
-  statement) while a query needs a narrower path (the specific argument
-  expression); path containment in either direction is treated as a match.
+  granularity (a call argument's read is attributed to the enclosing statement)
+  while a query needs a narrower path (the specific argument expression); path
+  containment in either direction is treated as a match.
 
 `src/backend/facts/walk.rs` is the shared _immutable_ traversal helper
 (`body_exprs`, `stmt_exprs`, `with_path_segment`, `nested_bodies_with_path`,
-...) that every collector below is built on — the collector-side counterpart
-to `src/backend/support/walk.rs`, which rewrite passes use instead.
+...) that every collector below is built on — the collector-side counterpart to
+`src/backend/support/walk.rs`, which rewrite passes use instead.
 
 ## Collectors
 
@@ -112,38 +110,39 @@ pass can also be a producer for a later collector, noted where relevant.
 | 26  | `va_list`                           | `VaListAliasFact`                                                                          | A local that's just a clone/alias of the function's sole `va_list` parameter, safe to fold away                                                                                                                                          | `va_list`                                                                                                                                                              |
 
 `goto` (`src/backend/facts/goto.rs`) is a related but separate case: it is a
-front-end-agnostic CFG library (`CfgNode`/`CfgEdge`, dominators, natural
-loops, SCCs) used directly by the `goto`-structuring pass
+front-end-agnostic CFG library (`CfgNode`/`CfgEdge`, dominators, natural loops,
+SCCs) used directly by the `goto`-structuring pass
 (`src/backend/query/rules/goto.rs`) to rebuild structured control flow from a
-label/jump dispatch loop. It is not backed by any `#[salsa::tracked]` fact —
-the `goto` pass runs first, before any other fact is read (see `Pass::Goto` in
-`src/backend/mod.rs`), and builds its own CFG straight from the AST each time
-it runs.
+label/jump dispatch loop. It is not backed by any `#[salsa::tracked]` fact — the
+`goto` pass runs first, before any other fact is read (see `Pass::Goto` in
+`src/backend/mod.rs`), and builds its own CFG straight from the AST each time it
+runs.
 
 ## Adding a fact
 
-Add a new module under `src/backend/facts/`, following the shape every
-existing collector uses:
+Add a new module under `src/backend/facts/`, following the shape every existing
+collector uses:
 
 1. Define the fact struct(s) in `src/backend/facts/mod.rs`.
-2. Write `pub(in crate::backend) fn collect_for_function(function: FunctionId, f: &FnDef, ...) -> Vec<XFact>`
+2. Write
+   `pub(in crate::backend) fn collect_for_function(function: FunctionId, f: &FnDef, ...) -> Vec<XFact>`
    in the new module, walking with `src/backend/facts/walk.rs` helpers, for a
    fact that only needs its own function's data. If the fact genuinely needs
    other functions' data (a call graph, a whole-program reduction), write
-   `compute(...)`/`collect(...)` instead, taking whatever slices/maps it
-   needs as parameters — never a whole facts struct.
+   `compute(...)`/`collect(...)` instead, taking whatever slices/maps it needs
+   as parameters — never a whole facts struct.
 3. Add a `#[salsa::tracked]` method calling it: on `impl FunctionInput` in
-   `src/backend/salsa.rs` for a per-function fact (see `def_use`, `effects`,
-   ... for the template), or on `impl ProgramInput` for a whole-program one
-   (see `callsites`, `lazy_init_singletons`, ...). A
-   whole-program tracked fn that needs one function's data narrowly should
-   filter a wider tracked fn's output down (see `own_callsites`) rather than
-   depending on the whole reduction directly, to avoid invalidating every
-   function whenever any one function's data changes.
+   `src/backend/salsa.rs` for a per-function fact (see `def_use`, `effects`, ...
+   for the template), or on `impl ProgramInput` for a whole-program one (see
+   `callsites`, `lazy_init_singletons`, ...). A whole-program tracked fn that
+   needs one function's data narrowly should filter a wider tracked fn's output
+   down (see `own_callsites`) rather than depending on the whole reduction
+   directly, to avoid invalidating every function whenever any one function's
+   data changes.
 4. Add a lookup method on `SalsaFacts` next to the existing ones
    (`string_buffer`, `def_use`, `place`, ...).
-5. Consume it from a rewrite pass through `QueryContext`/`SalsaFacts`, never
-   by re-walking the tree by hand.
+5. Consume it from a rewrite pass through `QueryContext`/`SalsaFacts`, never by
+   re-walking the tree by hand.
 
 Keep collectors read-only and side-effect-free: `collect_for_function`/
 `compute`/`collect` must not mutate the AST. If a pass needs the AST changed,

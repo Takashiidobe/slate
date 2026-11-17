@@ -1,6 +1,7 @@
 # Compiler flags
 
 <!-- toc -->
+
 - [Contract](#contract)
 - [Implemented](#implemented)
 - [ISA gotchas](#isa-gotchas)
@@ -8,93 +9,89 @@
 - [Not implemented](#not-implemented)
 <!-- /toc -->
 
-Each supported flag emulates the same flag of the selected flavor's
-compiler. Parsing and validation live in
-[compiler-arg-rules](compiler-arg-rules.md), and how the result reaches
-each stage is in [configuration-threading](configuration-threading.md).
+Each supported flag emulates the same flag of the selected flavor's compiler.
+Parsing and validation live in [compiler-arg-rules](compiler-arg-rules.md), and
+how the result reaches each stage is in
+[configuration-threading](configuration-threading.md).
 
 ## Contract
 
 - Flags are inputs to sema. The IR carries their resolved effects (an
-  operation's `overflow=`, a layout, `long_double`, symbol definition
-  kinds), never the flags themselves. Slate never reads flags.
+  operation's `overflow=`, a layout, `long_double`, symbol definition kinds),
+  never the flags themselves. Slate never reads flags.
 - Predefines follow the same effective configuration that sema uses.
-- Optional permissions (`contract=`, `range=`) are recorded when Slate can
-  use them. Ignoring them is always correct.
-- The IR records the rounding and exception behavior an operation
-  requires. Proving the runtime FP mode and lifting to plain Rust
-  arithmetic is the Rust rewriter's job, not the IR's.
-- The MSVC flavor rejects every `-f…` and `-m…` flag below
-  (`Opt::accepted_by`), except the `CODEGEN_ONLY_FLAGS` rows marked
-  `ALL_FLAVORS` (`-fomit-frame-pointer`, `-flto`, `-fvisibility=`, ...).
-  Its own `/` spellings (the rest of the cl.exe options are tracked in
-  slate-3amj.5):
-  - Any `/d2…` option (cl's undocumented backend switches, such as
-    `/d2FH4-` from ReactOS's toolchain) is a codegen-only row and ignored;
-    the backend can't change macros or the IR.
-  - Slate always uses cl's conforming preprocessor (`_MSVC_TRADITIONAL 0`),
-    even without `/Zc:preprocessor` or `/std:c11` and later, where cl falls
-    back to its traditional one. `/Zc:preprocessor` is accepted with no
-    effect. `/Zc:preprocessor-` is rejected and will not be supported
-    (slate-3amj.5.12), because most libraries do not build with the
-    traditional preprocessor. A flagless TU that depends on traditional
-    expansion (`__VA_ARGS__` forwarded as one argument, commas dropped
-    before an empty `__VA_ARGS__`) expands differently in slate than in cl.
+- Optional permissions (`contract=`, `range=`) are recorded when Slate can use
+  them. Ignoring them is always correct.
+- The IR records the rounding and exception behavior an operation requires.
+  Proving the runtime FP mode and lifting to plain Rust arithmetic is the Rust
+  rewriter's job, not the IR's.
+- The MSVC flavor rejects every `-f…` and `-m…` flag below (`Opt::accepted_by`),
+  except the `CODEGEN_ONLY_FLAGS` rows marked `ALL_FLAVORS`
+  (`-fomit-frame-pointer`, `-flto`, `-fvisibility=`, ...). Its own `/` spellings
+  (the rest of the cl.exe options are tracked in slate-3amj.5):
+  - Any `/d2…` option (cl's undocumented backend switches, such as `/d2FH4-`
+    from ReactOS's toolchain) is a codegen-only row and ignored; the backend
+    can't change macros or the IR.
+  - Slate always uses cl's conforming preprocessor (`_MSVC_TRADITIONAL 0`), even
+    without `/Zc:preprocessor` or `/std:c11` and later, where cl falls back to
+    its traditional one. `/Zc:preprocessor` is accepted with no effect.
+    `/Zc:preprocessor-` is rejected and will not be supported (slate-3amj.5.12),
+    because most libraries do not build with the traditional preprocessor. A
+    flagless TU that depends on traditional expansion (`__VA_ARGS__` forwarded
+    as one argument, commas dropped before an empty `__VA_ARGS__`) expands
+    differently in slate than in cl.
   - `/J` makes plain `char` unsigned (`TargetInfo::char_signed`) and defines
-    `_CHAR_UNSIGNED` only, as cl.exe does; `__CHAR_UNSIGNED__` stays
-    undefined.
-  - `/Zp<n>` sets the default maximum field alignment, like
-    `-fpack-struct=<n>`; `#pragma pack()` restores it. `/Zp` alone is
-    `/Zp1`. A number other than 1, 2, 4, 8 or 16 is `/Zp8`, which cl.exe
-    only warns about (D9014); a non-number is rejected.
-  - `/D`, `/U`, `/I` and `/FI` are `-D`, `-U`, `-I` and `-include`, joined
-    or with a separate argument, applied in command-line order. Each `#` in
-    a `/D` value is `=` (`/DNAME#4` is `NAME=4`). `/X` is `-nostdlibinc`.
+    `_CHAR_UNSIGNED` only, as cl.exe does; `__CHAR_UNSIGNED__` stays undefined.
+  - `/Zp<n>` sets the default maximum field alignment, like `-fpack-struct=<n>`;
+    `#pragma pack()` restores it. `/Zp` alone is `/Zp1`. A number other than 1,
+    2, 4, 8 or 16 is `/Zp8`, which cl.exe only warns about (D9014); a non-number
+    is rejected.
+  - `/D`, `/U`, `/I` and `/FI` are `-D`, `-U`, `-I` and `-include`, joined or
+    with a separate argument, applied in command-line order. Each `#` in a `/D`
+    value is `=` (`/DNAME#4` is `NAME=4`). `/X` is `-nostdlibinc`.
   - `/std:c11`, `/std:c17` and `/std:clatest` (C23, `__STDC_VERSION__`
     `202312L`) set the standard; the last one wins. Like an explicit `-std=`,
     they define `__STDC_VERSION__` and `__STDC_NO_ATOMICS__`,
-    `__STDC_NO_COMPLEX__` and `__STDC_NO_VLA__`, which cl.exe leaves
-    undefined without `/std`. `/experimental:c11atomics` drops
-    `__STDC_NO_ATOMICS__` under any `/std` and does nothing without one
-    (`MicrosoftFlags::c11_atomics`). Without a `/std`, `_Static_assert`,
-    `_Alignas`, `_Noreturn`, `_Generic` and `_Thread_local` are plain
-    identifiers (`StandardFeatures::c11_keywords`); `_Alignof`, `_Bool` and
-    lowercase `static_assert` are keywords in every cl mode. `/std:c++*` and other values are
-    rejected; cl.exe only warns about `/std:c99` and `/std:c23` (D9002) and
-    ignores them.
+    `__STDC_NO_COMPLEX__` and `__STDC_NO_VLA__`, which cl.exe leaves undefined
+    without `/std`. `/experimental:c11atomics` drops `__STDC_NO_ATOMICS__` under
+    any `/std` and does nothing without one (`MicrosoftFlags::c11_atomics`).
+    Without a `/std`, `_Static_assert`, `_Alignas`, `_Noreturn`, `_Generic` and
+    `_Thread_local` are plain identifiers (`StandardFeatures::c11_keywords`);
+    `_Alignof`, `_Bool` and lowercase `static_assert` are keywords in every cl
+    mode. `/std:c++*` and other values are rejected; cl.exe only warns about
+    `/std:c99` and `/std:c23` (D9002) and ignores them.
   - `/Zc:__STDC__` defines `__STDC__` 1, which cl.exe otherwise leaves
     undefined. `/Za` also defines it and drops `_MSC_EXTENSIONS`
-    (`MicrosoftFlags::strict_ansi`, `stdc_macro`). `/Ze` is accepted and
-    changes nothing. `/Za` conflicts (D8016, either order) with `/Ze` and
-    with any `/std:`, checked in `check_msvc_conflicts`. cl.exe's `/Za` also
-    rejects nameless struct members (C2467), casts used as lvalues (C2105),
-    zero-size arrays (C2466) and `$` in identifiers (C2018); slate does not
-    emulate those yet.
-  - Trigraphs are off by default. `/Zc:trigraphs` turns on replacement and
-    `??/` line splicing in every `/std:` mode, `/Zc:trigraphs-` turns it off
-    again, and the last one wins (`SourceGraphs::trigraphs`).
-  - `/u` (`MicrosoftFlags::undefine_predefined`) removes a fixed set of
-    cl.exe's predefines, not all of them: `_MSC_VER`, `_MSC_FULL_VER`,
-    `_MSC_BUILD`, `_MT`, `_DLL`, `_DEBUG`, `_VC_NODEFAULTLIB`,
-    `_CHAR_UNSIGNED`, `_ISO_VOLATILE`, `_WIN32`, `_WIN64`, the `_M_` arch
-    macros (`_M_X64`, `_M_AMD64`, `_M_IX86`, `_M_IX86_FP`, `_M_ARM64`,
-    `_M_ARM64_EXTENSION`), `_CMMN_INTRIN_FUNC`, `_M_FP_*` and every
-    `__ARM_*` macro (`MSVC_UNDEFINABLE_PREDEFINES` in `pp/mod.rs`). It keeps
-    `_MSC_EXTENSIONS`, `__STDC_HOSTED__`, `_MSVC_MT`, `_MSVC_MD`, the x86
-    ISA macros (`__AVX2__`) and the other option predefines. `/D` and `/U`
-    apply after it in either order, so `/D_MSC_VER=5 /u` keeps `5`. It also
-    removes `_OPENMP` and `_OPENMP_LLVM_RUNTIME`; OpenMP stays on.
-    Checked against cl.exe on x64, x86 and arm64.
-  - `/openmp`, `/openmp:llvm`, `/openmp:experimental` and `/openmp-` turn
-    OpenMP on (off for `/openmp-`; cl.exe warns D9025 on each override, slate
-    does not). `_OPENMP` is `2019` when the last positive spelling is
-    `/openmp:experimental`, otherwise `200203`. `_OPENMP_LLVM_RUNTIME 1`
-    appears once `/openmp:llvm` is seen and stays until a later `/openmp-`, so
+    (`MicrosoftFlags::strict_ansi`, `stdc_macro`). `/Ze` is accepted and changes
+    nothing. `/Za` conflicts (D8016, either order) with `/Ze` and with any
+    `/std:`, checked in `check_msvc_conflicts`. cl.exe's `/Za` also rejects
+    nameless struct members (C2467), casts used as lvalues (C2105), zero-size
+    arrays (C2466) and `$` in identifiers (C2018); slate does not emulate those
+    yet.
+  - Trigraphs are off by default. `/Zc:trigraphs` turns on replacement and `??/`
+    line splicing in every `/std:` mode, `/Zc:trigraphs-` turns it off again,
+    and the last one wins (`SourceGraphs::trigraphs`).
+  - `/u` (`MicrosoftFlags::undefine_predefined`) removes a fixed set of cl.exe's
+    predefines, not all of them: `_MSC_VER`, `_MSC_FULL_VER`, `_MSC_BUILD`,
+    `_MT`, `_DLL`, `_DEBUG`, `_VC_NODEFAULTLIB`, `_CHAR_UNSIGNED`,
+    `_ISO_VOLATILE`, `_WIN32`, `_WIN64`, the `_M_` arch macros (`_M_X64`,
+    `_M_AMD64`, `_M_IX86`, `_M_IX86_FP`, `_M_ARM64`, `_M_ARM64_EXTENSION`),
+    `_CMMN_INTRIN_FUNC`, `_M_FP_*` and every `__ARM_*` macro
+    (`MSVC_UNDEFINABLE_PREDEFINES` in `pp/mod.rs`). It keeps `_MSC_EXTENSIONS`,
+    `__STDC_HOSTED__`, `_MSVC_MT`, `_MSVC_MD`, the x86 ISA macros (`__AVX2__`)
+    and the other option predefines. `/D` and `/U` apply after it in either
+    order, so `/D_MSC_VER=5 /u` keeps `5`. It also removes `_OPENMP` and
+    `_OPENMP_LLVM_RUNTIME`; OpenMP stays on. Checked against cl.exe on x64, x86
+    and arm64.
+  - `/openmp`, `/openmp:llvm`, `/openmp:experimental` and `/openmp-` turn OpenMP
+    on (off for `/openmp-`; cl.exe warns D9025 on each override, slate does
+    not). `_OPENMP` is `2019` when the last positive spelling is
+    `/openmp:experimental`, otherwise `200203`. `_OPENMP_LLVM_RUNTIME 1` appears
+    once `/openmp:llvm` is seen and stays until a later `/openmp-`, so
     `/openmp:llvm /openmp:experimental` defines both `2019` and the runtime
     macro. `/u` suppresses both macros. `CompilerOptions::openmp` turns on
-    `#pragma omp` parsing, as with `-fopenmp`. cl.exe
-    reads other `/openmp:` spellings as the deprecated `/o`; slate rejects
-    them.
+    `#pragma omp` parsing, as with `-fopenmp`. cl.exe reads other `/openmp:`
+    spellings as the deprecated `/o`; slate rejects them.
   - `/W0`..`/W4`, `/Wall` and `/w` set `_MSVC_WARNING_LEVEL` (`nL`, `100L`,
     `0L`; `MicrosoftFlags::warning_level`). The last one wins, except that
     `/Wall` sticks once seen. `/W` takes a joined or separate value; another
@@ -102,88 +99,84 @@ each stage is in [configuration-threading](configuration-threading.md).
     Separately, the last `/W0` or `/w` silences warnings as `-w` does
     (`ignore_warnings`), even after `/Wall`; a later `/W1`..`/W4` or `/Wall`
     turns them back on. Other levels do not filter warnings yet.
-  - `/Gd`, `/Gr`, `/Gz` and `/Gv` set `TargetAbi::default_convention`
-    (cdecl, fastcall, stdcall, vectorcall) for every function type without
-    an explicit convention ([calls-abi](ir/calls-abi.md#calling-conventions)).
-    On x64 only `/Gv` applies. Two different ones are rejected, as cl.exe
-    does (D8016); repeating one is accepted.
-  - `/source-charset:` and `/execution-charset:` take `utf-8` or `.65001`,
-    or one of the single-byte code pages in `src/code_pages.rs` as `.<number>`
-    or a name wine accepts (`windows-1251`, `ibm437`, `koi8-r`, `iso-8859-5`,
-    `us-ascii`, ...; any case). The last of each wins.
-    Both default to windows-1252, the ANSI code page under wine
-    ([preprocessor](preprocessor.md#pipeline)). `/utf-8` sets both to UTF-8
-    and defines `_UTF8` to 1; combining it with either one is rejected
-    (D8016). An explicit execution charset sets
-    `_MSVC_EXECUTION_CHARACTER_SET` to its number. Anything else is rejected
-    as cl.exe's C3435 `character set 'X' is not supported`. That includes the
-    double-byte pages (932, 936, 949, 950) and other numbers cl.exe takes
-    without checking (`.99999`). Each table comes from cl.exe through
+  - `/Gd`, `/Gr`, `/Gz` and `/Gv` set `TargetAbi::default_convention` (cdecl,
+    fastcall, stdcall, vectorcall) for every function type without an explicit
+    convention ([calls-abi](ir/calls-abi.md#calling-conventions)). On x64 only
+    `/Gv` applies. Two different ones are rejected, as cl.exe does (D8016);
+    repeating one is accepted.
+  - `/source-charset:` and `/execution-charset:` take `utf-8` or `.65001`, or
+    one of the single-byte code pages in `src/code_pages.rs` as `.<number>` or a
+    name wine accepts (`windows-1251`, `ibm437`, `koi8-r`, `iso-8859-5`,
+    `us-ascii`, ...; any case). The last of each wins. Both default to
+    windows-1252, the ANSI code page under wine
+    ([preprocessor](preprocessor.md#pipeline)). `/utf-8` sets both to UTF-8 and
+    defines `_UTF8` to 1; combining it with either one is rejected (D8016). An
+    explicit execution charset sets `_MSVC_EXECUTION_CHARACTER_SET` to its
+    number. Anything else is rejected as cl.exe's C3435
+    `character set 'X' is not supported`. That includes the double-byte pages
+    (932, 936, 949, 950) and other numbers cl.exe takes without checking
+    (`.99999`). Each table comes from cl.exe through
     `tools/generate_code_pages.py`. Wine fills a page's undefined bytes with
     private-use characters or U+00XX, and us-ascii decodes a high byte to its
     low seven bits. Encoding is the exact inverse, with `?` for anything else
     (no best fit). `slate-parser pp` writes its output in the source charset, as
-    cl.exe `/E` and `/EP` do. The execution charset has no effect, and a
-    BOM'd UTF-8 file still prints in windows-1252 by default (`é一` as
-    `E9 3F`). A UCN in an identifier prints as its character (`?` if the
-    code page lacks it). One in a literal stays as written. Bytes that are not
-    valid UTF-8 in a UTF-8 file are dropped (`write_preprocessed`, `pp/print.rs`).
-    A plain string or character literal whose character the execution charset
-    lacks becomes `?` and warns `unrepresentable-character`
+    cl.exe `/E` and `/EP` do. The execution charset has no effect, and a BOM'd
+    UTF-8 file still prints in windows-1252 by default (`é一` as `E9 3F`). A UCN
+    in an identifier prints as its character (`?` if the code page lacks it).
+    One in a literal stays as written. Bytes that are not valid UTF-8 in a UTF-8
+    file are dropped (`write_preprocessed`, `pp/print.rs`). A plain string or
+    character literal whose character the execution charset lacks becomes `?`
+    and warns `unrepresentable-character`
     ([diagnostic-severity](diagnostic-severity.md#warnings)).
   - `/fp:precise|strict|fast` pick the model (last wins) and define
     `_M_FP_PRECISE`, `_M_FP_STRICT` or `_M_FP_FAST`; none is defined without
-    one. `/fp:contract` adds `_M_FP_CONTRACT`, which `fast` implies, and a
-    later `/fp:fast` drops an earlier `/fp:contract`. `/fp:except[-]` (last
-    wins) adds `_M_FP_EXCEPT`, which `strict` implies even after
-    `/fp:except-`. cl.exe checks conflicts against the options seen so far,
-    so slate does too: `/fp:contract` with a current `strict` (or `strict`
-    after `/fp:contract`) and `/fp:except` with a current `fast` (or `fast`
-    after `/fp:except`) are rejected (D8016), while
-    `/fp:strict /fp:precise /fp:contract` is fine. IR effects are in
-    [ir/operations](ir/operations.md#floating-settings). An unknown mode
-    is rejected; cl.exe ignores it (D9002).
-  - `/arch:` (`resolve_msvc_arch`, `MicrosoftFlags::arch`) defines
-    `__AVX__`, `__AVX2__`, `__AVX512{F,CD,BW,DQ,VL}__` up to the level and
-    `__AVX10_VER__` for AVX10.1/AVX10.2. The level also feeds the x86
-    `TargetIsa` request (`request_msvc_arch`), so vector width follows it as
-    with `-m` flags. cl.exe keeps the highest level, not the last: x64 always
-    (any `/arch` there also defines `_NO_PREFETCHW`); x86 for the AVX
-    options, while a later `IA32`, `SSE` or `SSE2` resets it and sets
-    `_M_IX86_FP` 0, 1 or 2. The AVX10 version is the last one given.
-    Checked by fuzzing random sequences against cl.exe. On x86, cl.exe keeps
-    parts of AVX10 through a later `IA32`/`SSE`/`SSE2` in no consistent way
-    (`AVX10.2 AVX512 SSE2 AVX` gives `__AVX__` and `__AVX10_VER__` without
-    `__AVX2__`), so slate rejects that order. `IA32`/`SSE` on x64,
-    `SSE4.2` on x86 and unknown values are rejected; cl.exe ignores them
-    (D9002). `/arch` on 32-bit Arm is rejected too.
-  - `/feature:APX` (x64 only) defines `__APX_F__`, `__EGPR__`,
-    `__PUSH2POP2__`, `__PPX__`, `__NDD__`, `__CCMP__`, `__NF__`, `__CF__`
-    and `__ZU__`. slate's x86 tables have no APX features, so it sets macros
-    only.
+    one. `/fp:contract` adds `_M_FP_CONTRACT`, which `fast` implies, and a later
+    `/fp:fast` drops an earlier `/fp:contract`. `/fp:except[-]` (last wins) adds
+    `_M_FP_EXCEPT`, which `strict` implies even after `/fp:except-`. cl.exe
+    checks conflicts against the options seen so far, so slate does too:
+    `/fp:contract` with a current `strict` (or `strict` after `/fp:contract`)
+    and `/fp:except` with a current `fast` (or `fast` after `/fp:except`) are
+    rejected (D8016), while `/fp:strict /fp:precise /fp:contract` is fine. IR
+    effects are in [ir/operations](ir/operations.md#floating-settings). An
+    unknown mode is rejected; cl.exe ignores it (D9002).
+  - `/arch:` (`resolve_msvc_arch`, `MicrosoftFlags::arch`) defines `__AVX__`,
+    `__AVX2__`, `__AVX512{F,CD,BW,DQ,VL}__` up to the level and `__AVX10_VER__`
+    for AVX10.1/AVX10.2. The level also feeds the x86 `TargetIsa` request
+    (`request_msvc_arch`), so vector width follows it as with `-m` flags. cl.exe
+    keeps the highest level, not the last: x64 always (any `/arch` there also
+    defines `_NO_PREFETCHW`); x86 for the AVX options, while a later `IA32`,
+    `SSE` or `SSE2` resets it and sets `_M_IX86_FP` 0, 1 or 2. The AVX10 version
+    is the last one given. Checked by fuzzing random sequences against cl.exe.
+    On x86, cl.exe keeps parts of AVX10 through a later `IA32`/`SSE`/`SSE2` in
+    no consistent way (`AVX10.2 AVX512 SSE2 AVX` gives `__AVX__` and
+    `__AVX10_VER__` without `__AVX2__`), so slate rejects that order.
+    `IA32`/`SSE` on x64, `SSE4.2` on x86 and unknown values are rejected; cl.exe
+    ignores them (D9002). `/arch` on 32-bit Arm is rejected too.
+  - `/feature:APX` (x64 only) defines `__APX_F__`, `__EGPR__`, `__PUSH2POP2__`,
+    `__PPX__`, `__NDD__`, `__CCMP__`, `__NF__`, `__CF__` and `__ZU__`. slate's
+    x86 tables have no APX features, so it sets macros only.
   - On arm64, `/arch:armv8.0`-`armv8.9` and `armv9.0`-`armv9.4`, optionally
     followed by `+lse`, `+rcpc` or `+rcpc2`, and `/feature:lse|rcpc|rcpc2`
     (joined with `+`) resolve in `resolve_msvc_arm64_arch` to
     `MicrosoftFlags::arm64_arch`. Any version but 8.0 sets `__ARM_ARCH` to
     major\*100+minor. armv8.x sets `_M_ARM64_EXTENSION` to 80+x, and armv9.x
     removes it. LSE (`__ARM_FEATURE_ATOMICS`) comes from 8.1 on, RCPC
-    (`__ARM_FEATURE_RCPC` 1) from 8.3 and RCPC2 (2) from 8.4, with 9.x
-    counting as 8.5 and later. The last `/arch` wins, with its `+features`.
-    `/feature:` options add up in any order, also across `/arch`. The
-    version and features feed the AArch64 `TargetIsa` march
-    (`ArmMarch::with_features`). Checked by fuzzing random sequences against
-    the arm64 cl.exe. cl.exe errors on unknown features and versions (D8021,
-    D8043, D8044) and ignores x86 values and other spellings like
-    `ARMv8.1` (D9002). slate rejects them all.
+    (`__ARM_FEATURE_RCPC` 1) from 8.3 and RCPC2 (2) from 8.4, with 9.x counting
+    as 8.5 and later. The last `/arch` wins, with its `+features`. `/feature:`
+    options add up in any order, also across `/arch`. The version and features
+    feed the AArch64 `TargetIsa` march (`ArmMarch::with_features`). Checked by
+    fuzzing random sequences against the arm64 cl.exe. cl.exe errors on unknown
+    features and versions (D8021, D8043, D8044) and ignores x86 values and other
+    spellings like `ARMv8.1` (D9002). slate rejects them all.
   - Predefine-only options (`MicrosoftFlags`, `msvc_option_predefines`):
-    - CRT: `/MT` (the default) keeps `_MSVC_MT`, `/MTd` defines `_DEBUG`,
-      `/MD` defines `_DLL` and `_MSVC_MD`, `/MDd` defines `_DLL` and
-      `_DEBUG`. Each one other than `/MT` drops `_MSVC_MT`. The last
-      `/M…` wins. `/LD` changes nothing. `/LDd` adds `_DEBUG` (dropping
-      `_MSVC_MT` only when no `/M…` came first) until a later `/M…`
-      clears it, so `/MD /LDd` keeps `_MSVC_MD` alongside `_DEBUG`.
-    - `/RTC` takes letters from `1suc` and defines `__MSVC_RUNTIME_CHECKS`.
-      A `c` anywhere also defines `_RTC_CONVERSION_CHECKS_ENABLED`.
+    - CRT: `/MT` (the default) keeps `_MSVC_MT`, `/MTd` defines `_DEBUG`, `/MD`
+      defines `_DLL` and `_MSVC_MD`, `/MDd` defines `_DLL` and `_DEBUG`. Each
+      one other than `/MT` drops `_MSVC_MT`. The last `/M…` wins. `/LD` changes
+      nothing. `/LDd` adds `_DEBUG` (dropping `_MSVC_MT` only when no `/M…` came
+      first) until a later `/M…` clears it, so `/MD /LDd` keeps `_MSVC_MD`
+      alongside `_DEBUG`.
+    - `/RTC` takes letters from `1suc` and defines `__MSVC_RUNTIME_CHECKS`. A
+      `c` anywhere also defines `_RTC_CONVERSION_CHECKS_ENABLED`.
     - Each of these defines one macro:
 
       | Option                                   | Macro                                                                        |
@@ -200,13 +193,13 @@ each stage is in [configuration-threading](configuration-threading.md).
       | `/fpcvt:BC`                              | `__FPCVT_IA__` 0                                                             |
 
     - `/favor:` and `/fpcvt:` are x86 and x64 only, and x86 accepts only
-      `/favor:blend|ATOM`. cl.exe ignores the others (D9002), even when a
-      later `/favor:` overrides them, and slate rejects them.
-    - `check_msvc_conflicts` replays the options in argv order and rejects
-      the pairs cl.exe rejects (D8016), checking each option against the
-      ones before it:
-      - `/RTC…` with `/O1`, `/O2`, `/Ox` or `/Og`, checked letter by
-        letter: `/RTC1 /O2d` fails but `/O2d /RTC1` passes.
+      `/favor:blend|ATOM`. cl.exe ignores the others (D9002), even when a later
+      `/favor:` overrides them, and slate rejects them.
+    - `check_msvc_conflicts` replays the options in argv order and rejects the
+      pairs cl.exe rejects (D8016), checking each option against the ones before
+      it:
+      - `/RTC…` with `/O1`, `/O2`, `/Ox` or `/Og`, checked letter by letter:
+        `/RTC1 /O2d` fails but `/O2d /RTC1` passes.
       - `/ZI` with `/fsanitize=address` or `/guard:cf`.
       - `/fsanitize=address` with `kernel-address`.
       - `/kernel` with `/GR`.
@@ -216,18 +209,16 @@ each stage is in [configuration-threading](configuration-threading.md).
 
     - With `/kernel`, the final `/arch` must be `IA32` on x86, or at most
       `SSE4.2` on x64.
-    - Checked by fuzzing random sequences against cl.exe on x64, x86 and
-      arm64.
+    - Checked by fuzzing random sequences against cl.exe on x64, x86 and arm64.
 
-  - Options with no C-level effect are `MSVC_ONLY` rows in
-    `CODEGEN_ONLY_FLAGS`: optimization (`/O…`), codegen (`/GS`, `/Gy`,
-    `/GF`, `/Qspectre…`, ...), debug info, output files (`/Fo`, `/Fd:` ...),
-    `/nologo`, `/c`, `/MP`, `/analyze…`, `/external:…`, warning controls
-    (`/wd`, `/WX`, ...), PCH (`/Y…`), `/TC`, `/Tc`, and the C++-only options
-    cl.exe accepts in C (`/EH…`, `/GR`, `/permissive`, the C++ `/Zc:`
-    arguments). `/GF` string pooling makes the address identity of equal
-    literals unspecified, which C already allows. `/TP`, `/Tp`, `/clr`,
-    `/ZW` and `/await` are C++ and rejected.
+  - Options with no C-level effect are `MSVC_ONLY` rows in `CODEGEN_ONLY_FLAGS`:
+    optimization (`/O…`), codegen (`/GS`, `/Gy`, `/GF`, `/Qspectre…`, ...),
+    debug info, output files (`/Fo`, `/Fd:` ...), `/nologo`, `/c`, `/MP`,
+    `/analyze…`, `/external:…`, warning controls (`/wd`, `/WX`, ...), PCH
+    (`/Y…`), `/TC`, `/Tc`, and the C++-only options cl.exe accepts in C (`/EH…`,
+    `/GR`, `/permissive`, the C++ `/Zc:` arguments). `/GF` string pooling makes
+    the address identity of equal literals unspecified, which C already allows.
+    `/TP`, `/Tp`, `/clr`, `/ZW` and `/await` are C++ and rejected.
 
 ## Implemented
 
@@ -245,18 +236,18 @@ each stage is in [configuration-threading](configuration-threading.md).
 | `-fpack-struct[=N]` (and `-fno-pack-struct`)                                              | gcc, clang                                             | `LayoutOptions::default_max_field_alignment` is the pack in effect at the top of the TU and what `#pragma pack()`/`pack(0)` restores. clang: `=N` (any power of two, `0` is off) wins over the bare flag in any order, the bare flag is `=1`, and `-fno-pack-struct` only cancels the bare flag. gcc: `=N` must be 1, 2, 4, 8 or 16; the bare flag is independent (`pack_records`) and marks every record `packed`, so `aligned` fields keep their alignment and pragmas only add a cap. clang's non-power-of-two `=N` is not emulated                                                                                                                                                                                                                                     |
 | `-funsigned-bitfields` / `-fsigned-bitfields` (and `-fno-`)                               | gcc; clang accepts the positive forms and ignores them | `LayoutOptions::unsigned_bitfields` (gcc only): a bit-field whose type is a signed `char`, `short`, `int`, `long`, `long long` or `__int128` becomes unsigned unless `signed` was written in its own specifiers or in a typedef chain's (`TypeResolver::explicitly_signed`). As in gcc, `__typeof__(signed int)` counts as not written, and enums, `_Bool` and `_BitInt` are unaffected                                                                                                                                                                                                                                                                                                                                                                                    |
 | `-mms-bitfields` (and `-mno-`)                                                            | gcc (x86 only), clang                                  | `LayoutOptions::ms_bitfields`: every record uses `ms_struct` bit-field layout unless it has `gcc_struct`; `#pragma ms_struct off`/`reset` don't undo it. No effect on windows-msvc targets, which always use Microsoft layout                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `-malign-double` (gcc also `-mno-`)                                                       | gcc (x86 only), clang                                  | `LayoutOptions::align_double` raises `double`, `long long` and `unsigned long long` to 8-byte alignment everywhere, including inside records and `_Alignof` (`TargetInfo::with_align_double`); only i686 changes, since x86_64 already has it. clang (`align_long_double`) also gives `long double` 8-byte alignment on every target, so x86_64 and aarch64 `long double` drop from 16 to 8 and i686's 12-byte `long double` gets alignment 8 (clang then rejects arrays of it, as slate-parser does for any array element whose size is not a multiple of its alignment). gcc leaves `long double` alone. No predefined macro changes                                                                                                                                                                                                |
+| `-malign-double` (gcc also `-mno-`)                                                       | gcc (x86 only), clang                                  | `LayoutOptions::align_double` raises `double`, `long long` and `unsigned long long` to 8-byte alignment everywhere, including inside records and `_Alignof` (`TargetInfo::with_align_double`); only i686 changes, since x86_64 already has it. clang (`align_long_double`) also gives `long double` 8-byte alignment on every target, so x86_64 and aarch64 `long double` drop from 16 to 8 and i686's 12-byte `long double` gets alignment 8 (clang then rejects arrays of it, as slate-parser does for any array element whose size is not a multiple of its alignment). gcc leaves `long double` alone. No predefined macro changes                                                                                                                                     |
 | `-ffp-contract=off\|on\|fast\|fast-honor-pragmas`                                         | gcc (not `fast-honor-pragmas`), clang                  | `MathOptions::contract` seeds the IR's `contract=` default and `#pragma STDC FP_CONTRACT DEFAULT`. clang: argv order with the fast-math umbrellas, whose `-fno-` restores the last `-ffp-contract=` or `on`. gcc: the explicit flag wins in any order, else unsafe math gives `fast`, else `fast` in `gnu*` and `off` in ISO modes. See [ir/operations](ir/operations.md)                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `-ffixed-<reg>`                                                                           | gcc, clang                                             | lets a file-scope `register T x asm("<reg>")` name that register (clang rejects it otherwise); slate lowers such a global as an ordinary static                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `-fexceptions` (and `-fno-`)                                                              | gcc, clang                                             | defines `__EXCEPTIONS` (off by default in C); no other effect                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `-fms-anonymous-structs` (and `-fno-`)                                                    | clang                                                  | [MS modes](#ms-modes): a declarator-less member of record type is an anonymous member                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `-fstrict-flex-arrays=0..3`                                                               | gcc, clang                                             | `CompilerOptions::strict_flex_arrays`, with no consumer yet. The bare and `-fno-` forms (3 and 0) are gcc only                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `-fexperimental-late-parse-attributes`                                                    | clang                                                  | `CompilerOptions::late_parsed_attributes`; `counted_by` names a member resolved at use, so a later counter already works and the flag changes nothing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `-fpic` / `-fPIC` / `-fpie` / `-fPIE` (and `-fno-`)                                       | gcc, clang                                             | predefines and `Module.machine.pic` (`CodegenOptions::pic`): the last of the eight wins, giving `__pic__`/`__PIC__` level 1 or 2 and, for pie, `__pie__`/`__PIE__`. Darwin forces PIC and windows-msvc ignores them (clang rejects the positive spellings there; slate does not). gcc aarch64 drops `__AARCH64_CMODEL_SMALL__` at level 1                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `-fpic` / `-fPIC` / `-fpie` / `-fPIE` (and `-fno-`)                                       | gcc, clang                                             | predefines and `Module.machine.pic` (`CodegenOptions::pic`): the last of the eight wins, giving `__pic__`/`__PIC__` level 1 or 2 and, for pie, `__pie__`/`__PIE__`. Darwin forces PIC and windows-msvc ignores them (clang rejects the positive spellings there; slate does not). gcc aarch64 drops `__AARCH64_CMODEL_SMALL__` at level 1                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `-fstack-protector[-strong\|-all]` / `-fno-stack-protector`                               | gcc, clang                                             | predefines only (`CodegenOptions::stack_protector`), last wins. clang's plain `-fstack-protector` is at least the target default (strong on Linux), read from the snapshot. clang: `__SSP__` 1, strong 2, all 3; gcc: 1, all 2, strong 3, `-fstack-protector-explicit` (gcc only) 4                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `-fcf-protection[=full\|branch\|return\|none\|check]`                                     | gcc, clang                                             | `__CET__` on x86 only, and `Module.machine.cf_protection` (`CodegenOptions::cf_protection`). clang: last wins. gcc: levels OR together, `none` clears branch and return but not `check` (8, gcc only)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `-mcmodel=`                                                                               | gcc, clang                                             | `Module.machine.code_model` (`CodeModel`; an unknown model is an error); changes no C semantics. `__code_model_*__`/`__AARCH64_CMODEL_*__` keep the snapshot's `small`, and per-target validity is not checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `-m[no-]red-zone` / `-m[no-]indirect-branch-cs-prefix` / `-m[no-]retpoline` (clang only)  | gcc, clang                                             | `Module.machine` (`red_zone`, `indirect_branch_cs_prefix`, `retpoline`), last wins; no C semantics. `-mno-indirect-branch-cs-prefix` is gcc only |
+| `-fcf-protection[=full\|branch\|return\|none\|check]`                                     | gcc, clang                                             | `__CET__` on x86 only, and `Module.machine.cf_protection` (`CodegenOptions::cf_protection`). clang: last wins. gcc: levels OR together, `none` clears branch and return but not `check` (8, gcc only)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `-mcmodel=`                                                                               | gcc, clang                                             | `Module.machine.code_model` (`CodeModel`; an unknown model is an error); changes no C semantics. `__code_model_*__`/`__AARCH64_CMODEL_*__` keep the snapshot's `small`, and per-target validity is not checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `-m[no-]red-zone` / `-m[no-]indirect-branch-cs-prefix` / `-m[no-]retpoline` (clang only)  | gcc, clang                                             | `Module.machine` (`red_zone`, `indirect_branch_cs_prefix`, `retpoline`), last wins; no C semantics. `-mno-indirect-branch-cs-prefix` is gcc only                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `-pthread`                                                                                | gcc, clang                                             | `_REENTRANT 1`, defined ahead of `-D`/`-U` so `-U_REENTRANT` wins wherever it appears                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `-fopenmp` / `-fno-openmp` / `-fopenmp-simd` / `-fopenmp=RT` / `-fopenmp-version=N`       | gcc, clang (`=RT`, `-version`: clang)                  | `_OPENMP` (gcc 202111; clang 202011, or 201107/201307/201511/201811/202111/202411 for version 31/40/45/50/52/60, anything else 202011); gcc also `_REENTRANT 1`. clang: on when the last of `-fopenmp`, `-fopenmp=`, `-fno-openmp` is positive; the runtime is the last `-fopenmp=` (libomp, libiomp5, libgomp; libgomp turns OpenMP off, others error); the last `-fopenmp-version` is parsed with auto radix as an `int` only when OpenMP or (alone) `-fopenmp-simd` is on. `CompilerOptions::openmp`: `#pragma omp` operands are macro-expanded and `#pragma omp parallel` is parsed ([control-flow](ir/control-flow.md#openmp-regions)); other directives except `simd` are "not supported yet" errors; `-fopenmp-simd` defines nothing and its directives are ignored |
 | `-w`                                                                                      | gcc, clang, msvc                                       | `DiagnosticOptions::ignore_warnings`, order independent: every diagnostic that is not a default error is dropped, even under `-Werror`, `-Werror=<w>` or `-pedantic-errors`. Default errors stay errors unless `-Wno-error=<w>` demotes them                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -264,10 +255,10 @@ each stage is in [configuration-threading](configuration-threading.md).
 | `-f[no-]delete-null-pointer-checks`                                                       | gcc, clang                                             | recorded as `CodegenOptions::delete_null_pointer_checks` (default on); nothing consumes it yet                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `-ftrivial-auto-var-init=uninitialized\|zero\|pattern`                                    | gcc, clang                                             | resolved per flavor and target into `Variable::auto_init` on each automatic local with no initializer and no `uninitialized` attribute (see [initialization](ir/initialization.md#automatic-variable-fill)): `zero` is `AutoInit::Zero`. clang `pattern` is `PatternFill::Typed`: `0xAA` everywhere (`0xFF` when pointers are narrower than 64 bits), `0xFF` for floats, zero x87 tail bytes, and a union fills its storage member. gcc `pattern` is `PatternFill::ValueBits(0xFE)`: every value bit, non-value bits zero; a standalone `_Bool`, `_Complex long double`, or 12-byte x87 `long double` is `AutoInit::Zero`. msvc rejects the flag. Variable-length arrays under `pattern` are a lowering barrier                                                            |
 | `-mllvm <arg>` / `-mllvm=<arg>`                                                           | clang                                                  | consumes its argument, even one starting with `-`, and ignores it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| codegen-only (`CODEGEN_ONLY_FLAGS`)                                                       | per row                                                | parsed and ignored. Covers alignment, tuning, sibling calls, unrolling, split stacks, return thunks, stack-protector guard, TLS model, patchable entries, diagnostic colors, LTO and section flags, and gcc's IRA and tree passes. `one_of` values are checked. Free-form values are not (`-falign-*=N`, `-mtune=`, `-fpatchable-function-entry=`, guard symbols, `--warning-suppression-mappings=` files), and `-mfunction-return=` accepts gcc's values for both flavors (clang rejects `thunk`/`thunk-inline`)                                                                                                                                        |
+| codegen-only (`CODEGEN_ONLY_FLAGS`)                                                       | per row                                                | parsed and ignored. Covers alignment, tuning, sibling calls, unrolling, split stacks, return thunks, stack-protector guard, TLS model, patchable entries, diagnostic colors, LTO and section flags, and gcc's IRA and tree passes. `one_of` values are checked. Free-form values are not (`-falign-*=N`, `-mtune=`, `-fpatchable-function-entry=`, guard symbols, `--warning-suppression-mappings=` files), and `-mfunction-return=` accepts gcc's values for both flavors (clang rejects `thunk`/`thunk-inline`)                                                                                                                                                                                                                                                          |
 | `-std=`                                                                                   | gcc/clang                                              | `LanguageStandard` → `StandardFeatures`, `__STDC_VERSION__`; without it `LanguageStandard::default_for` gives clang gnu17, gcc gnu23, msvc c17                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `-ansi`                                                                                   | gcc/clang                                              | same as `-std=c89`; later of `-ansi`/`-std=` wins                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `-O` / `-O0`..`-O3` / `-Os` / `-Oz` / `-Og` / `-Ofast`                                    | gcc, clang                                             | predefines, and above `-O0` asm immediates that fold only after inlining ([asm](ir/asm.md#immediates-and-symbols)); the last one wins. Above `-O0`: undefines `__NO_INLINE__` (unless inlining is off, below), defines `__OPTIMIZE__`, and `-Os`/`-Oz` also define `__OPTIMIZE_SIZE__`. `-Ofast` is `-O3` plus `-ffast-math` while it is the last `-O`: clang applies the fast-math at its argv position, gcc applies it before every explicit flag, so `-fno-fast-math -Ofast` keeps fast math in clang and drops it in gcc (`-ffp-contract=` likewise). clang's `-Wdeprecated-ofast` warning is not emitted; msvc rejects all                                                                                                                                                                                                                                               |
+| `-O` / `-O0`..`-O3` / `-Os` / `-Oz` / `-Og` / `-Ofast`                                    | gcc, clang                                             | predefines, and above `-O0` asm immediates that fold only after inlining ([asm](ir/asm.md#immediates-and-symbols)); the last one wins. Above `-O0`: undefines `__NO_INLINE__` (unless inlining is off, below), defines `__OPTIMIZE__`, and `-Os`/`-Oz` also define `__OPTIMIZE_SIZE__`. `-Ofast` is `-O3` plus `-ffast-math` while it is the last `-O`: clang applies the fast-math at its argv position, gcc applies it before every explicit flag, so `-fno-fast-math -Ofast` keeps fast math in clang and drops it in gcc (`-ffp-contract=` likewise). clang's `-Wdeprecated-ofast` warning is not emitted; msvc rejects all                                                                                                                                            |
 | `-f[no-]inline`, `-f[no-]inline-functions`, clang `-finline-hint-functions`               | gcc, clang                                             | predefines only: keep `__NO_INLINE__` above `-O0`. gcc: when the last `-finline`/`-fno-inline` is `-fno-inline`; `-fno-inline-functions` doesn't count. clang: the last `-finline`/`-fno-inline` decides, and without one the last of `-finline-functions`/`-finline-hint-functions`/`-fno-inline-functions` does. No `-fno-inline-hint-functions` in either                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `-target`                                                                                 | clang                                                  | selects `TargetSpec` ([adding-a-target](adding-a-target.md))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `-m16` / `-m32` / `-m64` / `-mx32`                                                        | gcc, clang                                             | retarget the triple ([compiler-arg-rules](compiler-arg-rules.md)). `-m16` is `-m32` for C: clang's `code16` environment changes only codegen, and the predefines are identical. `-mx32` is rejected until an x32 target exists                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
@@ -278,9 +269,9 @@ each stage is in [configuration-threading](configuration-threading.md).
 | fast-math family (and `-fno-`)                                                            | gcc, clang                                             | `-ffast-math`, `-funsafe-math-optimizations`, `-fassociative-math`, `-freciprocal-math`, `-fsigned-zeros`, `-fmath-errno`, `-ffinite-math-only`, `-fsignaling-nans`, `-fexcess-precision=fast\|standard\|16`. Applied in argv order by `MathOptions::apply`, as the compiler does (umbrellas overwrite components); predefines only, plus the `rounding=`/`exceptions=` above. gcc: `-fsignaling-nans` forces trapping math, which disables associative math; `__GCC_IEC_559*` drop to 0 and take glibc's `__STDC_IEC_*` with them; on x87 `__FLT_EVAL_METHOD__` becomes 0 under fast math. clang: only `__FAST_MATH__`, `__FINITE_MATH_ONLY__`, `__NO_MATH_ERRNO__`, ignores `-fsignaling-nans`. `__ARM_FP_FAST`: gcc aarch64, clang arm and aarch64                      |
 | `-f[no-]cx-limited-range`, `-f[no-]cx-fortran-rules`, `-fcomplex-arithmetic=`             | gcc, clang                                             | `-fcomplex-arithmetic=basic\|improved\|full\|promoted` is clang only. `range=` on complex `mul`/`div` ([operations](ir/operations.md)), last in argv order wins. `-fcx-limited-range`, `-ffast-math`, `-Ofast` give basic; `-fcx-fortran-rules` improved; the `-fno-` forms full. clang: `-fno-fast-math` restores the default, `-ffp-model=` sets it (below). gcc: `-ffast-math` overrides an earlier `-fno-cx-limited-range`; `-fno-fast-math` resets to full only when no explicit cx flag came before; `-Ofast` acts as if first; a range other than full gives `__GCC_IEC_559_COMPLEX` 0 and drops `__STDC_IEC_559_COMPLEX__`/`__STDC_IEC_60559_COMPLEX__`. gcc rejects `-fcomplex-arithmetic`                                                                        |
 | `-ffp-model=precise\|strict\|fast\|aggressive`                                            | clang                                                  | each first resets fast-math as `-fno-fast-math` does, keeping `-frounding-math` and trapping. precise: `contract=on`, range full. strict: precise plus `contract=off`, trapping, rounding-math. fast: unsafe math, no math-errno, no rounding-math, `contract=fast`, range promoted; finite math stays off (no `__FAST_MATH__`, `__FINITE_MATH_ONLY__` 0). aggressive: `-ffast-math`. The fast models' contraction is an umbrella change that a later `-fno-unsafe-math-optimizations`/`-fno-fast-math` undoes; precise and strict's is not. Not modelled: `-Ofast -ffp-model=precise`, which clang turns into a hybrid (math-errno, `contract=fast`, range basic); slate gives precise. gcc and msvc reject it                                                            |
-| `-mfpmath=387\|sse\|both\|sse+387\|387+sse\|sse,387\|387,sse` | gcc, clang | last wins. gcc: sets `__SSE_MATH__`, `__SSE2_MATH__`, `__FP_FAST_FMA*`, `__FLT_EVAL_METHOD__` (2 for 387 or no SSE, -1 for both or no SSE2, else 0), and x87 excess precision ([operations](ir/operations.md#x87-excess-precision)); explicit `-mfpmath` also stops `-ffast-math` from resetting the eval method on i686. clang: only `387` without SSE and `sse` with SSE, no effect |
-| `-ffloat-store` (and `-fno-`) | gcc, clang | gcc: with fast excess precision on x87, each operator rounds to its type; no effect otherwise. clang: accepted and ignored |
-| `-fsingle-precision-constant` (and `-fno-`) | gcc | unsuffixed floating literals (decimal and hex) have type `float`; suffixed, `L` and fixed-point literals are unchanged |
+| `-mfpmath=387\|sse\|both\|sse+387\|387+sse\|sse,387\|387,sse`                             | gcc, clang                                             | last wins. gcc: sets `__SSE_MATH__`, `__SSE2_MATH__`, `__FP_FAST_FMA*`, `__FLT_EVAL_METHOD__` (2 for 387 or no SSE, -1 for both or no SSE2, else 0), and x87 excess precision ([operations](ir/operations.md#x87-excess-precision)); explicit `-mfpmath` also stops `-ffast-math` from resetting the eval method on i686. clang: only `387` without SSE and `sse` with SSE, no effect                                                                                                                                                                                                                                                                                                                                                                                      |
+| `-ffloat-store` (and `-fno-`)                                                             | gcc, clang                                             | gcc: with fast excess precision on x87, each operator rounds to its type; no effect otherwise. clang: accepted and ignored                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `-fsingle-precision-constant` (and `-fno-`)                                               | gcc                                                    | unsuffixed floating literals (decimal and hex) have type `float`; suffixed, `L` and fixed-point literals are unchanged                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `-fpermitted-flt-eval-methods=c11\|ts-18661-3`                                            | gcc                                                    | either value keeps `_Float16`'s method 16 out of aarch64 `__FLT_EVAL_METHOD__`, as gcc 16 does                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `-finput-charset=utf-8`                                                                   | gcc, clang                                             | codegen-only row; other charsets are rejected (gcc accepts any iconv name, slate only reads UTF-8)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `-fgnu89-inline`                                                                          | gcc, clang                                             | inline definition semantics, `__GNUC_GNU_INLINE__`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -288,9 +279,9 @@ each stage is in [configuration-threading](configuration-threading.md).
 | `-trigraphs` / `-ftrigraphs` (and `-fno-`)                                                | `-trigraphs`: gcc, clang; `-f` forms: clang            | `StandardFeatures::trigraphs`, overriding the ISO-before-C23 default ([preprocessor](preprocessor.md#pipeline))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `-fdigraphs` (and `-fno-`)                                                                | clang                                                  | `StandardFeatures::digraphs`, overriding the not-strict-C89 default ([preprocessor](preprocessor.md#pipeline))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `-fdollars-in-identifiers` (and `-fno-`)                                                  | gcc, clang                                             | `StandardFeatures::dollars_in_identifiers` (lexer); generated Rust names mangle `$` to `_dollar_` (`Codegen::ident`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `-fraw-string-literals` / `-fno-raw-string-literals`                                      | clang                                                  | `StandardFeatures::raw_string_literals` (lexer): last wins and overrides the default in every standard; the default is on for gnu99 and later, off for `-std=cNN`, gnu89 and msvc |
-| `-fblocks` / `-fno-blocks`                                                                | clang                                                  | `StandardFeatures::blocks` (off by default, also on Darwin until blocks lower): defines `__BLOCKS__=1`, enables `__block`, parses `^` block-pointer declarators (`Declarator::BlockPointer`, `CTypeKind::BlockPointer`, `ir::Type::BlockPointer`), block literals (`ExprKind::Block`, `ValueKind::Block` with captures) and calls through block pointers; lowered to a hand-written Blocks ABI plus the vendored BlocksRuntime, see [blocks-lowering](blocks-lowering.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `-ffixed-point` / `-fno-fixed-point`                                                      | clang                                                  | `SourceGraphs::fixed_point` → `StandardFeatures::fixed_point_keywords` (off by default): makes `_Fract`/`_Accum`/`_Sat` keywords, accepts fixed-point literal suffixes, and predefines clang's `__FRACT_*`/`__ACCUM_*` macros (`CLANG_FIXED_POINT_MACROS`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `-fraw-string-literals` / `-fno-raw-string-literals`                                      | clang                                                  | `StandardFeatures::raw_string_literals` (lexer): last wins and overrides the default in every standard; the default is on for gnu99 and later, off for `-std=cNN`, gnu89 and msvc                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `-fblocks` / `-fno-blocks`                                                                | clang                                                  | `StandardFeatures::blocks` (off by default, also on Darwin until blocks lower): defines `__BLOCKS__=1`, enables `__block`, parses `^` block-pointer declarators (`Declarator::BlockPointer`, `CTypeKind::BlockPointer`, `ir::Type::BlockPointer`), block literals (`ExprKind::Block`, `ValueKind::Block` with captures) and calls through block pointers; lowered to a hand-written Blocks ABI plus the vendored BlocksRuntime, see [blocks-lowering](blocks-lowering.md)                                                                                                                                                                                                                                                                                                  |
+| `-ffixed-point` / `-fno-fixed-point`                                                      | clang                                                  | `SourceGraphs::fixed_point` → `StandardFeatures::fixed_point_keywords` (off by default): makes `_Fract`/`_Accum`/`_Sat` keywords, accepts fixed-point literal suffixes, and predefines clang's `__FRACT_*`/`__ACCUM_*` macros (`CLANG_FIXED_POINT_MACROS`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `-fms-extensions` / `-fms-compatibility` (and `-fno-`)                                    | clang                                                  | [MS modes](#ms-modes); gcc and msvc reject them                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `-fasm-blocks` / `-fno-asm-blocks`                                                        | clang                                                  | MS `__asm` blocks on x86 without the rest of MS mode; last wins, MS extensions enable them regardless (`MicrosoftFlags::asm_blocks`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `-fasm` / `-fno-asm`                                                                      | gcc, clang                                             | GNU keywords (`StandardFeatures::keyword_asm`, set in `Dialect::new`): `-fno-asm` makes `asm`, and `typeof` before C23 and `inline` before C99, plain identifiers; `-fasm` makes them keywords even in strict ISO modes. Without either, `asm` is a keyword only in the GNU modes. `__asm__`/`__typeof__`/`__inline__` always stay, and `__is_identifier` follows                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -303,47 +294,46 @@ each stage is in [configuration-threading](configuration-threading.md).
 | `-masm=att\|intel`                                                                        | gcc, clang                                             | GNU asm dialect; gcc rejects it off x86                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `-m<feature>` / `-mno-<feature>` / `-march=`                                              | gcc, clang                                             | `TargetIsa`, which drives ISA predefines and ABI vector width                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `-mfpu=` / `-mfloat-abi=` / `-mthumb` / `-marm`                                           | gcc, clang                                             | Arm32 ISA and float ABI (`aapcs32` vs `aapcs32_hard_float`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `-mgeneral-regs-only`                                                                     | gcc, clang                                             | applied after every other ISA option, so `-msse` or `-march=...+simd` cannot re-enable what it drops. x86: `-mno-mmx -mno-sse -mno-80387` (see [ISA gotchas](#isa-gotchas)). AArch64: `-mno-fp -mno-simd -mno-crypto`. Arm32: gcc only, drops the NEON macros and keeps VFP; clang rejects it. msvc rejects it as any `-m` flag. `-mno-general-regs-only` does not exist in either compiler |
+| `-mgeneral-regs-only`                                                                     | gcc, clang                                             | applied after every other ISA option, so `-msse` or `-march=...+simd` cannot re-enable what it drops. x86: `-mno-mmx -mno-sse -mno-80387` (see [ISA gotchas](#isa-gotchas)). AArch64: `-mno-fp -mno-simd -mno-crypto`. Arm32: gcc only, drops the NEON macros and keeps VFP; clang rejects it. msvc rejects it as any `-m` flag. `-mno-general-regs-only` does not exist in either compiler                                                                                                                                                                                                                                                                                                                                                                                |
 | `-msve-vector-bits=`                                                                      | gcc, clang                                             | AArch64 SVE macros                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `-W…` / `-pedantic`                                                                       | gcc, clang                                             | severities ([diagnostic-severity](diagnostic-severity.md))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
-ISA values are checked against the `-dM` output of both oracles. The
-tables live in `src/target/{x86,aarch64,arm}_isa.rs`. Where gcc and clang
-resolve the same string differently, each file has per-flavor rules.
+ISA values are checked against the `-dM` output of both oracles. The tables live
+in `src/target/{x86,aarch64,arm}_isa.rs`. Where gcc and clang resolve the same
+string differently, each file has per-flavor rules.
 
 x86 features and CPUs are generated into `src/target/x86_isa_tables.rs`
 ([generated-sources](generated-sources.md)): every `-m<feature>` in clang's
 `m_x86_Features_Group` that `X86.td` defines, and every `X86.td` CPU clang
-accepts. `tools/x86_isa_diff.py` compares slate's predefines with clang's
-for each CPU, each flag, and each `-mno-` flag on `diamondrapids`, on
-x86_64 and i686; it fails on wrong macros or on accepting what clang
-rejects, and lists what slate rejects. With `--gcc` it compares against
-gcc instead, over the levels, each flag (`-m80387` for x87), each `-mno-`
-flag on top of every flag gcc accepts, and some flag orderings. The gcc
-flavor accepts every table feature gcc accepts (all but `invpcid`, `rdpru`,
-`retpoline-external-thunk`), with gcc's own enable and disable sets and
-macro spellings in `src/target/x86_isa_gcc_tables.rs`, generated by
-`tools/generate_x86_isa_gcc.py` from the installed gcc. Rejected on purpose
-or not yet modeled:
+accepts. `tools/x86_isa_diff.py` compares slate's predefines with clang's for
+each CPU, each flag, and each `-mno-` flag on `diamondrapids`, on x86_64 and
+i686; it fails on wrong macros or on accepting what clang rejects, and lists
+what slate rejects. With `--gcc` it compares against gcc instead, over the
+levels, each flag (`-m80387` for x87), each `-mno-` flag on top of every flag
+gcc accepts, and some flag orderings. The gcc flavor accepts every table feature
+gcc accepts (all but `invpcid`, `rdpru`, `retpoline-external-thunk`), with gcc's
+own enable and disable sets and macro spellings in
+`src/target/x86_isa_gcc_tables.rs`, generated by `tools/generate_x86_isa_gcc.py`
+from the installed gcc. Rejected on purpose or not yet modeled:
 
 - clang-only CPU aliases (`corei7`, `skx`, `core-avx2`, `atom`, `slm`,
   `athlon64`, ...), which live in `X86TargetParser.cpp`, not `X86.td`;
 - 32-bit CPUs without SSE2 (no CPU table entries; `-mno-sse2` itself works);
-- gcc flavor: `-march=` other than the `x86-64` levels, and gcc-only
-  features with no `X86.td` entry;
-- `-march=<cpu>` without 64-bit support on x86_64, and 64-bit-only
-  features such as `-muintr` on i686, as clang rejects them.
+- gcc flavor: `-march=` other than the `x86-64` levels, and gcc-only features
+  with no `X86.td` entry;
+- `-march=<cpu>` without 64-bit support on x86_64, and 64-bit-only features such
+  as `-muintr` on i686, as clang rejects them.
 
-APX is modeled by hand in `x86_isa.rs` (`ApxFlag`, `Apx`), outside the
-generated tables, because its features have no `-m` flag of their own.
+APX is modeled by hand in `x86_isa.rs` (`ApxFlag`, `Apx`), outside the generated
+tables, because its features have no `-m` flag of their own.
 `-mapxf`/`-mno-apxf`, `-mapx-features=`/`-mno-apx-features=` and
-`-mapx-inline-asm-use-gpr32` apply in order; the positive forms are
-rejected on i686, as both compilers do.
+`-mapx-inline-asm-use-gpr32` apply in order; the positive forms are rejected on
+i686, as both compilers do.
 
-- clang: the features are `egpr`, `push2pop2`, `ppx`, `ndd`, `ccmp`, `nf`,
-  `cf`, `zu`, `jmpabs`, each with its own macro (`__EGPR__`, ...). `-mapxf`
-  toggles all but `cf`, and `__APX_F__` is defined when those eight are all
-  on, however they were set. `-march=diamondrapids` starts with the eight.
+- clang: the features are `egpr`, `push2pop2`, `ppx`, `ndd`, `ccmp`, `nf`, `cf`,
+  `zu`, `jmpabs`, each with its own macro (`__EGPR__`, ...). `-mapxf` toggles
+  all but `cf`, and `__APX_F__` is defined when those eight are all on, however
+  they were set. `-march=diamondrapids` starts with the eight.
   `__APX_INLINE_ASM_USE_GPR32__` needs EGPR. Empty list items are allowed.
 - gcc: only `-mapxf` (last one wins) defines `__APX_F__`; `-mapx-features=`
   accepts `none`, `all` and the clang names but `cf`/`jmpabs`, and defines
@@ -355,46 +345,45 @@ rejected on i686, as both compilers do.
 ## ISA gotchas
 
 - x86: `-march` sets the base, then `-m` flags apply in order. Enabling a
-  feature enables what it implies; disabling one disables whatever implies
-  it. `-mfoo … -mno-foo` drops `foo` entirely.
-- x86: clang's avx512f implies AVX2, FMA, and F16C; gcc's implies only
-  AVX2. In gcc, AVX → XSAVE is a real edge.
-- x86 gcc: a flag's enable and disable sets are not transitive and not
-  inverses, so they are measured, not derived. `-mamx-bf16` enables
-  amx-tile but not the XSAVE that `-mamx-tile` enables; `-mno-xsave` drops
-  AVX but keeps sha512, sm3, sm4 and vaes; `-mno-sse` keeps aes, pclmul,
-  sha; `-mno-avx512dq` keeps avx512vp2intersect. MMX follows SSE late (like
-  POPCNT and CRC32 follow SSE4.2) unless set explicitly, and the levels
-  carry no CRC32 of their own, so `-march=x86-64-v2 -mno-sse4.2` drops it.
-  gcc spells usermsr's macro `__USER_MSR__`; fma4 also defines
-  `__FP_FAST_FMA*`.
-- x86: `-mno-sse`/`-mno-sse2` are accepted. Their feature macros are
-  removed even where the snapshot bakes them in (Darwin, FreeBSD:
+  feature enables what it implies; disabling one disables whatever implies it.
+  `-mfoo … -mno-foo` drops `foo` entirely.
+- x86: clang's avx512f implies AVX2, FMA, and F16C; gcc's implies only AVX2. In
+  gcc, AVX → XSAVE is a real edge.
+- x86 gcc: a flag's enable and disable sets are not transitive and not inverses,
+  so they are measured, not derived. `-mamx-bf16` enables amx-tile but not the
+  XSAVE that `-mamx-tile` enables; `-mno-xsave` drops AVX but keeps sha512, sm3,
+  sm4 and vaes; `-mno-sse` keeps aes, pclmul, sha; `-mno-avx512dq` keeps
+  avx512vp2intersect. MMX follows SSE late (like POPCNT and CRC32 follow SSE4.2)
+  unless set explicitly, and the levels carry no CRC32 of their own, so
+  `-march=x86-64-v2 -mno-sse4.2` drops it. gcc spells usermsr's macro
+  `__USER_MSR__`; fma4 also defines `__FP_FAST_FMA*`.
+- x86: `-mno-sse`/`-mno-sse2` are accepted. Their feature macros are removed
+  even where the snapshot bakes them in (Darwin, FreeBSD:
   `X86Isa::disabled_macros`); clang also drops `__FLT16_*`.
-  `__FLT_EVAL_METHOD__` follows: clang 2 without SSE; gcc x86_64 2 without
-  SSE and -1 without SSE2, gcc i686 0 without x87. gcc's x87 excess precision
-  is in the IR ([operations](ir/operations.md#x87-excess-precision)); clang's
-  is not (slate-parser-6x05.38.6). clang's rejection of
-  `_Float16`/`__bf16` without SSE2 and of `long double` uses without x87 is
-  not emulated (too permissive is fine).
+  `__FLT_EVAL_METHOD__` follows: clang 2 without SSE; gcc x86_64 2 without SSE
+  and -1 without SSE2, gcc i686 0 without x87. gcc's x87 excess precision is in
+  the IR ([operations](ir/operations.md#x87-excess-precision)); clang's is not
+  (slate-parser-6x05.38.6). clang's rejection of `_Float16`/`__bf16` without
+  SSE2 and of `long double` uses without x87 is not emulated (too permissive is
+  fine).
 - `-mgeneral-regs-only`: gcc x86 also defines `_SOFT_FLOAT` and sets
   `__GCC_IEC_559{,_COMPLEX}` 0 (dropping the `__STDC_IEC_*` macros) whenever
   there is neither x87 nor SSE math (`pp/math.rs`); `-mno-80387` alone keeps
   them on x86_64 (SSE math) and drops them on i686. gcc i686 also sets
   `__FLT_EVAL_METHOD__` 0. gcc AArch64 drops `__ARM_FEATURE_FMA`, the fp16
   macros and `__FP_FAST_FMA*` with FP. gcc Arm32 keeps `__ARM_FP`, FMA and the
-  crypto macros and only loses `__ARM_NEON`, `__ARM_NEON__` and
-  `__ARM_NEON_FP`; its IEC macros go to 0.
-- x86 x87: `-m[no-]80387` both flavors, `-m[no-]x87` clang only. gcc
-  defines `_SOFT_FLOAT` without x87. `-mno-fp-ret-in-387` is `-mno-x87` in
-  clang and has no macro effect in gcc; the positive spelling is gcc only
+  crypto macros and only loses `__ARM_NEON`, `__ARM_NEON__` and `__ARM_NEON_FP`;
+  its IEC macros go to 0.
+- x86 x87: `-m[no-]80387` both flavors, `-m[no-]x87` clang only. gcc defines
+  `_SOFT_FLOAT` without x87. `-mno-fp-ret-in-387` is `-mno-x87` in clang and has
+  no macro effect in gcc; the positive spelling is gcc only
   (`X86IsaRequest::set_for_clang`).
-- x86 3DNow!: `-m[no-]3dnow[a]` are accepted by both; clang ignores them,
-  gcc defines `__3dNOW__` (and `__3dNOW_A__`) while MMX is on.
-- i686 without `-march`: clang defaults to pentium4 and gcc to x86-64
-  (from the multilib snapshot). Both have the same features.
-- gcc sets `__BIGGEST_ALIGNMENT__` to the widest enabled vector register;
-  clang keeps 16.
+- x86 3DNow!: `-m[no-]3dnow[a]` are accepted by both; clang ignores them, gcc
+  defines `__3dNOW__` (and `__3dNOW_A__`) while MMX is on.
+- i686 without `-march`: clang defaults to pentium4 and gcc to x86-64 (from the
+  multilib snapshot). Both have the same features.
+- gcc sets `__BIGGEST_ALIGNMENT__` to the widest enabled vector register; clang
+  keeps 16.
 - AArch64: enable and disable are not symmetric. Each feature has its own
   `enables`/`disables` table, and gcc and clang differ on
   `+nosimd`/`+nofp`/`+crypto`.
@@ -403,15 +392,14 @@ rejected on i686, as both compilers do.
 
 ## MS modes
 
-clang only (clang 22, `-###` and `-dM -E`). msvc flavor: always both on.
-gcc's `-fms-extensions` is a different feature; not emulated.
+clang only (clang 22, `-###` and `-dM -E`). msvc flavor: always both on. gcc's
+`-fms-extensions` is a different feature; not emulated.
 
 - Default: both on for `*-windows-msvc`, off elsewhere.
-- `-fms-compatibility` implies extensions. `-fno-ms-extensions` drops
-  default compatibility, not an explicit `-fms-compatibility`.
-- Slate: `StandardFeatures::{microsoft_extensions,
-microsoft_compatibility}`. Snapshots hold the target default;
-  `<microsoft modes>` applies the delta.
+- `-fms-compatibility` implies extensions. `-fno-ms-extensions` drops default
+  compatibility, not an explicit `-fms-compatibility`.
+- Slate: `StandardFeatures::{microsoft_extensions, microsoft_compatibility}`.
+  Snapshots hold the target default; `<microsoft modes>` applies the delta.
 
 | Follows                                                                                              | Effect                                                                                                                                                                                                                             |
 | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -424,31 +412,30 @@ microsoft_compatibility}`. Snapshots hold the target default;
 
 ## Not implemented
 
-`python3 crates/slate-parser/tools/flag_inventory.py` lists every flag
-gcc, clang and cl.exe accept, classified from clang's `Options.td`
-marshalling (`LangOpts`, `CodeGenOpts`, ...), gcc's `--help=` classes and
-the `-dM` delta, against what slate accepts. It writes
-`target/flag-inventory.md`. The semantic gaps are children of the
-slate-3amj epic, each with a `fixtures.unsupported/flag_*.c` fixture
-where the effect is observable at runtime. Highlights:
+`python3 crates/slate-parser/tools/flag_inventory.py` lists every flag gcc,
+clang and cl.exe accept, classified from clang's `Options.td` marshalling
+(`LangOpts`, `CodeGenOpts`, ...), gcc's `--help=` classes and the `-dM` delta,
+against what slate accepts. It writes `target/flag-inventory.md`. The semantic
+gaps are children of the slate-3amj epic, each with a
+`fixtures.unsupported/flag_*.c` fixture where the effect is observable at
+runtime. Highlights:
 
 - Layout: gcc `-fsso-struct=`.
 - Values: gcc `-fexec-charset=`.
-- Language: gcc's `-fms-extensions`,
-  `-fno-knr-functions`, `-fpermissive`.
-- Floating point: `-ffp-model=`,
-  `-fcomplex-arithmetic=`.
-- msvc: every `/` spelling. The slate-3amj.5 epic inventories them from
-  cl.exe's `/?` and `/PD` predefine deltas, one child per group (`/J`,
-  `/Zp`, `/D`, `/std:`, `/fp:`, `/Gz`, `/arch:`, charsets, `/Zc:`, the
-  predefine-only options, and the accept-and-ignore codegen options), with
-  fixtures in `fixtures.unsupported/msvc/`.
+- Language: gcc's `-fms-extensions`, `-fno-knr-functions`, `-fpermissive`.
+- Floating point: `-ffp-model=`, `-fcomplex-arithmetic=`.
+- msvc: every `/` spelling. The slate-3amj.5 epic inventories them from cl.exe's
+  `/?` and `/PD` predefine deltas, one child per group (`/J`, `/Zp`, `/D`,
+  `/std:`, `/fp:`, `/Gz`, `/arch:`, charsets, `/Zc:`, the predefine-only
+  options, and the accept-and-ignore codegen options), with fixtures in
+  `fixtures.unsupported/msvc/`.
 - Floating point: the fast-math family's IR effect (`nnan`, `ninf`, `nsz`,
   `arcp`, `reassoc`, `afn` have no IR field yet; slate-parser-dyd.57). Its
   macros are emulated.
 - Pointers: `-fno-delete-null-pointer-checks` is recorded but needs a
-  null-access contract in the IR. The pointer wrapping implied by `-fno-strict-overflow` lowers
-  pointer offsets to `wrapping_offset` (subtraction is not covered yet).
+  null-access contract in the IR. The pointer wrapping implied by
+  `-fno-strict-overflow` lowers pointer offsets to `wrapping_offset`
+  (subtraction is not covered yet).
 - Scoped overrides: `__attribute__((optimize))` does not change operation
-  contracts yet. `#pragma float_control`, `STDC FP_CONTRACT`, and
-  `FENV_ACCESS` do (`sema/pragmas.rs`).
+  contracts yet. `#pragma float_control`, `STDC FP_CONTRACT`, and `FENV_ACCESS`
+  do (`sema/pragmas.rs`).

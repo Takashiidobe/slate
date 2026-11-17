@@ -1,6 +1,7 @@
 # prototype FileCheck updater
 
-> Historical record. See the [archive index](index.md) for scope and source revision.
+> Historical record. See the [archive index](index.md) for scope and source
+> revision.
 
 _created 2026-08-29_
 
@@ -83,9 +84,9 @@ annotations are rejected.
 The updater replaces these comments with unique inline-assembly sentinels in a
 temporary sibling source file. It translates that copy with and without
 rewrites, extracts the sentinel-bounded Rust, and writes checks into the
-original fixture. Negative annotations emit only lines from the opposite
-profile that are absent from the selected profile. Profiles without annotations
-are omitted instead of receiving full-output checks.
+original fixture. Negative annotations emit only lines from the opposite profile
+that are absent from the selected profile. Profiles without annotations are
+omitted instead of receiving full-output checks.
 
 Generated patterns treat compiler-assigned identities as anonymous FileCheck
 regexes. CIR values such as `__v17`, ABI coercion records such as
@@ -101,8 +102,8 @@ be opened twice and regions cannot cross. Both sentinels must remain reachable
 through the same structured path, so a region must not end with `return`,
 `break`, `continue`, or `goto`.
 
-Embedded NUL bytes in generated Rust are emitted as `{{\\x00}}` regexes so
-the C fixture remains a text file.
+Embedded NUL bytes in generated Rust are emitted as `{{\\x00}}` regexes so the C
+fixture remains a text file.
 
 Multi-translation-unit and library fixtures use project-aware modes:
 
@@ -113,8 +114,8 @@ tools/update_filecheck.py --library-project tests/fixtures.library/simple \
   --profile both --in-place
 ```
 
-All annotated sources in the fixture are instrumented together. The updater
-runs one whole-project translation for each required lowering or rewrite output,
+All annotated sources in the fixture are instrumented together. The updater runs
+one whole-project translation for each required lowering or rewrite output,
 reads the marker-bearing generated module for each source, and refreshes that
 source's blocks. Project mode rejects target-qualified generation; target-aware
 project generation requires an explicit artifact-to-target ownership design.

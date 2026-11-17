@@ -2,8 +2,8 @@
 
 _created 2026-08-24_
 
-The MSVC time and file-status surface follows the pinned xwin UCRT headers,
-not the POSIX layouts selected by the target architecture.
+The MSVC time and file-status surface follows the pinned xwin UCRT headers, not
+the POSIX layouts selected by the target architecture.
 
 - `time.h` owns `__time32_t`/`__time64_t`, the three timespec records,
   `struct tm`, and explicit 32/64-bit function variants.

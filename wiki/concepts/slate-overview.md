@@ -1,6 +1,7 @@
 # Slate overview
 
 <!-- toc -->
+
 - [Pipeline](#pipeline)
 - [Use](#use)
 - [Coverage and failures](#coverage-and-failures)
@@ -18,7 +19,8 @@ C -> preprocess, parse, sema -> ir::Module -> Rust AST -> Rust source
 
 ## Use
 
-Run from the workspace root; release binaries live in `target/test-cache/release`.
+Run from the workspace root; release binaries live in
+`target/test-cache/release`.
 
 ```bash
 cargo build --release -p slate-c2rust
@@ -30,13 +32,22 @@ cargo run --release -p slate-c2rust -- translate-project \
   --compile-commands project/compile_commands.json project output-crate
 ```
 
-- Translation uses slate-parser as a Rust library and target headers from slate-sysroots.
-- A Rust nightly toolchain builds Slate and generated code. Differential tests also need `clang` on PATH as the C oracle.
-- `translate-project` supports executable projects with one `main`, one configuration per unit, and unique module stems. It writes runtime bridges when needed.
-- `SLATE_TARGET` sets the default target. Explicit compiler arguments take precedence; [target queries](slate-target-queries.md) documents configuration.
-- `SLATE_JOBS` controls project worker parallelism; `SLATE_CARGO` selects the generated-code compiler and `SLATE_RUSTFMT` the fallback formatter.
-- Published package: `slate-c2rust`; executable and library target: `slate`. [Release setup](../../RELEASING.md).
-- Embedded support manifests use `Cargo.toml.template`; Cargo always excludes nested packages containing `Cargo.toml`. Generated projects receive ordinary manifests.
+- Translation uses slate-parser as a Rust library and target headers from
+  slate-sysroots.
+- A Rust nightly toolchain builds Slate and generated code. Differential tests
+  also need `clang` on PATH as the C oracle.
+- `translate-project` supports executable projects with one `main`, one
+  configuration per unit, and unique module stems. It writes runtime bridges
+  when needed.
+- `SLATE_TARGET` sets the default target. Explicit compiler arguments take
+  precedence; [target queries](slate-target-queries.md) documents configuration.
+- `SLATE_JOBS` controls project worker parallelism; `SLATE_CARGO` selects the
+  generated-code compiler and `SLATE_RUSTFMT` the fallback formatter.
+- Published package: `slate-c2rust`; executable and library target: `slate`.
+  [Release setup](../../RELEASING.md).
+- Embedded support manifests use `Cargo.toml.template`; Cargo always excludes
+  nested packages containing `Cargo.toml`. Generated projects receive ordinary
+  manifests.
 
 ## Coverage and failures
 

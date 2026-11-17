@@ -1,10 +1,10 @@
 # long double (f80) representation
 
 <!-- toc -->
+
 - [Slate frontend](#slate-frontend)
 - [Why not just `f64`](#why-not-just-f64)
-- [ABI varies by target —
-  `TargetInfo::long_double`](#abi-varies-by-target--targetinfolong_double)
+- [ABI varies by target — `TargetInfo::long_double`](#abi-varies-by-target--targetinfolong_double)
 - [Integration points](#integration-points)
 - [History](#history)
 <!-- /toc -->
@@ -14,48 +14,44 @@
 
 ## Slate frontend
 
-`frontend/lowerer.rs` lowers IR `f80` to `LongDouble` and emits
-the prelude when any f80 type is lowered. Constants become
-`LongDouble([10 bytes])` straight from `Number::FloatBits`. Arithmetic,
-negation, and comparisons use the prelude's operator impls. Every `Convert`
-with an f80 side calls `__slate_f80_from_<t>` / `__slate_f80_to_<t>`.
+`frontend/lowerer.rs` lowers IR `f80` to `LongDouble` and emits the prelude when
+any f80 type is lowered. Constants become `LongDouble([10 bytes])` straight from
+`Number::FloatBits`. Arithmetic, negation, and comparisons use the prelude's
+operator impls. Every `Convert` with an f80 side calls `__slate_f80_from_<t>` /
+`__slate_f80_to_<t>`.
 
 A call to a body-less function whose return or argument holds f80 by value
 (including inside a struct) becomes a call to a C bridge named
-`__slate_<callee>__r<ret>_<arg tags>`. The test harness renders it from the
-name (`frontend::c_shim::render_shim_c_source_for_names`) and links it with
-`shims/long_double.c`, and the direct extern declaration is dropped. A
-variadic callee missing from `function_identity::Known` (a project function
-such as NumPy's `PyOS_snprintf`) has no header to declare it, so it is called
-through its address with an `__slate_icall__` trampoline instead, like a
-variadic definition (`fixtures.release/long_double_variadic_extern`). A record passed or returned by value is tagged
-by its class. A record that is MEMORY class in both C and Rust is tagged
-`m<size>a<align>` and passed unchanged as
+`__slate_<callee>__r<ret>_<arg tags>`. The test harness renders it from the name
+(`frontend::c_shim::render_shim_c_source_for_names`) and links it with
+`shims/long_double.c`, and the direct extern declaration is dropped. A variadic
+callee missing from `function_identity::Known` (a project function such as
+NumPy's `PyOS_snprintf`) has no header to declare it, so it is called through
+its address with an `__slate_icall__` trampoline instead, like a variadic
+definition (`fixtures.release/long_double_variadic_extern`). A record passed or
+returned by value is tagged by its class. A record that is MEMORY class in both
+C and Rust is tagged `m<size>a<align>` and passed unchanged as
 `struct __slate_m<size>a<align> { _Alignas(<align>) unsigned char v[<size>]; }`,
-which has the same ABI: on i686 every record (i386 Linux passes structs on
-the stack and returns them through a hidden pointer), and on x86_64 every
-record over 16 bytes. An x86_64 record holding f80 with alignment 16 keeps the
-shorter `m<size>`. A 16-byte record of one `long double` is X87 class in C
-(returned in `st0`) but INTEGER in Rust, so it is tagged `s80` and converted
-like a scalar `f80`. Records holding vectors are barriers, and so are x86_64
-records of 16 bytes or less without f80, whose stand-in would need the C SysV
-eightbyte classes (slate-yar4.34). A function pointer argument is tagged `fp` and
-passed as `void *`, since f80 function pointers already point at native-ABI
-code (`fixtures.dylink/long_double_abi`). Non-variadic bridged callees depend on `long_double.c` including
-`<math.h>`. A callee with no known header (a project function such as redis
-`ld2string`, or libc `qecvt`) is declared as
-`extern <native ret> __slate_extern_<callee>(<native params>) __asm__("<callee>")`
-with `long double` for f80 tags, and the bridge calls that alias. The private
-name cannot conflict with a header declaration whose integer spellings
-(`long` vs `long long`) differ from the tags; known-header callees keep the
-header so glibc redirects such as `__isoc23_strtold` still apply
-(`long_double_unknown_extern.c`).
+which has the same ABI: on i686 every record (i386 Linux passes structs on the
+stack and returns them through a hidden pointer), and on x86*64 every record
+over 16 bytes. An x86_64 record holding f80 with alignment 16 keeps the shorter
+`m<size>`. A 16-byte record of one `long double` is X87 class in C (returned in
+`st0`) but INTEGER in Rust, so it is tagged `s80` and converted like a scalar
+`f80`. Records holding vectors are barriers, and so are x86_64 records of 16
+bytes or less without f80, whose stand-in would need the C SysV eightbyte
+classes (slate-yar4.34). A function pointer argument is tagged `fp` and passed
+as `void
+*`, since f80 function pointers already point at native-ABI code (`fixtures.dylink/long_double_abi`). Non-variadic bridged callees depend on `long_double.c`including`<math.h>`. A callee with no known header (a project function such as redis `ld2string`, or libc `qecvt`) is declared as `extern
+<native ret> \_\_slate_extern\*<callee>(<native params>)
+**asm**("<callee>")`with`long
+double` for f80 tags, and the bridge calls that alias. The private name cannot conflict with a header declaration whose integer spellings (`long`vs`long
+long`) differ from the tags; known-header callees keep the header so glibc redirects such as `\_\_isoc23_strtold` still apply (`long_double_unknown_extern.c`).
 
 Bridges assume the callee has the native C ABI, but a Rust definition takes
 `LongDouble` as an INTEGER-class struct. So an exported (project) definition
 whose signature holds f80 is emitted with
-`#[unsafe(export_name = "__slate_ld__<name>__r<ret>_<arg tags>")]`, and
-`c_shim` renders the real `<name>` as a native-ABI C wrapper that applies
+`#[unsafe(export_name = "__slate_ld__<name>__r<ret>_<arg tags>")]`, and `c_shim`
+renders the real `<name>` as a native-ABI C wrapper that applies
 `__slate_f80_store` to arguments and `__slate_f80_load` to the result. Calls by
 symbol from other translated units (through their bridges), native C, and
 `dlsym` all reach the native ABI; same-unit Rust callers call the Rust function
@@ -68,12 +64,12 @@ C cannot forward `...`, so a variadic definition whose fixed parameters or
 return hold f80 is lowered with its `...` binding as a `VaList` parameter
 instead, exported as `__slate_ldv__<entry>__r<ret>_<fixed tags>`. `c_shim`
 renders the native `<entry>(<fixed>, ...)`, which `va_start`s, stores the f80
-fixed arguments, passes the `va_list`, and loads the result. Since the Rust
-body has no `...` entry, every call, including a direct same-unit one, goes
-through the native entry as `__slate_icall__` (`<entry>` is `<name>` when
-exported, else `__slate_ldfp_<unit>_<name>`). Single-file translation uses the
-file stem as the unit, as merged projects do, so `static` entries stay distinct
-when the test harness links many fixtures' shims together
+fixed arguments, passes the `va_list`, and loads the result. Since the Rust body
+has no `...` entry, every call, including a direct same-unit one, goes through
+the native entry as `__slate_icall__` (`<entry>` is `<name>` when exported, else
+`__slate_ldfp_<unit>_<name>`). Single-file translation uses the file stem as the
+unit, as merged projects do, so `static` entries stay distinct when the test
+harness links many fixtures' shims together
 (`long_double_variadic_definition_address.c`). A variadic definition with no
 fixed parameters is a barrier.
 
@@ -86,20 +82,20 @@ wrapper), the declaration carries `#[link_name = "<name>"]`. Any other
 definition also gets the export name
 `__slate_ld____slate_ldfp_<unit>_<name>__r<tags>`, and `c_shim` renders the
 native wrapper `__slate_ldfp_<unit>_<name>`. The unit stem keeps `static`
-functions that share a name in different units apart. `c_shim` splits the
-export name at the last `__`, since tags never contain one. An indirect call
-through such a pointer becomes
+functions that share a name in different units apart. `c_shim` splits the export
+name at the last `__`, since tags never contain one. An indirect call through
+such a pointer becomes
 `__slate_icall__r<ret>_<tags>(pointer as *const (), args)`, a C trampoline that
 loads the f80 arguments and calls the pointer natively. A call through a
 variadic pointer, when its signature or any variadic argument holds f80, becomes
-`__slate_icall__r<ret>_<fixed tags>__<variadic tags>`, which calls the pointer as
-`<ret> (*)(<fixed>, ...)` and loads every f80 argument. Variadic arguments are
-always passed natively, which Rust-defined variadic functions expect since their
-`va_arg` reads x87 values (`long_double_variadic_function_pointer.c`,
+`__slate_icall__r<ret>_<fixed tags>__<variadic tags>`, which calls the pointer
+as `<ret> (*)(<fixed>, ...)` and loads every f80 argument. Variadic arguments
+are always passed natively, which Rust-defined variadic functions expect since
+their `va_arg` reads x87 values (`long_double_variadic_function_pointer.c`,
 `fixtures.dylink/long_double_abi`). Function-pointer arguments (tag `fp`) are
 declared as `*const ()` in the bridge's Rust declaration, so bridges whose names
-match also have matching Rust types. Unprototyped and complex f80 function pointers are
-barriers (`long_double_function_pointer.c`,
+match also have matching Rust types. Unprototyped and complex f80 function
+pointers are barriers (`long_double_function_pointer.c`,
 `fixtures.release/long_double_static_callbacks`).
 
 Variadic `long double` arguments must reach the callee as real x87 values in
@@ -109,13 +105,13 @@ has a native entry, above), with f80 variadic arguments, becomes a call to
 `__slate_vcall__r<ret>_<fixed tags>__<variadic tags>(callee as *const (), ...)`.
 The C trampoline (`c_shim::render_variadic_trampoline`) calls the pointer as
 `<ret> (*)(<fixed>, ...)` with fixed f80 parameters and the return kept as
-`__slate_f80`, and loads only the variadic f80 arguments into `long double`.
-The callee is passed by pointer rather than exported by symbol, so static
-functions with the same name in different TUs, or named like a libc or Rust
-runtime symbol (`exit`), never collide, and trampolines are shared per
-signature. On the callee side, `va_arg(ap, long double)` lowers to
-`__slate_f80_va_arg(&mut ap)`, which relies on x86_64 `VaList` sharing C's
-`__va_list_tag` layout so C advances the Rust list in place.
+`__slate_f80`, and loads only the variadic f80 arguments into `long double`. The
+callee is passed by pointer rather than exported by symbol, so static functions
+with the same name in different TUs, or named like a libc or Rust runtime symbol
+(`exit`), never collide, and trampolines are shared per signature. On the callee
+side, `va_arg(ap, long double)` lowers to `__slate_f80_va_arg(&mut ap)`, which
+relies on x86_64 `VaList` sharing C's `__va_list_tag` layout so C advances the
+Rust list in place.
 
 - Runtime and name-based bridges: `frontend/c_shim.rs` and
   `frontend/shims/{long_double,fenv}.c`.
@@ -123,16 +119,15 @@ signature. On the callee side, `va_arg(ap, long double)` lowers to
 
 ## Why not just `f64`
 
-C `long double` and `double` are not interchangeable on the targets slate
-cares about most: on Linux x86_64, `long double` is genuinely 80-bit x87
-extended precision (10 bytes of value, padded to 16-byte alignment), with
-different rounding/precision behavior than `f64`. Silently widening it to
-`f64` would pass slate's differential tests on trivial cases and diverge on
-anything precision-sensitive. So slate models it as its own type,
-`LongDouble` (`frontend/long_double.rs::LONG_DOUBLE_TY`), backed
-by a `[u8; 10]` byte representation, with every x87 operation delegated to C
-helpers in `frontend/shims/long_double.c` since Rust has no native 80-bit
-float type.
+C `long double` and `double` are not interchangeable on the targets slate cares
+about most: on Linux x86_64, `long double` is genuinely 80-bit x87 extended
+precision (10 bytes of value, padded to 16-byte alignment), with different
+rounding/precision behavior than `f64`. Silently widening it to `f64` would pass
+slate's differential tests on trivial cases and diverge on anything
+precision-sensitive. So slate models it as its own type, `LongDouble`
+(`frontend/long_double.rs::LONG_DOUBLE_TY`), backed by a `[u8; 10]` byte
+representation, with every x87 operation delegated to C helpers in
+`frontend/shims/long_double.c` since Rust has no native 80-bit float type.
 
 ## ABI varies by target — `TargetInfo::long_double`
 

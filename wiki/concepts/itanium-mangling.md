@@ -1,6 +1,7 @@
 # Itanium mangling of overloadable functions
 
 <!-- toc -->
+
 - [Status](#status)
 - [Why](#why)
 - [Mangler](#mangler)
@@ -16,9 +17,9 @@ Implemented for non-MSVC targets. Tracked by `slate-parser-6x05.41`.
 ## Why
 
 clang links an `extern` `__attribute__((overloadable))` function under its
-Itanium-mangled name (`void f(int)` is `_Z1fi`; static ones are `_ZL1fi`).
-Slate needs the symbol in the IR to emit `#[link_name]` / `#[export_name]`.
-Static overloads never leave the TU and keep their C name.
+Itanium-mangled name (`void f(int)` is `_Z1fi`; static ones are `_ZL1fi`). Slate
+needs the symbol in the IR to emit `#[link_name]` / `#[export_name]`. Static
+overloads never leave the TU and keep their C name.
 
 ## Mangler
 
@@ -53,11 +54,11 @@ checker then rejects the declaration as `Unimplemented`.
 ## Redeclarations
 
 clang requires `overloadable` on every declaration of an overload (one unmarked
-first declaration is allowed and keeps its C name). Name resolution cannot
-tell a redeclaration from a new overload, so each declaration gets its own
-binding. `declare_object` (`sema/assertion.rs`) detects a compatible earlier
-overload and `TypeResolver::merge_overload_redeclaration` (`sema/types.rs`)
-aliases the new binding to it: `declarations`, `references`, `overload_sets` and
+first declaration is allowed and keeps its C name). Name resolution cannot tell
+a redeclaration from a new overload, so each declaration gets its own binding.
+`declare_object` (`sema/assertion.rs`) detects a compatible earlier overload and
+`TypeResolver::merge_overload_redeclaration` (`sema/types.rs`) aliases the new
+binding to it: `declarations`, `references`, `overload_sets` and
 `overload_candidates` are rewritten, and `declaration_id` reads
 `types.declarations` so the lowerer sees the same binding. This also fixes
 forward declarations of static overloads
@@ -67,7 +68,7 @@ forward declarations of static overloads
 
 - Anonymous tags: clang mangles them through their typedef name for linkage.
 - Microsoft mangling for MSVC targets.
-- Taking the address of an overloaded name (`fp = f`) is still
-  `Unimplemented` ("overloaded function used outside a call").
+- Taking the address of an overloaded name (`fp = f`) is still `Unimplemented`
+  ("overloaded function used outside a call").
 - Slate lowering: emit `#[link_name]` from `asm_name` and a distinct Rust
   identifier per overload. Not checked against the `slate` profile.

@@ -1,6 +1,7 @@
 # Diagnostic severity
 
 <!-- toc -->
+
 - [Severity resolution](#severity-resolution)
 - [Warnings](#warnings)
 - [Preprocessor warnings](#preprocessor-warnings)
@@ -12,20 +13,20 @@
 - [Testing](#testing)
 <!-- /toc -->
 
-Accepted extensions and incompatibilities carry a named `Warning` so flags
-can silence or promote them. `src/diagnostics.rs` holds the `Warning` enum
+Accepted extensions and incompatibilities carry a named `Warning` so flags can
+silence or promote them. `src/diagnostics.rs` holds the `Warning` enum
 (identity, default severity, pedantic membership) and `DiagnosticOptions`
 (resolved map, on `CompilerOptions`, read via `unit.dialect.options()`).
 Strictness policy: [architecture](parser-architecture.md#strictness-policy).
 Error limit, poisoning, and locations:
-[sema-passes](sema-passes.md#error-reporting).
-Attribute registration and applicability: [attributes](attributes.md).
+[sema-passes](sema-passes.md#error-reporting). Attribute registration and
+applicability: [attributes](attributes.md).
 
 ## Severity resolution
 
 `Warning::default_severity(standard, flavor)` is `Ignored`, `Warning`, or
-`Error` (clang `DefaultError`, gcc `permerror`). `DiagnosticContext`
-carries options, standard, and flavor.
+`Error` (clang `DefaultError`, gcc `permerror`). `DiagnosticContext` carries
+options, standard, and flavor.
 
 ```
 severity(w) =
@@ -40,19 +41,19 @@ severity(w) =
   None     otherwise
 ```
 
-- `-W<w>` keeps a default-error warning an error; only `-Wno-error=<w>`
-  demotes, only `-Wno-<w>` silences.
-- `-Wno-<w>` beats the pedantic group regardless of order; otherwise later
-  flags win.
+- `-W<w>` keeps a default-error warning an error; only `-Wno-error=<w>` demotes,
+  only `-Wno-<w>` silences.
+- `-Wno-<w>` beats the pedantic group regardless of order; otherwise later flags
+  win.
 - `-Werror=<w>` enables a default-off warning; blanket `-Werror` does not.
-- `-w` (`DiagnosticOptions::ignore_warnings`) is order independent and
-  beats `-Werror`, `-Werror=<w>` and `-pedantic-errors` in both gcc and
-  clang. Only default errors survive it. `#warning` does not go through
-  `DiagnosticContext` yet, so neither `-w` nor `-Werror` affects it.
-- Severity never changes the AST or IR. `-m32 -std=c89 -pedantic-errors`
-  still types `4294967296` as `long long` and errors on the use.
-  `Availability::Extension` never becomes `Rejected`; `StandardFeatures`
-  does not read `DiagnosticOptions`.
+- `-w` (`DiagnosticOptions::ignore_warnings`) is order independent and beats
+  `-Werror`, `-Werror=<w>` and `-pedantic-errors` in both gcc and clang. Only
+  default errors survive it. `#warning` does not go through `DiagnosticContext`
+  yet, so neither `-w` nor `-Werror` affects it.
+- Severity never changes the AST or IR. `-m32 -std=c89 -pedantic-errors` still
+  types `4294967296` as `long long` and errors on the use.
+  `Availability::Extension` never becomes `Rejected`; `StandardFeatures` does
+  not read `DiagnosticOptions`.
 - Verified against clang 22.1.8 and gcc 16.2.1.
 
 ## Warnings
@@ -88,9 +89,9 @@ severity(w) =
 | `traditional`                                    | off                                 | no                     | gcc only, `pp/traditional.rs`: a directive whose `#` is indented when K&R has it unindented (`#define #undef #include #if #ifdef #ifndef #else #endif #line`) or unindented when it is not (`#assert #error #pragma #warning #ident #import ...`); every `#elif`; a function-like macro name without `(`; a `U` suffix on an integer literal; a unary `+` in an evaluated part of `#if`; `\x`, `\a`, `\u`, `\U` in a string or character literal |
 | `higher-precision-for-complex-division`          | on                                  | no                     | clang `range=promoted` complex division that has no wider type (double on windows-msvc, long double); falls back to improved. Once per TU at the first use, with a suffix when more uses follow                                                                                                                                                                                                                                                  |
 
-- `-Wimplicit` is a group of `implicit-function-declaration` and
-  `implicit-int` (`Warning::group`). gcc applies `-Werror=implicit` to both
-  but its `-Wno-error=implicit` downgrades neither; clang's does.
+- `-Wimplicit` is a group of `implicit-function-declaration` and `implicit-int`
+  (`Warning::group`). gcc applies `-Werror=implicit` to both but its
+  `-Wno-error=implicit` downgrades neither; clang's does.
 - `openmp` warns for nonpositive constant schedule chunks and MSVC `collapse`
   clauses (ignored, matching C4849). It defaults on and is not pedantic.
 - `c99-compat` is not pedantic: clang keeps it a warning under
@@ -103,12 +104,12 @@ severity(w) =
 
 ## Preprocessor warnings
 
-`Preprocessor::warn` resolves a named warning through `DiagnosticContext`
-and records a `DirectiveDiagnostic` carrying the `Warning` (printed as its
-`-W` code), so `-Werror=` and `-w` behave as for sema warnings. Nothing is
-raised for a directive in a system header, which also keeps slate's own
-predefine files quiet. Redefinition rules (`redefinition_warning`,
-`pp/define.rs`), verified against gcc 16.2.1, clang 22.1.8 and cl 19.51:
+`Preprocessor::warn` resolves a named warning through `DiagnosticContext` and
+records a `DirectiveDiagnostic` carrying the `Warning` (printed as its `-W`
+code), so `-Werror=` and `-w` behave as for sema warnings. Nothing is raised for
+a directive in a system header, which also keeps slate's own predefine files
+quiet. Redefinition rules (`redefinition_warning`, `pp/define.rs`), verified
+against gcc 16.2.1, clang 22.1.8 and cl 19.51:
 
 |                                                                             | gcc                                                       | clang                   | msvc                                                        |
 | --------------------------------------------------------------------------- | --------------------------------------------------------- | ----------------------- | ----------------------------------------------------------- |
@@ -117,20 +118,19 @@ predefine files quiet. Redefinition rules (`redefinition_warning`,
 | other builtins (`__LINE__`, `__COUNTER__`, `__INCLUDE_LEVEL__`, `__has_*`)  | `macro-redefined`, even when identical, `#undef` included | builtin                 | —                                                           |
 | `__STDC_*` (gcc: any defined one but `__STDC_FORMAT/LIMIT/CONSTANT_MACROS`) | `macro-redefined`, even when identical, `#undef` included | builtin when predefined | —                                                           |
 
-- gcc's `#undef` warnings are plain warnings: `-pedantic-errors` leaves
-  them warnings (`DiagnosticContext::severity_as` with `pedantic = false`).
+- gcc's `#undef` warnings are plain warnings: `-pedantic-errors` leaves them
+  warnings (`DiagnosticContext::severity_as` with `pedantic = false`).
 - gcc's ordinary redefinition has no option name; slate files it under
-  `macro-redefined`, so `-Wno-macro-redefined` silences it, which gcc
-  cannot do.
-- `deprecated` is gcc only (clang rejects assertions). gcc reports an
-  assertion test only in `#if`, not in an `#elif` reached from a false
-  group; under `-pedantic` gcc words them as `-Wpedantic` instead.
-- `traditional` follows gcc: directive checks run for every directive,
-  including those in skipped groups (`skip_group`); the `#if` unary plus
-  check hooks the evaluator (`EvalContext::unary_plus_uses`), so
-  `#if 0 && +1` is silent; the literal checks run on each token that
-  reaches the output (`read_piece`) or an `#if`/`#elif` expression, so a
-  macro's literal warns at each use. clang has no such option.
+  `macro-redefined`, so `-Wno-macro-redefined` silences it, which gcc cannot do.
+- `deprecated` is gcc only (clang rejects assertions). gcc reports an assertion
+  test only in `#if`, not in an `#elif` reached from a false group; under
+  `-pedantic` gcc words them as `-Wpedantic` instead.
+- `traditional` follows gcc: directive checks run for every directive, including
+  those in skipped groups (`skip_group`); the `#if` unary plus check hooks the
+  evaluator (`EvalContext::unary_plus_uses`), so `#if 0 && +1` is silent; the
+  literal checks run on each token that reaches the output (`read_piece`) or an
+  `#if`/`#elif` expression, so a macro's literal warns at each use. clang has no
+  such option.
 
 ## Conversion warnings
 
@@ -142,18 +142,17 @@ predefine files quiet. Redefinition rules (`redefinition_warning`,
 - gcc's demotion uses `stdc_version().is_none()`, like `c99-compat`.
 - Dropping `_Atomic` from a pointee errors under clang and gcc (MSVC has no
   `_Atomic`).
-- `pointer-type-mismatch`: gcc reports it as `incompatible-pointer-types`,
-  MSVC as C4133 with the left operand's type.
+- `pointer-type-mismatch`: gcc reports it as `incompatible-pointer-types`, MSVC
+  as C4133 with the left operand's type.
 - Raised by the checker: `TypeResolver::record_conversion` warns on first
   record; compound assignment results go through `compound_conversion`
   (lowering's `update` re-classifies silently).
-- An item whose stashed diagnostics (`item_diagnostics`) include an error
-  moves them all into the checker's errors, so `parse` rejects `i = p`.
+- An item whose stashed diagnostics (`item_diagnostics`) include an error moves
+  them all into the checker's errors, so `parse` rejects `i = p`.
 - `conflicting-types` comes from the checker (`declare_object`), stashed in
-  `item_diagnostics` like other checker warnings, so a promoted warning is
-  a checker error.
-- Warnings point at the converted value's node (`take((unsigned *)p)` →
-  `p`).
+  `item_diagnostics` like other checker warnings, so a promoted warning is a
+  checker error.
+- Warnings point at the converted value's node (`take((unsigned *)p)` → `p`).
 - Fixtures: `error/conversion_default_errors.c`,
   `error/conversion_default_errors_gcc.c`,
   `sema/conversion_severity_{gcc,msvc}.c`,
@@ -166,20 +165,20 @@ predefine files quiet. Redefinition rules (`redefinition_warning`,
 | `_Alignas(N) int p`                 | error                       | error | accepted; `__alignof(p)` = N raised to natural |
 | `int p __attribute__((aligned(N)))` | accepted; `_Alignof(p)` = N | error | not parsed                                     |
 
-No rejecting majority, and every compiler that parses a spelling applies
-it. The request goes on the parameter entity; `_Alignof` reads it via
+No rejecting majority, and every compiler that parses a spelling applies it. The
+request goes on the parameter entity; `_Alignof` reads it via
 `declared_alignment` (msvc raises below-natural requests). The IR has no
 parameter slot, so it is only observable through `_Alignof`.
 
 ## Type-level extension warnings
 
-- `extension_warning(ty, features)` (`sema/validate.rs`) maps a specifier
-  to its warning. A new type-level warning is one match arm.
+- `extension_warning(ty, features)` (`sema/validate.rs`) maps a specifier to its
+  warning. A new type-level warning is one match arm.
 - `check_type` calls it for declarations, parameters, fields, and returns.
   Block-scope locals use `check_body_types` / `walk_type` (`check_type`'s
   `typedefs` set is file-scope only).
-- One warning per specifier: `long long a, b, c;` warns once (clang warns
-  per declarator; not reproduced).
+- One warning per specifier: `long long a, b, c;` warns once (clang warns per
+  declarator; not reproduced).
 
 ## Unrecognized `-W` names
 
@@ -188,12 +187,11 @@ Accepted and ignored, as clang does. Only `Warning` names have effect.
 ## `#warning` and `#error`
 
 - Not `Warning`s; severity is fixed. `Preprocessor::record_directive_diagnostic`
-  records a `DirectiveDiagnostic`; `main.rs::report_directives` prints
-  warnings and fails on errors, before the parse result is unwrapped, so
-  both a `#warning` and a later error are reported in order.
-- `tools/corpus_sweep.py` `DIAGNOSTIC_TIERS` picks a failure label: an
-  indented `× …` first, then `Error:   × …`, then `⚠ …` only without any
-  error.
+  records a `DirectiveDiagnostic`; `main.rs::report_directives` prints warnings
+  and fails on errors, before the parse result is unwrapped, so both a
+  `#warning` and a later error are reported in order.
+- `tools/corpus_sweep.py` `DIAGNOSTIC_TIERS` picks a failure label: an indented
+  `× …` first, then `Error:   × …`, then `⚠ …` only without any error.
 
 ## Testing
 

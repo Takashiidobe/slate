@@ -1,6 +1,7 @@
 # Lowerer phase file boundaries
 
-> Historical record. See the [archive index](index.md) for scope and source revision.
+> Historical record. See the [archive index](index.md) for scope and source
+> revision.
 
 _created 2026-08-24_
 
@@ -18,5 +19,5 @@ The typed lowering pipeline is divided by ownership:
 - `lowerer.rs` owns shared state plus module/global/record emission and constant
   initializer rendering.
 
-Keep these as free functions or inherent `Lowerer`/`FunctionLowerer` methods.
-Do not add phase traits or another operation traversal to enforce the layout.
+Keep these as free functions or inherent `Lowerer`/`FunctionLowerer` methods. Do
+not add phase traits or another operation traversal to enforce the layout.
