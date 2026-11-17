@@ -616,9 +616,9 @@ fn write_crate_manifest(
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
 ) -> Result<(), String> {
-    std::fs::write(
-        crate_dir.join("Cargo.toml"),
-        crate_manifest(
+    write_file(
+        &crate_dir.join("Cargo.toml"),
+        &crate_manifest(
             package,
             tests,
             c_shims,
@@ -629,7 +629,6 @@ fn write_crate_manifest(
             lib_crate_types,
         ),
     )
-    .map_err(|e| format!("write {}: {e}", crate_dir.join("Cargo.toml").display()))
 }
 
 /// Scaffold a Cargo crate at `crate_dir` for translated output: `cargo init`,
@@ -693,7 +692,7 @@ fn write_aligned_support(crate_dir: &Path) -> Result<(), String> {
 }
 
 fn write_file(path: &Path, contents: &str) -> Result<(), String> {
-    std::fs::write(path, contents).map_err(|e| format!("write {}: {e}", path.display()))
+    backend::write_if_changed(path, contents)
 }
 
 include!(concat!(env!("OUT_DIR"), "/vendored_libc.rs"));
@@ -791,11 +790,10 @@ fn write_bitint_support(crate_dir: &Path) -> Result<(), String> {
     let src_dir = bitint_dir.join("src");
     std::fs::create_dir_all(&src_dir).map_err(|e| format!("create {}: {e}", src_dir.display()))?;
     let manifest = bitint_dir.join("Cargo.toml");
-    std::fs::write(
+    write_file(
         &manifest,
         include_str!("../vendor/bitint/Cargo.toml.template"),
-    )
-    .map_err(|e| format!("write {}: {e}", manifest.display()))?;
+    )?;
     write_file(
         &src_dir.join("lib.rs"),
         include_str!("../vendor/bitint/src/lib.rs"),
@@ -825,7 +823,7 @@ fn write_num_complex_support(crate_dir: &Path) -> Result<(), String> {
             include_str!("../vendor/num-complex/build.rs"),
         ),
     ] {
-        std::fs::write(&path, contents).map_err(|e| format!("write {}: {e}", path.display()))?;
+        write_file(&path, contents)?;
     }
     for (source, contents) in [
         ("lib.rs", include_str!("../vendor/num-complex/src/lib.rs")),
@@ -1695,11 +1693,10 @@ fn write_project_crate(
     let has_shims = !shim_names.is_empty();
     let shim_path = crate_src.join("slate_long_double.c");
     if has_shims {
-        std::fs::write(
+        write_file(
             &shim_path,
-            c_shim::render_shim_c_source_for_names(&shim_names),
-        )
-        .map_err(|e| format!("write {}: {e}", shim_path.display()))?;
+            &c_shim::render_shim_c_source_for_names(&shim_names),
+        )?;
         written.push(shim_path);
     } else if shim_path.exists() {
         std::fs::remove_file(&shim_path)
@@ -1718,7 +1715,7 @@ fn write_project_crate(
         .into_iter()
         .chain(link_arg_target.map(|target| {
             format!(
-                "    if std::env::var(\"CARGO_CFG_TARGET_OS\").as_deref() == Ok(\"linux\") {{\n        println!(\"cargo:rustc-link-arg-{target}=-Wl,-z,nostart-stop-gc\");\n    }}\n"
+                "    println!(\"cargo:rerun-if-changed=build.rs\");\n    if std::env::var(\"CARGO_CFG_TARGET_OS\").as_deref() == Ok(\"linux\") {{\n        println!(\"cargo:rustc-link-arg-{target}=-Wl,-z,nostart-stop-gc\");\n    }}\n"
             )
         }))
         .collect();

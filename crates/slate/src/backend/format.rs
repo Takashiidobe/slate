@@ -56,8 +56,14 @@ pub fn format_rust(source: &str) -> Result<String, String> {
 }
 
 pub fn write_rust(path: &Path, source: &str) -> Result<(), String> {
-    let formatted = format_rust(source)?;
-    std::fs::write(path, formatted).map_err(|error| format!("write {}: {error}", path.display()))
+    write_if_changed(path, &format_rust(source)?)
+}
+
+pub fn write_if_changed(path: &Path, contents: &str) -> Result<(), String> {
+    if std::fs::read(path).is_ok_and(|current| current == contents.as_bytes()) {
+        return Ok(());
+    }
+    std::fs::write(path, contents).map_err(|error| format!("write {}: {error}", path.display()))
 }
 
 pub fn pretty_rust(source: &str) -> Result<String, String> {
@@ -71,6 +77,5 @@ pub fn pretty_rust(source: &str) -> Result<String, String> {
 }
 
 pub fn write_pretty_rust(path: &Path, source: &str) -> Result<(), String> {
-    let formatted = pretty_rust(source)?;
-    std::fs::write(path, formatted).map_err(|error| format!("write {}: {error}", path.display()))
+    write_if_changed(path, &pretty_rust(source)?)
 }

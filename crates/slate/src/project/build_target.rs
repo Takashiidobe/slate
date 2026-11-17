@@ -222,7 +222,7 @@ fn i386_spec(isa: X86Isa, code16: bool) -> String {
 }
 
 fn write(path: &Path, contents: &str) -> Result<(), String> {
-    std::fs::write(path, contents).map_err(|e| format!("write {}: {e}", path.display()))
+    crate::backend::write_if_changed(path, contents)
 }
 
 fn remove(path: &Path) -> Result<(), String> {

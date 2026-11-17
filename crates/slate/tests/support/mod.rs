@@ -4,6 +4,7 @@
 )]
 
 pub mod filecheck;
+pub mod fresh_tree;
 pub mod manifest;
 
 use std::collections::BTreeMap;

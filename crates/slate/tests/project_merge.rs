@@ -1,5 +1,7 @@
 #[path = "support/filecheck.rs"]
 mod filecheck;
+#[path = "support/fresh_tree.rs"]
+mod fresh_tree;
 #[path = "support/manifest.rs"]
 mod manifest;
 
@@ -24,7 +26,7 @@ fn work() -> PathBuf {
 }
 
 fn merge(manifest: &Path, crate_dir: &Path, jobs: Option<&str>) -> (String, String, i32) {
-    let _ = std::fs::remove_dir_all(crate_dir);
+    let previous = fresh_tree::set_aside(crate_dir);
     let mut command = Command::new(env!("CARGO_BIN_EXE_slate"));
     command
         .arg("translate-project")
@@ -42,6 +44,7 @@ fn merge(manifest: &Path, crate_dir: &Path, jobs: Option<&str>) -> (String, Stri
         command.env("SLATE_JOBS", jobs);
     }
     let output = command.output().expect("run slate translate-project");
+    fresh_tree::keep_unchanged_mtimes(&previous, crate_dir);
     (
         String::from_utf8_lossy(&output.stdout).into_owned(),
         String::from_utf8_lossy(&output.stderr).into_owned(),
@@ -120,7 +123,7 @@ fn run_c(sources: &[PathBuf], defines: &[String], out: &Path) -> Option<String> 
     ))
 }
 
-fn run_rust(crate_dir: &Path, features: &[String], worker: usize) -> Result<String, String> {
+fn run_rust(crate_dir: &Path, features: &[String], stem: &str) -> Result<String, String> {
     let output = Command::new(std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into()))
         .args([
             "run",
@@ -130,10 +133,7 @@ fn run_rust(crate_dir: &Path, features: &[String], worker: usize) -> Result<Stri
             &features.join(","),
         ])
         .current_dir(crate_dir)
-        .env(
-            "CARGO_TARGET_DIR",
-            work().join(format!("cargo-target-{worker}")),
-        )
+        .env("CARGO_TARGET_DIR", work().join("cargo-targets").join(stem))
         .output()
         .map_err(|error| format!("run cargo: {error}"))?;
     if !output.status.success() && output.stdout.is_empty() {
@@ -151,7 +151,6 @@ fn differential(
     crate_dir: &Path,
     stem: &str,
     sources: &[PathBuf],
-    worker: usize,
 ) -> Vec<String> {
     let features = spec_features(spec);
     let defines = |set: &[String]| -> Vec<String> {
@@ -168,7 +167,7 @@ fn differential(
         let Some(expected) = run_c(sources, &defines(&set), &binary) else {
             continue;
         };
-        match run_rust(crate_dir, &set, worker) {
+        match run_rust(crate_dir, &set, stem) {
             Ok(actual) if actual == expected => {}
             Ok(actual) => failures.push(format!(
                 "[{}]: C printed {expected:?}, Rust printed {actual:?}",
@@ -180,7 +179,7 @@ fn differential(
     failures
 }
 
-fn merge_fixture(source: &Path, worker: usize) -> Result<(), String> {
+fn merge_fixture(source: &Path) -> Result<(), String> {
     let stem = source.file_stem().unwrap().to_string_lossy().into_owned();
     let text = std::fs::read_to_string(source).map_err(|e| format!("read: {e}"))?;
     let base = std::fs::read(fixtures().join("targets.json")).map_err(|e| format!("read: {e}"))?;
@@ -291,7 +290,7 @@ fn merge_fixture(source: &Path, worker: usize) -> Result<(), String> {
     }
     if code == 0 {
         let paths: Vec<PathBuf> = sources.iter().map(|path| fixtures().join(path)).collect();
-        failures.extend(differential(&spec, &crate_dir, &stem, &paths, worker));
+        failures.extend(differential(&spec, &crate_dir, &stem, &paths));
     }
     if failures.is_empty() {
         Ok(())
@@ -318,11 +317,11 @@ fn merge_filecheck() {
     let next = AtomicUsize::new(0);
     let failures = Mutex::new(Vec::new());
     std::thread::scope(|scope| {
-        for worker in 0..FIXTURE_WORKERS {
+        for _ in 0..FIXTURE_WORKERS {
             let (next, failures, sources) = (&next, &failures, &sources);
             scope.spawn(move || {
                 while let Some(source) = sources.get(next.fetch_add(1, Ordering::Relaxed)) {
-                    if let Err(error) = merge_fixture(source, worker) {
+                    if let Err(error) = merge_fixture(source) {
                         failures
                             .lock()
                             .expect("failure list")

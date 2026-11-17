@@ -66,6 +66,7 @@ fn build_fixture(fixture: &Path, target: &str, text: &str) -> Result<(), String>
         &work.join(format!("{name}.json")),
     );
     let project = work.join(&name);
+    let previous = support::fresh_tree::set_aside(&project);
     run(Command::new(env!("CARGO_BIN_EXE_slate"))
         .args(["translate-project", "--manifest"])
         .arg(&manifest)
@@ -93,6 +94,7 @@ fn build_fixture(fixture: &Path, target: &str, text: &str) -> Result<(), String>
             .map_err(|error| error.to_string())?;
         writeln!(library, "\n{assertions}").map_err(|error| error.to_string())?;
     }
+    support::fresh_tree::keep_unchanged_mtimes(&previous, &project);
     run(
         Command::new(std::env::var_os("SLATE_CARGO").unwrap_or_else(|| "cargo".into()))
             .args([

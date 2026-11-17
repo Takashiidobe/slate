@@ -723,7 +723,7 @@ fn translate_arch_mode_project_with(
     let crate_dir = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/difftest-generated/arch-mode")
         .join(work);
-    let _ = std::fs::remove_dir_all(&crate_dir);
+    let previous = support::fresh_tree::set_aside(&crate_dir.join("crate"));
     std::fs::create_dir_all(&crate_dir).expect("create arch-mode crate directory");
     let entries: Vec<_> = units
         .iter()
@@ -747,14 +747,23 @@ fn translate_arch_mode_project_with(
         .arg(crate_dir.join("crate"))
         .output()
         .expect("run translate-project");
+    support::fresh_tree::keep_unchanged_mtimes(&previous, &crate_dir.join("crate"));
     (crate_dir.join("crate"), output)
+}
+
+fn arch_mode_target_dir(crate_dir: &Path) -> PathBuf {
+    let work = crate_dir
+        .parent()
+        .and_then(Path::file_name)
+        .expect("arch-mode work name");
+    support::test_cache_root().join(format!("arch-mode-{}", work.to_string_lossy()))
 }
 
 fn cargo_in(crate_dir: &Path, command: &str) -> Output {
     std::process::Command::new("cargo")
         .args([command, "--quiet", "--release"])
         .current_dir(crate_dir)
-        .env("CARGO_TARGET_DIR", crate_dir.join("../cargo-target"))
+        .env("CARGO_TARGET_DIR", arch_mode_target_dir(crate_dir))
         .output()
         .expect("run cargo")
 }
@@ -922,7 +931,8 @@ fn freestanding_main_links_as_an_ordinary_symbol() {
         "{}",
         String::from_utf8_lossy(&build.stderr)
     );
-    let archive = crate_dir.join("../cargo-target/x86_64-unknown-none/release/libslate_crate.a");
+    let archive =
+        arch_mode_target_dir(&crate_dir).join("x86_64-unknown-none/release/libslate_crate.a");
     let link = std::process::Command::new("cc")
         .args([
             "-nostdlib",
@@ -999,7 +1009,7 @@ fn translate_manifest(
     let crate_dir = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("target/difftest-generated/matrix")
         .join(work);
-    let _ = std::fs::remove_dir_all(&crate_dir);
+    let previous = support::fresh_tree::set_aside(&crate_dir);
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
         .arg("translate-project")
         .arg("--manifest")
@@ -1012,6 +1022,7 @@ fn translate_manifest(
         .env_remove("SLATE_CLANG_ARGS")
         .output()
         .expect("run slate translate-project");
+    support::fresh_tree::keep_unchanged_mtimes(&previous, &crate_dir);
     let result = if output.status.success() {
         Ok(())
     } else {
@@ -1024,6 +1035,16 @@ fn run_cargo_binary(crate_dir: &Path) -> String {
     let output = std::process::Command::new(std::env::var("SLATE_CARGO").unwrap_or("cargo".into()))
         .args(["run", "--quiet", "--release"])
         .current_dir(crate_dir)
+        .env(
+            "CARGO_TARGET_DIR",
+            support::test_cache_root().join(format!(
+                "matrix-{}",
+                crate_dir
+                    .file_name()
+                    .expect("matrix work name")
+                    .to_string_lossy()
+            )),
+        )
         .output()
         .expect("run cargo");
     assert!(
