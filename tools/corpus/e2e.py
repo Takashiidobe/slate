@@ -27,9 +27,12 @@ import pp_diff
 
 SLATE = ROOT / "target/test-cache/release/slate"
 SETUP = ROOT / "crates/slate-parser/tools/c_corpus_setup.py"
-STAGES = ("native", "barriers", "translate", "check", "build", "link", "boot", "kselftest", "bench", "test")
+STAGES = ("native", "barriers", "translate", "build", "link", "boot", "kselftest", "bench", "test")
 COMPILERS = {"clang": "clang", "gcc": "gcc", "clang-aarch64": "clang"}
-CANONICAL_OUT = {("linux", "clang"): Path.home() / "slate-translated/slate-linux"}
+CANONICAL_OUT = {
+    ("linux", "clang"): Path.home() / "slate-translated/slate-linux",
+    ("cpython", "clang"): Path.home() / "slate-translated/slate-python",
+}
 
 
 @dataclass
@@ -1960,22 +1963,18 @@ def main():
         return 1 if code else 0
 
     env = dict(os.environ, CARGO_TARGET_DIR=str(out / "cargo-target"))
-    code, _ = run(["cargo", "check", "--profile", args.profile, "--message-format=short"],
-                  out / "check.log", cwd=crate, env=env)
-    errors = sum(line.startswith("error") for line in (out / "check.log").read_text(errors="replace").splitlines())
-    if not finish("check", "failed" if code else "ok", errors=errors, log="check.log"):
-        return 1 if code else 0
-
     native_links = link_flags(project_dir, recipe, variables) if not (library or make_library or translation_only) else \
         shared_dependencies(build_dir / recipe.library) if library and recipe.translate_tests else None
     env["RUSTFLAGS"] = " ".join(filter(None, [os.environ.get("RUSTFLAGS"), "-A warnings", native_links]))
-    code, _ = run(["cargo", "build", "--profile", args.profile], out / "build.log", cwd=crate, env=env)
+    code, _ = run(["cargo", "build", "--profile", args.profile, "--message-format=short"], out / "build.log",
+                  cwd=crate, env=env)
+    errors = sum(line.startswith("error") for line in (out / "build.log").read_text(errors="replace").splitlines())
     profile_dir = "debug" if args.profile == "dev" else args.profile
     package = re.search(r'^name = "([^"]+)"', (crate / "Cargo.toml").read_text(), re.MULTILINE)[1]
     binary = out / "cargo-target" / profile_dir / package
     if library or make_library or translation_only:
         binary = next((out / "cargo-target" / profile_dir).glob("*.a"), binary)
-    if not finish("build", "failed" if code else "ok", log="build.log", binary=str(binary)):
+    if not finish("build", "failed" if code else "ok", errors=errors, log="build.log", binary=str(binary)):
         return 1 if code else 0
 
     if translation_only:

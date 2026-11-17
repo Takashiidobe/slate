@@ -34,7 +34,6 @@ Stages run in order and stop at the first failure or at `--until`:
 | native    | checks the native build's outputs exist, picks the TUs, writes `<out>/compile_commands.json` |
 | barriers  | `slate lowering-barriers` per TU, `barriers.md`                                              |
 | translate | `slate translate-project` into one crate, and times the native compile of the same TUs       |
-| check     | `cargo check`                                                                                |
 | build     | `cargo build`, linking native libraries                                                      |
 | link      | linux only: swap translated objects into vmlinux (`kernel_link.py`)                          |
 | boot      | linux only: boot native and translated bzImages under QEMU, diff dmesg (`kernel_boot.py`)    |
@@ -44,7 +43,8 @@ Stages run in order and stop at the first failure or at `--until`:
 
 Output goes to `target/corpus/<project>/<mode>/`, unless `CANONICAL_OUT` maps
 the project to a fixed directory (linux clang:
-`~/slate-translated/slate-linux`). `summary.json` holds every stage's status and
+`~/slate-translated/slate-linux`, cpython clang:
+`~/slate-translated/slate-python`). `summary.json` holds every stage's status and
 details; each stage writes its own log or report next to it.
 
 ## The comparison rule
