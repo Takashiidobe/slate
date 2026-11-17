@@ -151,8 +151,9 @@ similar rust.
 ### Clang/GCC
 
 - [Linux](https://kernel.org)
-  - Translates the x86_64 defconfig kernel and boots it under QEMU to a busybox
-    shell. The build, link, and objtool stages do not warn or error.
+  - [Rust Translation](https://github.com/takashiidobe/slate-linux). Translates
+    the x86_64 defconfig kernel and uses QEMU to boot to a busybox shell. The
+    build, link, and objtool stages do not warn or error.
 - [SQLite](https://sqlite.org)
   - [Rust Translation](https://github.com/takashiidobe/slate-sqlite). Passes
     `select1.test` and `main.test` using `testfixture`, plus `mptest` and
