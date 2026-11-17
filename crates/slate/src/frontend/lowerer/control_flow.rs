@@ -883,7 +883,9 @@ impl FunctionLowerer<'_, '_> {
             .collect();
         let jump = |index: usize| match unreachable_blocks.contains(&index) {
             true => vec![Stmt::Expr(Expr::Call {
-                func: Box::new(Expr::Var("core::hint::unreachable_unchecked".into())),
+                func: Box::new(Expr::Path(rust::Path::new(
+                    ["core", "hint", "unreachable_unchecked"].map(rust::Ident::from),
+                ))),
                 args: Vec::new(),
                 binding: CallBinding::Generated,
             })],

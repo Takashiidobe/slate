@@ -28,49 +28,19 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-NEXT: fn jump_probe(x: i32) -> i32 {
-// CHECK-NEXT:     let mut __slate_state: usize = 5usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     return 30;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     return 20;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
+// CHECK-NEXT:         if x < 0 || x > 2 {
+// CHECK-NEXT:             return -1;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             match targets.0[x as usize] as usize {
+// CHECK-NEXT:                 4 => {
 // CHECK-NEXT:                     return 10;
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 3 => {
-// CHECK-NEXT:                     match targets.0[x as usize] as usize {
-// CHECK-NEXT:                         4 => {
-// CHECK-NEXT:                             __slate_state = 2usize;
-// CHECK-NEXT:                             continue;
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         5 => {
-// CHECK-NEXT:                             __slate_state = 1usize;
-// CHECK-NEXT:                             continue;
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         6 => {
-// CHECK-NEXT:                             __slate_state = 0usize;
-// CHECK-NEXT:                             continue;
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         _ => {
-// CHECK-NEXT:                             unreachable!();
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 4 => {
-// CHECK-NEXT:                     return -1;
-// CHECK-NEXT:                 }
 // CHECK-NEXT:                 5 => {
-// CHECK-NEXT:                     if x < 0 || x > 2 {
-// CHECK-NEXT:                         __slate_state = 4usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         __slate_state = 3usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     }
+// CHECK-NEXT:                     return 20;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 6 => {
+// CHECK-NEXT:                     return 30;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 _ => {
 // CHECK-NEXT:                     unreachable!();

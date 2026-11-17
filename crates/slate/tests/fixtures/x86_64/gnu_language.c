@@ -211,53 +211,22 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_computed_goto(mut selector: u32) -> i32 {
-// CHECK-NEXT:     let mut __slate_state: usize = 5usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     return 13;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     return 11;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     return 7;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 3 => match targets.0[selector as usize] as usize {
-// CHECK-NEXT:                     19 => {
-// CHECK-NEXT:                         __slate_state = 2usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     20 => {
-// CHECK-NEXT:                         __slate_state = 1usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     21 => {
-// CHECK-NEXT:                         __slate_state = 0usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     _ => {
-// CHECK-NEXT:                         unreachable!();
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 },
-// CHECK-NEXT:                 4 => {
-// CHECK-NEXT:                     selector = 2;
-// CHECK-NEXT:                     __slate_state = 3usize;
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 5 => {
-// CHECK-NEXT:                     if selector > 1 {
-// CHECK-NEXT:                         __slate_state = 4usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         __slate_state = 3usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     unreachable!();
-// CHECK-NEXT:                 }
+// CHECK-NEXT:         if selector > 1 {
+// CHECK-NEXT:             selector = 2;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         match targets.0[selector as usize] as usize {
+// CHECK-NEXT:             19 => {
+// CHECK-NEXT:                 return 7;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             20 => {
+// CHECK-NEXT:                 return 11;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             21 => {
+// CHECK-NEXT:                 return 13;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 unreachable!();
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

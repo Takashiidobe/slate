@@ -21,50 +21,29 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn walk(mut position: *mut i32) {
-// CHECK-NEXT:     let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     return;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
+// CHECK-NEXT:         match labels.0[*position as usize] as usize {
+// CHECK-NEXT:             4 => {
+// CHECK-NEXT:                 loop {
 // CHECK-NEXT:                     let [[V_0:__v[0-9]+]]: *mut i32 = position;
 // CHECK-NEXT:                     position = [[V_0]].add(1);
 // CHECK-NEXT:                     match labels.0[*position as usize] as usize {
-// CHECK-NEXT:                         4 => {
-// CHECK-NEXT:                             __slate_state = 1usize;
-// CHECK-NEXT:                             continue;
-// CHECK-NEXT:                         }
+// CHECK-NEXT:                         4 => {}
 // CHECK-NEXT:                         5 => {
-// CHECK-NEXT:                             __slate_state = 0usize;
-// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                             break;
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                         _ => {
 // CHECK-NEXT:                             unreachable!();
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     match labels.0[*position as usize] as usize {
-// CHECK-NEXT:                         4 => {
-// CHECK-NEXT:                             __slate_state = 1usize;
-// CHECK-NEXT:                             continue;
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         5 => {
-// CHECK-NEXT:                             __slate_state = 0usize;
-// CHECK-NEXT:                             continue;
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         _ => {
-// CHECK-NEXT:                             unreachable!();
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     unreachable!();
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
+// CHECK-NEXT:             5 => {}
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 unreachable!();
+// CHECK-NEXT:             }
 // CHECK-NEXT:         }
+// CHECK-NEXT:         return;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

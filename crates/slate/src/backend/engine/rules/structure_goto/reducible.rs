@@ -11,6 +11,7 @@ pub(in crate::backend::engine) struct StructureReducible;
 
 enum Term {
     Diverge,
+    Escape(Vec<Stmt>),
     Exit,
     Jump(usize),
     Branch {
@@ -160,6 +161,9 @@ impl Extractor<'_> {
         {
             return self.index_of.get(&state).copied().map(Term::Jump);
         }
+        if tail_diverges(self.arena, body) {
+            return self.prefix(body).map(Term::Escape);
+        }
         let (prefix_len, term) = self.terminator(body)?;
         (prefix_len == 0).then_some(term)
     }
@@ -232,7 +236,7 @@ impl Extractor<'_> {
 
 fn edges(term: &Term) -> Vec<usize> {
     match term {
-        Term::Diverge | Term::Exit => Vec::new(),
+        Term::Diverge | Term::Escape(_) | Term::Exit => Vec::new(),
         Term::Jump(target) => vec![*target],
         Term::Branch {
             then_term,
@@ -419,7 +423,7 @@ fn sccs(blocks: &[Block]) -> Vec<Vec<usize>> {
 
 fn retarget_term(term: &mut Term, from: usize, to: usize) {
     match term {
-        Term::Diverge | Term::Exit => {}
+        Term::Diverge | Term::Escape(_) | Term::Exit => {}
         Term::Jump(target) if *target == from => *target = to,
         Term::Jump(_) => {}
         Term::Branch {
@@ -875,6 +879,7 @@ impl Graph {
     fn emit_term(&self, term: &Term, loops: &[usize]) -> Vec<Stmt> {
         match term {
             Term::Diverge => Vec::new(),
+            Term::Escape(stmts) => stmts.clone(),
             Term::Exit => vec![Stmt::Break(Some(self.label.clone()))],
             Term::Jump(target) => self.branch(*target, loops),
             Term::Branch {
