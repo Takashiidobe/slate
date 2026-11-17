@@ -1,4 +1,5 @@
 use crate::compiler_args::{CompilerFlavor, LanguageStandard};
+use crate::sanitizers::Sanitizers;
 
 mod clang;
 mod target;
@@ -78,8 +79,16 @@ const GCC_ONLY_BUILTINS: &[&str] = &[
     "__builtin_nansd64x",
 ];
 
-pub(super) fn has_feature(name: &str, flavor: CompilerFlavor, standard: LanguageStandard) -> bool {
+pub(super) fn has_feature(
+    name: &str,
+    flavor: CompilerFlavor,
+    standard: LanguageStandard,
+    sanitizers: Sanitizers,
+) -> bool {
     let name = normalize(name);
+    if let Some(enabled) = sanitizers.has_feature(name, flavor) {
+        return enabled;
+    }
     let standard_feature = match (name, flavor) {
         (
             "c_alignas"
@@ -106,12 +115,14 @@ pub(super) fn has_extension(
     name: &str,
     flavor: CompilerFlavor,
     standard: LanguageStandard,
+    sanitizers: Sanitizers,
 ) -> bool {
     let extensions = match flavor {
         CompilerFlavor::Gcc => GCC_EXTENSIONS,
         _ => KNOWN_EXTENSIONS,
     };
-    has_feature(name, flavor, standard) || extensions.binary_search(&normalize(name)).is_ok()
+    has_feature(name, flavor, standard, sanitizers)
+        || extensions.binary_search(&normalize(name)).is_ok()
 }
 
 const GCC_FEATURES: &[&str] = &[

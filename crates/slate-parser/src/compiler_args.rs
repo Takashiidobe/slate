@@ -345,6 +345,7 @@ struct ParsedCompilerArgs {
     pic: Option<Pic>,
     stack_protector: Option<StackProtector>,
     cf_protection: Vec<u8>,
+    sanitize: Vec<String>,
     code_model: Option<CodeModel>,
     red_zone: Option<bool>,
     indirect_branch_cs_prefix: Option<bool>,
@@ -613,6 +614,8 @@ enum Opt {
     StackProtectorLevel,
     StackProtectorExplicit,
     CfProtection,
+    Sanitize,
+    SanitizeChecks,
     CodeModel,
     RedZone,
     IndirectBranchCsPrefix,
@@ -781,6 +784,8 @@ impl std::fmt::Display for Opt {
             Self::StackProtectorLevel => "fstack-protector-<level>",
             Self::StackProtectorExplicit => "fstack-protector-explicit",
             Self::CfProtection => "fcf-protection",
+            Self::Sanitize => "fsanitize=",
+            Self::SanitizeChecks => "fsanitize-recover=",
             Self::CodeModel => "mcmodel",
             Self::RedZone => "mred-zone",
             Self::IndirectBranchCsPrefix => "mindirect-branch-cs-prefix",
@@ -979,6 +984,8 @@ impl Opt {
             | Self::StackProtector
             | Self::StackProtectorLevel
             | Self::CfProtection
+            | Self::Sanitize
+            | Self::SanitizeChecks
             | Self::CodeModel
             | Self::FunctionReturn
             | Self::RedZone
@@ -1377,6 +1384,10 @@ const CODEGEN_ONLY_FLAGS: &[CodegenOnlyFlag] = &[
     CodegenOnlyFlag::value("-fdiagnostics-color=", GNU_FLAVORS)
         .one_of(&["always", "never", "auto"]),
     CodegenOnlyFlag::switch("-coverage", GNU_FLAVORS).negated_by(&[]),
+    CodegenOnlyFlag::switch("-fsanitize-recover", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-fsanitize-trap", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-fsanitize-address-use-after-scope", GNU_FLAVORS),
+    CodegenOnlyFlag::switch("-fsanitize-undefined-trap-on-error", GNU_FLAVORS),
     CodegenOnlyFlag::switch("-mskip-rax-setup", GNU_FLAVORS),
     CodegenOnlyFlag::switch("-mvzeroupper", GNU_FLAVORS),
     CodegenOnlyFlag::value("-mtune=", GNU_FLAVORS),
@@ -1390,6 +1401,8 @@ const CODEGEN_ONLY_FLAGS: &[CodegenOnlyFlag] = &[
     CodegenOnlyFlag::value("-fira-region=", GCC_ONLY).one_of(&["all", "mixed", "one"]),
     CodegenOnlyFlag::value("-freorder-blocks-algorithm=", GCC_ONLY).one_of(&["simple", "stc"]),
     CodegenOnlyFlag::switch("-moutline", CLANG_ONLY),
+    CodegenOnlyFlag::switch("-fsanitize-minimal-runtime", CLANG_ONLY),
+    CodegenOnlyFlag::value("-fsanitize-ignorelist=", CLANG_ONLY),
     CodegenOnlyFlag::switch("-fintegrated-as", CLANG_ONLY),
     CodegenOnlyFlag::switch("-fcolor-diagnostics", CLANG_ONLY),
     CodegenOnlyFlag::switch("-fdiagnostics-show-inlining-chain", CLANG_ONLY),
@@ -1654,7 +1667,13 @@ impl CompilerArgParser {
         target.isa = TargetIsa::resolve(target.family, target.environment, &isa, raw.flavor)
             .map_err(|reason| invalid(&raw.target, &reason))?;
         let flavor = raw.flavor;
-        let codegen = codegen_options(&raw, &target);
+        let mut codegen = codegen_options(&raw, &target);
+        codegen.sanitizers = crate::sanitizers::Sanitizers::resolve(
+            &raw.sanitize,
+            flavor,
+            target.family,
+            codegen.optimization,
+        )?;
         let layout = LayoutOptions {
             long_double: raw.long_double,
             x87_long_double_bytes: raw.x87_long_double_bytes,
@@ -2005,6 +2024,20 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                     _ => return Err(invalid(argument, "unknown control-flow protection level")),
                 },
             );
+        } else if argument.starts_with("-fsanitize=") || argument.starts_with("-fno-sanitize=") {
+            parsed.saw(Opt::Sanitize, argument);
+            parsed.sanitize.push(argument.clone());
+        } else if [
+            "-fsanitize-recover=",
+            "-fno-sanitize-recover=",
+            "-fsanitize-trap=",
+            "-fno-sanitize-trap=",
+        ]
+        .iter()
+        .any(|prefix| argument.starts_with(prefix))
+        {
+            parsed.saw(Opt::SanitizeChecks, argument);
+            parsed.sanitize.push(argument.clone());
         } else if argument == "-trigraphs" || argument == "--trigraphs" {
             parsed.saw(Opt::Trigraphs, argument);
             parsed.trigraphs = Some(true);
@@ -2744,6 +2777,7 @@ fn codegen_options(raw: &ParsedCompilerArgs, target: &TargetInfo) -> CodegenOpti
         trivial_auto_var_init: raw.trivial_auto_var_init.unwrap_or_default(),
         zero_init_padding_bits: raw.zero_init_padding_bits.unwrap_or_default(),
         optimization: raw.optimization.unwrap_or_default(),
+        sanitizers: Default::default(),
     }
 }
 

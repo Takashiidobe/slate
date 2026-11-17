@@ -18,6 +18,7 @@ pub mod pp;
 pub mod reachability;
 pub mod render;
 pub mod rules;
+pub mod sanitizers;
 pub mod sema;
 pub mod standard_features;
 pub mod sysroot;

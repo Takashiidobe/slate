@@ -51,6 +51,7 @@ pub struct CodegenOptions {
     pub trivial_auto_var_init: TrivialAutoVarInit,
     pub zero_init_padding_bits: ZeroInitPaddingBits,
     pub optimization: Optimization,
+    pub sanitizers: crate::sanitizers::Sanitizers,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -120,6 +121,7 @@ impl Default for CodegenOptions {
             trivial_auto_var_init: TrivialAutoVarInit::Uninitialized,
             zero_init_padding_bits: ZeroInitPaddingBits::Standard,
             optimization: Optimization::None,
+            sanitizers: crate::sanitizers::Sanitizers::default(),
         }
     }
 }

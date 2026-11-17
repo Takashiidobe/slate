@@ -1206,6 +1206,12 @@ impl<'a> Preprocessor<'a> {
         if !gcc && !matches!(target.isa, TargetIsa::X86(_)) {
             defines.push("__FLT_EVAL_METHOD__=0".to_owned());
         }
+        defines.extend(
+            codegen
+                .sanitizers
+                .predefines()
+                .map(|name| format!("{name}=1")),
+        );
         if let Some(pic) = codegen.pic {
             removed.extend(["__pic__", "__PIC__", "__pie__", "__PIE__"]);
             let level = pic.level;
@@ -2292,8 +2298,11 @@ fn expand_has_checks(tokens: &[Span<Token>], dialect: &Dialect) -> Vec<Span<Toke
         value => value,
     };
     let has_builtin = |name: &str| has_checks::has_builtin(name, flavor) as i64;
-    let has_feature = |name: &str| has_checks::has_feature(name, flavor, standard) as i64;
-    let has_extension = |name: &str| has_checks::has_extension(name, flavor, standard) as i64;
+    let sanitizers = dialect.options().codegen.sanitizers;
+    let has_feature =
+        |name: &str| has_checks::has_feature(name, flavor, standard, sanitizers) as i64;
+    let has_extension =
+        |name: &str| has_checks::has_extension(name, flavor, standard, sanitizers) as i64;
     let has_declspec_attribute = |name: &str| {
         (microsoft && attribute_support::declspec_registered(name, flavor, target)) as i64
     };

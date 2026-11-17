@@ -3,6 +3,7 @@
 <!-- toc -->
 - [Contract](#contract)
 - [Implemented](#implemented)
+- [Sanitizers](#sanitizers)
 - [ISA gotchas](#isa-gotchas)
 - [MS modes](#ms-modes)
 - [Not implemented](#not-implemented)
@@ -244,6 +245,7 @@ how the result reaches each stage is in
 | `-fexperimental-late-parse-attributes`                                                    | clang                                                  | `CompilerOptions::late_parsed_attributes`; `counted_by` names a member resolved at use, so a later counter already works and the flag changes nothing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `-fpic` / `-fPIC` / `-fpie` / `-fPIE` (and `-fno-`)                                       | gcc, clang                                             | predefines and `Module.machine.pic` (`CodegenOptions::pic`): the last of the eight wins, giving `__pic__`/`__PIC__` level 1 or 2 and, for pie, `__pie__`/`__PIE__`. Darwin forces PIC and windows-msvc ignores them (clang rejects the positive spellings there; slate does not). gcc aarch64 drops `__AARCH64_CMODEL_SMALL__` at level 1                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `-fstack-protector[-strong\|-all]` / `-fno-stack-protector`                               | gcc, clang                                             | predefines only (`CodegenOptions::stack_protector`), last wins. clang's plain `-fstack-protector` is at least the target default (strong on Linux), read from the snapshot. clang: `__SSP__` 1, strong 2, all 3; gcc: 1, all 2, strong 3, `-fstack-protector-explicit` (gcc only) 4                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `-fsanitize=` / `-fno-sanitize=` | gcc, clang | predefines and `__has_feature` only (`CodegenOptions::sanitizers`); translated code is not instrumented (slate-3amj.59). See [Sanitizers](#sanitizers) |
 | `-fcf-protection[=full\|branch\|return\|none\|check]`                                     | gcc, clang                                             | `__CET__` on x86 only, and `Module.machine.cf_protection` (`CodegenOptions::cf_protection`). clang: last wins. gcc: levels OR together, `none` clears branch and return but not `check` (8, gcc only)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `-mcmodel=`                                                                               | gcc, clang                                             | `Module.machine.code_model` (`CodeModel`; an unknown model is an error); changes no C semantics. `__code_model_*__`/`__AARCH64_CMODEL_*__` keep the snapshot's `small`, and per-target validity is not checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `-m[no-]red-zone` / `-m[no-]indirect-branch-cs-prefix` / `-m[no-]retpoline` (clang only)  | gcc, clang                                             | `Module.machine` (`red_zone`, `indirect_branch_cs_prefix`, `retpoline`), last wins; no C semantics. `-mno-indirect-branch-cs-prefix` is gcc only                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -340,6 +342,56 @@ i686, as both compilers do.
   `-mno-` turns it off.
 
 `-mvzeroupper`/`-mno-vzeroupper` are codegen-only in both flavors.
+
+## Sanitizers
+
+`-fsanitize=` and `-fno-sanitize=` take comma lists and apply in argv order to
+one set of checks; group names expand to their checks, so
+`-fsanitize=undefined -fno-sanitize=shift` keeps the rest of `undefined`.
+`Sanitizers::resolve` validates names per flavor, checks conflicts on the final
+set, and gives:
+
+| Checks enabled                  | Macro                    | `__has_feature`                                              |
+| ------------------------------- | ------------------------ | ------------------------------------------------------------ |
+| `address`, `kernel-address`     | `__SANITIZE_ADDRESS__`   | `address_sanitizer`                                          |
+| `hwaddress`, `kernel-hwaddress` | `__SANITIZE_HWADDRESS__` | `hwaddress_sanitizer`                                        |
+| `thread`                        | `__SANITIZE_THREAD__`    | `thread_sanitizer`                                           |
+| `leak`                          |                          | `leak_sanitizer`                                             |
+| any check in `undefined`        |                          | `undefined_behavior_sanitizer` (gcc also for `bounds-strict`) |
+| clang only                      |                          | `memory_sanitizer`, `dataflow_sanitizer`, `safe_stack`, `shadow_call_stack`, `kcfi`, `realtime_sanitizer`, `type_sanitizer`, `numerical_stability_sanitizer`, `scudo`, `coverage_sanitizer` (`fuzzer`, `fuzzer-no-link`) |
+
+- Names: both flavors share the address, thread, leak and UB checks. clang adds
+  `memory`, `dataflow`, `safe-stack`, `kcfi`, `realtime`, `type`, `numerical`,
+  `scudo`, `fuzzer`, `function`, `array-bounds`/`local-bounds`, the
+  `implicit-*`, `nullability-*` and `unsigned-*` checks, and the groups
+  `integer`, `implicit-conversion`, `nullability`, `undefined-trap`. gcc adds
+  `bounds`, `bounds-strict`, `memtag-stack`. `bounds` is a check in gcc and a
+  group (`array-bounds,local-bounds`) in clang.
+- `all` is accepted only after `-fno-sanitize=` and in the
+  `-fsanitize-recover=`/`-fsanitize-trap=` lists, which are validated against
+  the same names and otherwise ignored. gcc rejects an empty `-fsanitize=`;
+  clang accepts it.
+- clang drops `vptr` in C, and `object-size` at `-O0`, before computing
+  features.
+- Conflicts are checked on the final set, so a later `-fno-sanitize=` resolves
+  one. Address, hwaddress, thread, memory and their kernel variants exclude each
+  other in both flavors; the rest of the pairs (`leak` with `thread`, clang's
+  `realtime` with any UB check, `kcfi` with `function`, ...) are the
+  `*_CONFLICTS` tables. `pointer-compare` and `pointer-subtract` need
+  `address`: clang checks every `-fsanitize=` given (so
+  `-fsanitize=address -fno-sanitize=address -fsanitize=pointer-compare` passes),
+  gcc checks the final set and also takes `kernel-address`.
+- gcc rejects `shadow-call-stack` off aarch64.
+- Codegen-only: `-fsanitize-recover`, `-fsanitize-trap`,
+  `-fsanitize-address-use-after-scope`, `-fsanitize-undefined-trap-on-error`
+  (gcc, clang), `-fsanitize-minimal-runtime` and `-fsanitize-ignorelist=`
+  (clang).
+- Not emulated: `-fsanitize-coverage=` (still reported as unsupported), clang's
+  target limits (`memtag*` off aarch64, `cfi*` without `-flto`, rejected here as
+  unknown names), clang's `-fsanitize-minimal-runtime` conflicts with the
+  memory sanitizers, and the ignorelist file check.
+- Measured against clang 23 and gcc 16 (`sanitize_macros.c` fixtures in
+  `clang/` and `gcc/`, errors in `error/<flavor>/linux/x86_64/sanitize-*.c`).
 
 ## ISA gotchas
 
