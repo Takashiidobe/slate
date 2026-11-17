@@ -179,9 +179,12 @@ impl CallBinding {
     }
 }
 
-pub fn classify_function(name: &str, system_headers: &[&str]) -> FunctionIdentity {
+pub fn classify_function(name: &str, system_headers: &[&str], hosted: bool) -> FunctionIdentity {
     if let Some(known) = Known::from_builtin_symbol(name) {
         return FunctionIdentity::Known(known);
+    }
+    if !hosted {
+        return FunctionIdentity::Unknown;
     }
     Known::classify(name, system_headers)
         .map(FunctionIdentity::Known)

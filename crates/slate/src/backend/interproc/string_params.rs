@@ -631,11 +631,11 @@ struct Ctx<'a> {
 }
 
 impl Ctx<'_> {
-    fn arg_use_allowed(&self, callee_name: Option<&str>, index: usize) -> bool {
+    fn arg_use_allowed(&self, callee_name: Option<&str>, known_libc: bool, index: usize) -> bool {
         let Some(name) = callee_name else {
             return false;
         };
-        if is_supported_libc_str_fn(name) {
+        if known_libc && is_supported_libc_str_fn(name) {
             return true;
         }
         if let Some(callee) = self.symbols.resolve(self.unit, name)
@@ -796,18 +796,23 @@ fn expr_ok(expr: &Expr, tracked: &BTreeSet<String>, ctx: &Ctx) -> bool {
         }
         Expr::Binary { lhs, rhs, .. } => expr_ok(lhs, tracked, ctx) && expr_ok(rhs, tracked, ctx),
         Expr::Range { start, end } => expr_ok(start, tracked, ctx) && expr_ok(end, tracked, ctx),
-        Expr::Call { func, args, .. } => {
+        Expr::Call {
+            func,
+            args,
+            binding,
+        } => {
             let callee_name = match &**func {
                 Expr::Var(v) => Some(v.as_str()),
                 _ => None,
             };
+            let known_libc = binding.known().is_some();
             let mut ok = expr_ok(func, tracked, ctx);
             for (index, arg) in args.iter().enumerate() {
                 let peeled = peel_pointer_view(arg);
                 if let Expr::Var(v) = peeled
                     && tracked.contains(v.as_str())
                 {
-                    ok &= ctx.arg_use_allowed(callee_name, index);
+                    ok &= ctx.arg_use_allowed(callee_name, known_libc, index);
                 } else {
                     ok &= expr_ok(arg, tracked, ctx);
                 }

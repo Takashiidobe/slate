@@ -677,7 +677,7 @@ impl<'m> ModuleLowerer<'m> {
                                 .filter_map(|path| path.file_name())
                                 .filter_map(|name| name.to_str())
                                 .collect();
-                            classify_function(&function.name, &system_headers)
+                            classify_function(&function.name, &system_headers, module.hosted)
                         } else if function.provenance.system_header.is_some() {
                             FunctionIdentity::HeaderInline
                         } else {
