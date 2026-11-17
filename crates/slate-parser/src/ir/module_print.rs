@@ -7,6 +7,7 @@ use super::{
 };
 use crate::{
     ast::{CommentAttach, Loc, MacroInvocations, NodeId, SmeKind, Span},
+    compiler_options::StackProtector,
     ir::Fallthrough,
 };
 use std::fmt;
@@ -1182,6 +1183,19 @@ impl fmt::Display for DisplayModule<'_> {
             machine
                 .function_return_thunk_extern
                 .then(|| "function_return=thunk_extern".to_string()),
+            machine.stack_protector.map(|level| {
+                let level = match level {
+                    StackProtector::Off => "off",
+                    StackProtector::On => "on",
+                    StackProtector::Strong => "strong",
+                    StackProtector::All => "all",
+                    StackProtector::Explicit => "explicit",
+                };
+                format!("stack_protector={level}")
+            }),
+            machine
+                .stack_protector_guard
+                .then(|| "stack_protector_guard".to_string()),
         ]
         .into_iter()
         .flatten()

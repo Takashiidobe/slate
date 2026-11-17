@@ -344,6 +344,7 @@ struct ParsedCompilerArgs {
     asynchronous_unwind_tables: Option<bool>,
     pic: Option<Pic>,
     stack_protector: Option<StackProtector>,
+    stack_protector_guard: bool,
     cf_protection: Vec<u8>,
     sanitize: Vec<String>,
     code_model: Option<CodeModel>,
@@ -1905,6 +1906,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if let Some(flag) = codegen_only_flag(argument) {
             flag.check_value(argument)?;
             parsed.saw(Opt::CodegenOnly(flag.spelling), argument);
+            parsed.stack_protector_guard |= flag.spelling.starts_with("-mstack-protector-guard");
             if flag.separate && argument == flag.spelling {
                 next_value(arguments, &mut index, argument, "")?;
             }
@@ -2766,6 +2768,7 @@ fn codegen_options(raw: &ParsedCompilerArgs, target: &TargetInfo) -> CodegenOpti
             StackProtector::On if raw.flavor.is_clang() => level.max(default_protector),
             level => level,
         }),
+        stack_protector_guard: raw.stack_protector_guard,
         cf_protection,
         code_model: raw.code_model,
         red_zone: raw.red_zone,

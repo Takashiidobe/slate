@@ -41,6 +41,8 @@ pub struct MachineCodegen {
     pub indirect_branch_cs_prefix: bool,
     pub retpoline: bool,
     pub function_return_thunk_extern: bool,
+    pub stack_protector: Option<crate::compiler_options::StackProtector>,
+    pub stack_protector_guard: bool,
 }
 
 impl MachineCodegen {
@@ -53,6 +55,8 @@ impl MachineCodegen {
             indirect_branch_cs_prefix: codegen.indirect_branch_cs_prefix,
             retpoline: codegen.retpoline,
             function_return_thunk_extern: codegen.function_return_thunk_extern,
+            stack_protector: codegen.stack_protector,
+            stack_protector_guard: codegen.stack_protector_guard,
         }
     }
 }

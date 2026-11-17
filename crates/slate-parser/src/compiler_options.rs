@@ -40,6 +40,7 @@ pub struct CompilerOptions {
 pub struct CodegenOptions {
     pub pic: Option<Pic>,
     pub stack_protector: Option<StackProtector>,
+    pub stack_protector_guard: bool,
     pub cf_protection: Option<u8>,
     pub code_model: Option<CodeModel>,
     pub red_zone: Option<bool>,
@@ -110,6 +111,7 @@ impl Default for CodegenOptions {
         Self {
             pic: None,
             stack_protector: None,
+            stack_protector_guard: false,
             cf_protection: None,
             code_model: None,
             red_zone: None,
@@ -181,7 +183,7 @@ impl Pic {
     };
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum StackProtector {
     Off,
     On,

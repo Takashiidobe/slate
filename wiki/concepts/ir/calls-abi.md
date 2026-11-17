@@ -290,7 +290,8 @@ the flavor. How to add one: [adding-a-target](../adding-a-target.md).
   is rejected until it has a target.
 - `Module.machine` (`MachineCodegen`, printed `machine [...]`) records the
   explicit code model, PIC/PIE level, red zone, cf-protection,
-  `-mindirect-branch-cs-prefix` and `-mretpoline`; x86 ISA flags such as
+  `-mindirect-branch-cs-prefix`, `-mretpoline`, the stack protector level and
+  whether a `-mstack-protector-guard*` option is present; x86 ISA flags such as
   `-mretpoline-external-thunk`, `-mno-sse` and `-mno-80387` stay in
   `TargetInfo::isa`. Neither changes layout or ABI. Slate builds a crate whose
   units are all core-only and SSE-free for `x86_64-unknown-none` (64-bit) or a

@@ -413,6 +413,56 @@ const LINK_ORDER_RUSTFLAGS: [&str; 3] = [
     "-Zcross-crate-inline-threshold=never",
 ];
 
+fn crate_stack_protector(programs: &[(String, rust_ast::Program)]) -> Option<&'static str> {
+    use slate_parser::compiler_options::StackProtector;
+    let level = |program: &rust_ast::Program| match program.stack_protector {
+        Some(StackProtector::On) => "basic",
+        Some(StackProtector::Strong) => "strong",
+        Some(StackProtector::All) => "all",
+        Some(StackProtector::Off | StackProtector::Explicit) | None => "none",
+    };
+    let mut counts: BTreeMap<&str, usize> = BTreeMap::new();
+    for (_, program) in programs {
+        *counts.entry(level(program)).or_default() += 1;
+    }
+    let [(&level, _)] = counts.iter().collect::<Vec<_>>()[..] else {
+        if counts.is_empty() {
+            return None;
+        }
+        let units: Vec<String> = counts
+            .iter()
+            .map(|(level, count)| format!("{level} in {count}"))
+            .collect();
+        eprintln!(
+            "warning: units disagree on the stack protector ({}); the crate builds without -Zstack-protector",
+            units.join(", ")
+        );
+        return None;
+    };
+    if level == "none" {
+        return None;
+    }
+    if programs
+        .iter()
+        .any(|(_, program)| !program.runtime.has_std())
+    {
+        eprintln!(
+            "warning: -fstack-protector in freestanding or -nostdinc units is not carried over: rustc reads the userspace canary"
+        );
+        return None;
+    }
+    if programs
+        .iter()
+        .any(|(_, program)| program.stack_protector_guard)
+    {
+        eprintln!(
+            "warning: -mstack-protector-guard* moves the canary, which rustc cannot express; the crate builds without -Zstack-protector"
+        );
+        return None;
+    }
+    Some(level)
+}
+
 fn link_order_sensitive(programs: &[(String, rust_ast::Program)]) -> bool {
     fn placement(item: &rust_ast::Item) -> Option<Option<&str>> {
         match item {
@@ -491,6 +541,7 @@ fn crate_manifest(
     blocks: bool,
     freestanding: bool,
     link_order: bool,
+    stack_protector: Option<&str>,
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
 ) -> String {
@@ -512,23 +563,34 @@ fn crate_manifest(
     } else {
         format!("\n[profile.release]\n{release_panic}{release_incremental}")
     };
-    let (cargo_features_line, link_order_profiles) = if link_order {
-        let flags = LINK_ORDER_RUSTFLAGS
+    let package_flags: Vec<String> = LINK_ORDER_RUSTFLAGS
+        .iter()
+        .filter(|_| link_order)
+        .map(|flag| flag.to_string())
+        .chain(stack_protector.map(|level| format!("-Zstack-protector={level}")))
+        .collect();
+    let (cargo_features_line, package_profiles) = if package_flags.is_empty() {
+        ("", String::new())
+    } else {
+        let flags = package_flags
             .iter()
             .map(|flag| format!("\"{flag}\""))
             .collect::<Vec<_>>()
             .join(", ");
+        let codegen_units = if link_order {
+            format!("codegen-units = {LINK_ORDER_CODEGEN_UNITS}\n")
+        } else {
+            String::new()
+        };
         let profiles: String = ["dev", "release"]
             .iter()
             .map(|profile| {
                 format!(
-                    "\n[profile.{profile}.package.{package}]\ncodegen-units = {LINK_ORDER_CODEGEN_UNITS}\nrustflags = [{flags}]\n"
+                    "\n[profile.{profile}.package.{package}]\n{codegen_units}rustflags = [{flags}]\n"
                 )
             })
             .collect();
         ("cargo-features = [\"profile-rustflags\"]\n\n", profiles)
-    } else {
-        ("", String::new())
     };
     let test_targets: String = tests
         .iter()
@@ -597,7 +659,7 @@ unused_dependencies = "allow"
 overflow-checks = false
 debug-assertions = false
 codegen-units = 256
-{dev_panic}{release_profile}{link_order_profiles}{test_targets}{features_section}"#
+{dev_panic}{release_profile}{package_profiles}{test_targets}{features_section}"#
     )
 }
 
@@ -613,6 +675,7 @@ fn write_crate_manifest(
     blocks: bool,
     freestanding: bool,
     link_order: bool,
+    stack_protector: Option<&str>,
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
 ) -> Result<(), String> {
@@ -625,6 +688,7 @@ fn write_crate_manifest(
             blocks,
             freestanding,
             link_order,
+            stack_protector,
             cargo_features,
             lib_crate_types,
         ),
@@ -645,6 +709,7 @@ fn init_crate(crate_dir: &Path, lib_crate_types: Option<&[String]>) -> Result<()
         false,
         false,
         false,
+        None,
         &BTreeSet::new(),
         lib_crate_types,
     )?;
@@ -1565,6 +1630,7 @@ fn write_project_crate(
         root.as_deref(),
         unit_files,
     )?;
+    let stack_protector = crate_stack_protector(&programs);
     let no_builtins = programs.iter().any(|(_, program)| program.no_builtins);
     let no_std: Vec<_> = freestanding
         .then_some(rust_ast::CrateAttr::NoStd)
@@ -1739,6 +1805,7 @@ fn write_project_crate(
         uses_blocks,
         freestanding,
         link_order,
+        stack_protector,
         &cargo_features,
         lib_crate_types.as_deref(),
     )?;

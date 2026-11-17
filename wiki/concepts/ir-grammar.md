@@ -75,7 +75,10 @@ machine_fact = "code_model=" ( "tiny" | "small" | "kernel" | "medium" | "large" 
              | "red_zone=" ( "on" | "off" )
              | "cf_protection=" ( "none" | "branch" | "return" | "full" | "check" )
                [ "+check" ]
-             | "indirect_branch_cs_prefix" | "retpoline" ;
+             | "indirect_branch_cs_prefix" | "retpoline"
+             | "function_return=thunk_extern"
+             | "stack_protector=" ( "off" | "on" | "strong" | "all" | "explicit" )
+             | "stack_protector_guard" ;
 
 target     = "target" string "{"
                "endian" "=" ( "little" | "big" ) ";"
@@ -108,9 +111,13 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
   when none is set: `-mcmodel=`, the last
   `-fpic`/`-fPIC`/`-fpie`/`-fPIE`/`-fno-*` (`pic=none` for level 0),
   `-m[no-]red-zone`, `-fcf-protection` (gcc's `check` bit prints as `check` or
-  `<level>+check`), `-mindirect-branch-cs-prefix`, and clang's `-mretpoline`.
-  They change no C semantics; slate maps them to the crate's Rust target and
-  rustflags for freestanding units.
+  `<level>+check`), `-mindirect-branch-cs-prefix`, clang's `-mretpoline`,
+  `-mfunction-return=thunk-extern`, the last `-f[no-]stack-protector*` level
+  (clang's plain `-fstack-protector` already raised to the target default), and
+  `stack_protector_guard` when any `-mstack-protector-guard*` option moved the
+  canary. They change no C semantics; slate maps them to the crate's Rust
+  target and rustflags for freestanding units, and the stack protector level to
+  `-Zstack-protector` for hosted crates.
 - `storage` lines cover every scalar format a module can name (`bool`, standard
   integers, floats, in that order), only for formats the target supports.
   Bit-precise integers, pointers, `va_list`, and composites are derived at the

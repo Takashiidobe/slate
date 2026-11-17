@@ -1833,6 +1833,8 @@ impl<'m> ModuleLowerer<'m> {
                 runtime: tables.runtime,
                 no_unwind: !tables.runtime.has_std(),
                 no_builtins: !self.module.hosted,
+                stack_protector: self.module.machine.stack_protector,
+                stack_protector_guard: self.module.machine.stack_protector_guard,
             },
             barriers,
             address_taken: dependencies.taken_functions,

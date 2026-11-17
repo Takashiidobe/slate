@@ -17,6 +17,8 @@ pub struct Program {
     pub runtime: Runtime,
     pub no_unwind: bool,
     pub no_builtins: bool,
+    pub stack_protector: Option<slate_parser::compiler_options::StackProtector>,
+    pub stack_protector_guard: bool,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
