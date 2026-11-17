@@ -617,6 +617,7 @@ enum Opt {
     CfProtection,
     Sanitize,
     SanitizeChecks,
+    SanitizeCoverage,
     CodeModel,
     RedZone,
     IndirectBranchCsPrefix,
@@ -787,6 +788,7 @@ impl std::fmt::Display for Opt {
             Self::CfProtection => "fcf-protection",
             Self::Sanitize => "fsanitize=",
             Self::SanitizeChecks => "fsanitize-recover=",
+            Self::SanitizeCoverage => "fsanitize-coverage=",
             Self::CodeModel => "mcmodel",
             Self::RedZone => "mred-zone",
             Self::IndirectBranchCsPrefix => "mindirect-branch-cs-prefix",
@@ -987,6 +989,7 @@ impl Opt {
             | Self::CfProtection
             | Self::Sanitize
             | Self::SanitizeChecks
+            | Self::SanitizeCoverage
             | Self::CodeModel
             | Self::FunctionReturn
             | Self::RedZone
@@ -1673,6 +1676,7 @@ impl CompilerArgParser {
             &raw.sanitize,
             flavor,
             target.family,
+            target.os,
             codegen.optimization,
         )?;
         let layout = LayoutOptions {
@@ -2039,6 +2043,11 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         .any(|prefix| argument.starts_with(prefix))
         {
             parsed.saw(Opt::SanitizeChecks, argument);
+            parsed.sanitize.push(argument.clone());
+        } else if argument.starts_with("-fsanitize-coverage=")
+            || argument.starts_with("-fno-sanitize-coverage=")
+        {
+            parsed.saw(Opt::SanitizeCoverage, argument);
             parsed.sanitize.push(argument.clone());
         } else if argument == "-trigraphs" || argument == "--trigraphs" {
             parsed.saw(Opt::Trigraphs, argument);
@@ -2887,7 +2896,7 @@ fn report_unsupported_flag(argument: &str) {
     }
 }
 
-fn parse_clang_integer(value: &str) -> Option<i32> {
+pub(crate) fn parse_clang_integer(value: &str) -> Option<i32> {
     let (negative, digits) = match value.strip_prefix('-') {
         Some(rest) => (true, rest),
         None => (false, value),

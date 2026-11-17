@@ -1835,6 +1835,7 @@ impl<'m> ModuleLowerer<'m> {
                 no_builtins: !self.module.hosted,
                 stack_protector: self.module.machine.stack_protector,
                 stack_protector_guard: self.module.machine.stack_protector_guard,
+                sanitize: self.module.machine.sanitize,
             },
             barriers,
             address_taken: dependencies.taken_functions,

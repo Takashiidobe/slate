@@ -463,6 +463,48 @@ fn crate_stack_protector(programs: &[(String, rust_ast::Program)]) -> Option<&'s
     Some(level)
 }
 
+fn crate_sanitizer(programs: &[(String, rust_ast::Program)]) -> Option<&'static str> {
+    use slate_parser::sanitizers::Instrumentation;
+    let mut counts: BTreeMap<&str, usize> = BTreeMap::new();
+    for (_, program) in programs {
+        let name = program.sanitize.map_or("none", Instrumentation::name);
+        *counts.entry(name).or_default() += 1;
+    }
+    let [(&name, _)] = counts.iter().collect::<Vec<_>>()[..] else {
+        if counts.is_empty() {
+            return None;
+        }
+        let units: Vec<String> = counts
+            .iter()
+            .map(|(name, count)| format!("{name} in {count}"))
+            .collect();
+        eprintln!(
+            "warning: units disagree on -fsanitize= ({}); the crate builds without -Zsanitizer",
+            units.join(", ")
+        );
+        return None;
+    };
+    match name {
+        "none" => None,
+        "kernel-address" => {
+            eprintln!(
+                "warning: -fsanitize=kernel-address is not carried over: the kernel provides the KASAN runtime, so the crate builds without -Zsanitizer"
+            );
+            None
+        }
+        _ if programs
+            .iter()
+            .any(|(_, program)| !program.runtime.has_std()) =>
+        {
+            eprintln!(
+                "warning: -fsanitize={name} in freestanding or -nostdinc units is not carried over; the crate builds without -Zsanitizer"
+            );
+            None
+        }
+        _ => Some(name),
+    }
+}
+
 fn link_order_sensitive(programs: &[(String, rust_ast::Program)]) -> bool {
     fn placement(item: &rust_ast::Item) -> Option<Option<&str>> {
         match item {
@@ -541,7 +583,7 @@ fn crate_manifest(
     blocks: bool,
     freestanding: bool,
     link_order: bool,
-    stack_protector: Option<&str>,
+    codegen_rustflags: &[String],
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
 ) -> String {
@@ -567,7 +609,7 @@ fn crate_manifest(
         .iter()
         .filter(|_| link_order)
         .map(|flag| flag.to_string())
-        .chain(stack_protector.map(|level| format!("-Zstack-protector={level}")))
+        .chain(codegen_rustflags.iter().cloned())
         .collect();
     let (cargo_features_line, package_profiles) = if package_flags.is_empty() {
         ("", String::new())
@@ -675,7 +717,7 @@ fn write_crate_manifest(
     blocks: bool,
     freestanding: bool,
     link_order: bool,
-    stack_protector: Option<&str>,
+    codegen_rustflags: &[String],
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
 ) -> Result<(), String> {
@@ -688,7 +730,7 @@ fn write_crate_manifest(
             blocks,
             freestanding,
             link_order,
-            stack_protector,
+            codegen_rustflags,
             cargo_features,
             lib_crate_types,
         ),
@@ -709,7 +751,7 @@ fn init_crate(crate_dir: &Path, lib_crate_types: Option<&[String]>) -> Result<()
         false,
         false,
         false,
-        None,
+        &[],
         &BTreeSet::new(),
         lib_crate_types,
     )?;
@@ -1630,7 +1672,20 @@ fn write_project_crate(
         root.as_deref(),
         unit_files,
     )?;
-    let stack_protector = crate_stack_protector(&programs);
+    let codegen_rustflags: Vec<String> = crate_stack_protector(&programs)
+        .map(|level| format!("-Zstack-protector={level}"))
+        .into_iter()
+        .chain(
+            crate_sanitizer(&programs)
+                .into_iter()
+                .flat_map(|sanitizer| {
+                    [
+                        format!("-Zsanitizer={sanitizer}"),
+                        "-Cunsafe-allow-abi-mismatch=sanitizer".to_string(),
+                    ]
+                }),
+        )
+        .collect();
     let no_builtins = programs.iter().any(|(_, program)| program.no_builtins);
     let no_std: Vec<_> = freestanding
         .then_some(rust_ast::CrateAttr::NoStd)
@@ -1805,7 +1860,7 @@ fn write_project_crate(
         uses_blocks,
         freestanding,
         link_order,
-        stack_protector,
+        &codegen_rustflags,
         &cargo_features,
         lib_crate_types.as_deref(),
     )?;

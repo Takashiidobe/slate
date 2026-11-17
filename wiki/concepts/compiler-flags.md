@@ -245,7 +245,7 @@ how the result reaches each stage is in
 | `-fexperimental-late-parse-attributes`                                                    | clang                                                  | `CompilerOptions::late_parsed_attributes`; `counted_by` names a member resolved at use, so a later counter already works and the flag changes nothing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `-fpic` / `-fPIC` / `-fpie` / `-fPIE` (and `-fno-`)                                       | gcc, clang                                             | predefines and `Module.machine.pic` (`CodegenOptions::pic`): the last of the eight wins, giving `__pic__`/`__PIC__` level 1 or 2 and, for pie, `__pie__`/`__PIE__`. Darwin forces PIC and windows-msvc ignores them (clang rejects the positive spellings there; slate does not). gcc aarch64 drops `__AARCH64_CMODEL_SMALL__` at level 1                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `-fstack-protector[-strong\|-all]` / `-fno-stack-protector`                               | gcc, clang                                             | predefines and `Module.machine` (`stack_protector=` fact), last wins; slate builds a hosted crate whose units all agree with `-Zstack-protector=basic\|strong\|all`, and warns and leaves it off when units disagree, any unit is freestanding/`-nostdinc`, or a `-mstack-protector-guard*` option is present (`stack_protector_guard` fact). clang's plain `-fstack-protector` is at least the target default (strong on Linux), read from the snapshot. clang: `__SSP__` 1, strong 2, all 3; gcc: 1, all 2, strong 3, `-fstack-protector-explicit` (gcc only) 4                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `-fsanitize=` / `-fno-sanitize=` | gcc, clang | predefines and `__has_feature` only (`CodegenOptions::sanitizers`); translated code is not instrumented (slate-3amj.59). See [Sanitizers](#sanitizers) |
+| `-fsanitize=` / `-fno-sanitize=` | gcc, clang | predefines, `__has_feature`, and `Module.machine` (`sanitize=address\|kernel-address\|thread`); slate builds a hosted crate whose units all agree with `-Zsanitizer=address\|thread -Cunsafe-allow-abi-mismatch=sanitizer`. See [Sanitizers](#sanitizers) |
 | `-fcf-protection[=full\|branch\|return\|none\|check]`                                     | gcc, clang                                             | `__CET__` on x86 only, and `Module.machine.cf_protection` (`CodegenOptions::cf_protection`). clang: last wins. gcc: levels OR together, `none` clears branch and return but not `check` (8, gcc only)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `-mcmodel=`                                                                               | gcc, clang                                             | `Module.machine.code_model` (`CodeModel`; an unknown model is an error); changes no C semantics. `__code_model_*__`/`__AARCH64_CMODEL_*__` keep the snapshot's `small`, and per-target validity is not checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `-m[no-]red-zone` / `-m[no-]indirect-branch-cs-prefix` / `-m[no-]retpoline` (clang only)  | gcc, clang                                             | `Module.machine` (`red_zone`, `indirect_branch_cs_prefix`, `retpoline`), last wins; no C semantics. `-mno-indirect-branch-cs-prefix` is gcc only                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -358,7 +358,7 @@ set, and gives:
 | `thread`                        | `__SANITIZE_THREAD__`    | `thread_sanitizer`                                           |
 | `leak`                          |                          | `leak_sanitizer`                                             |
 | any check in `undefined`        |                          | `undefined_behavior_sanitizer` (gcc also for `bounds-strict`) |
-| clang only                      |                          | `memory_sanitizer`, `dataflow_sanitizer`, `safe_stack`, `shadow_call_stack`, `kcfi`, `realtime_sanitizer`, `type_sanitizer`, `numerical_stability_sanitizer`, `scudo`, `coverage_sanitizer` (`fuzzer`, `fuzzer-no-link`) |
+| clang only                      |                          | `memory_sanitizer`, `dataflow_sanitizer`, `safe_stack`, `shadow_call_stack`, `kcfi`, `realtime_sanitizer`, `type_sanitizer`, `numerical_stability_sanitizer`, `scudo`, `coverage_sanitizer` (see coverage below) |
 
 - Names: both flavors share the address, thread, leak and UB checks. clang adds
   `memory`, `dataflow`, `safe-stack`, `kcfi`, `realtime`, `type`, `numerical`,
@@ -386,7 +386,33 @@ set, and gives:
   `-fsanitize-address-use-after-scope`, `-fsanitize-undefined-trap-on-error`
   (gcc, clang), `-fsanitize-minimal-runtime` and `-fsanitize-ignorelist=`
   (clang).
-- Not emulated: `-fsanitize-coverage=` (still reported as unsupported), clang's
+- Instrumentation (`Sanitizers::instrumentation`, `crate_sanitizer`): when
+  every unit of a translate-project crate records the same `address` or
+  `thread`, the crate's package rustflags get `-Zsanitizer=<name>` and
+  `-Cunsafe-allow-abi-mismatch=sanitizer` (std, core and the support crates are
+  not rebuilt; TSan rejects the mix without it). rustc links its own
+  compiler-rt runtime into executables; a staticlib linked by
+  `clang -fsanitize=address` uses clang's, which works while rustc's LLVM and
+  clang agree on the ASan ABI version (both LLVM 23 here). Units that disagree,
+  freestanding or `-nostdinc` units, and `kernel-address` (the kernel owns the
+  KASAN runtime) warn and build uninstrumented. The UB checks
+  (`undefined`, `integer`, ...) and the other runtimes (`memory`, `leak`,
+  `hwaddress`, ...) are not mirrored: Rust has no equivalent of the UB checks.
+- `-fsanitize-coverage=`/`-fno-sanitize-coverage=` (`resolve_coverage`): gcc
+  accepts only `trace-pc` and `trace-cmp`, rejects an empty list, and sets no
+  macro or feature. clang replays the lists in argv order: an integer value
+  (`0`, `0x3`, the deprecated levels) clears every feature, `all` and integers
+  inside a list are errors, and `func`/`bb`/`edge` exclude each other.
+  `-fsanitize=fuzzer[-no-link]` seeds `inline-8bit-counters,indirect-calls,
+  trace-cmp,pc-table` (plus `stack-depth` on Linux and Android), and a
+  positive coverage list is dropped while `scudo` or `realtime` is enabled and
+  not removed anywhere. Without `func`/`bb`/`edge`, the trace-pc family implies
+  `edge` and `stack-depth` implies `func`. `coverage_sanitizer` is set by
+  `func`, `bb`, `edge`, `indirect-calls`, `trace-cmp`, `trace-loads`,
+  `trace-stores` or `control-flow`; `trace-div`, `trace-gep`, `pc-table`,
+  `no-prune`, `trace-bb` and `8bit-counters` alone leave it 0. clang's
+  `-Wdeprecated` warnings for the legacy values are not reported.
+- Not emulated: clang's
   target limits (`memtag*` off aarch64, `cfi*` without `-flto`, rejected here as
   unknown names), clang's `-fsanitize-minimal-runtime` conflicts with the
   memory sanitizers, and the ignorelist file check.

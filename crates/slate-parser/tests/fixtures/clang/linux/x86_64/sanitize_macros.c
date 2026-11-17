@@ -124,6 +124,7 @@ int extension_address = __has_extension(address_sanitizer);
 // ASAN_UBSAN-NEXT:         storage d64 [size=8, align=8];
 // ASAN_UBSAN-NEXT:         storage d128 [size=16, align=16];
 // ASAN_UBSAN-NEXT:     }
+// ASAN_UBSAN-NEXT:     machine [sanitize=address];
 // ASAN_UBSAN-NEXT:     global %[[VALUE_macro_address:[0-9]+]] macro_address: i32 [storage=static] = const<i32>(1) [linkage=external];
 // ASAN_UBSAN-NEXT:     global %[[VALUE_macro_hwaddress:[0-9]+]] macro_hwaddress: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // ASAN_UBSAN-NEXT:     global %[[VALUE_macro_thread:[0-9]+]] macro_thread: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
@@ -161,6 +162,7 @@ int extension_address = __has_extension(address_sanitizer);
 // KASAN-NEXT:         storage d64 [size=8, align=8];
 // KASAN-NEXT:         storage d128 [size=16, align=16];
 // KASAN-NEXT:     }
+// KASAN-NEXT:     machine [sanitize=kernel-address];
 // KASAN-NEXT:     global %[[VALUE_macro_address:[0-9]+]] macro_address: i32 [storage=static] = const<i32>(1) [linkage=external];
 // KASAN-NEXT:     global %[[VALUE_macro_hwaddress:[0-9]+]] macro_hwaddress: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // KASAN-NEXT:     global %[[VALUE_macro_thread:[0-9]+]] macro_thread: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
@@ -235,6 +237,7 @@ int extension_address = __has_extension(address_sanitizer);
 // TSAN-NEXT:         storage d64 [size=8, align=8];
 // TSAN-NEXT:         storage d128 [size=16, align=16];
 // TSAN-NEXT:     }
+// TSAN-NEXT:     machine [sanitize=thread];
 // TSAN-NEXT:     global %[[VALUE_macro_address:[0-9]+]] macro_address: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // TSAN-NEXT:     global %[[VALUE_macro_hwaddress:[0-9]+]] macro_hwaddress: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // TSAN-NEXT:     global %[[VALUE_macro_thread:[0-9]+]] macro_thread: i32 [storage=static] = const<i32>(1) [linkage=external];
@@ -309,6 +312,7 @@ int extension_address = __has_extension(address_sanitizer);
 // LEAK_ADDRESS-NEXT:         storage d64 [size=8, align=8];
 // LEAK_ADDRESS-NEXT:         storage d128 [size=16, align=16];
 // LEAK_ADDRESS-NEXT:     }
+// LEAK_ADDRESS-NEXT:     machine [sanitize=address];
 // LEAK_ADDRESS-NEXT:     global %[[VALUE_macro_address:[0-9]+]] macro_address: i32 [storage=static] = const<i32>(1) [linkage=external];
 // LEAK_ADDRESS-NEXT:     global %[[VALUE_macro_hwaddress:[0-9]+]] macro_hwaddress: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // LEAK_ADDRESS-NEXT:     global %[[VALUE_macro_thread:[0-9]+]] macro_thread: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
@@ -420,6 +424,7 @@ int extension_address = __has_extension(address_sanitizer);
 // LATER_WINS-NEXT:         storage d64 [size=8, align=8];
 // LATER_WINS-NEXT:         storage d128 [size=16, align=16];
 // LATER_WINS-NEXT:     }
+// LATER_WINS-NEXT:     machine [sanitize=address];
 // LATER_WINS-NEXT:     global %[[VALUE_macro_address:[0-9]+]] macro_address: i32 [storage=static] = const<i32>(1) [linkage=external];
 // LATER_WINS-NEXT:     global %[[VALUE_macro_hwaddress:[0-9]+]] macro_hwaddress: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // LATER_WINS-NEXT:     global %[[VALUE_macro_thread:[0-9]+]] macro_thread: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
@@ -679,6 +684,7 @@ int extension_address = __has_extension(address_sanitizer);
 // RUNTIME_OPTIONS-NEXT:         storage d64 [size=8, align=8];
 // RUNTIME_OPTIONS-NEXT:         storage d128 [size=16, align=16];
 // RUNTIME_OPTIONS-NEXT:     }
+// RUNTIME_OPTIONS-NEXT:     machine [sanitize=address];
 // RUNTIME_OPTIONS-NEXT:     global %[[VALUE_macro_address:[0-9]+]] macro_address: i32 [storage=static] = const<i32>(1) [linkage=external];
 // RUNTIME_OPTIONS-NEXT:     global %[[VALUE_macro_hwaddress:[0-9]+]] macro_hwaddress: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // RUNTIME_OPTIONS-NEXT:     global %[[VALUE_macro_thread:[0-9]+]] macro_thread: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];

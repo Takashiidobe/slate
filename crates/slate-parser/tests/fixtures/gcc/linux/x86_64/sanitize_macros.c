@@ -106,6 +106,7 @@ int feature_leak = __has_feature(leak_sanitizer);
 // ASAN_UBSAN-NEXT:         storage d64 [size=8, align=8];
 // ASAN_UBSAN-NEXT:         storage d128 [size=16, align=16];
 // ASAN_UBSAN-NEXT:     }
+// ASAN_UBSAN-NEXT:     machine [sanitize=address];
 // ASAN_UBSAN-NEXT:     global %[[VALUE_macro_address:[0-9]+]] macro_address: i32 [storage=static] = const<i32>(1) [linkage=external];
 // ASAN_UBSAN-NEXT:     global %[[VALUE_macro_hwaddress:[0-9]+]] macro_hwaddress: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // ASAN_UBSAN-NEXT:     global %[[VALUE_macro_thread:[0-9]+]] macro_thread: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
@@ -140,6 +141,7 @@ int feature_leak = __has_feature(leak_sanitizer);
 // KASAN-NEXT:         storage d64 [size=8, align=8];
 // KASAN-NEXT:         storage d128 [size=16, align=16];
 // KASAN-NEXT:     }
+// KASAN-NEXT:     machine [sanitize=kernel-address];
 // KASAN-NEXT:     global %[[VALUE_macro_address:[0-9]+]] macro_address: i32 [storage=static] = const<i32>(1) [linkage=external];
 // KASAN-NEXT:     global %[[VALUE_macro_hwaddress:[0-9]+]] macro_hwaddress: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // KASAN-NEXT:     global %[[VALUE_macro_thread:[0-9]+]] macro_thread: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
@@ -208,6 +210,7 @@ int feature_leak = __has_feature(leak_sanitizer);
 // TSAN-NEXT:         storage d64 [size=8, align=8];
 // TSAN-NEXT:         storage d128 [size=16, align=16];
 // TSAN-NEXT:     }
+// TSAN-NEXT:     machine [sanitize=thread];
 // TSAN-NEXT:     global %[[VALUE_macro_address:[0-9]+]] macro_address: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // TSAN-NEXT:     global %[[VALUE_macro_hwaddress:[0-9]+]] macro_hwaddress: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // TSAN-NEXT:     global %[[VALUE_macro_thread:[0-9]+]] macro_thread: i32 [storage=static] = const<i32>(1) [linkage=external];
@@ -378,6 +381,7 @@ int feature_leak = __has_feature(leak_sanitizer);
 // POINTER_COMPARE-NEXT:         storage d64 [size=8, align=8];
 // POINTER_COMPARE-NEXT:         storage d128 [size=16, align=16];
 // POINTER_COMPARE-NEXT:     }
+// POINTER_COMPARE-NEXT:     machine [sanitize=kernel-address];
 // POINTER_COMPARE-NEXT:     global %[[VALUE_macro_address:[0-9]+]] macro_address: i32 [storage=static] = const<i32>(1) [linkage=external];
 // POINTER_COMPARE-NEXT:     global %[[VALUE_macro_hwaddress:[0-9]+]] macro_hwaddress: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // POINTER_COMPARE-NEXT:     global %[[VALUE_macro_thread:[0-9]+]] macro_thread: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
@@ -446,6 +450,7 @@ int feature_leak = __has_feature(leak_sanitizer);
 // RUNTIME_OPTIONS-NEXT:         storage d64 [size=8, align=8];
 // RUNTIME_OPTIONS-NEXT:         storage d128 [size=16, align=16];
 // RUNTIME_OPTIONS-NEXT:     }
+// RUNTIME_OPTIONS-NEXT:     machine [sanitize=address];
 // RUNTIME_OPTIONS-NEXT:     global %[[VALUE_macro_address:[0-9]+]] macro_address: i32 [storage=static] = const<i32>(1) [linkage=external];
 // RUNTIME_OPTIONS-NEXT:     global %[[VALUE_macro_hwaddress:[0-9]+]] macro_hwaddress: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // RUNTIME_OPTIONS-NEXT:     global %[[VALUE_macro_thread:[0-9]+]] macro_thread: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];

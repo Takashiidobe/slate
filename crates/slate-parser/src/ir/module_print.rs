@@ -1196,6 +1196,9 @@ impl fmt::Display for DisplayModule<'_> {
             machine
                 .stack_protector_guard
                 .then(|| "stack_protector_guard".to_string()),
+            machine
+                .sanitize
+                .map(|sanitizer| format!("sanitize={}", sanitizer.name())),
         ]
         .into_iter()
         .flatten()

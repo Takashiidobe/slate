@@ -43,6 +43,7 @@ pub struct MachineCodegen {
     pub function_return_thunk_extern: bool,
     pub stack_protector: Option<crate::compiler_options::StackProtector>,
     pub stack_protector_guard: bool,
+    pub sanitize: Option<crate::sanitizers::Instrumentation>,
 }
 
 impl MachineCodegen {
@@ -57,6 +58,7 @@ impl MachineCodegen {
             function_return_thunk_extern: codegen.function_return_thunk_extern,
             stack_protector: codegen.stack_protector,
             stack_protector_guard: codegen.stack_protector_guard,
+            sanitize: codegen.sanitizers.instrumentation(),
         }
     }
 }
