@@ -426,6 +426,7 @@ struct AsmNames<'t> {
     statement_start: bool,
     previous: Option<char>,
     x86: bool,
+    intel: bool,
 }
 
 impl<'t> AsmNames<'t> {
@@ -442,6 +443,7 @@ impl<'t> AsmNames<'t> {
             statement_start: true,
             previous: None,
             x86: false,
+            intel: false,
         }
     }
 
@@ -467,7 +469,15 @@ impl<'t> AsmNames<'t> {
                 let word = &rest[..end];
                 let mnemonic = std::mem::replace(&mut self.statement_start, false);
                 self.statement_start = mnemonic && self.x86 && x86_prefix(word);
-                let candidate = !mnemonic && !c.is_ascii_digit() && self.previous != Some('%');
+                match word {
+                    ".intel_syntax" => self.intel = true,
+                    ".att_syntax" => self.intel = false,
+                    _ => {}
+                }
+                let candidate = !mnemonic
+                    && !c.is_ascii_digit()
+                    && self.previous != Some('%')
+                    && !(self.x86 && self.intel && intel_register(word));
                 match self.names.get(word).filter(|_| candidate) {
                     Some(id) => {
                         let slot = self.slot(*id);
@@ -533,6 +543,17 @@ fn x86_prefix(word: &str) -> bool {
             | "addr16"
             | "addr32"
     ) || word.starts_with("rex")
+}
+
+fn intel_register(word: &str) -> bool {
+    let word = word.to_ascii_lowercase();
+    matches!(
+        word.as_str(),
+        "cs" | "ds" | "es" | "fs" | "gs" | "ss" | "rip" | "eip" | "ip"
+    ) || matches!(
+        slate_parser::target::x86::decode_register(&word),
+        slate_parser::ast::Register::X86(info) if !(16..=21).contains(&info.number)
+    )
 }
 
 fn symbol_char(c: char) -> bool {
@@ -766,6 +787,7 @@ fn asm_template(
     names.statement_start = true;
     names.previous = None;
     names.x86 = x86;
+    names.intel = asm.dialect == Some(ir::AsmDialect::Intel);
     if !asm.has_sections() {
         return Ok(names.text(&asm.template));
     }
