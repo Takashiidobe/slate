@@ -266,6 +266,7 @@ enum Slot {
     RegisterPair(&'static str, &'static str),
     Spill(SpillRegister),
     Zero,
+    GlobalSymbol(BindingId),
 }
 
 fn spill_reference(asm: &ir::InlineAsm, register: SpillRegister) -> String {
@@ -419,6 +420,7 @@ fn explicit_reference(
 
 struct AsmNames<'t> {
     names: &'t HashMap<String, BindingId>,
+    global_symbols: &'t HashMap<BindingId, String>,
     base: usize,
     used: Vec<BindingId>,
     statement_start: bool,
@@ -427,9 +429,14 @@ struct AsmNames<'t> {
 }
 
 impl<'t> AsmNames<'t> {
-    fn new(names: &'t HashMap<String, BindingId>, base: usize) -> Self {
+    fn new(
+        names: &'t HashMap<String, BindingId>,
+        global_symbols: &'t HashMap<BindingId, String>,
+        base: usize,
+    ) -> Self {
         Self {
             names,
+            global_symbols,
             base,
             used: Vec::new(),
             statement_start: true,
@@ -710,6 +717,41 @@ fn defines_named_label(template: &str) -> bool {
     })
 }
 
+fn symbol_reference(
+    asm: &ir::InlineAsm,
+    family: TargetFamily,
+    operand: &ir::AsmOperand,
+    modifier: Option<char>,
+    symbol_text: &str,
+) -> Result<String> {
+    let x86_64_att = family == TargetFamily::X86_64 && asm.dialect == Some(ir::AsmDialect::Att);
+    let allowed = if family == TargetFamily::Arm32 {
+        matches!(modifier, None | Some('c'))
+    } else {
+        matches!(modifier, None | Some('c' | 'P' | 'p')) || (x86_64_att && modifier == Some('a'))
+    };
+    if !allowed {
+        return Err(unsupported_asm(format!("symbol modifier {modifier:?}")));
+    }
+    let ir::AsmOperandKind::Symbol(symbol) = &operand.kind else {
+        return Err(unsupported_asm("non-symbol operand"));
+    };
+    let mut reference = String::new();
+    if modifier.is_none() && asm.dialect == Some(ir::AsmDialect::Att) {
+        reference.push('$');
+    }
+    reference.push_str(symbol_text);
+    if symbol.offset > 0 {
+        reference.push_str(&format!("+{}", symbol.offset));
+    } else if symbol.offset < 0 {
+        reference.push_str(&symbol.offset.to_string());
+    }
+    if modifier == Some('a') {
+        reference.push_str("(%rip)");
+    }
+    Ok(reference)
+}
+
 fn asm_template(
     asm: &ir::InlineAsm,
     family: TargetFamily,
@@ -845,6 +887,16 @@ fn asm_template(
                         });
                         continue;
                     }
+                    Slot::GlobalSymbol(id) => {
+                        template.push_str(&symbol_reference(
+                            asm,
+                            family,
+                            operand,
+                            *modifier,
+                            &names.global_symbols[&id],
+                        )?);
+                        continue;
+                    }
                     Slot::Zero => {
                         template.push_str(match modifier {
                             Some('x') => "xzr",
@@ -967,31 +1019,14 @@ fn asm_template(
                         }
                     },
                     Some(ir::AsmOperandClass::Symbol) => {
-                        let allowed = if arm {
-                            matches!(modifier, None | Some('c'))
-                        } else {
-                            matches!(modifier, None | Some('c' | 'P' | 'p'))
-                                || (x86_64_att && *modifier == Some('a'))
-                        };
-                        if !allowed {
-                            return Err(unsupported_asm(format!("symbol modifier {modifier:?}")));
-                        }
-                        let ir::AsmOperandKind::Symbol(symbol) = &operand.kind else {
-                            return Err(unsupported_asm("non-symbol operand"));
-                        };
+                        template.push_str(&symbol_reference(
+                            asm,
+                            family,
+                            operand,
+                            *modifier,
+                            &format!("{{{slot}}}"),
+                        )?);
                         used[*index] = true;
-                        if modifier.is_none() && asm.dialect == Some(ir::AsmDialect::Att) {
-                            template.push('$');
-                        }
-                        template.push_str(&format!("{{{slot}}}"));
-                        if symbol.offset > 0 {
-                            template.push_str(&format!("+{}", symbol.offset));
-                        } else if symbol.offset < 0 {
-                            template.push_str(&symbol.offset.to_string());
-                        }
-                        if *modifier == Some('a') {
-                            template.push_str("(%rip)");
-                        }
                     }
                     Some(ir::AsmOperandClass::Flags(_))
                         if !x86 && !arm && *modifier == Some('w') =>
@@ -1552,6 +1587,13 @@ impl FunctionLowerer<'_, '_> {
             }
             let mut slots = Vec::new();
             for operand in &asm.operands {
+                if let (Some(ir::AsmOperandClass::Symbol), ir::AsmOperandKind::Symbol(symbol)) =
+                    (&operand.selected, &operand.kind)
+                    && self.tables.asm_global_symbols.contains_key(&symbol.binding)
+                {
+                    slots.push(Slot::GlobalSymbol(symbol.binding));
+                    continue;
+                }
                 slots.push(Slot::Positional(operands.len()));
                 operands.push(match (&operand.selected, &operand.kind) {
                     (Some(ir::AsmOperandClass::Immediate), ir::AsmOperandKind::In(value)) => {
@@ -1570,7 +1612,11 @@ impl FunctionLowerer<'_, '_> {
                 dialects.push(asm.dialect);
             }
         }
-        let mut names = AsmNames::new(&self.tables.asm_names, operands.len());
+        let mut names = AsmNames::new(
+            &self.tables.asm_names,
+            &self.tables.asm_global_symbols,
+            operands.len(),
+        );
         for (asm, slots) in asms.iter().zip(&asm_slots) {
             let template = asm_template(asm, family, slots, &[], None, &mut names)?;
             self.dependencies.named_asm_labels |=
@@ -2015,6 +2061,10 @@ impl FunctionLowerer<'_, '_> {
                     let ir::AsmOperandKind::Symbol(symbol) = &operand.kind else {
                         return Err(unsupported_asm(format!("non-symbol operand {index}")));
                     };
+                    if self.tables.asm_global_symbols.contains_key(&symbol.binding) {
+                        slots.push(Slot::GlobalSymbol(symbol.binding));
+                        continue;
+                    }
                     slots.push(Slot::Positional(operands.len()));
                     operands.push(rust::AsmOperand::Sym(self.asm_symbol(symbol)?));
                     continue;
@@ -2701,7 +2751,11 @@ impl FunctionLowerer<'_, '_> {
                 operands.len() - 1
             })
             .collect();
-        let mut names = AsmNames::new(&self.tables.asm_names, operands.len());
+        let mut names = AsmNames::new(
+            &self.tables.asm_names,
+            &self.tables.asm_global_symbols,
+            operands.len(),
+        );
         let mut template = asm_template(asm, family, &slots, &label_slots, entry, &mut names)?;
         self.dependencies.named_asm_labels |= defines_named_label(&template);
         for id in names.used {

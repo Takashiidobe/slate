@@ -6,7 +6,7 @@ use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use slate_parser::ast::Span;
 use slate_parser::files::Files;
 use slate_parser::ir::{self, BindingId, Number, PlaceKind, TypeId, ValueKind};
-use slate_parser::target_info::{TargetFamily, TargetInfo};
+use slate_parser::target_info::{TargetFamily, TargetInfo, TargetOs};
 use std::collections::{BTreeMap, BTreeSet};
 
 mod arithmetic;
@@ -86,6 +86,7 @@ struct Tables<'m> {
     statics: HashSet<BindingId>,
     constexprs: HashMap<BindingId, &'m ir::Value>,
     asm_names: HashMap<String, BindingId>,
+    asm_global_symbols: HashMap<BindingId, String>,
     register_globals: HashMap<BindingId, &'static str>,
     over_aligned: HashMap<BindingId, AlignWrapper>,
     flexible_globals: HashMap<BindingId, String>,
@@ -282,11 +283,11 @@ pub fn lower(
     Ok(lowerer.assemble())
 }
 
-fn asm_names(
-    module: &ir::Module,
+fn asm_name_entries<'m>(
+    module: &'m ir::Module,
     options: &LowerOptions,
-    statics: &[&ir::Global],
-) -> HashMap<String, BindingId> {
+    statics: &[&'m ir::Global],
+) -> Vec<(&'m String, BindingId, bool)> {
     let functions = module
         .functions
         .iter()
@@ -325,15 +326,40 @@ fn asm_names(
                 exported_elsewhere,
             )
         });
+    functions.chain(globals).collect()
+}
+
+fn asm_names(entries: &[(&String, BindingId, bool)]) -> HashMap<String, BindingId> {
     let mut names = HashMap::new();
     let mut ambiguous = HashSet::new();
-    for (name, id, exported_elsewhere) in functions.chain(globals) {
+    for &(name, id, exported_elsewhere) in entries {
         if exported_elsewhere || names.insert(name.clone(), id).is_some() {
             ambiguous.insert(name.clone());
         }
     }
     names.retain(|name, _| !ambiguous.contains(name));
     names
+}
+
+fn asm_global_symbols(
+    entries: &[(&String, BindingId, bool)],
+    target: &TargetInfo,
+) -> HashMap<BindingId, String> {
+    let prefix = match (target.os, target.family) {
+        (TargetOs::Darwin, _) | (TargetOs::Windows, TargetFamily::X86) => "_",
+        _ => "",
+    };
+    entries
+        .iter()
+        .filter(|(_, _, exported_elsewhere)| *exported_elsewhere)
+        .map(|&(name, id, _)| {
+            let symbol = match name.strip_prefix('\u{1}') {
+                Some(verbatim) => verbatim.to_string(),
+                None => format!("{prefix}{name}"),
+            };
+            (id, symbol)
+        })
+        .collect()
 }
 
 fn elf_alias_target(target: &slate_parser::target_info::TargetInfo) -> bool {
@@ -747,6 +773,7 @@ impl<'m> ModuleLowerer<'m> {
                 nested.insert(inner.function.id, inner);
             }
         }
+        let asm_entries = asm_name_entries(module, options, &statics);
         let mut bindings =
             global_names(module, files, names.values().map(|name| name.rust.as_str()));
         let static_names: HashSet<_> = statics
@@ -794,7 +821,8 @@ impl<'m> ModuleLowerer<'m> {
                     Some((global.variable.id, global.variable.initializer.as_ref()?))
                 })
                 .collect(),
-            asm_names: asm_names(module, options, &statics),
+            asm_names: asm_names(&asm_entries),
+            asm_global_symbols: asm_global_symbols(&asm_entries, &module.target),
             register_globals,
             over_aligned: HashMap::new(),
             flexible_globals: HashMap::new(),

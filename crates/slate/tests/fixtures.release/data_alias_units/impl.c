@@ -9,6 +9,12 @@ int sbox_at(int i) { return sbox[i]; }
 
 __asm__(".section .data.alias_refs,\"aw\"\n.balign 8\n.globl alias_refs\nalias_refs:\n.quad crypto_sbox\n.quad table_alias\n.previous");
 
+void emit_alias_operand_refs(void) {
+  __asm__ volatile(".pushsection .data.alias_operand_refs,\"aw\"\n.balign 8\n.globl alias_operand_refs\nalias_operand_refs:\n.quad %c0\n.quad %c1\n.popsection"
+                   :
+                   : "i"(crypto_sbox), "i"(table_alias));
+}
+
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}static sbox: [u8; 4] = [1, 2, 3, 4];
 // CHECK-EMPTY:
@@ -28,6 +34,15 @@ __asm__(".section .data.alias_refs,\"aw\"\n.balign 8\n.globl alias_refs\nalias_r
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn sbox_at(i: i32) -> i32 {
 // CHECK-NEXT:     (unsafe { sbox[i as usize] }) as i32
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: pub fn emit_alias_operand_refs() {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             ".pushsection .data.alias_operand_refs,\"aw\"\n.balign 8\n.globl alias_operand_refs\nalias_operand_refs:\n.quad crypto_sbox\n.quad table_alias\n.popsection",
+// CHECK-NEXT:             options(nostack, att_syntax)
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

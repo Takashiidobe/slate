@@ -34,3 +34,9 @@ unsigned long strlen(const char *s) {
 }
 
 __asm__(".section .data.symbol_refs,\"aw\"\n.balign 8\n.globl strlen_ref\nstrlen_ref:\n.quad strlen\n.globl memcmp_ref\nmemcmp_ref:\n.quad memcmp\n.previous");
+
+void runtime_operand_refs(void) {
+  __asm__ volatile(".pushsection .data.symbol_operand_refs,\"aw\"\n.balign 8\n.globl strlen_operand_ref\nstrlen_operand_ref:\n.quad %c0\n.globl memcmp_operand_ref\nmemcmp_operand_ref:\n.quad %c1\n.popsection"
+                   :
+                   : "i"(strlen), "i"(memcmp));
+}
