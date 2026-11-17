@@ -306,6 +306,7 @@ int main(void) {
 // CHECK-NEXT:     val: [core::simd::Simd<u8, 16>; 4],
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vaddq_u8(
 // CHECK-NEXT:     __p0: core::simd::Simd<u8, 16>,
 // CHECK-NEXT:     __p1: core::simd::Simd<u8, 16>,
@@ -314,6 +315,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vshlq_u8(
 // CHECK-NEXT:     __p0: core::simd::Simd<u8, 16>,
 // CHECK-NEXT:     __p1: core::simd::Simd<i8, 16>,
@@ -357,6 +359,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vshlq_u32(
 // CHECK-NEXT:     __p0: core::simd::Simd<u32, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<i32, 4>,
@@ -400,6 +403,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vshlq_s8(
 // CHECK-NEXT:     __p0: core::simd::Simd<i8, 16>,
 // CHECK-NEXT:     __p1: core::simd::Simd<i8, 16>,
@@ -428,6 +432,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vshlq_s32(
 // CHECK-NEXT:     __p0: core::simd::Simd<i32, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<i32, 4>,
@@ -471,6 +476,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vshlq_s16(
 // CHECK-NEXT:     __p0: core::simd::Simd<i16, 8>,
 // CHECK-NEXT:     __p1: core::simd::Simd<i16, 8>,
@@ -514,6 +520,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vshl_s32(
 // CHECK-NEXT:     __p0: core::simd::Simd<i32, 2>,
 // CHECK-NEXT:     __p1: core::simd::Simd<i32, 2>,
@@ -557,6 +564,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vqtbl1q_u8(
 // CHECK-NEXT:     __p0: core::simd::Simd<u8, 16>,
 // CHECK-NEXT:     __p1: core::simd::Simd<u8, 16>,
@@ -595,6 +603,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vqtbl1q_s8(
 // CHECK-NEXT:     __p0: core::simd::Simd<i8, 16>,
 // CHECK-NEXT:     __p1: core::simd::Simd<u8, 16>,
@@ -623,6 +632,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vqtbl1_u8(
 // CHECK-NEXT:     __p0: core::simd::Simd<u8, 16>,
 // CHECK-NEXT:     __p1: core::simd::Simd<u8, 8>,
@@ -661,6 +671,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vqtbl2q_u8(
 // CHECK-NEXT:     __p0: uint8x16x2_t,
 // CHECK-NEXT:     __p1: core::simd::Simd<u8, 16>,
@@ -706,6 +717,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vqtbl3q_u8(
 // CHECK-NEXT:     __p0: uint8x16x3_t,
 // CHECK-NEXT:     __p1: core::simd::Simd<u8, 16>,
@@ -756,6 +768,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vqtbl4q_u8(
 // CHECK-NEXT:     __p0: uint8x16x4_t,
 // CHECK-NEXT:     __p1: core::simd::Simd<u8, 16>,
@@ -812,6 +825,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vreinterpretq_u32_s32(
 // CHECK-NEXT:     __p0: core::simd::Simd<i32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<u32, 4> {
@@ -821,6 +835,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vreinterpretq_s8_u8(
 // CHECK-NEXT:     __p0: core::simd::Simd<u8, 16>,
 // CHECK-NEXT: ) -> core::simd::Simd<i8, 16> {
@@ -830,6 +845,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vreinterpretq_s64_u64(
 // CHECK-NEXT:     __p0: core::simd::Simd<u64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
@@ -1362,19 +1378,19 @@ int main(void) {
 // CHECK-NEXT:                 .write_unaligned(
 // CHECK-NEXT:                     core::simd::simd_swizzle!(
 // CHECK-NEXT:                         ([[V_18]] as * mut core::simd::Simd < f32, 4 >).read_unaligned(),
-// CHECK-NEXT:                         ([[V_18]] as * mut core::simd::Simd < f32, 4 >).add(1)
-// CHECK-NEXT:                         .read_unaligned(), [0, 2, 4, 6]
+// CHECK-NEXT:                         ([[V_18]] as * mut core::simd::Simd < f32, 4 >).wrapping_offset(1 as
+// CHECK-NEXT:                         isize).read_unaligned(), [0, 2, 4, 6]
 // CHECK-NEXT:                     ),
 // CHECK-NEXT:                 );
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             ([[V_17]] as *mut core::simd::Simd<f32, 4>)
-// CHECK-NEXT:                 .add(1)
+// CHECK-NEXT:                 .wrapping_offset(1 as isize)
 // CHECK-NEXT:                 .write_unaligned(
 // CHECK-NEXT:                     core::simd::simd_swizzle!(
 // CHECK-NEXT:                         ([[V_18]] as * mut core::simd::Simd < f32, 4 >).read_unaligned(),
-// CHECK-NEXT:                         ([[V_18]] as * mut core::simd::Simd < f32, 4 >).add(1)
-// CHECK-NEXT:                         .read_unaligned(), [1, 3, 5, 7]
+// CHECK-NEXT:                         ([[V_18]] as * mut core::simd::Simd < f32, 4 >).wrapping_offset(1 as
+// CHECK-NEXT:                         isize).read_unaligned(), [1, 3, 5, 7]
 // CHECK-NEXT:                     ),
 // CHECK-NEXT:                 );
 // CHECK-NEXT:         }
@@ -1395,21 +1411,21 @@ int main(void) {
 // CHECK-NEXT:                 .write_unaligned(
 // CHECK-NEXT:                     core::simd::simd_swizzle!(
 // CHECK-NEXT:                         ([[V_21]] as * mut core::simd::Simd < u8, 16 >).read_unaligned(),
-// CHECK-NEXT:                         ([[V_21]] as * mut core::simd::Simd < u8, 16 >).add(1)
-// CHECK-NEXT:                         .read_unaligned(), [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22,
-// CHECK-NEXT:                         24, 26, 28, 30]
+// CHECK-NEXT:                         ([[V_21]] as * mut core::simd::Simd < u8, 16 >).wrapping_offset(1 as
+// CHECK-NEXT:                         isize).read_unaligned(), [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20,
+// CHECK-NEXT:                         22, 24, 26, 28, 30]
 // CHECK-NEXT:                     ),
 // CHECK-NEXT:                 );
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             ([[V_20]] as *mut core::simd::Simd<u8, 16>)
-// CHECK-NEXT:                 .add(1)
+// CHECK-NEXT:                 .wrapping_offset(1 as isize)
 // CHECK-NEXT:                 .write_unaligned(
 // CHECK-NEXT:                     core::simd::simd_swizzle!(
 // CHECK-NEXT:                         ([[V_21]] as * mut core::simd::Simd < u8, 16 >).read_unaligned(),
-// CHECK-NEXT:                         ([[V_21]] as * mut core::simd::Simd < u8, 16 >).add(1)
-// CHECK-NEXT:                         .read_unaligned(), [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23,
-// CHECK-NEXT:                         25, 27, 29, 31]
+// CHECK-NEXT:                         ([[V_21]] as * mut core::simd::Simd < u8, 16 >).wrapping_offset(1 as
+// CHECK-NEXT:                         isize).read_unaligned(), [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21,
+// CHECK-NEXT:                         23, 25, 27, 29, 31]
 // CHECK-NEXT:                     ),
 // CHECK-NEXT:                 );
 // CHECK-NEXT:         }
@@ -1429,19 +1445,19 @@ int main(void) {
 // CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
 // CHECK-NEXT:                     ([[V_24]] as * mut core::simd::Simd < i16, 8 >).read_unaligned(), ([[V_24]]
-// CHECK-NEXT:                     as * mut core::simd::Simd < i16, 8 >).add(1).read_unaligned(), [0, 2,
-// CHECK-NEXT:                     4, 6, 8, 10, 12, 14]
+// CHECK-NEXT:                     as * mut core::simd::Simd < i16, 8 >).wrapping_offset(1 as isize)
+// CHECK-NEXT:                     .read_unaligned(), [0, 2, 4, 6, 8, 10, 12, 14]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         ([[V_23]] as *mut core::simd::Simd<i16, 8>)
-// CHECK-NEXT:             .add(1)
+// CHECK-NEXT:             .wrapping_offset(1 as isize)
 // CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
 // CHECK-NEXT:                     ([[V_24]] as * mut core::simd::Simd < i16, 8 >).read_unaligned(), ([[V_24]]
-// CHECK-NEXT:                     as * mut core::simd::Simd < i16, 8 >).add(1).read_unaligned(), [1, 3,
-// CHECK-NEXT:                     5, 7, 9, 11, 13, 15]
+// CHECK-NEXT:                     as * mut core::simd::Simd < i16, 8 >).wrapping_offset(1 as isize)
+// CHECK-NEXT:                     .read_unaligned(), [1, 3, 5, 7, 9, 11, 13, 15]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             );
 // CHECK-NEXT:     }
@@ -1772,7 +1788,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             ([[V_29]] as *mut core::simd::Simd<f32, 4>)
-// CHECK-NEXT:                 .add(1)
+// CHECK-NEXT:                 .wrapping_offset(1 as isize)
 // CHECK-NEXT:                 .write_unaligned(
 // CHECK-NEXT:                     core::simd::simd_swizzle!(
 // CHECK-NEXT:                         unsafe { core::mem::transmute::< core::simd::Simd < i8, 16 >,
@@ -1861,7 +1877,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             ([[V_7]] as *mut core::simd::Simd<u8, 16>)
-// CHECK-NEXT:                 .add(1)
+// CHECK-NEXT:                 .wrapping_offset(1 as isize)
 // CHECK-NEXT:                 .write_unaligned(
 // CHECK-NEXT:                     core::simd::simd_swizzle!(
 // CHECK-NEXT:                         unsafe { core::mem::transmute::< core::simd::Simd < i8, 16 >,
@@ -1951,7 +1967,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         ([[V_10]] as *mut core::simd::Simd<i16, 8>)
-// CHECK-NEXT:             .add(1)
+// CHECK-NEXT:             .wrapping_offset(1 as isize)
 // CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
 // CHECK-NEXT:                     unsafe { core::mem::transmute::< core::simd::Simd < i8, 16 >,
@@ -2941,7 +2957,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut idx_bytes: [u8; 16] = [
+// CHECK-NEXT: static idx_bytes: [u8; 16] = [
 // CHECK-NEXT:     0, 15, 16, 31, 32, 47, 48, 63, 64, 255, 1, 17, 33, 49, 128, 7,
 // CHECK-NEXT: ];
 // CHECK-NEXT: fn __slate_main() -> i32 {

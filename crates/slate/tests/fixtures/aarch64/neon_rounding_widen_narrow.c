@@ -313,6 +313,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vcombine_s16(
 // CHECK-NEXT:     mut __p0: core::simd::Simd<i16, 4>,
 // CHECK-NEXT:     mut __p1: core::simd::Simd<i16, 4>,
@@ -323,21 +324,25 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vget_high_u32(mut __p0: core::simd::Simd<u32, 4>) -> core::simd::Simd<u32, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<u32, 2> = core::simd::simd_swizzle!(__p0, __p0, [2, 3]);
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vget_high_f32(mut __p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f32, 2> = core::simd::simd_swizzle!(__p0, __p0, [2, 3]);
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vget_high_s32(mut __p0: core::simd::Simd<i32, 4>) -> core::simd::Simd<i32, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i32, 2> = core::simd::simd_swizzle!(__p0, __p0, [2, 3]);
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vget_high_s16(mut __p0: core::simd::Simd<i16, 8>) -> core::simd::Simd<i16, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i16, 4> = core::simd::simd_swizzle!(
 // CHECK-NEXT:         __p0, __p0, [4, 5, 6, 7]
@@ -345,21 +350,25 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vget_low_u32(mut __p0: core::simd::Simd<u32, 4>) -> core::simd::Simd<u32, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<u32, 2> = core::simd::simd_swizzle!(__p0, __p0, [0, 1]);
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vget_low_f32(mut __p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f32, 2> = core::simd::simd_swizzle!(__p0, __p0, [0, 1]);
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vget_low_s32(mut __p0: core::simd::Simd<i32, 4>) -> core::simd::Simd<i32, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i32, 2> = core::simd::simd_swizzle!(__p0, __p0, [0, 1]);
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vget_low_s16(mut __p0: core::simd::Simd<i16, 8>) -> core::simd::Simd<i16, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i16, 4> = core::simd::simd_swizzle!(
 // CHECK-NEXT:         __p0, __p0, [0, 1, 2, 3]
@@ -367,6 +376,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmovl_u8(__p0: core::simd::Simd<u8, 8>) -> core::simd::Simd<u16, 8> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<u16, 8> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -397,6 +407,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmovl_u32(__p0: core::simd::Simd<u32, 2>) -> core::simd::Simd<u64, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<u64, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -426,6 +437,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmovl_u16(__p0: core::simd::Simd<u16, 4>) -> core::simd::Simd<u32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<u32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -455,6 +467,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmovl_s8(__p0: core::simd::Simd<i8, 8>) -> core::simd::Simd<i16, 8> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i16, 8> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -479,6 +492,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmovl_s32(__p0: core::simd::Simd<i32, 2>) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i64, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -508,6 +522,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmovl_s16(__p0: core::simd::Simd<i16, 4>) -> core::simd::Simd<i32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -537,6 +552,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmovn_u32(__p0: core::simd::Simd<u32, 4>) -> core::simd::Simd<u16, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<u16, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -566,6 +582,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmovn_u64(__p0: core::simd::Simd<u64, 2>) -> core::simd::Simd<u32, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<u32, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -595,6 +612,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmovn_u16(__p0: core::simd::Simd<u16, 8>) -> core::simd::Simd<u8, 8> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<u8, 8> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -624,6 +642,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmovn_s32(__p0: core::simd::Simd<i32, 4>) -> core::simd::Simd<i16, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i16, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -653,6 +672,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmovn_s64(__p0: core::simd::Simd<i64, 2>) -> core::simd::Simd<i32, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i32, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -682,6 +702,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmovn_s16(__p0: core::simd::Simd<i16, 8>) -> core::simd::Simd<i8, 8> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i8, 8> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -706,6 +727,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmull_u8(
 // CHECK-NEXT:     __p0: core::simd::Simd<u8, 8>,
 // CHECK-NEXT:     __p1: core::simd::Simd<u8, 8>,
@@ -751,6 +773,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmull_u32(
 // CHECK-NEXT:     __p0: core::simd::Simd<u32, 2>,
 // CHECK-NEXT:     __p1: core::simd::Simd<u32, 2>,
@@ -796,6 +819,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmull_u16(
 // CHECK-NEXT:     __p0: core::simd::Simd<u16, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<u16, 4>,
@@ -841,6 +865,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmull_s8(
 // CHECK-NEXT:     __p0: core::simd::Simd<i8, 8>,
 // CHECK-NEXT:     __p1: core::simd::Simd<i8, 8>,
@@ -876,6 +901,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmull_s32(
 // CHECK-NEXT:     __p0: core::simd::Simd<i32, 2>,
 // CHECK-NEXT:     __p1: core::simd::Simd<i32, 2>,
@@ -921,6 +947,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmull_s16(
 // CHECK-NEXT:     __p0: core::simd::Simd<i16, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<i16, 4>,
@@ -966,6 +993,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vrev64_s8(mut __p0: core::simd::Simd<i8, 8>) -> core::simd::Simd<i8, 8> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i8, 8> = core::simd::simd_swizzle!(
 // CHECK-NEXT:         __p0, __p0, [7, 6, 5, 4, 3, 2, 1, 0]
@@ -973,6 +1001,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vrndq_f64(__p0: core::simd::Simd<f64, 2>) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f64, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1000,6 +1029,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vrndmq_f64(__p0: core::simd::Simd<f64, 2>) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f64, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1027,6 +1057,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vrndnq_f64(__p0: core::simd::Simd<f64, 2>) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f64, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1054,6 +1085,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vrndpq_f64(__p0: core::simd::Simd<f64, 2>) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f64, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1081,6 +1113,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vcvtaq_s32_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<i32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1108,6 +1141,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vcvtmq_s32_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<i32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1135,6 +1169,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vcvtnq_s32_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<i32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1162,6 +1197,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vcvtn_s32_f32(__p0: core::simd::Simd<f32, 2>) -> core::simd::Simd<i32, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i32, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1189,6 +1225,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vcvtnq_u32_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<u32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<u32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1216,6 +1253,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vcvtpq_u32_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<u32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<u32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1243,6 +1281,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vrndq_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1270,6 +1309,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vrnd_f32(__p0: core::simd::Simd<f32, 2>) -> core::simd::Simd<f32, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f32, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1297,6 +1337,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vrndaq_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1324,6 +1365,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vrndiq_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1351,6 +1393,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vrndmq_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1378,6 +1421,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vrndnq_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1405,6 +1449,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vrndn_f32(__p0: core::simd::Simd<f32, 2>) -> core::simd::Simd<f32, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f32, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1432,6 +1477,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vrndpq_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1459,6 +1505,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vrndxq_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1486,6 +1533,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vcvtmq_s64_f64(__p0: core::simd::Simd<f64, 2>) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i64, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1513,6 +1561,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vcvtnq_s64_f64(__p0: core::simd::Simd<f64, 2>) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i64, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1540,6 +1589,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vcvtnq_u64_f64(__p0: core::simd::Simd<f64, 2>) -> core::simd::Simd<u64, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<u64, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1567,6 +1617,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmovn_high_s32(
 // CHECK-NEXT:     __p0: core::simd::Simd<i16, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<i32, 4>,
@@ -1575,6 +1626,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmull_high_u32(
 // CHECK-NEXT:     __p0: core::simd::Simd<u32, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<u32, 4>,
@@ -1585,6 +1637,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vreinterpretq_u16_s16(
 // CHECK-NEXT:     __p0: core::simd::Simd<i16, 8>,
 // CHECK-NEXT: ) -> core::simd::Simd<u16, 8> {

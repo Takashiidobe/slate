@@ -370,6 +370,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vabsq_s8(__p0: core::simd::Simd<i8, 16>) -> core::simd::Simd<i8, 16> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i8, 16> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -387,6 +388,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vabsq_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -414,6 +416,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vabsq_s32(__p0: core::simd::Simd<i32, 4>) -> core::simd::Simd<i32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -441,6 +444,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vbslq_u8(
 // CHECK-NEXT:     __p0: core::simd::Simd<u8, 16>,
 // CHECK-NEXT:     __p1: core::simd::Simd<u8, 16>,
@@ -480,6 +484,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vbslq_f32(
 // CHECK-NEXT:     __p0: core::simd::Simd<u32, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<f32, 4>,
@@ -519,6 +524,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vcagtq_f32(
 // CHECK-NEXT:     __p0: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<f32, 4>,
@@ -562,6 +568,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxq_u16(
 // CHECK-NEXT:     __p0: core::simd::Simd<u16, 8>,
 // CHECK-NEXT:     __p1: core::simd::Simd<u16, 8>,
@@ -605,6 +612,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxq_f32(
 // CHECK-NEXT:     __p0: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<f32, 4>,
@@ -648,6 +656,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxq_s32(
 // CHECK-NEXT:     __p0: core::simd::Simd<i32, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<i32, 4>,
@@ -692,6 +701,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminq_u32(
 // CHECK-NEXT:     __p0: core::simd::Simd<u32, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<u32, 4>,
@@ -735,6 +745,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminq_s8(
 // CHECK-NEXT:     __p0: core::simd::Simd<i8, 16>,
 // CHECK-NEXT:     __p1: core::simd::Simd<i8, 16>,
@@ -763,6 +774,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vqaddq_u8(
 // CHECK-NEXT:     __p0: core::simd::Simd<u8, 16>,
 // CHECK-NEXT:     __p1: core::simd::Simd<u8, 16>,
@@ -806,6 +818,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vqaddq_u32(
 // CHECK-NEXT:     __p0: core::simd::Simd<u32, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<u32, 4>,
@@ -849,6 +862,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vqaddq_s8(
 // CHECK-NEXT:     __p0: core::simd::Simd<i8, 16>,
 // CHECK-NEXT:     __p1: core::simd::Simd<i8, 16>,
@@ -877,6 +891,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vqsubq_u64(
 // CHECK-NEXT:     __p0: core::simd::Simd<u64, 2>,
 // CHECK-NEXT:     __p1: core::simd::Simd<u64, 2>,
@@ -920,6 +935,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vqsubq_s16(
 // CHECK-NEXT:     __p0: core::simd::Simd<i16, 8>,
 // CHECK-NEXT:     __p1: core::simd::Simd<i16, 8>,
@@ -963,6 +979,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxnmq_f64(
 // CHECK-NEXT:     __p0: core::simd::Simd<f64, 2>,
 // CHECK-NEXT:     __p1: core::simd::Simd<f64, 2>,
@@ -1006,6 +1023,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminnmq_f64(
 // CHECK-NEXT:     __p0: core::simd::Simd<f64, 2>,
 // CHECK-NEXT:     __p1: core::simd::Simd<f64, 2>,
@@ -1049,6 +1067,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxnmq_f32(
 // CHECK-NEXT:     __p0: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<f32, 4>,
@@ -1092,6 +1111,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminnmq_f32(
 // CHECK-NEXT:     __p0: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<f32, 4>,
@@ -1135,6 +1155,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vfmaq_f32(
 // CHECK-NEXT:     __p0: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     __p1: core::simd::Simd<f32, 4>,
@@ -1190,6 +1211,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vabsq_f64(__p0: core::simd::Simd<f64, 2>) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f64, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1217,6 +1239,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vaddlvq_u8(__p0: core::simd::Simd<u8, 16>) -> u16 {
 // CHECK-NEXT:     let __ret: u16 = (unsafe {
 // CHECK-NEXT:         __slate_intrinsic_913ceccafb28254c(core::simd::num::SimdUint::cast::<u16>(__p0))
@@ -1224,6 +1247,7 @@ int main(void) {
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vaddlvq_u16(__p0: core::simd::Simd<u16, 8>) -> u32 {
 // CHECK-NEXT:     let __ret: u32 = (unsafe {
 // CHECK-NEXT:         __slate_intrinsic_1289b355d60cd71c(core::simd::num::SimdUint::cast::<u32>(__p0))
@@ -1231,31 +1255,37 @@ int main(void) {
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vaddvq_u32(__p0: core::simd::Simd<u32, 4>) -> u32 {
 // CHECK-NEXT:     let __ret: u32 = (unsafe { __slate_intrinsic_2f1d539bf793407f(__p0) }) as u32;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vaddvq_u64(__p0: core::simd::Simd<u64, 2>) -> u64 {
 // CHECK-NEXT:     let __ret: u64 = (unsafe { __slate_intrinsic_2edab781d56c3c29(__p0) }) as u64;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vaddvq_u16(__p0: core::simd::Simd<u16, 8>) -> u16 {
 // CHECK-NEXT:     let __ret: u16 = (unsafe { __slate_intrinsic_dd4a165081cac072(__p0) }) as u16;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vaddvq_f64(__p0: core::simd::Simd<f64, 2>) -> f64 {
 // CHECK-NEXT:     let __ret: f64 = (unsafe { __slate_intrinsic_116292d1f1842b18(__p0) }) as f64;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vaddvq_f32(__p0: core::simd::Simd<f32, 4>) -> f32 {
 // CHECK-NEXT:     let __ret: f32 = (unsafe { __slate_intrinsic_e035389aa3b494cd(__p0) }) as f32;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vcagtq_f64(
 // CHECK-NEXT:     __p0: core::simd::Simd<f64, 2>,
 // CHECK-NEXT:     __p1: core::simd::Simd<f64, 2>,
@@ -1299,6 +1329,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vfmaq_f64(
 // CHECK-NEXT:     __p0: core::simd::Simd<f64, 2>,
 // CHECK-NEXT:     __p1: core::simd::Simd<f64, 2>,
@@ -1354,56 +1385,67 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxnmvq_f64(__p0: core::simd::Simd<f64, 2>) -> f64 {
 // CHECK-NEXT:     let __ret: f64 = (unsafe { __slate_intrinsic_315618d5a2c41b2d(__p0) }) as f64;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxnmvq_f32(__p0: core::simd::Simd<f32, 4>) -> f32 {
 // CHECK-NEXT:     let __ret: f32 = (unsafe { __slate_intrinsic_1e45a6a34b0154be(__p0) }) as f32;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxvq_u8(__p0: core::simd::Simd<u8, 16>) -> u8 {
 // CHECK-NEXT:     let __ret: u8 = (unsafe { __slate_intrinsic_6960035b61849aa2(__p0) }) as u8;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxvq_u32(__p0: core::simd::Simd<u32, 4>) -> u32 {
 // CHECK-NEXT:     let __ret: u32 = (unsafe { __slate_intrinsic_29954df4ca6da281(__p0) }) as u32;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxvq_u16(__p0: core::simd::Simd<u16, 8>) -> u16 {
 // CHECK-NEXT:     let __ret: u16 = (unsafe { __slate_intrinsic_d1e6a39bbe218dbc(__p0) }) as u16;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxvq_s8(__p0: core::simd::Simd<i8, 16>) -> i8 {
 // CHECK-NEXT:     let __ret: i8 = (unsafe { __slate_intrinsic_f97cf353485dbff4(__p0) }) as i8;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxvq_f64(__p0: core::simd::Simd<f64, 2>) -> f64 {
 // CHECK-NEXT:     let __ret: f64 = (unsafe { __slate_intrinsic_3103a600ad0fa3a4(__p0) }) as f64;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxvq_f32(__p0: core::simd::Simd<f32, 4>) -> f32 {
 // CHECK-NEXT:     let __ret: f32 = (unsafe { __slate_intrinsic_2204a14738b4b36a(__p0) }) as f32;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxvq_s32(__p0: core::simd::Simd<i32, 4>) -> i32 {
 // CHECK-NEXT:     let __ret: i32 = (unsafe { __slate_intrinsic_9a56b33d8f4248b0(__p0) }) as i32;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vmaxvq_s16(__p0: core::simd::Simd<i16, 8>) -> i16 {
 // CHECK-NEXT:     let __ret: i16 = (unsafe { __slate_intrinsic_81a13871527c628b(__p0) }) as i16;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminq_f64(
 // CHECK-NEXT:     __p0: core::simd::Simd<f64, 2>,
 // CHECK-NEXT:     __p1: core::simd::Simd<f64, 2>,
@@ -1447,56 +1489,67 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminnmvq_f64(__p0: core::simd::Simd<f64, 2>) -> f64 {
 // CHECK-NEXT:     let __ret: f64 = (unsafe { __slate_intrinsic_2a596a503c082fd7(__p0) }) as f64;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminnmvq_f32(__p0: core::simd::Simd<f32, 4>) -> f32 {
 // CHECK-NEXT:     let __ret: f32 = (unsafe { __slate_intrinsic_242d01703380673e(__p0) }) as f32;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminvq_u8(__p0: core::simd::Simd<u8, 16>) -> u8 {
 // CHECK-NEXT:     let __ret: u8 = (unsafe { __slate_intrinsic_85398d715a72c131(__p0) }) as u8;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminvq_u32(__p0: core::simd::Simd<u32, 4>) -> u32 {
 // CHECK-NEXT:     let __ret: u32 = (unsafe { __slate_intrinsic_fd617c98b499a8ae(__p0) }) as u32;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminvq_u16(__p0: core::simd::Simd<u16, 8>) -> u16 {
 // CHECK-NEXT:     let __ret: u16 = (unsafe { __slate_intrinsic_ce0ee746dd35708c(__p0) }) as u16;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminvq_s8(__p0: core::simd::Simd<i8, 16>) -> i8 {
 // CHECK-NEXT:     let __ret: i8 = (unsafe { __slate_intrinsic_95a0a4e7264639a0(__p0) }) as i8;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminvq_f64(__p0: core::simd::Simd<f64, 2>) -> f64 {
 // CHECK-NEXT:     let __ret: f64 = (unsafe { __slate_intrinsic_5b3640b060d44082(__p0) }) as f64;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminvq_f32(__p0: core::simd::Simd<f32, 4>) -> f32 {
 // CHECK-NEXT:     let __ret: f32 = (unsafe { __slate_intrinsic_e11ba547017d5dc7(__p0) }) as f32;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminvq_s32(__p0: core::simd::Simd<i32, 4>) -> i32 {
 // CHECK-NEXT:     let __ret: i32 = (unsafe { __slate_intrinsic_c5bcd0d7d8d03b90(__p0) }) as i32;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminvq_s16(__p0: core::simd::Simd<i16, 8>) -> i16 {
 // CHECK-NEXT:     let __ret: i16 = (unsafe { __slate_intrinsic_3fe3344f40e10f80(__p0) }) as i16;
 // CHECK-NEXT:     __ret
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vreinterpretq_u8_s8(
 // CHECK-NEXT:     __p0: core::simd::Simd<i8, 16>,
 // CHECK-NEXT: ) -> core::simd::Simd<u8, 16> {
@@ -1506,6 +1559,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vreinterpretq_s64_u64(
 // CHECK-NEXT:     __p0: core::simd::Simd<u64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
@@ -1515,6 +1569,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vsqrtq_f64(__p0: core::simd::Simd<f64, 2>) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f64, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<
@@ -1542,6 +1597,7 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-NEXT: #[target_feature(enable = "neon")]
+// CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vsqrtq_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<

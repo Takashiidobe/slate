@@ -259,7 +259,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (minus as i32) * 10 + (nonzero as i32)
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut pairs: {{\[\[}}i32; 2]; 8] = [
+// CHECK-NEXT: static pairs: {{\[\[}}i32; 2]; 8] = [
 // CHECK-NEXT:     [5, 5],
 // CHECK-NEXT:     [9, 4],
 // CHECK-NEXT:     [4, 9],

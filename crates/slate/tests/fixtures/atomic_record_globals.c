@@ -256,6 +256,7 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign4<T> {}
 // CHECK-NEXT: static mut small: __SlateAlign4<Small> = __SlateAlign4(unsafe { core::mem::zeroed() });
 // CHECK-NEXT: static mut large: Large = unsafe { core::mem::zeroed() };
 // CHECK-NEXT: static mut holder: Holder = unsafe { core::mem::zeroed() };

@@ -118,7 +118,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut message: [u8; 16] = [
+// CHECK-NEXT: static message: [u8; 16] = [
 // CHECK-NEXT:     104, 101, 108, 108, 111, 32, 102, 114, 111, 109, 32, 115, 118, 99, 10, 0,
 // CHECK-NEXT: ];
 // CHECK-NEXT: #[unsafe(no_mangle)]
