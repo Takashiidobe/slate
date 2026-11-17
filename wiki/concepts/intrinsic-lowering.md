@@ -1,7 +1,6 @@
 # Intrinsic lowering
 
 <!-- toc -->
-
 - [Catalog](#catalog)
 - [Frontend](#frontend)
 - [Limits](#limits)

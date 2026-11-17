@@ -1,7 +1,6 @@
 # Differential fixtures
 
 <!-- toc -->
-
 - [Suites](#suites)
   - [Build-only fixtures](#build-only-fixtures)
   - [Targets](#targets)

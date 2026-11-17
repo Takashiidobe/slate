@@ -1,9 +1,9 @@
 # AST Spec
 
 <!-- toc -->
-
 - [Pipeline and responsibilities](#pipeline-and-responsibilities)
-- [Parser input and name environment](#parser-input-and-name-environment)
+- [Parser input and name
+  environment](#parser-input-and-name-environment)
 - [Invariants](#invariants)
 - [Locations and provenance](#locations-and-provenance)
 - [Translation unit](#translation-unit)
@@ -25,9 +25,11 @@
 - [Literals](#literals)
 - [Initializers](#initializers)
 - [Attributes and asm](#attributes-and-asm)
-- [Calling conventions and `__declspec`](#calling-conventions-and-__declspec)
+- [Calling conventions and
+  `__declspec`](#calling-conventions-and-__declspec)
 - [Early validation](#early-validation)
-- [Post-C89 constructs in older modes](#post-c89-constructs-in-older-modes)
+- [Post-C89 constructs in older
+  modes](#post-c89-constructs-in-older-modes)
 - [Migration](#migration)
 <!-- /toc -->
 

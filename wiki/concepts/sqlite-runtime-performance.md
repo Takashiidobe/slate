@@ -1,12 +1,13 @@
 # SQLite runtime performance
 
 <!-- toc -->
-
 - [Experiment](#experiment)
-- [Why statement dispatch was expensive](#why-statement-dispatch-was-expensive)
+- [Why statement dispatch was
+  expensive](#why-statement-dispatch-was-expensive)
 - [Basic-block coalescing](#basic-block-coalescing)
 - [Structured control flow](#structured-control-flow)
-- [What the instruction measurements mean](#what-the-instruction-measurements-mean)
+- [What the instruction measurements
+  mean](#what-the-instruction-measurements-mean)
 - [Reproduce](#reproduce)
 <!-- /toc -->
 

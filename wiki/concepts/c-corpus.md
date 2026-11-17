@@ -1,7 +1,6 @@
 # C corpus
 
 <!-- toc -->
-
 - [Layout](#layout)
 - [Setup](#setup)
 - [Recipes](#recipes)
@@ -18,6 +17,9 @@
 `~/c-corpus` (override with `SLATE_CORPUS`) holds real-world C projects as git
 checkouts. The goal: every TU that `clang -fsyntax-only` accepts goes through
 `slate-parser ir --flavor=clang` on `x86_64-unknown-linux-gnu`.
+
+To add a project or tests to `tools/corpus/e2e.py`, start with
+[Adding corpus tests](corpus-e2e.md).
 
 ## Layout
 

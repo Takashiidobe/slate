@@ -1,15 +1,16 @@
 # C type layer
 
 <!-- toc -->
-
 - [Representation](#representation)
 - [Rendering](#rendering)
 - [Layout](#layout)
 - [Typed lowering](#typed-lowering)
-- [Compatibility and composite types](#compatibility-and-composite-types)
+- [Compatibility and composite
+  types](#compatibility-and-composite-types)
 - [Conversions](#conversions)
 - [Redeclaration merging](#redeclaration-merging)
-- [Invariant: no IR type decides C identity](#invariant-no-ir-type-decides-c-identity)
+- [Invariant: no IR type decides C
+  identity](#invariant-no-ir-type-decides-c-identity)
 - [Flavor-dependent rules](#flavor-dependent-rules)
 - [Adding a rule](#adding-a-rule)
 <!-- /toc -->

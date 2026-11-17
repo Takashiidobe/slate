@@ -1,7 +1,6 @@
 # Diagnostic severity
 
 <!-- toc -->
-
 - [Severity resolution](#severity-resolution)
 - [Warnings](#warnings)
 - [Preprocessor warnings](#preprocessor-warnings)

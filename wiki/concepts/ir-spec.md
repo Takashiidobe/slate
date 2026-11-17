@@ -1,7 +1,6 @@
 # IR Spec
 
 <!-- toc -->
-
 - [Rules](#rules)
 - [Subpages](#subpages)
 - [Worked example](#worked-example)

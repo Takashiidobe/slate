@@ -1,7 +1,6 @@
 # IR-to-Rust lowering
 
 <!-- toc -->
-
 - [Types and storage](#types-and-storage)
 - [Atomics](#atomics)
 - [Control flow](#control-flow)

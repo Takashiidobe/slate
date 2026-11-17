@@ -1,10 +1,10 @@
 # long double (f80) representation
 
 <!-- toc -->
-
 - [Slate frontend](#slate-frontend)
 - [Why not just `f64`](#why-not-just-f64)
-- [ABI varies by target — `TargetInfo::long_double`](#abi-varies-by-target--targetinfolong_double)
+- [ABI varies by target —
+  `TargetInfo::long_double`](#abi-varies-by-target--targetinfolong_double)
 - [Integration points](#integration-points)
 - [History](#history)
 <!-- /toc -->

@@ -1,9 +1,9 @@
 # Builtins
 
 <!-- toc -->
-
 - [Compile-time queries and types](#compile-time-queries-and-types)
-- [Source location and function names](#source-location-and-function-names)
+- [Source location and function
+  names](#source-location-and-function-names)
 - [Integer arithmetic and bits](#integer-arithmetic-and-bits)
 - [Floating point](#floating-point)
 - [Control flow and hints](#control-flow-and-hints)
@@ -11,7 +11,8 @@
 - [Variadic arguments](#variadic-arguments)
 - [Vector builtin expansion](#vector-builtin-expansion)
 - [Atomic operations](#atomic-operations)
-- [Library and target intrinsic calls](#library-and-target-intrinsic-calls)
+- [Library and target intrinsic
+  calls](#library-and-target-intrinsic-calls)
 - [alloca](#alloca)
 <!-- /toc -->
 

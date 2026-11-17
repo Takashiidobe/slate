@@ -1,7 +1,6 @@
 # Open IR design
 
 <!-- toc -->
-
 - [Information ownership](#information-ownership)
 - [Macro provenance](#macro-provenance)
 - [String literal views](#string-literal-views)

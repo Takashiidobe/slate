@@ -1,9 +1,9 @@
 # Fixture layout
 
 <!-- toc -->
-
 - [Path](#path)
-- [Directives to write before generating](#directives-to-write-before-generating)
+- [Directives to write before
+  generating](#directives-to-write-before-generating)
 - [Ids in generated expectations](#ids-in-generated-expectations)
 - [Matcher](#matcher)
 <!-- /toc -->

@@ -1,7 +1,6 @@
 # Blocks lowering
 
 <!-- toc -->
-
 - [Representation](#representation)
 - [Block literals](#block-literals)
 - [Calls](#calls)

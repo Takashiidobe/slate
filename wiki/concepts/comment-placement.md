@@ -1,14 +1,14 @@
 # Comment placement
 
 <!-- toc -->
-
 - [Problem](#problem)
 - [Ownership model](#ownership-model)
 - [Taxonomy](#taxonomy)
   - [Owned](#owned)
   - [Detached](#detached)
   - [Dropped](#dropped)
-- [Migration when an owner disappears](#migration-when-an-owner-disappears)
+- [Migration when an owner
+  disappears](#migration-when-an-owner-disappears)
 - [Doc vs regular comments](#doc-vs-regular-comments)
   - [Text normalization](#text-normalization)
   - [Rendering status](#rendering-status)

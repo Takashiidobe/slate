@@ -1,14 +1,14 @@
 # IR pipeline, dumps, and pruning
 
 <!-- toc -->
-
 - [Placement](#placement)
 - [Failure kinds](#failure-kinds)
 - [Node identity and metadata](#node-identity-and-metadata)
   - [C type metadata](#c-type-metadata)
   - [Macro invocations](#macro-invocations)
 - [Dumps and CLI](#dumps-and-cli)
-- [Constant evaluation is required, not an optimization](#constant-evaluation-is-required-not-an-optimization)
+- [Constant evaluation is required, not an
+  optimization](#constant-evaluation-is-required-not-an-optimization)
 - [Name-resolution scopes](#name-resolution-scopes)
 - [Reachability pruning](#reachability-pruning)
 <!-- /toc -->

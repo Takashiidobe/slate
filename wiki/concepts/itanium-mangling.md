@@ -1,7 +1,6 @@
 # Itanium mangling of overloadable functions
 
 <!-- toc -->
-
 - [Status](#status)
 - [Why](#why)
 - [Mangler](#mangler)

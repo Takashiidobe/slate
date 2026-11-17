@@ -1,7 +1,6 @@
 # MSVC oracle
 
 <!-- toc -->
-
 - [Install](#install)
 - [What it can answer](#what-it-can-answer)
 - [Corpus sweep](#corpus-sweep)

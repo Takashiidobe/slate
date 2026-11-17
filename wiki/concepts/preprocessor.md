@@ -1,7 +1,6 @@
 # Preprocessor
 
 <!-- toc -->
-
 - [Pipeline](#pipeline)
 - [Predefines](#predefines)
 - [Includes](#includes)

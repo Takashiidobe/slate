@@ -1,7 +1,6 @@
 # Rust rewrite engine
 
 <!-- toc -->
-
 - [Ownership](#ownership)
 - [Scheduling and facts](#scheduling-and-facts)
 - [Control-flow rewrites](#control-flow-rewrites)

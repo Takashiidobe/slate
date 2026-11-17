@@ -1,7 +1,6 @@
 # Inline asm parsing
 
 <!-- toc -->
-
 - [Recognition](#recognition)
 - [GNU asm: parser](#gnu-asm-parser)
 - [GNU asm: sema](#gnu-asm-sema)

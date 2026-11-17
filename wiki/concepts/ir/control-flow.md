@@ -1,7 +1,6 @@
 # Control flow and side effects
 
 <!-- toc -->
-
 - [Function bodies](#function-bodies)
 - [Structured control flow](#structured-control-flow)
   - [Counted loops](#counted-loops)

@@ -1,7 +1,6 @@
 # OpenMP lowering
 
 <!-- toc -->
-
 - [Runtimes](#runtimes)
 - [Parallel regions](#parallel-regions)
 - [Data sharing](#data-sharing)

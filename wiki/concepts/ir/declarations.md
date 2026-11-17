@@ -1,14 +1,14 @@
 # Declarations, linkage, and attributes
 
 <!-- toc -->
-
 - [Globals, statics, and linkage](#globals-statics-and-linkage)
 - [Redeclaration conflicts](#redeclaration-conflicts)
 - [Implicit declarations](#implicit-declarations)
 - [Overloadable functions](#overloadable-functions)
 - [Symbol attributes](#symbol-attributes)
 - [Object properties](#object-properties)
-- [Declaration attribute classification](#declaration-attribute-classification)
+- [Declaration attribute
+  classification](#declaration-attribute-classification)
 - [Function semantics](#function-semantics)
 <!-- /toc -->
 

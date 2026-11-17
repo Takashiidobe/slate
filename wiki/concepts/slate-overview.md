@@ -1,7 +1,6 @@
 # Slate overview
 
 <!-- toc -->
-
 - [Pipeline](#pipeline)
 - [Use](#use)
 - [Coverage and failures](#coverage-and-failures)

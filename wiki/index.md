@@ -53,6 +53,7 @@ rewrite and fixture records, with the source revision for the former frontend.
 - [Compiler argument rules](concepts/compiler-arg-rules.md)
 - [Adding a target](concepts/adding-a-target.md)
 - [C corpus](concepts/c-corpus.md)
+  - [Adding corpus tests](concepts/corpus-e2e.md)
 - [Configuration threading](concepts/configuration-threading.md)
 - [Diagnostic severity](concepts/diagnostic-severity.md)
 - [MSVC oracle](concepts/msvc-oracle.md)

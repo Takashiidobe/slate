@@ -1,7 +1,6 @@
 # Type Family Touchpoints
 
 <!-- toc -->
-
 - [Layers](#layers)
 - [Caught by the compiler](#caught-by-the-compiler)
 - [Not caught by the compiler](#not-caught-by-the-compiler)

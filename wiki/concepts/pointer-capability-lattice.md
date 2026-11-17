@@ -1,11 +1,11 @@
 # Pointer capability lattice
 
 <!-- toc -->
-
 - [The tables](#the-tables)
 - [Why not SSA](#why-not-ssa)
 - [Monotonicity](#monotonicity)
-- [Two-phase design: interproc solve, then local consumption](#two-phase-design-interproc-solve-then-local-consumption)
+- [Two-phase design: interproc solve, then local
+  consumption](#two-phase-design-interproc-solve-then-local-consumption)
 - [Interprocedural propagation](#interprocedural-propagation)
 - [Status](#status)
 - [Related](#related)

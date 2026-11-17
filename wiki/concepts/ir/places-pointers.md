@@ -1,7 +1,6 @@
 # Places, pointers, and qualified access
 
 <!-- toc -->
-
 - [Places and values](#places-and-values)
   - [Members and bit-fields](#members-and-bit-fields)
 - [Pointer arithmetic](#pointer-arithmetic)

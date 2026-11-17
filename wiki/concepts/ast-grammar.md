@@ -1,7 +1,6 @@
 # AST Grammar
 
 <!-- toc -->
-
 - [Notation](#notation)
 - [Lexical](#lexical)
 - [Dump](#dump)

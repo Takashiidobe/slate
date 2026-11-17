@@ -1,7 +1,6 @@
 # Inline asm
 
 <!-- toc -->
-
 - [`Statement::Asm`](#statementasm)
 - [Operand kinds and directions](#operand-kinds-and-directions)
 - [Alternative selection](#alternative-selection)
