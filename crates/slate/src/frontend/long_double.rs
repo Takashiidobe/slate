@@ -254,6 +254,7 @@ fn f80_extern_decl(name: &str, params: Vec<FnParam>, ret: Option<Type>) -> Exter
         params,
         variadic: false,
         ret,
+        noreturn: false,
         safe: true,
     }
 }

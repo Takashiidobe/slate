@@ -276,6 +276,7 @@ fn ato_int_prelude(name: &str, ret: Prim, target: &slate_parser::target_info::Ta
             },
         }],
         ret: Some(Type::Prim(ret)),
+        noreturn: false,
         body,
     })
 }

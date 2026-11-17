@@ -1382,7 +1382,13 @@ fn translate_slate_project(
 
 const SHARED_MACROS_MODULE: &str = "__slate_macros";
 
-fn declares_c_panic(program: &rust_ast::Program) -> bool {
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+enum CPanic {
+    Returns,
+    Noreturn,
+}
+
+fn c_panic(program: &rust_ast::Program) -> Option<CPanic> {
     let takes_message = |params: &[rust_ast::FnParam]| {
         matches!(
             params.first(),
@@ -1392,17 +1398,32 @@ fn declares_c_panic(program: &rust_ast::Program) -> bool {
             })
         )
     };
-    program.items.iter().any(|item| match item {
-        rust_ast::Item::Fn(function) => function.name == "panic" && takes_message(&function.params),
-        rust_ast::Item::ExternBlock { abi, decls } => {
-            abi != "llvm-intrinsic"
-                && decls.iter().any(|decl| {
-                    matches!(decl, rust_ast::ExternDecl::Fn(function)
-                        if function.name == "panic" && takes_message(&function.params))
+    let kind = |noreturn: bool| match noreturn {
+        true => CPanic::Noreturn,
+        false => CPanic::Returns,
+    };
+    program
+        .items
+        .iter()
+        .filter_map(|item| match item {
+            rust_ast::Item::Fn(function)
+                if function.name == "panic" && takes_message(&function.params) =>
+            {
+                Some(kind(function.noreturn))
+            }
+            rust_ast::Item::ExternBlock { abi, decls } if abi != "llvm-intrinsic" => {
+                decls.iter().find_map(|decl| match decl {
+                    rust_ast::ExternDecl::Fn(function)
+                        if function.name == "panic" && takes_message(&function.params) =>
+                    {
+                        Some(kind(function.noreturn))
+                    }
+                    _ => None,
                 })
-        }
-        _ => false,
-    })
+            }
+            _ => None,
+        })
+        .max()
 }
 
 #[expect(
@@ -1547,10 +1568,12 @@ fn write_project_crate(
     let panic_handler = freestanding.then(|| {
         let source = match programs
             .iter()
-            .any(|(_, program)| declares_c_panic(program))
+            .filter_map(|(_, program)| c_panic(program))
+            .max()
         {
-            true => include_str!("frontend/support/panic_c.rs"),
-            false => include_str!("frontend/support/panic_loop.rs"),
+            Some(CPanic::Noreturn) => include_str!("frontend/support/panic_c_noreturn.rs"),
+            Some(CPanic::Returns) => include_str!("frontend/support/panic_c.rs"),
+            None => include_str!("frontend/support/panic_loop.rs"),
         };
         rust_ast::Item::SupportModule(rust_ast::SupportModule {
             name: rust_ast::Ident::new("__slate_panic"),

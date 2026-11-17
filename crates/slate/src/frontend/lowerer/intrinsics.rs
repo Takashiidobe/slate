@@ -407,6 +407,7 @@ impl FunctionLowerer<'_, '_> {
                 params: fixed,
                 variadic: false,
                 ret: (shim_types[0] != rust::Type::Unit).then(|| shim_types[0].clone()),
+                noreturn: false,
                 safe: false,
             });
         let call = Expr::Unsafe(Box::new(rust::Block {

@@ -485,6 +485,7 @@ fn fflush_extern_decl() -> ExternFnDecl {
         }],
         variadic: false,
         ret: Some(Type::Prim(crate::backend::rust_ast::Prim::I32)),
+        noreturn: false,
         safe: false,
     }
 }

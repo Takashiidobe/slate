@@ -409,6 +409,7 @@ impl FunctionLowerer<'_, '_> {
                 params: Vec::new(),
                 variadic: false,
                 ret: None,
+                noreturn: false,
                 safe: false,
             });
         Ok(Expr::Cast {

@@ -944,6 +944,46 @@ fn freestanding_main_links_as_an_ordinary_symbol() {
     );
 }
 
+#[test]
+fn freestanding_panic_handler_ends_on_a_noreturn_c_panic() {
+    for (work, units) in [
+        (
+            "noreturn-panic-caller",
+            &[
+                ("noreturn_panic_definition.c", KERNEL_FLAGS),
+                ("noreturn_panic_caller.c", KERNEL_FLAGS),
+            ][..],
+        ),
+        (
+            "noreturn-panic-definition",
+            &[("noreturn_panic_definition.c", KERNEL_FLAGS)][..],
+        ),
+    ] {
+        let (crate_dir, output) =
+            translate_arch_mode_project_with(work, units, &["--crate-type", "staticlib"]);
+        assert!(
+            output.status.success(),
+            "{work}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let root = std::fs::read_to_string(crate_dir.join("src/lib.rs")).expect("read lib.rs");
+        let handler = &root[root
+            .find("mod __slate_panic")
+            .expect("panic handler module")..];
+        assert!(
+            handler.contains("fn panic(fmt: *const core::ffi::c_char, ...) -> !;")
+                && !handler.contains("loop {}"),
+            "{work}: {handler}"
+        );
+        let build = cargo_in(&crate_dir, "build");
+        assert!(
+            build.status.success(),
+            "{work}: {}",
+            String::from_utf8_lossy(&build.stderr)
+        );
+    }
+}
+
 fn matrix_fixture(name: &str) -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures.matrix")

@@ -311,6 +311,7 @@ impl FunctionLowerer<'_, '_> {
                     .collect(),
                 variadic: false,
                 ret: (!matches!(ret, rust::Type::Unit)).then_some(ret),
+                noreturn: false,
                 safe: false,
             });
     }

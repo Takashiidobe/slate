@@ -450,6 +450,7 @@ impl FunctionLowerer<'_, '_> {
             name: name.into(),
             params,
             ret,
+            noreturn: false,
             body: statements,
         }))
     }

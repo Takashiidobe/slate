@@ -640,6 +640,28 @@ fn jump(index: usize) -> Vec<Stmt> {
 }
 
 impl FunctionLowerer<'_, '_> {
+    fn starts_unreachable(&self, block: &[Node]) -> bool {
+        block
+            .iter()
+            .find(|node| {
+                !matches!(node, Node::Statement(statement, _)
+                    if matches!(statement.value, ir::Statement::Comment(_)))
+            })
+            .is_some_and(|node| {
+                matches!(node, Node::Statement(statement, _)
+                    if matches!(&statement.value, ir::Statement::Expression(ir::Value {
+                        node: Span {
+                            value: ValueKind::Call {
+                                callee: ir::Callee::Direct(id),
+                                ..
+                            },
+                            ..
+                        },
+                        ..
+                    }) if self.tables.builtin_name(*id) == Some("__builtin_unreachable")))
+            })
+    }
+
     fn dispatch_unreachable(&self) -> Stmt {
         Stmt::Expr(if self.tables.runtime.has_std() {
             Expr::Macro {
@@ -853,6 +875,20 @@ impl FunctionLowerer<'_, '_> {
         for variable in &cleanups {
             lowered.extend(self.dispatch_cleanup_guard(variable)?);
         }
+        let unreachable_blocks: HashSet<usize> = blocks
+            .iter()
+            .enumerate()
+            .filter(|(_, block)| self.starts_unreachable(block))
+            .map(|(index, _)| index)
+            .collect();
+        let jump = |index: usize| match unreachable_blocks.contains(&index) {
+            true => vec![Stmt::Expr(Expr::Call {
+                func: Box::new(Expr::Var("core::hint::unreachable_unchecked".into())),
+                args: Vec::new(),
+                binding: CallBinding::Generated,
+            })],
+            false => jump(index),
+        };
         let mut arms = Vec::new();
         let mut slot_comments = HashMap::<BindingId, Vec<rust::Comment>>::new();
         for (index, block) in blocks.into_iter().enumerate() {

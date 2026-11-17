@@ -136,6 +136,7 @@ pub(super) fn runtime_export(
         name: format!("__slate_export_{}", definition.name),
         params,
         ret,
+        noreturn: false,
         body,
     })
 }
@@ -247,6 +248,7 @@ pub(super) fn main_wrapper(arity: usize, huge_stack: bool, returns_void: bool) -
         name: "main".into(),
         params,
         ret: Some(rust::Type::Prim(rust::Prim::I32)),
+        noreturn: false,
         body,
     })
 }
@@ -505,6 +507,7 @@ impl FunctionLowerer<'_, '_> {
                 .collect::<Result<Vec<_>>>()?,
             variadic: *variadic,
             ret,
+            noreturn: function.semantics.noreturn,
             safe: false,
         };
         let shim = vector_feature.map(|feature| {
@@ -527,6 +530,7 @@ impl FunctionLowerer<'_, '_> {
                 name: function.name.clone(),
                 params: decl.params.clone(),
                 ret: decl.ret.clone(),
+                noreturn: decl.noreturn,
                 body: vec![Stmt::Return(Some(Expr::Unsafe(Box::new(rust::Block {
                     stmts: Vec::new(),
                     tail: Some(Box::new(call)),
@@ -597,6 +601,7 @@ impl FunctionLowerer<'_, '_> {
                 name: self.tables.names[&function.value.id].rust.clone(),
                 params,
                 ret,
+                noreturn: function.semantics.noreturn,
                 body: vec![self.lower_naked_body(body)?],
             }));
         }
@@ -692,6 +697,7 @@ impl FunctionLowerer<'_, '_> {
             name: self.tables.names[&function.value.id].rust.clone(),
             params,
             ret,
+            noreturn: function.semantics.noreturn,
             body: statements,
         }))
     }

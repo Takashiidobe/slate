@@ -566,6 +566,7 @@ impl<'m> ModuleLowerer<'m> {
                 name: wrapper.clone(),
                 params: Vec::new(),
                 ret: None,
+                noreturn: false,
                 body: vec![Stmt::Expr(Expr::Call {
                     func: Box::new(Expr::Var(target.as_str().into())),
                     args: Vec::new(),

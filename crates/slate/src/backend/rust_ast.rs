@@ -683,6 +683,7 @@ pub struct ExternFnDecl {
     pub params: Vec<FnParam>,
     pub variadic: bool,
     pub ret: Option<Type>,
+    pub noreturn: bool,
     pub safe: bool,
 }
 
@@ -696,6 +697,7 @@ pub struct FnDef {
     pub name: String,
     pub params: Vec<FnParam>,
     pub ret: Option<Type>,
+    pub noreturn: bool,
     pub body: Vec<Stmt>,
 }
 

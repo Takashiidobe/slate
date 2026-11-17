@@ -5,7 +5,7 @@ use crate::backend::engine::macro_templates::rename_templates;
 use crate::backend::engine::unlabeled_jump;
 use crate::backend::link::signatures::{self, UnitCompiles};
 use crate::backend::rust_ast::{
-    Attr, Cfg, CrateAttr, Expr, ExternDecl, Item, MacroOutcome, MacroParam, Program, Stmt,
+    Attr, Cfg, CrateAttr, Expr, ExternDecl, FnDef, Item, MacroOutcome, MacroParam, Program, Stmt,
     TraitRef, macro_template_base,
 };
 use crate::backend::{self, Exports};
@@ -459,15 +459,26 @@ fn entries(program: &Program) -> Vec<Entry> {
                         ExternDecl::Fn(decl) => decl.name.as_str(),
                         ExternDecl::Static { name, .. } => name.as_str(),
                     };
+                    let mut decl = decl.clone();
+                    if let ExternDecl::Fn(function) = &mut decl {
+                        function.noreturn = false;
+                    }
                     push(
                         format!("extern:{abi}:{name}"),
                         Item::ExternBlock {
                             abi: abi.clone(),
-                            decls: vec![decl.clone()],
+                            decls: vec![decl],
                         },
                     );
                 }
             }
+            Item::Fn(function) => push(
+                item_key(item),
+                Item::Fn(FnDef {
+                    noreturn: false,
+                    ..function.clone()
+                }),
+            ),
             item => push(item_key(item), item.clone()),
         }
     }
