@@ -50,33 +50,56 @@ const X86_FEATURES: &[(&str, &str)] = &[
     ("xsaves", "xsaves"),
 ];
 
-const AARCH64_FEATURES: &[(&str, &str)] = &[
-    ("aes", "aes"),
-    ("bf16", "bf16"),
-    ("crc", "crc"),
-    ("dotprod", "dotprod"),
-    ("f32mm", "f32mm"),
-    ("f64mm", "f64mm"),
-    ("fp16", "fp16"),
-    ("fp8", "fp8"),
-    ("i8mm", "i8mm"),
-    ("lse", "lse"),
-    ("neon", "neon"),
-    ("rcpc", "rcpc"),
-    ("rdm", "rdm"),
-    ("rdma", "rdm"),
-    ("sha2", "sha2"),
-    ("sha3", "sha3"),
-    ("simd", "neon"),
-    ("sm4", "sm4"),
-    ("sme", "sme"),
-    ("sme2", "sme2"),
-    ("sve", "sve"),
-    ("sve2", "sve2"),
-    ("sve2-aes", "sve2-aes"),
-    ("sve2-bitperm", "sve2-bitperm"),
-    ("sve2-sha3", "sve2-sha3"),
-    ("sve2-sm4", "sve2-sm4"),
+const AARCH64_FEATURES: &[(&str, &[&str])] = &[
+    ("aes", &["aes"]),
+    ("bf16", &["bf16"]),
+    ("bti", &["bti"]),
+    ("complxnum", &["fcma"]),
+    ("crc", &["crc"]),
+    ("cssc", &["cssc"]),
+    ("dotprod", &["dotprod"]),
+    ("f32mm", &["f32mm"]),
+    ("f64mm", &["f64mm"]),
+    ("faminmax", &["faminmax"]),
+    ("fp16", &["fp16"]),
+    ("fp16fml", &["fhm"]),
+    ("fp8", &["fp8"]),
+    ("fp8dot2", &["fp8dot2"]),
+    ("fp8dot4", &["fp8dot4"]),
+    ("fp8fma", &["fp8fma"]),
+    ("fptoint", &["frintts"]),
+    ("fullfp16", &["fp16"]),
+    ("i8mm", &["i8mm"]),
+    ("jsconv", &["jsconv"]),
+    ("lse", &["lse"]),
+    ("lut", &["lut"]),
+    ("mops", &["mops"]),
+    ("neon", &["neon"]),
+    ("rand", &["rand"]),
+    ("rcpc", &["rcpc"]),
+    ("rdm", &["rdm"]),
+    ("rdma", &["rdm"]),
+    ("sha2", &["sha2"]),
+    ("sha3", &["sha3"]),
+    ("simd", &["neon"]),
+    ("sm4", &["sm4"]),
+    ("sme", &["sme"]),
+    ("sme2", &["sme2"]),
+    ("sve", &["sve"]),
+    ("sve2", &["sve2"]),
+    ("sve2-aes", &["sve2-aes"]),
+    ("sve2-bitperm", &["sve2-bitperm"]),
+    ("sve2-sha3", &["sve2-sha3"]),
+    ("sve2-sm4", &["sve2-sm4"]),
+    ("sve2p1", &["sve2p1"]),
+    ("v8.1a", &["rdm"]),
+    ("v8.3a", &["fcma", "jsconv"]),
+    ("v8.5a", &["frintts"]),
+];
+
+pub(super) const AARCH64_UNSTABLE_FEATURES: &[&str] = &[
+    "cssc", "faminmax", "fp8", "fp8dot2", "fp8dot4", "fp8fma", "lut", "mops", "sme", "sme2",
+    "sve2p1",
 ];
 
 fn rustc_x86_feature(clang: &str) -> Option<&'static str> {
@@ -86,17 +109,43 @@ fn rustc_x86_feature(clang: &str) -> Option<&'static str> {
 }
 
 pub(super) fn unit_target_features(target: &TargetInfo) -> Vec<&'static str> {
-    let slate_parser::target::isa::TargetIsa::X86(isa) = target.isa else {
-        return Vec::new();
+    let spellings: Vec<&'static str> = match target.isa {
+        slate_parser::target::isa::TargetIsa::X86(isa) => isa
+            .enabled_beyond(slate_parser::target::x86_isa::X86Isa::baseline(
+                target.family,
+            ))
+            .collect(),
+        slate_parser::target::isa::TargetIsa::AArch64(isa) => {
+            isa.enabled_beyond(slate_parser::target::aarch64_isa::AArch64Isa::baseline())
+        }
+        _ => return Vec::new(),
     };
-    isa.enabled_beyond(slate_parser::target::x86_isa::X86Isa::baseline(
-        target.family,
-    ))
-    .filter_map(rustc_x86_feature)
-    .collect()
+    let mut features = Vec::new();
+    for rustc in spellings
+        .into_iter()
+        .filter_map(|spelling| rustc_features(target.family, spelling))
+        .flatten()
+    {
+        if !features.contains(rustc) {
+            features.push(*rustc);
+        }
+    }
+    features
 }
 
-fn rustc_aarch64_feature(clang: &str) -> Option<&'static str> {
+fn rustc_features(family: TargetFamily, name: &str) -> Option<&'static [&'static str]> {
+    match family {
+        TargetFamily::AArch64 => rustc_aarch64_feature(name.strip_prefix('+').unwrap_or(name)),
+        TargetFamily::Arm32 => (name == "neon").then_some(&["neon"]),
+        family if family.is_x86() => X86_FEATURES
+            .iter()
+            .find(|(clang, _)| *clang == name)
+            .map(|(_, rustc)| std::slice::from_ref(rustc)),
+        _ => None,
+    }
+}
+
+fn rustc_aarch64_feature(clang: &str) -> Option<&'static [&'static str]> {
     AARCH64_FEATURES
         .iter()
         .find_map(|(name, rustc)| (*name == clang).then_some(*rustc))
@@ -105,15 +154,6 @@ fn rustc_aarch64_feature(clang: &str) -> Option<&'static str> {
 impl Tables<'_> {
     fn is_x86(&self) -> bool {
         self.target.family.is_x86()
-    }
-
-    fn rustc_feature(&self, name: &str) -> Option<&'static str> {
-        match self.target.family {
-            TargetFamily::AArch64 => rustc_aarch64_feature(name.strip_prefix('+').unwrap_or(name)),
-            TargetFamily::Arm32 => (name == "neon").then_some("neon"),
-            family if family.is_x86() => rustc_x86_feature(name),
-            _ => None,
-        }
     }
 
     pub(super) fn target_feature_attr(&self, function: &ir::Function) -> Result<Option<Attr>> {
@@ -199,11 +239,12 @@ impl Tables<'_> {
             match feature {
                 ir::TargetFeature::Enable(name) if name == "default" => {}
                 ir::TargetFeature::Enable(name) => {
-                    let rustc = self
-                        .rustc_feature(name)
+                    let rustc = rustc_features(self.target.family, name)
                         .ok_or_else(|| unsupported(format!("target feature `{name}`")))?;
-                    if !enabled.contains(&rustc) {
-                        enabled.push(rustc);
+                    for feature in rustc {
+                        if !enabled.contains(feature) {
+                            enabled.push(feature);
+                        }
                     }
                 }
                 ir::TargetFeature::Arch(cpu) => {

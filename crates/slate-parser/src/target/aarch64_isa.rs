@@ -438,6 +438,55 @@ impl AArch64Isa {
         }
     }
 
+    pub fn enabled_beyond(self, baseline: Self) -> Vec<&'static str> {
+        use AArch64Feature::*;
+        let has = |isa: Self, feature| isa.features.contains(feature);
+        let crypto = |isa: Self| has(isa, Crypto);
+        let crypto_v84 = |isa: Self| crypto(isa) && isa.version.is_v8(4);
+        let mut enabled = Vec::new();
+        let mut add = |spelling: &'static str, present: bool, in_baseline: bool| {
+            if present && !in_baseline && !enabled.contains(&spelling) {
+                enabled.push(spelling);
+            }
+        };
+        add("v8.1a", self.version.is_v8(1), baseline.version.is_v8(1));
+        for (feature, spelling) in [
+            (Simd, "neon"),
+            (Fp16, "fullfp16"),
+            (Fp16fml, "fp16fml"),
+            (Crc, "crc"),
+            (Lse, "lse"),
+            (Rcpc, "rcpc"),
+            (Dotprod, "dotprod"),
+            (Bti, "bti"),
+            (Bf16, "bf16"),
+            (I8mm, "i8mm"),
+            (Mops, "mops"),
+            (Cssc, "cssc"),
+            (Sve, "sve"),
+            (Sve2, "sve2"),
+            (Sve2p1, "sve2p1"),
+            (Aes, "aes"),
+            (Sha2, "sha2"),
+            (Faminmax, "faminmax"),
+            (Lut, "lut"),
+            (Fcma, "complxnum"),
+            (Jscvt, "jsconv"),
+            (Frintts, "fptoint"),
+        ] {
+            add(spelling, has(self, feature), has(baseline, feature));
+        }
+        add("aes", crypto(self), crypto(baseline) || has(baseline, Aes));
+        add(
+            "sha2",
+            crypto(self),
+            crypto(baseline) || has(baseline, Sha2),
+        );
+        add("sha3", crypto_v84(self), crypto_v84(baseline));
+        add("sm4", crypto_v84(self), crypto_v84(baseline));
+        enabled
+    }
+
     pub fn predefines(self, flavor: CompilerFlavor, iso_flt_eval_method: bool) -> Vec<String> {
         match flavor {
             CompilerFlavor::Gcc => self.gcc_predefines(iso_flt_eval_method),
