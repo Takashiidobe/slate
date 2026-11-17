@@ -22,11 +22,12 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "crates/slate-parser/tools"))
 import kernel_boot
 import kernel_link
+import kernel_selftest
 import pp_diff
 
 SLATE = ROOT / "target/test-cache/release/slate"
 SETUP = ROOT / "crates/slate-parser/tools/c_corpus_setup.py"
-STAGES = ("native", "barriers", "translate", "check", "build", "link", "boot", "bench", "test")
+STAGES = ("native", "barriers", "translate", "check", "build", "link", "boot", "kselftest", "bench", "test")
 COMPILERS = {"clang": "clang", "gcc": "gcc", "clang-aarch64": "clang"}
 CANONICAL_OUT = {("linux", "clang"): Path.home() / "slate-translated/slate-linux"}
 
@@ -1840,8 +1841,12 @@ def sharded_stages(units, project_dir, out, recipe, args, finish):
                                                args.profile, args.jobs)
         if not finish("link", "failed" if code else "ok", **details):
             return 1 if broken or code else 0
-    code, details = kernel_boot.boot_stage(out, project_dir, args.mode, COMPILERS[args.mode], args.jobs)
-    finish("boot", "failed" if code else "ok", **details)
+    if STAGES.index(args.start) <= STAGES.index("boot"):
+        code, details = kernel_boot.boot_stage(out, project_dir, args.mode, COMPILERS[args.mode], args.jobs)
+        if not finish("boot", "failed" if code else "ok", **details):
+            return 1 if broken or code else 0
+    code, details = kernel_selftest.selftest_stage(out, project_dir, args.mode, COMPILERS[args.mode], args.jobs)
+    finish("kselftest", "failed" if code else "ok", **details)
     return 1 if broken or code else 0
 
 
@@ -1853,9 +1858,9 @@ def main():
     parser.add_argument("--out", type=Path)
     parser.add_argument("--setup", action="store_true", help="rebuild build-<mode> with c_corpus_setup.py first")
     parser.add_argument("--until", choices=STAGES, default=STAGES[-1])
-    parser.add_argument("--from", dest="start", choices=("native", "translate", "build", "link", "boot"),
+    parser.add_argument("--from", dest="start", choices=("native", "translate", "build", "link", "boot", "kselftest"),
                         default="native", help="sharded projects: skip the barrier pass and every stage before "
-                                               "this one (link reuses the built shards, boot the linked vmlinux)")
+                                               "this one (link reuses the built shards, boot and kselftest the linked vmlinux)")
     parser.add_argument("--shards", type=lambda value: set(value.split(",")),
                         help="sharded projects: re-translate only these shards; build and link use all")
     parser.add_argument("--jobs", type=int, default=os.cpu_count() or 8)

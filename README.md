@@ -150,11 +150,23 @@ similar rust.
 
 ### Clang/GCC
 
+- [Linux](https://kernel.org)
+  - Translates the x86_64 defconfig kernel and boots it under QEMU to a busybox
+    shell. The build, link, and objtool stages do not warn or error.
 - [SQLite](https://sqlite.org)
   - [Rust Translation](https://github.com/takashiidobe/slate-sqlite). Passes
     `select1.test` and `main.test` using `testfixture`, plus `mptest` and
     `threadtest3`. Benchmarks for the translated run ~5% faster to 8% slower,
     depending on run/benchmark for the generated rust.
+- [CPython](https://www.python.org)
+  - Translates the 190 C units of the `python` binary. With the build tree's
+    extension modules, `python -m test` passes 459 of 462 test files (48,414
+    tests), in 100s against 95s native. The 3 failures are debugging tooling
+    that expects the C build: `test_gdb` (2 files) and perf's DWARF unwinding in
+    `test_perf_profiler`. Every other test matches native.
+- [curl](https://curl.se)
+  - Translates libcurl and the `curl` tool. Passes all 1690 `runtests.pl` tests,
+    and benchmarks within 5% of native over file:// and HTTP transfers.
 - [Redis](https://redis.io)
 - [chibicc](https://github.com/rui314/chibicc)
 - [cJSON](https://github.com/DaveGamble/cJSON)
@@ -181,19 +193,10 @@ similar rust.
   - Translates libzstd and the `zstd` CLI. The translated CLI produces
     byte-identical output to native at 9 compression levels and modes, and
     round-trips 366 files across both builds.
-- [curl](https://curl.se)
-  - Translates libcurl and the `curl` tool. Passes all 1690 `runtests.pl` tests,
-    and benchmarks within 5% of native over file:// and HTTP transfers.
 - [jq](https://jqlang.org)
 - [nginx](https://nginx.org)
   - Translates the default `nginx` build. Passes all 2584 tests in the 176
     upstream `nginx-tests` files that apply to its modules, matching native.
-- [CPython](https://www.python.org)
-  - Translates the 190 C units of the `python` binary. With the build tree's
-    extension modules, `python -m test` passes 459 of 462 test files (48,414
-    tests), in 100s against 95s native. The 3 failures are debugging tooling
-    that expects the C build: `test_gdb` (2 files) and perf's DWARF unwinding in
-    `test_perf_profiler`. Every other test matches native.
 - [NumPy](https://numpy.org)
   - x86_64 passes 14872 tests, and skips 17, same as the C build on my machine.
     Tests run in 28.7s for the rust version compared to 35.7s in C.

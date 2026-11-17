@@ -54,6 +54,7 @@ rewrite and fixture records, with the source revision for the former frontend.
 - [Adding a target](concepts/adding-a-target.md)
 - [C corpus](concepts/c-corpus.md)
   - [Adding corpus tests](concepts/corpus-e2e.md)
+  - [Kernel selftests](concepts/kernel-selftests.md)
 - [Configuration threading](concepts/configuration-threading.md)
 - [Diagnostic severity](concepts/diagnostic-severity.md)
 - [MSVC oracle](concepts/msvc-oracle.md)

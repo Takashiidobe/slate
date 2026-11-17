@@ -63,19 +63,21 @@ def initramfs(path):
         source.write_text(INIT % MARKER)
         subprocess.run(["clang", "-static", "-nostdlib", "-ffreestanding", "-fno-stack-protector", "-O2",
                         "-o", binary, source], check=True)
-        entries = [("dev", 0o040755, b"", 0), ("dev/console", 0o020600, b"", os.makedev(5, 1)),
-                   ("proc", 0o040755, b"", 0), ("init", 0o100755, binary.read_bytes(), 0)]
-        archive = bytearray()
-        for inode, (name, mode, data, device) in enumerate(entries + [("TRAILER!!!", 0, b"", 0)], 1):
-            encoded = name.encode() + b"\0"
-            fields = [inode, mode, 0, 0, 1, 0, len(data), 0, 0, os.major(device), os.minor(device),
-                      len(encoded), 0]
-            archive += b"070701" + b"".join(b"%08X" % field for field in fields) + encoded
-            archive += b"\0" * (-len(archive) % 4) + data
-            archive += b"\0" * (-len(archive) % 4)
-        archive += b"\0" * (-len(archive) % 512)
-        path.write_bytes(gzip.compress(bytes(archive)))
+        write_cpio(path, [("proc", 0o040755, b"", 0), ("init", 0o100755, binary.read_bytes(), 0)])
     return path
+
+
+def write_cpio(path, entries):
+    entries = [("dev", 0o040755, b"", 0), ("dev/console", 0o020600, b"", os.makedev(5, 1)), *entries]
+    archive = bytearray()
+    for inode, (name, mode, data, device) in enumerate(entries + [("TRAILER!!!", 0, b"", 0)], 1):
+        encoded = name.encode() + b"\0"
+        fields = [inode, mode, 0, 0, 1, 0, len(data), 0, 0, os.major(device), os.minor(device), len(encoded), 0]
+        archive += b"070701" + b"".join(b"%08X" % field for field in fields) + encoded
+        archive += b"\0" * (-len(archive) % 4) + data
+        archive += b"\0" * (-len(archive) % 4)
+    archive += b"\0" * (-len(archive) % 512)
+    path.write_bytes(gzip.compress(bytes(archive), compresslevel=6))
 
 
 def bzimage(build_dir, compiler, jobs, log):

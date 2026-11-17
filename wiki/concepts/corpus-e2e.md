@@ -1,12 +1,12 @@
 # Adding corpus tests
 
 <!-- toc -->
-
 - [What e2e.py does](#what-e2epy-does)
 - [The comparison rule](#the-comparison-rule)
 - [Flags](#flags)
 - [Picking a recipe type](#picking-a-recipe-type)
-  - [Adding a project with an existing type](#adding-a-project-with-an-existing-type)
+  - [Adding a project with an existing
+    type](#adding-a-project-with-an-existing-type)
   - [Adding a recipe type](#adding-a-recipe-type)
 - [Linux kernel](#linux-kernel)
 <!-- /toc -->
@@ -38,6 +38,7 @@ Stages run in order and stop at the first failure or at `--until`:
 | build     | `cargo build`, linking native libraries                                                      |
 | link      | linux only: swap translated objects into vmlinux (`kernel_link.py`)                          |
 | boot      | linux only: boot native and translated bzImages under QEMU, diff dmesg (`kernel_boot.py`)    |
+| kselftest | linux only: run userspace selftests on both kernels, diff TAP results (`kernel_selftest.py`) |
 | bench     | the recipe's `benchmark`, native vs translated                                               |
 | test      | run the tests against the translated build and the native build and compare                  |
 
@@ -144,8 +145,11 @@ staticlib and relink each executable from its native link command.
   (`build-slate/`) and links vmlinux with the kernel's own scripts.
 - boot: `kernel_boot.py` boots native and translated bzImages under QEMU with a
   marker initramfs and diffs normalized dmesg (`boot.md`).
-- `--from translate|build|link|boot` skips earlier stages and reuses their
-  output.
+- kselftest: `kernel_selftest.py` runs `tools/testing/selftests` in a busybox
+  initramfs on both kernels and compares per-test TAP results
+  ([Kernel selftests](kernel-selftests.md)).
+- `--from translate|build|link|boot|kselftest` skips earlier stages and reuses
+  their output.
 
 Kernel tests that do not need a booted kernel go in as separate hosted projects
 rather than as stages of `linux`, so they never wait on the sharded pipeline.
