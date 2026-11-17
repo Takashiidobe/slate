@@ -17,7 +17,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT: #[target_feature(enable = "rdm,fp16,crc,lse,rcpc,dotprod,bti,sve,sve2,fcma,jsconv,frintts")]
+// CHECK-NEXT: unsafe fn __slate_main() -> i32 {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

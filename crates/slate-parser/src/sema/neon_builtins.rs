@@ -47,6 +47,11 @@ pub(super) enum NeonOp {
     Crc(&'static str),
     FloatResize,
     LaneWrite,
+    Splat { quad: bool },
+    Scalar(&'static str),
+    ScalarVector(&'static str),
+    Immediate(&'static str),
+    HalfAcross(&'static str),
 }
 
 impl NeonOp {
@@ -159,6 +164,8 @@ pub(super) fn neon_op(record: &str) -> Option<NeonOp> {
         "vmovn_v" => NeonOp::Narrow,
         "vmull_v" => NeonOp::MultiplyLong,
         "vcvt_f32_f16" | "vcvt_f16_f32" => NeonOp::FloatResize,
+        "splat_lane_v" | "splat_laneq_v" => NeonOp::Splat { quad: false },
+        "splatq_lane_v" | "splatq_laneq_v" => NeonOp::Splat { quad: true },
         _ if convert_rounding(name).is_some() => NeonOp::ConvertRounding(convert_rounding(name)?),
         _ => return None,
     })
@@ -183,6 +190,9 @@ impl Lowerer {
                 | NeonOp::MinNumAcross
                 | NeonOp::Crc(_)
                 | NeonOp::LaneWrite
+                | NeonOp::Scalar(_)
+                | NeonOp::ScalarVector(_)
+                | NeonOp::HalfAcross(_)
         );
         let shape = arguments
             .last()
@@ -334,6 +344,149 @@ impl Lowerer {
                 );
                 self.context.emit_arithmetic_conversion(
                     checksum,
+                    result,
+                    ConversionReason::Explicit,
+                )?
+            }
+            NeonOp::Splat { quad } => {
+                let Some(index) = arguments.get(1).and_then(|index| self.neon_constant(index))
+                else {
+                    return Ok(Err((returned, ty, arguments)));
+                };
+                let (_, source) = shape;
+                let Type::Vector { element, lanes } = source else {
+                    return Err(ResolveError::Internal("neon splat vector"));
+                };
+                let vector = arguments
+                    .into_iter()
+                    .next()
+                    .ok_or(ResolveError::Internal("neon splat operand"))?;
+                let vector =
+                    self.context
+                        .vector_convert(vector, source, ConversionReason::Explicit)?;
+                let bits = if quad { 128 } else { 64 };
+                let splat_lanes = bits / (element_bytes(element) as u32 * 8);
+                let splat = self.shuffle(
+                    e,
+                    Type::Vector {
+                        element,
+                        lanes: splat_lanes,
+                    },
+                    vector,
+                    None,
+                    vec![Some(index % lanes); splat_lanes as usize],
+                );
+                self.context
+                    .vector_convert(splat, result, ConversionReason::Explicit)?
+            }
+            NeonOp::Scalar(name) => self.value(
+                e,
+                result,
+                ValueKind::Intrinsic {
+                    name: name.into(),
+                    arguments,
+                },
+            ),
+            NeonOp::ScalarVector(name) => {
+                let element = NumericType::integer(16, true);
+                let vector = Type::Vector { element, lanes: 4 };
+                let arguments = arguments
+                    .into_iter()
+                    .map(|value| {
+                        let scalar = self.context.emit_arithmetic_conversion(
+                            value,
+                            Type::Numeric(element),
+                            ConversionReason::Explicit,
+                        )?;
+                        Ok(conversion(
+                            scalar,
+                            vector.clone(),
+                            ConversionKind::VectorSplat,
+                            ConversionReason::Explicit,
+                            ConversionSema::Exact,
+                        ))
+                    })
+                    .collect::<Result<Vec<_>, ResolveError>>()?;
+                let computed = self.value(
+                    e,
+                    vector,
+                    ValueKind::Intrinsic {
+                        name: name.into(),
+                        arguments,
+                    },
+                );
+                let index = self.neon_index(e, 0);
+                let lane = self.value(
+                    e,
+                    Type::Numeric(element),
+                    ValueKind::Lane {
+                        vector: Box::new(computed),
+                        index: Box::new(index),
+                    },
+                );
+                self.context
+                    .emit_arithmetic_conversion(lane, result, ConversionReason::Explicit)?
+            }
+            NeonOp::Immediate(name) => {
+                let mut operands = arguments;
+                operands.pop();
+                let Some(immediate) = operands.pop().and_then(|value| self.neon_constant(&value))
+                else {
+                    return Err(ResolveError::Internal("neon immediate operand"));
+                };
+                let (_, vector) = shape;
+                let mut operands = operands
+                    .into_iter()
+                    .map(|value| {
+                        self.context.vector_convert(
+                            value,
+                            vector.clone(),
+                            ConversionReason::Explicit,
+                        )
+                    })
+                    .collect::<Result<Vec<_>, _>>()?;
+                operands.push(self.value(
+                    e,
+                    Type::Numeric(NumericType::integer(64, true)),
+                    ValueKind::Constant(Number::Integer(immediate.into())),
+                ));
+                let computed = self.value(
+                    e,
+                    vector,
+                    ValueKind::Intrinsic {
+                        name: name.into(),
+                        arguments: operands,
+                    },
+                );
+                self.context
+                    .vector_convert(computed, result, ConversionReason::Explicit)?
+            }
+            NeonOp::HalfAcross(name) => {
+                let [vector]: [Value; 1] = arguments
+                    .try_into()
+                    .map_err(|_| ResolveError::Internal("neon f16 across operand count"))?;
+                let Type::Vector { lanes, .. } = vector.ty else {
+                    return Ok(Err((returned, ty, vec![vector])));
+                };
+                let element = NumericType::Float(FloatType::F16);
+                let vector = self.context.vector_convert(
+                    vector,
+                    Type::Vector {
+                        element,
+                        lanes: lanes / 2,
+                    },
+                    ConversionReason::Explicit,
+                )?;
+                let reduced = self.value(
+                    e,
+                    Type::Numeric(element),
+                    ValueKind::Intrinsic {
+                        name: name.into(),
+                        arguments: vec![vector],
+                    },
+                );
+                self.context.emit_arithmetic_conversion(
+                    reduced,
                     result,
                     ConversionReason::Explicit,
                 )?
@@ -886,6 +1039,27 @@ fn direct_op(name: &str) -> Option<NeonOp> {
         ("vdot" | "vdotq", "s32" | "u32") => return Some(NeonOp::Dot),
         ("vqrdmlah" | "vqrdmlahq", "s16" | "s32") => return same("llvm.aarch64.neon.sqrdmlah"),
         ("vqrdmlsh" | "vqrdmlshq", "s16" | "s32") => return same("llvm.aarch64.neon.sqrdmlsh"),
+        ("vqrdmlahs", "s32") => return Some(NeonOp::Scalar("llvm.aarch64.neon.sqrdmlah")),
+        ("vqrdmlshs", "s32") => return Some(NeonOp::Scalar("llvm.aarch64.neon.sqrdmlsh")),
+        ("vqrdmlahh", "s16") => return Some(NeonOp::ScalarVector("llvm.aarch64.neon.sqrdmlah")),
+        ("vqrdmlshh", "s16") => return Some(NeonOp::ScalarVector("llvm.aarch64.neon.sqrdmlsh")),
+        ("vsha1cq", "u32") => return Some(NeonOp::Scalar("llvm.aarch64.crypto.sha1c")),
+        ("vsha1mq", "u32") => return Some(NeonOp::Scalar("llvm.aarch64.crypto.sha1m")),
+        ("vsha1pq", "u32") => return Some(NeonOp::Scalar("llvm.aarch64.crypto.sha1p")),
+        ("vsha1h", "u32") => return Some(NeonOp::Scalar("llvm.aarch64.crypto.sha1h")),
+        ("vxarq", "u64") => return Some(NeonOp::Immediate("llvm.aarch64.crypto.xar")),
+        ("vsm3tt1aq", "u32") => return Some(NeonOp::Immediate("llvm.aarch64.crypto.sm3tt1a")),
+        ("vsm3tt1bq", "u32") => return Some(NeonOp::Immediate("llvm.aarch64.crypto.sm3tt1b")),
+        ("vsm3tt2aq", "u32") => return Some(NeonOp::Immediate("llvm.aarch64.crypto.sm3tt2a")),
+        ("vsm3tt2bq", "u32") => return Some(NeonOp::Immediate("llvm.aarch64.crypto.sm3tt2b")),
+        ("vmaxv" | "vmaxvq", "f16") => return Some(NeonOp::HalfAcross("llvm.aarch64.neon.fmaxv")),
+        ("vminv" | "vminvq", "f16") => return Some(NeonOp::HalfAcross("llvm.aarch64.neon.fminv")),
+        ("vmaxnmv" | "vmaxnmvq", "f16") => {
+            return Some(NeonOp::HalfAcross("llvm.aarch64.neon.fmaxnmv"));
+        }
+        ("vminnmv" | "vminnmvq", "f16") => {
+            return Some(NeonOp::HalfAcross("llvm.aarch64.neon.fminnmv"));
+        }
         ("veor3q", _) => {
             return Some(NeonOp::Direct(
                 "llvm.aarch64.crypto.eor3s",
@@ -919,6 +1093,9 @@ fn direct_op(name: &str) -> Option<NeonOp> {
         "vrax1q" => same("llvm.aarch64.crypto.rax1"),
         "vsm4eq" => same("llvm.aarch64.crypto.sm4e"),
         "vsm4ekeyq" => same("llvm.aarch64.crypto.sm4ekey"),
+        "vsm3partw1q" => same("llvm.aarch64.crypto.sm3partw1"),
+        "vsm3partw2q" => same("llvm.aarch64.crypto.sm3partw2"),
+        "vsm3ss1q" => same("llvm.aarch64.crypto.sm3ss1"),
         "vcmla" | "vcmlaq" if float => same("llvm.aarch64.neon.vcmla.rot0"),
         "vcmla_rot90" | "vcmlaq_rot90" if float => same("llvm.aarch64.neon.vcmla.rot90"),
         "vcmla_rot180" | "vcmlaq_rot180" if float => same("llvm.aarch64.neon.vcmla.rot180"),
