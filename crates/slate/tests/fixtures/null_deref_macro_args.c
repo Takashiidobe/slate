@@ -13,6 +13,9 @@ struct entry { int band; int width; };
 static void fill(struct entry *e, struct def *d) { ASSIGN(d, e); }
 static void fill_null(struct entry *e) { ASSIGN((struct def *)NULL, e); }
 
+#define STORE(p, i, v) do { if (p) (p)[i] = (v); } while (0)
+static void store_null(int i) { STORE((int *)NULL, i, 4); STORE((int *)NULL, 0, 4); }
+
 int main(void) {
   struct chan c = {3};
   struct def d = {&c, 5};
@@ -24,7 +27,11 @@ int main(void) {
   unsigned char prev = 0;
   int a = FIND(2, &prev);
   int b = FIND(3, (unsigned char *)NULL);
-  printf("%d %d %d\n", a, b, prev);
+  int slots[3] = {0};
+  int *sp = slots;
+  STORE(sp, 1, 6);
+  store_null(2);
+  printf("%d %d %d %d\n", a, b, prev, slots[1]);
   return 0;
 }
 
@@ -45,6 +52,18 @@ int main(void) {
 // CHECK-NEXT:         [[V_2:__v[0-9]+]] : i32 = 0; while [[V_0]] < 10 { if [[V_0]] == 7 { [[V_2]] = [[V_0]]; if !$prev_ptr
 // CHECK-NEXT:         .is_null() { unsafe { *$prev_ptr = [[V_1]] as u8; } } break; } [[V_1]] = [[V_0]]; [[V_0]] +=
 // CHECK-NEXT:         1; } __v = [[V_2]]; __v }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! STORE__2 {
+// CHECK-NEXT:     ($p:expr, $i:expr, $v:expr) => {
+// CHECK-NEXT:         loop { if !$p .is_null() { unsafe { *$p .offset(($i) as isize) = $v; } } if true
+// CHECK-NEXT:         { break; } }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-NEXT: macro_rules! STORE {
+// CHECK-NEXT:     ($p:expr, $i:expr, $v:expr) => {
+// CHECK-NEXT:         loop { if !$p .is_null() { unsafe { *$p .offset(($i) as isize) = $v; } } if true
+// CHECK-NEXT:         { break; } }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: #[repr(C)]
@@ -70,6 +89,10 @@ int main(void) {
 // CHECK-NEXT: fn fill_null(e: *mut entry) {
 // CHECK-NEXT:     ASSIGN!(core::ptr::null_mut::< def > (), e);
 // CHECK-NEXT: }
+// CHECK-NEXT: fn store_null(i: i32) {
+// CHECK-NEXT:     STORE!(core::ptr::null_mut::< i32 > (), i, 4i32);
+// CHECK-NEXT:     STORE!(core::ptr::null_mut::< i32 > (), 0i32, 4i32);
+// CHECK-NEXT: }
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut c: chan = chan { band: 3 };
 // CHECK-NEXT:     let mut d: def = {
@@ -86,7 +109,15 @@ int main(void) {
 // CHECK-NEXT:     let mut prev: u8 = 0;
 // CHECK-NEXT:     let a: i32 = FIND!(2i32, core::ptr::addr_of_mut!(prev));
 // CHECK-NEXT:     let b: i32 = FIND!(3i32, core::ptr::null_mut::< u8 > ());
-// CHECK-NEXT:     println!("{} {} {}", a, b, prev as i32);
+// CHECK-NEXT:     let mut slots: [i32; 3] = {
+// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [i32; 3] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         [[T_1]][0] = 0i32;
+// CHECK-NEXT:         [[T_1]]
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut sp: *mut i32 = slots.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:     STORE__2!(sp, 1i32, 6i32);
+// CHECK-NEXT:     store_null(2i32);
+// CHECK-NEXT:     println!("{} {} {} {}", a, b, prev as i32, slots[1]);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]
