@@ -55,6 +55,7 @@ class Recipe:
     test_binary: str = ""
     benchmark: Callable | None = None
     every_unit: bool = False
+    standalone: str = ""
 
 
 @dataclass
@@ -1295,7 +1296,7 @@ def barrier_report(units, project_dir, out, jobs):
 def shared_dependencies(library):
     dynamic = subprocess.run(["readelf", "-d", library], capture_output=True, text=True, check=True).stdout
     needed = re.findall(r"\(NEEDED\)\s+Shared library: \[([^\]]+)\]", dynamic)
-    return " ".join(f"-C link-arg=-l:{name}" for name in needed if not name.startswith(("libc.so", "ld-linux")))
+    return [f"-l:{name}" for name in needed if not name.startswith(("libc.so", "ld-linux"))]
 
 
 def link_flags(project_dir, recipe, variables):
@@ -1304,8 +1305,39 @@ def link_flags(project_dir, recipe, variables):
     for word in variables[recipe.libs].split():
         flags.append(str((make_dir / word).resolve()) if word.endswith(".a") else word)
     flags += [str((make_dir / obj).resolve()) for obj in recipe.native_objects]
-    flags += recipe.ldflags
-    return " ".join(f"-C link-arg={flag}" for flag in flags)
+    return flags + recipe.ldflags
+
+
+def write_cargo_config(crate, out, link_args, runner=None):
+    rustflags = [*shlex.split(os.environ.get("RUSTFLAGS", "")), "-A", "warnings",
+                 *(f"-Clink-arg={arg}" for arg in link_args)]
+    lines = ["[build]", f"target = {json.dumps(host_triple())}",
+             f"target-dir = {json.dumps(os.path.relpath(out / 'cargo-target', crate))}",
+             f"rustflags = {json.dumps(rustflags)}"]
+    if runner:
+        lines += ["", f"[target.{host_triple()}]", f"runner = {json.dumps(os.path.relpath(runner, crate))}"]
+    (crate / ".cargo").mkdir(exist_ok=True)
+    (crate / ".cargo/config.toml").write_text("\n".join(lines) + "\n")
+
+
+def host_triple():
+    return re.search(r"^host: (\S+)", subprocess.run(["rustc", "-vV"], capture_output=True, text=True,
+                                                      check=True).stdout, re.MULTILINE)[1]
+
+
+def standalone_tree(project, project_dir, out, crate, link_args, name):
+    source = out / name
+    if source.is_symlink() or not source.exists():
+        source.unlink(missing_ok=True)
+        source.symlink_to(project_dir.resolve())
+    channel = re.search(r'^channel = "([^"]+)"', (ROOT / "rust-toolchain.toml").read_text(), re.MULTILINE)[1]
+    (out / "rust-toolchain.toml").write_text(f'[toolchain]\nchannel = "{channel}"\nprofile = "minimal"\n')
+    runner = out / "run.sh"
+    shutil.copy2(Path(__file__).parent / "standalone" / f"{project}.sh", runner)
+    real = str(project_dir.resolve())
+    link_args = [os.path.relpath(source / os.path.relpath(arg, real), crate) if arg.startswith(real + os.sep) else arg
+                 for arg in link_args]
+    return link_args, runner
 
 
 def exports_dynamic(ldflags):
@@ -1497,6 +1529,7 @@ RECIPES = {
         test=["{binary}", "-m", "test", "-j0", "--timeout=1200", "-x", "test_gdb",
               "--ignore", "*TestPerfProfilerWithDwarf*"],
         test_binary="python-slate",
+        standalone="cpython",
     ),
     "lua": Recipe(
         target="lua",
@@ -1962,18 +1995,22 @@ def main():
     if not finish("translate", "failed" if code else "ok", log="translate.log", **timing):
         return 1 if code else 0
 
-    env = dict(os.environ, CARGO_TARGET_DIR=str(out / "cargo-target"))
-    native_links = link_flags(project_dir, recipe, variables) if not (library or make_library or translation_only) else \
-        shared_dependencies(build_dir / recipe.library) if library and recipe.translate_tests else None
-    env["RUSTFLAGS"] = " ".join(filter(None, [os.environ.get("RUSTFLAGS"), "-A warnings", native_links]))
+    env = {name: value for name, value in os.environ.items() if name not in ("RUSTFLAGS", "CARGO_TARGET_DIR")}
+    link_args = link_flags(project_dir, recipe, variables) if not (library or make_library or translation_only) else \
+        shared_dependencies(build_dir / recipe.library) if library and recipe.translate_tests else []
+    runner = None
+    if isinstance(recipe, Recipe) and recipe.standalone:
+        link_args, runner = standalone_tree(args.project, project_dir, out, crate, link_args, recipe.standalone)
+    write_cargo_config(crate, out, link_args, runner)
     code, _ = run(["cargo", "build", "--profile", args.profile, "--message-format=short"], out / "build.log",
                   cwd=crate, env=env)
     errors = sum(line.startswith("error") for line in (out / "build.log").read_text(errors="replace").splitlines())
     profile_dir = "debug" if args.profile == "dev" else args.profile
     package = re.search(r'^name = "([^"]+)"', (crate / "Cargo.toml").read_text(), re.MULTILINE)[1]
-    binary = out / "cargo-target" / profile_dir / package
+    artifacts = out / "cargo-target" / host_triple() / profile_dir
+    binary = artifacts / package
     if library or make_library or translation_only:
-        binary = next((out / "cargo-target" / profile_dir).glob("*.a"), binary)
+        binary = next(artifacts.glob("*.a"), binary)
     if not finish("build", "failed" if code else "ok", errors=errors, log="build.log", binary=str(binary)):
         return 1 if code else 0
 

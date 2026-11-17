@@ -160,6 +160,7 @@ similar rust.
     `threadtest3`. Benchmarks for the translated run ~5% faster to 8% slower,
     depending on run/benchmark for the generated rust.
 - [CPython](https://www.python.org)
+  - [Rust Translation](https://github.com/takashiidobe/slate-python).
   - Translates the 190 C units of the `python` binary. With the build tree's
     extension modules, `python -m test` passes 459 of 462 test files (48,414
     tests), in 100s against 95s native. The 3 failures are debugging tooling

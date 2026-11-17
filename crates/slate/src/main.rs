@@ -590,6 +590,9 @@ bitint = {{ path = "bitint" }}
 num-complex = {{ path = "num-complex", default-features = false }}
 bitfields = {{ path = "bitfields" }}
 {blocks_line}{build_section}
+[lints.cargo]
+unused_dependencies = "allow"
+
 [profile.dev]
 overflow-checks = false
 debug-assertions = false
