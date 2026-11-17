@@ -75,6 +75,7 @@ pub(super) fn simd_type(element: rust::Type, lanes: u64) -> Option<rust::Type> {
                 | Prim::U32
                 | Prim::I64
                 | Prim::U64
+                | Prim::F16
                 | Prim::F32
                 | Prim::F64
         )
@@ -118,6 +119,7 @@ fn scalar_type(name: &str) -> Option<rust::Type> {
         "u64" => Prim::U64,
         "i128" => Prim::I128,
         "u128" => Prim::U128,
+        "half" | "f16" => Prim::F16,
         "float" | "f32" => Prim::F32,
         "double" | "f64" => Prim::F64,
         _ => return None,
@@ -137,6 +139,7 @@ fn mangle_llvm_type(ty: &rust::Type) -> Option<String> {
             rust::Type::Prim(Prim::I32 | Prim::U32) => "i32",
             rust::Type::Prim(Prim::I64 | Prim::U64) => "i64",
             rust::Type::Prim(Prim::I128 | Prim::U128) => "i128",
+            rust::Type::Prim(Prim::F16) => "f16",
             rust::Type::Prim(Prim::F32) => "f32",
             rust::Type::Prim(Prim::F64) => "f64",
             rust::Type::Prim(Prim::F128) => "f128",
@@ -163,7 +166,7 @@ fn resolve_llvm_type(name: &str, overloads: &[rust::Type]) -> Option<rust::Type>
                 "int" => !mangle_llvm_type(element)?.starts_with('i'),
                 "float" => !matches!(
                     element,
-                    rust::Type::Prim(Prim::F32 | Prim::F64 | Prim::F128)
+                    rust::Type::Prim(Prim::F16 | Prim::F32 | Prim::F64 | Prim::F128)
                 ),
                 "ptr" => !matches!(element, rust::Type::Ptr { .. }),
                 _ => true,

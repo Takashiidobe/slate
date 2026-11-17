@@ -20,6 +20,7 @@ pub(super) fn slate_vector_type(
                 | Prim::U64
                 | Prim::I128
                 | Prim::U128
+                | Prim::F16
                 | Prim::F32
                 | Prim::F64
         )

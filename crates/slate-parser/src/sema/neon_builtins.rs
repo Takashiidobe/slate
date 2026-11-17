@@ -42,6 +42,11 @@ pub(super) enum NeonOp {
     Widen,
     Narrow,
     MultiplyLong,
+    Direct(&'static str, &'static str),
+    Dot,
+    Crc(&'static str),
+    FloatResize,
+    LaneWrite,
 }
 
 impl NeonOp {
@@ -50,15 +55,43 @@ impl NeonOp {
             Self::AbsGreater | Self::ConvertRounding(_) => NeonShape::Float,
             Self::Widen | Self::MultiplyLong => NeonShape::Half,
             Self::Narrow => NeonShape::Double,
+            Self::Dot => NeonShape::Quarter,
+            Self::FloatResize => NeonShape::FloatResize,
             _ => NeonShape::Same,
         }
     }
 }
 
 pub(super) fn neon_op(record: &str) -> Option<NeonOp> {
+    if let Some(crc) = crc_intrinsic(record) {
+        return Some(NeonOp::Crc(crc));
+    }
     let name = record.strip_prefix("__builtin_neon_")?;
+    if let Some(op) = direct_op(name) {
+        return Some(op);
+    }
     if name.starts_with("vgetq_lane_") || name.starts_with("vget_lane_") {
         return Some(NeonOp::LaneRead);
+    }
+    if name.starts_with("vsetq_lane_") || name.starts_with("vset_lane_") {
+        return Some(NeonOp::LaneWrite);
+    }
+    if let Some(stem) = name.strip_suffix("_f16")
+        && let Some(op) = neon_op(&format!("__builtin_neon_{stem}_v")).filter(|op| {
+            matches!(
+                op,
+                NeonOp::Abs
+                    | NeonOp::Max
+                    | NeonOp::Min
+                    | NeonOp::MaxNum
+                    | NeonOp::MinNum
+                    | NeonOp::Fma
+                    | NeonOp::Sqrt
+                    | NeonOp::Round(_)
+            )
+        })
+    {
+        return Some(op);
     }
     let across = |prefix: &str| {
         name.strip_prefix(prefix).is_some_and(|rest| {
@@ -125,6 +158,7 @@ pub(super) fn neon_op(record: &str) -> Option<NeonOp> {
         "vmovl_v" => NeonOp::Widen,
         "vmovn_v" => NeonOp::Narrow,
         "vmull_v" => NeonOp::MultiplyLong,
+        "vcvt_f32_f16" | "vcvt_f16_f32" => NeonOp::FloatResize,
         _ if convert_rounding(name).is_some() => NeonOp::ConvertRounding(convert_rounding(name)?),
         _ => return None,
     })
@@ -147,6 +181,8 @@ impl Lowerer {
                 | NeonOp::MinAcross
                 | NeonOp::MaxNumAcross
                 | NeonOp::MinNumAcross
+                | NeonOp::Crc(_)
+                | NeonOp::LaneWrite
         );
         let shape = arguments
             .last()
@@ -239,6 +275,68 @@ impl Lowerer {
                 let shifted = self.neon_shift_immediate(e, op, shape.1, vector, amount)?;
                 self.context
                     .vector_convert(shifted, result, ConversionReason::Explicit)?
+            }
+            NeonOp::LaneWrite => {
+                let Some(index) = arguments.get(2).and_then(|index| self.neon_constant(index))
+                else {
+                    return Ok(Err((returned, ty, arguments)));
+                };
+                let [scalar, vector, _]: [Value; 3] = arguments
+                    .try_into()
+                    .map_err(|_| ResolveError::Internal("neon lane write operand count"))?;
+                let Type::Vector { element, lanes } = vector.ty else {
+                    return Err(ResolveError::Internal("neon lane write vector"));
+                };
+                let vector_type = vector.ty.clone();
+                let scalar = self.context.emit_arithmetic_conversion(
+                    scalar,
+                    Type::Numeric(element),
+                    ConversionReason::Explicit,
+                )?;
+                let splat = conversion(
+                    scalar,
+                    vector_type.clone(),
+                    ConversionKind::VectorSplat,
+                    ConversionReason::Explicit,
+                    ConversionSema::Exact,
+                );
+                let index = index % lanes;
+                let mask = (0..lanes)
+                    .map(|each| Some(if each == index { lanes + each } else { each }))
+                    .collect();
+                let written = self.shuffle(e, vector_type, vector, Some(splat), mask);
+                self.context
+                    .vector_convert(written, result, ConversionReason::Explicit)?
+            }
+            NeonOp::Crc(name) => {
+                let [checksum, data]: [Value; 2] = arguments
+                    .try_into()
+                    .map_err(|_| ResolveError::Internal("crc32 operand count"))?;
+                let wide = name.ends_with('x');
+                let convert = |value: Value, width: u32| {
+                    self.context.emit_arithmetic_conversion(
+                        value,
+                        Type::Numeric(NumericType::integer(width, false)),
+                        ConversionReason::Explicit,
+                    )
+                };
+                let arguments = vec![
+                    convert(checksum, 32)?,
+                    convert(data, if wide { 64 } else { 32 })?,
+                ];
+                let checksum = self.value(
+                    e,
+                    Type::Numeric(NumericType::integer(32, false)),
+                    ValueKind::Intrinsic {
+                        name: name.into(),
+                        arguments,
+                    },
+                );
+                self.context.emit_arithmetic_conversion(
+                    checksum,
+                    result,
+                    ConversionReason::Explicit,
+                )?
             }
             NeonOp::Table(count) => {
                 let mut operands = arguments;
@@ -353,9 +451,14 @@ impl Lowerer {
         }
         let mut operands = operands
             .into_iter()
-            .map(|value| {
+            .enumerate()
+            .map(|(index, value)| {
+                let ty = match (op, index) {
+                    (NeonOp::Dot, 0) => result.clone(),
+                    _ => operand.clone(),
+                };
                 self.context
-                    .vector_convert(value, operand.clone(), ConversionReason::Explicit)
+                    .vector_convert(value, ty, ConversionReason::Explicit)
             })
             .collect::<Result<Vec<_>, _>>()?;
         let Type::Vector { element, .. } = operand else {
@@ -368,7 +471,10 @@ impl Lowerer {
         else {
             return Err(ResolveError::Internal("neon result shape"));
         };
-        if matches!(op, NeonOp::Widen | NeonOp::Narrow | NeonOp::MultiplyLong) {
+        if matches!(
+            op,
+            NeonOp::Widen | NeonOp::Narrow | NeonOp::MultiplyLong | NeonOp::FloatResize
+        ) {
             let mut converted = operands.into_iter().map(|value| {
                 self.context.elementwise_conversion(
                     value,
@@ -433,6 +539,10 @@ impl Lowerer {
             NeonOp::AbsGreater => "llvm.aarch64.neon.facgt",
             NeonOp::ShiftLeft if signed => "llvm.aarch64.neon.sshl",
             NeonOp::ShiftLeft => "llvm.aarch64.neon.ushl",
+            NeonOp::Direct(_, unsigned) if !float && !signed => unsigned,
+            NeonOp::Direct(name, _) => name,
+            NeonOp::Dot if signed => "llvm.aarch64.neon.sdot",
+            NeonOp::Dot => "llvm.aarch64.neon.udot",
             _ => return Err(ResolveError::Internal("neon lanewise operation")),
         };
         Ok(self.value(
@@ -755,6 +865,72 @@ impl Lowerer {
     }
 }
 
+fn crc_intrinsic(record: &str) -> Option<&'static str> {
+    Some(match record {
+        "crc32b" => "llvm.aarch64.crc32b",
+        "crc32h" => "llvm.aarch64.crc32h",
+        "crc32w" => "llvm.aarch64.crc32w",
+        "crc32d" => "llvm.aarch64.crc32x",
+        "crc32cb" => "llvm.aarch64.crc32cb",
+        "crc32ch" => "llvm.aarch64.crc32ch",
+        "crc32cw" => "llvm.aarch64.crc32cw",
+        "crc32cd" => "llvm.aarch64.crc32cx",
+        _ => return None,
+    })
+}
+
+fn direct_op(name: &str) -> Option<NeonOp> {
+    let same = |name: &'static str| Some(NeonOp::Direct(name, name));
+    let (stem, suffix) = name.rsplit_once('_')?;
+    match (stem, suffix) {
+        ("vdot" | "vdotq", "s32" | "u32") => return Some(NeonOp::Dot),
+        ("vqrdmlah" | "vqrdmlahq", "s16" | "s32") => return same("llvm.aarch64.neon.sqrdmlah"),
+        ("vqrdmlsh" | "vqrdmlshq", "s16" | "s32") => return same("llvm.aarch64.neon.sqrdmlsh"),
+        ("veor3q", _) => {
+            return Some(NeonOp::Direct(
+                "llvm.aarch64.crypto.eor3s",
+                "llvm.aarch64.crypto.eor3u",
+            ));
+        }
+        ("vbcaxq", _) => {
+            return Some(NeonOp::Direct(
+                "llvm.aarch64.crypto.bcaxs",
+                "llvm.aarch64.crypto.bcaxu",
+            ));
+        }
+        _ => {}
+    }
+    let float = matches!(suffix, "f16" | "f32" | "f64");
+    match stem {
+        "vaeseq" => same("llvm.aarch64.crypto.aese"),
+        "vaesdq" => same("llvm.aarch64.crypto.aesd"),
+        "vaesmcq" => same("llvm.aarch64.crypto.aesmc"),
+        "vaesimcq" => same("llvm.aarch64.crypto.aesimc"),
+        "vsha1su0q" => same("llvm.aarch64.crypto.sha1su0"),
+        "vsha1su1q" => same("llvm.aarch64.crypto.sha1su1"),
+        "vsha256hq" => same("llvm.aarch64.crypto.sha256h"),
+        "vsha256h2q" => same("llvm.aarch64.crypto.sha256h2"),
+        "vsha256su0q" => same("llvm.aarch64.crypto.sha256su0"),
+        "vsha256su1q" => same("llvm.aarch64.crypto.sha256su1"),
+        "vsha512hq" => same("llvm.aarch64.crypto.sha512h"),
+        "vsha512h2q" => same("llvm.aarch64.crypto.sha512h2"),
+        "vsha512su0q" => same("llvm.aarch64.crypto.sha512su0"),
+        "vsha512su1q" => same("llvm.aarch64.crypto.sha512su1"),
+        "vrax1q" => same("llvm.aarch64.crypto.rax1"),
+        "vsm4eq" => same("llvm.aarch64.crypto.sm4e"),
+        "vsm4ekeyq" => same("llvm.aarch64.crypto.sm4ekey"),
+        "vcmla" | "vcmlaq" if float => same("llvm.aarch64.neon.vcmla.rot0"),
+        "vcmla_rot90" | "vcmlaq_rot90" if float => same("llvm.aarch64.neon.vcmla.rot90"),
+        "vcmla_rot180" | "vcmlaq_rot180" if float => same("llvm.aarch64.neon.vcmla.rot180"),
+        "vcmla_rot270" | "vcmlaq_rot270" if float => same("llvm.aarch64.neon.vcmla.rot270"),
+        "vrnd32x" | "vrnd32xq" if float => same("llvm.aarch64.neon.frint32x"),
+        "vrnd32z" | "vrnd32zq" if float => same("llvm.aarch64.neon.frint32z"),
+        "vrnd64x" | "vrnd64xq" if float => same("llvm.aarch64.neon.frint64x"),
+        "vrnd64z" | "vrnd64zq" if float => same("llvm.aarch64.neon.frint64z"),
+        _ => None,
+    }
+}
+
 fn convert_rounding(name: &str) -> Option<&'static str> {
     let rest = name.strip_prefix("vcvt")?;
     let (mode, rest) = rest.split_at_checked(1)?;
@@ -777,6 +953,8 @@ enum NeonShape {
     Float,
     Half,
     Double,
+    Quarter,
+    FloatResize,
 }
 
 fn neon_vector(code: u32, shape: NeonShape) -> Option<(Type, Type)> {
@@ -791,12 +969,14 @@ fn neon_vector(code: u32, shape: NeonShape) -> Option<(Type, Type)> {
         4 => NumericType::integer(8, false),
         5 => NumericType::integer(16, false),
         6 => NumericType::integer(64, false),
+        8 => NumericType::Float(FloatType::F16),
         9 => NumericType::Float(FloatType::F32),
         10 => NumericType::Float(FloatType::F64),
         _ => return None,
     };
     let width = match element {
         NumericType::Integer { width, .. } => width,
+        NumericType::Float(FloatType::F16) => 16,
         NumericType::Float(FloatType::F32) => 32,
         NumericType::Float(_) => 64,
     };
@@ -805,6 +985,20 @@ fn neon_vector(code: u32, shape: NeonShape) -> Option<(Type, Type)> {
     let signed = matches!(element, NumericType::Integer { signed: true, .. });
     let operand = match (shape, element) {
         (NeonShape::Same, _) => element,
+        (NeonShape::FloatResize, NumericType::Float(float @ (FloatType::F16 | FloatType::F32))) => {
+            let resized = match float {
+                FloatType::F16 => FloatType::F32,
+                _ => FloatType::F16,
+            };
+            return Some((
+                result,
+                Type::Vector {
+                    element: NumericType::Float(resized),
+                    lanes,
+                },
+            ));
+        }
+        (NeonShape::Float, _) if width == 16 => NumericType::Float(FloatType::F16),
         (NeonShape::Float, _) if width == 32 => NumericType::Float(FloatType::F32),
         (NeonShape::Float, _) if width == 64 => NumericType::Float(FloatType::F64),
         (NeonShape::Half, NumericType::Integer { .. }) if !poly && width >= 16 => {
@@ -812,6 +1006,15 @@ fn neon_vector(code: u32, shape: NeonShape) -> Option<(Type, Type)> {
         }
         (NeonShape::Double, NumericType::Integer { .. }) if width <= 32 && bits == 64 => {
             NumericType::integer(width * 2, signed)
+        }
+        (NeonShape::Quarter, NumericType::Integer { .. }) if width == 32 => {
+            return Some((
+                Type::Vector {
+                    element: NumericType::integer(8, signed),
+                    lanes: lanes * 4,
+                },
+                result,
+            ));
         }
         _ => return None,
     };
@@ -827,6 +1030,7 @@ fn neon_vector(code: u32, shape: NeonShape) -> Option<(Type, Type)> {
 fn element_bytes(element: NumericType) -> u64 {
     match element {
         NumericType::Integer { width, .. } => u64::from(width / 8),
+        NumericType::Float(FloatType::F16) => 2,
         NumericType::Float(FloatType::F32) => 4,
         NumericType::Float(_) => 8,
     }
