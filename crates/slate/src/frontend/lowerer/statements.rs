@@ -485,7 +485,7 @@ impl FunctionLowerer<'_, '_> {
                 body,
                 folded,
             } => self
-                .lower_switch(*id, discriminant, folded.is_some(), body)
+                .lower_switch(*id, discriminant, folded.as_ref(), body)
                 .map_err(|error| error.within(Site::of(statement), "in switch".into()))?,
             ir::Statement::Break(id) => Stmt::Break(Some(self.break_label(*id))),
             ir::Statement::Continue(id) if self.counted_loops.contains(id) => {

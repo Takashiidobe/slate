@@ -177,7 +177,7 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         id: BindingId,
         discriminant: &ir::Value,
-        folded: bool,
+        folded: Option<&ir::Number>,
         body: &[slate_parser::ast::Span<ir::Statement>],
     ) -> Result<Stmt> {
         let arms = switch_arms(id, body)?;
@@ -252,7 +252,7 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         id: BindingId,
         discriminant: &ir::Value,
-        folded: bool,
+        folded: Option<&ir::Number>,
         arms: &[SwitchArm],
     ) -> Result<Stmt> {
         if self
@@ -288,7 +288,11 @@ impl FunctionLowerer<'_, '_> {
         Ok(Stmt::LabeledBlock {
             label: self.break_label(id),
             body: vec![Stmt::Match {
-                expr: self.lower_folded(discriminant, folded, Self::lower_match_scrutinee)?,
+                expr: self.lower_folded(
+                    discriminant,
+                    folded.is_some(),
+                    Self::lower_match_scrutinee,
+                )?,
                 arms: match_arms,
             }],
         })
@@ -298,10 +302,24 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         id: BindingId,
         discriminant: &ir::Value,
-        folded: bool,
+        folded: Option<&ir::Number>,
         arms: &[SwitchArm],
     ) -> Result<Stmt> {
         let case = self.next_temp();
+        if let Some(live) = folded.and_then(|folded| live_arm(arms, folded)) {
+            let reachable = match live {
+                Some(start) => {
+                    let end = arms[start..]
+                        .iter()
+                        .position(|arm| !falls_through(arm))
+                        .map_or(arms.len(), |offset| start + offset + 1);
+                    start..end
+                }
+                None => 0..0,
+            };
+            let init = Expr::Value(rust::RustValue::I64(live.map_or(-1, |index| index as i64)));
+            return self.lower_case_loop(id, case, init, arms, reachable, Vec::new());
+        }
         let case_index = |index: usize| Expr::Value(rust::RustValue::I64(index as i64));
         let mut dispatch = Vec::new();
         for (index, arm) in arms.iter().enumerate().filter(|(_, arm)| !arm.default) {
@@ -320,10 +338,14 @@ impl FunctionLowerer<'_, '_> {
             },
         });
         let init = Expr::Match {
-            expr: Box::new(self.lower_folded(discriminant, folded, Self::lower_match_scrutinee)?),
+            expr: Box::new(self.lower_folded(
+                discriminant,
+                folded.is_some(),
+                Self::lower_match_scrutinee,
+            )?),
             arms: dispatch,
         };
-        self.lower_case_loop(id, case, init, arms, Vec::new())
+        self.lower_case_loop(id, case, init, arms, 0..arms.len(), Vec::new())
     }
 
     fn lower_indexed_switch(
@@ -373,7 +395,7 @@ impl FunctionLowerer<'_, '_> {
             ty: Some(selector_type),
             init: Some(selector_init),
         }];
-        self.lower_case_loop(id, case, init, arms, prelude)
+        self.lower_case_loop(id, case, init, arms, 0..arms.len(), prelude)
     }
 
     fn lower_case_condition(&mut self, selector: &str, value: CaseValue) -> Result<Expr> {
@@ -404,12 +426,16 @@ impl FunctionLowerer<'_, '_> {
         case: String,
         init: Expr,
         arms: &[SwitchArm],
+        reachable: std::ops::Range<usize>,
         mut body_prefix: Vec<Stmt>,
     ) -> Result<Stmt> {
         let label = self.break_label(id);
         let case_index = |index: usize| Expr::Value(rust::RustValue::I64(index as i64));
         let mut match_arms = Vec::new();
         for (index, arm) in arms.iter().enumerate() {
+            if !reachable.contains(&index) {
+                continue;
+            }
             let mut body = self.lower_switch_arm(arm)?;
             if falls_through(arm) {
                 if index + 1 < arms.len() {
@@ -478,6 +504,18 @@ impl FunctionLowerer<'_, '_> {
         }
         Ok(lowered)
     }
+}
+
+fn live_arm(arms: &[SwitchArm], folded: &ir::Number) -> Option<Option<usize>> {
+    let mut live = None;
+    for (index, arm) in arms.iter().enumerate() {
+        for value in &arm.values {
+            if folded_case(value.start, value.end, folded)? && live.is_none() {
+                live = Some(index);
+            }
+        }
+    }
+    Some(live.or_else(|| arms.iter().position(|arm| arm.default)))
 }
 
 pub(super) fn folded_case(

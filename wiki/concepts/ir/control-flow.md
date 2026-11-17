@@ -62,7 +62,8 @@ was.
   `const { size_of::<T>() }`, so rustc's MIR drops the dead arm even at `-O0`;
   only the leaf is wrapped because `ConstBlock` is opaque to rewrites. The
   goto/asm-goto state machine jumps to the live target and drops states only the
-  dead arms reached. Dead arms may hold asm that is invalid for the operand
+  dead arms reached. A folded switch with fallthrough arms lowered as a case
+  loop starts at the live arm and lowers only the arms it falls into. Dead arms may hold asm that is invalid for the operand
   width (`__get_user_size`) or calls to undefined functions (`__get_user_bad`),
   which C never instantiates (`ir_folded_branches.c`,
   `x86_64/asm_folded_size_dispatch.c`).
