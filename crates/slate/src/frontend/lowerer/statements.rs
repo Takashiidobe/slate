@@ -674,10 +674,33 @@ impl FunctionLowerer<'_, '_> {
         let lowered = self.lower_statement_node(statement);
         let before = std::mem::replace(&mut self.pending, outer);
         let lowered = lowered.map_err(|error| error.used_at(Site::of(statement)))?;
+        let diverges = matches!(
+            &statement.value,
+            ir::Statement::Expression(ir::Value {
+                node: Span {
+                    value: ValueKind::Call {
+                        callee: ir::Callee::Direct(id),
+                        ..
+                    },
+                    ..
+                },
+                ..
+            }) if self.tables.returns_through_unit(*id)
+        );
         Ok(before
             .into_iter()
             .chain(std::iter::once(lowered))
             .chain(self.after_declaration.take())
+            .chain(diverges.then(|| {
+                Stmt::Expr(Expr::Unsafe(Box::new(rust::Block {
+                    stmts: Vec::new(),
+                    tail: Some(Box::new(Expr::Call {
+                        func: Box::new(Expr::Var("core::hint::unreachable_unchecked".into())),
+                        args: Vec::new(),
+                        binding: CallBinding::Generated,
+                    })),
+                })))
+            }))
             .collect())
     }
 }

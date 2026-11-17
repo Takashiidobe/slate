@@ -72,6 +72,7 @@ struct FunctionName {
     is_unsafe: bool,
     is_variadic: bool,
     exported: bool,
+    noreturn: bool,
     identity: FunctionIdentity,
 }
 
@@ -664,6 +665,7 @@ impl<'m> ModuleLowerer<'m> {
                         },
                         exported: function.body.is_some()
                             && exports_symbol(options, module, function),
+                        noreturn: function.semantics.noreturn,
                         identity: if function.body.is_none() {
                             let provenance = &function.provenance;
                             let system_headers: Vec<&str> = provenance
@@ -737,6 +739,7 @@ impl<'m> ModuleLowerer<'m> {
                         is_unsafe: variadic || !unit_features.is_empty(),
                         is_variadic: variadic,
                         exported: false,
+                        noreturn: inner.function.semantics.noreturn,
                         identity: FunctionIdentity::Unknown,
                     },
                 );

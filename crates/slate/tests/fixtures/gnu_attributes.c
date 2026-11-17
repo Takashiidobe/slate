@@ -333,6 +333,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(never)) }) != 0 {
 // CHECK-NEXT:         gnu_attribute_noreturn();
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {}", gnu_attribute_layout(),

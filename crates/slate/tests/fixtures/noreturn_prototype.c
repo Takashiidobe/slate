@@ -24,6 +24,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("main");
 // CHECK-NEXT:     bail(7i32);
+// CHECK-NEXT:     unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NEXT: #[unsafe(no_mangle)]

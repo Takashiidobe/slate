@@ -26,6 +26,7 @@ int main(void) {
 // CHECK-NEXT:                 c"int main(void)".as_ptr(),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("after");
 // CHECK-NEXT:     0

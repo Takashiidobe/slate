@@ -661,6 +661,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c11_never_return(status: i32) {
 // CHECK-NEXT:     unsafe { quick_exit(status) };
+// CHECK-NEXT:     unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT: }
 // CHECK-NEXT: fn c11_open_exclusive(path: *const i8) -> *mut slate_support::FILE {
 // CHECK-NEXT:     unsafe { slate_support::fopen(path, c"wx".as_ptr()) }
@@ -896,6 +897,7 @@ int main(void) {
 // CHECK-NEXT:     limits_total += 0;
 // CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(c11_never_flag)) }) != 0 {
 // CHECK-NEXT:         c11_never_return(99i32);
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     print!(
 // CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}", alignment_total,

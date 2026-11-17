@@ -361,6 +361,7 @@ int main(void) {
 // CHECK-NEXT:     let removal_total: i32 = true as i32;
 // CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(c23_never_flag)) }) != 0 {
 // CHECK-NEXT:         c23_never_return();
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     c23_label_before_brace();
 // CHECK-NEXT:     println!(

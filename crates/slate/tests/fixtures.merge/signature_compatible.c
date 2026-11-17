@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-NEXT:   units/signature_compatible_helper.c: [alpha,beta] 4 compiled
 // CHECK-NEXT: total: 12 compiles across 2 targets
 // CHECK-NEXT: unit signature_compatible: 21 items, 3 gated, 0 duplicated functions
-// CHECK-NEXT:   spliced fn:__slate_main: 2 variants
+// CHECK-NEXT:   spliced fn:__slate_main: 4 variants
 // CHECK-NEXT: unit signature_compatible_helper: 24 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT:   hoisted fn:scale: 2 variants
 // CHECK-NEXT:   spliced record:opaque: 2 variants
@@ -135,6 +135,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { quit(0i32) };
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
 // CHECK-EMPTY:

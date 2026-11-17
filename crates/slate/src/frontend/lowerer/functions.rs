@@ -256,6 +256,16 @@ impl Tables<'_> {
         self.names.get(&id)?.builtin.as_deref()
     }
 
+    pub(super) fn returns_through_unit(&self, id: BindingId) -> bool {
+        self.names
+            .get(&id)
+            .is_some_and(|name| name.noreturn && name.builtin.is_none())
+            && self
+                .support_functions
+                .get(&id)
+                .is_none_or(|support| !support.shape.ends_with(" -> !"))
+    }
+
     pub(super) fn builtin_library(&self, id: BindingId) -> Option<&str> {
         self.names.get(&id)?.library.as_deref()
     }

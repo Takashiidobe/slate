@@ -25,6 +25,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     if false {
 // CHECK-NEXT:         die(1i32);
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("main");
 // CHECK-NEXT:     0
