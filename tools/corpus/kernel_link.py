@@ -112,8 +112,8 @@ def unreferenced_probestack(path):
     return None if references else sections[0]
 
 
-def make(build_dir, compiler, jobs, log):
-    command = ["make", f"O={build_dir.name}", f"CC={compiler}", f"HOSTCC={compiler}", f"-j{jobs}", "vmlinux"]
+def make(build_dir, compiler, jobs, log, target="vmlinux"):
+    command = ["make", f"O={build_dir.name}", f"CC={compiler}", f"HOSTCC={compiler}", f"-j{jobs}", target]
     with open(log, "w") as stream:
         return subprocess.run(command, cwd=build_dir.parent, stdout=stream, stderr=subprocess.STDOUT).returncode
 

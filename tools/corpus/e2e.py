@@ -20,12 +20,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "crates/slate-parser/tools"))
+import kernel_boot
 import kernel_link
 import pp_diff
 
 SLATE = ROOT / "target/test-cache/release/slate"
 SETUP = ROOT / "crates/slate-parser/tools/c_corpus_setup.py"
-STAGES = ("native", "barriers", "translate", "check", "build", "link", "bench", "test")
+STAGES = ("native", "barriers", "translate", "check", "build", "link", "boot", "bench", "test")
 COMPILERS = {"clang": "clang", "gcc": "gcc", "clang-aarch64": "clang"}
 CANONICAL_OUT = {("linux", "clang"): Path.home() / "slate-translated/slate-linux"}
 
@@ -1811,29 +1812,36 @@ def sharded_stages(units, project_dir, out, recipe, args, finish):
                   if re.search(r"(: |^)error(\[E\d+\])?:", line) and not line.startswith("error: could not compile")]
         return name, code, errors
 
-    with concurrent.futures.ThreadPoolExecutor(max(1, args.jobs // 4)) as pool:
-        results = list(pool.map(build, shards))
-    clusters = collections.defaultdict(lambda: [0, set(), ""])
-    for name, _, errors in results:
-        for line in errors:
-            cluster = clusters[rustc_error_cluster(line)]
-            cluster[0] += 1
-            cluster[1].add(name)
-            cluster[2] = cluster[2] or line
-    broken = sorted(name for name, code, _ in results if code)
-    report = [f"# build: {len(shards) - len(broken)}/{len(shards)} shards", "",
-              "| errors | shards | cluster | example |", "| --- | --- | --- | --- |"]
-    report += [f"| {count} | {len(names)} | {cluster} | `{example}` |"
-               for cluster, (count, names, example) in sorted(clusters.items(), key=lambda item: -item[1][0])]
-    (out / "build.md").write_text("\n".join(report) + "\n")
-    finish("build", "failed" if broken else "ok", errors=sum(count for count, _, _ in clusters.values()),
-           failed=broken, report="build.md")
+    broken = []
+    built = list(shards)
+    if STAGES.index(args.start) <= STAGES.index("build"):
+        with concurrent.futures.ThreadPoolExecutor(max(1, args.jobs // 4)) as pool:
+            results = list(pool.map(build, shards))
+        clusters = collections.defaultdict(lambda: [0, set(), ""])
+        for name, _, errors in results:
+            for line in errors:
+                cluster = clusters[rustc_error_cluster(line)]
+                cluster[0] += 1
+                cluster[1].add(name)
+                cluster[2] = cluster[2] or line
+        broken = sorted(name for name, code, _ in results if code)
+        report = [f"# build: {len(shards) - len(broken)}/{len(shards)} shards", "",
+                  "| errors | shards | cluster | example |", "| --- | --- | --- | --- |"]
+        report += [f"| {count} | {len(names)} | {cluster} | `{example}` |"
+                   for cluster, (count, names, example) in sorted(clusters.items(), key=lambda item: -item[1][0])]
+        (out / "build.md").write_text("\n".join(report) + "\n")
+        finish("build", "failed" if broken else "ok", errors=sum(count for count, _, _ in clusters.values()),
+               failed=broken, report="build.md")
+        built = [name for name, code, _ in results if not code]
     if not recipe.relink_vmlinux or STAGES.index(args.until) < STAGES.index("link"):
         return 1 if broken else 0
-    built = [name for name, code, _ in results if not code]
-    code, details = kernel_link.link_stage(paths, out, project_dir, args.mode, COMPILERS[args.mode], built,
-                                           args.profile, args.jobs)
-    finish("link", "failed" if code else "ok", **details)
+    if STAGES.index(args.start) <= STAGES.index("link"):
+        code, details = kernel_link.link_stage(paths, out, project_dir, args.mode, COMPILERS[args.mode], built,
+                                               args.profile, args.jobs)
+        if not finish("link", "failed" if code else "ok", **details):
+            return 1 if broken or code else 0
+    code, details = kernel_boot.boot_stage(out, project_dir, args.mode, COMPILERS[args.mode], args.jobs)
+    finish("boot", "failed" if code else "ok", **details)
     return 1 if broken or code else 0
 
 
@@ -1845,8 +1853,9 @@ def main():
     parser.add_argument("--out", type=Path)
     parser.add_argument("--setup", action="store_true", help="rebuild build-<mode> with c_corpus_setup.py first")
     parser.add_argument("--until", choices=STAGES, default=STAGES[-1])
-    parser.add_argument("--from", dest="start", choices=("native", "translate", "build"), default="native",
-                        help="sharded projects: skip the barrier pass, and translate too for build")
+    parser.add_argument("--from", dest="start", choices=("native", "translate", "build", "link", "boot"),
+                        default="native", help="sharded projects: skip the barrier pass and every stage before "
+                                               "this one (link reuses the built shards, boot the linked vmlinux)")
     parser.add_argument("--shards", type=lambda value: set(value.split(",")),
                         help="sharded projects: re-translate only these shards; build and link use all")
     parser.add_argument("--jobs", type=int, default=os.cpu_count() or 8)
