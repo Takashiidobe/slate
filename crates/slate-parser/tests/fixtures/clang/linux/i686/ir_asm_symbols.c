@@ -1,5 +1,5 @@
 // SLATE-FILECHECK-DEFINES IR
-// SLATE-FILECHECK-ARGS --dump-ir
+// SLATE-FILECHECK-ARGS -fno-pic --dump-ir
 // SLATE-FILECHECK-STD IR gnu23
 int g;
 
@@ -31,6 +31,7 @@ void pointer_width_cast(void) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
+// IR-NEXT:     machine [pic=none];
 // IR-NEXT:     global %[[VALUE_g:[0-9]+]] g: i32 [storage=static] [linkage=external];
 // IR-NEXT:     fn %[[VALUE_pointer_width_cast:[0-9]+]] @pointer_width_cast() -> void [linkage=external] [fallthrough=ret_void] {
 // IR-NEXT:         asm "# %0" [dialect=att] [options=nostack] {

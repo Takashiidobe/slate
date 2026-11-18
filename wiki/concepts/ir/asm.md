@@ -162,9 +162,20 @@ whole asm: the first where every operand has a usable class.
   plus a constant offset, through `&`, decay, field and constant index
   projections, constant pointer arithmetic, and pointer-width casts (`(long)&g`,
   not `(int)(long)&g` on x86-64). String literals qualify; automatics and
-  non-constant indices don't; thread-locals only under gcc. Functions are
-  accepted though both compilers reject them under PIE, which isn't modeled
-  (`ir_asm_symbols*.c`).
+  non-constant indices don't; thread-locals only under gcc (`ir_asm_symbols*.c`).
+- On x86 the symbol must also be a link-time address under the unit's PIC mode
+  (`Module.machine.pic`, else PIE on Linux, Android and Darwin and off
+  elsewhere); otherwise `Symbol` is unavailable and `ri`/`g`/`X` fall back to a
+  register, while `i` is rejected as both compilers do. `-fno-pic` allows every
+  symbol. i686 under PIC/PIE allows none. x86_64 always allows internal,
+  hidden and internal-visibility symbols (protected too, except gcc under
+  `-fpic`), and under PIE also symbols defined anywhere in the unit (a
+  pre-pass, `Lowerer::defined_symbols`, or an `alias`) and, for gcc, `extern`
+  variables. clang on x86_64 accepts any symbol with a nonzero offset
+  (`&arr[1]`, `(char *)&g + 3`), because llvm checks for a GOT stub only on a
+  bare global; clang still accepts `s` under PIC; gcc gates both like `i`.
+  Not modeled: mingw/darwin rejecting `extern` symbols (`ir_asm_symbols_pic.c`,
+  `ir_asm_symbols_pie.c`, `ir_asm_symbols_fpic.c`, slate-3f8g.4.43).
 - An `Immediate` input becomes `In(const<ty>(n))`, since Rust's `const` operand
   can't read a C object. The fold follows clang's evaluator: it reads const
   non-volatile objects through their initializers (`static const int k = 2`,
@@ -453,7 +464,10 @@ operands there, bound like a statement asm's; labels are impossible.
   arm/aarch64, as clang prints it (per-cpu `%%gs:%a[var]`,
   `asm_address_modifier.c`, `gcc/x86_64/asm_intel_address_modifier.c`). An
   i686 symbol under `%a` stays a barrier: it is only valid under `-fno-pic`,
-  and Rust's i686 PIE link rejects the absolute relocation (`slate-3f8g.4.43`).
+  and hosted crates always build as PIE, so the absolute relocation would not
+  link. Hosted `-fno-pic` is deliberately not honored: only legacy code needs
+  it, and freestanding builds already get `-Crelocation-model=static`
+  (`slate-3f8g.4.43`).
   Symbol operands use Rust `sym` item paths with signed byte offsets in the
   template; functions retain the C ABI and string operands get named byte-array
   statics.

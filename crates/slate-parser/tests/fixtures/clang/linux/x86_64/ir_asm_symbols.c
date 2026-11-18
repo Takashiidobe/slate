@@ -1,5 +1,5 @@
 // SLATE-FILECHECK-DEFINES IR
-// SLATE-FILECHECK-ARGS --dump-ir
+// SLATE-FILECHECK-ARGS -fno-pic --dump-ir
 // SLATE-FILECHECK-STD IR gnu23
 struct S { int a; int b[3]; } s;
 _Thread_local int t;
@@ -45,6 +45,7 @@ void rejected(int i) {
 // IR-NEXT:         storage d64 [size=8, align=8];
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
+// IR-NEXT:     machine [pic=none];
 // IR-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // IR-NEXT:         field0 a: i32;
 // IR-NEXT:         field1 b: array<i32, 3>;

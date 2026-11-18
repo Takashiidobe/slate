@@ -51,6 +51,7 @@ pub(super) struct Lowerer {
     pub reserved_extents: HashMap<NodeId, BindingId>,
     pub bare_weakrefs: HashSet<BindingId>,
     pub register_variables: HashMap<BindingId, AsmRegister>,
+    pub defined_symbols: HashSet<BindingId>,
     pub nested_functions: Vec<super::nested::NestedScope>,
     pub(super) specializations: super::asm_constants::Specializations,
 }

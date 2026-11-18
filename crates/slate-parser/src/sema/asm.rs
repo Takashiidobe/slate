@@ -6,9 +6,10 @@ use super::operand::Lvalue;
 use super::types::TypeResolver;
 use crate::ast;
 use crate::compiler_args::CompilerFlavor;
+use crate::compiler_options::Pic;
 use crate::ir::*;
 use crate::target::flag_condition;
-use crate::target_info::TargetFamily;
+use crate::target_info::{TargetFamily, TargetOs};
 use foldhash::HashMap;
 use num_bigint::BigInt;
 
@@ -400,10 +401,16 @@ impl Lowerer {
         }
         let target = self.types.fold_target();
         let objects = self.types.entities.constants();
+        let symbol_letter = constraint.alternatives.iter().any(|alternative| {
+            matches!(&alternative.location, AsmConstraintLocation::Letters { letters, .. } if letters.contains('s'))
+        });
         let (constant, symbol) = match &candidate {
             Candidate::Value(value) => (
                 integer_with_objects(value, target, objects),
-                self.symbol(value),
+                self.symbol(value).filter(|symbol| {
+                    self.link_time_address(symbol)
+                        || (symbol_letter && !self.types.flavor().is_gcc())
+                }),
             ),
             Candidate::Lvalue { lvalue, .. } => {
                 (read_with_objects(&lvalue.place, target, objects), None)
@@ -545,6 +552,52 @@ impl Lowerer {
         (matches!(selected, Some(AsmOperandClass::Memory))
             && self.binding_storage(symbol.binding) == Some(StorageDuration::Static))
         .then_some(symbol)
+    }
+
+    fn link_time_address(&self, symbol: &AsmSymbol) -> bool {
+        let binding = symbol.binding;
+        let target = &self.context.target;
+        let default = matches!(
+            target.os,
+            TargetOs::Linux | TargetOs::Android | TargetOs::Darwin
+        )
+        .then_some(Pic {
+            level: 2,
+            executable: true,
+        });
+        let Some(pic) = self
+            .module
+            .machine
+            .pic
+            .or(default)
+            .filter(|pic| pic.level > 0)
+        else {
+            return true;
+        };
+        if target.family != TargetFamily::X86_64 {
+            return target.family != TargetFamily::X86;
+        }
+        let entities = &self.types.entities;
+        let gcc = self.types.flavor().is_gcc();
+        if !gcc && symbol.offset != 0 {
+            return true;
+        }
+        let attributes = entities.symbol(binding);
+        let visibility = attributes.and_then(|attributes| attributes.visibility);
+        let weak = attributes.is_some_and(|attributes| attributes.weak);
+        let function = self.binding_storage(binding).is_none();
+        match entities.linkage(binding) {
+            Some(Linkage::External) => {}
+            _ => return true,
+        }
+        if matches!(visibility, Some(Visibility::Hidden | Visibility::Internal))
+            || (visibility == Some(Visibility::Protected) && !gcc)
+        {
+            return true;
+        }
+        let defined = self.defined_symbols.contains(&binding)
+            || attributes.is_some_and(|attributes| attributes.alias.is_some());
+        pic.executable && (defined || (gcc && !function && !weak))
     }
 
     fn binding_storage(&self, binding: BindingId) -> Option<StorageDuration> {

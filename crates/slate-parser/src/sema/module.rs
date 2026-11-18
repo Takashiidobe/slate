@@ -74,10 +74,12 @@ fn resolve_module(
     module.null_pointer_is_valid = !types.dialect().options().codegen.delete_null_pointer_checks;
     module.machine = crate::ir::MachineCodegen::from_options(&types.dialect().options().codegen);
     module.linker_options = types.pragmas.linker_options().to_vec();
+    let defined_symbols = defined_symbols(unit, &names);
     let mut lower = Lowerer {
         types,
         module,
         names,
+        defined_symbols,
         function_declarations: HashMap::new(),
         function_target: Vec::new(),
         builtin_declarations: HashMap::new(),
@@ -292,6 +294,29 @@ struct Produced {
     globals: Vec<NodeId>,
     functions: Vec<NodeId>,
     redefined: Option<NodeId>,
+}
+
+fn defined_symbols(unit: &TranslationUnit, names: &NameResolution) -> HashSet<BindingId> {
+    let mut defined = HashSet::new();
+    for declaration in &unit.decls {
+        match &declaration.value {
+            DeclKind::Function(_) => defined.extend(names.declarations.get(&declaration.id)),
+            DeclKind::Declaration(item) if item.specifiers.storage != StorageClass::Typedef => {
+                let tentative = item.specifiers.storage != StorageClass::Extern;
+                defined.extend(
+                    item.declarators
+                        .iter()
+                        .filter(|declarator| {
+                            declarator.declarator.function_parameters().is_none()
+                                && (tentative || declarator.initializer.is_some())
+                        })
+                        .filter_map(|declarator| names.declarations.get(&declarator.id)),
+                );
+            }
+            _ => {}
+        }
+    }
+    defined
 }
 
 fn defines_symbol(declaration: &DeclKind) -> bool {
