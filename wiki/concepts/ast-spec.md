@@ -30,7 +30,7 @@
 - [Early validation](#early-validation)
 - [Post-C89 constructs in older
   modes](#post-c89-constructs-in-older-modes)
-- [Migration](#migration)
+- [Known divergences](#known-divergences)
 <!-- /toc -->
 
 The AST is the syntactic form of one preprocessed translation unit, close to the
@@ -40,7 +40,8 @@ Sema. Update this page with any `src/ast.rs` or parser change.
 - Printed syntax: [ast-grammar](ast-grammar.md).
 - Exhaustive match sites: [ast-enum-touchpoints](ast-enum-touchpoints.md).
 - What it lowers into: [ir-spec](ir-spec.md).
-- [Migration](#migration) lists where `src/ast.rs` differs from this spec.
+- [Known divergences](#known-divergences) lists work the parser does that sema
+  could own, and why it stays.
 
 ## Pipeline and responsibilities
 
@@ -125,7 +126,7 @@ pp ──▶ parser ──▶ AST ──▶ src/sema/ (validation + resolution +
 ```
 TranslationUnit {
     items: Vec<ExternalItem>,
-    tags: Vec<TagDefinition>,      // indexed by TagId
+    tags: Vec<Span<TagDefinition>>, // sorted by TagId, gaps after pruning; look up with `tag(id)`
     dialect: Dialect,              // flavor, standard, features, effective target, options
     macros: MacroInvocations,      // not printed by AST dumps
     macro_type_arguments: Vec<MacroTypeArgument>, // parsed type of each type argument, not printed
@@ -216,24 +217,24 @@ The parser accepts conflicting specifiers where unambiguous; sema rejects.
 
 The base type; never pointers, arrays, or functions (those are declarators).
 
-| Variant                                                            | Source                                                                                                          |
-| ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
-| `Void`, `Bool`                                                     | `void`, `_Bool`/`bool`                                                                                          |
-| `Char { signed: Option<bool> }`                                    | `char` / `signed char` / `unsigned char`; MS `__int8`                                                           |
-| `Int { rank: Short \| Int \| Long \| LongLong \| Int128, signed }` | incl. `__int128_t`/`__uint128_t`; MS `__int16`/`__int32`/`__int64`; `signed: None` when `signed` is not written |
-| `BitInt { width: Expr, signed }`                                   | `_BitInt(N)`, width unevaluated                                                                                 |
-| `Float(FloatKind)`                                                 | `float`, `double`, `long double`, `_Float16`, `__fp16`, `_Float128`, …                                          |
-| `Float(Decimal32 \| Decimal64 \| Decimal64x \| Decimal128)`        | `_Decimal32/64/64x/128`; literals `DF`/`DD`/`DL`, `D64x`; `d`/`D` spellings of `D32`, `D64`, `D128` also work   |
-| `Complex(FloatKind)`, `Imaginary(FloatKind)`                       |                                                                                                                 |
-| `FixedPoint { kind, rank, signed, saturated }`                     | `_Fract`/`_Accum`, any order, signed unless `unsigned`                                                          |
-| `Atomic(TypeName)`                                                 | `_Atomic(T)`                                                                                                    |
-| `TypeOf { unqual: bool, operand: TypeOfOperand }`                  | `typeof(expr)` / `typeof(type-name)`                                                                            |
-| `TypedefName(Span<String>)`                                        | known typedef name; `NodeId` keys the reference                                                                 |
-| `Tag(TagSpecifier)`                                                | `struct`/`union`/`enum`                                                                                         |
-| `TargetBuiltin(String)`                                            | `__builtin_va_list`                                                                                             |
-| `Inferred`                                                         | `__auto_type`, C23 `auto`                                                                                       |
-| `Vector { element, size }`                                         | GNU vectors                                                                                                     |
-| `Mode { base, mode }`                                              | `__attribute__((mode(M)))`, name as spelled                                                                     |
+| Variant                                                                     | Source                                                                                                          |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `Void`, `Bool`                                                              | `void`, `_Bool`/`bool`                                                                                          |
+| `Integer(Char { signed: Option<bool> })`                                    | `char` / `signed char` / `unsigned char`; MS `__int8`                                                           |
+| `Integer(Ranked { rank: Short \| Int \| Long \| LongLong \| Int128, signed })` | incl. `__int128_t`/`__uint128_t`; MS `__int16`/`__int32`/`__int64`; `signed: None` when `signed` is not written |
+| `Integer(BitInt { width: Expr, signed })`                                   | `_BitInt(N)`, width unevaluated                                                                                 |
+| `Floating(FloatingType)`                                                    | `float`, `double`, `long double`, `_Float16`, `__fp16`, `_Float128`, …                                          |
+| `Floating(Decimal32 \| Decimal64 \| Decimal64x \| Decimal128)`              | `_Decimal32/64/64x/128`; literals `DF`/`DD`/`DL`, `D64x`; `d`/`D` spellings of `D32`, `D64`, `D128` also work   |
+| `Complex(Box<TypeSpecifier>)`, `Imaginary(Box<TypeSpecifier>)`              | `_Complex T`; boxed, not a float kind, so GNU complex integers (`_Complex int`) are representable               |
+| `FixedPoint(FixedPointType { kind, rank, signed, saturated })`              | `_Fract`/`_Accum`, any order, signed unless `unsigned`                                                          |
+| `Atomic(Box<TypeName>)`                                                     | `_Atomic(T)`                                                                                                    |
+| `TypeOf(TypeOfOperand)`, `TypeOfUnqual(TypeOfOperand)`                      | `typeof(expr)` / `typeof(type-name)`, and the `_unqual` forms                                                   |
+| `Named(Span<String>)`                                                       | known typedef name; `NodeId` keys the reference                                                                 |
+| `Tag(TagSpecifier)`                                                         | `struct`/`union`/`enum`                                                                                         |
+| `TargetBuiltin(String)`                                                     | `__builtin_va_list`                                                                                             |
+| `Inferred`                                                                  | `__auto_type`, C23 `auto`                                                                                       |
+| `Vector(VectorType { element, size })`                                      | GNU vectors                                                                                                     |
+| `Mode(ModeType { base, mode })`                                             | `__attribute__((mode(M)))`, name as spelled                                                                     |
 
 Decimal floating types are accepted in every mode and target
 (`StandardFeatures::decimal_floating_point`: `Standard` from C23, else
@@ -428,10 +429,10 @@ TagSpecifier =
 TagDefinition { id: TagId, kind: TagKind, name: Option<String>, attributes, body: TagBody, provenance }
 
 TagBody =
-    | Record(Vec<MemberItem>)
+    | Record(Vec<FieldItem>)
     | Enum { fixed_type: Option<TypeName>, enumerators: Vec<EnumItem> }   // C23 `enum E : int`
 
-MemberItem = Field(FieldDeclaration) | StaticAssert | CommentGroup | ExtraSemi
+FieldItem = Field(FieldDeclaration) | StaticAssert | Pragma | CommentGroup | ExtraSemi
 FieldDeclaration { specifiers, declarators: Vec<FieldDeclarator>, provenance }   // empty: anonymous member
 FieldDeclarator { declarator: Declarator, bit_width: Option<Expr>, attributes, provenance }
 EnumItem = Enumerator { name, value: Option<Expr>, attributes, provenance } | CommentGroup
@@ -604,7 +605,7 @@ Taxonomy and rationale: [comment-placement](comment-placement.md).
   multi-line calls) become `Trailing` siblings after it.
 - `doc`: the first comment starts with `/**`, `/*!`, `///`, or `//!` (not
   `/**/`, `/***`, `////`).
-- Groups appear as `ExternalItem`, `BlockItem`, `MemberItem`, `EnumItem`, and
+- Groups appear as `ExternalItem`, `BlockItem`, `FieldItem`, `EnumItem`, and
   `ParameterDeclaration.comments`. A parameter takes the comments inside its
   tokens and the `Trailing` comments after its comma.
 
@@ -718,7 +719,7 @@ StringLiteral {
 Initializer = Expr(Expr) | List(InitializerList)
 InitializerList { items: Vec<InitializerItem>, trailing_comma: bool }
 InitializerItem { designators: Vec<Designator>, value: Initializer }
-Designator = Field(Span<String>) | Index(Expr) | IndexRange { start: Expr, end: Expr }   // GNU range
+Designator = Field(Span<String>) | Array(Expr) | ArrayRange { start: Expr, end: Expr }   // GNU range
 ```
 
 Designator indices are unevaluated.
@@ -803,16 +804,22 @@ so the `e`/`p` sign rule doesn't apply across it: `0x0'e-0xe` is `0x0'e`, `-`,
   `maxof-bitint575.c`. Integer-operand validation, result typing, range
   evaluation, and IR lowering remain unimplemented.
 
-## Migration
+## Known divergences
 
-Where `src/ast.rs` differs from this spec.
+Places where the parser does work a cleaner split would give sema. They are
+kept on purpose; none is pending migration work.
 
-| Current                                                                                                                                | Target                                                               |
-| -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `TagSpecifier::Reference` holds an optional boxed fixed enum type; `TagBody::Record` holds `FieldItem`                                 | `MemberItem`, `EnumItem`; opaque C23 enum declarations keep `: type` |
-| `TypeSpecifier` uses `Integer(IntegerType)`, `Floating(FloatingType)`, `Complex(Box<TypeSpecifier>)`, `Named`, `TypeOf`/`TypeOfUnqual` | names and shapes in the `TypeSpecifier` table                        |
-| `TranslationUnit.tags` is `Vec<Span<TagDefinition>>` with gaps after pruning; use `TranslationUnit::tag`                               | indexed by `TagId` once pruning moves to the IR pipeline             |
-| `Designator::Array` / `ArrayRange`                                                                                                     | `Index` / `IndexRange`                                               |
-| bare `aligned` reads `__BIGGEST_ALIGNMENT__` in the parser                                                                             | argument-less `Aligned`, value chosen in sema                        |
-| `validate.rs` returns errors only; rejects tag definitions in parameter lists                                                          | returns checked AST plus diagnostics                                 |
-| parser calls `filter_translation_unit` before resolution                                                                               | IR pipeline prunes resolved dependencies from explicit roots         |
+- Bare `aligned` reads `__BIGGEST_ALIGNMENT__` in the parser
+  (`parser/declarator.rs`) instead of producing an argument-less `Aligned` for
+  sema to resolve.
+- `validate.rs` returns errors only (it rejects tag definitions in parameter
+  lists) instead of a checked AST plus diagnostics.
+- The parser calls `filter_translation_unit` before name resolution, so pruning
+  is by name, not by resolved entity
+  ([reachability pruning](ir/pipeline.md#reachability-pruning)). Pruning after
+  resolution would drop the name-based rules, but resolving every header
+  declaration is too slow: on a `#include <windows.h>` TU (msvc, x86_64,
+  2026-11-18) `ir` takes 0.79s pruned and 1.29s with `--all-declarations`,
+  against 0.14s for `clang -fsyntax-only`. Revisit only once sema is close to
+  clang's per-declaration cost. This is also why `TranslationUnit.tags` has
+  gaps.
