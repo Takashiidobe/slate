@@ -20,7 +20,7 @@ struct Uses {
 impl Uses {
     fn of(body: &mut Vec<Span<Statement>>) -> Self {
         let mut uses = Self::default();
-        walk_macro_structure(body, &mut uses);
+        walk_body(body, &mut uses);
         uses
     }
 
@@ -36,7 +36,7 @@ impl Uses {
     }
 }
 
-impl MacroStructureVisitor for Uses {
+impl Visitor for Uses {
     fn statement(&mut self, statement: &Statement) {
         match statement {
             Statement::Let(variable) => {
@@ -77,7 +77,7 @@ struct Redirect<'a> {
     candidates: &'a HashSet<BindingId>,
 }
 
-impl MacroStructureVisitor for Redirect<'_> {
+impl Visitor for Redirect<'_> {
     fn rewrite_value(&mut self, value: &mut Value) {
         let ValueKind::Call {
             callee: Callee::Direct(callee),
@@ -105,7 +105,7 @@ struct Reselect<'a> {
     known: &'a Known,
 }
 
-impl MacroStructureVisitor for Reselect<'_> {
+impl Visitor for Reselect<'_> {
     fn rewrite_statement(&mut self, statement: &mut Statement) {
         if let Statement::Asm(asm) = statement {
             self.lower.reselect(asm, self.known);
@@ -121,7 +121,7 @@ fn entry_prefix(body: &[Span<Statement>], entry: &Known) -> usize {
     for statement in body {
         let mut single = vec![statement.clone()];
         let mut targets = JumpTargets::default();
-        walk_macro_structure(&mut single, &mut targets);
+        walk_body(&mut single, &mut targets);
         if targets.labels {
             break;
         }
@@ -156,25 +156,25 @@ impl JumpTargets {
 
     pub(super) fn of_statements(body: &mut Vec<Span<Statement>>) -> bool {
         let mut targets = Self::default();
-        walk_macro_structure(body, &mut targets);
+        walk_body(body, &mut targets);
         targets.enterable()
     }
 
     pub(super) fn of_switch(id: BindingId, body: &mut Vec<Span<Statement>>) -> bool {
         let mut targets = Self::default();
         targets.switches.insert(id);
-        walk_macro_structure(body, &mut targets);
+        walk_body(body, &mut targets);
         targets.enterable()
     }
 
     fn of_value(value: &mut Value) -> bool {
         let mut targets = Self::default();
-        walk_value_structure(value, &mut targets);
+        walk_value(value, &mut targets);
         targets.enterable()
     }
 }
 
-impl MacroStructureVisitor for JumpTargets {
+impl Visitor for JumpTargets {
     fn statement(&mut self, statement: &Statement) {
         match statement {
             Statement::Label { .. } => self.labels = true,
@@ -206,7 +206,7 @@ impl DeadArms<'_> {
         }
         let taken = self.lower.folded_condition(condition)?;
         let mut tested = Uses::default();
-        walk_value_structure(condition, &mut tested);
+        walk_value(condition, &mut tested);
         (self.needs_resolution(&tested) || self.needs_resolution(&unanswered_arm(taken)))
             .then_some(taken)
     }
@@ -220,7 +220,7 @@ impl DeadArms<'_> {
     }
 }
 
-impl MacroStructureVisitor for DeadArms<'_> {
+impl Visitor for DeadArms<'_> {
     fn rewrite_statement(&mut self, statement: &mut Statement) {
         let Statement::If {
             condition,
@@ -281,7 +281,7 @@ impl MacroStructureVisitor for DeadArms<'_> {
             } else {
                 &mut **then_value
             };
-            walk_value_structure(dropped, &mut uses);
+            walk_value(dropped, &mut uses);
             uses
         }) else {
             return;
@@ -316,7 +316,7 @@ impl Lowerer {
                 continue;
             };
             let known = self.known_locals(&mut body, Known::new());
-            walk_macro_structure(
+            walk_body(
                 &mut body,
                 &mut Reselect {
                     lower: self,
@@ -349,7 +349,7 @@ impl Lowerer {
                 continue;
             };
             let known = self.known_locals(&mut body, Known::new());
-            walk_macro_structure(
+            walk_body(
                 &mut body,
                 &mut Redirect {
                     lower: self,
@@ -405,7 +405,7 @@ impl Lowerer {
                 unresolved,
                 pruned: false,
             };
-            walk_macro_structure(&mut body, &mut dead);
+            walk_body(&mut body, &mut dead);
             pruned |= dead.pruned;
             self.module.functions[index].value.body = Some(body);
         }
@@ -517,8 +517,8 @@ impl Lowerer {
         let mut at_entry = known.clone();
         at_entry.extend(entry);
         for (part, known) in [(&mut body, &at_entry), (&mut rest, &known)] {
-            walk_macro_structure(part, &mut Reselect { lower: self, known });
-            walk_macro_structure(
+            walk_body(part, &mut Reselect { lower: self, known });
+            walk_body(
                 part,
                 &mut Redirect {
                     lower: self,
@@ -587,7 +587,7 @@ impl Lowerer {
             for global in &mut self.module.globals {
                 if let Some(initializer) = &mut global.value.variable.initializer {
                     let mut uses = Uses::default();
-                    walk_value_structure(initializer, &mut uses);
+                    walk_value(initializer, &mut uses);
                     referenced.extend(uses.references());
                 }
             }

@@ -326,7 +326,7 @@ fn operand_name(operand: &ast::AsmOperand) -> Option<String> {
 
 pub(super) fn substitute(value: &Value, known: &HashMap<BindingId, Value>) -> Value {
     struct Substitute<'a>(&'a HashMap<BindingId, Value>);
-    impl MacroStructureVisitor for Substitute<'_> {
+    impl Visitor for Substitute<'_> {
         fn rewrite_value(&mut self, value: &mut Value) {
             if let ValueKind::Read { place, .. } = &value.node.value
                 && let PlaceKind::Binding(id) = place.without_macro_holes().kind
@@ -337,7 +337,7 @@ pub(super) fn substitute(value: &Value, known: &HashMap<BindingId, Value>) -> Va
         }
     }
     let mut value = value.clone();
-    walk_value_structure(&mut value, &mut Substitute(known));
+    walk_value(&mut value, &mut Substitute(known));
     value
 }
 

@@ -539,7 +539,7 @@ pub(super) fn folded_case(
 #[derive(Default)]
 struct Mentions(HashSet<BindingId>);
 
-impl ir::MacroStructureVisitor for Mentions {
+impl ir::Visitor for Mentions {
     fn binding(&mut self, binding: BindingId) {
         self.0.insert(binding);
     }
@@ -552,7 +552,7 @@ fn arm_mentions(arm: &SwitchArm) -> HashSet<BindingId> {
         .map(|statement| (*statement).clone())
         .collect();
     let mut mentions = Mentions::default();
-    ir::walk_macro_structure(&mut body, &mut mentions);
+    ir::walk_body(&mut body, &mut mentions);
     mentions.0
 }
 

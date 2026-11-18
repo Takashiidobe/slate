@@ -8,7 +8,7 @@ struct FoldedBranches<'a> {
     lower: &'a Lowerer,
 }
 
-impl MacroStructureVisitor for FoldedBranches<'_> {
+impl Visitor for FoldedBranches<'_> {
     fn rewrite_statement(&mut self, statement: &mut Statement) {
         match statement {
             Statement::If {
@@ -69,7 +69,7 @@ impl Lowerer {
             let Some(mut body) = self.module.functions[index].value.body.take() else {
                 continue;
             };
-            walk_macro_structure(&mut body, &mut FoldedBranches { lower: self });
+            walk_body(&mut body, &mut FoldedBranches { lower: self });
             self.module.functions[index].value.body = Some(body);
         }
     }

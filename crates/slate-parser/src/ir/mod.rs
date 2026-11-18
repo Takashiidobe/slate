@@ -5,10 +5,9 @@ mod c_types;
 mod comments;
 mod declarations;
 mod macro_strip;
-pub use macro_strip::{
-    MacroStructureVisitor, strip_all_macro_structure, strip_all_macro_structure_in_value,
-    walk_macro_structure, walk_value_structure,
-};
+pub use macro_strip::{strip_all_macro_structure, strip_all_macro_structure_in_value};
+mod visit;
+pub use visit::{Visitor, walk_body, walk_value};
 mod module;
 mod module_print;
 mod names;

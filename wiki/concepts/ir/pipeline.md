@@ -6,6 +6,7 @@
 - [Node identity and metadata](#node-identity-and-metadata)
   - [C type metadata](#c-type-metadata)
   - [Macro invocations](#macro-invocations)
+- [Walking the IR](#walking-the-ir)
 - [Dumps and CLI](#dumps-and-cli)
 - [Constant evaluation is required, not an
   optimization](#constant-evaluation-is-required-not-an-optimization)
@@ -175,13 +176,25 @@ exhaustiveness does not reach them.
 picks the expansions that are safe to lift from a normalized module. Hoisting
 has already kept value expansions together by then and cannot be undone, so
 `finish_module` puts the unnormalized bodies back, calls
-`Module::strip_macro_structure` (`ir/macro_strip.rs`) to remove the expansions
+`Module::strip_macro_structure` (`ir/macro_strip.rs`, an `ir::Visitor` whose
+`keep` drops expansions) to remove the expansions
 `keep` rejected, and normalizes again. A stripped expansion therefore hoists
 exactly as if it had no structure and stays inline in the
 [generated Rust](../slate-architecture.md#macro-templates).
 
 Per-value expansion chains are not in the IR yet (only atomic builtins record
 `c_macro`); see [open design](open-design.md#macro-provenance).
+
+## Walking the IR
+
+`ir::Visitor` with `ir::walk_body` / `ir::walk_value` (`ir/visit.rs`) is the one
+IR traversal; do not hand-roll another. It visits every `Statement`,
+`PlaceKind`, and `ValueKind` through `&mut`. Observe hooks (`statement`,
+`value_kind`, `place_kind`, `binding`) run before the children; rewrite hooks
+(`rewrite_place`, `rewrite_value`, `rewrite_statement`) run after them, bottom
+up. The macro hooks (`keep`, `enter_expansion`, value and place holes) default
+to keeping and ignoring macro structure. A new variant must be added to the
+walker's matches, which are exhaustive.
 
 ## Dumps and CLI
 

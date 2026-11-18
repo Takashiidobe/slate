@@ -2,8 +2,7 @@ use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 
 use slate_parser::ast::{MacroCover, MacroDefinition, MacroExpansionId, MacroInvocations};
 use slate_parser::ir::{
-    BindingId, MacroStructureVisitor, Module, Place, PlaceKind, Statement, Type, ValueKind,
-    walk_macro_structure,
+    BindingId, Module, Place, PlaceKind, Statement, Type, ValueKind, Visitor, walk_body,
 };
 
 use crate::backend::rust_ast::is_valid_macro_template_base;
@@ -86,7 +85,7 @@ impl Survey<'_> {
     }
 }
 
-impl MacroStructureVisitor for Survey<'_> {
+impl Visitor for Survey<'_> {
     fn statement(&mut self, statement: &Statement) {
         match statement {
             Statement::Let(variable) => {
@@ -298,7 +297,7 @@ impl CallerLocals<'_> {
     }
 }
 
-impl MacroStructureVisitor for CallerLocals<'_> {
+impl Visitor for CallerLocals<'_> {
     fn statement(&mut self, statement: &Statement) {
         match statement {
             Statement::Let(variable) => self.declare(variable.id),
@@ -413,7 +412,7 @@ pub(super) fn pass_caller_locals(module: &mut Module) {
             declared: HashMap::new(),
             hidden: std::mem::take(&mut hidden),
         };
-        walk_macro_structure(body, &mut locals);
+        walk_body(body, &mut locals);
         hidden = locals.hidden;
     }
     module.macro_hidden_arguments = hidden;
@@ -438,7 +437,7 @@ pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> 
             reserves_storage: HashSet::new(),
             argument_values: HashMap::new(),
         };
-        walk_macro_structure(body, &mut survey);
+        walk_body(body, &mut survey);
         if survey.has_jump {
             for expansion in std::mem::take(&mut survey.reserves_storage) {
                 survey.reject(expansion, "storage_in_dispatch_function");
