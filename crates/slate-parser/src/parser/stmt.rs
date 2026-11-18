@@ -196,8 +196,16 @@ impl Parser {
                     })
                 })
                 .partition(|stmt| matches!(stmt.value, StmtKind::Pragma(_)));
-            stmts.extend(pragmas);
+            let (floating, hoisted): (Vec<_>, Vec<_>) = pragmas.into_iter().partition(|stmt| {
+                matches!(
+                    &stmt.value,
+                    StmtKind::Pragma(pragma)
+                        if matches!(pragma.kind, PragmaKind::Stdc { .. } | PragmaKind::FloatControl(_))
+                )
+            });
+            stmts.extend(hoisted);
             stmts.push(span_tokens(stmt, &tokens[start..position], self.context()));
+            stmts.extend(floating);
             stmts.extend(comments);
         }
         stmts.extend(self.statement_annotations(tokens, tokens.len(), tokens.len())?);
