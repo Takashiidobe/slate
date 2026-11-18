@@ -4,7 +4,7 @@
 #if !defined(_WIN64) || !defined(_WIN32) || _MSC_VER != 1951 || !defined(_M_ARM64)
 #error missing native MSVC target predefines
 #endif
-#if defined(__linux__) || defined(__SLATE_LIBC_GLIBC) || defined(__clang__) || defined(__LDBL_MANT_DIG__)
+#if defined(__linux__) || defined(__clang__) || defined(__LDBL_MANT_DIG__)
 #error foreign predefines on native MSVC target
 #endif
 

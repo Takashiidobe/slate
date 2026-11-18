@@ -13,7 +13,7 @@
 #if __SIZEOF_LONG__ != 4 || __SIZEOF_LONG_DOUBLE__ != 8 || __SIZEOF_POINTER__ != 4 || __SIZEOF_WCHAR_T__ != 2 || defined(__CHAR_UNSIGNED__)
 #error wrong Windows on Arm32 data model
 #endif
-#if defined(__linux__) || defined(__ARM_EABI__) || defined(__ELF__) || defined(__SLATE_LIBC_GLIBC) || defined(_M_ARM64)
+#if defined(__linux__) || defined(__ARM_EABI__) || defined(__ELF__) || defined(_M_ARM64)
 #error foreign predefines on Windows on Arm32
 #endif
 

@@ -7,7 +7,7 @@
 #if __SIZEOF_LONG__ != 4 || __SIZEOF_LONG_DOUBLE__ != 8 || __SIZEOF_POINTER__ != 8 || __SIZEOF_WCHAR_T__ != 2
 #error wrong Windows data model
 #endif
-#if defined(__linux__) || defined(__SLATE_LIBC_GLIBC)
+#if defined(__linux__)
 #error Linux predefines on Windows target
 #endif
 

@@ -5,18 +5,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 TRIPLE = "x86_64-unknown-linux-gnu"
 MULTIARCH = "x86_64-linux-gnu"
-DEFINES = [
-    "-D__SLATE_ARCH_X86_64",
-    "-D__SLATE_VENDOR_UNKNOWN",
-    "-D__SLATE_KERNEL_LINUX",
-    "-D__SLATE_LIBC_GLIBC",
-    "-D__SLATE_OBJ_ELF",
-    "-D__SLATE_WORDSIZE_64",
-    "-D__SLATE_ENDIAN_LITTLE",
-]
 TARGETS = {
-    "crates/slate/compile_flags.txt": ["-std=c23", *DEFINES[:4], "-D__SLATE_GLIBC_MINOR__=43", *DEFINES[4:]],
-    "crates/slate/tests/fixtures.chibicc/compile_flags.txt": ["-std=gnu11", *DEFINES],
+    "crates/slate/compile_flags.txt": ["-std=c23"],
+    "crates/slate/tests/fixtures.chibicc/compile_flags.txt": ["-std=gnu11"],
 }
 
 

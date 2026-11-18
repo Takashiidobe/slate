@@ -10,7 +10,7 @@
 #if __SIZEOF_LONG__ != 4 || __SIZEOF_LONG_DOUBLE__ != 8 || __SIZEOF_POINTER__ != 4 || __SIZEOF_WCHAR_T__ != 2
 #error wrong Win32 data model
 #endif
-#if defined(__linux__) || defined(__SLATE_LIBC_GLIBC) || defined(_M_X64)
+#if defined(__linux__) || defined(_M_X64)
 #error foreign predefines on Win32 target
 #endif
 #if !defined(i386)

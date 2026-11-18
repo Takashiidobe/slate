@@ -172,7 +172,7 @@ const I686_LINUX_GNU: Predefines = Predefines {
     flavors: CLANG_AND_MSVC,
     name: "<clang-i686-linux-gnu-predefines>",
     source: include_str!("predefines/clang-23.1.4_i686_linux_gnu.h"),
-    defaults: include_str!("predefines/slate_x86_linux_defaults.h"),
+    defaults: "",
     gnu_namespace: include_str!("predefines/slate_gnu_namespace_i686_linux.h"),
 };
 
@@ -194,7 +194,7 @@ const AARCH64_LINUX_GNU: Predefines = Predefines {
     flavors: CLANG_AND_MSVC,
     name: "<clang-aarch64-linux-gnu-predefines>",
     source: include_str!("predefines/clang-23.1.4_aarch64_linux_gnu.h"),
-    defaults: include_str!("predefines/slate_aarch64_linux_defaults.h"),
+    defaults: "",
     gnu_namespace: LINUX_GNU_NAMESPACE,
 };
 
@@ -205,13 +205,11 @@ const AARCH64_LINUX_GNU_GCC: Predefines = Predefines {
     ..AARCH64_LINUX_GNU
 };
 
-const ARM32_LINUX_DEFAULTS: &str = include_str!("predefines/slate_arm32_linux_defaults.h");
-
 const ARM32_LINUX_GNU_GCC: Predefines = Predefines {
     flavors: GCC,
     name: "<gcc-armv7-linux-gnueabi-predefines>",
     source: include_str!("predefines/gcc-15.2.1_armv7_linux_gnueabihf.h"),
-    defaults: ARM32_LINUX_DEFAULTS,
+    defaults: "",
     gnu_namespace: LINUX_GNU_NAMESPACE,
 };
 
@@ -428,7 +426,7 @@ pub const TARGETS: &[TargetSpec] = &[
                     flavors: CLANG_AND_MSVC,
                     name: "<clang-armv7-linux-gnueabi-predefines>",
                     source: include_str!("predefines/clang-23.1.4_armv7_linux_gnueabi.h"),
-                    defaults: ARM32_LINUX_DEFAULTS,
+                    defaults: "",
                     gnu_namespace: LINUX_GNU_NAMESPACE,
                 },
                 ARM32_LINUX_GNU_GCC,
@@ -445,7 +443,7 @@ pub const TARGETS: &[TargetSpec] = &[
                     flavors: CLANG_AND_MSVC,
                     name: "<clang-armv7-linux-gnueabihf-predefines>",
                     source: include_str!("predefines/clang-23.1.4_armv7_linux_gnueabihf.h"),
-                    defaults: ARM32_LINUX_DEFAULTS,
+                    defaults: "",
                     gnu_namespace: LINUX_GNU_NAMESPACE,
                 },
                 ARM32_LINUX_GNU_GCC,
