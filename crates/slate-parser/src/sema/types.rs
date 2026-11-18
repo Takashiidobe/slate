@@ -1111,20 +1111,18 @@ impl TypeResolver {
                         "sizeof of a variably modified type is not a constant",
                     ));
                 }
-                let layout = self
-                    .measured_storage(
-                        &self.ir_type(ty),
-                        self.ctypes.quals(ty).is_atomic,
-                        matches!(e.value, ExprKind::SizeOfExpr(_)),
-                    )
-                    .map_err(|error| match error {
-                        ResolveError::Rejected("incomplete field type")
-                            if matches!(e.value, ExprKind::SizeOfExpr(_)) =>
-                        {
-                            ResolveError::Rejected("sizeof of incomplete type")
-                        }
-                        error => error,
-                    })?;
+                let atomic = self.ctypes.quals(ty).is_atomic;
+                let layout = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
+                    self.measured_storage(&self.ir_type(ty), atomic, true)
+                        .map_err(|error| match error {
+                            ResolveError::Rejected("incomplete field type") => {
+                                ResolveError::Rejected("sizeof of incomplete type")
+                            }
+                            error => error,
+                        })?
+                } else {
+                    self.alignof_object_storage(&self.ir_type(ty), atomic)?
+                };
                 let layout = self.declared_storage(ty, layout)?;
                 let n = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
@@ -3976,6 +3974,24 @@ impl TypeResolver {
             ty = element;
         }
         self.sizeof_storage(ty.clone(), atomic)
+    }
+
+    pub(super) fn alignof_object_storage(
+        &self,
+        ty: &Type,
+        atomic: bool,
+    ) -> Result<StorageLayout, ResolveError> {
+        match self.measured_storage(ty, atomic, false) {
+            Err(ResolveError::Rejected("incomplete field type"))
+                if matches!(self.dialect.flavor(), CompilerFlavor::Gcc) =>
+            {
+                Ok(StorageLayout {
+                    size_bytes: 0,
+                    alignment_bytes: 1,
+                })
+            }
+            layout => layout,
+        }
     }
 
     fn atomic_layout(&self, layout: StorageLayout) -> StorageLayout {

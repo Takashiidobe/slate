@@ -2210,9 +2210,12 @@ impl TypeResolver {
             return Err(FAILED_DEFINITION);
         }
         let atomic = self.access_of(c).atomic;
-        let layout = self
-            .measured_storage(&ty, atomic, sizeof)
-            .map_err(|error| if sizeof { sizeof_error(error) } else { error })?;
+        let layout = if sizeof {
+            self.measured_storage(&ty, atomic, true)
+                .map_err(sizeof_error)?
+        } else {
+            self.alignof_object_storage(&ty, atomic)?
+        };
         self.declared_storage(c, layout)?;
         Ok(())
     }

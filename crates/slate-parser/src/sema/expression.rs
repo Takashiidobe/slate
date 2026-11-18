@@ -3393,14 +3393,14 @@ impl Lowerer {
                     let size = self.runtime_size(e, &ty)?;
                     return Ok(self.after_operand(e, evaluated, size));
                 }
-                let measured = self
-                    .types
-                    .measured_storage(
-                        &ty,
-                        access.atomic,
-                        matches!(e.value, ExprKind::SizeOfExpr(_)),
-                    )
-                    .map_err(ResolveError::checked)?;
+                let sizeof = matches!(e.value, ExprKind::SizeOfExpr(_));
+                let measurable = self.types.measured_storage(&ty, access.atomic, sizeof);
+                let queryable = measurable.is_ok();
+                let measured = match measurable {
+                    Err(_) if !sizeof => self.types.alignof_object_storage(&ty, access.atomic),
+                    measured => measured,
+                }
+                .map_err(ResolveError::checked)?;
                 let layout = self.types.declared_storage(c, measured)?;
                 let amount = if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                     layout.size_bytes
@@ -3410,7 +3410,7 @@ impl Lowerer {
                             .preferred_alignment(e, &ty, u64::from(layout.alignment_bytes));
                     self.types.object_alignment(operand, natural)
                 };
-                if !access.atomic && layout == measured {
+                if !access.atomic && layout == measured && queryable {
                     if matches!(e.value, ExprKind::SizeOfExpr(_)) {
                         let query = LayoutQuery::SizeOf { ty, c };
                         return Ok(self.layout_query(e, query, amount));
