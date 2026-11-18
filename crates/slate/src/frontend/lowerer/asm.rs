@@ -288,6 +288,7 @@ fn intel_size(operand: &ir::AsmOperand) -> Result<&'static str> {
 enum Slot {
     Positional(usize),
     MemorySymbol(usize, i64),
+    GlobalMemorySymbol(BindingId, i64),
     Flags(usize, Option<usize>),
     Register(&'static str),
     PairLow(&'static str),
@@ -936,6 +937,30 @@ fn asm_template(
                             _ => template
                                 .operand(Operand::new(slot))
                                 .text(&format!("{displacement}(%rip)")),
+                        };
+                        continue;
+                    }
+                    Slot::GlobalMemorySymbol(id, offset) => {
+                        let offset = match modifier {
+                            None | Some('b' | 'h' | 'w' | 'k' | 'q') => offset,
+                            Some('H') => offset + 8,
+                            _ => {
+                                return Err(unsupported_asm(format!(
+                                    "memory modifier {modifier:?}"
+                                )));
+                            }
+                        };
+                        let displacement = match offset {
+                            0 => String::new(),
+                            offset => format!("{offset:+}"),
+                        };
+                        let name = &names.global_symbols[&id];
+                        match asm.dialect {
+                            Some(ir::AsmDialect::Intel) => template.text(&format!(
+                                "{} ptr [rip + {name}{displacement}]",
+                                intel_size(operand)?
+                            )),
+                            _ => template.text(&format!("{name}{displacement}(%rip)")),
                         };
                         continue;
                     }
@@ -2261,6 +2286,10 @@ impl FunctionLowerer<'_, '_> {
                         .address
                         .filter(|symbol| self.asm_memory_symbol(symbol)) =>
                 {
+                    if self.tables.asm_global_symbols.contains_key(&symbol.binding) {
+                        slots.push(Slot::GlobalMemorySymbol(symbol.binding, symbol.offset));
+                        continue;
+                    }
                     slots.push(Slot::MemorySymbol(operands.len(), symbol.offset));
                     operands.push(rust::AsmOperand::Sym(self.asm_symbol(&ir::AsmSymbol {
                         offset: 0,

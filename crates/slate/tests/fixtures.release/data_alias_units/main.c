@@ -8,6 +8,7 @@ int sbox_at(int i);
 extern const void *alias_refs[2];
 extern const void *alias_operand_refs[2];
 void emit_alias_operand_refs(void);
+int read_sbox_memory(void);
 
 int main(void) {
   emit_alias_operand_refs();
@@ -16,5 +17,6 @@ int main(void) {
   printf("%d %d\n", alias_refs[0] == crypto_sbox, alias_refs[1] == table_alias);
   printf("%d %d\n", alias_operand_refs[0] == crypto_sbox,
          alias_operand_refs[1] == table_alias);
+  printf("%d\n", read_sbox_memory());
   return 0;
 }

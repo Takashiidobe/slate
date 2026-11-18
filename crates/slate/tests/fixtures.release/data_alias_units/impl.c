@@ -1,3 +1,4 @@
+// { dg-options "-fPIE" }
 static const unsigned char sbox[4] = {1, 2, 3, 4};
 extern const unsigned char crypto_sbox[4] __attribute__((alias("sbox")));
 
@@ -15,8 +16,15 @@ void emit_alias_operand_refs(void) {
                    : "i"(crypto_sbox), "i"(table_alias));
 }
 
+int read_sbox_memory(void) {
+  unsigned int value;
+  __asm__("movzbl %1, %0" : "=r"(value) : "m"(crypto_sbox));
+  return value;
+}
+
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}static sbox: [u8; 4] = [1, 2, 3, 4];
+// CHECK: {{^}}/// { dg-options "-fPIE" }
+// CHECK-NEXT: static sbox: [u8; 4] = [1, 2, 3, 4];
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut table: [i32; 3] = [10, 20, 30];
@@ -43,6 +51,16 @@ void emit_alias_operand_refs(void) {
 // CHECK-NEXT:             options(nostack, att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: pub fn read_sbox_memory() -> i32 {
+// CHECK-NEXT:     let mut value: u32 = 0;
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
+// CHECK-NEXT:         core::arch::asm!("movzbl crypto_sbox(%rip), {0:e}", lateout(reg) [[T_0]], options(pure, readonly, nostack, att_syntax));
+// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     value as i32
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END
