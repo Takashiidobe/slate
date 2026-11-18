@@ -409,9 +409,16 @@ pub struct Merged {
     pub features: BTreeSet<String>,
     pub target_guard: Item,
     pub unit_cfgs: BTreeMap<String, Cfg>,
+    pub target_codegen: Vec<TargetCodegen>,
     report: String,
     pub mismatches: usize,
     pub signature_mismatches: usize,
+}
+
+pub struct TargetCodegen {
+    pub triple: String,
+    pub cfg: Cfg,
+    pub programs: Vec<(String, Program)>,
 }
 
 impl Merged {
@@ -516,11 +523,13 @@ struct TargetUnit {
 
 struct TargetBuild {
     name: String,
+    triple: String,
     cfg: Cfg,
     properties: BTreeSet<Cfg>,
     owners: CommonOwners,
     symbol_owners: SymbolOwners,
     units: Vec<TargetUnit>,
+    codegen: Vec<(String, Program)>,
 }
 
 fn subset(relevant: &[String], mask: u32) -> Vec<String> {
@@ -832,14 +841,34 @@ fn prepare_target(matrix: &Matrix, target: &str) -> Result<TargetBuild, String> 
         built.push(explored_unit(&unit, rows, interner));
     }
     let info = matrix_target_info(matrix, target)?;
+    let codegen = parsed
+        .iter()
+        .map(|unit| (unit.stem.clone(), codegen_facts(&unit.module)))
+        .collect();
     Ok(TargetBuild {
         name: target.to_string(),
+        triple: info.triple.clone(),
         cfg: target_cfg(&info),
         properties: super::cfg::target_properties(&info),
         owners,
         symbol_owners,
         units: built,
+        codegen,
     })
+}
+
+fn codegen_facts(module: &Module) -> Program {
+    let machine = module.machine;
+    Program {
+        runtime: crate::backend::rust_ast::Runtime::for_module(module),
+        stack_protector: machine.stack_protector,
+        stack_protector_guard: machine.stack_protector_guard,
+        sanitize: machine.sanitize,
+        reg_struct_return: machine.reg_struct_return,
+        regparm: machine.regparm,
+        linux: module.target.os == slate_parser::target_info::TargetOs::Linux,
+        ..Default::default()
+    }
 }
 
 fn is_valid(matrix: &Matrix, relevant: &[String], mask: u32) -> bool {
@@ -2120,6 +2149,14 @@ pub fn merge(
         units.iter_mut().map(|(_, program)| program),
     );
     let shared_macros = share_macros(&mut units);
+    let target_codegen = builds
+        .into_iter()
+        .map(|build| TargetCodegen {
+            triple: build.triple,
+            cfg: build.cfg,
+            programs: build.codegen,
+        })
+        .collect();
     Ok(Merged {
         units,
         shared_macros,
@@ -2127,6 +2164,7 @@ pub fn merge(
         features,
         target_guard,
         unit_cfgs,
+        target_codegen,
         report,
         mismatches: result.mismatches.len(),
         signature_mismatches: signature_mismatches.len(),

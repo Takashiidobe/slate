@@ -72,6 +72,20 @@ cargo run --release -p slate-c2rust -- translate \
   first error but followed by whatever else no longer resolves. The guard only
   sees `target_arch`, the OS and `target_env`, so a target that shares all three
   with a selected one, such as x32 with x86_64 linux gnu, still passes it.
+  Per-target codegen rustflags (`-Zstack-protector`, `-Zsanitizer`,
+  `-Zreg-struct-return`, `-Zregparm`) go into Cargo profiles, because Cargo has
+  no per-target package rustflags and `.cargo/config.toml` target rustflags
+  also reach the dependencies. The host target, or the first one when the host
+  is not selected, uses the `dev`/`release` package rustflags; each target
+  whose flags differ gets `[profile.<triple>] inherits = "release"` with its
+  own package rustflags. Every profile adds `--cfg slate_profile_<name>`, and a
+  `compile_error!` per target fails the build when it is built with another
+  target's profile (`build i686-unknown-linux-gnu with --profile
+  i686-unknown-linux-gnu`). rustc cannot compile a build script for an x86_64
+  host with `-Zregparm` or `-Zreg-struct-return`, and package rustflags beat
+  `build-override`, so a crate with those flags has no `build.rs`: the Linux
+  `-Wl,-z,nostart-stop-gc` link argument becomes a `-Clink-arg` rustflag, and
+  long double C shims are refused.
   `--check-projection` is an independent check: it translates whole-project
   configurations directly and requires the items the merged crate resolves to
   for that configuration; `all` covers every valid feature subset, and

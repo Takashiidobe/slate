@@ -72,7 +72,8 @@ fn resolve_module(
     module.hosted = types.dialect().options().hosted;
     module.nostdinc = types.dialect().options().nostdinc;
     module.null_pointer_is_valid = !types.dialect().options().codegen.delete_null_pointer_checks;
-    module.machine = crate::ir::MachineCodegen::from_options(&types.dialect().options().codegen);
+    module.machine =
+        crate::ir::MachineCodegen::from_options(&types.dialect().options().codegen, &module.target);
     module.linker_options = types.pragmas.linker_options().to_vec();
     let defined_symbols = defined_symbols(unit, &names);
     let mut lower = Lowerer {

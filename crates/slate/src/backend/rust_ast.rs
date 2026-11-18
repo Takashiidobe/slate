@@ -20,6 +20,9 @@ pub struct Program {
     pub stack_protector: Option<slate_parser::compiler_options::StackProtector>,
     pub stack_protector_guard: bool,
     pub sanitize: Option<slate_parser::sanitizers::Instrumentation>,
+    pub reg_struct_return: bool,
+    pub regparm: u8,
+    pub linux: bool,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]

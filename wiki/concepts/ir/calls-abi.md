@@ -5,6 +5,8 @@
 - [ABI signatures](#abi-signatures)
   - [`native_c` means trust rustc](#native_c-means-trust-rustc)
   - [`x86_win32`](#x86_win32)
+  - [`x86_cdecl` with
+    `-freg-struct-return`](#x86_cdecl-with--freg-struct-return)
   - [x86-64 `vectorcall`](#x86-64-vectorcall)
   - [i686 `vectorcall`](#i686-vectorcall)
   - [Vectors](#vectors)
@@ -109,6 +111,29 @@ i686-pc-windows-msvc cdecl (clang's `X86_32ABIInfo` with `IsWin32StructABI`):
   in registers, so the rest are explicit `sret`. An empty record result is
   `void`.
 - Fixture: `clang/windows/i686/abi_target.c`.
+
+### `x86_cdecl` with `-freg-struct-return`
+
+`-freg-struct-return` on i686 Linux sets `MachineCodegen.reg_struct_return`
+(printed `machine [reg_struct_return]`), and slate builds the crate with
+`-Zreg-struct-return -Cunsafe-allow-abi-mismatch=reg-struct-return`.
+
+- C (clang and gcc): a record, union, or complex result of 1, 2, 4, or 8 bytes
+  returns in registers only when every non-empty field is register-sized; a
+  single `float`/`double` that fills the record returns in x87. gcc returns an
+  empty record through `sret`, clang drops it.
+- rustc: every 1/2/4/8-byte result returns in registers (a single float field
+  that fills the record as `f32`/`f64`), a zero-size one is `void`.
+- The result prints `native_c` when both agree. Otherwise it prints the C shape
+  and slate rejects the function (`struct { char a[3]; char b; }`, gcc's empty
+  record).
+- `-mregparm=N` sets `MachineCodegen.regparm` (`regparm=N`) and slate passes
+  `-Zregparm=N` without checking it. rustc diverges from gcc for `long long`
+  and small record arguments (rust-lang/rust#145694) and for the `sret`
+  pointer.
+- Fixtures: `{clang,gcc}/linux/i686/abi_convention_flags.c`,
+  `fixtures.dylink/abi_reg_struct_return`,
+  `fixtures.unsupported/i686/reg_struct_return_divergent.c`.
 
 ### x86-64 `vectorcall`
 

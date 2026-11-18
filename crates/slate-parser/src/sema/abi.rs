@@ -1001,30 +1001,65 @@ impl<'a> AbiClassifier<'a> {
                 | AbiConvention::Aapcs32
                 | AbiConvention::Aapcs32HardFloat,
             ) if size > 0 => Some(AbiPass::SRet { align }),
-            (StructReturn::Registers, AbiConvention::X86Cdecl)
-                if self.is_empty_record(record.ty) =>
-            {
-                Some(if self.types.flavor().is_gcc() {
-                    AbiPass::SRet {
-                        align: align.min(4),
+            (StructReturn::Registers, AbiConvention::X86Cdecl) => {
+                let c = if self.is_empty_record(record.ty) {
+                    if self.types.flavor().is_gcc() {
+                        AbiPass::SRet {
+                            align: align.min(4),
+                        }
+                    } else {
+                        AbiPass::Void
                     }
+                } else if matches!(size, 1 | 2 | 4 | 8)
+                    && self.win32_returns_in_register(record.ty)?
+                {
+                    register_result(size, self.single_float_element(record.ty))
                 } else {
-                    AbiPass::Void
-                })
-            }
-            (StructReturn::Registers, AbiConvention::X86Cdecl)
-                if matches!(size, 1 | 2 | 4 | 8)
-                    && self.win32_returns_in_register(record.ty)? =>
-            {
-                Some(AbiPass::Coerce(vec![
-                    match self.single_float_element(record.ty) {
-                        Some(format) => AbiChunk::Float(format),
-                        None => AbiChunk::Integer((size * 8) as u32),
-                    },
-                ]))
+                    AbiPass::SRet { align }
+                };
+                let rustc = match size {
+                    0 => AbiPass::Void,
+                    1 | 2 | 4 | 8 => {
+                        register_result(size, self.rust_single_float_element(record.ty))
+                    }
+                    _ => AbiPass::SRet { align },
+                };
+                Some(if c == rustc { AbiPass::NativeC } else { c })
             }
             _ => None,
         })
+    }
+
+    fn rust_single_float_element(&self, ty: &Type) -> Option<FloatType> {
+        match ty {
+            Type::Numeric(NumericType::Float(format @ (FloatType::F32 | FloatType::F64))) => {
+                Some(*format)
+            }
+            Type::Array {
+                element,
+                length: Some(1),
+            } => self.rust_single_float_element(element),
+            Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
+                TypeDefinitionKind::Alias(inner) => self.rust_single_float_element(inner),
+                TypeDefinitionKind::Record {
+                    kind,
+                    fields: Some(fields),
+                    ..
+                } => {
+                    let mut members = fields.iter().filter(|field| !self.is_empty_field(field));
+                    let first = self.rust_single_float_element(&members.next()?.ty)?;
+                    let mut rest = members.map(|field| self.rust_single_float_element(&field.ty));
+                    match kind {
+                        RecordKind::Struct => rest.next().is_none().then_some(first),
+                        RecordKind::Union => {
+                            rest.all(|other| other == Some(first)).then_some(first)
+                        }
+                    }
+                }
+                _ => None,
+            },
+            _ => None,
+        }
     }
 
     fn single_float_element(&self, ty: &Type) -> Option<FloatType> {
@@ -1039,7 +1074,6 @@ impl<'a> AbiClassifier<'a> {
             Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
                 TypeDefinitionKind::Alias(inner) => self.single_float_element(inner),
                 TypeDefinitionKind::Record {
-                    kind: RecordKind::Struct,
                     fields: Some(fields),
                     ..
                 } => {
@@ -1686,6 +1720,14 @@ fn sysv_pass(shape: SysvShape, align: u32, result: bool) -> AbiPass {
 
 const WIN32_VECTOR_REGISTERS: usize = 3;
 const VECTORCALL_VECTOR_REGISTERS: usize = 6;
+
+fn register_result(size: u64, single_float: Option<FloatType>) -> AbiPass {
+    let fills = |format: &FloatType| size == if *format == FloatType::F32 { 4 } else { 8 };
+    AbiPass::Coerce(vec![match single_float.filter(fills) {
+        Some(format) => AbiChunk::Float(format),
+        None => AbiChunk::Integer((size * 8) as u32),
+    }])
+}
 
 fn integer_chunks(size: u64, width: u32) -> AbiPass {
     let bytes = u64::from(width / 8);

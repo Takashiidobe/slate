@@ -505,6 +505,194 @@ fn crate_sanitizer(programs: &[(String, rust_ast::Program)]) -> Option<&'static 
     }
 }
 
+#[derive(Clone)]
+struct TargetFlags {
+    triple: String,
+    cfg: Option<rust_ast::Cfg>,
+    linux: bool,
+    rustflags: Vec<String>,
+}
+
+struct TargetProfile {
+    name: String,
+    rustflags: Vec<String>,
+}
+
+struct ProfilePlan {
+    build_script: bool,
+    default_flags: Vec<String>,
+    targets: Vec<TargetProfile>,
+    guards: Vec<rust_ast::Item>,
+}
+
+impl ProfilePlan {
+    fn new(targets: &[TargetFlags], links: bool) -> Self {
+        let build_script = !targets
+            .iter()
+            .flat_map(|target| &target.rustflags)
+            .any(|flag| flag.starts_with("-Zregparm=") || flag == "-Zreg-struct-return");
+        let flags_of = |target: &TargetFlags| {
+            let mut flags = target.rustflags.clone();
+            if !build_script && links && target.linux {
+                flags.push("-Clink-arg=-Wl,-z,nostart-stop-gc".to_string());
+            }
+            flags
+        };
+        let Some(default) = targets
+            .iter()
+            .find(|target| target.triple == env!("SLATE_BUILD_TARGET"))
+            .or_else(|| targets.first())
+        else {
+            return Self {
+                build_script,
+                default_flags: Vec::new(),
+                targets: Vec::new(),
+                guards: Vec::new(),
+            };
+        };
+        let mut default_flags = flags_of(default);
+        let others: Vec<(&TargetFlags, Vec<String>)> = targets
+            .iter()
+            .filter(|target| target.triple != default.triple)
+            .map(|target| (target, flags_of(target)))
+            .filter(|(_, flags)| *flags != default_flags)
+            .collect();
+        if others.is_empty() {
+            return Self {
+                build_script,
+                default_flags,
+                targets: Vec::new(),
+                guards: Vec::new(),
+            };
+        }
+        let cfg_name = |profile: &str| {
+            format!(
+                "slate_profile_{}",
+                profile.replace(|c: char| !c.is_ascii_alphanumeric(), "_")
+            )
+        };
+        let names: Vec<String> = std::iter::once("default".to_string())
+            .chain(
+                others
+                    .iter()
+                    .map(|(target, _)| target.triple.replace('.', "_")),
+            )
+            .collect();
+        let check_cfg = format!(
+            "--check-cfg=cfg({})",
+            names
+                .iter()
+                .map(|name| cfg_name(name))
+                .collect::<Vec<_>>()
+                .join(", ")
+        );
+        let guard = |target: &TargetFlags, profile: &str, message: String| {
+            target.cfg.clone().map(|cfg| rust_ast::Item::Cfg {
+                cfg: rust_ast::Cfg::All(vec![
+                    cfg,
+                    rust_ast::Cfg::Not(Box::new(rust_ast::Cfg::Flag(cfg_name(profile)))),
+                ]),
+                item: Box::new(rust_ast::Item::Macro {
+                    name: "compile_error".into(),
+                    args: vec![rust_ast::Expr::Str(message)],
+                }),
+            })
+        };
+        default_flags.extend(["--cfg".to_string(), cfg_name("default"), check_cfg.clone()]);
+        let mut guards: Vec<rust_ast::Item> = guard(
+            default,
+            "default",
+            format!("build {} with the dev or release profile", default.triple),
+        )
+        .into_iter()
+        .collect();
+        let mut profiles = Vec::new();
+        for ((target, mut flags), name) in others.into_iter().zip(names.into_iter().skip(1)) {
+            flags.extend(["--cfg".to_string(), cfg_name(&name), check_cfg.clone()]);
+            guards.extend(guard(
+                target,
+                &name,
+                format!("build {} with --profile {name}", target.triple),
+            ));
+            profiles.push(TargetProfile {
+                name,
+                rustflags: flags,
+            });
+        }
+        Self {
+            build_script,
+            default_flags,
+            targets: profiles,
+            guards,
+        }
+    }
+}
+
+fn crate_codegen_rustflags(
+    programs: &[(String, rust_ast::Program)],
+) -> Result<Vec<String>, String> {
+    Ok(crate_stack_protector(programs)
+        .map(|level| format!("-Zstack-protector={level}"))
+        .into_iter()
+        .chain(crate_sanitizer(programs).into_iter().flat_map(|sanitizer| {
+            [
+                format!("-Zsanitizer={sanitizer}"),
+                "-Cunsafe-allow-abi-mismatch=sanitizer".to_string(),
+            ]
+        }))
+        .chain(crate_call_abi_rustflags(programs)?)
+        .collect())
+}
+
+fn crate_call_abi_rustflags(
+    programs: &[(String, rust_ast::Program)],
+) -> Result<Vec<String>, String> {
+    let settings: BTreeSet<(bool, u8)> = programs
+        .iter()
+        .map(|(_, program)| (program.reg_struct_return, program.regparm))
+        .collect();
+    let [(reg_struct_return, regparm)] = settings.iter().copied().collect::<Vec<_>>()[..] else {
+        if settings.is_empty() {
+            return Ok(Vec::new());
+        }
+        let units: Vec<String> = programs
+            .iter()
+            .map(|(stem, program)| {
+                format!(
+                    "{stem} ({}struct-return, regparm={})",
+                    if program.reg_struct_return {
+                        "reg-"
+                    } else {
+                        "pcc-"
+                    },
+                    program.regparm
+                )
+            })
+            .collect();
+        return Err(format!(
+            "units disagree on -freg-struct-return or -mregparm, which rustc sets per crate: {}",
+            units.join(", ")
+        ));
+    };
+    let mut flags = Vec::new();
+    let mut mismatches = Vec::new();
+    if reg_struct_return {
+        flags.push("-Zreg-struct-return".to_string());
+        mismatches.push("reg-struct-return");
+    }
+    if regparm > 0 {
+        flags.push(format!("-Zregparm={regparm}"));
+        mismatches.push("regparm");
+    }
+    if !mismatches.is_empty() {
+        flags.push(format!(
+            "-Cunsafe-allow-abi-mismatch={}",
+            mismatches.join(",")
+        ));
+    }
+    Ok(flags)
+}
+
 fn link_order_sensitive(programs: &[(String, rust_ast::Program)]) -> bool {
     fn placement(item: &rust_ast::Item) -> Option<Option<&str>> {
         match item {
@@ -584,6 +772,7 @@ fn crate_manifest(
     freestanding: bool,
     link_order: bool,
     codegen_rustflags: &[String],
+    target_profiles: &[TargetProfile],
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
 ) -> String {
@@ -605,34 +794,45 @@ fn crate_manifest(
     } else {
         format!("\n[profile.release]\n{release_panic}{release_incremental}")
     };
-    let package_flags: Vec<String> = LINK_ORDER_RUSTFLAGS
-        .iter()
-        .filter(|_| link_order)
-        .map(|flag| flag.to_string())
-        .chain(codegen_rustflags.iter().cloned())
-        .collect();
-    let (cargo_features_line, package_profiles) = if package_flags.is_empty() {
-        ("", String::new())
-    } else {
-        let flags = package_flags
+    let package_flags = |codegen: &[String]| -> String {
+        LINK_ORDER_RUSTFLAGS
             .iter()
+            .filter(|_| link_order)
+            .map(|flag| flag.to_string())
+            .chain(codegen.iter().cloned())
             .map(|flag| format!("\"{flag}\""))
             .collect::<Vec<_>>()
-            .join(", ");
-        let codegen_units = if link_order {
-            format!("codegen-units = {LINK_ORDER_CODEGEN_UNITS}\n")
-        } else {
-            String::new()
-        };
-        let profiles: String = ["dev", "release"]
+            .join(", ")
+    };
+    let codegen_units = if link_order {
+        format!("codegen-units = {LINK_ORDER_CODEGEN_UNITS}\n")
+    } else {
+        String::new()
+    };
+    let default_flags = package_flags(codegen_rustflags);
+    let mut package_profiles: String = if default_flags.is_empty() {
+        String::new()
+    } else {
+        ["dev", "release"]
             .iter()
             .map(|profile| {
                 format!(
-                    "\n[profile.{profile}.package.{package}]\n{codegen_units}rustflags = [{flags}]\n"
+                    "\n[profile.{profile}.package.{package}]\n{codegen_units}rustflags = [{default_flags}]\n"
                 )
             })
-            .collect();
-        ("cargo-features = [\"profile-rustflags\"]\n\n", profiles)
+            .collect()
+    };
+    for profile in target_profiles {
+        package_profiles.push_str(&format!(
+            "\n[profile.{name}]\ninherits = \"release\"\n\n[profile.{name}.package.{package}]\n{codegen_units}rustflags = [{}]\n",
+            package_flags(&profile.rustflags),
+            name = profile.name,
+        ));
+    }
+    let cargo_features_line = if package_profiles.is_empty() {
+        ""
+    } else {
+        "cargo-features = [\"profile-rustflags\"]\n\n"
     };
     let test_targets: String = tests
         .iter()
@@ -718,6 +918,7 @@ fn write_crate_manifest(
     freestanding: bool,
     link_order: bool,
     codegen_rustflags: &[String],
+    target_profiles: &[TargetProfile],
     cargo_features: &BTreeSet<String>,
     lib_crate_types: Option<&[String]>,
 ) -> Result<(), String> {
@@ -731,6 +932,7 @@ fn write_crate_manifest(
             freestanding,
             link_order,
             codegen_rustflags,
+            target_profiles,
             cargo_features,
             lib_crate_types,
         ),
@@ -751,6 +953,7 @@ fn init_crate(crate_dir: &Path, lib_crate_types: Option<&[String]>) -> Result<()
         false,
         false,
         false,
+        &[],
         &[],
         &BTreeSet::new(),
         lib_crate_types,
@@ -1233,6 +1436,18 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
         print!("{report}");
         let mismatches = merged.mismatches;
         let signature_mismatches = merged.signature_mismatches;
+        let target_rustflags = merged
+            .target_codegen
+            .iter()
+            .map(|target| {
+                Ok(TargetFlags {
+                    triple: target.triple.clone(),
+                    cfg: Some(target.cfg.clone()),
+                    linux: target.programs.iter().any(|(_, program)| program.linux),
+                    rustflags: crate_codegen_rustflags(&target.programs)?,
+                })
+            })
+            .collect::<Result<Vec<_>, String>>()?;
         let written = write_project_crate(
             Path::new(paths[1]),
             merged.units,
@@ -1244,6 +1459,7 @@ fn translate_project_command(args: &[String]) -> Result<String, String> {
             merged.shared_macros,
             &merged.unit_cfgs,
             &BTreeMap::new(),
+            &target_rustflags,
         )?;
         let report_path = Path::new(paths[1]).join("merge-report.txt");
         std::fs::write(&report_path, report)
@@ -1491,6 +1707,7 @@ fn translate_slate_project(
         None,
         &BTreeMap::new(),
         &unit_files,
+        &[],
     )?;
     build_target::BuildTarget::write_config(target.as_ref(), crate_dir)?;
     Ok(written)
@@ -1557,6 +1774,7 @@ fn write_project_crate(
     shared_macros: Option<rust_ast::Program>,
     unit_cfgs: &BTreeMap<String, rust_ast::Cfg>,
     unit_files: &BTreeMap<String, PathBuf>,
+    target_rustflags: &[TargetFlags],
 ) -> Result<String, String> {
     let lib_crate_types = match &root {
         Some(root) => {
@@ -1584,8 +1802,28 @@ fn write_project_crate(
     let macro_module = shared_macros.as_ref().map(|_| rust_ast::Item::MacroUseMod {
         name: rust_ast::Ident::new(SHARED_MACROS_MODULE),
     });
+    let link_arg_target = if root.is_some() {
+        Some("bins")
+    } else {
+        lib_crate_types
+            .as_deref()
+            .is_some_and(|types| types.iter().any(|ty| ty == "cdylib"))
+            .then_some("cdylib")
+    };
+    let targets = if target_rustflags.is_empty() {
+        vec![TargetFlags {
+            triple: String::new(),
+            cfg: None,
+            linux: programs.iter().any(|(_, program)| program.linux),
+            rustflags: crate_codegen_rustflags(&programs)?,
+        }]
+    } else {
+        target_rustflags.to_vec()
+    };
+    let profiles = ProfilePlan::new(&targets, link_arg_target.is_some());
     let children: Vec<rust_ast::Item> = target_guard
         .into_iter()
+        .chain(profiles.guards.iter().cloned())
         .chain(macro_module)
         .chain(shared_module)
         .chain(
@@ -1672,20 +1910,6 @@ fn write_project_crate(
         root.as_deref(),
         unit_files,
     )?;
-    let codegen_rustflags: Vec<String> = crate_stack_protector(&programs)
-        .map(|level| format!("-Zstack-protector={level}"))
-        .into_iter()
-        .chain(
-            crate_sanitizer(&programs)
-                .into_iter()
-                .flat_map(|sanitizer| {
-                    [
-                        format!("-Zsanitizer={sanitizer}"),
-                        "-Cunsafe-allow-abi-mismatch=sanitizer".to_string(),
-                    ]
-                }),
-        )
-        .collect();
     let no_builtins = programs.iter().any(|(_, program)| program.no_builtins);
     let no_std: Vec<_> = freestanding
         .then_some(rust_ast::CrateAttr::NoStd)
@@ -1812,6 +2036,12 @@ fn write_project_crate(
     });
     let mut written = collect_all_errors(results)?;
     let has_shims = !shim_names.is_empty();
+    if has_shims && !profiles.build_script {
+        return Err(
+            "long double C shims need a build script, which rustc cannot compile for the host with -Zregparm or -Zreg-struct-return"
+                .to_string(),
+        );
+    }
     let shim_path = crate_src.join("slate_long_double.c");
     if has_shims {
         write_file(
@@ -1823,22 +2053,18 @@ fn write_project_crate(
         std::fs::remove_file(&shim_path)
             .map_err(|e| format!("remove {}: {e}", shim_path.display()))?;
     }
-    let link_arg_target = if root.is_some() {
-        Some("bins")
-    } else {
-        lib_crate_types
-            .as_deref()
-            .is_some_and(|types| types.iter().any(|ty| ty == "cdylib"))
-            .then_some("cdylib")
-    };
     let statements: String = has_shims
         .then(|| c_shim::shim_build_statements(&shim_gates))
         .into_iter()
-        .chain(link_arg_target.map(|target| {
-            format!(
-                "    println!(\"cargo:rerun-if-changed=build.rs\");\n    if std::env::var(\"CARGO_CFG_TARGET_OS\").as_deref() == Ok(\"linux\") {{\n        println!(\"cargo:rustc-link-arg-{target}=-Wl,-z,nostart-stop-gc\");\n    }}\n"
-            )
-        }))
+        .chain(
+            link_arg_target
+                .filter(|_| profiles.build_script)
+                .map(|target| {
+                    format!(
+                        "    println!(\"cargo:rerun-if-changed=build.rs\");\n    if std::env::var(\"CARGO_CFG_TARGET_OS\").as_deref() == Ok(\"linux\") {{\n        println!(\"cargo:rustc-link-arg-{target}=-Wl,-z,nostart-stop-gc\");\n    }}\n"
+                    )
+                }),
+        )
         .collect();
     let build_script = crate_dir.join("build.rs");
     if statements.is_empty() {
@@ -1860,7 +2086,8 @@ fn write_project_crate(
         uses_blocks,
         freestanding,
         link_order,
-        &codegen_rustflags,
+        &profiles.default_flags,
+        &profiles.targets,
         &cargo_features,
         lib_crate_types.as_deref(),
     )?;

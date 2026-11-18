@@ -1202,6 +1202,10 @@ impl fmt::Display for DisplayModule<'_> {
             machine
                 .sanitize
                 .map(|sanitizer| format!("sanitize={}", sanitizer.name())),
+            machine
+                .reg_struct_return
+                .then(|| "reg_struct_return".to_string()),
+            (machine.regparm > 0).then(|| format!("regparm={}", machine.regparm)),
         ]
         .into_iter()
         .flatten()

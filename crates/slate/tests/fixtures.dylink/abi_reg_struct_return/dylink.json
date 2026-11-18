@@ -1,0 +1,4 @@
+{
+  "platforms": ["linux-i686"],
+  "args": ["-freg-struct-return"]
+}

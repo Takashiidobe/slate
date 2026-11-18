@@ -359,6 +359,18 @@ impl Tables<'_> {
             return unsupported(format!("{convention} calling convention"));
         };
         if abi == rust::Abi::CUnwind {
+            if self.module.machine.reg_struct_return
+                && let Some(signature) = &function.abi
+                && matches!(function.return_type, Some(ir::Type::Defined(_)))
+                && matches!(
+                    signature.result,
+                    ir::AbiPass::SRet { .. } | ir::AbiPass::Coerce(_)
+                )
+            {
+                return unsupported(format!(
+                    "-freg-struct-return result rustc -Zreg-struct-return returns differently: {signature}"
+                ));
+            }
             return Ok(abi);
         }
         if self.passes_long_double(function) {

@@ -5030,7 +5030,8 @@ pub(super) fn resolve_type_module(
     module.hosted = unit.dialect.options().hosted;
     module.nostdinc = unit.dialect.options().nostdinc;
     module.null_pointer_is_valid = !unit.dialect.options().codegen.delete_null_pointer_checks;
-    module.machine = crate::ir::MachineCodegen::from_options(&unit.dialect.options().codegen);
+    module.machine =
+        crate::ir::MachineCodegen::from_options(&unit.dialect.options().codegen, &module.target);
     let mut resolver = TypeResolver::with_names(unit, names);
     let mut next_binding = 0u32;
     for declaration in &unit.decls {

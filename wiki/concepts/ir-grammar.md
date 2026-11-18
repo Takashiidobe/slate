@@ -80,7 +80,9 @@ machine_fact = "code_model=" ( "tiny" | "small" | "kernel" | "medium" | "large" 
              | "function_return=thunk_extern"
              | "stack_protector=" ( "off" | "on" | "strong" | "all" | "explicit" )
              | "stack_protector_guard"
-             | "sanitize=" ( "address" | "kernel-address" | "thread" ) ;
+             | "sanitize=" ( "address" | "kernel-address" | "thread" )
+             | "reg_struct_return"
+             | "regparm=" int ;
 
 target     = "target" string "{"
                "endian" "=" ( "little" | "big" ) ";"
@@ -124,10 +126,12 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
   (clang's plain `-fstack-protector` already raised to the target default), and
   `stack_protector_guard` when any `-mstack-protector-guard*` option moved the
   canary, and the instrumenting sanitizer left enabled by `-fsanitize=`
-  (`address`, `kernel-address` or `thread`, which exclude each other). They
+  (`address`, `kernel-address` or `thread`, which exclude each other), then
+  i686's `-freg-struct-return` and `-mregparm=N`. They
   change no C semantics; slate maps them to the crate's Rust target and
   rustflags for freestanding units, the stack protector level to
-  `-Zstack-protector` and the sanitizer to `-Zsanitizer` for hosted crates.
+  `-Zstack-protector` and the sanitizer to `-Zsanitizer` for hosted crates,
+  and the last two to `-Zreg-struct-return` and `-Zregparm` for every crate.
 - `storage` lines cover every scalar format a module can name (`bool`, standard
   integers, floats, in that order), only for formats the target supports.
   Bit-precise integers, pointers, `va_list`, and composites are derived at the

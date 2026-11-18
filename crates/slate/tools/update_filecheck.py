@@ -470,7 +470,8 @@ def run_harness(targets, fixtures):
         environment["SLATE_TEST_TARGETS"] = ",".join(dict.fromkeys(map(run_target, targets)))
         if len(names) == 1:
             environment["SLATE_DIFF_FIXTURE"] = next(iter(names))
-        command = ["cargo", "nextest", "r", "--release", "--profile", "slate", "--no-fail-fast", *test_command]
+        profile = "merge" if test_command is MERGE_TEST_COMMAND else "slate"
+        command = ["cargo", "nextest", "r", "--release", "--profile", profile, "--no-fail-fast", *test_command]
         subprocess.run(command, cwd=WORKSPACE, env=environment, capture_output=True, check=False)
 
 

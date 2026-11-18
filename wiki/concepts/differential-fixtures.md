@@ -227,7 +227,9 @@ only, then build the crate for each valid feature subset and compare it with
 clang on the host. Fixtures run on 4 workers, each with its own Cargo target
 directory. `// merge-sources:` adds units and `// merge-linux-args:` sets the
 first target's arguments. `// merge-second-target: <name> <triple> <flavor>`
-replaces the second target. `// merge-expect-exit:` sets the expected exit code;
+replaces the second target, and `// merge-target-args: <name> <args...>` sets
+any target's arguments. The check prints the non-default `[profile.*]` sections
+of `Cargo.toml` with the package name replaced by `<crate>`. `// merge-expect-exit:` sets the expected exit code;
 a fixture that fails to merge skips the build and comparison.
 `merge_filecheck` is not in the `slate` profile; run it with
 `cargo nextest r --release --profile merge`.

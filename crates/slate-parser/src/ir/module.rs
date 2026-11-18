@@ -45,11 +45,19 @@ pub struct MachineCodegen {
     pub stack_protector: Option<crate::compiler_options::StackProtector>,
     pub stack_protector_guard: bool,
     pub sanitize: Option<crate::sanitizers::Instrumentation>,
+    pub reg_struct_return: bool,
+    pub regparm: u8,
 }
 
 impl MachineCodegen {
-    pub fn from_options(codegen: &crate::compiler_options::CodegenOptions) -> Self {
+    pub fn from_options(
+        codegen: &crate::compiler_options::CodegenOptions,
+        target: &crate::target_info::TargetInfo,
+    ) -> Self {
         Self {
+            reg_struct_return: target.profile.convention == super::AbiConvention::X86Cdecl
+                && target.abi.struct_return == Some(crate::target_info::StructReturn::Registers),
+            regparm: target.abi.default_regparm,
             code_model: codegen.code_model,
             pic: codegen.pic,
             red_zone: codegen.red_zone,

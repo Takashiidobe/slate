@@ -68,6 +68,25 @@ fn crate_sources(crate_dir: &Path) -> String {
         text.push_str(&format!("file {name}\n"));
         text.push_str(&std::fs::read_to_string(&path).expect("read generated source"));
     }
+    let manifest = std::fs::read_to_string(crate_dir.join("Cargo.toml")).unwrap_or_default();
+    let mut in_profile = false;
+    let profiles: String = manifest
+        .lines()
+        .filter(|line| {
+            if line.starts_with('[') {
+                in_profile = line.starts_with("[profile.")
+                    && !matches!(*line, "[profile.dev]" | "[profile.release]");
+            }
+            in_profile && !line.is_empty()
+        })
+        .map(|line| match line.split_once(".package.") {
+            Some((profile, _)) => format!("{profile}.package.<crate>]\n"),
+            None => format!("{line}\n"),
+        })
+        .collect();
+    if !profiles.is_empty() {
+        text.push_str(&format!("file Cargo.toml profiles\n{profiles}"));
+    }
     text
 }
 
@@ -222,6 +241,13 @@ fn merge_fixture(source: &Path) -> Result<(), String> {
                 target[0].to_string(),
                 serde_json::json!({"triple": target[1], "flavor": target[2]}),
             );
+        }
+    }
+    for line in text.lines() {
+        if let Some(fields) = line.strip_prefix("// merge-target-args:") {
+            let mut fields = fields.split_whitespace();
+            let name = fields.next().expect("merge-target-args target");
+            targets[name]["args"] = serde_json::json!(fields.collect::<Vec<_>>());
         }
     }
     if let Some(names) = text

@@ -186,6 +186,7 @@ int __attribute__((fastcall)) fast(int a, int b) { return a + b; }
 // M16-NEXT:         storage d64 [size=8, align=8];
 // M16-NEXT:         storage d128 [size=16, align=16];
 // M16-NEXT:     }
+// M16-NEXT:     machine [regparm=3];
 // M16-NEXT:     global %[[VALUE_macro_x86_64:[0-9]+]] macro_x86_64: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
 // M16-NEXT:     global %[[VALUE_macro_i386:[0-9]+]] macro_i386: i32 [storage=static] = const<i32>(1) [linkage=external];
 // M16-NEXT:     global %[[VALUE_macro_tune_i386:[0-9]+]] macro_tune_i386: i32 [storage=static] = neg<i32>(const<i32>(1)) [linkage=external];
