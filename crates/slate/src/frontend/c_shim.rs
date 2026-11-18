@@ -184,12 +184,18 @@ fn render_indirect_trampoline(name: &str) -> Option<Vec<c::Item>> {
     })])
 }
 
+fn va_start_args(fixed: usize) -> Vec<Expr> {
+    match fixed.checked_sub(1) {
+        Some(last) => vec![Expr::name("_ap"), arg(last)],
+        None => vec![Expr::name("_ap")],
+    }
+}
+
 fn render_variadic_export(name: &str) -> Option<Vec<c::Item>> {
     let (entry, tags) = name.strip_prefix("__slate_ldv__")?.rsplit_once("__")?;
     let mut tags = split_tags(tags);
     let ret_tag = tags.next()?.strip_prefix('r')?;
     let fixed = tags.collect::<Vec<_>>();
-    let last = fixed.len().checked_sub(1)?;
     let rust_ret = c_type_for_tag(ret_tag);
     let prototype = Prototype {
         ret: rust_ret.clone(),
@@ -214,7 +220,7 @@ fn render_variadic_export(name: &str) -> Option<Vec<c::Item>> {
     let call = Expr::call(name, args);
     let mut body = vec![
         Stmt::decl(Type::Named("va_list"), "_ap", None),
-        Stmt::Expr(Expr::call("va_start", vec![Expr::name("_ap"), arg(last)])),
+        Stmt::Expr(Expr::call("va_start", va_start_args(fixed.len()))),
     ];
     let returned = match ret_tag {
         "v" => {

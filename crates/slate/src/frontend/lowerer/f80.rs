@@ -72,12 +72,6 @@ pub(super) fn long_double_entry_export_name(entry: &str, definition: &FnDef) -> 
         }
         _ => ("__slate_ld__", definition.params.as_slice()),
     };
-    if prefix == "__slate_ldv__" && params.is_empty() {
-        return Err(Construct::LongDouble {
-            detail: format!("export of {entry} with no fixed parameters"),
-        }
-        .into());
-    }
     let ret = definition.ret.clone().unwrap_or(rust::Type::Unit);
     let tags = long_double_bridge_tags(
         entry,

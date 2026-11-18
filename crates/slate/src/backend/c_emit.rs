@@ -102,7 +102,7 @@ impl fmt::Display for ParamList<'_> {
             param.ty.declare(f, &param.name)?;
         }
         if variadic {
-            f.write_str(", ...")?;
+            f.write_str(if params.is_empty() { "..." } else { ", ..." })?;
         }
         Ok(())
     }
