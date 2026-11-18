@@ -65,6 +65,8 @@ def run_session(n, args, remaining_s):
     if args.model:
         cmd += ["--model", args.model]
     env = dict(os.environ, SLATE_AUTO="1")
+    if args.compact_window:
+        env["CLAUDE_CODE_AUTO_COMPACT_WINDOW"] = str(args.compact_window)
     print(f"session {n}: log {log}; transcript {TRANSCRIPT}", flush=True)
     limited = False
     with log.open("w") as raw, TRANSCRIPT.open("a") as tx:
@@ -159,6 +161,7 @@ def main():
     parser.add_argument("--max-sessions", type=int, default=0)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--model")
+    parser.add_argument("--compact-window", type=int, default=250000)
     parser.add_argument("--limit-stop", type=float, default=0.9)
     args = parser.parse_args()
 
