@@ -333,6 +333,7 @@ struct ParsedCompilerArgs {
     inline: Option<bool>,
     inline_functions: Option<bool>,
     exceptions: Option<bool>,
+    exception_model_macro: Option<&'static str>,
     ms_anonymous_structs: Option<bool>,
     strict_flex_arrays: Option<u8>,
     pthread: bool,
@@ -612,6 +613,10 @@ enum Opt {
     InlineFunctions,
     InlineHintFunctions,
     Exceptions,
+    SjljExceptions,
+    SehExceptions,
+    DwarfExceptions,
+    WasmExceptions,
     MsAnonymousStructs,
     StrictFlexArrays,
     GccStrictFlexArrays,
@@ -791,6 +796,10 @@ impl std::fmt::Display for Opt {
             Self::InlineFunctions => "finline-functions",
             Self::InlineHintFunctions => "finline-hint-functions",
             Self::Exceptions => "fexceptions",
+            Self::SjljExceptions => "fsjlj-exceptions",
+            Self::SehExceptions => "fseh-exceptions",
+            Self::DwarfExceptions => "fdwarf-exceptions",
+            Self::WasmExceptions => "fwasm-exceptions",
             Self::MsAnonymousStructs => "fms-anonymous-structs",
             Self::StrictFlexArrays => "fstrict-flex-arrays=",
             Self::GccStrictFlexArrays => "fstrict-flex-arrays",
@@ -1054,6 +1063,10 @@ impl Opt {
             | Self::Blocks
             | Self::PascalStrings
             | Self::MPascalStrings
+            | Self::SjljExceptions
+            | Self::SehExceptions
+            | Self::DwarfExceptions
+            | Self::WasmExceptions
             | Self::FixedPoint
             | Self::MsAnonymousStructs
             | Self::LateParseAttributes
@@ -1173,6 +1186,10 @@ impl Opt {
             Self::InlineFunctions => "-finline-functions",
             Self::InlineHintFunctions => "-finline-hint-functions",
             Self::Exceptions => "-fexceptions",
+            Self::SjljExceptions => "-fsjlj-exceptions",
+            Self::SehExceptions => "-fseh-exceptions",
+            Self::DwarfExceptions => "-fdwarf-exceptions",
+            Self::WasmExceptions => "-fwasm-exceptions",
             Self::MsAnonymousStructs => "-fms-anonymous-structs",
             Self::GccStrictFlexArrays => "-fstrict-flex-arrays",
             Self::LateParseAttributes => "-fexperimental-late-parse-attributes",
@@ -1634,6 +1651,10 @@ const SWITCH_OPTS: &[Opt] = &[
     Opt::InlineFunctions,
     Opt::InlineHintFunctions,
     Opt::Exceptions,
+    Opt::SjljExceptions,
+    Opt::SehExceptions,
+    Opt::DwarfExceptions,
+    Opt::WasmExceptions,
     Opt::MsAnonymousStructs,
     Opt::LateParseAttributes,
     Opt::AsynchronousUnwindTables,
@@ -2083,6 +2104,17 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::OpenMp => parsed.openmp = Some(value),
                 Opt::OpenMpSimd => parsed.openmp_simd = Some(value),
                 Opt::Exceptions => parsed.exceptions = Some(value),
+                Opt::SjljExceptions if value => {
+                    parsed.exception_model_macro = Some("__USING_SJLJ_EXCEPTIONS__");
+                }
+                Opt::SehExceptions if value => parsed.exception_model_macro = Some("__SEH__"),
+                Opt::DwarfExceptions | Opt::WasmExceptions if value => {
+                    parsed.exception_model_macro = None;
+                }
+                Opt::SjljExceptions
+                | Opt::SehExceptions
+                | Opt::DwarfExceptions
+                | Opt::WasmExceptions => {}
                 Opt::MsAnonymousStructs => parsed.ms_anonymous_structs = Some(value),
                 Opt::LateParseAttributes => parsed.late_parsed_attributes = Some(value),
                 Opt::AsynchronousUnwindTables => parsed.asynchronous_unwind_tables = Some(value),
@@ -2829,6 +2861,14 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             .preprocessor_inputs
             .macros
             .insert(0, MacroOption::Define("__EXCEPTIONS".into()));
+    }
+    if let Some(name) = parsed.exception_model_macro
+        && !parsed.undef_predefines
+    {
+        parsed
+            .preprocessor_inputs
+            .macros
+            .insert(0, MacroOption::Define(format!("{name}=1")));
     }
     parsed.openmp_date = parsed.openmp_date()?;
     if let Some(date) = parsed.openmp_date
