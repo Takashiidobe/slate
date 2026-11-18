@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 LEASE = ROOT / ".auto" / "lease.json"
 TICKET_MINUTES = 15
 DRY_LABEL = "auto-dry"
+LIGHT_OUTCOMES = ("stale", "needs_input")
 
 
 def load():
@@ -114,7 +115,6 @@ def cmd_next(_args):
         sys.exit(4)
     lease["ticket"] = claimed["id"]
     lease["ticket_start"] = time.time()
-    lease["session_tickets"] += 1
     save(lease)
     print(f"claimed {claimed['id']}: {claimed['title']}")
     print(status_line(lease))
@@ -134,9 +134,11 @@ def cmd_done(args):
     })
     lease["ticket"] = None
     lease["ticket_start"] = None
+    if args.outcome not in LIGHT_OUTCOMES:
+        lease["session_tickets"] += 1
     save(lease)
     stop = (
-        args.outcome in ("needs_input", "wip")
+        args.outcome == "wip"
         or lease["session_tickets"] >= lease["per_session"]
         or run_left(lease) <= TICKET_MINUTES
     )
