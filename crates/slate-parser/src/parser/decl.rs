@@ -6,6 +6,7 @@ use crate::const_expr;
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Token, TokenSpanExt};
 use crate::reachability::filter_translation_unit;
+use crate::target_info::TargetOs;
 use std::rc::Rc;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -83,7 +84,11 @@ impl Parser {
             [Token::Ident(name), rest @ ..] if name == "float_control" => {
                 PragmaKind::FloatControl(parse_float_control(rest))
             }
-            [Token::Ident(name), Token::Ident(action)] if name == "ms_struct" => {
+            [Token::Ident(name), Token::Ident(action)]
+                if name == "ms_struct"
+                    && !(self.flavor().is_gcc()
+                        && self.dialect().target().os == TargetOs::Linux) =>
+            {
                 match parse_ms_struct_action(action) {
                     Some(action) => PragmaKind::MsStruct { action },
                     None => PragmaKind::Opaque(text.clone()),
