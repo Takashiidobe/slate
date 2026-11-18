@@ -34,8 +34,26 @@ fn build_fixture(fixture: &Path, target: &str, text: &str) -> Result<(), String>
     std::fs::create_dir_all(&work).map_err(|error| error.to_string())?;
     let generated = work.join(format!("{name}.generated.rs"));
     let marker = work.join(format!("{name}.build-ok"));
-    let _ = std::fs::remove_file(&marker);
     let args = support::fixture_dg_options(fixture);
+    let key = support::translation_key(
+        fixture,
+        &std::iter::once(target.to_string())
+            .chain(args.iter().cloned())
+            .collect::<Vec<_>>(),
+    );
+    if let Some(source) = key
+        .as_ref()
+        .filter(|key| std::fs::read_to_string(&marker).is_ok_and(|old| old == **key))
+        .and_then(|_| std::fs::read_to_string(&generated).ok())
+    {
+        return support::filecheck::check_generated_rust(
+            text,
+            &source,
+            target,
+            &work.join("filecheck").join(name),
+        );
+    }
+    let _ = std::fs::remove_file(&marker);
     let sysroot = slate_parser::sysroot::root().join(target);
     let mut clang = Command::new("clang");
     clang.args(["-c", "-std=c23", "-target", target]);
@@ -110,7 +128,7 @@ fn build_fixture(fixture: &Path, target: &str, text: &str) -> Result<(), String>
             .env("RUSTFLAGS", "-Awarnings")
             .env_remove("CARGO_ENCODED_RUSTFLAGS"),
     )?;
-    std::fs::write(marker, "").map_err(|error| error.to_string())?;
+    std::fs::write(marker, key.unwrap_or_default()).map_err(|error| error.to_string())?;
     support::filecheck::check_generated_rust(
         text,
         &source,

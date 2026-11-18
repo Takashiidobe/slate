@@ -1671,7 +1671,7 @@ fn local_inputs_hash(dir: &Path) -> u64 {
     hash
 }
 
-fn translation_key(c_src: &Path, extra_args: &[String]) -> Option<String> {
+pub fn translation_key(c_src: &Path, extra_args: &[String]) -> Option<String> {
     use std::hash::{Hash, Hasher};
     let binary = std::fs::metadata(env!("CARGO_BIN_EXE_slate")).ok()?;
     let mut hasher = std::hash::DefaultHasher::new();
