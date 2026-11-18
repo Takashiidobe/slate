@@ -619,6 +619,12 @@ impl Checker<'_> {
                 let completed = self
                     .types
                     .completed_array(sized, declarator.initializer.as_ref());
+                if !global
+                    && declaration.specifiers.storage != StorageClass::Extern
+                    && self.types.is_incomplete_record(completed)
+                {
+                    self.reject(declarator, "variable has incomplete type");
+                }
                 let attributes = declaration
                     .specifiers
                     .attributes_with(&declarator.declarator, &declarator.attributes);
