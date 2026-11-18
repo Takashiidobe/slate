@@ -27,7 +27,7 @@ jobs:
         run: |
           tag_version="${GITHUB_REF_NAME#v}"
           metadata="$(cargo metadata --locked --no-deps --format-version 1)"
-          crates=(slate-parser slate-sysroots slate-c2rust)
+          crates=(slate-parser slate-sysroots slate-cargo-toml slate-c2rust)
           for crate in "${crates[@]}"; do
             crate_version="$(jq -er --arg crate "$crate" '.packages[] | select(.name == $crate) | .version' <<< "$metadata")"
             if [ "$GITHUB_REF_NAME" != "v$crate_version" ]; then

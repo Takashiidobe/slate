@@ -5,7 +5,9 @@ edition = "2024"
 description = "Typed Cargo.toml and .cargo/config.toml models for Slate's generated crates"
 license.workspace = true
 repository.workspace = true
-include = ["/src"]
+keywords = ["cargo", "manifest", "toml"]
+categories = ["development-tools::build-utils"]
+include = ["/src", "/LICENSE-*"]
 
 [dependencies]
 serde = { workspace = true, features = ["derive"] }

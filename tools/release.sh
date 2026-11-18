@@ -24,6 +24,7 @@ bump = sys.argv[2]
 packages = {
     "slate-parser": root / "crates/slate-parser/Cargo.toml",
     "slate-sysroots": root / "crates/slate-sysroots/Cargo.toml",
+    "slate-cargo-toml": root / "crates/slate-cargo-toml/Cargo.toml",
     "slate-c2rust": root / "crates/slate/Cargo.toml",
 }
 
@@ -72,7 +73,7 @@ for path in packages.values():
 
 workspace = root / "Cargo.toml"
 text = workspace.read_text()
-for name in ("slate-parser", "slate-sysroots"):
+for name in ("slate-parser", "slate-sysroots", "slate-cargo-toml"):
     text, count = re.subn(
         rf'(?m)^({re.escape(name)}\s*=\s*\{{\s*version\s*=\s*)"{re.escape(version)}"',
         rf'\g<1>"{next_version}"',
