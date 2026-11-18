@@ -1826,9 +1826,13 @@ name = "slate-intrinsic-gen"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "prettyplease",
+ "proc-macro2",
+ "quote",
  "serde",
  "serde_json",
  "shlex",
+ "syn 3.0.6",
  "tempfile",
 ]
 

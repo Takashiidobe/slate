@@ -5,6 +5,8 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use clap::Parser;
+use proc_macro2::{Literal, TokenStream};
+use quote::{format_ident, quote};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -101,7 +103,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
     }
-    let source = generate_source(&sections, llvm_commit.as_deref(), &stdarch_overrides);
+    let source = generate_source(&sections, llvm_commit.as_deref(), &stdarch_overrides)?;
     if let Some(parent) = config.out.parent() {
         fs::create_dir_all(parent)?;
     }
@@ -315,89 +317,103 @@ fn generate_source(
     sections: &[(String, Vec<RawIntrinsic>)],
     llvm_commit: Option<&str>,
     stdarch_overrides: &[StdarchOverride],
-) -> String {
-    let mut out = String::new();
-    out.push_str(
-        "#![allow(dead_code, reason = \"catalog retains metadata for future lowering\")]\n",
-    );
-    out.push_str(&format!(
-        "pub const LLVM_COMMIT: Option<&str> = {llvm_commit:?};\n\n"
-    ));
-    out.push_str("pub struct IntrinsicParam {\n    pub llvm_type: &'static str,\n    pub immarg: bool,\n}\n\n");
-    out.push_str("pub struct IntrinsicSignature {\n    pub name: &'static str,\n    pub builtins: &'static [&'static str],\n    pub overloaded: bool,\n    pub ret: Option<&'static str>,\n    pub params: Option<&'static [IntrinsicParam]>,\n    pub overloaded_positions: Option<&'static [u32]>,\n}\n\n");
+) -> Result<String, syn::Error> {
+    let llvm_commit = optional(llvm_commit, |commit| quote!(#commit));
+    let mut tokens = quote! {
+        #![allow(dead_code, reason = "catalog retains metadata for future lowering")]
+        pub const LLVM_COMMIT: Option<&str> = #llvm_commit;
+
+        pub struct IntrinsicParam {
+            pub llvm_type: &'static str,
+            pub immarg: bool,
+        }
+
+        pub struct IntrinsicSignature {
+            pub name: &'static str,
+            pub builtins: &'static [&'static str],
+            pub overloaded: bool,
+            pub ret: Option<&'static str>,
+            pub params: Option<&'static [IntrinsicParam]>,
+            pub overloaded_positions: Option<&'static [u32]>,
+        }
+    };
 
     for (prefix, intrinsics) in sections {
-        let const_name = format!("{}_INTRINSICS", prefix.to_uppercase());
-        out.push_str(&format!(
-            "#[rustfmt::skip]\npub static {const_name}: &[IntrinsicSignature] = &[\n"
-        ));
-        for intr in intrinsics {
-            let ret = match &intr.ret {
-                Some(r) => format!("Some({:?})", r),
-                None => "None".to_string(),
-            };
-            let params = match &intr.params {
-                Some(params) => {
-                    let entries: Vec<String> = params
-                        .iter()
-                        .map(|p| {
-                            format!(
-                                "IntrinsicParam {{ llvm_type: {:?}, immarg: {} }}",
-                                p.ty, p.immarg
-                            )
-                        })
-                        .collect();
-                    format!("Some(&[{}])", entries.join(", "))
-                }
-                None => "None".to_string(),
-            };
-            let overloaded_positions = match &intr.overloaded_positions {
-                Some(positions) => format!(
-                    "Some(&[{}])",
-                    positions
-                        .iter()
-                        .map(u32::to_string)
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                ),
-                None => "None".to_string(),
-            };
-            out.push_str(&format!(
-                "    IntrinsicSignature {{ name: {:?}, builtins: &{:?}, overloaded: {}, ret: {}, params: {}, overloaded_positions: {} }},\n",
-                intr.name, intr.builtins, intr.overloaded, ret, params, overloaded_positions
-            ));
-        }
-        out.push_str("];\n");
+        let table = format_ident!("{}_INTRINSICS", prefix.to_uppercase());
+        let rows = intrinsics.iter().map(intrinsic_row);
+        tokens.extend(quote! {
+            pub static #table: &[IntrinsicSignature] = &[#(#rows),*];
+        });
     }
 
     if !stdarch_overrides.is_empty() {
-        out.push_str(
-            "pub struct StdarchOverride {\n    \
-             pub link_name: &'static str,\n    \
-             pub params: &'static [&'static str],\n    \
-             pub ret: Option<&'static str>,\n\
-             }\n\n",
-        );
-        out.push_str(
-            "#[rustfmt::skip]\npub static X86_STDARCH_OVERRIDES: &[StdarchOverride] = &[\n",
-        );
-        for entry in stdarch_overrides {
-            let params: Vec<String> = entry.params.iter().map(|p| format!("{p:?}")).collect();
-            let ret = match &entry.ret {
-                Some(r) => format!("Some({r:?})"),
-                None => "None".to_string(),
-            };
-            out.push_str(&format!(
-                "    StdarchOverride {{ link_name: {:?}, params: &[{}], ret: {} }},\n",
-                entry.link_name,
-                params.join(", "),
-                ret
-            ));
-        }
-        out.push_str("];\n");
+        let rows = stdarch_overrides.iter().map(stdarch_row);
+        tokens.extend(quote! {
+            pub struct StdarchOverride {
+                pub link_name: &'static str,
+                pub params: &'static [&'static str],
+                pub ret: Option<&'static str>,
+            }
+
+            pub static X86_STDARCH_OVERRIDES: &[StdarchOverride] = &[#(#rows),*];
+        });
     }
 
-    out
+    Ok(prettyplease::unparse(&syn::parse2(tokens)?))
+}
+
+fn optional<T>(value: Option<T>, bake: impl FnOnce(T) -> TokenStream) -> TokenStream {
+    match value {
+        Some(value) => {
+            let value = bake(value);
+            quote!(Some(#value))
+        }
+        None => quote!(None),
+    }
+}
+
+fn intrinsic_row(intrinsic: &RawIntrinsic) -> TokenStream {
+    let RawIntrinsic {
+        name,
+        builtins,
+        overloaded,
+        ret,
+        params,
+        overloaded_positions,
+    } = intrinsic;
+    let ret = optional(ret.as_ref(), |ret| quote!(#ret));
+    let params = optional(params.as_ref(), |params| {
+        let params = params.iter().map(
+            |RawParam { ty, immarg }| quote!(IntrinsicParam { llvm_type: #ty, immarg: #immarg }),
+        );
+        quote!(&[#(#params),*])
+    });
+    let overloaded_positions = optional(overloaded_positions.as_ref(), |positions| {
+        let positions = positions.iter().copied().map(Literal::u32_unsuffixed);
+        quote!(&[#(#positions),*])
+    });
+    quote! {
+        IntrinsicSignature {
+            name: #name,
+            builtins: &[#(#builtins),*],
+            overloaded: #overloaded,
+            ret: #ret,
+            params: #params,
+            overloaded_positions: #overloaded_positions,
+        }
+    }
+}
+
+fn stdarch_row(entry: &StdarchOverride) -> TokenStream {
+    let StdarchOverride {
+        link_name,
+        params,
+        ret,
+    } = entry;
+    let ret = optional(ret.as_ref(), |ret| quote!(#ret));
+    quote! {
+        StdarchOverride { link_name: #link_name, params: &[#(#params),*], ret: #ret }
+    }
 }
 
 fn mine_builtin_names(
