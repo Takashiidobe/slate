@@ -1522,7 +1522,9 @@ impl FunctionLowerer<'_, '_> {
                 rust::Type::Prim(Prim::U16) => Ok(16),
                 rust::Type::Prim(Prim::U32) => Ok(32),
                 rust::Type::Prim(Prim::U64) => Ok(64),
-                _ => unreachable!(),
+                _ => Err(unsupported_asm(
+                    "register operand wider than a general-purpose register",
+                )),
             }
         };
         let bits = width(output)?.max(input.map(width).transpose()?.unwrap_or(0));
