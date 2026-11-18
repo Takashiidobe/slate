@@ -4,8 +4,8 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use crate::backend::interproc::pointer_lattice::{PointerBinding, PointerFact, ResolvedPtrType};
 use crate::backend::interproc::{self, FnKey, Symbols};
 use crate::backend::rust_ast::{
-    BinOp, Block, CLibType, Expr, FnDef, Ident, Item, Path, Prim, Program, Stmt, Type, UnaryOp,
-    Visibility,
+    BinOp, Block, CLibType, Expr, FnDef, Ident, Item, Path, Pattern, Prim, Program, Stmt, Type,
+    UnaryOp, Visibility,
 };
 use crate::function_identity::{CallBinding, Known};
 
@@ -1238,10 +1238,13 @@ fn rewrite_signature_stmt(
             ..
         } => {
             rewrite_signature_expr(cond, caller, ctx, proofs);
-            for indent in then_body.iter_mut().chain(else_body.iter_mut()) {
+            for indent in then_body.iter_mut() {
                 rewrite_signature_stmt(indent, caller, ctx, proofs);
             }
             rewrite_signature_expr(then_value, caller, ctx, proofs);
+            for indent in else_body.iter_mut() {
+                rewrite_signature_stmt(indent, caller, ctx, proofs);
+            }
             rewrite_signature_expr(else_value, caller, ctx, proofs);
         }
         Stmt::Assign { target, value } | Stmt::CompoundAssign { target, value, .. } => {
@@ -1262,15 +1265,27 @@ fn rewrite_signature_stmt(
                 rewrite_signature_stmt(indent, caller, ctx, proofs);
             }
         }
-        Stmt::Loop { body, .. }
-        | Stmt::For { body, .. }
-        | Stmt::Scope { body, .. }
-        | Stmt::LabeledBlock { body, .. } => {
+        Stmt::For { iter, body, .. } => {
+            rewrite_signature_expr(iter, caller, ctx, proofs);
             for indent in body {
                 rewrite_signature_stmt(indent, caller, ctx, proofs);
             }
         }
-        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
+        Stmt::Loop { body, .. } | Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } => {
+            for indent in body {
+                rewrite_signature_stmt(indent, caller, ctx, proofs);
+            }
+        }
+        Stmt::While { cond, body, .. } => {
+            rewrite_signature_expr(cond, caller, ctx, proofs);
+            for indent in &mut body.stmts {
+                rewrite_signature_stmt(indent, caller, ctx, proofs);
+            }
+            if let Some(tail) = &mut body.tail {
+                rewrite_signature_expr(tail, caller, ctx, proofs);
+            }
+        }
+        Stmt::Unsafe { body } | Stmt::Block(body) => {
             for indent in &mut body.stmts {
                 rewrite_signature_stmt(indent, caller, ctx, proofs);
             }
@@ -1281,6 +1296,9 @@ fn rewrite_signature_stmt(
         Stmt::Match { expr, arms } => {
             rewrite_signature_expr(expr, caller, ctx, proofs);
             for arm in arms {
+                if let Pattern::Guarded { cond, .. } = &mut arm.pattern {
+                    rewrite_signature_expr(cond, caller, ctx, proofs);
+                }
                 for indent in &mut arm.body {
                     rewrite_signature_stmt(indent, caller, ctx, proofs);
                 }
@@ -1295,71 +1313,11 @@ fn rewrite_signature_expr(
     ctx: &SignatureCtx,
     proofs: &mut BTreeMap<(FnKey, FnKey), VecDeque<CallProof>>,
 ) {
+    let popped = match &*expr {
+        Expr::Call { func, .. } => pop_call_proofs(func, caller, ctx, proofs),
+        _ => None,
+    };
     match expr {
-        Expr::Call { func, args, .. } => {
-            rewrite_signature_expr(func, caller, ctx, proofs);
-            for arg in args.iter_mut() {
-                rewrite_signature_expr(arg, caller, ctx, proofs);
-            }
-            let Expr::Var(callee) = &**func else {
-                return;
-            };
-            let Some(callee) = ctx.symbols.resolve(ctx.unit, callee.as_str()) else {
-                return;
-            };
-            let Some(ids) = ctx.accepted.get(&callee) else {
-                return;
-            };
-            let Some(queue) = proofs.get_mut(&(caller.clone(), callee)) else {
-                return;
-            };
-            let mut bridges = Vec::new();
-            let mut len_indices = Vec::new();
-            for &id in ids {
-                let candidate = &ctx.candidates[id];
-                let Some(proof) = queue.pop_front() else {
-                    return;
-                };
-                let Some(ptr_arg) = args.get(candidate.ptr_index).cloned() else {
-                    return;
-                };
-                let Some(len_arg) = args.get(candidate.len_index).cloned() else {
-                    return;
-                };
-                let bridge = match proof {
-                    CallProof::WholeArray => match array_place(&ptr_arg) {
-                        Some((place, _)) => Expr::Ref {
-                            mutable: candidate.kind.mutable(),
-                            expr: Box::new(place.clone()),
-                        },
-                        None => buffer_bridge(ptr_arg, len_arg, candidate),
-                    },
-                    CallProof::Exact => buffer_bridge(ptr_arg, len_arg, candidate),
-                    CallProof::Forwarded(source) => {
-                        Expr::Var(Ident::new(ctx.candidates[source].ptr_param.as_str()))
-                    }
-                };
-                bridges.push((candidate.ptr_index, bridge));
-                len_indices.push(candidate.len_index);
-            }
-            for (ptr_index, bridge) in bridges {
-                args[ptr_index] = bridge;
-            }
-            len_indices.sort_unstable();
-            for len_index in len_indices.into_iter().rev() {
-                args.remove(len_index);
-            }
-        }
-        Expr::Macro { args, .. } => {
-            for arg in args {
-                rewrite_signature_expr(arg, caller, ctx, proofs);
-            }
-        }
-        Expr::Unary { expr, .. }
-        | Expr::Cast { expr, .. }
-        | Expr::Ref { expr, .. }
-        | Expr::AddrOf { expr, .. }
-        | Expr::Transmute { expr, .. } => rewrite_signature_expr(expr, caller, ctx, proofs),
         Expr::Block(block) | Expr::Unsafe(block) => {
             for indent in &mut block.stmts {
                 rewrite_signature_stmt(indent, caller, ctx, proofs);
@@ -1368,43 +1326,164 @@ fn rewrite_signature_expr(
                 rewrite_signature_expr(tail, caller, ctx, proofs);
             }
         }
+        _ => {
+            for child in expr_children_mut(expr) {
+                rewrite_signature_expr(child, caller, ctx, proofs);
+            }
+        }
+    }
+    if let (Expr::Call { args, .. }, Some(popped)) = (expr, popped) {
+        bridge_call_args(args, popped, ctx);
+    }
+}
+
+fn pop_call_proofs(
+    func: &Expr,
+    caller: &FnKey,
+    ctx: &SignatureCtx,
+    proofs: &mut BTreeMap<(FnKey, FnKey), VecDeque<CallProof>>,
+) -> Option<Vec<(usize, CallProof)>> {
+    let Expr::Var(callee) = func else {
+        return None;
+    };
+    let callee = ctx.symbols.resolve(ctx.unit, callee.as_str())?;
+    let ids = ctx.accepted.get(&callee)?;
+    let queue = proofs.get_mut(&(caller.clone(), callee))?;
+    let mut popped = Vec::with_capacity(ids.len());
+    for &id in ids {
+        popped.push((id, queue.pop_front()?));
+    }
+    Some(popped)
+}
+
+fn bridge_call_args(args: &mut Vec<Expr>, popped: Vec<(usize, CallProof)>, ctx: &SignatureCtx) {
+    let mut bridges = Vec::new();
+    let mut len_indices = Vec::new();
+    for (id, proof) in popped {
+        let candidate = &ctx.candidates[id];
+        let Some(ptr_arg) = args.get(candidate.ptr_index).cloned() else {
+            return;
+        };
+        let Some(len_arg) = args.get(candidate.len_index).cloned() else {
+            return;
+        };
+        let bridge = match proof {
+            CallProof::WholeArray => match array_place(&ptr_arg) {
+                Some((place, _)) => Expr::Ref {
+                    mutable: candidate.kind.mutable(),
+                    expr: Box::new(place.clone()),
+                },
+                None => buffer_bridge(ptr_arg, len_arg, candidate),
+            },
+            CallProof::Exact => buffer_bridge(ptr_arg, len_arg, candidate),
+            CallProof::Forwarded(source) => {
+                Expr::Var(Ident::new(ctx.candidates[source].ptr_param.as_str()))
+            }
+        };
+        bridges.push((candidate.ptr_index, bridge));
+        len_indices.push(candidate.len_index);
+    }
+    for (ptr_index, bridge) in bridges {
+        args[ptr_index] = bridge;
+    }
+    len_indices.sort_unstable();
+    for len_index in len_indices.into_iter().rev() {
+        args.remove(len_index);
+    }
+}
+
+fn expr_children_mut(expr: &mut Expr) -> Vec<&mut Expr> {
+    match expr {
+        Expr::Unary { expr, .. }
+        | Expr::Cast { expr, .. }
+        | Expr::Ref { expr, .. }
+        | Expr::AddrOf { expr, .. }
+        | Expr::Transmute { expr, .. }
+        | Expr::Field { base: expr, .. }
+        | Expr::TupleField { base: expr, .. }
+        | Expr::ArrayPtr { array: expr, .. }
+        | Expr::ArrayRepeat { elem: expr, .. }
+        | Expr::AtomicNew { value: expr, .. }
+        | Expr::Closure { body: expr, .. } => vec![expr],
         Expr::Binary { lhs, rhs, .. }
         | Expr::Range {
             start: lhs,
             end: rhs,
-        } => {
-            rewrite_signature_expr(lhs, caller, ctx, proofs);
-            rewrite_signature_expr(rhs, caller, ctx, proofs);
         }
-        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
-            rewrite_signature_expr(recv, caller, ctx, proofs);
-            for arg in args {
-                rewrite_signature_expr(arg, caller, ctx, proofs);
-            }
+        | Expr::Index {
+            base: lhs,
+            index: rhs,
         }
-        Expr::Index { base, index } => {
-            rewrite_signature_expr(base, caller, ctx, proofs);
-            rewrite_signature_expr(index, caller, ctx, proofs);
-        }
-        Expr::Field { base, .. }
-        | Expr::TupleField { base, .. }
-        | Expr::ArrayPtr { array: base, .. } => rewrite_signature_expr(base, caller, ctx, proofs),
+        | Expr::VecRepeat {
+            elem: lhs,
+            len: rhs,
+        } => vec![lhs, rhs],
         Expr::If {
             cond,
             then_expr,
             else_expr,
-        } => {
-            rewrite_signature_expr(cond, caller, ctx, proofs);
-            rewrite_signature_expr(then_expr, caller, ctx, proofs);
-            rewrite_signature_expr(else_expr, caller, ctx, proofs);
+        } => vec![cond, then_expr, else_expr],
+        Expr::Call { func, args, .. } => {
+            let mut out = vec![func.as_mut()];
+            out.extend(args.iter_mut());
+            out
         }
+        Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
+            let mut out = vec![recv.as_mut()];
+            out.extend(args.iter_mut());
+            out
+        }
+        Expr::StructLit { fields, .. } => fields.iter_mut().map(|(_, value)| value).collect(),
+        Expr::TupleStructLit { fields, .. } => fields.iter_mut().collect(),
+        Expr::ArrayLit(elems) | Expr::VecLit(elems) => elems.iter_mut().collect(),
+        Expr::Macro { args, .. } => args.iter_mut().collect(),
         Expr::Match { expr, arms } => {
-            rewrite_signature_expr(expr, caller, ctx, proofs);
-            for arm in arms {
-                rewrite_signature_expr(&mut arm.value, caller, ctx, proofs);
-            }
+            let mut out = vec![expr.as_mut()];
+            out.extend(arms.iter_mut().map(|arm| &mut arm.value));
+            out
         }
-        _ => {}
+        Expr::CopyNonoverlapping { src, dst, .. } => vec![src, dst],
+        Expr::PtrCopy {
+            src, dst, count, ..
+        } => vec![src, dst, count],
+        Expr::WriteBytes { dst, val, count } => vec![dst, val, count],
+        Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => {
+            place.ptr_expr_mut().into_iter().collect()
+        }
+        Expr::AtomicStore { place, value, .. }
+        | Expr::AtomicFetch { place, value, .. }
+        | Expr::AtomicSwap { place, value, .. } => {
+            let mut out: Vec<&mut Expr> = place.ptr_expr_mut().into_iter().collect();
+            out.push(value);
+            out
+        }
+        Expr::AtomicCompareExchange {
+            place,
+            expected,
+            desired,
+            ..
+        } => {
+            let mut out: Vec<&mut Expr> = place.ptr_expr_mut().into_iter().collect();
+            out.push(expected);
+            out.push(desired);
+            out
+        }
+        Expr::Block(_)
+        | Expr::Unsafe(_)
+        | Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::MacroName(_)
+        | Expr::MacroType(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
+        | Expr::ConstBlock(_)
+        | Expr::CStr(_)
+        | Expr::Var(_)
+        | Expr::Path(_)
+        | Expr::LayoutQuery { .. }
+        | Expr::GenericPath { .. }
+        | Expr::Todo(_)
+        | Expr::AtomicFence { .. } => Vec::new(),
     }
 }
 
