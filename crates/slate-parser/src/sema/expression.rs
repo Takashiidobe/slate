@@ -3281,8 +3281,9 @@ impl Lowerer {
                 let operand = constant_p_operand(callee, arguments)
                     .ok_or(ResolveError::Internal("__builtin_constant_p"))?;
                 let lowered = self.expr(operand)?.value;
-                let constant =
-                    super::types::is_folded(&lowered) || self.types.builtin_constant_p(operand);
+                let constant = !self.types.gcc_comma_operand(operand)
+                    && (super::types::is_folded(&lowered)
+                        || self.types.builtin_constant_p(operand));
                 let lowered = self.enum_integer(lowered);
                 if !constant && self.statically_known_query(&lowered) {
                     let value = self.truth(

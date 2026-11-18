@@ -1881,8 +1881,17 @@ impl TypeResolver {
         self.constant_value(e).is_ok_and(|value| is_folded(&value))
     }
 
+    pub(super) fn gcc_comma_operand(&self, e: &crate::ast::Expr) -> bool {
+        use crate::ast::ExprKind;
+        let mut operand = e;
+        while let ExprKind::Paren(inner) = &operand.value {
+            operand = inner;
+        }
+        self.dialect.flavor().is_gcc() && matches!(operand.value, ExprKind::Comma { .. })
+    }
+
     pub(super) fn builtin_constant_p(&mut self, e: &crate::ast::Expr) -> bool {
-        self.is_constant(e) || self.string_literal_start(e)
+        !self.gcc_comma_operand(e) && (self.is_constant(e) || self.string_literal_start(e))
     }
 
     fn string_literal_start(&mut self, e: &crate::ast::Expr) -> bool {
