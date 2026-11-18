@@ -635,6 +635,7 @@ enum Opt {
     Retpoline,
     FunctionReturn,
     X87,
+    SoftFloat,
     ClangX87,
     FpRetIn387,
     ThreeDNow,
@@ -811,6 +812,7 @@ impl std::fmt::Display for Opt {
             Self::Retpoline => "mretpoline",
             Self::FunctionReturn => "mfunction-return",
             Self::X87 => "m80387",
+            Self::SoftFloat => "msoft-float",
             Self::ClangX87 => "mx87",
             Self::FpRetIn387 => "mfp-ret-in-387",
             Self::ThreeDNow => "m3dnow",
@@ -1026,6 +1028,7 @@ impl Opt {
             | Self::FixedRegister
             | Self::Rtd
             | Self::ExecCharset
+            | Self::SoftFloat
             | Self::StructReturn => &[Gcc, Clang],
             Self::PreferredStackBoundary
             | Self::GccStrictFlexArrays
@@ -1175,6 +1178,7 @@ impl Opt {
             Self::IndirectBranchCsPrefix => "-mindirect-branch-cs-prefix",
             Self::Retpoline => "-mretpoline",
             Self::X87 => "-m80387",
+            Self::SoftFloat => "-msoft-float",
             Self::ClangX87 => "-mx87",
             Self::FpRetIn387 => "-mfp-ret-in-387",
             Self::ThreeDNow => "-m3dnow",
@@ -1597,6 +1601,7 @@ const SWITCH_OPTS: &[Opt] = &[
     Opt::IndirectBranchCsPrefix,
     Opt::Retpoline,
     Opt::X87,
+    Opt::SoftFloat,
     Opt::ClangX87,
     Opt::FpRetIn387,
     Opt::ThreeDNow,
@@ -2099,6 +2104,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::IndirectBranchCsPrefix => parsed.indirect_branch_cs_prefix = Some(value),
                 Opt::Retpoline => parsed.retpoline = Some(value),
                 Opt::X87 | Opt::ClangX87 => parsed.isa.x86.set(X86Feature::X87, value),
+                Opt::SoftFloat => parsed.isa.x86.set(X86Feature::X87, !value),
                 Opt::FpRetIn387 => {
                     if !value {
                         parsed.isa.x86.set_for_clang(X86Feature::X87, false);
