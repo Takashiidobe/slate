@@ -1843,11 +1843,15 @@ dependencies = [
  "anyhow",
  "clap",
  "object 0.37.3",
+ "prettyplease",
+ "proc-macro2",
+ "quote",
  "rayon",
  "serde_json",
  "slate-c2rust",
  "slate-cargo-toml",
  "slate-parser",
+ "syn 3.0.6",
  "tempfile",
 ]
 

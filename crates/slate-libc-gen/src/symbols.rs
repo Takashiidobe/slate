@@ -1,9 +1,11 @@
 use crate::{
     decide::{Entry, Outcome},
-    rust_side,
+    emit, rust_side,
 };
 use anyhow::Result;
 use object::{Object, ObjectSection, ObjectSymbol, RelocationTarget};
+use proc_macro2::{Literal, TokenStream};
+use quote::{format_ident, quote};
 use slate::libc_catalog::{self, Kind};
 use slate_parser::ir::{self, TypeDefinitionKind};
 use std::{
@@ -329,24 +331,24 @@ pub fn collect(
             vec![candidate]
         })
         .collect();
-    let lines = candidates.iter().enumerate().map(|(index, candidate)| {
-        let path = &candidate.rust_path;
-        match candidate.kind {
-            Kind::Function => format!("#[unsafe(no_mangle)] pub static S{index}: {} = {path};", candidate.shape),
-            Kind::Global => format!("#[unsafe(no_mangle)] pub static mut S{index}: {} = unsafe {{ &raw {} {path} }};", candidate.shape,
-                if candidate.shape.starts_with("*mut") { "mut" } else { "const" }),
-            Kind::Type => {
-                let ty = &candidate.shape;
-                let signed = ty.starts_with('i');
-                if ty.starts_with(['f']) {
-                    format!("const _: fn({path}) = |_: {ty}| {{}}; #[unsafe(no_mangle)] pub static S{index}: u8 = 0;")
-                } else {
-                    format!("const _: () = assert!(core::mem::size_of::<{path}>() == core::mem::size_of::<{ty}>() && core::mem::align_of::<{path}>() == core::mem::align_of::<{ty}>() && ({path}::MIN < {path}::MAX / 2 * 0) == {signed}); #[unsafe(no_mangle)] pub static S{index}: u8 = 0;")
-                }
+    let (candidates, probes): (Vec<_>, Vec<_>) = candidates
+        .into_iter()
+        .filter_map(|candidate| match Probe::parse(&candidate) {
+            Some(probe) => Some((candidate, probe)),
+            None => {
+                rejected.insert(format!(
+                    "{:?} `{}`: Rust path or shape does not parse",
+                    candidate.kind, candidate.name
+                ));
+                None
             }
-            Kind::Constant => format!("const _: () = assert!({path} as i128 == {}i128); #[unsafe(no_mangle)] pub static S{index}: u8 = 0;", candidate.shape),
-        }
-    }).collect::<Vec<_>>();
+        })
+        .unzip();
+    let lines = probes
+        .iter()
+        .enumerate()
+        .map(|(index, probe)| probe.item(index).to_string())
+        .collect::<Vec<_>>();
     let (object, passed) = rust_side::compile_lines(libc, work, target, &lines)?;
     let bytes = std::fs::read(object)?;
     let object = object::File::parse(&*bytes)?;
@@ -432,6 +434,87 @@ pub fn collect(
     })
 }
 
+enum Probe {
+    Function {
+        path: syn::Path,
+        ty: syn::Type,
+    },
+    Global {
+        path: syn::Path,
+        ty: syn::TypePtr,
+    },
+    Float {
+        path: syn::Path,
+        ty: syn::Type,
+    },
+    Integer {
+        path: syn::Path,
+        ty: syn::Type,
+        signed: bool,
+    },
+    Constant {
+        path: syn::Path,
+        value: i128,
+    },
+}
+
+impl Probe {
+    fn parse(candidate: &Candidate) -> Option<Self> {
+        let path = emit::parse(&candidate.rust_path)?;
+        let shape = &candidate.shape;
+        Some(match candidate.kind {
+            Kind::Function => Self::Function {
+                path,
+                ty: emit::parse(shape)?,
+            },
+            Kind::Global => Self::Global {
+                path,
+                ty: emit::parse(shape)?,
+            },
+            Kind::Type if shape.starts_with('f') => Self::Float {
+                path,
+                ty: emit::parse(shape)?,
+            },
+            Kind::Type => Self::Integer {
+                path,
+                ty: emit::parse(shape)?,
+                signed: shape.starts_with('i'),
+            },
+            Kind::Constant => Self::Constant {
+                path,
+                value: shape.parse().ok()?,
+            },
+        })
+    }
+
+    fn item(&self, index: usize) -> TokenStream {
+        let symbol = format_ident!("S{index}");
+        let marker = quote!(#[unsafe(no_mangle)] pub static #symbol: u8 = 0;);
+        match self {
+            Self::Function { path, ty } => {
+                quote!(#[unsafe(no_mangle)] pub static #symbol: #ty = #path;)
+            }
+            Self::Global { path, ty } => {
+                let access = &ty.mutability;
+                quote!(#[unsafe(no_mangle)] pub static mut #symbol: #ty = unsafe { &raw #access #path };)
+            }
+            Self::Float { path, ty } => quote!(const _: fn(#path) = |_: #ty| {}; #marker),
+            Self::Integer { path, ty, signed } => quote! {
+                const _: () = assert!(
+                    core::mem::size_of::<#path>() == core::mem::size_of::<#ty>()
+                        && core::mem::align_of::<#path>() == core::mem::align_of::<#ty>()
+                        && (#path::MIN < #path::MAX / 2 * 0) == #signed
+                );
+                #marker
+            },
+            Self::Constant { path, value } => {
+                let value = Literal::i128_suffixed(*value);
+                quote!(const _: () = assert!(#path as i128 == #value); #marker)
+            }
+        }
+    }
+}
+
 pub fn integer(value: &ir::Value) -> Option<String> {
     match &value.node.value {
         ir::ValueKind::Constant(ir::Number::Integer(n)) => Some(n.to_string()),
@@ -440,7 +523,7 @@ pub fn integer(value: &ir::Value) -> Option<String> {
     }
 }
 
-pub fn table(targets: &BTreeMap<String, TargetSymbols>) -> String {
+pub fn table(targets: &BTreeMap<String, TargetSymbols>) -> Result<String> {
     let mut rows: BTreeMap<(Kind, &str, String, Option<&str>), BTreeSet<&str>> = BTreeMap::new();
     for (target, symbols) in targets {
         for candidate in &symbols.accepted {
@@ -454,16 +537,28 @@ pub fn table(targets: &BTreeMap<String, TargetSymbols>) -> String {
             .insert(target);
         }
     }
-    let mut out = String::from("pub const SYMBOLS: &[Symbol] = &[\n");
-    for ((kind, name, rust_path, shape), targets) in rows {
-        let targets = targets.into_iter().collect::<Vec<_>>();
-        let _ = writeln!(
-            out,
-            "    Symbol {{ name: {name:?}, rust_path: {rust_path:?}, targets: &{targets:?}, kind: Kind::{kind:?}, shape: {shape:?} }},"
-        );
-    }
-    out.push_str("];\n");
-    out
+    let symbols = rows
+        .into_iter()
+        .map(|((kind, name, rust_path, shape), targets)| {
+            let targets = targets.iter();
+            let kind = format_ident!("{kind:?}");
+            let shape = match shape {
+                Some(shape) => quote!(Some(#shape)),
+                None => quote!(None),
+            };
+            quote! {
+                Symbol {
+                    name: #name,
+                    rust_path: #rust_path,
+                    targets: &[#(#targets),*],
+                    kind: Kind::#kind,
+                    shape: #shape,
+                }
+            }
+        });
+    emit::file(quote! {
+        pub const SYMBOLS: &[Symbol] = &[#(#symbols),*];
+    })
 }
 
 pub fn report(targets: &BTreeMap<String, TargetSymbols>) -> String {

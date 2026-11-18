@@ -1,5 +1,6 @@
 use crate::c_side::{CMap, CType, Field};
 use crate::rust_side::RustLayout;
+use quote::quote;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt::Write;
 
@@ -297,7 +298,7 @@ fn decide_one(
     }
 }
 
-pub fn table(entries: &[Entry]) -> (String, Vec<String>) {
+pub fn table(entries: &[Entry]) -> anyhow::Result<(String, Vec<String>)> {
     let accepted: BTreeSet<(&str, &str)> = entries
         .iter()
         .filter(|entry| !matches!(entry.outcome, Outcome::Excluded))
@@ -346,27 +347,21 @@ pub fn table(entries: &[Entry]) -> (String, Vec<String>) {
             }
         }
     }
-    let mut out = String::from("pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[\n");
-    for (rust_name, names) in rows {
-        let _ = writeln!(
-            out,
-            "    CLibRecord {{ rust_path: \"{rust_name}\", aliases: &["
-        );
+    let records = rows.into_iter().map(|(rust_path, names)| {
         let mut groups: BTreeMap<BTreeSet<String>, Vec<String>> = BTreeMap::new();
         for (name, targets) in names {
             groups.entry(targets).or_default().push(name);
         }
-        for (targets, names) in groups {
-            let targets = targets.into_iter().collect::<Vec<_>>();
-            let _ = writeln!(
-                out,
-                "        CLibAliases {{ names: &{names:?}, targets: &{targets:?} }},"
-            );
-        }
-        out.push_str("    ] },\n");
-    }
-    out.push_str("];\n");
-    (out, conflicts)
+        let aliases = groups.into_iter().map(|(targets, names)| {
+            let targets = targets.iter();
+            quote!(CLibAliases { names: &[#(#names),*], targets: &[#(#targets),*] })
+        });
+        quote!(CLibRecord { rust_path: #rust_path, aliases: &[#(#aliases),*] })
+    });
+    let table = crate::emit::file(quote! {
+        pub const CLIB_RECORD_TYPES: &[CLibRecord] = &[#(#records),*];
+    })?;
+    Ok((table, conflicts))
 }
 
 pub fn report(

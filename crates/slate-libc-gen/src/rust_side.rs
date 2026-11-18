@@ -1,5 +1,7 @@
 use anyhow::{Context, Result, bail};
 use object::{Object, ObjectSection, ObjectSymbol};
+use proc_macro2::TokenStream;
+use quote::{format_ident, quote};
 use slate_cargo_toml::{Dependency, Edition, Lib, Manifest, Workspace};
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::{Path, PathBuf};
@@ -94,7 +96,15 @@ fn write_probe_manifest(dir: &Path, libc: &Path, opt_level: Option<u8>) -> Resul
 struct Probe {
     key: String,
     type_index: usize,
-    line: String,
+    value: TokenStream,
+}
+
+impl Probe {
+    fn line(&self) -> String {
+        let key = format_ident!("{}", self.key);
+        let value = &self.value;
+        quote!(#[unsafe(no_mangle)] pub static #key: u32 = #value;).to_string()
+    }
 }
 
 pub fn collect(
@@ -110,24 +120,30 @@ pub fn collect(
 
     let mut probes = Vec::new();
     for (index, (name, fields)) in candidates.iter().enumerate() {
-        let Some(ty) = providers.path(name) else {
+        let Some(ty) = providers
+            .path(name)
+            .and_then(|path| crate::emit::parse::<syn::Type>(&path))
+        else {
             continue;
         };
         probes.push(Probe {
             key: format!("L{index}_s"),
             type_index: index,
-            line: format!("core::mem::size_of::<{ty}>() as u32"),
+            value: quote!(core::mem::size_of::<#ty>() as u32),
         });
         probes.push(Probe {
             key: format!("L{index}_a"),
             type_index: index,
-            line: format!("core::mem::align_of::<{ty}>() as u32"),
+            value: quote!(core::mem::align_of::<#ty>() as u32),
         });
         for (field_index, field) in fields.iter().enumerate() {
+            let Some(field) = crate::emit::parse::<syn::Ident>(&ident(field)) else {
+                continue;
+            };
             probes.push(Probe {
                 key: format!("L{index}_o{field_index}"),
                 type_index: index,
-                line: format!("core::mem::offset_of!({ty}, {}) as u32", ident(field)),
+                value: quote!(core::mem::offset_of!(#ty, #field) as u32),
             });
         }
     }
@@ -140,10 +156,8 @@ pub fn collect(
         let mut source =
             String::from("#![no_std]\n#![allow(non_upper_case_globals)]\nextern crate libc;\n");
         for probe in &probes {
-            source.push_str(&format!(
-                "#[unsafe(no_mangle)] pub static {}: u32 = {};\n",
-                probe.key, probe.line
-            ));
+            source.push_str(&probe.line());
+            source.push('\n');
         }
         std::fs::write(&lib, source)?;
         let output = Command::new("cargo")

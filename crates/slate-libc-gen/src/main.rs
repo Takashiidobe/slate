@@ -1,5 +1,6 @@
 mod c_side;
 mod decide;
+mod emit;
 mod providers;
 mod rust_side;
 mod symbols;
@@ -119,7 +120,7 @@ fn main() -> Result<()> {
         .collect::<Result<_>>()?;
 
     let entries = decide::decide(&data);
-    let (table, conflicts) = decide::table(&entries);
+    let (table, conflicts) = decide::table(&entries)?;
     if let Some(parent) = args.report.parent() {
         std::fs::create_dir_all(parent)?;
     }
@@ -151,7 +152,7 @@ fn main() -> Result<()> {
         })
         .collect::<Result<_>>()?;
     std::fs::write(&args.out, table)?;
-    std::fs::write(&args.symbols_out, symbols::table(&symbol_data))?;
+    std::fs::write(&args.symbols_out, symbols::table(&symbol_data)?)?;
     let mut report = decide::report(&entries, &data, &conflicts);
     report.push_str(&symbols::report(&symbol_data));
     std::fs::write(&args.report, report)?;
