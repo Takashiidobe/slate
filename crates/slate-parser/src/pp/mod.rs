@@ -617,6 +617,14 @@ impl<'a> Preprocessor<'a> {
         {
             defines.extend(self.c23_predefines());
         }
+        let standard = self.dialect.standard();
+        if self.dialect.flavor().is_gcc()
+            && !standard.at_least_c11()
+            && standard != crate::compiler_args::LanguageStandard::Gnu99
+        {
+            self.macros.remove("__STDC_UTF_16__");
+            self.macros.remove("__STDC_UTF_32__");
+        }
 
         for name in [
             "__STRICT_ANSI__",
