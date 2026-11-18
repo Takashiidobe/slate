@@ -35,6 +35,16 @@ def run_left(lease):
     return lease["run_minutes"] - minutes_since(lease["run_start"])
 
 
+def near_limit():
+    try:
+        limits = json.loads((ROOT / ".auto" / "limits.json").read_text())
+    except (FileNotFoundError, json.JSONDecodeError):
+        return False
+    if limits["resets_at"] and limits["resets_at"] < time.time():
+        return False
+    return limits["status"] == "rejected" or (limits["utilization"] or 0) >= limits["stop_at"]
+
+
 def bd(*args):
     return subprocess.run(["bd", *args], cwd=ROOT, capture_output=True, text=True)
 
@@ -86,6 +96,9 @@ def cmd_next(_args):
         sys.exit(3)
     if run_left(lease) <= TICKET_MINUTES:
         print("EXIT: run budget exhausted")
+        sys.exit(3)
+    if near_limit():
+        print("EXIT: 5-hour usage limit nearly used")
         sys.exit(3)
     query = ["ready", "--label", "auto", "--exclude-type", "epic", "--claim", "--json"]
     if lease["dry_run"]:

@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 LEASE_PY = ROOT / "tools" / "auto" / "lease.py"
 LOGS = ROOT / ".auto" / "logs"
 TRANSCRIPT = ROOT / ".auto" / "transcript.md"
+LIMITS = ROOT / ".auto" / "limits.json"
 
 
 def sh(*args, check=False):
@@ -32,8 +33,10 @@ def tree_dirty():
     return any(not line.endswith(".beads/issues.jsonl") for line in lines)
 
 
-def rescue(ticket, dry_run):
+def rescue(ticket, dry_run, limited):
     note = "[auto] session ended while holding this ticket"
+    if limited:
+        note += " (5-hour usage limit reached; returned to the queue, not a judgment call)"
     if tree_dirty() and not dry_run:
         branch = f"{ticket}-wip"
         base = sh("git", "rev-parse", "--short", "HEAD").stdout.strip()
@@ -45,7 +48,7 @@ def rescue(ticket, dry_run):
     elif tree_dirty():
         sh("git", "stash", "push", "-u", "-m", f"auto dry-run leftovers {ticket}")
     sh("bd", "comments", "add", ticket, note)
-    status = "open" if dry_run else "needs_input"
+    status = "open" if dry_run or limited else "needs_input"
     sh("bd", "update", ticket, "--status", status, "--assignee", "")
     lease("done", "dry" if dry_run else "wip")
 
@@ -77,7 +80,11 @@ def run_session(n, args, remaining_s):
             except json.JSONDecodeError:
                 tx.write(line)
                 continue
-            if event.get("type") == "rate_limit_event" and event["rate_limit_info"].get("status") != "allowed":
+            if event.get("type") == "rate_limit_event" and record_limit(event["rate_limit_info"], args.limit_stop):
+                limited = True
+                tx.write(f"\n[{time.strftime('%H:%M:%S')}] 5-hour limit reached: killing session\n")
+                proc.kill()
+            if event.get("type") == "result" and event.get("is_error") and "limit" in str(event.get("result", "")).lower():
                 limited = True
             text = render(event)
             if text:
@@ -87,6 +94,28 @@ def run_session(n, args, remaining_s):
         timed_out = not timer.is_alive()
         timer.cancel()
     return ("timeout" if timed_out else code), limited
+
+
+def record_limit(info, stop_at):
+    window = info.get("unifiedWindows", {}).get("five_hour", {})
+    utilization = window.get("utilization", info.get("utilization"))
+    LIMITS.write_text(json.dumps({
+        "status": info.get("status"),
+        "utilization": utilization,
+        "resets_at": window.get("resetsAt", info.get("resetsAt")),
+        "stop_at": stop_at,
+    }))
+    return info.get("status") == "rejected"
+
+
+def near_limit():
+    try:
+        limits = json.loads(LIMITS.read_text())
+    except (FileNotFoundError, json.JSONDecodeError):
+        return False
+    if limits["resets_at"] and limits["resets_at"] < time.time():
+        return False
+    return limits["status"] == "rejected" or (limits["utilization"] or 0) >= limits["stop_at"]
 
 
 def clip(text, limit):
@@ -130,6 +159,7 @@ def main():
     parser.add_argument("--max-sessions", type=int, default=0)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--model")
+    parser.add_argument("--limit-stop", type=float, default=0.9)
     args = parser.parse_args()
 
     if sh("git", "branch", "--show-current").stdout.strip() != "main":
@@ -140,6 +170,7 @@ def main():
     start_args = ["start-run", "--hours", str(args.hours), "--per-session", str(args.per_session)]
     if args.dry_run:
         start_args.append("--dry-run")
+    LIMITS.unlink(missing_ok=True)
     start_commit = lease(*start_args).stdout.strip()
     deadline = time.time() + args.hours * 3600
     print(f"run start commit {start_commit}; review with: git log {start_commit[:12]}..main", flush=True)
@@ -162,6 +193,9 @@ def loop(args, deadline):
     while time.time() < deadline - 15 * 60:
         if args.max_sessions and n >= args.max_sessions:
             break
+        if near_limit():
+            print("5-hour usage limit reached or nearly used; stopping", flush=True)
+            break
         query = ["bd", "ready", "--label", "auto", "--exclude-type", "epic", "--json", "-n", "1"]
         if args.dry_run:
             query += ["--exclude-label", "auto-dry"]
@@ -173,7 +207,7 @@ def loop(args, deadline):
         code, limited = run_session(n, args, deadline - time.time())
         held = read_lease().get("ticket")
         if held:
-            rescue(held, args.dry_run)
+            rescue(held, args.dry_run, limited)
         print(f"session {n} exit {code}{' (usage limit)' if limited else ''}", flush=True)
         if limited:
             break
