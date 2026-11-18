@@ -25,7 +25,8 @@ def read_lease():
 
 
 def tree_dirty():
-    return bool(sh("git", "status", "--porcelain", "--untracked-files=normal").stdout.strip())
+    lines = sh("git", "status", "--porcelain", "--untracked-files=normal").stdout.splitlines()
+    return any(not line.endswith(".beads/issues.jsonl") for line in lines)
 
 
 def rescue(ticket, dry_run):
