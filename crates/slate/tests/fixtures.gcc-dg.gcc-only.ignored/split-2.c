@@ -1,8 +1,8 @@
-/* { dg-do run { target { i?86-*-linux* i?86-*-gnu* x86_64-*-linux* } } } */
-/* { dg-require-effective-target cet } */
+/* SLATE: recurses ~10 MB on a pthread and relies on -fsplit-stack growing the stack; rustc has no split stacks, so the translation overflows the fixed thread stack. */
+/* { dg-do run } */
 /* { dg-require-effective-target split_stack } */
 /* { dg-require-effective-target pthread_h } */
-/* { dg-options "-pthread -fsplit-stack -fcf-protection" } */
+/* { dg-options "-pthread -fsplit-stack" } */
 
 #include <stdlib.h>
 #include <pthread.h>
