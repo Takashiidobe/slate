@@ -3427,12 +3427,13 @@ fn gcc_rules<'a>(target: &'a TargetInfo) -> Rule<'a, ParsedCompilerArgs> {
             },
         ),
         Rule::validate("GCC MS modes", |args: &ParsedCompilerArgs| {
-            match [Opt::MsExtensions, Opt::MsCompatibility]
-                .into_iter()
-                .find(|opt| args.has(*opt))
-            {
-                Some(opt) => Err(format!("`{opt}` is not emulated for GCC")),
-                None => Ok(()),
+            if args.has(Opt::MsCompatibility) {
+                Err(format!(
+                    "`{}` is not emulated for GCC",
+                    Opt::MsCompatibility
+                ))
+            } else {
+                Ok(())
             }
         }),
         Rules::when(

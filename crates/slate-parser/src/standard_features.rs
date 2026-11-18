@@ -245,7 +245,7 @@ impl StandardFeatures {
             CompilerFlavor::Clang => microsoft
                 .anonymous_structs
                 .unwrap_or(features.microsoft_extensions),
-            CompilerFlavor::Gcc => false,
+            CompilerFlavor::Gcc => microsoft.anonymous_structs.unwrap_or(false),
         };
         features.octal_prefix = !flavor.is_msvc();
         features.raw_string_literals =
