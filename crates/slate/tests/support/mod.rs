@@ -651,7 +651,7 @@ pub fn compile_c_multi_with_std_include_and_args(
     })
 }
 
-fn compile_c_cached(
+pub fn compile_c_cached(
     inputs: &[&Path],
     out: &Path,
     cache_key: &str,

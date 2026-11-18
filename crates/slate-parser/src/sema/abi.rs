@@ -7,7 +7,7 @@ use crate::ir::{
     AbiChunk, AbiConvention, AbiPass, AbiSignature, CallConv, Field, FloatType, NumericType,
     RecordKind, TargetFeature, Type, TypeDefinitionKind, VaClass, VaPassing, Value,
 };
-use crate::target_info::{TargetInfo, TargetOs};
+use crate::target_info::{StructReturn, TargetInfo, TargetOs};
 
 impl Lowerer {
     pub(super) fn abi_signature(
@@ -934,6 +934,12 @@ impl<'a> AbiClassifier<'a> {
         convention: AbiConvention,
     ) -> Result<AbiPass, ResolveError> {
         let AbiRecord { size, align, .. } = *record;
+        if result
+            && let Some(policy) = self.target.abi.struct_return
+            && let Some(pass) = self.forced_struct_return(record, policy, convention)?
+        {
+            return Ok(pass);
+        }
         let flexible_in_memory = !self.types.flavor().is_gcc() && has_flexible_array(record.fields);
         Ok(match convention {
             AbiConvention::SysV64 => self.sysv_record(record, flexible_in_memory, result)?,
@@ -977,6 +983,78 @@ impl<'a> AbiClassifier<'a> {
             }
             _ => AbiPass::NativeC,
         })
+    }
+
+    fn forced_struct_return(
+        &self,
+        record: &AbiRecord<'_>,
+        policy: StructReturn,
+        convention: AbiConvention,
+    ) -> Result<Option<AbiPass>, ResolveError> {
+        let AbiRecord { size, align, .. } = *record;
+        Ok(match (policy, convention) {
+            (StructReturn::Memory, AbiConvention::X86Win32) => Some(AbiPass::SRet { align }),
+            (
+                StructReturn::Memory,
+                AbiConvention::SysV64
+                | AbiConvention::Aapcs64
+                | AbiConvention::Aapcs32
+                | AbiConvention::Aapcs32HardFloat,
+            ) if size > 0 => Some(AbiPass::SRet { align }),
+            (StructReturn::Registers, AbiConvention::X86Cdecl)
+                if self.is_empty_record(record.ty) =>
+            {
+                Some(if self.types.flavor().is_gcc() {
+                    AbiPass::SRet {
+                        align: align.min(4),
+                    }
+                } else {
+                    AbiPass::Void
+                })
+            }
+            (StructReturn::Registers, AbiConvention::X86Cdecl)
+                if matches!(size, 1 | 2 | 4 | 8)
+                    && self.win32_returns_in_register(record.ty)? =>
+            {
+                Some(AbiPass::Coerce(vec![
+                    match self.single_float_element(record.ty) {
+                        Some(format) => AbiChunk::Float(format),
+                        None => AbiChunk::Integer((size * 8) as u32),
+                    },
+                ]))
+            }
+            _ => None,
+        })
+    }
+
+    fn single_float_element(&self, ty: &Type) -> Option<FloatType> {
+        match ty {
+            Type::Numeric(NumericType::Float(format @ (FloatType::F32 | FloatType::F64))) => {
+                Some(*format)
+            }
+            Type::Array {
+                element,
+                length: Some(1),
+            } => self.single_float_element(element),
+            Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
+                TypeDefinitionKind::Alias(inner) => self.single_float_element(inner),
+                TypeDefinitionKind::Record {
+                    kind: RecordKind::Struct,
+                    fields: Some(fields),
+                    ..
+                } => {
+                    let mut members = fields.iter().filter(|field| !self.is_empty_field(field));
+                    let only = members.next()?;
+                    members
+                        .next()
+                        .is_none()
+                        .then(|| self.single_float_element(&only.ty))
+                        .flatten()
+                }
+                _ => None,
+            },
+            _ => None,
+        }
     }
 
     fn rust_homogeneous_record(

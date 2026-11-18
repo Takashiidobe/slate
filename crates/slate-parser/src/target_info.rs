@@ -143,11 +143,19 @@ pub struct StorageLayout {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum StructReturn {
+    Memory,
+    Registers,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TargetAbi {
     pub preferred_stack_alignment: u32,
     pub zero_width_bitfield_aligns_record: bool,
     pub default_regparm: u8,
     pub default_convention: crate::ir::CallConv,
+    pub main_takes_default_convention: bool,
+    pub struct_return: Option<StructReturn>,
 }
 
 impl Default for TargetAbi {
@@ -157,6 +165,8 @@ impl Default for TargetAbi {
             zero_width_bitfield_aligns_record: false,
             default_regparm: 0,
             default_convention: crate::ir::CallConv::C,
+            main_takes_default_convention: false,
+            struct_return: None,
         }
     }
 }

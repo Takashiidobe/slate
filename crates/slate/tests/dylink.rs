@@ -5,6 +5,7 @@ use std::process::Command;
 
 const WINDOWS_TRIPLE: &str = "x86_64-pc-windows-msvc";
 const AARCH64_TRIPLE: &str = "aarch64-unknown-linux-gnu";
+const I686_TRIPLE: &str = "i686-unknown-linux-gnu";
 
 fn manifest_dir() -> &'static Path {
     Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -25,37 +26,79 @@ fn c_sources_in(dir: &Path) -> Vec<PathBuf> {
     sources
 }
 
-fn fixtures() -> Vec<(String, PathBuf)> {
+fn headers_in(dir: &Path) -> Vec<PathBuf> {
+    std::fs::read_dir(dir)
+        .into_iter()
+        .flatten()
+        .filter_map(|entry| entry.ok().map(|entry| entry.path()))
+        .filter(|path| path.extension().is_some_and(|ext| ext == "h"))
+        .collect()
+}
+
+#[derive(Default)]
+struct FixtureConfig {
+    platforms: Option<Vec<String>>,
+    args: Vec<String>,
+}
+
+impl FixtureConfig {
+    fn path(fixture: &Path) -> PathBuf {
+        fixture.join("dylink.json")
+    }
+
+    fn load(fixture: &Path) -> Self {
+        let path = Self::path(fixture);
+        let Ok(text) = std::fs::read_to_string(&path) else {
+            return Self::default();
+        };
+        let value: serde_json::Value = serde_json::from_str(&text)
+            .unwrap_or_else(|error| panic!("{}: {error}", path.display()));
+        let strings = |key: &str| {
+            value.get(key).map(|list| {
+                list.as_array()
+                    .unwrap_or_else(|| panic!("{}: `{key}` must be a list", path.display()))
+                    .iter()
+                    .map(|item| {
+                        item.as_str()
+                            .unwrap_or_else(|| panic!("{}: `{key}` holds strings", path.display()))
+                            .to_owned()
+                    })
+                    .collect::<Vec<_>>()
+            })
+        };
+        Self {
+            platforms: strings("platforms"),
+            args: strings("args").unwrap_or_default(),
+        }
+    }
+
+    fn runs_on(&self, platform: &Platform) -> bool {
+        match &self.platforms {
+            Some(platforms) => platforms.iter().any(|name| name == platform.name),
+            None => !platform.opt_in,
+        }
+    }
+}
+
+fn fixtures(platform: &Platform) -> Vec<(String, PathBuf, FixtureConfig)> {
     let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
-    let mut fixtures: Vec<(String, PathBuf)> = std::fs::read_dir(fixtures_root())
+    let mut fixtures: Vec<_> = std::fs::read_dir(fixtures_root())
         .expect("read dylink fixtures")
         .filter_map(|entry| {
             let path = entry.ok()?.path();
             let name = path.file_name()?.to_string_lossy().into_owned();
-            (path.join("lib").is_dir()
-                && path.join("host").is_dir()
-                && selected.as_ref().is_none_or(|selected| *selected == name))
-            .then_some((name, path))
+            if !path.join("lib").is_dir()
+                || !path.join("host").is_dir()
+                || selected.as_ref().is_some_and(|selected| *selected != name)
+            {
+                return None;
+            }
+            let config = FixtureConfig::load(&path);
+            config.runs_on(platform).then_some((name, path, config))
         })
         .collect();
-    fixtures.sort();
+    fixtures.sort_by(|left, right| left.0.cmp(&right.0));
     fixtures
-}
-
-fn run_checked(command: &mut Command, what: &str) -> Result<(), String> {
-    let output = command
-        .output()
-        .map_err(|error| format!("spawn {what}: {error}"))?;
-    if output.status.success() {
-        Ok(())
-    } else {
-        Err(format!(
-            "{what} failed ({}):\n{}{}",
-            output.status,
-            String::from_utf8_lossy(&output.stdout),
-            String::from_utf8_lossy(&output.stderr)
-        ))
-    }
 }
 
 struct Platform {
@@ -66,6 +109,7 @@ struct Platform {
     translate_args: Vec<String>,
     cross: Option<support::CrossTarget>,
     msvc_root: Option<PathBuf>,
+    opt_in: bool,
 }
 
 impl Platform {
@@ -78,6 +122,7 @@ impl Platform {
             translate_args: vec!["-std=c23".into()],
             cross: None,
             msvc_root: None,
+            opt_in: false,
         }
     }
 
@@ -90,6 +135,20 @@ impl Platform {
             translate_args: vec!["-std=c23".into(), format!("--target={AARCH64_TRIPLE}")],
             cross: Some(support::CrossTarget::aarch64_linux()),
             msvc_root: None,
+            opt_in: false,
+        }
+    }
+
+    fn linux_i686() -> Self {
+        Self {
+            name: "linux-i686",
+            triple: I686_TRIPLE,
+            dep_file: "libdep.so",
+            dep_path: "./libdep.so",
+            translate_args: vec!["-std=c23".into(), format!("--target={I686_TRIPLE}")],
+            cross: Some(support::CrossTarget::i686_linux()),
+            msvc_root: None,
+            opt_in: true,
         }
     }
 
@@ -104,6 +163,7 @@ impl Platform {
                 &msvc_root, "x86_64",
             )),
             msvc_root: Some(msvc_root),
+            opt_in: false,
         }
     }
 
@@ -111,15 +171,57 @@ impl Platform {
         self.msvc_root.is_some()
     }
 
-    fn linux_cc(&self) -> Command {
+    fn linux_cc(&self) -> (String, Vec<String>) {
         match &self.cross {
-            Some(cross) => {
-                let mut command = Command::new(&cross.cc);
-                command.args(&cross.cc_extra_args);
-                command
-            }
-            None => Command::new(support::cc()),
+            Some(cross) => (cross.cc.clone(), cross.cc_extra_args.clone()),
+            None => (support::cc(), Vec::new()),
         }
+    }
+
+    fn compile_cached(
+        &self,
+        fixture: &Path,
+        config: &FixtureConfig,
+        work: &Path,
+        sources: &[PathBuf],
+        out: &Path,
+        compile: impl FnOnce(&Path) -> Result<std::process::Output, String>,
+    ) -> Result<(), String> {
+        let mut inputs = sources.to_vec();
+        for dir in [
+            fixtures_root(),
+            fixture.to_path_buf(),
+            fixture.join("lib"),
+            fixture.join("host"),
+        ] {
+            inputs.extend(headers_in(&dir));
+        }
+        inputs.push(work.join("dylink_path.h"));
+        inputs.extend(Some(FixtureConfig::path(fixture)).filter(|path| path.is_file()));
+        let key =
+            serde_json::to_string(&(1, self.triple, self.linux_cc(), sources, &config.args, out))
+                .map_err(|e| format!("encode dylink C cache key: {e}"))?;
+        let inputs: Vec<&Path> = inputs.iter().map(PathBuf::as_path).collect();
+        let what = format!("{} build of {}", self.name, out.display());
+        support::compile_c_cached(&inputs, out, &key, &what, compile)
+    }
+
+    fn cl_into(
+        &self,
+        work: &Path,
+        built: &str,
+        temporary: &Path,
+        configure: impl FnOnce(&mut Command),
+    ) -> Result<std::process::Output, String> {
+        let mut command = self.cl();
+        command.current_dir(work);
+        configure(&mut command);
+        let output = command.output().map_err(|e| format!("spawn cl.exe: {e}"))?;
+        if output.status.success() {
+            std::fs::rename(work.join(built), temporary)
+                .map_err(|e| format!("rename {built}: {e}"))?;
+        }
+        Ok(output)
     }
 
     fn run_config(&self) -> support::RunConfig {
@@ -145,75 +247,101 @@ impl Platform {
         command
     }
 
-    fn build_dependency(&self, fixture: &Path, work: &Path) -> Result<(), String> {
+    fn build_dependency(
+        &self,
+        fixture: &Path,
+        config: &FixtureConfig,
+        work: &Path,
+    ) -> Result<(), String> {
         let sources = c_sources_in(&fixture.join("lib"));
-        if self.is_windows() {
-            std::fs::create_dir_all(work.join("obj_lib")).map_err(|e| e.to_string())?;
-            let mut command = self.cl();
-            command
-                .current_dir(work)
-                .arg("/LD")
-                .arg(format!("/I{}", fixtures_root().display()))
-                .arg(format!("/Fe:{}", self.dep_file))
-                .arg("/Foobj_lib\\")
-                .args(&sources);
-            run_checked(&mut command, "cl.exe /LD")
-        } else {
-            run_checked(
-                self.linux_cc()
-                    .args(["-O0", "-std=c23", "-shared", "-fPIC", "-fvisibility=hidden"])
-                    .arg(format!("-I{}", fixtures_root().display()))
-                    .arg("-o")
-                    .arg(work.join(self.dep_file))
-                    .args(&sources),
-                "clang -shared",
-            )
-        }
+        let out = work.join(self.dep_file);
+        self.compile_cached(fixture, config, work, &sources, &out, |temporary| {
+            if self.is_windows() {
+                std::fs::create_dir_all(work.join("obj_lib")).map_err(|e| e.to_string())?;
+                return self.cl_into(work, self.dep_file, temporary, |command| {
+                    command
+                        .arg("/LD")
+                        .arg(format!("/I{}", fixtures_root().display()))
+                        .args(&config.args)
+                        .arg(format!("/Fe:{}", self.dep_file))
+                        .arg("/Foobj_lib\\")
+                        .args(&sources);
+                });
+            }
+            let (cc, cc_args) = self.linux_cc();
+            Command::new(&cc)
+                .args(cc_args)
+                .args(["-O0", "-std=c23", "-shared", "-fPIC", "-fvisibility=hidden"])
+                .args(&config.args)
+                .arg(format!("-I{}", fixtures_root().display()))
+                .arg("-o")
+                .arg(temporary)
+                .args(&sources)
+                .output()
+                .map_err(|e| format!("spawn {cc}: {e}"))
+        })
     }
 
-    fn build_native_host(&self, fixture: &Path, work: &Path) -> Result<PathBuf, String> {
+    fn build_native_host(
+        &self,
+        fixture: &Path,
+        config: &FixtureConfig,
+        work: &Path,
+    ) -> Result<PathBuf, String> {
         let sources = c_sources_in(&fixture.join("host"));
-        if self.is_windows() {
-            std::fs::create_dir_all(work.join("obj_host")).map_err(|e| e.to_string())?;
-            let mut command = self.cl();
-            command
-                .current_dir(work)
-                .arg(format!("/I{}", fixtures_root().display()))
-                .arg(format!("/I{}", work.display()))
-                .arg("/Fe:host_c.exe")
-                .arg("/Foobj_host\\")
-                .args(&sources);
-            run_checked(&mut command, "cl.exe host")?;
-            Ok(work.join("host_c.exe"))
+        let out = work.join(if self.is_windows() {
+            "host_c.exe"
         } else {
-            let out = work.join("host_c");
-            run_checked(
-                self.linux_cc()
-                    .args(["-O0", "-std=c23"])
-                    .arg(format!("-I{}", fixtures_root().display()))
-                    .arg(format!("-I{}", work.display()))
-                    .arg("-o")
-                    .arg(&out)
-                    .args(&sources)
-                    .args(["-ldl", "-lm"]),
-                "clang host",
-            )?;
-            Ok(out)
-        }
+            "host_c"
+        });
+        self.compile_cached(fixture, config, work, &sources, &out, |temporary| {
+            if self.is_windows() {
+                std::fs::create_dir_all(work.join("obj_host")).map_err(|e| e.to_string())?;
+                return self.cl_into(work, "host_c.exe", temporary, |command| {
+                    command
+                        .arg(format!("/I{}", fixtures_root().display()))
+                        .arg(format!("/I{}", work.display()))
+                        .args(&config.args)
+                        .arg("/Fe:host_c.exe")
+                        .arg("/Foobj_host\\")
+                        .args(&sources);
+                });
+            }
+            let (cc, cc_args) = self.linux_cc();
+            Command::new(&cc)
+                .args(cc_args)
+                .args(["-O0", "-std=c23"])
+                .args(&config.args)
+                .arg(format!("-I{}", fixtures_root().display()))
+                .arg(format!("-I{}", work.display()))
+                .arg("-o")
+                .arg(temporary)
+                .args(&sources)
+                .args(["-ldl", "-lm"])
+                .output()
+                .map_err(|e| format!("spawn {cc}: {e}"))
+        })?;
+        Ok(out)
     }
 
-    fn build_translated_host(&self, fixture: &Path, work: &Path) -> Result<PathBuf, String> {
+    fn build_translated_host(
+        &self,
+        fixture: &Path,
+        config: &FixtureConfig,
+        work: &Path,
+    ) -> Result<PathBuf, String> {
         let sources = c_sources_in(&fixture.join("host"));
         let crate_dir = work.join("rust");
-        let _ = std::fs::remove_file(crate_dir.join("runtime-ok"));
+        let previous = support::fresh_tree::set_aside(&crate_dir);
         std::fs::create_dir_all(&crate_dir).map_err(|e| e.to_string())?;
-        let database = crate_dir.join("compile_commands.json");
+        let database = work.join("compile_commands.json");
         let host_dir = fixture.join("host");
         let entries: Vec<_> = sources
             .iter()
             .map(|source| {
                 let mut arguments = vec!["clang".to_string()];
                 arguments.extend(self.translate_args.iter().cloned());
+                arguments.extend(config.args.iter().cloned());
                 arguments.push(format!("-I{}", fixtures_root().display()));
                 arguments.push(format!("-I{}", work.display()));
                 arguments.push(source.display().to_string());
@@ -233,6 +361,7 @@ impl Platform {
             .arg(&crate_dir)
             .output()
             .map_err(|e| format!("spawn slate translate-project: {e}"))?;
+        support::fresh_tree::keep_unchanged_mtimes(&previous, &crate_dir);
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
             assert!(
@@ -249,7 +378,7 @@ impl Platform {
         support::run_with_config_for_target(binary, &self.run_config(), work, self.cross.as_ref())
     }
 
-    fn check(&self, fixture: &Path, name: &str) -> Result<(), String> {
+    fn check(&self, fixture: &Path, name: &str, config: &FixtureConfig) -> Result<(), String> {
         let work = manifest_dir()
             .join("target/difftest-generated/dylink")
             .join(self.triple)
@@ -260,9 +389,9 @@ impl Platform {
             format!("#define DEP_PATH \"{}\"\n", self.dep_path).as_bytes(),
         )
         .map_err(|e| e.to_string())?;
-        self.build_dependency(fixture, &work)?;
-        let native = self.build_native_host(fixture, &work)?;
-        let translated = self.build_translated_host(fixture, &work)?;
+        self.build_dependency(fixture, config, &work)?;
+        let native = self.build_native_host(fixture, config, &work)?;
+        let translated = self.build_translated_host(fixture, config, &work)?;
         let c = self.run(&native, &work)?;
         if c.exit() != Some(0) || c.stdout().is_empty() {
             return Err(format!(
@@ -343,15 +472,15 @@ fn windows_platform() -> Option<Platform> {
 }
 
 fn run_platform(platform: &Platform) {
-    let fixtures = fixtures();
+    let fixtures = fixtures(platform);
     assert!(
-        !fixtures.is_empty() || std::env::var("SLATE_DIFF_FIXTURE").is_ok(),
+        !fixtures.is_empty() || platform.opt_in || std::env::var("SLATE_DIFF_FIXTURE").is_ok(),
         "no dylink fixtures found in {}",
         fixtures_root().display()
     );
-    let failures: Vec<_> = support::parallel_map(&fixtures, |(name, path)| {
+    let failures: Vec<_> = support::parallel_map(&fixtures, |(name, path, config)| {
         platform
-            .check(path, name)
+            .check(path, name, config)
             .err()
             .map(|error| format!("[{}/{name}] {error}", platform.name))
     })
@@ -395,6 +524,15 @@ fn dylink_linux_aarch64() {
             "dylink: skipping linux-aarch64 leg, missing {}",
             missing.join(", ")
         );
+    }
+}
+
+#[test]
+fn dylink_linux_i686() {
+    if support::rust_target_installed(I686_TRIPLE) {
+        run_platform(&Platform::linux_i686());
+    } else {
+        eprintln!("dylink: skipping linux-i686 leg, missing rust target {I686_TRIPLE}");
     }
 }
 

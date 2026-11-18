@@ -2505,7 +2505,7 @@ impl TypeResolver {
     pub(super) fn default_convention(&self, name: Option<&str>) -> CallConv {
         let target = self.dialect.target();
         match name {
-            Some("main" | "wmain") => CallConv::C,
+            Some("main" | "wmain") if !target.abi.main_takes_default_convention => CallConv::C,
             Some("WinMain" | "wWinMain" | "DllMain") if self.is_msvcrt_entry_point_scope() => {
                 match target.family {
                     TargetFamily::X86 => CallConv::X86Stdcall,

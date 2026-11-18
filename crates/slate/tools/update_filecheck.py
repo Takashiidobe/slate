@@ -2,6 +2,7 @@
 import argparse
 import difflib
 import glob
+import json
 import os
 import re
 import subprocess
@@ -20,7 +21,13 @@ MERGE = TESTS / "fixtures.merge"
 SELECT = TESTS / "fixtures.select"
 BUILD = TESTS / "fixtures.build"
 DYLINK = TESTS / "fixtures.dylink"
-DYLINK_TARGETS = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu", "x86_64-pc-windows-msvc"]
+DYLINK_PLATFORMS = {
+    "linux": "x86_64-unknown-linux-gnu",
+    "linux-aarch64": "aarch64-unknown-linux-gnu",
+    "windows": "x86_64-pc-windows-msvc",
+    "linux-i686": "i686-unknown-linux-gnu",
+}
+DYLINK_DEFAULT_PLATFORMS = ["linux", "linux-aarch64", "windows"]
 PLAN_SUITES = {PLAN: "plan", LOWERED_NAMES: "lowered-names", MERGE: "merge", SELECT: "select"}
 WORK = CRATE / "target" / "difftest-generated"
 
@@ -105,6 +112,12 @@ def is_dylink(path):
 
 def dylink_project(path):
     return path.resolve().relative_to(DYLINK).parts[0]
+
+
+def dylink_targets(path):
+    config = DYLINK / dylink_project(path) / "dylink.json"
+    platforms = json.loads(config.read_text()).get("platforms") if config.is_file() else None
+    return [DYLINK_PLATFORMS[name] for name in platforms or DYLINK_DEFAULT_PLATFORMS]
 
 
 def is_msvc(path):
@@ -517,7 +530,7 @@ def fixture_targets(path, requested, extra):
         if not targets and is_build(path):
             targets = next((line.removeprefix("// SLATE-BUILD-TARGETS:").split() for line in path.read_text().splitlines() if line.startswith("// SLATE-BUILD-TARGETS:")), [])
         if not targets and is_dylink(path):
-            targets = list(DYLINK_TARGETS)
+            targets = dylink_targets(path)
         if not targets:
             arch = fixture_arch(path)
             target = ARCH_TARGETS[arch] if arch else DEFAULT_TARGET

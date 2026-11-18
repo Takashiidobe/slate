@@ -14,7 +14,9 @@ use crate::rules::{Rule, Rules};
 use crate::target::aarch64_isa::{AArch64Feature, ArmMarch};
 use crate::target::isa::{IsaRequest, March, TargetIsa};
 use crate::target::x86_isa::{ApxFlag, X86Feature, X86IsaRequest};
-use crate::target_info::{LongDoubleFormat, TargetEnvironment, TargetFamily, TargetInfo, TargetOs};
+use crate::target_info::{
+    LongDoubleFormat, StructReturn, TargetEnvironment, TargetFamily, TargetInfo, TargetOs,
+};
 use crate::target_registry::{ArchMode, arch_variant};
 use crate::{compiler_headers, native_headers, sysroot};
 use std::collections::HashSet;
@@ -288,6 +290,8 @@ struct ParsedCompilerArgs {
     target: String,
     arch_mode: Option<ArchMode>,
     regparm: Option<u8>,
+    rtd: Option<bool>,
+    struct_return: Option<StructReturn>,
     hosted: Option<bool>,
     builtin: Option<bool>,
     no_builtin: Vec<String>,
@@ -583,6 +587,8 @@ enum Opt {
     Target,
     ArchMode,
     RegParm,
+    Rtd,
+    StructReturn,
     Freestanding,
     Hosted,
     Builtin,
@@ -754,6 +760,8 @@ impl std::fmt::Display for Opt {
             Self::Target => "target",
             Self::ArchMode => "m16|m32|m64|mx32",
             Self::RegParm => "mregparm",
+            Self::Rtd => "mrtd",
+            Self::StructReturn => "fpcc-struct-return|freg-struct-return",
             Self::Freestanding => "ffreestanding",
             Self::Hosted => "fhosted",
             Self::Builtin => "fbuiltin",
@@ -1006,7 +1014,9 @@ impl Opt {
             | Self::TrivialAutoVarInit
             | Self::MacroPrefixMap
             | Self::DollarsInIdentifiers
-            | Self::FixedRegister => &[Gcc, Clang],
+            | Self::FixedRegister
+            | Self::Rtd
+            | Self::StructReturn => &[Gcc, Clang],
             Self::PreferredStackBoundary
             | Self::GccStrictFlexArrays
             | Self::PermittedFltEvalMethods
@@ -1149,6 +1159,7 @@ impl Opt {
             Self::LargePie => "-fPIE",
             Self::StackProtector => "-fstack-protector",
             Self::RedZone => "-mred-zone",
+            Self::Rtd => "-mrtd",
             Self::IndirectBranchCsPrefix => "-mindirect-branch-cs-prefix",
             Self::Retpoline => "-mretpoline",
             Self::X87 => "-m80387",
@@ -1570,6 +1581,7 @@ const SWITCH_OPTS: &[Opt] = &[
     Opt::LargePie,
     Opt::StackProtector,
     Opt::RedZone,
+    Opt::Rtd,
     Opt::IndirectBranchCsPrefix,
     Opt::Retpoline,
     Opt::X87,
@@ -1645,6 +1657,32 @@ impl CompilerArgParser {
                 crate::ir::CallConv::X86Vectorcall
             }
             _ => crate::ir::CallConv::C,
+        };
+        let not_on_target = |argument: &str| {
+            invalid(
+                argument,
+                &format!("not supported for target '{}'", target.triple),
+            )
+        };
+        if raw.rtd == Some(true) {
+            match target.family {
+                TargetFamily::X86 => {
+                    target.abi.default_convention = crate::ir::CallConv::X86Stdcall;
+                    target.abi.main_takes_default_convention = raw.flavor.is_gcc();
+                }
+                TargetFamily::X86_64 if raw.flavor.is_gcc() => {}
+                _ => return Err(not_on_target("-mrtd")),
+            }
+        }
+        target.abi.struct_return = match (target.family, raw.struct_return) {
+            (_, None) => None,
+            (TargetFamily::X86, convention) => convention,
+            (_, Some(StructReturn::Registers)) if raw.flavor.is_gcc() => None,
+            (_, Some(StructReturn::Memory)) if raw.flavor.is_gcc() => Some(StructReturn::Memory),
+            (_, Some(StructReturn::Memory)) => return Err(not_on_target("-fpcc-struct-return")),
+            (_, Some(StructReturn::Registers)) => {
+                return Err(not_on_target("-freg-struct-return"));
+            }
         };
         let (msvc_arch, msvc_apx, msvc_arm64_arch) = if target.family == TargetFamily::AArch64 {
             let arm64 = resolve_msvc_arm64_arch(&raw.msvc_arch, &raw.msvc_features)?;
@@ -1995,6 +2033,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                     })
                 }
                 Opt::RedZone => parsed.red_zone = Some(value),
+                Opt::Rtd => parsed.rtd = Some(value),
                 Opt::IndirectBranchCsPrefix => parsed.indirect_branch_cs_prefix = Some(value),
                 Opt::Retpoline => parsed.retpoline = Some(value),
                 Opt::X87 | Opt::ClangX87 => parsed.isa.x86.set(X86Feature::X87, value),
@@ -2162,6 +2201,13 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if let Some(count) = argument.strip_prefix("-mregparm=") {
             parsed.saw(Opt::RegParm, argument);
             parsed.regparm = Some(parse_value(count.to_owned(), argument, "register count")?);
+        } else if let Some(convention) = match argument.as_str() {
+            "-fpcc-struct-return" => Some(StructReturn::Memory),
+            "-freg-struct-return" => Some(StructReturn::Registers),
+            _ => None,
+        } {
+            parsed.saw(Opt::StructReturn, argument);
+            parsed.struct_return = Some(convention);
         } else if let Some(function) = argument
             .strip_prefix("-fno-builtin-")
             .filter(|function| !function.is_empty())
