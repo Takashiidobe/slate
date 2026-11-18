@@ -1,17 +1,20 @@
 use crate::backend::build_script::Step;
+use crate::backend::c_emit::{
+    self as c, Expr, Field, Function, Param, Prototype, Stmt, Type, Unit,
+};
 use crate::backend::rust_ast::{Attr, Cfg, ExternDecl, Item, Program};
 use std::collections::BTreeSet;
 
-fn c_type_for_tag(tag: &str) -> String {
+fn c_type_for_tag(tag: &str) -> Type {
     if let Some(inner) = tag.strip_prefix('p') {
         return match inner {
-            "i8" | "u8" => "char *".to_string(),
-            "x" => "void *".to_string(),
-            "f80" => "long double *".to_string(),
-            other => format!("{} *", c_type_for_tag(other)),
+            "i8" | "u8" => Type::Named("char").pointer(),
+            "x" => Type::Named("void").pointer(),
+            "f80" => Type::Named("long double").pointer(),
+            other => c_type_for_tag(other).pointer(),
         };
     }
-    match tag {
+    Type::Named(match tag {
         "i8" => "signed char",
         "u8" => "unsigned char",
         "i16" => "short",
@@ -31,11 +34,9 @@ fn c_type_for_tag(tag: &str) -> String {
         "f80" => "__slate_f80",
         "cf80" => "__slate_cf80",
         "lq" => "long double",
-        "fp" => "void *",
-        tag if memory_aggregate(tag).is_some() => return format!("struct __slate_{tag}"),
-        _ => "void *",
-    }
-    .to_string()
+        tag if memory_aggregate(tag).is_some() => return Type::Struct(format!("__slate_{tag}")),
+        _ => return Type::Named("void").pointer(),
+    })
 }
 
 fn split_tags(tags: &str) -> impl Iterator<Item = &str> {
@@ -55,54 +56,83 @@ fn memory_aggregate(tag: &str) -> Option<(u64, u64)> {
     (size > 0 && u64::is_power_of_two(align) && size % align == 0).then_some((size, align))
 }
 
-fn native_c_type(tag: &str) -> String {
+fn native_c_type(tag: &str) -> Type {
     match tag {
-        "f80" | "ld" => "long double".to_string(),
-        "pf80" => "long double *".to_string(),
-        "cf80" => "_Complex long double".to_string(),
-        "pcf80" => "_Complex long double *".to_string(),
+        "f80" | "ld" => Type::Named("long double"),
+        "pf80" => Type::Named("long double").pointer(),
+        "cf80" => Type::Named("_Complex long double"),
+        "pcf80" => Type::Named("_Complex long double").pointer(),
         _ => c_type_for_tag(tag),
     }
 }
 
-fn render_variadic_trampoline(name: &str) -> Option<String> {
+fn arg(index: usize) -> Expr {
+    Expr::name(format!("_{index}"))
+}
+
+fn named_params(types: impl IntoIterator<Item = Type>) -> impl Iterator<Item = Param> {
+    types
+        .into_iter()
+        .enumerate()
+        .map(|(index, ty)| Param::new(ty, format!("_{index}")))
+}
+
+fn function_pointer_param() -> Param {
+    Param::new(Type::Named("void").pointer(), "_f")
+}
+
+fn call_through_f(ret: Type, params: Vec<Type>, variadic: bool, args: Vec<Expr>) -> Expr {
+    let ty = Type::FnPtr {
+        ret: Box::new(ret),
+        params,
+        variadic,
+    };
+    Expr::call_expr(Expr::cast(ty, Expr::name("_f")), args)
+}
+
+fn result(ret: &Type, call: Expr) -> Stmt {
+    if ret.is_void() {
+        Stmt::Expr(call)
+    } else {
+        Stmt::Return(call)
+    }
+}
+
+fn render_variadic_trampoline(name: &str) -> Option<Vec<c::Item>> {
     let (fixed, variadic) = name.strip_prefix("__slate_vcall__")?.split_once("__")?;
     let mut fixed = split_tags(fixed);
     let ret = c_type_for_tag(fixed.next()?.strip_prefix('r')?);
     let fixed = fixed.map(c_type_for_tag).collect::<Vec<_>>();
     let variadic = split_tags(variadic).collect::<Vec<_>>();
-    let params = fixed
-        .iter()
-        .cloned()
-        .chain(variadic.iter().map(|tag| c_type_for_tag(tag)))
-        .enumerate()
-        .map(|(i, ty)| format!("{ty} _{i}"))
-        .collect::<Vec<_>>()
-        .join(", ");
+    let params = std::iter::once(function_pointer_param())
+        .chain(named_params(
+            fixed
+                .iter()
+                .cloned()
+                .chain(variadic.iter().map(|tag| c_type_for_tag(tag))),
+        ))
+        .collect();
     let args = (0..fixed.len())
-        .map(|i| format!("_{i}"))
+        .map(arg)
         .chain(variadic.iter().enumerate().map(|(j, tag)| {
             let i = fixed.len() + j;
-            if *tag == "f80" {
-                format!("__slate_f80_load(_{i})")
-            } else {
-                format!("_{i}")
+            match *tag {
+                "f80" => Expr::call("__slate_f80_load", vec![arg(i)]),
+                _ => arg(i),
             }
         }))
-        .collect::<Vec<_>>()
-        .join(", ");
-    let call = format!("(({ret} (*)({}, ...))_f)({args})", fixed.join(", "));
-    let body = if ret == "void" {
-        format!("{call};")
-    } else {
-        format!("return {call};")
-    };
-    Some(format!(
-        "{ret} {name}(void *_f, {params}) {{\n    {body}\n}}\n"
-    ))
+        .collect();
+    let call = call_through_f(ret.clone(), fixed, true, args);
+    Some(vec![c::Item::Function(Function {
+        body: vec![result(&ret, call)],
+        ret,
+        name: name.to_string(),
+        params,
+        variadic: false,
+    })])
 }
 
-fn render_indirect_trampoline(name: &str) -> Option<String> {
+fn render_indirect_trampoline(name: &str) -> Option<Vec<c::Item>> {
     let rest = name.strip_prefix("__slate_icall__")?;
     let (fixed, variadic) = match rest.split_once("__") {
         Some((fixed, variadic)) => (fixed, Some(variadic)),
@@ -111,16 +141,7 @@ fn render_indirect_trampoline(name: &str) -> Option<String> {
     let mut fixed = split_tags(fixed);
     let ret_tag = fixed.next()?.strip_prefix('r')?;
     let fixed = fixed.collect::<Vec<_>>();
-    let native_params = fixed
-        .iter()
-        .map(|tag| native_c_type(tag))
-        .chain(variadic.map(|_| "...".to_string()))
-        .collect::<Vec<_>>();
-    let native_params = if native_params.is_empty() {
-        "void".to_string()
-    } else {
-        native_params.join(", ")
-    };
+    let native_params = fixed.iter().map(|tag| native_c_type(tag)).collect();
     let tags = fixed
         .into_iter()
         .chain(
@@ -130,84 +151,99 @@ fn render_indirect_trampoline(name: &str) -> Option<String> {
                 .filter(|tag| !tag.is_empty()),
         )
         .collect::<Vec<_>>();
-    let params = tags
-        .iter()
-        .enumerate()
-        .map(|(i, tag)| format!(", {} _{i}", c_type_for_tag(tag)))
-        .collect::<String>();
+    let params = std::iter::once(function_pointer_param())
+        .chain(named_params(tags.iter().map(|tag| c_type_for_tag(tag))))
+        .collect();
     let args = tags
         .iter()
         .enumerate()
         .map(|(i, tag)| match *tag {
-            "f80" => format!("__slate_f80_load(_{i})"),
-            "cf80" => format!("__slate_cf80_load(_{i})"),
-            _ => format!("_{i}"),
+            "f80" => Expr::call("__slate_f80_load", vec![arg(i)]),
+            "cf80" => Expr::call("__slate_cf80_load", vec![arg(i)]),
+            _ => arg(i),
         })
-        .collect::<Vec<_>>()
-        .join(", ");
-    let call = format!(
-        "(({} (*)({native_params}))_f)({args})",
-        native_c_type(ret_tag)
+        .collect();
+    let call = call_through_f(
+        native_c_type(ret_tag),
+        native_params,
+        variadic.is_some(),
+        args,
     );
     let body = match ret_tag {
-        "v" => format!("{call};"),
-        "f80" => format!("return __slate_f80_store({call});"),
-        "cf80" => format!("return __slate_cf80_store({call});"),
-        _ => format!("return {call};"),
+        "v" => Stmt::Expr(call),
+        "f80" => Stmt::Return(Expr::call("__slate_f80_store", vec![call])),
+        "cf80" => Stmt::Return(Expr::call("__slate_cf80_store", vec![call])),
+        _ => Stmt::Return(call),
     };
-    Some(format!(
-        "{} {name}(void *_f{params}) {{\n    {body}\n}}\n",
-        c_type_for_tag(ret_tag)
-    ))
+    Some(vec![c::Item::Function(Function {
+        ret: c_type_for_tag(ret_tag),
+        name: name.to_string(),
+        params,
+        variadic: false,
+        body: vec![body],
+    })])
 }
 
-fn render_variadic_export(name: &str) -> Option<String> {
+fn render_variadic_export(name: &str) -> Option<Vec<c::Item>> {
     let (entry, tags) = name.strip_prefix("__slate_ldv__")?.rsplit_once("__")?;
     let mut tags = split_tags(tags);
     let ret_tag = tags.next()?.strip_prefix('r')?;
     let fixed = tags.collect::<Vec<_>>();
     let last = fixed.len().checked_sub(1)?;
-    let rust_params = fixed
-        .iter()
-        .map(|tag| c_type_for_tag(tag))
-        .chain(["va_list".to_string()])
-        .collect::<Vec<_>>()
-        .join(", ");
-    let params = fixed
-        .iter()
-        .enumerate()
-        .map(|(i, tag)| format!("{} _{i}", native_c_type(tag)))
-        .collect::<Vec<_>>()
-        .join(", ");
+    let rust_ret = c_type_for_tag(ret_tag);
+    let prototype = Prototype {
+        ret: rust_ret.clone(),
+        name: name.to_string(),
+        params: fixed
+            .iter()
+            .map(|tag| c_type_for_tag(tag))
+            .chain([Type::Named("va_list")])
+            .collect(),
+        variadic: false,
+        asm_label: None,
+    };
     let args = fixed
         .iter()
         .enumerate()
         .map(|(i, tag)| match *tag {
-            "f80" => format!("__slate_f80_store(_{i})"),
-            _ => format!("_{i}"),
+            "f80" => Expr::call("__slate_f80_store", vec![arg(i)]),
+            _ => arg(i),
         })
-        .chain(["_ap".to_string()])
-        .collect::<Vec<_>>()
-        .join(", ");
-    let rust_ret = c_type_for_tag(ret_tag);
-    let (call, result) = match ret_tag {
-        "v" => (format!("{name}({args});"), String::new()),
-        "f80" => (
-            format!("{rust_ret} _r = {name}({args});"),
-            "\n    return __slate_f80_load(_r);".to_string(),
-        ),
-        _ => (
-            format!("{rust_ret} _r = {name}({args});"),
-            "\n    return _r;".to_string(),
-        ),
+        .chain([Expr::name("_ap")])
+        .collect();
+    let call = Expr::call(name, args);
+    let mut body = vec![
+        Stmt::decl(Type::Named("va_list"), "_ap", None),
+        Stmt::Expr(Expr::call("va_start", vec![Expr::name("_ap"), arg(last)])),
+    ];
+    let returned = match ret_tag {
+        "v" => {
+            body.push(Stmt::Expr(call));
+            None
+        }
+        _ => {
+            body.push(Stmt::decl(rust_ret, "_r", Some(call)));
+            Some(match ret_tag {
+                "f80" => Expr::call("__slate_f80_load", vec![Expr::name("_r")]),
+                _ => Expr::name("_r"),
+            })
+        }
     };
-    Some(format!(
-        "{rust_ret} {name}({rust_params});\n{} {entry}({params}, ...) {{\n    va_list _ap;\n    va_start(_ap, _{last});\n    {call}\n    va_end(_ap);{result}\n}}\n",
-        native_c_type(ret_tag)
-    ))
+    body.push(Stmt::Expr(Expr::call("va_end", vec![Expr::name("_ap")])));
+    body.extend(returned.map(Stmt::Return));
+    Some(vec![
+        c::Item::Prototype(prototype),
+        c::Item::Function(Function {
+            ret: native_c_type(ret_tag),
+            name: entry.to_string(),
+            params: named_params(fixed.iter().map(|tag| native_c_type(tag))).collect(),
+            variadic: true,
+            body,
+        }),
+    ])
 }
 
-fn render_trampoline(name: &str) -> Option<String> {
+fn render_trampoline(name: &str) -> Option<Vec<c::Item>> {
     if name.starts_with("__slate_ldv__") {
         return render_variadic_export(name);
     }
@@ -235,48 +271,26 @@ fn render_trampoline(name: &str) -> Option<String> {
         Some(tag) if tag.starts_with('r') && tag.len() > 1 => (&tag[1..], &tags[1..]),
         _ => ("i32", &tags[..]),
     };
-    let ret_c_type = if native_entry && matches!(ret_tag, "f80" | "cf80") {
-        native_c_type(ret_tag)
-    } else {
-        c_type_for_tag(ret_tag)
+    let entry_type = |tag: &str| {
+        if native_entry && matches!(tag, "f80" | "cf80") {
+            native_c_type(tag)
+        } else {
+            c_type_for_tag(tag)
+        }
     };
-    let params = arg_tags
-        .iter()
-        .enumerate()
-        .map(|(i, tag)| {
-            let ty = if native_entry && matches!(*tag, "f80" | "cf80") {
-                native_c_type(tag)
-            } else {
-                c_type_for_tag(tag)
-            };
-            format!("{ty} _{i}")
-        })
-        .collect::<Vec<_>>()
-        .join(", ");
     let args = arg_tags
         .iter()
         .enumerate()
-        .map(|(i, tag)| {
-            if native_entry && *tag == "f80" {
-                format!("__slate_f80_store(_{i})")
-            } else if native_entry && *tag == "cf80" {
-                format!("__slate_cf80_store(_{i})")
-            } else if *tag == "cf80" {
-                format!("__slate_cf80_load(_{i})")
-            } else if *tag == "pcf80" {
-                format!("__slate_cf80_load(*_{i})")
-            } else if *tag == "f80" {
-                format!("__slate_f80_load(_{i})")
-            } else if *tag == "pf80" {
-                format!("_{i}")
-            } else if *tag == "ld" {
-                format!("(long double)_{i}")
-            } else {
-                format!("_{i}")
-            }
+        .map(|(i, tag)| match *tag {
+            "f80" if native_entry => Expr::call("__slate_f80_store", vec![arg(i)]),
+            "cf80" if native_entry => Expr::call("__slate_cf80_store", vec![arg(i)]),
+            "cf80" => Expr::call("__slate_cf80_load", vec![arg(i)]),
+            "pcf80" => Expr::call("__slate_cf80_load", vec![Expr::deref(arg(i))]),
+            "f80" => Expr::call("__slate_f80_load", vec![arg(i)]),
+            "ld" => Expr::cast(Type::Named("long double"), arg(i)),
+            _ => arg(i),
         })
-        .collect::<Vec<_>>()
-        .join(", ");
+        .collect();
     let undeclared = !native_entry && header_for_shim_name(name).is_none();
     let (entry, target) = match (exported_callee, callback_callee) {
         (Some(exported), _) => (exported.to_string(), name.to_string()),
@@ -284,58 +298,48 @@ fn render_trampoline(name: &str) -> Option<String> {
         (None, None) if undeclared => (name.to_string(), format!("__slate_extern_{callee}")),
         (None, None) => (name.to_string(), callee.to_string()),
     };
-    let call = format!("{target}({args})");
-    let body = if ret_tag == "v" {
-        format!("{call};")
-    } else if native_entry && ret_tag == "cf80" {
-        format!("return __slate_cf80_load({call});")
-    } else if ret_tag == "cf80" {
-        format!("return __slate_cf80_store({call});")
-    } else if native_entry && ret_tag == "f80" {
-        format!("return __slate_f80_load({call});")
-    } else if ret_tag == "f80" {
-        format!("return __slate_f80_store({call});")
-    } else {
-        format!("return {call};")
+    let call = Expr::call(target.clone(), args);
+    let body = match ret_tag {
+        "v" => Stmt::Expr(call),
+        "cf80" if native_entry => Stmt::Return(Expr::call("__slate_cf80_load", vec![call])),
+        "cf80" => Stmt::Return(Expr::call("__slate_cf80_store", vec![call])),
+        "f80" if native_entry => Stmt::Return(Expr::call("__slate_f80_load", vec![call])),
+        "f80" => Stmt::Return(Expr::call("__slate_f80_store", vec![call])),
+        _ => Stmt::Return(call),
     };
     let prototype = if native_entry {
-        let rust_ret = if ret_tag == "f80" {
-            "__slate_f80".to_string()
-        } else {
-            c_type_for_tag(ret_tag)
-        };
-        let rust_params = arg_tags
-            .iter()
-            .map(|tag| {
-                if *tag == "f80" {
-                    "__slate_f80".to_string()
-                } else {
-                    c_type_for_tag(tag)
-                }
-            })
-            .collect::<Vec<_>>()
-            .join(", ");
-        format!("{rust_ret} {target}({rust_params});\n")
+        Some(Prototype {
+            ret: c_type_for_tag(ret_tag),
+            name: target,
+            params: arg_tags.iter().map(|tag| c_type_for_tag(tag)).collect(),
+            variadic: false,
+            asm_label: None,
+        })
     } else if undeclared {
-        let native_params = arg_tags
-            .iter()
-            .map(|tag| native_c_type(tag))
-            .collect::<Vec<_>>();
-        let native_params = if native_params.is_empty() {
-            "void".to_string()
-        } else {
-            native_params.join(", ")
-        };
-        format!(
-            "extern {} {target}({native_params}) __asm__(\"{callee}\");\n",
-            native_c_type(ret_tag)
-        )
+        Some(Prototype {
+            ret: native_c_type(ret_tag),
+            name: target,
+            params: arg_tags.iter().map(|tag| native_c_type(tag)).collect(),
+            variadic: false,
+            asm_label: Some(callee.to_string()),
+        })
     } else {
-        String::new()
+        None
     };
-    Some(format!(
-        "{prototype}{ret_c_type} {entry}({params}) {{\n    {body}\n}}\n"
-    ))
+    let function = Function {
+        ret: entry_type(ret_tag),
+        name: entry,
+        params: named_params(arg_tags.iter().map(|tag| entry_type(tag))).collect(),
+        variadic: false,
+        body: vec![body],
+    };
+    Some(
+        prototype
+            .map(c::Item::Prototype)
+            .into_iter()
+            .chain([c::Item::Function(function)])
+            .collect(),
+    )
 }
 
 pub(crate) const F80_SHIMS: &str = include_str!("./shims/long_double.c");
@@ -427,26 +431,19 @@ pub fn render_shim_c_source_for_names(names: &BTreeSet<String>) -> String {
         .filter_map(|name| header_for_shim_name(name))
         .filter(|header| !header.starts_with("bits/"))
         .collect::<BTreeSet<_>>();
-    let mut blocks = vec![
-        std::iter::once("#define _GNU_SOURCE".to_string())
-            .chain(
-                headers
-                    .into_iter()
-                    .map(|header| format!("#include <{header}>")),
-            )
-            .collect::<Vec<_>>()
-            .join("\n"),
-    ];
+    let mut unit = Unit::default();
+    unit.push(c::Item::Define("_GNU_SOURCE"));
+    unit.extend(headers.into_iter().map(c::Item::Include));
     if names.iter().any(|name| {
         !name.starts_with("__slate_intrinsic_") && name.contains("f80")
             || name.contains("s80")
             || name.starts_with("__slate_f128_")
             || name.starts_with("__slate_ldv__")
     }) {
-        blocks.push(F80_SHIMS.to_string());
+        unit.push(c::Item::Raw(F80_SHIMS));
     }
     if names.iter().any(|name| name.starts_with("__slate_fenv_")) {
-        blocks.push(FENV_SHIMS.to_string());
+        unit.push(c::Item::Raw(FENV_SHIMS));
     }
     let aggregates = names
         .iter()
@@ -454,17 +451,25 @@ pub fn render_shim_c_source_for_names(names: &BTreeSet<String>) -> String {
         .map(|tag| tag.strip_prefix('r').unwrap_or(tag))
         .filter_map(|tag| memory_aggregate(tag).map(|layout| (tag, layout)))
         .collect::<BTreeSet<_>>();
-    for (tag, (size, align)) in aggregates {
-        blocks.push(format!(
-            "struct __slate_{tag} {{\n    _Alignas({align}) unsigned char v[{size}];\n}};\n"
-        ));
-    }
-    for name in names {
-        if name.starts_with("__slate_fenv_") {
-            continue;
-        } else if let Some(trampoline) = render_trampoline(name) {
-            blocks.push(trampoline);
-        }
-    }
-    blocks.join("\n")
+    unit.extend(
+        aggregates
+            .into_iter()
+            .map(|(tag, (size, align))| c::Item::Struct {
+                tag: format!("__slate_{tag}"),
+                fields: vec![Field {
+                    align: Some(align),
+                    ty: Type::Named("unsigned char"),
+                    name: "v".into(),
+                    len: Some(size),
+                }],
+            }),
+    );
+    unit.extend(
+        names
+            .iter()
+            .filter(|name| !name.starts_with("__slate_fenv_"))
+            .filter_map(|name| render_trampoline(name))
+            .flatten(),
+    );
+    unit.to_string()
 }
