@@ -5,8 +5,8 @@ use crate::backend::engine::macro_templates::rename_templates;
 use crate::backend::engine::unlabeled_jump;
 use crate::backend::link::signatures::{self, UnitCompiles};
 use crate::backend::rust_ast::{
-    Attr, Cfg, CrateAttr, Expr, ExternDecl, FnDef, Item, MacroOutcome, MacroParam, Program, Stmt,
-    TraitRef, macro_template_base,
+    Attr, Cfg, CrateAttr, Expr, ExternDecl, FnDef, Item, MacroOutcome, MacroParam, Program,
+    Runtime, Stmt, TraitRef, macro_template_base,
 };
 use crate::backend::{self, Exports};
 use crate::compile_commands::CompileCommand;
@@ -860,7 +860,8 @@ fn prepare_target(matrix: &Matrix, target: &str) -> Result<TargetBuild, String> 
 fn codegen_facts(module: &Module) -> Program {
     let machine = module.machine;
     Program {
-        runtime: crate::backend::rust_ast::Runtime::for_module(module),
+        runtime: Runtime::for_module(module),
+        no_builtins: !module.hosted,
         stack_protector: machine.stack_protector,
         stack_protector_guard: machine.stack_protector_guard,
         sanitize: machine.sanitize,
@@ -2145,6 +2146,40 @@ pub fn merge(
         .iter()
         .map(|unit| (unit.stem.clone(), program_of(unit)))
         .collect();
+    for (stem, program) in &mut units {
+        let facts: Vec<(&str, &Program)> = builds
+            .iter()
+            .flat_map(|build| {
+                build
+                    .codegen
+                    .iter()
+                    .filter(|(unit, _)| unit == stem)
+                    .map(|(_, facts)| (build.triple.as_str(), facts))
+            })
+            .collect();
+        if let [(first_triple, first), rest @ ..] = facts.as_slice()
+            && let Some((triple, other)) = rest
+                .iter()
+                .find(|(_, facts)| facts.runtime != first.runtime)
+        {
+            let hosted = |runtime: Runtime| {
+                if runtime.has_std() {
+                    "hosted"
+                } else {
+                    "freestanding"
+                }
+            };
+            return Err(format!(
+                "{stem}: {} on {first_triple} but {} on {triple}; --merge needs every target hosted or every target freestanding",
+                hosted(first.runtime),
+                hosted(other.runtime),
+            ));
+        }
+        if let Some((_, first)) = facts.first() {
+            program.runtime = first.runtime;
+        }
+        program.no_builtins = facts.iter().any(|(_, facts)| facts.no_builtins);
+    }
     crate::backend::engine::macro_templates::assign_template_names(
         units.iter_mut().map(|(_, program)| program),
     );

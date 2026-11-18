@@ -86,6 +86,10 @@ cargo run --release -p slate-c2rust -- translate \
   `build-override`, so a crate with those flags has no `build.rs`: the Linux
   `-Wl,-z,nostart-stop-gc` link argument becomes a `-Clink-arg` rustflag, and
   long double C shims are refused.
+  Each merged unit takes `runtime` and `no_builtins` from its per-target
+  facts, so a project freestanding on every target is a `#![no_std]` crate
+  with the panic handler, as without `--merge`; a unit hosted on one target and
+  freestanding on another is an error.
   `--check-projection` is an independent check: it translates whole-project
   configurations directly and requires the items the merged crate resolves to
   for that configuration; `all` covers every valid feature subset, and

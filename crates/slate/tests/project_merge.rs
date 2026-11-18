@@ -142,6 +142,26 @@ fn run_c(sources: &[PathBuf], defines: &[String], out: &Path) -> Option<String> 
     ))
 }
 
+fn build_library(crate_dir: &Path, features: &[String], stem: &str) -> Result<(), String> {
+    let output = Command::new(std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into()))
+        .args([
+            "build",
+            "--quiet",
+            "--release",
+            "--features",
+            &features.join(","),
+        ])
+        .current_dir(crate_dir)
+        .env("CARGO_TARGET_DIR", work().join("cargo-targets").join(stem))
+        .output()
+        .map_err(|error| format!("run cargo: {error}"))?;
+    if output.status.success() {
+        Ok(())
+    } else {
+        Err(String::from_utf8_lossy(&output.stderr).into_owned())
+    }
+}
+
 fn run_rust(crate_dir: &Path, features: &[String], stem: &str) -> Result<String, String> {
     let output = Command::new(std::env::var("SLATE_CARGO").unwrap_or_else(|_| "cargo".into()))
         .args([
@@ -181,6 +201,16 @@ fn differential(
             .collect()
     };
     let mut failures = Vec::new();
+    if !crate_dir.join("src/main.rs").exists() {
+        return feature_sets(spec)
+            .into_iter()
+            .filter_map(|set| {
+                build_library(crate_dir, &set, stem)
+                    .err()
+                    .map(|error| format!("[{}]: {error}", set.join(",")))
+            })
+            .collect();
+    }
     for set in feature_sets(spec) {
         let binary = work().join(format!("{stem}-c"));
         let Some(expected) = run_c(sources, &defines(&set), &binary) else {
@@ -297,6 +327,7 @@ fn merge_fixture(source: &Path) -> Result<(), String> {
     match std::fs::read_to_string(crate_dir.join("merge-report.txt")) {
         Ok(written) if written == report => {}
         Ok(written) => failures.push(format!("merge-report.txt differs: {written}")),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound && report.is_empty() => {}
         Err(error) => failures.push(format!("read merge-report.txt: {error}")),
     }
     let expected_code = text

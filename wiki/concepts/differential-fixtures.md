@@ -229,7 +229,9 @@ directory. `// merge-sources:` adds units and `// merge-linux-args:` sets the
 first target's arguments. `// merge-second-target: <name> <triple> <flavor>`
 replaces the second target, and `// merge-target-args: <name> <args...>` sets
 any target's arguments. The check prints the non-default `[profile.*]` sections
-of `Cargo.toml` with the package name replaced by `<crate>`. `// merge-expect-exit:` sets the expected exit code;
+of `Cargo.toml` with the package name replaced by `<crate>`. A crate without
+`src/main.rs` (a freestanding project, whose `main` is an ordinary symbol) is
+built for each feature subset and not run. `// merge-expect-exit:` sets the expected exit code;
 a fixture that fails to merge skips the build and comparison.
 `merge_filecheck` is not in the `slate` profile; run it with
 `cargo nextest r --release --profile merge`.
