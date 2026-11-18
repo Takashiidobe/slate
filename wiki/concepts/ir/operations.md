@@ -249,8 +249,15 @@ without `-mfpmath` switches gcc to SSE math, so no excess precision applies.
 Not modeled, tracked in slate-3amj.49: gcc fast mode on i686 returns `double` in
 `st(0)` unrounded, and inlined builtins such as `fabs` keep excess precision of
 their operand. Fast mode above `-O0` also keeps variables in registers
-unrounded, which depends on register allocation; slate models `-O0`. clang's
-`-mno-sse` x87 evaluation stays per-operation (slate-parser-6x05.38.6).
+unrounded, which depends on register allocation; slate models `-O0`.
+
+clang flavor (not MSVC) uses the same machinery whenever float or double math
+lands on x87 (`-mno-sse`, or `double` only with i686 `-mno-sse2`), always with
+`Fast`: clang ignores `-fexcess-precision` for these types, `-ffloat-store`, and
+ISO vs GNU `-std`, and has no fast-math opt-out. clang does not widen in IR; its
+backend rounds on spill and store, so `?:` arms and statement-expression results
+differ between `-O0` and `-O2` and are not modeled. An assignment expression's
+value keeps excess precision in clang but rounds in slate (slate-3amj.62).
 
 ## Operator rules checked in sema
 

@@ -92,7 +92,7 @@ int eval_method = __FLT_EVAL_METHOD__;
 // X87-NEXT:     }
 // X87-NEXT:     global %[[VALUE_eval_method:[0-9]+]] eval_method: i32 [storage=static] = const<i32>(2) [linkage=external];
 // X87-NEXT:     fn %[[VALUE_chain:[0-9]+]] @chain(%[[VALUE_a:[0-9]+]] a: f64, %[[VALUE_b:[0-9]+]] b: f64, %[[VALUE_c:[0-9]+]] c: f64) -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// X87-NEXT:         return div<f64>(mul<f64>(read<f64>(%[[VALUE_a]]), read<f64>(%[[VALUE_b]])), read<f64>(%[[VALUE_c]]));
+// X87-NEXT:         return float_narrow<f64>(div<f80>(mul<f80>(float_widen<f80>(read<f64>(%[[VALUE_a]])), float_widen<f80>(read<f64>(%[[VALUE_b]]))), float_widen<f80>(read<f64>(%[[VALUE_c]]))));
 // X87-NEXT:     }
 // X87-NEXT: }
 // SLATE-FILECHECK-END X87

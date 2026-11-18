@@ -139,25 +139,29 @@ impl X87Excess {
         let TargetIsa::X86(isa) = target.isa else {
             return None;
         };
-        if !dialect.flavor().is_gcc() {
+        let flavor = dialect.flavor();
+        if flavor.is_msvc() {
             return None;
         }
+        let gcc = flavor.is_gcc();
         let options = dialect.options();
         let math = &options.math;
-        let fast = math
-            .fast_excess_precision
-            .unwrap_or(dialect.standard().is_gnu());
-        if target.family == TargetFamily::X86
+        let fast = !gcc
+            || math
+                .fast_excess_precision
+                .unwrap_or(dialect.standard().is_gnu());
+        if gcc
+            && target.family == TargetFamily::X86
             && isa.fpmath.is_none()
             && fast
             && math.gcc_requested_fast_math(true)
         {
             return None;
         }
-        let formats = isa.x87_formats(target.family);
+        let formats = isa.x87_formats(target.family, gcc);
         (formats.float || formats.double).then_some(Self {
             formats,
-            rounding: match (fast, options.float_store) {
+            rounding: match (fast, gcc && options.float_store) {
                 (false, _) => X87Rounding::Standard,
                 (true, false) => X87Rounding::Fast,
                 (true, true) => X87Rounding::EachOperation,

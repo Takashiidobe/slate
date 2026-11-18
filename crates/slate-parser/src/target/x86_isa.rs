@@ -600,11 +600,11 @@ impl X86Isa {
         }
     }
 
-    pub fn x87_formats(self, family: TargetFamily) -> X87Formats {
+    pub fn x87_formats(self, family: TargetFamily, gcc: bool) -> X87Formats {
         if !self.features.contains(X86Feature::X87) {
             return X87Formats::NONE;
         }
-        if !self.wants_sse_math(family, true) || !self.features.contains(X86Feature::Sse) {
+        if !self.wants_sse_math(family, gcc) || !self.features.contains(X86Feature::Sse) {
             return X87Formats {
                 float: true,
                 double: true,
