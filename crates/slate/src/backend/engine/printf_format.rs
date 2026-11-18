@@ -81,8 +81,19 @@ const STDOUT_WRITER_KNOWNS: &[Known] = &[
     Known::FWrite,
 ];
 
-const STDOUT_WRITER_EXTRA_NAMES: &[&str] =
-    &["putchar", "putc", "__sputc", "fputc", "vprintf", "vfprintf"];
+const STDOUT_WRITER_EXTRA_NAMES: &[&str] = &[
+    "putchar",
+    "putc",
+    "__sputc",
+    "fputc",
+    "vprintf",
+    "vfprintf",
+    "putc_unlocked",
+    "putchar_unlocked",
+    "fputc_unlocked",
+    "fputs_unlocked",
+    "fwrite_unlocked",
+];
 
 fn stdout_writer_shim_names(program: &Program) -> HashSet<String> {
     program
