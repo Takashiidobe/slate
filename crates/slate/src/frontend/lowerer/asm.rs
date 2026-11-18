@@ -745,11 +745,11 @@ fn symbol_reference(
     modifier: Option<char>,
     symbol_text: &str,
 ) -> Result<String> {
-    let x86_64_att = family == TargetFamily::X86_64 && asm.dialect == Some(ir::AsmDialect::Att);
     let allowed = if family == TargetFamily::Arm32 {
         matches!(modifier, None | Some('c'))
     } else {
-        matches!(modifier, None | Some('c' | 'P' | 'p')) || (x86_64_att && modifier == Some('a'))
+        matches!(modifier, None | Some('c' | 'P' | 'p'))
+            || (family == TargetFamily::X86_64 && modifier == Some('a'))
     };
     if !allowed {
         return Err(unsupported_asm(format!("symbol modifier {modifier:?}")));
@@ -767,10 +767,11 @@ fn symbol_reference(
     } else if symbol.offset < 0 {
         reference.push_str(&symbol.offset.to_string());
     }
-    if modifier == Some('a') {
-        reference.push_str("(%rip)");
-    }
-    Ok(reference)
+    Ok(match (modifier, asm.dialect) {
+        (Some('a'), Some(ir::AsmDialect::Intel)) => format!("[rip + {reference}]"),
+        (Some('a'), _) => format!("{reference}(%rip)"),
+        _ => reference,
+    })
 }
 
 fn asm_template(
@@ -783,7 +784,6 @@ fn asm_template(
 ) -> Result<String> {
     let x86 = family.is_x86();
     let arm = family == TargetFamily::Arm32;
-    let x86_64_att = family == TargetFamily::X86_64 && asm.dialect == Some(ir::AsmDialect::Att);
     names.statement_start = true;
     names.previous = None;
     names.x86 = x86;
@@ -1008,9 +1008,13 @@ fn asm_template(
                                 "arm immediate modifier {modifier:?}"
                             )));
                         }
-                        Some('a') if x86_64_att => {
+                        Some('a') => {
                             used[*index] = true;
-                            template.push_str(&format!("{{{slot}}}"));
+                            template.push_str(&match asm.dialect {
+                                Some(ir::AsmDialect::Intel) => format!("[{{{slot}}}]"),
+                                _ if !x86 => format!("#{{{slot}}}"),
+                                _ => format!("{{{slot}}}"),
+                            });
                         }
                         None | Some('c' | 'P' | 'p') => {
                             used[*index] = true;

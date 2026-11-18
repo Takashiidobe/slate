@@ -446,10 +446,14 @@ operands there, bound like a statement asm's; labels are impossible.
   escape; percent pieces become `%`; ordinary AT&T constants and symbols receive
   `$`.
 - `%c`/`%P`/`%p` suppress the prefix; `%n` folds a negated integer per
-  reference. On x86_64 AT&T, `%a` prints a symbol as the memory reference
-  `{N}+off(%rip)` and an immediate as the bare constant, matching clang and gcc
-  (per-cpu `%%gs:%a[var]`, `asm_address_modifier.c`). i686, Intel dialect and
-  arm targets keep `%a` on these classes as a barrier (`slate-3f8g.4.40`).
+  reference. `%a` prints an x86_64 symbol as the memory reference
+  `{N}+off(%rip)` (AT&T) or `[rip + {N}+off]` (Intel, gcc's `"sym"[rip+off]`;
+  clang cannot assemble its own output there). An immediate becomes the bare
+  constant on x86 AT&T, `[{N}]` under Intel (gcc's `ds:N`) and `#{N}` on
+  arm/aarch64, as clang prints it (per-cpu `%%gs:%a[var]`,
+  `asm_address_modifier.c`, `gcc/x86_64/asm_intel_address_modifier.c`). An
+  i686 symbol under `%a` stays a barrier: it is only valid under `-fno-pic`,
+  and Rust's i686 PIE link rejects the absolute relocation (`slate-3f8g.4.43`).
   Symbol operands use Rust `sym` item paths with signed byte offsets in the
   template; functions retain the C ABI and string operands get named byte-array
   statics.

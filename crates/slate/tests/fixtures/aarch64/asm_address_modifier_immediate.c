@@ -1,0 +1,73 @@
+#include <stdio.h>
+
+static long immediate(void) {
+    long v;
+    __asm__("mov %0, %a1" : "=r"(v) : "i"(8));
+    return v;
+}
+
+static int through_register(int *q) {
+    int v;
+    __asm__("ldr %w0, %a1" : "=r"(v) : "r"(q));
+    return v;
+}
+
+int main(void) {
+    int values[2] = {5, 9};
+    printf("%ld %d\n", immediate(), through_register(&values[1]));
+    return 0;
+}
+
+// SLATE-FILECHECK-BEGIN aarch64-unknown-linux-gnu
+// CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
+// CHECK-NEXT: #![no_main]
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
+// CHECK-NEXT: fn immediate() -> i64 {
+// CHECK-NEXT:     let mut v: i64 = 0;
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov {0:x}, #{1}", lateout(reg) [[T_0]], const 8 as i32, options(pure, nomem,
+// CHECK-NEXT:             nostack, preserves_flags)
+// CHECK-NEXT:         );
+// CHECK-NEXT:         v = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     v
+// CHECK-NEXT: }
+// CHECK-NEXT: fn through_register(mut q: *mut i32) -> i32 {
+// CHECK-NEXT:     let mut v: i32 = 0;
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         let [[T_0]]: u32;
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "ldr {0:w}, [{1:x}]", lateout(reg) [[T_0]], in (reg) q as u64, options(pure,
+// CHECK-NEXT:             nomem, nostack, preserves_flags)
+// CHECK-NEXT:         );
+// CHECK-NEXT:         v = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     v
+// CHECK-NEXT: }
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut values: [i32; 2] = [5, 9];
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%ld %d\n".as_ptr(),
+// CHECK-NEXT:             immediate(),
+// CHECK-NEXT:             through_register((values.as_mut_ptr() as *mut i32).add(1)),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END
