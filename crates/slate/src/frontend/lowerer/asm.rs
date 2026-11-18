@@ -130,9 +130,9 @@ fn aarch64_register_modifier(
 ) -> Result<char> {
     let general = match &operand.selected {
         Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::Reg)) => true,
-        Some(ir::AsmOperandClass::Explicit(register)) => {
-            register.canonical.is_some_and(|name| name.starts_with('x'))
-        }
+        Some(ir::AsmOperandClass::Explicit(register)) => register
+            .canonical
+            .is_some_and(|name| name.starts_with('x') || name == "sp"),
         _ => false,
     };
     Ok(match (general, modifier, view) {
@@ -834,8 +834,14 @@ fn asm_template(
                     }
                     Slot::Register(canonical) if !x86 => {
                         let prefix = aarch64_register_modifier(operand, *modifier, *view)?;
-                        template.push(prefix);
-                        template.push_str(&canonical[1..]);
+                        match (canonical, prefix) {
+                            ("sp", 'w') => template.push_str("wsp"),
+                            ("sp", _) => template.push_str("sp"),
+                            _ => {
+                                template.push(prefix);
+                                template.push_str(&canonical[1..]);
+                            }
+                        }
                         continue;
                     }
                     Slot::Register(canonical) if *modifier == Some('a') && view.is_none() => {
@@ -2004,7 +2010,7 @@ impl FunctionLowerer<'_, '_> {
             let mut pinned = None;
             let mut reserved = None;
             let mut merged_rbx = false;
-            if x86
+            if (x86 || family == TargetFamily::AArch64)
                 && matches!(&operand.selected, Some(ir::AsmOperandClass::Explicit(register)) if register.canonical == Some("sp"))
             {
                 let referenced = asm.pieces.iter().any(

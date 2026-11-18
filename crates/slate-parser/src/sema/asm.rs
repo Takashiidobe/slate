@@ -688,7 +688,7 @@ fn options(
     {
         memory = AsmMemory::Any;
     }
-    let stack_pointer = family.is_x86()
+    let stack_pointer = (family.is_x86() || family == TargetFamily::AArch64)
         && asm.operands.iter().any(|operand| {
             matches!(&operand.selected, Some(AsmOperandClass::Explicit(register)) if register.canonical == Some("sp"))
         });
