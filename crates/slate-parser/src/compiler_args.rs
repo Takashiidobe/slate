@@ -1,6 +1,6 @@
-use crate::charset::Charset;
+use crate::charset::{Charset, WideCharset};
 use crate::compiler_options::{
-    CodeModel, CodegenOptions, CompilerOptions, ComplexMethod, FpModel, LayoutOptions,
+    CodeModel, CodegenOptions, CompilerOptions, ComplexMethod, FpModel, GnuCharsets, LayoutOptions,
     LibraryBuiltins, MathOptions, MathSwitch, MicrosoftFlags, MsvcArch, MsvcArchLevel,
     MsvcArm64Arch, MsvcFavor, MsvcFloatingModel, MsvcFloatingPoint, MsvcRuntimeChecks,
     MsvcRuntimeLibrary, OperationValues, Optimization, Pic, SourceGraphs, StackProtector,
@@ -302,6 +302,8 @@ struct ParsedCompilerArgs {
     msvc_convention: Option<(crate::ir::CallConv, String)>,
     msvc_source_charset: Option<(Charset, String)>,
     msvc_execution_charset: Option<(Charset, String)>,
+    exec_charset: Option<(String, String)>,
+    wide_exec_charset: Option<(String, String)>,
     msvc_utf8: bool,
     msvc_floating_point: MsvcFloatingPoint,
     msvc_arch: Vec<String>,
@@ -611,6 +613,8 @@ enum Opt {
     MsAnonymousStructs,
     StrictFlexArrays,
     GccStrictFlexArrays,
+    ExecCharset,
+    WideExecCharset,
     LateParseAttributes,
     AsynchronousUnwindTables,
     SmallPic,
@@ -784,6 +788,8 @@ impl std::fmt::Display for Opt {
             Self::MsAnonymousStructs => "fms-anonymous-structs",
             Self::StrictFlexArrays => "fstrict-flex-arrays=",
             Self::GccStrictFlexArrays => "fstrict-flex-arrays",
+            Self::ExecCharset => "fexec-charset=",
+            Self::WideExecCharset => "fwide-exec-charset=",
             Self::LateParseAttributes => "fexperimental-late-parse-attributes",
             Self::AsynchronousUnwindTables => "fasynchronous-unwind-tables",
             Self::SmallPic => "fpic",
@@ -1016,9 +1022,11 @@ impl Opt {
             | Self::DollarsInIdentifiers
             | Self::FixedRegister
             | Self::Rtd
+            | Self::ExecCharset
             | Self::StructReturn => &[Gcc, Clang],
             Self::PreferredStackBoundary
             | Self::GccStrictFlexArrays
+            | Self::WideExecCharset
             | Self::PermittedFltEvalMethods
             | Self::StackProtectorExplicit
             | Self::FpRetIn387
@@ -1836,6 +1844,12 @@ impl CompilerArgParser {
         options.knr_functions = raw.knr_functions.unwrap_or(true);
         options.undef_predefines = raw.undef_predefines;
         options.gnuc_version = raw.gnuc_version;
+        options.gnu_charsets = gnu_charsets(
+            raw.exec_charset.as_ref(),
+            raw.wide_exec_charset.as_ref(),
+            flavor,
+            options.effective_target(target.clone()).wchar_width,
+        )?;
         Ok(CompilerArgs {
             options,
             defines: raw.defines,
@@ -1864,6 +1878,50 @@ impl CompilerArgParser {
         parsed.resolve_paths_in(directory);
         Ok(parsed)
     }
+}
+
+fn gnu_charsets(
+    exec_charset: Option<&(String, String)>,
+    wide_exec_charset: Option<&(String, String)>,
+    flavor: CompilerFlavor,
+    wchar_width: u32,
+) -> Result<GnuCharsets, CompilerArgError> {
+    let execution = match exec_charset {
+        Some((name, argument)) if flavor.is_clang() => {
+            if !name.eq_ignore_ascii_case("utf-8") {
+                return Err(invalid(argument, &format!("invalid value '{name}'")));
+            }
+            None
+        }
+        Some((name, argument)) => {
+            let charset = Charset::parse_gnu(name).ok_or_else(|| {
+                invalid(
+                    argument,
+                    &format!("character set '{name}' is not supported"),
+                )
+            })?;
+            Some((charset, name.clone()))
+        }
+        None => None,
+    };
+    let wide_execution = match wide_exec_charset {
+        Some((name, argument)) => {
+            let charset = WideCharset::parse_gnu(name)
+                .filter(|charset| charset.width == wchar_width)
+                .ok_or_else(|| {
+                    invalid(
+                        argument,
+                        &format!("character set '{name}' is not supported for a {wchar_width}-bit wchar_t"),
+                    )
+                })?;
+            Some((charset, name.clone()))
+        }
+        None => None,
+    };
+    Ok(GnuCharsets {
+        execution,
+        wide_execution,
+    })
 }
 
 fn parse_gnuc_version(version: &str) -> Option<[u32; 3]> {
@@ -2262,6 +2320,12 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if let Some(level) = argument.strip_prefix("-fstrict-flex-arrays=") {
             parsed.saw(Opt::StrictFlexArrays, argument);
             parsed.strict_flex_arrays = Some(parse_value(level.to_owned(), argument, "level")?);
+        } else if let Some(name) = argument.strip_prefix("-fexec-charset=") {
+            parsed.saw(Opt::ExecCharset, argument);
+            parsed.exec_charset = Some((name.to_owned(), argument.clone()));
+        } else if let Some(name) = argument.strip_prefix("-fwide-exec-charset=") {
+            parsed.saw(Opt::WideExecCharset, argument);
+            parsed.wide_exec_charset = Some((name.to_owned(), argument.clone()));
         } else if let Some(value) = option_value(argument, "D") {
             parsed.saw(Opt::Define, argument);
             let define = next_value(arguments, &mut index, argument, value)?;

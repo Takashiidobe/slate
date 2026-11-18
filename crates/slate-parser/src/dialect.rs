@@ -28,6 +28,14 @@ impl Dialect {
                 .execution_charset
                 .unwrap_or(Charset::WINDOWS_1252);
         }
+        if flavor.is_gcc() {
+            if let Some((charset, _)) = options.gnu_charsets.execution {
+                target.execution_charset = charset;
+            }
+            if let Some((charset, _)) = options.gnu_charsets.wide_execution {
+                target.wide_execution_swapped = charset.endian != target.endian;
+            }
+        }
         let mut features = StandardFeatures::for_compiler(
             standard,
             flavor,

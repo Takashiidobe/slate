@@ -808,10 +808,26 @@ fn execution_units(spelling: &str, encoding: Encoding, target: &TargetInfo) -> V
             crate::lexer::SourceUnit::Character(value) if width == 8 => {
                 charset.encode(value, &mut units)
             }
+            crate::lexer::SourceUnit::Character(value)
+                if encoding == Encoding::Wide && target.wide_execution_swapped =>
+            {
+                let start = units.len();
+                encode(value, width, &mut units);
+                for unit in &mut units[start..] {
+                    *unit = swap_unit(*unit, width);
+                }
+            }
             crate::lexer::SourceUnit::Character(value) => encode(value, width, &mut units),
         }
     }
     units
+}
+
+fn swap_unit(unit: u32, width: u32) -> u32 {
+    match width {
+        16 => u32::from((unit as u16).swap_bytes()),
+        _ => unit.swap_bytes(),
+    }
 }
 
 fn truncate(value: u32, width: u32) -> u32 {

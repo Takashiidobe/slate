@@ -34,6 +34,13 @@ pub struct CompilerOptions {
     pub knr_functions: bool,
     pub undef_predefines: bool,
     pub gnuc_version: Option<[u32; 3]>,
+    pub gnu_charsets: GnuCharsets,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
+pub struct GnuCharsets {
+    pub execution: Option<(crate::charset::Charset, String)>,
+    pub wide_execution: Option<(crate::charset::WideCharset, String)>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -620,6 +627,7 @@ impl Default for CompilerOptions {
             knr_functions: true,
             undef_predefines: false,
             gnuc_version: None,
+            gnu_charsets: GnuCharsets::default(),
         }
     }
 }

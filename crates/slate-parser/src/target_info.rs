@@ -27,6 +27,7 @@ pub struct TargetInfo {
     pub isa: TargetIsa,
     pub profile: TargetProfile,
     pub execution_charset: crate::charset::Charset,
+    pub wide_execution_swapped: bool,
     pub code16: bool,
 }
 
@@ -114,6 +115,7 @@ impl Default for TargetInfo {
             isa: TargetIsa::baseline(TargetFamily::X86_64, TargetEnvironment::Gnu),
             profile: crate::target_registry::X86_64_LINUX_GNU_PROFILE,
             execution_charset: crate::charset::Charset::Utf8,
+            wide_execution_swapped: false,
             code16: false,
         }
     }

@@ -1,10 +1,13 @@
 use crate::code_pages::{CODE_PAGES, CP1252};
+use crate::gnu_charsets::GNU_CHARSETS;
+use crate::target_info::Endian;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub enum Charset {
     #[default]
     Utf8,
     CodePage(&'static CodePage),
+    Table(&'static ByteTable),
 }
 
 #[derive(Debug)]
@@ -12,6 +15,30 @@ pub struct CodePage {
     pub(crate) number: u32,
     pub(crate) names: &'static [&'static str],
     pub(crate) high: [char; 128],
+}
+
+#[derive(Debug)]
+pub struct ByteTable {
+    pub(crate) number: u32,
+    pub(crate) names: &'static [&'static str],
+    pub(crate) table: [Option<char>; 256],
+}
+
+impl PartialEq for ByteTable {
+    fn eq(&self, other: &Self) -> bool {
+        self.number == other.number
+    }
+}
+
+impl Eq for ByteTable {}
+
+impl ByteTable {
+    fn byte(&self, value: u32) -> Option<u8> {
+        self.table
+            .iter()
+            .position(|&c| c.is_some_and(|c| c as u32 == value))
+            .map(|index| index as u8)
+    }
 }
 
 impl PartialEq for CodePage {
@@ -53,16 +80,30 @@ impl Charset {
             .map(Self::CodePage)
     }
 
+    pub fn parse_gnu(name: &str) -> Option<Self> {
+        let name = name.to_ascii_lowercase();
+        if matches!(name.as_str(), "utf-8" | "utf8") {
+            return Some(Self::Utf8);
+        }
+        GNU_CHARSETS
+            .iter()
+            .copied()
+            .find(|table| table.names.contains(&name.as_str()))
+            .map(Self::Table)
+    }
+
     pub fn code_page(self) -> u32 {
         match self {
             Self::Utf8 => 65001,
             Self::CodePage(page) => page.number,
+            Self::Table(table) => table.number,
         }
     }
 
     pub fn decode_byte(self, byte: u8) -> char {
         match (self, byte) {
             (Self::CodePage(page), 0x80..=0xFF) => page.high[usize::from(byte - 0x80)],
+            (Self::Table(table), _) => table.table[usize::from(byte)].unwrap_or('\u{FFFD}'),
             _ => char::from(byte),
         }
     }
@@ -71,6 +112,7 @@ impl Charset {
         match self {
             Self::Utf8 => true,
             Self::CodePage(page) => page.byte(value).is_some(),
+            Self::Table(table) => table.byte(value).is_some(),
         }
     }
 
@@ -78,7 +120,27 @@ impl Charset {
         match self {
             Self::Utf8 => encode_utf8(value, units),
             Self::CodePage(page) => units.push(page.byte(value).map_or(0x3F, u32::from)),
+            Self::Table(table) => units.push(table.byte(value).map_or(0x3F, u32::from)),
         }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct WideCharset {
+    pub width: u32,
+    pub endian: Endian,
+}
+
+impl WideCharset {
+    pub fn parse_gnu(name: &str) -> Option<Self> {
+        let (width, endian) = match name.to_ascii_uppercase().as_str() {
+            "UTF-32LE" | "UCS-4LE" => (32, Endian::Little),
+            "UTF-32BE" | "UCS-4BE" | "UCS-4" => (32, Endian::Big),
+            "UTF-16LE" => (16, Endian::Little),
+            "UTF-16BE" => (16, Endian::Big),
+            _ => return None,
+        };
+        Some(Self { width, endian })
     }
 }
 

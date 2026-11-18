@@ -990,6 +990,16 @@ fn push_literal_diagnostics(
         .into_iter()
         .flat_map(|(loc, characters)| characters.into_iter().map(move |c| (loc, c)))
     {
+        if context.flavor.is_gcc() {
+            errors.push(error(
+                provenance,
+                loc,
+                "converting to execution character set: Invalid or incomplete multibyte or wide \
+                 character"
+                    .to_owned(),
+            ));
+            continue;
+        }
         errors.extend(Warning::UnrepresentableCharacter.diagnose(
             unrepresentable_character_message(character, context.target),
             context.diagnostics(),

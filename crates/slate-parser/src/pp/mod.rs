@@ -1201,6 +1201,14 @@ impl<'a> Preprocessor<'a> {
             }
             defines.extend(self.wchar_predefines(target.wchar_width == target.short_width));
         }
+        if dialect.flavor().is_gcc() {
+            if let Some((_, name)) = &options.gnu_charsets.execution {
+                defines.push(format!("__GNUC_EXECUTION_CHARSET_NAME=\"{name}\""));
+            }
+            if let Some((_, name)) = &options.gnu_charsets.wide_execution {
+                defines.push(format!("__GNUC_WIDE_EXECUTION_CHARSET_NAME=\"{name}\""));
+            }
+        }
         let codegen = &options.codegen;
         let gcc = dialect.flavor().is_gcc();
         if !gcc && !matches!(target.isa, TargetIsa::X86(_)) {

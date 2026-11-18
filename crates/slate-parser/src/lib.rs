@@ -10,6 +10,7 @@ pub mod diagnostics;
 pub mod dialect;
 pub mod error;
 pub mod files;
+mod gnu_charsets;
 pub mod ir;
 pub mod lexer;
 pub mod native_headers;
