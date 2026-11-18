@@ -607,6 +607,37 @@ impl FunctionLowerer<'_, '_> {
         Ok(stmts)
     }
 
+    pub(super) fn uniform_pattern_byte(&self, ty: &ir::Type, fill: PatternFill) -> Result<u8> {
+        let tables = self.tables;
+        let mut element = ty;
+        while let ir::Type::VariableArray { element: inner, .. }
+        | ir::Type::Array { element: inner, .. } = tables.resolve_type(element)
+        {
+            element = inner;
+        }
+        let fill = match fill {
+            PatternFill::Typed { integer, floating } => Fill::Typed { integer, floating },
+            PatternFill::ValueBits(byte) => Fill::ValueBits(byte),
+        };
+        let painter = Painter {
+            tables,
+            fill,
+            root: element,
+        };
+        let size = painter.size_of(element)?;
+        match painter.writes(element)?.as_slice() {
+            [] => Ok(fill.background()),
+            [
+                Write::Bytes {
+                    offset: 0,
+                    len,
+                    byte,
+                },
+            ] if *len == size => Ok(*byte),
+            _ => Err(unsupported_type(ty)),
+        }
+    }
+
     pub(super) fn local_bytes(&self, id: BindingId) -> Expr {
         bytes_of(self.lower_binding(id))
     }

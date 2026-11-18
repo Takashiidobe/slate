@@ -161,9 +161,15 @@ impl FunctionLowerer<'_, '_> {
 
     pub(super) fn vla_buffer(&mut self, variable: &ir::Variable) -> Result<(rust::Type, Expr)> {
         self.tables.require_std("variable-length array")?;
-        if matches!(variable.auto_init, Some(ir::AutoInit::Pattern(_))) {
-            return Err(unsupported_type(&variable.ty));
-        }
+        let fill_byte = match variable.auto_init {
+            Some(ir::AutoInit::Pattern(fill)) => {
+                if self.tables.variable_record(&variable.ty).is_some() {
+                    return Err(unsupported_type(&variable.ty));
+                }
+                self.uniform_pattern_byte(&variable.ty, fill)?
+            }
+            _ => 0,
+        };
         if let Some(initializer) = &variable.initializer
             && !matches!(
                 &initializer.node.value,
@@ -209,7 +215,10 @@ impl FunctionLowerer<'_, '_> {
                                 }),
                                 method: "write_bytes".into(),
                                 args: vec![
-                                    Expr::Value(rust::RustValue::TypedUInt(0, Prim::U8)),
+                                    Expr::Value(rust::RustValue::TypedUInt(
+                                        u128::from(fill_byte),
+                                        Prim::U8,
+                                    )),
                                     count,
                                 ],
                             })],
