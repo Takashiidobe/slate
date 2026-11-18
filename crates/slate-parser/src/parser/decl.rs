@@ -81,6 +81,26 @@ impl Parser {
                     _ => PragmaKind::Opaque(text.clone()),
                 }
             }
+            [
+                Token::Ident(name),
+                Token::LParen,
+                Token::Ident(value),
+                Token::RParen,
+            ] if self.flavor().is_msvc()
+                && matches!(name.as_str(), "fenv_access" | "fp_contract") =>
+            {
+                match parse_msvc_floating_value(value) {
+                    Some(value) => PragmaKind::Stdc {
+                        option: if name == "fenv_access" {
+                            StdcPragmaOption::FenvAccess
+                        } else {
+                            StdcPragmaOption::FpContract
+                        },
+                        value,
+                    },
+                    None => PragmaKind::Opaque(text.clone()),
+                }
+            }
             [Token::Ident(name), rest @ ..] if name == "float_control" => {
                 PragmaKind::FloatControl(parse_float_control(rest))
             }
@@ -548,6 +568,14 @@ fn parse_stdc_value(token: &str) -> Option<StdcPragmaValue> {
         "ON" => Some(StdcPragmaValue::On),
         "OFF" => Some(StdcPragmaValue::Off),
         "DEFAULT" => Some(StdcPragmaValue::Default),
+        _ => None,
+    }
+}
+
+fn parse_msvc_floating_value(token: &str) -> Option<StdcPragmaValue> {
+    match token {
+        "on" => Some(StdcPragmaValue::On),
+        "off" => Some(StdcPragmaValue::Off),
         _ => None,
     }
 }
