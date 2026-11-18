@@ -125,21 +125,23 @@ pp ──▶ parser ──▶ AST ──▶ src/sema/ (validation + resolution +
 
 ```
 TranslationUnit {
-    items: Vec<ExternalItem>,
-    tags: Vec<Span<TagDefinition>>, // sorted by TagId, gaps after pruning; look up with `tag(id)`
     dialect: Dialect,              // flavor, standard, features, effective target, options
+    decls: Vec<Decl>,
+    tags: Vec<Span<TagDefinition>>, // sorted by TagId, gaps after pruning; look up with `tag(id)`
     macros: MacroInvocations,      // not printed by AST dumps
     macro_type_arguments: Vec<MacroTypeArgument>, // parsed type of each type argument, not printed
 }
 
-ExternalItem =
-    | FunctionDefinition
-    | Declaration
-    | StaticAssert
+Decl = Span<DeclKind>
+
+DeclKind =
+    | Function(FunctionDefinition)
+    | Declaration(Declaration)
+    | StaticAssert(StaticAssert)
     | Asm(GnuAsm)                   // file-scope asm("...")
     | Pragma(Pragma)
     | Attribute(Vec<Span<Attribute>>)  // file-scope `[[attr]];`
-    | CommentGroup
+    | Comment(CommentGroup)
 ```
 
 - `dialect.options` keeps grouped settings and ordered arguments; `target` is
@@ -147,7 +149,7 @@ ExternalItem =
   IR consumers never read arguments.
 - Long-double literal spelling stays unresolved; sema interprets it at the
   target precision.
-- No `Typedef`, `Record`, or `Enum` item: `typedef` is a storage class and tag
+- No `Typedef`, `Record`, or `Enum` decl: `typedef` is a storage class and tag
   definitions live in the specifier that wrote them.
 
 ## Pragmas
@@ -195,18 +197,20 @@ InitDeclarator {
 | `int x, f(void);`                       | declarators `x`, `f(void)`                                                 |
 
 Used at file scope, in blocks, in `for` initializers, and (as
-`FieldDeclaration`) in records.
+`FieldDecl`) in records.
 
 ### `DeclarationSpecifiers`
 
 ```
 DeclarationSpecifiers {
-    storage: Option<StorageClass>,      // Typedef | Extern | Static | Auto | Register
-    thread_local: bool,
-    function: FunctionSpecifiers,       // inline, noreturn
-    constexpr: bool,
-    qualifiers: Qualifiers,             // const, volatile, restrict, _Atomic
     ty: TypeSpecifier,
+    qualifiers: Qualifiers,             // const, volatile, restrict, _Atomic
+    storage: StorageClass,              // None | Typedef | Extern | Static | Auto | Register
+    is_thread_local: bool,
+    is_block: bool,                     // clang `__block`
+    is_inline: bool,
+    is_noreturn: bool,
+    is_constexpr: bool,
     attributes: Vec<Span<Attribute>>,
 }
 ```
@@ -409,15 +413,14 @@ FunctionDefinition {
     specifiers: DeclarationSpecifiers,
     declarator: Declarator,                 // outermost derived layer is Function
     attributes: Vec<Span<Attribute>>,
-    body: CompoundStatement,
-    provenance,
+    body: Vec<Stmt>,
 }
 ```
 
 - `int *f(void) { ... }`: specifiers `int`, declarator
   `Function { inner: Pointer { inner: Name("f") }, parameters: Void }`. The
   return type is derived by sema.
-- GNU nested functions are `FunctionDefinition`s in block item position.
+- GNU nested functions are `StmtKind::NestedFunction`.
 
 ## Tags
 
@@ -432,10 +435,10 @@ TagBody =
     | Record(Vec<FieldItem>)
     | Enum { fixed_type: Option<TypeName>, enumerators: Vec<EnumItem> }   // C23 `enum E : int`
 
-FieldItem = Field(FieldDeclaration) | StaticAssert | Pragma | CommentGroup | ExtraSemi
-FieldDeclaration { specifiers, declarators: Vec<FieldDeclarator>, provenance }   // empty: anonymous member
-FieldDeclarator { declarator: Declarator, bit_width: Option<Expr>, attributes, provenance }
-EnumItem = Enumerator { name, value: Option<Expr>, attributes, provenance } | CommentGroup
+FieldItem = Span<Field(FieldDecl) | StaticAssert | Pragma | Comment(CommentGroup) | ExtraSemi>
+FieldDecl { specifiers, declarators: Vec<FieldDeclarator> }   // empty: anonymous member
+FieldDeclarator = Span<{ declarator: Declarator, bit_width: Option<Expr>, attributes }>
+EnumItem = Span<Enumerator { name, attributes, value: Option<Expr> } | Comment(CommentGroup)>
 ```
 
 - A stray `;` in a record body (`struct { int x; ; }`) is an `ExtraSemi` item,
@@ -605,7 +608,8 @@ Taxonomy and rationale: [comment-placement](comment-placement.md).
   multi-line calls) become `Trailing` siblings after it.
 - `doc`: the first comment starts with `/**`, `/*!`, `///`, or `//!` (not
   `/**/`, `/***`, `////`).
-- Groups appear as `ExternalItem`, `BlockItem`, `FieldItem`, `EnumItem`, and
+- Groups appear as the `Comment` variant of `DeclKind`, `StmtKind`,
+  `FieldItemKind`, and `EnumItemKind`, and in
   `ParameterDeclaration.comments`. A parameter takes the comments inside its
   tokens and the `Trailing` comments after its comma.
 
@@ -619,8 +623,9 @@ Taxonomy and rationale: [comment-placement](comment-placement.md).
 | `IntegerLiteral`, `FloatLiteral`, `CharLiteral`                                                | [Literals](#literals)                                                                   |
 | `StringLiteral(StringLiteral)`                                                                 | adjacent literals concatenated                                                          |
 | `Paren(Expr)`                                                                                  | kept for source form                                                                    |
-| `Unary { op: Plus \| Minus \| BitNot \| Not \| AddrOf \| Deref \| PreInc \| PreDec, operand }` |                                                                                         |
-| `Postfix { op: PostInc \| PostDec, operand }`                                                  |                                                                                         |
+| `BoolLiteral(bool)`, `NullPtrLiteral`                                                          | `true`/`false`, `nullptr`                                                               |
+| `Unary { op: Plus \| Minus \| BitNot \| Not \| AddrOf \| Deref \| PreIncrement \| PreDecrement \| Real \| Imag, operand }` | `Real`/`Imag`: GNU `__real__`/`__imag__`                   |
+| `Postfix { op: Increment \| Decrement, operand }`                                              |                                                                                         |
 | `Binary { op, left, right }`                                                                   | arithmetic, shifts, comparisons, bitwise, `&&`, `\|\|`                                  |
 | `Assign { op, target, value }`                                                                 | `=` and compound                                                                        |
 | `Conditional { condition, then_value: Option<Expr>, else_value }`                              | `None`: GNU `a ?: b`                                                                    |
@@ -633,15 +638,15 @@ Taxonomy and rationale: [comment-placement](comment-placement.md).
 | `SizeOfExpr`, `SizeOfType`, `AlignOf`, `AlignOfExpr`                                           |                                                                                         |
 | `CountOfExpr`, `CountOfType { ty: TypeName }`                                                  | C2y `_Countof`; parsed like `sizeof`                                                    |
 | `MaxOf { ty: TypeName }`, `MinOf { ty: TypeName }`                                             | `_Maxof(type-name)` / `_Minof(type-name)`; retain the operand, without range evaluation |
-| `OffsetOf { ty: TypeName, member: MemberDesignator }`                                          | `offsetof`, `__builtin_offsetof`                                                        |
+| `OffsetOf { ty: TypeName, member: Expr }`                                                      | `offsetof`, `__builtin_offsetof`; `member` is the designator written as an expression   |
 | `Generic { controlling: GenericControl, associations }`                                        |                                                                                         |
 | `VaArg { list, ty: TypeName }`                                                                 |                                                                                         |
-| `TypesCompatible(TypeName, TypeName)`                                                          | GNU                                                                                     |
+| `TypesCompatible { left_ty: TypeName, right_ty: TypeName }`                                    | GNU                                                                                     |
 | `BitCast { ty: TypeName, value }`                                                              |                                                                                         |
 | `ConvertVector { ty: TypeName, value }`                                                        | `__builtin_convertvector`                                                               |
 | `LabelAddress(Span<String>)`                                                                   | GNU `&&label`                                                                           |
-| `StatementExpression(CompoundStatement)`                                                       | GNU `({ ... })`                                                                         |
-| `Block(BlockLiteral)`                                                                          | clang `^ret(params){ ... }`, under `-fblocks`; see below                                |
+| `StatementExpression(Vec<Stmt>)`                                                               | GNU `({ ... })`                                                                         |
+| `Block(Box<BlockLiteral>)`                                                                     | clang `^ret(params){ ... }`, under `-fblocks`; see below                                |
 | `StaticAssert(Box<StaticAssert>)`                                                              | C2y `static_assert` expression; `void`                                                  |
 
 `BlockLiteral { signature: TypeName, deduced_return: bool, body }`: `signature`
@@ -651,9 +656,8 @@ first `return value;` (`void` if none). `^int{...}` gets `(void)` parameters.
 `__block` sets `DeclarationSpecifiers.is_block`.
 
 ```
-GenericControl = Expr(Expr) | Type(TypeName)
+GenericControl = Expr(Expr) | Type { ty: TypeName }
 GenericAssociation = Type { ty: TypeName, value: Expr } | Default(Expr)
-MemberDesignator = Vec<Field(Span<String>) | Index(Expr)>
 ```
 
 - `_Generic` keeps all associations; sema selects. An expression operand is
@@ -686,17 +690,17 @@ Lexical content is decoded; C types are assigned by sema.
 ```
 IntegerLiteral {
     value: BigUint,
-    radix: Decimal | Hex | Octal | Binary,
-    suffix: IntegerSuffix { unsigned: bool, size: None | Long | LongLong | BitInt | Microsoft(Int8 | Int16 | Int32 | Int64 | Int128) },
+    radix: Radix,                            // Decimal | Hex | Octal | Binary
+    suffix: IntegerSuffix { unsigned: bool, size: IntegerSizeSuffix },   // None | Long | LongLong | BitInt | Microsoft(Int8 | Int16 | Int32 | Int64 | Int128)
     spelling: String,
     imaginary: bool,                         // GNU i/j, anywhere among u/l
 }
 
 FloatLiteral {
     spelling: String,
-    radix: Decimal | Hex,
-    suffix: None | F | L | F16 | F32 | F64 | F128 | F32x | F64x | Q | W | DecimalF32 | DecimalF64 | DecimalF128,
-    fixed_suffix: Option<{ kind: Fract | Accum, rank: Short | Default | Long | LongLong, unsigned: bool }>,
+    radix: FloatRadix,                       // Decimal | Hex
+    suffix: FloatSuffix,                     // None | F | L | BF16 | F16 | F32 | F64 | F128 | F32x | F64x | Q | W | DecimalF32 | DecimalF64 | DecimalF64x | DecimalF128
+    fixed_suffix: Option<FixedPointLiteralSuffix>,   // { kind: Fract | Accum, rank: Short | Default | Long | LongLong, unsigned: bool }
     imaginary: bool,
 }
 
@@ -716,8 +720,7 @@ StringLiteral {
 ## Initializers
 
 ```
-Initializer = Expr(Expr) | List(InitializerList)
-InitializerList { items: Vec<InitializerItem>, trailing_comma: bool }
+Initializer = Expr(Expr) | List(Vec<InitializerItem>)
 InitializerItem { designators: Vec<Designator>, value: Initializer }
 Designator = Field(Span<String>) | Array(Expr) | ArrayRange { start: Expr, end: Expr }   // GNU range
 ```
