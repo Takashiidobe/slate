@@ -2091,11 +2091,21 @@ impl<'a> Preprocessor<'a> {
     }
 
     fn record_directive_diagnostic(&mut self, directive: &Directive, severity: Severity) {
-        let keyword = if severity == Severity::Warning {
-            "#warning"
+        let is_warning = severity == Severity::Warning;
+        let severity = if is_warning {
+            let context = DiagnosticContext {
+                options: &self.dialect.options().diagnostics,
+                standard: self.dialect.standard(),
+                flavor: self.dialect.flavor(),
+            };
+            let Some(resolved) = context.severity(Warning::Cpp) else {
+                return;
+            };
+            resolved
         } else {
-            "#error"
+            severity
         };
+        let keyword = if is_warning { "#warning" } else { "#error" };
         let text = if directive.arguments.is_empty() {
             String::new()
         } else {

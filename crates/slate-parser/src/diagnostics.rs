@@ -34,6 +34,7 @@ pub enum Warning {
     UnrepresentableCharacter,
     HigherPrecisionForComplexDivision,
     Openmp,
+    Cpp,
 }
 
 impl Warning {
@@ -68,11 +69,13 @@ impl Warning {
         Self::UnrepresentableCharacter,
         Self::HigherPrecisionForComplexDivision,
         Self::Openmp,
+        Self::Cpp,
     ];
 
     pub fn name(self) -> &'static str {
         match self {
             Self::Openmp => "openmp",
+            Self::Cpp => "cpp",
             Self::LongLong => "long-long",
             Self::C99Compat => "c99-compat",
             Self::ImplicitlyUnsignedLiteral => "implicitly-unsigned-literal",
@@ -117,6 +120,7 @@ impl Warning {
     pub fn group(name: &str) -> Vec<Self> {
         match name {
             "implicit" => vec![Self::ImplicitFunctionDeclaration, Self::ImplicitInt],
+            "#warnings" => vec![Self::Cpp],
             _ => Self::from_name(name).into_iter().collect(),
         }
     }
