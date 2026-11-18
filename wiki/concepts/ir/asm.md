@@ -580,6 +580,9 @@ operands there, bound like a statement asm's; labels are impossible.
   `%`-prefixed registers (including `%%ds`, where `%%` is its own piece), quoted
   strings, thread-locals, and names defined twice (`gnu_toplevel_asm_symbols.c`,
   `x86_64/asm_template_symbol_words.c`). Intel-syntax register names carry no
-  `%` and are still candidates (slate-yar4.46).
+  `%` and are still candidates (slate-yar4.46). A `:` starts a new statement
+  only right after a statement's first word (a label), so the name after an
+  AArch64 `:lo12:` specifier is still rewritten; the specifier itself never is
+  (`aarch64/asm_aarch64_toplevel_lo12_symbol.c`, slate-3f8g.4.42).
 - Other immediate modifiers, and additional operand classes are tracked by the
   other `slate-3f8g.4.17` children.

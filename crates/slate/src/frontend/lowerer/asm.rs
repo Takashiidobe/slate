@@ -425,6 +425,7 @@ struct AsmNames<'t> {
     used: Vec<BindingId>,
     statement_start: bool,
     previous: Option<char>,
+    label: bool,
     x86: bool,
     intel: bool,
 }
@@ -442,6 +443,7 @@ impl<'t> AsmNames<'t> {
             used: Vec::new(),
             statement_start: true,
             previous: None,
+            label: false,
             x86: false,
             intel: false,
         }
@@ -469,12 +471,14 @@ impl<'t> AsmNames<'t> {
                 let word = &rest[..end];
                 let mnemonic = std::mem::replace(&mut self.statement_start, false);
                 self.statement_start = mnemonic && self.x86 && x86_prefix(word);
+                let relocation = self.previous == Some(':') && rest[end..].starts_with(':');
                 match word {
                     ".intel_syntax" => self.intel = true,
                     ".att_syntax" => self.intel = false,
                     _ => {}
                 }
                 let candidate = !mnemonic
+                    && !relocation
                     && !c.is_ascii_digit()
                     && self.previous != Some('%')
                     && !(self.x86 && self.intel && intel_register(word));
@@ -486,14 +490,17 @@ impl<'t> AsmNames<'t> {
                     None => out.push_str(word),
                 }
                 self.previous = word.chars().last();
+                self.label = mnemonic;
                 rest = &rest[end..];
                 continue;
             }
             match c {
                 '"' if self.previous != Some('\\') => quoted = !quoted,
-                '\n' | ';' | ':' if !quoted => self.statement_start = true,
+                '\n' | ';' if !quoted => self.statement_start = true,
+                ':' if !quoted && self.label => self.statement_start = true,
                 _ => {}
             }
+            self.label = false;
             match c {
                 '{' => out.push_str("{{"),
                 '}' => out.push_str("}}"),
