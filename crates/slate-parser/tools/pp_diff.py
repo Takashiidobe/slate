@@ -23,8 +23,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SLATE = ROOT.parents[1] / "target/test-cache/release/slate-parser"
 TARGET = "x86_64-unknown-linux-gnu"
-# slate defaults every flavor to gnu23 (slate-parser-6x05.6); pin clang's own default instead
-CLANG_DEFAULT_STANDARD = "-std=gnu17"
 CONTEXT = 3
 
 TOKEN = re.compile(
@@ -159,8 +157,6 @@ def first_line(stderr: str) -> str:
 
 
 def run(job: Job, includes: list[str]) -> Outcome:
-    if not any(arg.startswith("-std=") for arg in job.args):
-        job.args = [*job.args, CLANG_DEFAULT_STANDARD]
     clang = subprocess.run(
         ["clang", f"--target={TARGET}", "-nostdinc", *job.args, *includes, "-E", "-P", "-w", job.source],
         cwd=job.directory, capture_output=True, text=True, errors="replace",

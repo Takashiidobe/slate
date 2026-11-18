@@ -102,8 +102,8 @@ python3 tools/c_corpus_sweep.py [PROJECT ...] [--flavor clang|gcc|msvc] [--jobs 
   command, minus the compiler and the source file; relative paths resolve
   because both sides run in the entry's directory. The oracle also drops
   dependency output (`-M*`, `-MF`/`-MT`/`-MQ`/`-MJ`, `-Wp,-M…`), which would
-  rewrite the build's `.d` files. Pins `-std=gnu17` when absent
-  (slate-parser-6x05.6).
+  rewrite the build's `.d` files. Without `-std`, slate and the oracle
+  each use the flavor's default standard (clang gnu17, gcc gnu23).
 - msvc databases use `/` spellings, so they still go through
   `pp_diff.kept_args`: `-D`, `-U`, the include flags, `-include`, `-imacros`,
   `-std`, target `-m` flags and `pp_diff.SEMANTIC_FLAGS`. `pp_diff.py` and

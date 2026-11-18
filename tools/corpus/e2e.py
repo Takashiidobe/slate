@@ -723,8 +723,6 @@ int main(void) {
 def translation_unit(entry, source, recipe, flavor):
     argv = entry.get("arguments") or shlex.split(entry["command"])
     args = pp_diff.kept_args(argv, entry["directory"])
-    if not any(arg.startswith("-std=") for arg in args):
-        args.append(pp_diff.CLANG_DEFAULT_STANDARD)
     args += [f"-idirafter{directory}" for directory in recipe.host_includes]
     return {
         "directory": entry["directory"],

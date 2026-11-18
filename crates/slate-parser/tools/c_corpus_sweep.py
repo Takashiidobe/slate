@@ -119,8 +119,6 @@ def jobs(corpus: Path, projects: list[str], flavor: str) -> list[Job]:
                     flag = next((flag for flag in path_flags if arg.startswith(flag)), None)
                     normalized.append(flag + arg[len(flag):].replace("\\", "/") if flag else arg)
                 args = normalized
-            if flavor != "msvc" and not any(arg.startswith("-std=") for arg in args):
-                args.append(pp_diff.CLANG_DEFAULT_STANDARD)
             found.append(Job(project, source, entry["directory"], [*args, *extra]))
     return found
 
@@ -181,8 +179,6 @@ def run(job: Job, flavor: str, timeout: int) -> Result:
         slate_args = [str(SLATE), "ir", job.source, f"--flavor={flavor}", *job.args]
         if flavor == "msvc":
             slate_args.extend(("--target=x86_64-pc-windows-msvc", "-std=c17"))
-        elif not any(arg.startswith("-std=") for arg in job.args):
-            slate_args.append(pp_diff.CLANG_DEFAULT_STANDARD)
         slate = subprocess.run(
             slate_args,
             cwd=job.directory, capture_output=True, text=True, errors="replace", timeout=timeout,
