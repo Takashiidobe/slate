@@ -924,6 +924,9 @@ impl<'a> Preprocessor<'a> {
         if self.dialect.features().blocks {
             defines.push("__BLOCKS__=1".to_owned());
         }
+        if self.dialect.features().pascal_strings {
+            defines.push("__PASCAL_STRINGS__=1".to_owned());
+        }
         if flavor.is_clang() && self.dialect.features().fixed_point_keywords {
             defines.extend(
                 CLANG_FIXED_POINT_MACROS

@@ -81,6 +81,7 @@ pub struct StandardFeatures {
     pub digraphs: bool,
     pub dollars_in_identifiers: bool,
     pub blocks: bool,
+    pub pascal_strings: bool,
     pub scope_token: bool,
     pub elifdef_directives: bool,
     pub gnu_inline_asm: bool,
@@ -182,6 +183,7 @@ impl StandardFeatures {
             digraphs: !matches!(standard, LanguageStandard::C89),
             dollars_in_identifiers: true,
             blocks: false,
+            pascal_strings: false,
             scope_token: true,
             elifdef_directives: c23 || standard.is_gnu(),
             gnu_inline_asm: true,
@@ -203,6 +205,7 @@ impl StandardFeatures {
         features.digraphs = graphs.digraphs.unwrap_or(features.digraphs);
         features.dollars_in_identifiers = graphs.dollars.unwrap_or(true);
         features.blocks = flavor.is_clang() && graphs.blocks.unwrap_or(false);
+        features.pascal_strings = flavor.is_clang() && graphs.pascal_strings.unwrap_or(false);
         if flavor.is_clang() {
             features.fixed_point_keywords = graphs.fixed_point.unwrap_or(false);
         }

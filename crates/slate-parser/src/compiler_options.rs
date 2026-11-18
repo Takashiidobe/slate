@@ -206,6 +206,7 @@ pub struct SourceGraphs {
     pub dollars: Option<bool>,
     pub raw_strings: Option<bool>,
     pub blocks: Option<bool>,
+    pub pascal_strings: Option<bool>,
     pub fixed_point: Option<bool>,
 }
 

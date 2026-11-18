@@ -379,6 +379,7 @@ struct ParsedCompilerArgs {
     dollars_in_identifiers: Option<bool>,
     raw_string_literals: Option<bool>,
     blocks: Option<bool>,
+    pascal_strings: Option<bool>,
     fixed_point: Option<bool>,
     ms_extensions: Option<bool>,
     ms_compatibility: Option<bool>,
@@ -671,6 +672,8 @@ enum Opt {
     DollarsInIdentifiers,
     RawStringLiterals,
     Blocks,
+    PascalStrings,
+    MPascalStrings,
     FixedPoint,
     MsExtensions,
     MsCompatibility,
@@ -848,6 +851,8 @@ impl std::fmt::Display for Opt {
             Self::DollarsInIdentifiers => "fdollars-in-identifiers",
             Self::RawStringLiterals => "fraw-string-literals",
             Self::Blocks => "fblocks",
+            Self::PascalStrings => "fpascal-strings",
+            Self::MPascalStrings => "mpascal-strings",
             Self::FixedPoint => "ffixed-point",
             Self::MsExtensions => "ms-extensions",
             Self::MsCompatibility => "ms-compatibility",
@@ -1047,6 +1052,8 @@ impl Opt {
             | Self::ClangDigraphs
             | Self::RawStringLiterals
             | Self::Blocks
+            | Self::PascalStrings
+            | Self::MPascalStrings
             | Self::FixedPoint
             | Self::MsAnonymousStructs
             | Self::LateParseAttributes
@@ -1141,6 +1148,8 @@ impl Opt {
             Self::DollarsInIdentifiers => "-fdollars-in-identifiers",
             Self::RawStringLiterals => "-fraw-string-literals",
             Self::Blocks => "-fblocks",
+            Self::PascalStrings => "-fpascal-strings",
+            Self::MPascalStrings => "-mpascal-strings",
             Self::FixedPoint => "-ffixed-point",
             Self::MsExtensions => "-fms-extensions",
             Self::MsCompatibility => "-fms-compatibility",
@@ -1589,6 +1598,8 @@ const SWITCH_OPTS: &[Opt] = &[
     Opt::DollarsInIdentifiers,
     Opt::RawStringLiterals,
     Opt::Blocks,
+    Opt::PascalStrings,
+    Opt::MPascalStrings,
     Opt::FixedPoint,
     Opt::DeleteNullPointerChecks,
     Opt::SmallPic,
@@ -1782,6 +1793,7 @@ impl CompilerArgParser {
             dollars: raw.dollars_in_identifiers,
             raw_strings: raw.raw_string_literals,
             blocks: raw.blocks,
+            pascal_strings: raw.pascal_strings,
             fixed_point: raw.fixed_point,
         };
         options.microsoft = MicrosoftFlags {
@@ -2038,6 +2050,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::DollarsInIdentifiers => parsed.dollars_in_identifiers = Some(value),
                 Opt::RawStringLiterals => parsed.raw_string_literals = Some(value),
                 Opt::Blocks => parsed.blocks = Some(value),
+                Opt::PascalStrings | Opt::MPascalStrings => parsed.pascal_strings = Some(value),
                 Opt::FixedPoint => parsed.fixed_point = Some(value),
                 Opt::MsExtensions => {
                     parsed.ms_extensions = Some(value);

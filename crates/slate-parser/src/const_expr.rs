@@ -2084,6 +2084,23 @@ impl<'a> Parser<'a> {
                     pieces.push(self.tokens[index].clone().with_value(content.to_string()));
                     self.take();
                 }
+                if self.features().pascal_strings
+                    && encoding == Encoding::Plain
+                    && let Some(rest) = pieces[0].value.strip_prefix("\\p")
+                {
+                    let rest = rest.to_owned();
+                    pieces[0].value = rest;
+                    let length = pieces
+                        .iter()
+                        .map(|piece| {
+                            let chars: Vec<char> = piece.value.chars().collect();
+                            Lexer::decode_escapes(&chars, 0, chars.len()).len()
+                        })
+                        .sum::<usize>();
+                    pieces[0]
+                        .value
+                        .insert_str(0, &format!("\\{:03o}", length & 0xff));
+                }
                 let code_units = pieces
                     .iter()
                     .flat_map(|piece| {
