@@ -336,6 +336,7 @@ struct ParsedCompilerArgs {
     ms_anonymous_structs: Option<bool>,
     strict_flex_arrays: Option<u8>,
     pthread: bool,
+    force_enable_int128: bool,
     openmp: Option<bool>,
     openmp_simd: Option<bool>,
     openmp_runtime: Option<String>,
@@ -689,6 +690,7 @@ enum Opt {
     Pedantic,
     Optimize,
     Pthread,
+    ForceEnableInt128,
     OpenMp,
     OpenMpSimd,
     OpenMpRuntime,
@@ -864,6 +866,7 @@ impl std::fmt::Display for Opt {
             Self::Pedantic => "pedantic",
             Self::Optimize => "O",
             Self::Pthread => "pthread",
+            Self::ForceEnableInt128 => "fforce-enable-int128",
             Self::OpenMp => "fopenmp",
             Self::OpenMpSimd => "fopenmp-simd",
             Self::OpenMpRuntime => "fopenmp=",
@@ -1053,6 +1056,7 @@ impl Opt {
             | Self::GnuInlineAsm
             | Self::KnrFunctions
             | Self::Retpoline
+            | Self::ForceEnableInt128
             | Self::Mllvm => &[Clang],
             Self::ConformingPreprocessor
             | Self::MsvcUnsignedChar
@@ -2152,6 +2156,9 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } else if argument == "-pthread" {
             parsed.saw(Opt::Pthread, argument);
             parsed.pthread = true;
+        } else if parsed.flavor.is_clang() && argument == "-fforce-enable-int128" {
+            parsed.saw(Opt::ForceEnableInt128, argument);
+            parsed.force_enable_int128 = true;
         } else if let Some(runtime) = argument.strip_prefix("-fopenmp=") {
             parsed.saw(Opt::OpenMpRuntime, argument);
             parsed.openmp = Some(true);
@@ -2819,6 +2826,12 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 .macros
                 .insert(0, MacroOption::Define("_OPENMP_LLVM_RUNTIME".into()));
         }
+    }
+    if parsed.force_enable_int128 && !parsed.undef_predefines {
+        parsed
+            .preprocessor_inputs
+            .macros
+            .insert(0, MacroOption::Define("__SIZEOF_INT128__=16".into()));
     }
     let reentrant = match parsed.flavor {
         CompilerFlavor::Gcc => parsed.pthread || parsed.openmp_date.is_some(),
