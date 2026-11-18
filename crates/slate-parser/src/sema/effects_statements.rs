@@ -8,6 +8,7 @@ pub(super) fn normalize(
     module: &mut Module,
     next_id: u32,
     access: HashMap<BindingId, Access>,
+    arguments_reversed: bool,
 ) -> Result<(), ResolveError> {
     let effect_free = module
         .functions
@@ -16,6 +17,13 @@ pub(super) fn normalize(
         .map(|function| function.value.id)
         .collect();
     let mut hoister = Hoister::new(next_id, module.target.pointer_width, access, effect_free);
+    hoister.arguments_reversed = arguments_reversed;
+    hoister.source_ordered_builtins = module
+        .functions
+        .iter()
+        .filter(|function| function.value.name.starts_with("__builtin_stdc_"))
+        .map(|function| function.value.id)
+        .collect();
     hoister.c_nodes = std::mem::take(&mut module.c_types.nodes);
     hoister.c_bindings = std::mem::take(&mut module.c_types.bindings);
     for function in &mut module.functions {

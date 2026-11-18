@@ -430,9 +430,16 @@ impl Lowerer {
             .into_iter()
             .chain(self.types.locals.iter().map(|(id, c)| (*id, *c)))
             .collect();
+        let arguments_reversed =
+            self.types.flavor().is_gcc() && self.context.target.family.is_x86();
         match macro_keep {
-            None => super::effects_statements::normalize(&mut self.module, self.next_id, access)?,
-            Some(keep) => self.normalize_kept_expansions(keep, access)?,
+            None => super::effects_statements::normalize(
+                &mut self.module,
+                self.next_id,
+                access,
+                arguments_reversed,
+            )?,
+            Some(keep) => self.normalize_kept_expansions(keep, access, arguments_reversed)?,
         }
         super::counted_loops::annotate(&mut self.module);
         Ok(())
@@ -442,6 +449,7 @@ impl Lowerer {
         &mut self,
         keep: MacroKeep,
         access: HashMap<BindingId, Access>,
+        arguments_reversed: bool,
     ) -> Result<(), ResolveError> {
         let bodies: Vec<_> = self
             .module
@@ -451,7 +459,12 @@ impl Lowerer {
             .collect();
         let nodes = self.module.c_types.nodes.clone();
         let bindings = self.module.c_types.bindings.clone();
-        super::effects_statements::normalize(&mut self.module, self.next_id, access.clone())?;
+        super::effects_statements::normalize(
+            &mut self.module,
+            self.next_id,
+            access.clone(),
+            arguments_reversed,
+        )?;
         let mut kept = keep(&mut self.module);
         let mut rejections = std::mem::take(&mut self.module.macro_rejections);
         loop {
@@ -462,7 +475,12 @@ impl Lowerer {
             self.module.c_types.bindings = bindings.clone();
             self.module
                 .strip_macro_structure(|expansion| kept.contains(&expansion));
-            super::effects_statements::normalize(&mut self.module, self.next_id, access.clone())?;
+            super::effects_statements::normalize(
+                &mut self.module,
+                self.next_id,
+                access.clone(),
+                arguments_reversed,
+            )?;
             let survived = keep(&mut self.module);
             for (expansion, reason) in std::mem::take(&mut self.module.macro_rejections) {
                 rejections.entry(expansion).or_insert(reason);

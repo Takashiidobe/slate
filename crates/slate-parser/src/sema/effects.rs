@@ -95,6 +95,8 @@ pub(super) struct Hoister {
     next_id: u32,
     old: Vec<Value>,
     unsequenced: bool,
+    pub(super) arguments_reversed: bool,
+    pub(super) source_ordered_builtins: HashSet<BindingId>,
     pub(super) access: HashMap<BindingId, Access>,
     effect_free: HashSet<BindingId>,
     inlined: HashMap<BindingId, Value>,
@@ -113,6 +115,8 @@ impl Hoister {
             next_id,
             old: Vec::new(),
             unsequenced: false,
+            arguments_reversed: false,
+            source_ordered_builtins: HashSet::new(),
             access,
             effect_free,
             inlined: HashMap::new(),
@@ -740,18 +744,37 @@ impl Hoister {
                 group.extend(arguments.iter());
                 let conflict = super::sequencing::unsequenced(&group);
                 drop(group);
-                let (callee, lowered) = self.grouped(conflict, |this| match callee {
-                    Callee::Direct(id) => {
-                        Ok::<_, ResolveError>((Callee::Direct(id), this.sequenced(arguments, out)?))
+                let reversed = self.arguments_reversed
+                    && !matches!(&callee, Callee::Direct(id) if self.source_ordered_builtins.contains(id));
+                let (callee, lowered) = self.grouped(conflict, |this| {
+                    let mut operands = Vec::with_capacity(arguments.len() + 1);
+                    let indirect = match callee {
+                        Callee::Direct(id) => Err(id),
+                        Callee::Indirect(value) => {
+                            operands.push(*value);
+                            Ok(())
+                        }
+                    };
+                    let first = operands.len();
+                    operands.extend(arguments);
+                    if reversed {
+                        operands[first..].reverse();
                     }
-                    Callee::Indirect(value) => {
-                        let mut operands = Vec::with_capacity(arguments.len() + 1);
-                        operands.push(*value);
-                        operands.extend(arguments);
-                        let mut lowered = this.sequenced(operands, out)?;
-                        let callee = lowered.remove(0);
-                        Ok((Callee::Indirect(Box::new(callee)), lowered))
+                    let mut lowered = this.sequenced(operands, out)?;
+                    if reversed {
+                        let last = lowered.iter().rposition(|value| this.effects(value));
+                        for operand in lowered.iter_mut().take(last.unwrap_or(0)) {
+                            if this.effects(operand) {
+                                *operand = this.temporary(operand.clone(), out);
+                            }
+                        }
+                        lowered[first..].reverse();
                     }
+                    let callee = match indirect {
+                        Err(id) => Callee::Direct(id),
+                        Ok(()) => Callee::Indirect(Box::new(lowered.remove(0))),
+                    };
+                    Ok::<_, ResolveError>((callee, lowered))
                 })?;
                 ValueKind::Call {
                     callee,

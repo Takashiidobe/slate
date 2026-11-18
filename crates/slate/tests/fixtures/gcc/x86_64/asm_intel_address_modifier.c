@@ -109,15 +109,22 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i64 =
+// CHECK-NEXT:         through_register(unsafe { (core::ptr::addr_of_mut!(arr.0) as *mut i64).add(1) });
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i64 = immediate_address();
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = (address_of_last()
+// CHECK-NEXT:         == unsafe { (core::ptr::addr_of_mut!(arr.0) as *mut i64).add(3) })
+// CHECK-NEXT:         as i32;
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i64 = read_third();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ld %ld %d %ld %ld\n".as_ptr(),
 // CHECK-NEXT:             read_word(),
-// CHECK-NEXT:             read_third(),
-// CHECK-NEXT:             (address_of_last() == (core::ptr::addr_of_mut!(arr.0) as *mut i64).add(3)) as i32,
-// CHECK-NEXT:             immediate_address(),
-// CHECK-NEXT:             through_register((core::ptr::addr_of_mut!(arr.0) as *mut i64).add(1)),
+// CHECK-NEXT:             [[V_3]],
+// CHECK-NEXT:             [[V_2]],
+// CHECK-NEXT:             [[V_1]],
+// CHECK-NEXT:             [[V_0]],
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

@@ -122,7 +122,8 @@ foo (int n)
 // DEFAULT-NEXT:         return widen<i64, reason=return>(shl<i32, overflow=ub, amount_out_of_range=ub, negative_left=ub>(read<i32>(%[[VALUE_x_6]]), const<i32>(16))) [c="fixed"];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_n:[0-9]+]] n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// DEFAULT-NEXT:         return call<i32, signature=fn(i64) -> i32>(%[[VALUE_fixtoi]], call<i64, signature=fn(i64, i64) -> i64>(%[[VALUE_fixdiv]], call<i64, signature=fn(i32) -> i64>(%[[VALUE_itofix]], const<i32>(512)) [c="fixed"], call<i64, signature=fn(i32) -> i64>(%[[VALUE_itofix]], read<i32>(%[[VALUE_n]])) [c="fixed"]) [c="fixed"]);
+// DEFAULT-NEXT:         let %[[VALUE0:[0-9]+]]: i64 [synthetic] = call<i64, signature=fn(i32) -> i64>(%[[VALUE_itofix]], read<i32>(%[[VALUE_n]])) [c="fixed"] [c="fixed"];
+// DEFAULT-NEXT:         return call<i32, signature=fn(i64) -> i32>(%[[VALUE_fixtoi]], call<i64, signature=fn(i64, i64) -> i64>(%[[VALUE_fixdiv]], call<i64, signature=fn(i32) -> i64>(%[[VALUE_itofix]], const<i32>(512)) [c="fixed"], read<i64>(%[[VALUE0]]) [c="fixed"]) [c="fixed"]);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

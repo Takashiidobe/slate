@@ -373,7 +373,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", counter(1i32));
 // CHECK-NEXT:     println!("{}", grandparent(1i32));
-// CHECK-NEXT:     println!("{} {}", parity(4i32), parity(5i32));
+// CHECK-NEXT:     let [[V_3]]: i32 = parity(5i32);
+// CHECK-NEXT:     println!("{} {}", parity(4i32), [[V_3]]);
 // CHECK-NEXT:     println!("{}", aggregates());
 // CHECK-NEXT:     println!("{}", sum_vla(5i32));
 // CHECK-NEXT:     println!("{}", with_goto(4i32));

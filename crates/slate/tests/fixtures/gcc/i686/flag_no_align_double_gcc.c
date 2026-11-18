@@ -47,6 +47,10 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].l = 3i64;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u32 = offset(
+// CHECK-NEXT:         unsafe { &(*(core::ptr::addr_of_mut!(w) as *const ())) },
+// CHECK-NEXT:         core::ptr::addr_of_mut!(w.l) as *const (),
+// CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %u %u\n".as_ptr(),
@@ -56,10 +60,7 @@ int main(void) {
 // CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(w) as *const ())),
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(w.d) as *const (),
 // CHECK-NEXT:             ),
-// CHECK-NEXT:             offset(
-// CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(w) as *const ())),
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(w.l) as *const (),
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             [[V_0]],
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { printf(c"%d %g %lld\n".as_ptr(), w.c as i32, w.d, w.l) };

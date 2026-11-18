@@ -76,8 +76,11 @@ int main(void) {
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         println!("nonzero");
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{} {}", pick(2i32), pick(8i32));
-// CHECK-NEXT:     println!("{} {} {}", classify(5i32), classify(15i32), classify(35i32));
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = pick(8i32);
+// CHECK-NEXT:     println!("{} {}", pick(2i32), [[V_1]]);
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = classify(35i32);
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = classify(15i32);
+// CHECK-NEXT:     println!("{} {} {}", classify(5i32), [[V_3]], [[V_2]]);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

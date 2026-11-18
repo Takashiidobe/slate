@@ -144,13 +144,10 @@ int main(void) {
 // CHECK-NEXT:     joined = [[V_2]];
 // CHECK-NEXT:     let c: i32 = step(1i32);
 // CHECK-NEXT:     println!("{} {} {} {} {} {}", a, b, c, worker_result, created, joined);
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}",
-// CHECK-NEXT:         unsafe { *counter() },
-// CHECK-NEXT:         unsafe { (*point()).x },
-// CHECK-NEXT:         unsafe { (*point()).y },
-// CHECK-NEXT:         (unsafe { *pair_a().add(0) }) + unsafe { *pair_b().add(1) }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = (unsafe { *pair_a().add(0) }) + unsafe { *pair_b().add(1) };
+// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = unsafe { (*point()).y };
+// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = unsafe { (*point()).x };
+// CHECK-NEXT:     println!("{} {} {} {}", unsafe { *counter() }, [[V_5]], [[V_4]], [[V_3]]);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

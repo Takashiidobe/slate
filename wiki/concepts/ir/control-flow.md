@@ -260,6 +260,15 @@ Rust has no compact form for C's embedded effects, so a final sema pass
   the write, as clang does. This applies to arithmetic, comparisons, call
   arguments and indirect callees, pointer offsets and differences, aggregates,
   and intrinsics (`ir_effects_call_before_hoisted.c`).
+- `--flavor=gcc` on x86 (x86_64, i686) evaluates call arguments right to left
+  after the callee, as gcc does at every `-O` level: `pair(a(), b())` calls `b`
+  first. With more than one effectful operand, all but the last one evaluated
+  are spilled in that order. gcc on aarch64 and arm, clang, and MSVC keep left
+  to right. `__builtin_stdc_*` calls also keep source order, because gcc
+  expands them in its parser rather than emitting a call. Binary operands and
+  initializers are left to right for every flavor
+  (`gcc/linux/{x86_64,aarch64}/ir_effects_call_argument_order.c`,
+  slate `fixtures/gcc/call_argument_evaluation_order.c`).
 - `&&`, `||`, `?:` with effectful operands become `Statement::If` writing a
   per-branch result temporary (`void` operands discard). A direct call to a
   `[memory=none]`/`[memory=read]` function is not an effect, so `a && square(b)`
@@ -312,11 +321,13 @@ order to reproduce and the oracles disagree. With `i = 1`, `f(i++, i++)` where
 | clang 22   | 12     | `f(1, 2)` |
 | gcc 16     | 21     | `f(2, 1)` |
 | MSVC 19.51 | 11     | `f(1, 1)` |
-| slate      | 12     | `f(1, 2)` |
+| slate      | 12     | `f(1, 2)`; 21 under `--flavor=gcc` on x86 |
 
 - slate hoists left to right, like clang and like Rust's argument order.
-  Emulating each flavor would pin codegen accidents, not semantics; the flavor
-  mechanism is for defined meanings that differ.
+  The one per-flavor order is gcc's right-to-left call arguments on x86 (see
+  side-effect hoisting above). gcc applies that order consistently on x86, so
+  it is a rule to follow, not an accident of one build. It also decides `f(i++, i++)` there. Other
+  codegen differences are not emulated.
 - Statements committing to the arbitrary order are marked, as other UB is:
   `let %18: i32 [synthetic, unsequenced] = ...`, `write<i32, unsequenced>(..)`.
 - `sema/sequencing.rs` decides it. A location is a binding (or the object a

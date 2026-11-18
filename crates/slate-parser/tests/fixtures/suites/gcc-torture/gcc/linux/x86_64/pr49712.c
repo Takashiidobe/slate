@@ -99,8 +99,9 @@ int main() {
 // DEFAULT-NEXT:             }
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 while %[[VALUE8:[0-9]+]] ne<i32>(read<i32>(%[[VALUE_c]]), const<i32>(0))
+// DEFAULT-NEXT:                     let %[[VALUE9:[0-9]+]]: i32 [synthetic] = call<i32, signature=fn() -> i32>(%[[VALUE_bar]]);
 // DEFAULT-NEXT:                     write<i32>(deref(ptr_offset<ptr<i32>, subtract=false, element=i32, overflow=ub>(array_decay<ptr<i32>, length=Some(2)>(%[[VALUE_a]]), read<i32>(%[[VALUE_b]]))), const<i32>(0));
-// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32) -> void>(%[[VALUE_foo]], const<i32>(0), call<i32, signature=fn() -> i32>(%[[VALUE_bar]]));
+// DEFAULT-NEXT:                     call<void, signature=fn(i32, i32) -> void>(%[[VALUE_foo]], const<i32>(0), read<i32>(%[[VALUE9]]));
 // DEFAULT-NEXT:         return const<i32>(0);
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT: }
