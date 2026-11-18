@@ -254,7 +254,12 @@ Rust has no compact form for C's embedded effects, so a final sema pass
 - Postfix forms snapshot the old value in a `[synthetic]` temporary; the write
   targets the once-evaluated place. `f(i++)` always snapshots; removing unneeded
   temporaries is the analysis pass's job.
-- Calls stay values. Arguments evaluate left to right.
+- Calls stay values. Arguments evaluate left to right. When an operand hoists
+  statements, an earlier sibling that still has effects (a call) is first spilled
+  to a `[synthetic]` temporary, so `plain(p) + (g = 1)` calls `plain` before
+  the write, as clang does. This applies to arithmetic, comparisons, call
+  arguments and indirect callees, pointer offsets and differences, aggregates,
+  and intrinsics (`ir_effects_call_before_hoisted.c`).
 - `&&`, `||`, `?:` with effectful operands become `Statement::If` writing a
   per-branch result temporary (`void` operands discard). A direct call to a
   `[memory=none]`/`[memory=read]` function is not an effect, so `a && square(b)`

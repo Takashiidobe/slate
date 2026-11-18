@@ -145,6 +145,42 @@ impl Hoister {
         }
     }
 
+    fn sequenced(
+        &mut self,
+        operands: Vec<Value>,
+        out: &mut Vec<Span<Statement>>,
+    ) -> Result<Vec<Value>, ResolveError> {
+        let mut lowered: Vec<Value> = Vec::with_capacity(operands.len());
+        for operand in operands {
+            let mut hoisted = Vec::new();
+            let value = self.value(operand, &mut hoisted)?;
+            if !hoisted.is_empty() {
+                for earlier in &mut lowered {
+                    if self.effects(earlier) {
+                        let spilled = self.temporary(earlier.clone(), out);
+                        *earlier = spilled;
+                    }
+                }
+            }
+            out.append(&mut hoisted);
+            lowered.push(value);
+        }
+        Ok(lowered)
+    }
+
+    fn sequenced_pair(
+        &mut self,
+        left: Value,
+        right: Value,
+        out: &mut Vec<Span<Statement>>,
+    ) -> Result<(Value, Value), ResolveError> {
+        let mut lowered = self.sequenced(vec![left, right], out)?.into_iter();
+        match (lowered.next(), lowered.next()) {
+            (Some(left), Some(right)) => Ok((left, right)),
+            _ => Err(ResolveError::Internal("sequenced pair lost an operand")),
+        }
+    }
+
     fn inherit_c_type(&mut self, from: crate::ast::NodeId, to: crate::ast::NodeId) {
         if let Some(c) = self.c_nodes.get(&from).copied() {
             self.c_nodes.insert(to, c);
@@ -704,18 +740,18 @@ impl Hoister {
                 group.extend(arguments.iter());
                 let conflict = super::sequencing::unsequenced(&group);
                 drop(group);
-                let (callee, lowered) = self.grouped(conflict, |this| {
-                    let callee = match callee {
-                        Callee::Direct(id) => Callee::Direct(id),
-                        Callee::Indirect(value) => {
-                            Callee::Indirect(Box::new(this.value(*value, out)?))
-                        }
-                    };
-                    let lowered = arguments
-                        .into_iter()
-                        .map(|argument| this.value(argument, out))
-                        .collect::<Result<Vec<_>, _>>()?;
-                    Ok::<_, ResolveError>((callee, lowered))
+                let (callee, lowered) = self.grouped(conflict, |this| match callee {
+                    Callee::Direct(id) => {
+                        Ok::<_, ResolveError>((Callee::Direct(id), this.sequenced(arguments, out)?))
+                    }
+                    Callee::Indirect(value) => {
+                        let mut operands = Vec::with_capacity(arguments.len() + 1);
+                        operands.push(*value);
+                        operands.extend(arguments);
+                        let mut lowered = this.sequenced(operands, out)?;
+                        let callee = lowered.remove(0);
+                        Ok((Callee::Indirect(Box::new(callee)), lowered))
+                    }
                 })?;
                 ValueKind::Call {
                     callee,
@@ -731,9 +767,8 @@ impl Hoister {
                 semantics,
             } => {
                 let conflict = super::sequencing::unsequenced(&[&left, &right]);
-                let (left, right) = self.grouped(conflict, |this| {
-                    Ok::<_, ResolveError>((this.value(*left, out)?, this.value(*right, out)?))
-                })?;
+                let (left, right) =
+                    self.grouped(conflict, |this| this.sequenced_pair(*left, *right, out))?;
                 ValueKind::Arith {
                     op,
                     left: Box::new(left),
@@ -759,8 +794,7 @@ impl Hoister {
                 exceptions,
                 reason,
             } => {
-                let left = self.value(*left, out)?;
-                let right = self.value(*right, out)?;
+                let (left, right) = self.sequenced_pair(*left, *right, out)?;
                 ValueKind::Compare {
                     op,
                     left: Box::new(left),
@@ -776,8 +810,7 @@ impl Hoister {
                 element,
                 overflow,
             } => {
-                let pointer = self.value(*pointer, out)?;
-                let amount = self.value(*amount, out)?;
+                let (pointer, amount) = self.sequenced_pair(*pointer, *amount, out)?;
                 ValueKind::PointerOffset {
                     pointer: Box::new(pointer),
                     amount: Box::new(amount),
@@ -791,8 +824,7 @@ impl Hoister {
                 right,
                 element,
             } => {
-                let left = self.value(*left, out)?;
-                let right = self.value(*right, out)?;
+                let (left, right) = self.sequenced_pair(*left, *right, out)?;
                 ValueKind::PointerDifference {
                     left: Box::new(left),
                     right: Box::new(right),
@@ -831,10 +863,7 @@ impl Hoister {
             },
             ValueKind::Intrinsic { name, arguments } => ValueKind::Intrinsic {
                 name,
-                arguments: arguments
-                    .into_iter()
-                    .map(|argument| self.value(argument, out))
-                    .collect::<Result<_, _>>()?,
+                arguments: self.sequenced(arguments, out)?,
             },
             ValueKind::Convert {
                 kind,
@@ -852,17 +881,16 @@ impl Hoister {
                 reason,
             },
             ValueKind::Aggregate { members, zero_fill } => {
-                let mut lowered = Vec::new();
-                for member in members {
-                    lowered.push(AggregateMember {
-                        target: member.target,
-                        value: self.value(member.value, out)?,
-                    });
-                }
-                ValueKind::Aggregate {
-                    members: lowered,
-                    zero_fill,
-                }
+                let (targets, values): (Vec<_>, Vec<_>) = members
+                    .into_iter()
+                    .map(|member| (member.target, member.value))
+                    .unzip();
+                let members = targets
+                    .into_iter()
+                    .zip(self.sequenced(values, out)?)
+                    .map(|(target, value)| AggregateMember { target, value })
+                    .collect();
+                ValueKind::Aggregate { members, zero_fill }
             }
             ValueKind::Read {
                 place:
