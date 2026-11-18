@@ -1,7 +1,13 @@
 experimental = ["setup-scripts"]
 
+[profile.default]
+default-filter = '!(binary(project_merge) & test(=merge_filecheck))'
+
 [profile.slate]
-default-filter = 'package(slate-c2rust)'
+default-filter = 'package(slate-c2rust) & !(binary(project_merge) & test(=merge_filecheck))'
+
+[profile.merge]
+default-filter = 'package(slate-c2rust) & binary(project_merge) & test(=merge_filecheck)'
 
 [profile.parser]
 default-filter = 'package(slate-parser)'

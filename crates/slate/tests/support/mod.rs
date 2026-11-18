@@ -1420,12 +1420,32 @@ pub fn run_with_config_for_target(
     run_with_emulator(bin, config, cwd, emulator(cross))
 }
 
+fn keep_wineserver_warm() {
+    static STARTED: std::sync::Once = std::sync::Once::new();
+    STARTED.call_once(|| {
+        let quiet = |program: &str, args: &[&str]| {
+            let _ = Command::new(program)
+                .args(args)
+                .env("WINEDEBUG", "-all")
+                .stdin(Stdio::null())
+                .stdout(Stdio::null())
+                .stderr(Stdio::null())
+                .status();
+        };
+        quiet("wineserver", &["-p30"]);
+        quiet("wine", &["cmd", "/c", "exit"]);
+    });
+}
+
 fn run_with_emulator(
     bin: &Path,
     config: &RunConfig,
     cwd: &Path,
     emulator: Option<(&str, &[String])>,
 ) -> Result<Run, String> {
+    if emulator.is_some_and(|(program, _)| program == "wine") {
+        keep_wineserver_warm();
+    }
     let mut cmd = if let Some(seconds) = config.timeout_seconds {
         let mut cmd = Command::new("timeout");
         cmd.args(["--kill-after=1", &format!("{seconds}s")]);
@@ -1620,7 +1640,62 @@ pub fn fixture_dg_additional_options(path: &Path) -> Vec<String> {
     fixture_dg_directive_flags(path, "dg-additional-options")
 }
 
+fn hash_files_beside(dir: &Path, hasher: &mut std::hash::DefaultHasher) {
+    use std::hash::Hash;
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
+    let mut paths: Vec<PathBuf> = entries.flatten().map(|entry| entry.path()).collect();
+    paths.sort();
+    for path in paths {
+        if path.is_dir() {
+            hash_files_beside(&path, hasher);
+        } else if path.extension().is_none_or(|ext| ext != "c") {
+            path.hash(hasher);
+            std::fs::read(&path).unwrap_or_default().hash(hasher);
+        }
+    }
+}
+
+fn local_inputs_hash(dir: &Path) -> u64 {
+    use std::hash::Hasher;
+    static HASHES: std::sync::Mutex<BTreeMap<PathBuf, u64>> =
+        std::sync::Mutex::new(BTreeMap::new());
+    if let Some(hash) = HASHES.lock().unwrap().get(dir) {
+        return *hash;
+    }
+    let mut hasher = std::hash::DefaultHasher::new();
+    hash_files_beside(dir, &mut hasher);
+    let hash = hasher.finish();
+    HASHES.lock().unwrap().insert(dir.to_path_buf(), hash);
+    hash
+}
+
+fn translation_key(c_src: &Path, extra_args: &[String]) -> Option<String> {
+    use std::hash::{Hash, Hasher};
+    let binary = std::fs::metadata(env!("CARGO_BIN_EXE_slate")).ok()?;
+    let mut hasher = std::hash::DefaultHasher::new();
+    binary.len().hash(&mut hasher);
+    binary.modified().ok()?.hash(&mut hasher);
+    slate_parser::sysroot::root().hash(&mut hasher);
+    extra_args.hash(&mut hasher);
+    c_src.hash(&mut hasher);
+    std::fs::read(c_src).ok()?.hash(&mut hasher);
+    local_inputs_hash(c_src.parent()?).hash(&mut hasher);
+    Some(format!("{:016x}", hasher.finish()))
+}
+
 pub fn translate_slate(c_src: &Path, rs_out: &Path, extra_args: &[String]) -> Result<(), String> {
+    let key_path = PathBuf::from(format!("{}.translate-key", rs_out.display()));
+    let key = translation_key(c_src, extra_args);
+    if rs_out.is_file()
+        && key
+            .as_ref()
+            .is_some_and(|key| std::fs::read_to_string(&key_path).is_ok_and(|old| old == *key))
+    {
+        return Ok(());
+    }
+    let _ = std::fs::remove_file(&key_path);
     let o = Command::new(env!("CARGO_BIN_EXE_slate"))
         .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
         .args(["translate", "-std=c23"])
@@ -1638,6 +1713,9 @@ pub fn translate_slate(c_src: &Path, rs_out: &Path, extra_args: &[String]) -> Re
         return Err(format!("slate translate failed ({}):\n{stderr}", o.status));
     }
     write_if_changed(rs_out, &o.stdout).map_err(|e| format!("write {}: {e}", rs_out.display()))?;
+    if let Some(key) = key {
+        std::fs::write(&key_path, key).map_err(|e| format!("write {}: {e}", key_path.display()))?;
+    }
     Ok(())
 }
 

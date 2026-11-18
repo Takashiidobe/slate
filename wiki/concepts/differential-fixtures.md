@@ -229,6 +229,8 @@ directory. `// merge-sources:` adds units and `// merge-linux-args:` sets the
 first target's arguments. `// merge-second-target: <name> <triple> <flavor>`
 replaces the second target. `// merge-expect-exit:` sets the expected exit code;
 a fixture that fails to merge skips the build and comparison.
+`merge_filecheck` is not in the `slate` profile; run it with
+`cargo nextest r --release --profile merge`.
 `zlib_projection_sample` samples configurations of `~/c-corpus/zlib` and skips
 when that checkout is not configured.
 

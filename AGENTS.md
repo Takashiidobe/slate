@@ -40,9 +40,12 @@ Always test with release nextest profiles from the root:
 ```bash
 cargo nextest r --release --profile slate    # crates/slate: slate-frontend differential suites
 cargo nextest r --release --profile parser   # crates/slate-parser: FileCheck fixtures
+cargo nextest r --release --profile merge    # crates/slate: merge_filecheck (tests/fixtures.merge/)
 ```
 
-Run the profile for each crate you changed. The crate instructions describe
+Run the profile for each crate you changed, and `merge` when you touched
+`--merge` or `tests/fixtures.merge/` (the `slate` profile skips
+`merge_filecheck`). The crate instructions describe
 single-fixture runs.
 
 While working on one flavor's behavior (compiler options, for example the cl.exe
