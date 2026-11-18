@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT:     near(
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]]: usize;
-// CHECK-NEXT:             core::arch::asm!("mov {}, rsp", lateout(reg) [[T_0]]);
+// CHECK-NEXT:             core::arch::asm!("mov {0}, rsp", lateout(reg) [[T_0]]);
 // CHECK-NEXT:             [[T_0]] as u64
 // CHECK-NEXT:         },
 // CHECK-NEXT:         core::ptr::addr_of_mut!(local) as *const (),
@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-NEXT:     near(
 // CHECK-NEXT:         (unsafe {
 // CHECK-NEXT:             let [[T_0]]: usize;
-// CHECK-NEXT:             core::arch::asm!("mov {}, rsp", lateout(reg) [[T_0]]);
+// CHECK-NEXT:             core::arch::asm!("mov {0}, rsp", lateout(reg) [[T_0]]);
 // CHECK-NEXT:             [[T_0]] as *mut i8
 // CHECK-NEXT:         }) as u64,
 // CHECK-NEXT:         core::ptr::addr_of_mut!(local) as *const (),

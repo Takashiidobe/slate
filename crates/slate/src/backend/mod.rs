@@ -4,6 +4,7 @@
 //! emits formatted Rust source through [`crate::backend::format_rust`].
 
 /// Rust source emission and code-generation helpers.
+pub mod asm;
 pub mod codegen;
 pub(crate) mod engine;
 mod format;

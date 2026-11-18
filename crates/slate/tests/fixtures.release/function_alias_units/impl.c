@@ -8,11 +8,11 @@ int        weak_alias(int) __attribute__((weak, alias("target")));
 int local_identity(void) { return aliased == target; }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}core::arch::global_asm!(".globl aliased\n.set aliased, {}", sym target);
+// CHECK: {{^}}core::arch::global_asm!(".globl aliased\n.set aliased, {0}", sym target);
 // CHECK-EMPTY:
-// CHECK-NEXT: core::arch::global_asm!(".globl from_static\n.set from_static, {}", sym hidden);
+// CHECK-NEXT: core::arch::global_asm!(".globl from_static\n.set from_static, {0}", sym hidden);
 // CHECK-EMPTY:
-// CHECK-NEXT: core::arch::global_asm!(".weak weak_alias\n.set weak_alias, {}", sym target);
+// CHECK-NEXT: core::arch::global_asm!(".weak weak_alias\n.set weak_alias, {0}", sym target);
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.impl.target")]

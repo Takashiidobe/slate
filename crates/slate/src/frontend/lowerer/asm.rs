@@ -1,4 +1,9 @@
 use super::*;
+use crate::backend::asm::aarch64 as a64;
+use crate::backend::asm::arm as arm_out;
+use crate::backend::asm::{
+    Arch, AsmLine, Condition, Fragment, Modifier, Operand, Passthrough, x86,
+};
 use slate_parser::target::aarch64_isa::AArch64Feature;
 use slate_parser::target::arm;
 use slate_parser::target::isa::TargetIsa;
@@ -41,11 +46,18 @@ fn asm_options(asm: &ir::InlineAsm) -> Result<Vec<rust::AsmOption>> {
     Ok(lowered)
 }
 
+fn x86_syntax(asm: &ir::InlineAsm) -> x86::Syntax {
+    match asm.dialect {
+        Some(ir::AsmDialect::Intel) => x86::Syntax::Intel,
+        _ => x86::Syntax::Att,
+    }
+}
+
 fn register_reference(
     slot: usize,
     operand: &ir::AsmOperand,
     view: Option<ir::AsmRegisterView>,
-) -> Result<String> {
+) -> Result<Operand> {
     let modifier = match operand.selected {
         Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::KReg)) if view.is_none() => None,
         Some(ir::AsmOperandClass::Register(
@@ -54,16 +66,16 @@ fn register_reference(
             | ir::AsmRegisterClass::ZmmReg,
         )) => match view {
             None => None,
-            Some(ir::AsmRegisterView::Bits(128)) => Some('x'),
-            Some(ir::AsmRegisterView::Bits(256)) => Some('y'),
-            Some(ir::AsmRegisterView::Bits(512)) => Some('z'),
+            Some(ir::AsmRegisterView::Bits(128)) => Some(x86::Modifier::Xmm),
+            Some(ir::AsmRegisterView::Bits(256)) => Some(x86::Modifier::Ymm),
+            Some(ir::AsmRegisterView::Bits(512)) => Some(x86::Modifier::Zmm),
             Some(view) => return Err(unsupported_asm(format!("vector register view {view:?}"))),
         },
         _ => Some(register_modifier(operand, view)?),
     };
-    Ok(match modifier {
-        Some(modifier) => format!("{{{slot}:{modifier}}}"),
-        None => format!("{{{slot}}}"),
+    Ok(Operand {
+        slot,
+        modifier: modifier.map(Modifier::X86),
     })
 }
 
@@ -99,14 +111,17 @@ fn high_byte_narrowed(asm: &ir::InlineAsm) -> Option<ir::InlineAsm> {
     Some(narrowed)
 }
 
-fn register_modifier(operand: &ir::AsmOperand, view: Option<ir::AsmRegisterView>) -> Result<char> {
+fn register_modifier(
+    operand: &ir::AsmOperand,
+    view: Option<ir::AsmRegisterView>,
+) -> Result<x86::Modifier> {
     let width = match view {
         Some(ir::AsmRegisterView::HighByte) => {
             return if matches!(
                 operand.selected,
                 Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::RegAbcd))
             ) {
-                Ok('h')
+                Ok(x86::Modifier::HighByte)
             } else {
                 Err(unsupported_asm("high-byte view needs an abcd register"))
             };
@@ -114,20 +129,15 @@ fn register_modifier(operand: &ir::AsmOperand, view: Option<ir::AsmRegisterView>
         Some(ir::AsmRegisterView::Bits(width)) => width,
         None => operand.width.ok_or(Invariant::AsmOperandWidth)?,
     };
-    match width {
-        8 => Ok('l'),
-        16 => Ok('x'),
-        32 => Ok('e'),
-        64 => Ok('r'),
-        _ => Err(unsupported_asm(format!("register view width {width}"))),
-    }
+    x86::Modifier::for_width(width)
+        .ok_or_else(|| unsupported_asm(format!("register view width {width}")))
 }
 
 fn aarch64_register_modifier(
     operand: &ir::AsmOperand,
     modifier: Option<char>,
     view: Option<ir::AsmRegisterView>,
-) -> Result<char> {
+) -> Result<a64::Modifier> {
     let general = match &operand.selected {
         Some(ir::AsmOperandClass::Register(ir::AsmRegisterClass::Reg)) => true,
         Some(ir::AsmOperandClass::Explicit(register)) => register
@@ -136,14 +146,14 @@ fn aarch64_register_modifier(
         _ => false,
     };
     Ok(match (general, modifier, view) {
-        (true, _, Some(ir::AsmRegisterView::Bits(32))) => 'w',
-        (true, _, Some(ir::AsmRegisterView::Bits(64))) | (true, None, None) => 'x',
-        (false, _, Some(ir::AsmRegisterView::Bits(8))) => 'b',
-        (false, _, Some(ir::AsmRegisterView::Bits(16))) => 'h',
-        (false, _, Some(ir::AsmRegisterView::Bits(32))) => 's',
-        (false, _, Some(ir::AsmRegisterView::Bits(64))) => 'd',
-        (false, _, Some(ir::AsmRegisterView::Bits(128))) => 'q',
-        (false, None | Some('v'), None) => 'v',
+        (true, _, Some(ir::AsmRegisterView::Bits(32))) => a64::Modifier::W,
+        (true, _, Some(ir::AsmRegisterView::Bits(64))) | (true, None, None) => a64::Modifier::X,
+        (false, _, Some(ir::AsmRegisterView::Bits(8))) => a64::Modifier::B,
+        (false, _, Some(ir::AsmRegisterView::Bits(16))) => a64::Modifier::H,
+        (false, _, Some(ir::AsmRegisterView::Bits(32))) => a64::Modifier::S,
+        (false, _, Some(ir::AsmRegisterView::Bits(64))) => a64::Modifier::D,
+        (false, _, Some(ir::AsmRegisterView::Bits(128))) => a64::Modifier::Q,
+        (false, None | Some('v'), None) => a64::Modifier::V,
         _ => {
             return Err(unsupported_asm(format!(
                 "aarch64 register modifier {modifier:?} view {view:?}"
@@ -156,7 +166,7 @@ fn arm_register_modifier(
     operand: &ir::AsmOperand,
     modifier: Option<char>,
     view: Option<ir::AsmRegisterView>,
-) -> Result<Option<char>> {
+) -> Result<Option<arm_out::Modifier>> {
     let bank = match &operand.selected {
         Some(ir::AsmOperandClass::Register(class)) => class.as_str().chars().next(),
         Some(ir::AsmOperandClass::Explicit(register)) => {
@@ -166,7 +176,8 @@ fn arm_register_modifier(
     };
     match (bank, modifier, view) {
         (_, None, None) | (Some('d'), Some('P'), _) | (Some('q'), Some('q'), _) => Ok(None),
-        (Some('q'), Some(half @ ('e' | 'f')), _) => Ok(Some(half)),
+        (Some('q'), Some('e'), _) => Ok(Some(arm_out::Modifier::LowHalf)),
+        (Some('q'), Some('f'), _) => Ok(Some(arm_out::Modifier::HighHalf)),
         _ => Err(unsupported_asm(format!(
             "arm register modifier {modifier:?} view {view:?}"
         ))),
@@ -210,7 +221,7 @@ fn memory_reference(
     operand: &ir::AsmOperand,
     index: usize,
     displacement: Option<u32>,
-) -> Result<String> {
+) -> Result<Passthrough> {
     if !matches!(
         operand.kind,
         ir::AsmOperandKind::In(_)
@@ -220,25 +231,42 @@ fn memory_reference(
     ) {
         return Err(unsupported_asm("address of a non-value operand"));
     }
+    let mut reference = Passthrough::new();
     match family {
-        TargetFamily::AArch64 => return Ok(format!("[{{{index}:x}}]")),
-        TargetFamily::Arm32 => return Ok(format!("[{{{index}}}]")),
+        TargetFamily::AArch64 => {
+            reference
+                .text("[")
+                .operand(Operand::aarch64(index, a64::Modifier::X))
+                .text("]");
+            return Ok(reference);
+        }
+        TargetFamily::Arm32 => {
+            reference.text("[").operand(Operand::new(index)).text("]");
+            return Ok(reference);
+        }
         TargetFamily::X86 | TargetFamily::X86_64 => {}
     }
-    let base = format!("{{{index}:{}}}", address_modifier(family));
-    Ok(match (asm.dialect, displacement) {
-        (Some(ir::AsmDialect::Intel), None) => format!("[{base}]"),
-        (Some(ir::AsmDialect::Intel), Some(offset)) => format!("[{base}+{offset}]"),
-        (_, None) => format!("({base})"),
-        (_, Some(offset)) => format!("{offset}({base})"),
-    })
+    let base = Operand::x86(index, address_modifier(family));
+    match (asm.dialect, displacement) {
+        (Some(ir::AsmDialect::Intel), None) => reference.text("[").operand(base).text("]"),
+        (Some(ir::AsmDialect::Intel), Some(offset)) => reference
+            .text("[")
+            .operand(base)
+            .text(&format!("+{offset}]")),
+        (_, None) => reference.text("(").operand(base).text(")"),
+        (_, Some(offset)) => reference
+            .text(&format!("{offset}("))
+            .operand(base)
+            .text(")"),
+    };
+    Ok(reference)
 }
 
-fn address_modifier(family: TargetFamily) -> char {
+fn address_modifier(family: TargetFamily) -> x86::Modifier {
     if family == TargetFamily::X86 {
-        'e'
+        x86::Modifier::Dword
     } else {
-        'r'
+        x86::Modifier::Qword
     }
 }
 
@@ -269,15 +297,12 @@ enum Slot {
     GlobalSymbol(BindingId),
 }
 
-fn spill_reference(asm: &ir::InlineAsm, register: SpillRegister) -> String {
-    let name = match register {
-        SpillRegister::Stack(0) => "st".to_string(),
-        SpillRegister::Stack(position) => format!("st({position})"),
-        SpillRegister::Mmx(number) => format!("mm{number}"),
-    };
-    match asm.dialect {
-        Some(ir::AsmDialect::Intel) => name,
-        _ => format!("%{name}"),
+impl SpillRegister {
+    fn x86(self) -> x86::Reg {
+        match self {
+            Self::Stack(position) => x86::Reg::St(position as u8),
+            Self::Mmx(number) => x86::Reg::Mm(number as u8),
+        }
     }
 }
 
@@ -334,39 +359,27 @@ fn spill_instruction(
     family: TargetFamily,
     spill: &Spill,
     load: bool,
-) -> String {
-    let intel = asm.dialect == Some(ir::AsmDialect::Intel);
-    let modifier = address_modifier(family);
-    let memory = if intel {
-        let size = match spill.bytes {
-            4 => "dword",
-            8 => "qword",
-            _ => "tbyte",
-        };
-        format!("{size} ptr [{{{}:{modifier}}}]", spill.slot)
-    } else {
-        format!("({{{}:{modifier}}})", spill.slot)
+) -> AsmLine {
+    let memory = x86::Mem {
+        size: match spill.bytes {
+            4 => x86::MemSize::Dword,
+            8 => x86::MemSize::Qword,
+            _ => x86::MemSize::Tbyte,
+        },
+        base: Operand::x86(spill.slot, address_modifier(family)),
     };
-    match spill.register {
-        SpillRegister::Stack(_) => {
-            let base = if load { "fld" } else { "fstp" };
-            let suffix = match (intel, spill.bytes) {
-                (true, _) => "",
-                (_, 4) => "s",
-                (_, 8) => "l",
-                _ => "t",
-            };
-            format!("{base}{suffix} {memory}")
-        }
-        SpillRegister::Mmx(number) => {
-            let mnemonic = if spill.bytes == 4 { "movd" } else { "movq" };
-            let register = spill_reference(asm, SpillRegister::Mmx(number));
-            match (intel, load) {
-                (true, true) | (false, false) => format!("{mnemonic} {register}, {memory}"),
-                _ => format!("{mnemonic} {memory}, {register}"),
-            }
-        }
-    }
+    let register = x86::Arg::Reg(spill.register.x86());
+    let (dst, src) = if load {
+        (register, x86::Arg::Mem(memory))
+    } else {
+        (x86::Arg::Mem(memory), register)
+    };
+    x86_syntax(asm).line(match (spill.register, load) {
+        (SpillRegister::Stack(_), true) => x86::Inst::Fld(memory),
+        (SpillRegister::Stack(_), false) => x86::Inst::Fstp(memory),
+        (SpillRegister::Mmx(_), _) if spill.bytes == 4 => x86::Inst::Movd { dst, src },
+        (SpillRegister::Mmx(_), _) => x86::Inst::Movq { dst, src },
+    })
 }
 
 fn gpr_name(canonical: &str, view: Option<ir::AsmRegisterView>, width: u64) -> Option<String> {
@@ -461,8 +474,7 @@ impl<'t> AsmNames<'t> {
         self.base + position
     }
 
-    fn text(&mut self, text: &str) -> String {
-        let mut out = String::new();
+    fn text(&mut self, text: &str, out: &mut Passthrough) {
         let mut quoted = false;
         let mut rest = text;
         while let Some(c) = rest.chars().next() {
@@ -485,9 +497,11 @@ impl<'t> AsmNames<'t> {
                 match self.names.get(word).filter(|_| candidate) {
                     Some(id) => {
                         let slot = self.slot(*id);
-                        out.push_str(&format!("{{{slot}}}"));
+                        out.operand(Operand::new(slot));
                     }
-                    None => out.push_str(word),
+                    None => {
+                        out.text(word);
+                    }
                 }
                 self.previous = word.chars().last();
                 self.label = mnemonic;
@@ -501,15 +515,10 @@ impl<'t> AsmNames<'t> {
                 _ => {}
             }
             self.label = false;
-            match c {
-                '{' => out.push_str("{{"),
-                '}' => out.push_str("}}"),
-                c => out.push(c),
-            }
+            out.char(c);
             self.previous = Some(c);
             rest = &rest[c.len_utf8()..];
         }
-        out
     }
 }
 
@@ -750,8 +759,8 @@ fn symbol_reference(
     family: TargetFamily,
     operand: &ir::AsmOperand,
     modifier: Option<char>,
-    symbol_text: &str,
-) -> Result<String> {
+    symbol_reference: Fragment,
+) -> Result<Passthrough> {
     let allowed = if family == TargetFamily::Arm32 {
         matches!(modifier, None | Some('c'))
     } else {
@@ -764,21 +773,28 @@ fn symbol_reference(
     let ir::AsmOperandKind::Symbol(symbol) = &operand.kind else {
         return Err(unsupported_asm("non-symbol operand"));
     };
-    let mut reference = String::new();
-    if modifier.is_none() && asm.dialect == Some(ir::AsmDialect::Att) {
-        reference.push('$');
+    let mut reference = Passthrough::new();
+    match (modifier, asm.dialect) {
+        (Some('a'), Some(ir::AsmDialect::Intel)) => {
+            reference.text("[rip + ");
+        }
+        (None, Some(ir::AsmDialect::Att)) => {
+            reference.text("$");
+        }
+        _ => {}
     }
-    reference.push_str(symbol_text);
+    reference.fragment(symbol_reference);
     if symbol.offset > 0 {
-        reference.push_str(&format!("+{}", symbol.offset));
+        reference.text(&format!("+{}", symbol.offset));
     } else if symbol.offset < 0 {
-        reference.push_str(&symbol.offset.to_string());
+        reference.text(&symbol.offset.to_string());
     }
-    Ok(match (modifier, asm.dialect) {
-        (Some('a'), Some(ir::AsmDialect::Intel)) => format!("[rip + {reference}]"),
-        (Some('a'), _) => format!("{reference}(%rip)"),
-        _ => reference,
-    })
+    match (modifier, asm.dialect) {
+        (Some('a'), Some(ir::AsmDialect::Intel)) => reference.text("]"),
+        (Some('a'), _) => reference.text("(%rip)"),
+        _ => &mut reference,
+    };
+    Ok(reference)
 }
 
 fn asm_template(
@@ -788,17 +804,18 @@ fn asm_template(
     labels: &[usize],
     entry: Option<BindingId>,
     names: &mut AsmNames,
-) -> Result<String> {
+) -> Result<AsmTemplate> {
     let x86 = family.is_x86();
     let arm = family == TargetFamily::Arm32;
     names.statement_start = true;
     names.previous = None;
     names.x86 = x86;
     names.intel = asm.dialect == Some(ir::AsmDialect::Intel);
+    let mut template = Passthrough::new();
     if !asm.has_sections() {
-        return Ok(names.text(&asm.template));
+        names.text(&asm.template, &mut template);
+        return Ok(AsmTemplate::new().with(template));
     }
-    let mut template = String::new();
     let mut used = vec![false; asm.operands.len()];
     let mut used_labels = vec![false; labels.len()];
     let pieces = numeric_local_labels(&asm.pieces, entry)?;
@@ -808,8 +825,10 @@ fn asm_template(
             names.previous = matches!(piece, ir::AsmPiece::Percent).then_some('%');
         }
         match piece {
-            ir::AsmPiece::Text(text) => template.push_str(&names.text(text)),
-            ir::AsmPiece::Percent => template.push('%'),
+            ir::AsmPiece::Text(text) => names.text(text, &mut template),
+            ir::AsmPiece::Percent => {
+                template.char('%');
+            }
             ir::AsmPiece::Operand {
                 index,
                 modifier,
@@ -827,7 +846,7 @@ fn asm_template(
                                 "flags operand modifier {modifier:?}"
                             )));
                         }
-                        template.push_str(&format!("{{{reference}:e}}"));
+                        template.operand(Operand::x86(reference, x86::Modifier::Dword));
                         continue;
                     }
                     Slot::Register(canonical) if arm => {
@@ -836,19 +855,16 @@ fn asm_template(
                                 "arm explicit register modifier {modifier:?}"
                             )));
                         }
-                        template.push_str(canonical);
+                        template.text(canonical);
                         continue;
                     }
                     Slot::Register(canonical) if !x86 => {
                         let prefix = aarch64_register_modifier(operand, *modifier, *view)?;
                         match (canonical, prefix) {
-                            ("sp", 'w') => template.push_str("wsp"),
-                            ("sp", _) => template.push_str("sp"),
-                            _ => {
-                                template.push(prefix);
-                                template.push_str(&canonical[1..]);
-                            }
-                        }
+                            ("sp", a64::Modifier::W) => template.text("wsp"),
+                            ("sp", _) => template.text("sp"),
+                            _ => template.char(prefix.letter()).text(&canonical[1..]),
+                        };
                         continue;
                     }
                     Slot::Register(canonical) if *modifier == Some('a') && view.is_none() => {
@@ -856,7 +872,7 @@ fn asm_template(
                         let name = gpr_name(canonical, None, bits).ok_or_else(|| {
                             unsupported_asm(format!("address register {canonical}"))
                         })?;
-                        template.push_str(&match asm.dialect {
+                        template.text(&match asm.dialect {
                             Some(ir::AsmDialect::Intel) => format!("[{name}]"),
                             _ => format!("(%{name})"),
                         });
@@ -864,21 +880,20 @@ fn asm_template(
                     }
                     Slot::Register(canonical) => {
                         let width = operand.width.ok_or(Invariant::AsmOperandWidth)?;
-                        template.push_str(&explicit_reference(
+                        template.text(&explicit_reference(
                             asm, width, canonical, *modifier, *view,
                         )?);
                         continue;
                     }
                     Slot::PairLow(canonical) => {
-                        template
-                            .push_str(&explicit_reference(asm, 64, canonical, *modifier, *view)?);
+                        template.text(&explicit_reference(asm, 64, canonical, *modifier, *view)?);
                         continue;
                     }
                     Slot::RegisterPair(..) if x86 => {
                         return Err(unsupported_asm("register pair operand in x86 template"));
                     }
                     Slot::RegisterPair(low, high) => {
-                        template.push_str(match (modifier, view) {
+                        template.text(match (modifier, view) {
                             (None | Some('Q'), None) => low,
                             (Some('R' | 'H'), None) => high,
                             _ => {
@@ -895,7 +910,7 @@ fn asm_template(
                                 "spilled register modifier {modifier:?}"
                             )));
                         }
-                        template.push_str(&spill_reference(asm, register));
+                        template.text(&register.x86().spelling(x86_syntax(asm)));
                         continue;
                     }
                     Slot::MemorySymbol(slot, offset) => {
@@ -913,27 +928,29 @@ fn asm_template(
                             0 => String::new(),
                             offset => format!("{offset:+}"),
                         };
-                        template.push_str(&match asm.dialect {
-                            Some(ir::AsmDialect::Intel) => format!(
-                                "{} ptr [rip + {{{slot}}}{displacement}]",
-                                intel_size(operand)?
-                            ),
-                            _ => format!("{{{slot}}}{displacement}(%rip)"),
-                        });
+                        match asm.dialect {
+                            Some(ir::AsmDialect::Intel) => template
+                                .text(&format!("{} ptr [rip + ", intel_size(operand)?))
+                                .operand(Operand::new(slot))
+                                .text(&format!("{displacement}]")),
+                            _ => template
+                                .operand(Operand::new(slot))
+                                .text(&format!("{displacement}(%rip)")),
+                        };
                         continue;
                     }
                     Slot::GlobalSymbol(id) => {
-                        template.push_str(&symbol_reference(
+                        template.append(symbol_reference(
                             asm,
                             family,
                             operand,
                             *modifier,
-                            &names.global_symbols[&id],
+                            Fragment::Text(names.global_symbols[&id].clone()),
                         )?);
                         continue;
                     }
                     Slot::Zero => {
-                        template.push_str(match modifier {
+                        template.text(match modifier {
                             Some('x') => "xzr",
                             Some('w') => "wzr",
                             None | Some('c' | 'P' | 'p' | 'n') => "0",
@@ -949,11 +966,11 @@ fn asm_template(
                 match &operand.selected {
                     Some(ir::AsmOperandClass::Register(_)) if *modifier == Some('a') => {
                         used[*index] = true;
-                        template.push_str(&memory_reference(asm, family, operand, slot, None)?);
+                        template.append(memory_reference(asm, family, operand, slot, None)?);
                     }
                     Some(ir::AsmOperandClass::Memory) if arm && *modifier == Some('m') => {
                         used[*index] = true;
-                        template.push_str(&format!("{{{slot}}}"));
+                        template.operand(Operand::new(slot));
                     }
                     Some(ir::AsmOperandClass::Memory) => {
                         let displacement = match modifier {
@@ -968,10 +985,9 @@ fn asm_template(
                         };
                         used[*index] = true;
                         if asm.dialect == Some(ir::AsmDialect::Intel) {
-                            template.push_str(intel_size(operand)?);
-                            template.push_str(" ptr ");
+                            template.text(intel_size(operand)?).text(" ptr ");
                         }
-                        template.push_str(&memory_reference(
+                        template.append(memory_reference(
                             asm,
                             family,
                             operand,
@@ -981,24 +997,22 @@ fn asm_template(
                     }
                     Some(ir::AsmOperandClass::Register(_)) if arm => {
                         used[*index] = true;
-                        template.push_str(
-                            &match arm_register_modifier(operand, *modifier, *view)? {
-                                Some(half) => format!("{{{slot}:{half}}}"),
-                                None => format!("{{{slot}}}"),
-                            },
-                        );
+                        template.operand(match arm_register_modifier(operand, *modifier, *view)? {
+                            Some(half) => Operand::arm(slot, half),
+                            None => Operand::new(slot),
+                        });
                     }
                     Some(ir::AsmOperandClass::Register(_)) if !x86 => {
                         used[*index] = true;
                         let modifier = aarch64_register_modifier(operand, *modifier, *view)?;
-                        template.push_str(&format!("{{{slot}:{modifier}}}"));
+                        template.operand(Operand::aarch64(slot, modifier));
                     }
                     Some(ir::AsmOperandClass::Register(_)) => {
                         if modifier.is_some() && view.is_none() {
                             return Err(unsupported_asm(format!("operand modifier {modifier:?}")));
                         }
                         used[*index] = true;
-                        template.push_str(&register_reference(slot, operand, *view)?);
+                        template.operand(register_reference(slot, operand, *view)?);
                     }
                     Some(ir::AsmOperandClass::Immediate) => match modifier {
                         Some(modifier @ ('B' | 'L')) if arm => {
@@ -1008,7 +1022,7 @@ fn asm_template(
                             } else {
                                 i64::from(value) & 0xffff
                             };
-                            template.push_str(&printed.to_string());
+                            template.text(&printed.to_string());
                         }
                         Some('P' | 'p') if arm => {
                             return Err(unsupported_asm(format!(
@@ -1017,21 +1031,23 @@ fn asm_template(
                         }
                         Some('a') => {
                             used[*index] = true;
-                            template.push_str(&match asm.dialect {
-                                Some(ir::AsmDialect::Intel) => format!("[{{{slot}}}]"),
-                                _ if !x86 => format!("#{{{slot}}}"),
-                                _ => format!("{{{slot}}}"),
-                            });
+                            match asm.dialect {
+                                Some(ir::AsmDialect::Intel) => {
+                                    template.text("[").operand(Operand::new(slot)).text("]")
+                                }
+                                _ if !x86 => template.text("#").operand(Operand::new(slot)),
+                                _ => template.operand(Operand::new(slot)),
+                            };
                         }
                         None | Some('c' | 'P' | 'p') => {
                             used[*index] = true;
                             if modifier.is_none() && asm.dialect == Some(ir::AsmDialect::Att) {
-                                template.push('$');
+                                template.text("$");
                             }
                             if modifier.is_none() && arm {
-                                template.push('#');
+                                template.text("#");
                             }
-                            template.push_str(&format!("{{{slot}}}"));
+                            template.operand(Operand::new(slot));
                         }
                         Some('n') => {
                             let ir::AsmOperandKind::In(value) = &operand.kind else {
@@ -1044,12 +1060,10 @@ fn asm_template(
                                 }
                                 _ => return Err(unsupported_asm("negated non-integer constant")),
                             };
-                            if let Some(positive) = number.strip_prefix('-') {
-                                template.push_str(positive);
-                            } else {
-                                template.push('-');
-                                template.push_str(&number);
-                            }
+                            match number.strip_prefix('-') {
+                                Some(positive) => template.text(positive),
+                                None => template.text("-").text(&number),
+                            };
                         }
                         _ => {
                             return Err(unsupported_asm(format!(
@@ -1058,19 +1072,19 @@ fn asm_template(
                         }
                     },
                     Some(ir::AsmOperandClass::Symbol) => {
-                        template.push_str(&symbol_reference(
+                        template.append(symbol_reference(
                             asm,
                             family,
                             operand,
                             *modifier,
-                            &format!("{{{slot}}}"),
+                            Fragment::Operand(Operand::new(slot)),
                         )?);
                         used[*index] = true;
                     }
                     Some(ir::AsmOperandClass::Flags(_))
                         if !x86 && !arm && *modifier == Some('w') =>
                     {
-                        template.push_str("nzcv");
+                        template.text("nzcv");
                     }
                     _ => {
                         return Err(unsupported_asm(format!(
@@ -1085,7 +1099,7 @@ fn asm_template(
                     .get(*index)
                     .ok_or_else(|| unsupported_asm(format!("label operand {index}")))?;
                 used_labels[*index] = true;
-                template.push_str(&format!("{{{slot}}}"));
+                template.operand(Operand::new(*slot));
             }
             ir::AsmPiece::Address {
                 operand,
@@ -1100,30 +1114,30 @@ fn asm_template(
                 };
                 used[*operand] = true;
                 if let Some(size) = size {
-                    template.push_str(&format!("{size} ptr "));
+                    template.text(&format!("{size} ptr "));
                 }
-                template.push_str(&format!("[{{{slot}}}"));
+                template.text("[").operand(Operand::new(slot));
                 if let Some(base) = base {
-                    template.push_str(&format!("+{base}"));
+                    template.text(&format!("+{base}"));
                 }
                 if let Some((index, scale)) = index {
-                    template.push_str(&format!("+{index}*{scale}"));
+                    template.text(&format!("+{index}*{scale}"));
                 }
                 if *displacement != 0 {
-                    template.push_str(&format!("{displacement:+}"));
+                    template.text(&format!("{displacement:+}"));
                 }
-                template.push(']');
+                template.text("]");
             }
             piece => return Err(unsupported_asm(format!("template piece {piece}"))),
         }
     }
-    let comment = match family {
-        TargetFamily::X86 | TargetFamily::X86_64 => "#",
-        TargetFamily::AArch64 => "//",
-        TargetFamily::Arm32 => "@",
-    };
+    let arch = Arch::of(family);
+    let mut lines = AsmTemplate::new().with(template);
     for (slot, _) in labels.iter().zip(used_labels).filter(|(_, used)| !used) {
-        template.push_str(&format!("\n{comment} {{{slot}}}"));
+        lines.push(AsmLine::Mention {
+            arch,
+            operand: Operand::new(*slot),
+        });
     }
     for (index, used) in used.into_iter().enumerate() {
         if let (
@@ -1133,37 +1147,92 @@ fn asm_template(
         {
             let operand = &asm.operands[index];
             if let Some(ir::AsmOperandClass::Flags(condition)) = operand.selected {
-                template.push_str(&match family {
+                let condition = Condition(condition);
+                match family {
                     TargetFamily::X86 | TargetFamily::X86_64 => {
-                        format!("\nset{condition} {{{slot}}}")
+                        lines.push(x86_syntax(asm).line(x86::Inst::Set {
+                            condition,
+                            dst: Operand::new(slot),
+                        }));
                     }
-                    TargetFamily::AArch64 => format!("\ncset {{{slot}:w}}, {condition}"),
+                    TargetFamily::AArch64 => {
+                        lines.push(a64::Inst::Cset {
+                            dst: Operand::aarch64(slot, a64::Modifier::W),
+                            condition,
+                        });
+                    }
                     TargetFamily::Arm32 => {
-                        format!("\nmov {{{slot}}}, #0\nmov{condition} {{{slot}}}, #1")
+                        lines
+                            .push(arm_out::Inst::mov(Operand::new(slot), arm_out::Arg::Imm(0)))
+                            .push(arm_out::Inst::mov_if(
+                                condition,
+                                Operand::new(slot),
+                                arm_out::Arg::Imm(1),
+                            ));
                     }
-                });
+                }
                 continue;
             }
-            let reference = match operand.selected {
-                Some(ir::AsmOperandClass::Register(_)) if arm => format!("{{{slot}}}"),
+            let operand = match operand.selected {
+                Some(ir::AsmOperandClass::Register(_)) if arm => Operand::new(slot),
                 Some(ir::AsmOperandClass::Register(_)) if !x86 => {
-                    let modifier = aarch64_register_modifier(operand, None, None)?;
-                    format!("{{{slot}:{modifier}}}")
+                    Operand::aarch64(slot, aarch64_register_modifier(operand, None, None)?)
                 }
                 Some(ir::AsmOperandClass::Register(_)) => register_reference(slot, operand, None)?,
                 Some(
                     ir::AsmOperandClass::Immediate
                     | ir::AsmOperandClass::Symbol
                     | ir::AsmOperandClass::Memory,
-                ) => {
-                    format!("{{{slot}}}")
-                }
+                ) => Operand::new(slot),
                 _ => return Err(unsupported_asm(format!("unused operand {index}"))),
             };
-            template.push_str(&format!("\n{comment} {reference}"));
+            lines.push(AsmLine::Mention { arch, operand });
         }
     }
-    Ok(template)
+    Ok(lines)
+}
+
+fn reserved_move(
+    asm: &ir::InlineAsm,
+    family: TargetFamily,
+    register: &str,
+    slot: usize,
+    to_register: bool,
+) -> Result<AsmLine> {
+    let unsupported = || unsupported_asm(format!("reserved register {register}"));
+    Ok(match family {
+        TargetFamily::Arm32 => {
+            let register = arm_out::Reg::from_canonical(register).ok_or_else(unsupported)?;
+            let scratch = Operand::new(slot);
+            match to_register {
+                true => arm_out::Inst::mov(register, scratch),
+                false => arm_out::Inst::mov(scratch, register),
+            }
+            .into()
+        }
+        TargetFamily::AArch64 => {
+            let register = a64::Reg::from_canonical(register).ok_or_else(unsupported)?;
+            let scratch = Operand::aarch64(slot, a64::Modifier::X);
+            match to_register {
+                true => a64::Inst::mov(register, scratch),
+                false => a64::Inst::mov(scratch, register),
+            }
+            .into()
+        }
+        TargetFamily::X86 | TargetFamily::X86_64 => {
+            let (width, modifier) = match family {
+                TargetFamily::X86 => (x86::Width::Dword, x86::Modifier::Dword),
+                _ => (x86::Width::Qword, x86::Modifier::Qword),
+            };
+            let gpr = x86::Gpr::from_canonical(register).ok_or_else(unsupported)?;
+            let register = x86::Reg::Gpr(gpr, width);
+            let scratch = Operand::x86(slot, modifier);
+            x86_syntax(asm).line(match to_register {
+                true => x86::Inst::mov(register, scratch),
+                false => x86::Inst::mov(scratch, register),
+            })
+        }
+    })
 }
 
 impl FunctionLowerer<'_, '_> {
@@ -1613,7 +1682,7 @@ impl FunctionLowerer<'_, '_> {
         kind: rust::AsmKind,
     ) -> Result<rust::InlineAsm> {
         let family = self.tables.target.family;
-        let mut templates = Vec::new();
+        let mut template = AsmTemplate::new();
         let mut operands = Vec::new();
         let mut dialects = Vec::new();
         let mut asm_slots = Vec::new();
@@ -1657,10 +1726,10 @@ impl FunctionLowerer<'_, '_> {
             operands.len(),
         );
         for (asm, slots) in asms.iter().zip(&asm_slots) {
-            let template = asm_template(asm, family, slots, &[], None, &mut names)?;
+            let lowered = asm_template(asm, family, slots, &[], None, &mut names)?;
             self.dependencies.named_asm_labels |=
-                kind != rust::AsmKind::Global && defines_named_label(&template);
-            templates.push(template);
+                kind != rust::AsmKind::Global && defines_named_label(&lowered.to_string());
+            template.append(lowered);
         }
         for id in names.used {
             operands.push(rust::AsmOperand::Sym(self.asm_symbol(&ir::AsmSymbol {
@@ -1677,7 +1746,7 @@ impl FunctionLowerer<'_, '_> {
             }
         };
         Ok(rust::InlineAsm {
-            template: templates.join("\n"),
+            template,
             operands,
             options,
             kind,
@@ -2796,7 +2865,7 @@ impl FunctionLowerer<'_, '_> {
             operands.len(),
         );
         let mut template = asm_template(asm, family, &slots, &label_slots, entry, &mut names)?;
-        self.dependencies.named_asm_labels |= defines_named_label(&template);
+        self.dependencies.named_asm_labels |= defines_named_label(&template.to_string());
         for id in names.used {
             operands.push(rust::AsmOperand::Sym(self.asm_symbol(&ir::AsmSymbol {
                 binding: id,
@@ -2804,22 +2873,16 @@ impl FunctionLowerer<'_, '_> {
             })?));
         }
         if !loads.is_empty() || !stores.is_empty() {
-            let pop = match asm.dialect {
-                Some(ir::AsmDialect::Intel) => "fstp st(0)",
-                _ => "fstp %st(0)",
-            };
-            template = loads
-                .iter()
-                .map(|spill| spill_instruction(asm, family, spill, true))
-                .chain(std::iter::once(template))
-                .chain(
-                    stores
-                        .iter()
-                        .map(|spill| spill_instruction(asm, family, spill, false)),
-                )
-                .chain(std::iter::repeat_n(pop.to_string(), pops))
-                .collect::<Vec<_>>()
-                .join("\n");
+            let pop = x86_syntax(asm).line(x86::Inst::FstpSt(0));
+            template.wrap(
+                loads
+                    .iter()
+                    .map(|spill| spill_instruction(asm, family, spill, true)),
+                stores
+                    .iter()
+                    .map(|spill| spill_instruction(asm, family, spill, false))
+                    .chain(std::iter::repeat_n(pop, pops)),
+            );
         }
         if !stores.is_empty() {
             options.retain(|option| {
@@ -2836,58 +2899,30 @@ impl FunctionLowerer<'_, '_> {
             }
         }
         for slot in flags_inputs.into_iter().rev() {
-            template = format!("msr nzcv, {{{slot}:x}}\n{template}");
+            template.prepend(a64::Inst::MsrNzcv(Operand::aarch64(slot, a64::Modifier::X)));
         }
         if let Some((slot, swap)) = saved_rbx {
-            let (save, restore) = match (asm.dialect, swap) {
-                (Some(ir::AsmDialect::Intel), false) => (
-                    format!("mov {{{slot}:r}}, rbx"),
-                    format!("mov rbx, {{{slot}:r}}"),
-                ),
-                (Some(ir::AsmDialect::Intel), _) => {
-                    let swap = format!("xchg {{{slot}:r}}, rbx");
-                    (swap.clone(), swap)
-                }
-                (_, false) => (
-                    format!("mov %rbx, {{{slot}:r}}"),
-                    format!("mov {{{slot}:r}}, %rbx"),
-                ),
-                _ => {
-                    let swap = format!("xchg {{{slot}:r}}, %rbx");
-                    (swap.clone(), swap)
-                }
+            let scratch = Operand::x86(slot, x86::Modifier::Qword);
+            let rbx = x86::Reg::Gpr(x86::Gpr::Bx, x86::Width::Qword);
+            let (save, restore) = match swap {
+                true => (x86::Inst::xchg(scratch, rbx), x86::Inst::xchg(scratch, rbx)),
+                false => (x86::Inst::mov(scratch, rbx), x86::Inst::mov(rbx, scratch)),
             };
-            template = format!("{save}\n{template}\n{restore}");
+            let syntax = x86_syntax(asm);
+            template.wrap([syntax.line(save)], [syntax.line(restore)]);
         }
         for (register, scratch, operand) in saved_reserved {
-            let (name, modifier) = match (x86, x86_32) {
-                _ if arm => (register.to_string(), ""),
-                (false, _) => (register.to_string(), ":x"),
-                (true, false) => (format!("r{register}"), ":r"),
-                (true, true) => (format!("e{register}"), ":e"),
-            };
-            let intel = !x86 || asm.dialect == Some(ir::AsmDialect::Intel);
-            let sigil = if x86 && !intel { "%" } else { "" };
-            let mov = |to_register: bool, slot: usize| {
-                let (register, slot) = (format!("{sigil}{name}"), format!("{{{slot}{modifier}}}"));
-                match (to_register, intel) {
-                    (true, true) => format!("mov {register}, {slot}"),
-                    (false, true) => format!("mov {slot}, {register}"),
-                    (true, false) => format!("mov {slot}, {register}"),
-                    (false, false) => format!("mov {register}, {slot}"),
-                }
-            };
-            let mut save = mov(false, scratch);
-            let mut restore = mov(true, scratch);
+            let mut save = vec![reserved_move(asm, family, register, scratch, false)?];
+            let mut restore = vec![reserved_move(asm, family, register, scratch, true)?];
             if let Some((slot, input, output)) = operand {
                 if input {
-                    save.push_str(&format!("\n{}", mov(true, slot)));
+                    save.push(reserved_move(asm, family, register, slot, true)?);
                 }
                 if output {
-                    restore = format!("{}\n{restore}", mov(false, slot));
+                    restore.insert(0, reserved_move(asm, family, register, slot, false)?);
                 }
             }
-            template = format!("{save}\n{template}\n{restore}");
+            template.wrap(save, restore);
         }
         operands.extend(explicit);
         self.dependencies.asm_unwind |= options.contains(&rust::AsmOption::MayUnwind);

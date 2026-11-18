@@ -906,7 +906,7 @@ impl AsmOperand {
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct InlineAsm {
-    pub template: String,
+    pub template: crate::backend::asm::AsmTemplate,
     pub operands: Vec<AsmOperand>,
     pub options: Vec<AsmOption>,
     pub kind: AsmKind,

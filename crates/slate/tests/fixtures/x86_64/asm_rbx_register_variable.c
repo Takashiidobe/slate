@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xchg {1:r}, %rbx\naddl %ebx, {0:e}\nxchg {1:r}, %rbx", inlateout(reg) a as
+// CHECK-NEXT:             "xchg %rbx, {1:r}\naddl %ebx, {0:e}\nxchg %rbx, {1:r}", inlateout(reg) a as
 // CHECK-NEXT:             u32 => [[T_0]], inout(reg) b as u32 => _, options(pure, nomem, nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );
@@ -51,7 +51,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xchg {0:r}, %rbx\naddl %ebx, %ebx\nxchg {0:r}, %rbx", inout(reg) x as u32 =>
+// CHECK-NEXT:             "xchg %rbx, {0:r}\naddl %ebx, %ebx\nxchg %rbx, {0:r}", inout(reg) x as u32 =>
 // CHECK-NEXT:             [[T_0]], options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };

@@ -1,4 +1,5 @@
 use super::long_double;
+use crate::backend::asm::{self as asm_out, AsmTemplate, Directive};
 use crate::backend::rust_ast::{self as rust, Attr, BinOp, Expr, FnDef, FnParam, Item, Prim, Stmt};
 use crate::function_identity::CallBinding;
 use crate::function_identity::{FunctionIdentity, classify_function};
@@ -87,7 +88,7 @@ struct Tables<'m> {
     constexprs: HashMap<BindingId, &'m ir::Value>,
     asm_names: HashMap<String, BindingId>,
     asm_global_symbols: HashMap<BindingId, String>,
-    register_globals: HashMap<BindingId, &'static str>,
+    register_globals: HashMap<BindingId, RegisterGlobal>,
     over_aligned: HashMap<BindingId, AlignWrapper>,
     flexible_globals: HashMap<BindingId, String>,
     address_images: HashSet<BindingId>,
@@ -473,18 +474,31 @@ impl<'m> ModuleLowerer<'m> {
                 name: function.name.clone(),
                 detail: format!("ifunc resolver `{resolver}` is not defined here"),
             })?;
-        let hidden = match (&function.linkage, &function.symbol.visibility) {
-            (ir::Linkage::External, Some(ir::Visibility::Hidden | ir::Visibility::Internal)) => {
-                format!("\n.hidden {symbol}")
-            }
-            (ir::Linkage::External, _) => String::new(),
-            _ => format!("\n.hidden {symbol}"),
-        };
+        let hidden = !matches!(
+            (&function.linkage, &function.symbol.visibility),
+            (
+                ir::Linkage::External,
+                None | Some(ir::Visibility::Default | ir::Visibility::Protected)
+            )
+        );
+        let mut template = AsmTemplate::new().with(Directive::Globl(symbol.as_str().into()));
+        if hidden {
+            template.push(Directive::Hidden(symbol.as_str().into()));
+        }
+        template
+            .push(Directive::Type {
+                symbol: symbol.as_str().into(),
+                ty: asm_out::directive::SymbolType::IndirectFunction,
+            })
+            .push(Directive::Set {
+                symbol: symbol.as_str().into(),
+                value: asm_out::Operand::new(0).into(),
+            });
         self.items.push(Item::GlobalAsm(rust::InlineAsm {
-            template: format!(
-                ".globl {symbol}{hidden}\n.type {symbol}, @gnu_indirect_function\n.set {symbol}, {{}}"
-            ),
-            operands: vec![rust::AsmOperand::Sym(Expr::Var(resolver.rust.as_str().into()))],
+            template,
+            operands: vec![rust::AsmOperand::Sym(Expr::Var(
+                resolver.rust.as_str().into(),
+            ))],
             options: Vec::new(),
             kind: rust::AsmKind::Global,
         }));
@@ -535,16 +549,26 @@ impl<'m> ModuleLowerer<'m> {
             .asm_name
             .clone()
             .unwrap_or_else(|| name.to_owned());
-        let binding = if attributes.weak { "weak" } else { "globl" };
-        let visibility = match attributes.visibility {
+        let mut template = AsmTemplate::new().with(if attributes.weak {
+            Directive::Weak(symbol.as_str().into())
+        } else {
+            Directive::Globl(symbol.as_str().into())
+        });
+        match attributes.visibility {
             Some(ir::Visibility::Hidden | ir::Visibility::Internal) => {
-                format!("\n.hidden {symbol}")
+                template.push(Directive::Hidden(symbol.as_str().into()));
             }
-            Some(ir::Visibility::Protected) => format!("\n.protected {symbol}"),
-            Some(ir::Visibility::Default) | None => String::new(),
-        };
+            Some(ir::Visibility::Protected) => {
+                template.push(Directive::Protected(symbol.as_str().into()));
+            }
+            Some(ir::Visibility::Default) | None => {}
+        }
+        template.push(Directive::Set {
+            symbol: symbol.into(),
+            value: asm_out::Operand::new(0).into(),
+        });
         self.items.push(Item::GlobalAsm(rust::InlineAsm {
-            template: format!(".{binding} {symbol}{visibility}\n.set {symbol}, {{}}"),
+            template,
             operands: vec![rust::AsmOperand::Sym(Expr::Var(target.into()))],
             options: Vec::new(),
             kind: rust::AsmKind::Global,
@@ -1076,7 +1100,8 @@ impl<'m> ModuleLowerer<'m> {
                                 ty: ty.clone(),
                             },
                             Item::GlobalAsm(rust::InlineAsm {
-                                template: ".weak {}".into(),
+                                template: AsmTemplate::new()
+                                    .with(Directive::Weak(asm_out::Operand::new(0).into())),
                                 operands: vec![rust::AsmOperand::Sym(Expr::Var(
                                     alias.as_str().into(),
                                 ))],
@@ -1195,7 +1220,9 @@ impl<'m> ModuleLowerer<'m> {
                 .map(|option| format!(" {option}"))
                 .collect();
             self.items.push(Item::GlobalAsm(rust::InlineAsm {
-                template: format!(".section .drectve,\"yni\"\n.ascii {directives:?}"),
+                template: AsmTemplate::new()
+                    .with(Directive::Section(asm_out::directive::Section::Drectve))
+                    .with(Directive::Ascii(directives)),
                 operands: Vec::new(),
                 options: Vec::new(),
                 kind: rust::AsmKind::Global,

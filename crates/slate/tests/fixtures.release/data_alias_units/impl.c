@@ -21,11 +21,11 @@ void emit_alias_operand_refs(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut table: [i32; 3] = [10, 20, 30];
 // CHECK-EMPTY:
-// CHECK-NEXT: core::arch::global_asm!(".globl crypto_sbox\n.set crypto_sbox, {}", sym sbox);
+// CHECK-NEXT: core::arch::global_asm!(".globl crypto_sbox\n.set crypto_sbox, {0}", sym sbox);
 // CHECK-EMPTY:
-// CHECK-NEXT: core::arch::global_asm!(".globl table_alias\n.set table_alias, {}", sym table);
+// CHECK-NEXT: core::arch::global_asm!(".globl table_alias\n.set table_alias, {0}", sym table);
 // CHECK-EMPTY:
-// CHECK-NEXT: core::arch::global_asm!(".weak weak_table\n.set weak_table, {}", sym table);
+// CHECK-NEXT: core::arch::global_asm!(".weak weak_table\n.set weak_table, {0}", sym table);
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // CHECK-NEXT:     ".section .data.alias_refs,\"aw\"\n.balign 8\n.globl alias_refs\nalias_refs:\n.quad crypto_sbox\n.quad table_alias\n.previous",

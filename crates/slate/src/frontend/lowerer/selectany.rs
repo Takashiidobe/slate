@@ -1,10 +1,10 @@
 use super::*;
+use asm_out::directive::{ComdatKind, DataValue, DataWidth, Section};
 use slate_parser::target_info::{TargetFamily, TargetOs};
-use std::fmt::Write as _;
 
 #[derive(Default)]
 struct ComdatData {
-    directives: String,
+    directives: Vec<Directive>,
     operands: Vec<rust::AsmOperand>,
     cursor: u64,
 }
@@ -15,30 +15,23 @@ impl ComdatData {
             return None;
         }
         if offset > self.cursor {
-            let _ = writeln!(self.directives, ".zero {}", offset - self.cursor);
+            self.directives.push(Directive::Zero(offset - self.cursor));
             self.cursor = offset;
         }
         Some(())
     }
 
     fn scalar(&mut self, offset: u64, size: u64, value: ScalarData) -> Option<()> {
-        let directive = match size {
-            1 => ".byte",
-            2 => ".short",
-            4 => ".long",
-            8 => ".quad",
-            _ => return None,
-        };
+        let width = DataWidth::of_bytes(size)?;
         self.seek(offset)?;
-        match value {
-            ScalarData::Literal(literal) => {
-                let _ = writeln!(self.directives, "{directive} {literal}");
-            }
+        let value = match value {
+            ScalarData::Literal(literal) => DataValue::Literal(literal),
             ScalarData::Const(expr) => {
-                let _ = writeln!(self.directives, "{directive} {{}}");
                 self.operands.push(rust::AsmOperand::Const(expr));
+                DataValue::Operand(asm_out::Operand::new(self.operands.len() - 1))
             }
-        }
+        };
+        self.directives.push(Directive::Data { width, value });
         self.cursor = offset + size;
         Some(())
     }
@@ -98,21 +91,28 @@ impl FunctionLowerer<'_, '_> {
             None if tables.target.family == TargetFamily::X86 => format!("_{}", variable.name),
             None => variable.name.clone(),
         };
-        let (section, flags) = if variable.is_const {
-            (".rdata", "dr")
+        let kind = if variable.is_const {
+            ComdatKind::ReadOnly
         } else {
-            (".data", "dw")
+            ComdatKind::Data
         };
-        let include = if global.symbol.include {
-            format!(".section .drectve,\"yni\"\n.ascii \" /include:{symbol}\"\n")
-        } else {
-            String::new()
-        };
-        let template = format!(
-            ".section {section}${symbol},\"{flags}\",discard,{symbol}\n.globl {symbol}\n.p2align {}\n{symbol}:\n{}{include}.text",
-            align.trailing_zeros(),
-            data.directives,
-        );
+        let mut template = AsmTemplate::new()
+            .with(Directive::Section(Section::Comdat {
+                kind,
+                symbol: symbol.clone(),
+            }))
+            .with(Directive::Globl(symbol.as_str().into()))
+            .with(Directive::P2Align(align.trailing_zeros()))
+            .with(Directive::Label(symbol.clone()));
+        for directive in data.directives {
+            template.push(directive);
+        }
+        if global.symbol.include {
+            template
+                .push(Directive::Section(Section::Drectve))
+                .push(Directive::Ascii(format!(" /include:{symbol}")));
+        }
+        template.push(Directive::Text);
         Ok((
             ty,
             rust::InlineAsm {

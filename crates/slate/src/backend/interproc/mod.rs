@@ -217,7 +217,7 @@ fn export_candidates(
                 pinned.extend(
                     exported
                         .keys()
-                        .filter(|symbol| mentions_symbol(&asm.template, symbol)),
+                        .filter(|symbol| mentions_symbol(&asm.template.to_string(), symbol)),
                 );
             }
         }

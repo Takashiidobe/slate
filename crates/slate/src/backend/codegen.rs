@@ -1170,7 +1170,7 @@ impl<W: Write> Codegen<W> {
             AsmKind::Naked => "core::arch::naked_asm!(",
             AsmKind::Global => "core::arch::global_asm!(",
         })?;
-        self.expr(&Expr::Str(asm.template.clone()))?;
+        self.expr(&Expr::Str(asm.template.to_string()))?;
         for operand in &asm.operands {
             self.out.write_str(", ")?;
             match operand {

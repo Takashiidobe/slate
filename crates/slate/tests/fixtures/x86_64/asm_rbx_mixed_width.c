@@ -31,7 +31,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xchg {0:r}, %rbx\nmovq %rbx, %rax\n\taddl $1, %ebx\nxchg {0:r}, %rbx",
+// CHECK-NEXT:             "xchg %rbx, {0:r}\nmovq %rbx, %rax\n\taddl $1, %ebx\nxchg %rbx, {0:r}",
 // CHECK-NEXT:             inout(reg) r#in as u64 => [[T_1]], lateout("ax") [[T_0]], options(pure, nomem,
 // CHECK-NEXT:             nostack, att_syntax)
 // CHECK-NEXT:         );
@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xchg {0:r}, %rbx\nmovl %ebx, %ebx\n\taddq $1, %rbx\nxchg {0:r}, %rbx",
+// CHECK-NEXT:             "xchg %rbx, {0:r}\nmovl %ebx, %ebx\n\taddq $1, %rbx\nxchg %rbx, {0:r}",
 // CHECK-NEXT:             inout(reg) (r#in as u32) as u64 => [[T_0]], options(pure, nomem, nostack,
 // CHECK-NEXT:             att_syntax)
 // CHECK-NEXT:         );

@@ -63,7 +63,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xchg {0:r}, %rbx\nxchgq %rbx, %rcx\nxchg {0:r}, %rbx", inout(reg) r#in as
+// CHECK-NEXT:             "xchg %rbx, {0:r}\nxchgq %rbx, %rcx\nxchg %rbx, {0:r}", inout(reg) r#in as
 // CHECK-NEXT:             u64 => [[T_0]], lateout("cx") [[T_1]], in ("cx") r#in.wrapping_add((1 as i32) as
 // CHECK-NEXT:             u64) as u64, options(pure, nomem, nostack, att_syntax)
 // CHECK-NEXT:         );

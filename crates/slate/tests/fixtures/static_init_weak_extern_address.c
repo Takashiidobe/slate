@@ -120,9 +120,9 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
-// CHECK-NEXT: core::arch::global_asm!(".weak {}", sym __slate_weak_address_missing_vendor);
-// CHECK-NEXT: core::arch::global_asm!(".weak {}", sym __slate_weak_address_missing_runtime);
-// CHECK-NEXT: core::arch::global_asm!(".weak {}", sym __slate_weak_address_missing_counter);
+// CHECK-NEXT: core::arch::global_asm!(".weak {0}", sym __slate_weak_address_missing_vendor);
+// CHECK-NEXT: core::arch::global_asm!(".weak {0}", sym __slate_weak_address_missing_runtime);
+// CHECK-NEXT: core::arch::global_asm!(".weak {0}", sym __slate_weak_address_missing_counter);
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

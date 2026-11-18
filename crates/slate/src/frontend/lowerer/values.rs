@@ -926,7 +926,7 @@ impl FunctionLowerer<'_, '_> {
                     },
                 ordering: None,
             } if let Some(register) = self.tables.register_globals.get(id) => {
-                self.lower_register_read(register, value)?
+                self.lower_register_read(*register, value)?
             }
             ValueKind::Read {
                 place,

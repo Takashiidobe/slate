@@ -30,17 +30,24 @@ pub(super) fn lower_string_global(global: &ir::Global) -> Option<Result<Vec<u8>>
     )
 }
 
+#[derive(Clone, Copy)]
+pub(super) enum RegisterGlobal {
+    X86(asm_out::x86::Reg),
+    AArch64(asm_out::aarch64::Reg),
+}
+
 pub(super) fn register_global(
     global: &ir::Global,
     target: &TargetInfo,
-) -> Option<Result<&'static str>> {
+) -> Option<Result<RegisterGlobal>> {
+    use asm_out::x86::{Gpr, Reg, Width};
     let register = global.variable.register.as_ref()?;
     let name = match (target.family, register.canonical) {
-        (TargetFamily::X86_64, Some("sp")) => "rsp",
-        (TargetFamily::X86_64, Some("bp")) => "rbp",
-        (TargetFamily::X86, Some("sp")) => "esp",
-        (TargetFamily::X86, Some("bp")) => "ebp",
-        (TargetFamily::AArch64, Some("sp")) => "sp",
+        (TargetFamily::X86_64, Some("sp")) => RegisterGlobal::X86(Reg::Gpr(Gpr::Sp, Width::Qword)),
+        (TargetFamily::X86_64, Some("bp")) => RegisterGlobal::X86(Reg::Gpr(Gpr::Bp, Width::Qword)),
+        (TargetFamily::X86, Some("sp")) => RegisterGlobal::X86(Reg::Gpr(Gpr::Sp, Width::Dword)),
+        (TargetFamily::X86, Some("bp")) => RegisterGlobal::X86(Reg::Gpr(Gpr::Bp, Width::Dword)),
+        (TargetFamily::AArch64, Some("sp")) => RegisterGlobal::AArch64(asm_out::aarch64::Reg::Sp),
         (TargetFamily::X86_64 | TargetFamily::X86, _) => return None,
         _ => {
             return Some(Err(Construct::Global {
@@ -56,7 +63,7 @@ pub(super) fn register_global(
 impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_register_read(
         &mut self,
-        register: &str,
+        register: RegisterGlobal,
         value: &ir::Value,
     ) -> Result<Expr> {
         if !matches!(
@@ -76,7 +83,13 @@ impl FunctionLowerer<'_, '_> {
                     init: None,
                 },
                 Stmt::InlineAsm(rust::InlineAsm {
-                    template: format!("mov {{}}, {register}"),
+                    template: AsmTemplate::new().with(match register {
+                        RegisterGlobal::X86(register) => asm_out::x86::Syntax::Intel
+                            .line(asm_out::x86::Inst::mov(asm_out::Operand::new(0), register)),
+                        RegisterGlobal::AArch64(register) => {
+                            asm_out::aarch64::Inst::mov(asm_out::Operand::new(0), register).into()
+                        }
+                    }),
                     operands: vec![rust::AsmOperand::Out {
                         reg: rust::AsmReg::Class("reg".into()),
                         late: true,
