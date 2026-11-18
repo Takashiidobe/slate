@@ -64,6 +64,7 @@ before its declaration (a function called before its definition, a loop ID in
 
 ```ebnf
 module     = "module" "{" target [ "freestanding" ";" ] [ "nostdinc" ";" ]
+             [ "null_pointer_is_valid" ";" ]
              [ "machine" "[" machine_fact { "," machine_fact } "]" ";" ]
              { asm } { linker_option } { type_def } { global } { function }
              { macro_definition } { macro_expansion } "}" ;
@@ -107,6 +108,12 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
   keeps the shim. A `no_std` crate root also defines a weak
   `rust_eh_personality`, because calls through `C-unwind` function pointers
   under `panic=abort` reference it.
+- `null_pointer_is_valid` marks a unit compiled with
+  `-fno-delete-null-pointer-checks` (`Module.null_pointer_is_valid`): address 0
+  may be a valid object, so an access through a pointer does not prove it
+  non-null and later null checks must stay. Slate lowers every data-pointer
+  `eq`/`ne` against `null` to `slate_support::opaque_is_null`, which passes the
+  address through an empty `asm!` so LLVM cannot fold the check.
 - `machine` lists the machine codegen flags the unit set explicitly
   (`Module.machine`, a `MachineCodegen`), in the order above, and is omitted
   when none is set: `-mcmodel=`, the last

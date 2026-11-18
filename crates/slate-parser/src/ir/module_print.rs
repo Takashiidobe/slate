@@ -1155,6 +1155,9 @@ impl fmt::Display for DisplayModule<'_> {
         if self.module.nostdinc {
             writeln!(f, "    nostdinc;")?;
         }
+        if self.module.null_pointer_is_valid {
+            writeln!(f, "    null_pointer_is_valid;")?;
+        }
         let machine = self.module.machine;
         let facts: Vec<String> = [
             machine

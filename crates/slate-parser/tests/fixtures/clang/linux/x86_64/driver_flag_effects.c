@@ -41,6 +41,7 @@ const char *file_name = __FILE_NAME__;
 // DEFAULT-NEXT:         storage d64 [size=8, align=8];
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
+// DEFAULT-NEXT:     null_pointer_is_valid;
 // DEFAULT-NEXT:     machine [red_zone=off, retpoline, function_return=thunk_extern];
 // DEFAULT-NEXT:     global %[[VALUE_reentrant:[0-9]+]] reentrant: i32 [storage=static] = const<i32>(1) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_warned_only:[0-9]+]] warned_only: i32 [storage=static] [linkage=external];

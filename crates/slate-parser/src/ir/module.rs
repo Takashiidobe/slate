@@ -29,6 +29,7 @@ pub struct Module {
     pub alloca: AllocaLayout,
     pub hosted: bool,
     pub nostdinc: bool,
+    pub null_pointer_is_valid: bool,
     pub machine: MachineCodegen,
 }
 
@@ -472,6 +473,7 @@ impl Module {
             },
             hosted: true,
             nostdinc: false,
+            null_pointer_is_valid: false,
             machine: MachineCodegen::default(),
         }
     }

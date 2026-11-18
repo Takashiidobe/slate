@@ -271,3 +271,16 @@ impl Drop for Guard<'_> {
         (self.0)()
     }
 }
+
+#[inline(always)]
+pub fn opaque_is_null<T: ?Sized>(pointer: *const T) -> bool {
+    let mut address = pointer.cast::<u8>();
+    unsafe {
+        core::arch::asm!(
+            "/* {0} */",
+            inout(reg) address,
+            options(pure, nomem, nostack, preserves_flags)
+        )
+    };
+    address.is_null()
+}

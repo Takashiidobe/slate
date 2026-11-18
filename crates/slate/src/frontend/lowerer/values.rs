@@ -1598,6 +1598,25 @@ impl FunctionLowerer<'_, '_> {
                 return self.lower_vector_compare(value, *op, left, right);
             }
             ValueKind::Compare {
+                op: op @ (ir::CompareOp::Eq | ir::CompareOp::Ne),
+                left,
+                right,
+                ..
+            } if let Some(pointer) = self.opaque_null_operand(left, right) => {
+                let is_null = Expr::Call {
+                    func: Box::new(Expr::Var("::slate_support::opaque_is_null".into())),
+                    args: vec![self.lower_value(pointer)?],
+                    binding: CallBinding::Generated,
+                };
+                match op {
+                    ir::CompareOp::Eq => is_null,
+                    _ => Expr::Unary {
+                        op: rust::UnaryOp::Not,
+                        expr: Box::new(is_null),
+                    },
+                }
+            }
+            ValueKind::Compare {
                 op, left, right, ..
             } => {
                 let is_decay = |mut operand: &ir::Value| {
@@ -2801,4 +2820,29 @@ pub(super) fn unsupported_constant(number: &Number) -> Failure {
         ir: format!("{number:?}"),
     }
     .into()
+}
+
+impl FunctionLowerer<'_, '_> {
+    fn opaque_null_operand<'v>(
+        &self,
+        left: &'v ir::Value,
+        right: &'v ir::Value,
+    ) -> Option<&'v ir::Value> {
+        if !self.tables.module.null_pointer_is_valid {
+            return None;
+        }
+        let pointer = match (&left.node.value, &right.node.value) {
+            (_, ValueKind::Null) => left,
+            (ValueKind::Null, _) => right,
+            _ => return None,
+        };
+        match self.tables.resolve_type(&pointer.ty) {
+            ir::Type::Pointer { pointee, .. }
+                if !matches!(self.tables.resolve_type(pointee), ir::Type::Function { .. }) =>
+            {
+                Some(pointer)
+            }
+            _ => None,
+        }
+    }
 }
