@@ -85,13 +85,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: file Cargo.toml profiles
-// CHECK-NEXT: [profile.dev.package.<crate>]
-// CHECK-NEXT: rustflags = ["-Zstack-protector=all", "-Clink-arg=-Wl,-z,nostart-stop-gc", "--cfg", "slate_profile_default", "--check-cfg=cfg(slate_profile_default, slate_profile_i686_unknown_linux_gnu)"]
-// CHECK-NEXT: [profile.release.package.<crate>]
+// CHECK-NEXT: [profile.dev.package."<crate>"]
 // CHECK-NEXT: rustflags = ["-Zstack-protector=all", "-Clink-arg=-Wl,-z,nostart-stop-gc", "--cfg", "slate_profile_default", "--check-cfg=cfg(slate_profile_default, slate_profile_i686_unknown_linux_gnu)"]
 // CHECK-NEXT: [profile.i686-unknown-linux-gnu]
 // CHECK-NEXT: inherits = "release"
-// CHECK-NEXT: [profile.i686-unknown-linux-gnu.package.<crate>]
+// CHECK-EMPTY:
+// CHECK-NEXT: [profile.i686-unknown-linux-gnu.package."<crate>"]
 // CHECK-NEXT: rustflags = ["-Zreg-struct-return", "-Zregparm=3", "-Cunsafe-allow-abi-mismatch=reg-struct-return,regparm", "-Clink-arg=-Wl,-z,nostart-stop-gc", "--cfg", "slate_profile_i686_unknown_linux_gnu", "--check-cfg=cfg(slate_profile_default, slate_profile_i686_unknown_linux_gnu)"]
+// CHECK-NEXT: [profile.release.package."<crate>"]
+// CHECK-NEXT: rustflags = ["-Zstack-protector=all", "-Clink-arg=-Wl,-z,nostart-stop-gc", "--cfg", "slate_profile_default", "--check-cfg=cfg(slate_profile_default, slate_profile_i686_unknown_linux_gnu)"]
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

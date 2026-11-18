@@ -1,3 +1,5 @@
+#[path = "support/cargo_toml.rs"]
+mod cargo_toml;
 #[path = "support/filecheck.rs"]
 mod filecheck;
 #[path = "support/fresh_tree.rs"]
@@ -68,22 +70,9 @@ fn crate_sources(crate_dir: &Path) -> String {
         text.push_str(&format!("file {name}\n"));
         text.push_str(&std::fs::read_to_string(&path).expect("read generated source"));
     }
-    let manifest = std::fs::read_to_string(crate_dir.join("Cargo.toml")).unwrap_or_default();
-    let mut in_profile = false;
-    let profiles: String = manifest
-        .lines()
-        .filter(|line| {
-            if line.starts_with('[') {
-                in_profile = line.starts_with("[profile.")
-                    && !matches!(*line, "[profile.dev]" | "[profile.release]");
-            }
-            in_profile && !line.is_empty()
-        })
-        .map(|line| match line.split_once(".package.") {
-            Some((profile, _)) => format!("{profile}.package.<crate>]\n"),
-            None => format!("{line}\n"),
-        })
-        .collect();
+    let profiles = cargo_toml::read_manifest(&crate_dir.join("Cargo.toml"))
+        .and_then(|manifest| cargo_toml::render_package_profiles(&manifest, "<crate>"))
+        .unwrap_or_default();
     if !profiles.is_empty() {
         text.push_str(&format!("file Cargo.toml profiles\n{profiles}"));
     }

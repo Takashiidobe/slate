@@ -5,6 +5,7 @@ use slate::frontend::c_shim;
 use slate::project::merge::{Unit as SlateUnit, collect_all_errors, rust_ident};
 use slate::project::{build_target, matrix, merge, plan};
 use slate::{api, compile_commands};
+use slate_cargo_toml as cargo_toml;
 use std::collections::{BTreeMap, BTreeSet, HashSet};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -406,7 +407,7 @@ fn package_name(crate_dir: &Path) -> String {
     }
 }
 
-const LINK_ORDER_CODEGEN_UNITS: usize = 4096;
+const LINK_ORDER_CODEGEN_UNITS: u32 = 4096;
 const LINK_ORDER_RUSTFLAGS: [&str; 3] = [
     "-Zcodegen-source-order",
     "-Zhuman-readable-cgu-names",
@@ -760,183 +761,116 @@ fn write_link_order_map(
     write_file(&path, &format!("{text}\n"))
 }
 
-#[expect(
-    clippy::too_many_arguments,
-    reason = "each argument is a distinct manifest section"
-)]
-fn crate_manifest(
-    package: &str,
-    tests: &[String],
-    c_shims: bool,
-    blocks: bool,
-    freestanding: bool,
-    link_order: bool,
-    codegen_rustflags: &[String],
-    target_profiles: &[TargetProfile],
-    cargo_features: &BTreeSet<String>,
-    lib_crate_types: Option<&[String]>,
-) -> String {
-    let (dev_panic, release_panic, support_features) = match freestanding {
-        true => (
-            "panic = \"abort\"\n",
-            "panic = \"abort\"\n",
-            ", default-features = false",
+fn crate_manifest(package: &str, lib_crate_types: Option<&[String]>) -> cargo_toml::Manifest {
+    let mut manifest = cargo_toml::Manifest::new(package, "0.0.0", cargo_toml::Edition::E2024);
+    manifest.workspace = Some(cargo_toml::Workspace {});
+    if let Some(types) = lib_crate_types {
+        manifest.package.autobins = Some(false);
+        manifest.lib = Some(cargo_toml::Lib {
+            path: Some("src/lib.rs".into()),
+            doctest: Some(false),
+            crate_type: types.to_vec(),
+        });
+    }
+    manifest.dependencies.extend([
+        (
+            "slate-support".to_string(),
+            cargo_toml::Dependency::path("slate-support"),
         ),
-        false => ("", "", ""),
-    };
-    let release_incremental = if link_order {
-        "incremental = true\n"
-    } else {
-        ""
-    };
-    let release_profile = if release_panic.is_empty() && release_incremental.is_empty() {
-        String::new()
-    } else {
-        format!("\n[profile.release]\n{release_panic}{release_incremental}")
-    };
-    let package_flags = |codegen: &[String]| -> String {
-        LINK_ORDER_RUSTFLAGS
+        (
+            "aligned".to_string(),
+            cargo_toml::Dependency::path("aligned"),
+        ),
+        ("bitint".to_string(), cargo_toml::Dependency::path("bitint")),
+        (
+            "num-complex".to_string(),
+            cargo_toml::Dependency::path("num-complex").without_default_features(),
+        ),
+        (
+            "bitfields".to_string(),
+            cargo_toml::Dependency::path("bitfields"),
+        ),
+    ]);
+    manifest
+        .lints
+        .entry(cargo_toml::LintTool::Cargo)
+        .or_default()
+        .insert(
+            "unused_dependencies".to_string(),
+            cargo_toml::LintLevel::Allow,
+        );
+    let dev = manifest.profile_mut("dev");
+    dev.overflow_checks = Some(false);
+    dev.debug_assertions = Some(false);
+    dev.codegen_units = Some(256);
+    manifest
+}
+
+fn make_manifest_freestanding(manifest: &mut cargo_toml::Manifest) {
+    if let Some(support) = manifest.dependencies.remove("slate-support") {
+        manifest.dependencies.insert(
+            "slate-support".to_string(),
+            support.without_default_features(),
+        );
+    }
+    for profile in ["dev", "release"] {
+        manifest.profile_mut(profile).panic = Some(cargo_toml::Panic::Abort);
+    }
+}
+
+fn add_manifest_rustflags(
+    manifest: &mut cargo_toml::Manifest,
+    link_order: bool,
+    default_rustflags: &[String],
+    target_profiles: &[TargetProfile],
+) {
+    let package = manifest.package.name.clone();
+    let package_profile = |codegen: &[String]| cargo_toml::Profile {
+        codegen_units: link_order.then_some(LINK_ORDER_CODEGEN_UNITS),
+        rustflags: LINK_ORDER_RUSTFLAGS
             .iter()
             .filter(|_| link_order)
             .map(|flag| flag.to_string())
             .chain(codegen.iter().cloned())
-            .map(|flag| format!("\"{flag}\""))
-            .collect::<Vec<_>>()
-            .join(", ")
+            .collect(),
+        ..cargo_toml::Profile::default()
     };
-    let codegen_units = if link_order {
-        format!("codegen-units = {LINK_ORDER_CODEGEN_UNITS}\n")
-    } else {
-        String::new()
-    };
-    let default_flags = package_flags(codegen_rustflags);
-    let mut package_profiles: String = if default_flags.is_empty() {
-        String::new()
-    } else {
-        ["dev", "release"]
-            .iter()
-            .map(|profile| {
-                format!(
-                    "\n[profile.{profile}.package.{package}]\n{codegen_units}rustflags = [{default_flags}]\n"
-                )
-            })
-            .collect()
-    };
-    for profile in target_profiles {
-        package_profiles.push_str(&format!(
-            "\n[profile.{name}]\ninherits = \"release\"\n\n[profile.{name}.package.{package}]\n{codegen_units}rustflags = [{}]\n",
-            package_flags(&profile.rustflags),
-            name = profile.name,
-        ));
+    if link_order {
+        manifest.profile_mut("release").incremental = Some(true);
     }
-    let cargo_features_line = if package_profiles.is_empty() {
-        ""
-    } else {
-        "cargo-features = [\"profile-rustflags\"]\n\n"
-    };
-    let test_targets: String = tests
-        .iter()
-        .map(|test| {
-            format!(
-                r#"
-[[test]]
-name = "{test}"
-path = "tests/{test}.rs"
-harness = false
-"#
-            )
-        })
-        .collect();
-    let build_section = if c_shims {
-        "\n[build-dependencies]\ncc = \"1\"\n"
-    } else {
-        ""
-    };
-    let autobins_line = if lib_crate_types.is_none() {
-        ""
-    } else {
-        "autobins = false\n"
-    };
-    let lib_section = lib_crate_types.map_or_else(String::new, |types| {
-        let types: Vec<String> = types.iter().map(|ty| format!("\"{ty}\"")).collect();
-        format!(
-            "\n[lib]\npath = \"src/lib.rs\"\ndoctest = false\ncrate-type = [{}]\n",
-            types.join(", ")
-        )
-    });
-    let blocks_line = if blocks {
-        "slate-blocks = { path = \"slate-blocks\" }\n"
-    } else {
-        ""
-    };
-    let features_section: String = if cargo_features.is_empty() {
-        String::new()
-    } else {
-        let mut section = "\n[features]\n".to_string();
-        for feature in cargo_features {
-            section.push_str(&format!("{feature} = []\n"));
+    let default = package_profile(default_rustflags);
+    if !default.rustflags.is_empty() {
+        for profile in ["dev", "release"] {
+            manifest
+                .profile_mut(profile)
+                .package
+                .insert(package.clone(), default.clone());
         }
-        section
-    };
-    format!(
-        r#"{cargo_features_line}[package]
-name = "{package}"
-version = "0.0.0"
-edition = "2024"
-{autobins_line}
-{lib_section}
-[workspace]
-
-[dependencies]
-slate-support = {{ path = "slate-support"{support_features} }}
-aligned = {{ path = "aligned" }}
-bitint = {{ path = "bitint" }}
-num-complex = {{ path = "num-complex", default-features = false }}
-bitfields = {{ path = "bitfields" }}
-{blocks_line}{build_section}
-[lints.cargo]
-unused_dependencies = "allow"
-
-[profile.dev]
-overflow-checks = false
-debug-assertions = false
-codegen-units = 256
-{dev_panic}{release_profile}{package_profiles}{test_targets}{features_section}"#
-    )
+    }
+    for target in target_profiles {
+        let profile = manifest.profile_mut(&target.name);
+        profile.inherits = Some("release".to_string());
+        profile
+            .package
+            .insert(package.clone(), package_profile(&target.rustflags));
+    }
+    if manifest
+        .profile
+        .values()
+        .any(cargo_toml::Profile::uses_rustflags)
+    {
+        manifest
+            .cargo_features
+            .push(cargo_toml::CargoFeature::ProfileRustflags);
+    }
 }
 
-#[expect(
-    clippy::too_many_arguments,
-    reason = "each argument is a distinct manifest section"
-)]
-fn write_crate_manifest(
-    crate_dir: &Path,
-    package: &str,
-    tests: &[String],
-    c_shims: bool,
-    blocks: bool,
-    freestanding: bool,
-    link_order: bool,
-    codegen_rustflags: &[String],
-    target_profiles: &[TargetProfile],
-    cargo_features: &BTreeSet<String>,
-    lib_crate_types: Option<&[String]>,
-) -> Result<(), String> {
-    write_file(
-        &crate_dir.join("Cargo.toml"),
-        &crate_manifest(
-            package,
-            tests,
-            c_shims,
-            blocks,
-            freestanding,
-            link_order,
-            codegen_rustflags,
-            target_profiles,
-            cargo_features,
-            lib_crate_types,
-        ),
-    )
+fn write_crate_manifest(crate_dir: &Path, manifest: &cargo_toml::Manifest) -> Result<(), String> {
+    let path = crate_dir.join("Cargo.toml");
+    let text = manifest
+        .to_toml()
+        .map_err(|e| format!("serialize {}: {e}", path.display()))?;
+    write_file(&path, &text)
 }
 
 /// Scaffold a Cargo crate at `crate_dir` for translated output: `cargo init`,
@@ -945,19 +879,7 @@ fn init_crate(crate_dir: &Path, lib_crate_types: Option<&[String]>) -> Result<()
     let src_dir = crate_dir.join("src");
     std::fs::create_dir_all(&src_dir).map_err(|e| format!("create {}: {e}", src_dir.display()))?;
     let package = package_name(crate_dir);
-    write_crate_manifest(
-        crate_dir,
-        &package,
-        &[],
-        false,
-        false,
-        false,
-        false,
-        &[],
-        &[],
-        &BTreeSet::new(),
-        lib_crate_types,
-    )?;
+    write_crate_manifest(crate_dir, &crate_manifest(&package, lib_crate_types))?;
     write_slate_support(crate_dir)?;
     write_aligned_support(crate_dir)?;
     write_bitint_support(crate_dir)?;
@@ -2078,19 +2000,32 @@ fn write_project_crate(
     if uses_blocks {
         write_blocks_support(crate_dir)?;
     }
-    write_crate_manifest(
-        crate_dir,
-        &package_name(crate_dir),
-        &[],
-        has_shims,
-        uses_blocks,
-        freestanding,
+    let mut manifest = crate_manifest(&package_name(crate_dir), lib_crate_types.as_deref());
+    if has_shims {
+        manifest
+            .build_dependencies
+            .insert("cc".to_string(), cargo_toml::Dependency::version("1"));
+    }
+    if uses_blocks {
+        manifest.dependencies.insert(
+            "slate-blocks".to_string(),
+            cargo_toml::Dependency::path("slate-blocks"),
+        );
+    }
+    if freestanding {
+        make_manifest_freestanding(&mut manifest);
+    }
+    add_manifest_rustflags(
+        &mut manifest,
         link_order,
         &profiles.default_flags,
         &profiles.targets,
-        &cargo_features,
-        lib_crate_types.as_deref(),
-    )?;
+    );
+    manifest.features = cargo_features
+        .into_iter()
+        .map(|feature| (feature, Vec::new()))
+        .collect();
+    write_crate_manifest(crate_dir, &manifest)?;
     Ok(written
         .into_iter()
         .map(|path| format!("wrote {}\n", path.display()))

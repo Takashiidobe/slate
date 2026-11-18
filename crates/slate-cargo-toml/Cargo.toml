@@ -1,0 +1,12 @@
+[package]
+name = "slate-cargo-toml"
+version = "0.9.0"
+edition = "2024"
+description = "Typed Cargo.toml and .cargo/config.toml models for Slate's generated crates"
+license.workspace = true
+repository.workspace = true
+include = ["/src"]
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+toml.workspace = true

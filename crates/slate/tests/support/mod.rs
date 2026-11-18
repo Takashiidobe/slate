@@ -3,6 +3,7 @@
     reason = "shared helpers are used by different integration test binaries"
 )]
 
+pub mod cargo_toml;
 pub mod filecheck;
 pub mod fresh_tree;
 pub mod manifest;
@@ -289,21 +290,14 @@ fn support_crate_path(name: &str, project: &Path) -> Result<PathBuf, String> {
     let source = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("vendor")
         .join(name);
-    let template = source.join("Cargo.toml.template");
-    let manifest = std::fs::read_to_string(&template)
-        .map_err(|e| format!("read {}: {e}", template.display()))?;
-    let path = source.join("src/lib.rs");
-    let manifest = if manifest.contains("[lib]") {
-        manifest.replace(
-            "path = \"src/lib.rs\"",
-            &format!("path = {:?}", path.to_string_lossy()),
-        )
-    } else {
-        format!("{manifest}\n[lib]\npath = {:?}\n", path.to_string_lossy())
-    };
+    let mut manifest = cargo_toml::read_manifest(&source.join("Cargo.toml.template"))?;
+    manifest.lib.get_or_insert_default().path = Some(source.join("src/lib.rs"));
     let dest = project.join("vendor").join(name);
-    write_if_changed(dest.join("Cargo.toml"), manifest.as_bytes())
-        .map_err(|e| format!("write {name} manifest: {e}"))?;
+    write_if_changed(
+        dest.join("Cargo.toml"),
+        cargo_toml::render_manifest(&manifest)?.as_bytes(),
+    )
+    .map_err(|e| format!("write {name} manifest: {e}"))?;
     let build_script = source.join("build.rs");
     if build_script.exists() {
         let contents = std::fs::read(&build_script)
@@ -334,39 +328,33 @@ fn generated_crate_manifest(name: &str, project: &Path) -> Result<String, String
     support_crate_path("num-traits", project)?;
     support_crate_path("libc", project)?;
     support_crate_path("mach2", project)?;
-    Ok(format!(
-        r#"[package]
-name = "{name}"
-version = "0.0.0"
-edition = "2024"
-
-[dependencies]
-slate-support = {{ path = "{}" }}
-aligned = {{ path = "{}" }}
-bitint = {{ path = "{}" }}
-num-complex = {{ path = "{}", default-features = false }}
-bitfields = {{ path = "{}" }}
-slate-blocks = {{ path = "{}" }}
-
-[build-dependencies]
-cc = "1"
-
-[profile.dev]
-debug = 0
-overflow-checks = false
-debug-assertions = false
-panic = "unwind"
-codegen-units = 256
-
-[workspace]
-"#,
-        support_crate_path("slate-support", project)?.display(),
-        support_crate_path("aligned", project)?.display(),
-        support_crate_path("bitint", project)?.display(),
-        support_crate_path("num-complex", project)?.display(),
-        bitfields_path().display(),
-        support_crate_path("slate-blocks", project)?.display()
-    ))
+    let mut manifest = cargo_toml::Manifest::new(name, "0.0.0", cargo_toml::Edition::E2024);
+    manifest.workspace = Some(cargo_toml::Workspace {});
+    for support in ["slate-support", "aligned", "bitint", "slate-blocks"] {
+        manifest.dependencies.insert(
+            support.to_string(),
+            cargo_toml::Dependency::path(support_crate_path(support, project)?),
+        );
+    }
+    manifest.dependencies.insert(
+        "num-complex".to_string(),
+        cargo_toml::Dependency::path(support_crate_path("num-complex", project)?)
+            .without_default_features(),
+    );
+    manifest.dependencies.insert(
+        "bitfields".to_string(),
+        cargo_toml::Dependency::path(bitfields_path()),
+    );
+    manifest
+        .build_dependencies
+        .insert("cc".to_string(), cargo_toml::Dependency::version("1"));
+    let dev = manifest.profile_mut("dev");
+    dev.debug = Some(false);
+    dev.overflow_checks = Some(false);
+    dev.debug_assertions = Some(false);
+    dev.panic = Some(cargo_toml::Panic::Unwind);
+    dev.codegen_units = Some(256);
+    cargo_toml::render_manifest(&manifest)
 }
 
 pub fn test_cache_root() -> PathBuf {

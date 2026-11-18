@@ -1,5 +1,6 @@
 use anyhow::{Context, Result, bail};
 use object::{Object, ObjectSection, ObjectSymbol};
+use slate_cargo_toml::{Dependency, Edition, Lib, Manifest, Workspace};
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -62,9 +63,32 @@ pub fn prepare_libc(libc: &Path, work: &Path) -> Result<PathBuf> {
         }
     }
     let support = work.join("slate-support/Cargo.toml");
-    let manifest = std::fs::read_to_string(&support)?;
-    std::fs::write(&support, format!("{manifest}\n[workspace]\n"))?;
+    let mut manifest = Manifest::parse(&std::fs::read_to_string(&support)?)?;
+    manifest.workspace = Some(Workspace {});
+    std::fs::write(&support, manifest.to_toml()?)?;
     Ok(dir)
+}
+
+fn write_probe_manifest(dir: &Path, libc: &Path, opt_level: Option<u8>) -> Result<()> {
+    let mut manifest = Manifest::new("probe", "0.0.0", Edition::E2024);
+    manifest.lib = Some(Lib {
+        path: Some("lib.rs".into()),
+        ..Lib::default()
+    });
+    manifest.workspace = Some(Workspace {});
+    manifest.dependencies.insert(
+        "libc".to_string(),
+        Dependency::path(libc).without_default_features(),
+    );
+    manifest.dependencies.insert(
+        "slate_support".to_string(),
+        Dependency::path("../slate-support").renamed_from("slate-support"),
+    );
+    let dev = manifest.profile_mut("dev");
+    dev.opt_level = opt_level;
+    dev.debug = Some(false);
+    std::fs::write(dir.join("Cargo.toml"), manifest.to_toml()?)?;
+    Ok(())
 }
 
 struct Probe {
@@ -82,16 +106,7 @@ pub fn collect(
 ) -> Result<BTreeMap<String, RustLayout>> {
     let dir = work.join(target);
     std::fs::create_dir_all(&dir)?;
-    std::fs::write(
-        dir.join("Cargo.toml"),
-        format!(
-            "[package]\nname = \"probe\"\nversion = \"0.0.0\"\nedition = \"2024\"\n\n\
-             [lib]\npath = \"lib.rs\"\n\n\
-             [dependencies]\nlibc = {{ path = {libc:?}, default-features = false }}\nslate_support = {{ package = \"slate-support\", path = \"../slate-support\" }}\n\n\
-             [profile.dev]\nopt-level = 0\ndebug = false\n\n[workspace]\n",
-            libc = libc_dir.display().to_string()
-        ),
-    )?;
+    write_probe_manifest(&dir, libc_dir, Some(0))?;
 
     let mut probes = Vec::new();
     for (index, (name, fields)) in candidates.iter().enumerate() {
@@ -296,13 +311,7 @@ pub fn compile_lines(
 ) -> Result<(PathBuf, HashSet<usize>)> {
     let dir = work.join(format!("symbol-probe-{target}"));
     std::fs::create_dir_all(&dir)?;
-    std::fs::write(
-        dir.join("Cargo.toml"),
-        format!(
-            "[package]\nname = \"probe\"\nversion = \"0.0.0\"\nedition = \"2024\"\n[lib]\npath = \"lib.rs\"\n[dependencies]\nlibc = {{ path = {:?}, default-features = false }}\nslate_support = {{ package = \"slate-support\", path = \"../slate-support\" }}\n[profile.dev]\ndebug = false\n[workspace]\n",
-            libc.display().to_string()
-        ),
-    )?;
+    write_probe_manifest(&dir, libc, None)?;
     let mut active: Vec<usize> = (0..lines.len()).collect();
     for _ in 0..16 {
         let mut source = String::from("#![no_std]\n#![allow(deprecated, unused_comparisons)]\n");

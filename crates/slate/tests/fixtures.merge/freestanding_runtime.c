@@ -139,10 +139,10 @@ int main(void) {
 // CHECK-NEXT:         loop {}
 // CHECK-NEXT:     }
 // CHECK-NEXT: file Cargo.toml profiles
-// CHECK-NEXT: [profile.dev.package.<crate>]
+// CHECK-NEXT: [profile.dev.package."<crate>"]
 // CHECK-NEXT: codegen-units = 4096
 // CHECK-NEXT: rustflags = ["-Zcodegen-source-order", "-Zhuman-readable-cgu-names", "-Zcross-crate-inline-threshold=never"]
-// CHECK-NEXT: [profile.release.package.<crate>]
+// CHECK-NEXT: [profile.release.package."<crate>"]
 // CHECK-NEXT: codegen-units = 4096
 // CHECK-NEXT: rustflags = ["-Zcodegen-source-order", "-Zhuman-readable-cgu-names", "-Zcross-crate-inline-threshold=never"]
 // CHECK-NOT: {{.}}

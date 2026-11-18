@@ -1803,12 +1803,22 @@ dependencies = [
  "serde",
  "serde_json",
  "shlex",
+ "slate-cargo-toml",
  "slate-parser",
  "slate-sysroots",
  "stacker",
  "syn 3.0.6",
  "tempfile",
  "thiserror",
+ "toml",
+]
+
+[[package]]
+name = "slate-cargo-toml"
+version = "0.9.0"
+dependencies = [
+ "serde",
+ "toml",
 ]
 
 [[package]]
@@ -1832,6 +1842,7 @@ dependencies = [
  "rayon",
  "serde_json",
  "slate-c2rust",
+ "slate-cargo-toml",
  "slate-parser",
  "tempfile",
 ]

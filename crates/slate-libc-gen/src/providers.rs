@@ -1,4 +1,5 @@
 use anyhow::{Context, Result, bail};
+use slate_cargo_toml::{Dependency, Edition, Lib, Manifest, Workspace};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 use std::process::Command;
@@ -49,12 +50,17 @@ impl Inventory {
         };
         let directory = work.join(format!("{package}-doc-{target}"));
         std::fs::create_dir_all(&directory)?;
-        std::fs::write(
-            directory.join("Cargo.toml"),
-            format!(
-                "[package]\nname = \"binding-inventory\"\nversion = \"0.0.0\"\nedition = \"2024\"\n[lib]\npath = \"lib.rs\"\n[dependencies]\n{package} = {{ path = \"../{package}\" }}\n[workspace]\n"
-            ),
-        )?;
+        let mut manifest = Manifest::new("binding-inventory", "0.0.0", Edition::E2024);
+        manifest.lib = Some(Lib {
+            path: Some("lib.rs".into()),
+            ..Lib::default()
+        });
+        manifest.workspace = Some(Workspace {});
+        manifest.dependencies.insert(
+            package.to_string(),
+            Dependency::path(format!("../{package}")),
+        );
+        std::fs::write(directory.join("Cargo.toml"), manifest.to_toml()?)?;
         std::fs::write(directory.join("lib.rs"), "")?;
         let output = Command::new("cargo")
             .args([

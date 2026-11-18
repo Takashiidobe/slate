@@ -5,6 +5,7 @@ members = [
   "crates/slate-sysroots",
   "crates/slate-intrinsic-gen",
   "crates/slate-libc-gen",
+  "crates/slate-cargo-toml",
 ]
 resolver = "3"
 
@@ -35,12 +36,14 @@ serde = "1"
 serde_json = "1"
 sha2 = "0.11"
 shlex = "2"
+slate-cargo-toml = { version = "0.9.0", path = "crates/slate-cargo-toml" }
 slate-parser = { version = "0.9.0", path = "crates/slate-parser" }
 slate-sysroots = { version = "0.9.0", path = "crates/slate-sysroots" }
 syn = { version = "3", default-features = false }
 tar = "0.4"
 tempfile = "3"
 thiserror = "2.0.19"
+toml = "1.1"
 ureq = "3.5"
 xwin = "0.10"
 xz2 = "0.1"

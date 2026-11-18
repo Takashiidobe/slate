@@ -42,6 +42,7 @@ libc.workspace = true
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 shlex.workspace = true
+slate-cargo-toml.workspace = true
 thiserror.workspace = true
 ordered-float.workspace = true
 rustc_apfloat.workspace = true
@@ -69,3 +70,4 @@ result_large_err = "allow"
 
 [dev-dependencies]
 tempfile.workspace = true
+toml.workspace = true

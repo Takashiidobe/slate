@@ -2,6 +2,7 @@ mod support;
 
 use std::path::{Path, PathBuf};
 use std::process::Output;
+use support::cargo_toml;
 
 fn fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures")
@@ -780,16 +781,21 @@ fn arch_mode_projects_select_their_rust_target() {
             "{work}: {}",
             String::from_utf8_lossy(&output.stderr)
         );
-        let config = std::fs::read_to_string(crate_dir.join(".cargo/config.toml"))
-            .expect("read .cargo/config.toml");
-        assert!(
-            config.contains("target = \"i686-unknown-linux-gnu\""),
-            "{work}: {config}"
+        let config = cargo_toml::read_cargo_config(&crate_dir).expect("read .cargo/config.toml");
+        assert_eq!(
+            config
+                .build
+                .as_ref()
+                .and_then(|build| build.target.as_deref()),
+            Some("i686-unknown-linux-gnu"),
+            "{work}: {config:?}"
         );
         assert_eq!(
-            config.contains("-Ctarget-feature=+16bit-mode,-32bit-mode"),
+            cargo_toml::config_rustflags(&config)
+                .iter()
+                .any(|flag| flag == "-Ctarget-feature=+16bit-mode,-32bit-mode"),
             rustflags,
-            "{work}: {config}"
+            "{work}: {config:?}"
         );
         let build = cargo_in(&crate_dir, "build");
         assert!(
@@ -837,25 +843,31 @@ fn freestanding_projects_build_for_bare_metal_targets() {
         .copied()
         .chain(["-m16", "-march=i386", "-mno-sse", "-mno-mmx", "-fno-pic"])
         .collect();
-    for (work, file, flags, target, expected) in [
+    for (work, file, flags, target, expected_rustflags, expected_unstable) in [
         (
             "kernel",
             "long_mode.c",
             KERNEL_FLAGS,
             "x86_64-unknown-none",
             &[
-                "\"-Crelocation-model=static\"",
-                "\"-Zcf-protection=branch\"",
-                "\"-Zretpoline-external-thunk\"",
-                "\"-Zindirect-branch-cs-prefix\"",
-                "\"-Zfunction-return=thunk-extern\"",
-                "\"-Ctarget-feature=-x87\"",
-                "\"-Zmerge-functions=disabled\"",
-                "\"-Zplt=yes\"",
-                "\"-Zunstable-options\"",
-                "\"-Cpanic=immediate-abort\"",
-                "build-std = [\"core\", \"compiler_builtins\"]",
+                "-Crelocation-model=static",
+                "-Zcf-protection=branch",
+                "-Zretpoline-external-thunk",
+                "-Zindirect-branch-cs-prefix",
+                "-Zfunction-return=thunk-extern",
+                "-Ctarget-feature=-x87",
+                "-Zmerge-functions=disabled",
+                "-Zplt=yes",
+                "-Zunstable-options",
+                "-Cpanic=immediate-abort",
             ][..],
+            cargo_toml::UnstableConfig {
+                build_std: vec![
+                    cargo_toml::StdCrate::Core,
+                    cargo_toml::StdCrate::CompilerBuiltins,
+                ],
+                json_target_spec: None,
+            },
         ),
         (
             "freestanding-m16",
@@ -863,11 +875,17 @@ fn freestanding_projects_build_for_bare_metal_targets() {
             &code16[..],
             "i386-unknown-none.json",
             &[
-                "\"-Crelocation-model=static\"",
-                "\"-Zmerge-functions=disabled\"",
-                "\"-Cpanic=immediate-abort\"",
-                "json-target-spec = true",
+                "-Crelocation-model=static",
+                "-Zmerge-functions=disabled",
+                "-Cpanic=immediate-abort",
             ][..],
+            cargo_toml::UnstableConfig {
+                build_std: vec![
+                    cargo_toml::StdCrate::Core,
+                    cargo_toml::StdCrate::CompilerBuiltins,
+                ],
+                json_target_spec: Some(true),
+            },
         ),
     ] {
         let (crate_dir, output) = translate_arch_mode_project(work, &[(file, flags)]);
@@ -876,17 +894,30 @@ fn freestanding_projects_build_for_bare_metal_targets() {
             "{work}: {}",
             String::from_utf8_lossy(&output.stderr)
         );
-        let config = std::fs::read_to_string(crate_dir.join(".cargo/config.toml"))
-            .expect("read .cargo/config.toml");
-        assert!(
-            config.contains(&format!("target = \"{target}\"")),
-            "{work}: {config}"
-        );
-        for line in expected {
-            assert!(config.contains(line), "{work}: missing {line} in {config}");
+        let config = cargo_toml::read_cargo_config(&crate_dir).expect("read .cargo/config.toml");
+        let build = config
+            .build
+            .as_ref()
+            .expect("[build] in .cargo/config.toml");
+        assert_eq!(build.target.as_deref(), Some(target), "{work}: {config:?}");
+        for flag in expected_rustflags {
+            assert!(
+                build.rustflags.iter().any(|actual| actual == flag),
+                "{work}: missing {flag} in {config:?}"
+            );
         }
-        assert!(!config.contains("code-model"), "{work}: {config}");
-        assert!(!config.contains("no-redzone"), "{work}: {config}");
+        assert_eq!(
+            config.unstable.as_ref(),
+            Some(&expected_unstable),
+            "{work}: {config:?}"
+        );
+        assert!(
+            !build
+                .rustflags
+                .iter()
+                .any(|flag| flag.contains("code-model") || flag.contains("no-redzone")),
+            "{work}: {config:?}"
+        );
         let build = cargo_in(&crate_dir, "build");
         assert!(
             build.status.success(),

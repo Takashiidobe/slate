@@ -1,4 +1,5 @@
 use crate::backend::rust_ast::Runtime;
+use slate_cargo_toml::{BuildConfig, CargoConfig, StdCrate, UnstableConfig};
 use slate_parser::compiler_options::CodeModel;
 use slate_parser::ir::{MachineCodegen, Module};
 use slate_parser::target::isa::TargetIsa;
@@ -81,27 +82,25 @@ impl BuildTarget {
         let Some(target) = target.filter(|target| !target.is_host_default()) else {
             return remove(&path);
         };
-        let mut config = format!("[build]\ntarget = \"{}\"\n", target.triple);
-        if !target.rustflags.is_empty() {
-            let flags: Vec<String> = target
-                .rustflags
-                .iter()
-                .map(|flag| format!("\"{flag}\""))
-                .collect();
-            config.push_str(&format!("rustflags = [{}]\n", flags.join(", ")));
-        }
-        if target.build_std || target.spec.is_some() {
-            config.push_str("\n[unstable]\n");
-        }
-        if target.build_std {
-            config.push_str("build-std = [\"core\", \"compiler_builtins\"]\n");
-        }
-        if target.spec.is_some() {
-            config.push_str("json-target-spec = true\n");
-        }
+        let config = CargoConfig {
+            build: Some(BuildConfig {
+                target: Some(target.triple.clone()),
+                rustflags: target.rustflags.clone(),
+            }),
+            unstable: (target.build_std || target.spec.is_some()).then(|| UnstableConfig {
+                build_std: match target.build_std {
+                    true => vec![StdCrate::Core, StdCrate::CompilerBuiltins],
+                    false => Vec::new(),
+                },
+                json_target_spec: target.spec.is_some().then_some(true),
+            }),
+        };
+        let text = config
+            .to_toml()
+            .map_err(|e| format!("serialize {}: {e}", path.display()))?;
         std::fs::create_dir_all(&directory)
             .map_err(|e| format!("create {}: {e}", directory.display()))?;
-        write(&path, &config)
+        write(&path, &text)
     }
 }
 
