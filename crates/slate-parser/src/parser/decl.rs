@@ -477,6 +477,8 @@ impl Parser {
                 }
                 let body = self.parse_function_body(tokens, &mut parser.pos, &first.declarator)?;
                 *position = parser.pos;
+                let ty = std::mem::replace(&mut specifiers.ty, TypeSpecifier::Void);
+                specifiers.ty = ty.with_type_attributes(&specifiers.attributes);
                 return Ok(DeclKind::Function(FunctionDefinition {
                     specifiers,
                     declarator: first.value.declarator,
