@@ -722,6 +722,12 @@ impl X86Isa {
                 self.vector_register_bytes()
             ));
         }
+        if flavor.is_clang() && !self.has_cmpxchg8b() {
+            defines.extend([
+                "__GCC_ATOMIC_LLONG_LOCK_FREE=1".into(),
+                "__CLANG_ATOMIC_LLONG_LOCK_FREE=1".into(),
+            ]);
+        }
         if let Some(method) = self.eval_method(family, flavor) {
             defines.push(format!("__FLT_EVAL_METHOD__={method}"));
             if gcc {
@@ -766,6 +772,22 @@ impl X86Isa {
                 names.push(name);
             }
         }
+        if flavor.is_clang() {
+            if self.arch.cpu().name == "i386" {
+                names.extend([
+                    "__GCC_HAVE_SYNC_COMPARE_AND_SWAP_1",
+                    "__GCC_HAVE_SYNC_COMPARE_AND_SWAP_2",
+                    "__GCC_HAVE_SYNC_COMPARE_AND_SWAP_4",
+                ]);
+            }
+            if !self.has_cmpxchg8b() {
+                names.push("__GCC_HAVE_SYNC_COMPARE_AND_SWAP_8");
+            }
+        }
         names
+    }
+
+    fn has_cmpxchg8b(self) -> bool {
+        !matches!(self.arch.cpu().name, "i386" | "i486")
     }
 }
