@@ -3,13 +3,16 @@ import argparse
 import json
 import os
 import subprocess
+import signal
 import sys
+import threading
 import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 LEASE_PY = ROOT / "tools" / "auto" / "lease.py"
 LOGS = ROOT / ".auto" / "logs"
+TRANSCRIPT = ROOT / ".auto" / "transcript.md"
 
 
 def sh(*args, check=False):
@@ -59,16 +62,65 @@ def run_session(n, args, remaining_s):
     if args.model:
         cmd += ["--model", args.model]
     env = dict(os.environ, SLATE_AUTO="1")
-    print(f"session {n}: log {log}", flush=True)
-    with log.open("w") as out:
-        try:
-            proc = subprocess.run(cmd, cwd=ROOT, env=env, stdout=out, stderr=subprocess.STDOUT, timeout=remaining_s)
-            code = proc.returncode
-        except subprocess.TimeoutExpired:
-            code = "timeout"
-    tail = log.read_text()[-4000:].lower()
-    limited = "usage limit" in tail or "rate limit" in tail or "limit reached" in tail
-    return code, limited
+    print(f"session {n}: log {log}; transcript {TRANSCRIPT}", flush=True)
+    limited = False
+    with log.open("w") as raw, TRANSCRIPT.open("a") as tx:
+        tx.write(f"\n\n# session {n} · {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+        tx.flush()
+        proc = subprocess.Popen(cmd, cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        timer = threading.Timer(remaining_s, proc.kill)
+        timer.start()
+        for line in proc.stdout:
+            raw.write(line)
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                tx.write(line)
+                continue
+            if event.get("type") == "rate_limit_event" and event["rate_limit_info"].get("status") != "allowed":
+                limited = True
+            text = render(event)
+            if text:
+                tx.write(text)
+                tx.flush()
+        code = proc.wait()
+        timed_out = not timer.is_alive()
+        timer.cancel()
+    return ("timeout" if timed_out else code), limited
+
+
+def clip(text, limit):
+    text = text.strip()
+    return text if len(text) <= limit else text[:limit] + f" … [{len(text) - limit} more chars]"
+
+
+def render(event):
+    stamp = time.strftime("%H:%M:%S")
+    kind = event.get("type")
+    if kind == "assistant":
+        out = []
+        for part in event["message"].get("content", []):
+            if part.get("type") == "text" and part["text"].strip():
+                out.append(f"\n[{stamp}] {part['text'].strip()}\n")
+            elif part.get("type") == "tool_use":
+                args = part.get("input", {})
+                shown = args.get("command") or args.get("file_path") or args.get("pattern") or json.dumps(args)
+                out.append(f"[{stamp}] → {part['name']}: {clip(shown, 400)}\n")
+        return "".join(out)
+    if kind == "user":
+        content = event["message"].get("content")
+        out = []
+        for part in content if isinstance(content, list) else []:
+            if part.get("type") == "tool_result":
+                body = part.get("content")
+                if isinstance(body, list):
+                    body = "\n".join(p.get("text", "") for p in body if isinstance(p, dict))
+                mark = "✗" if part.get("is_error") else "←"
+                out.append("    " + clip(str(body or ""), 300).replace("\n", "\n    ") + f"  {mark}\n")
+        return "".join(out)
+    if kind == "result":
+        return f"\n[{stamp}] session result: {event.get('subtype')} · ${event.get('total_cost_usd', 0):.2f}\n"
+    return ""
 
 
 def main():
@@ -91,7 +143,21 @@ def main():
     start_commit = lease(*start_args).stdout.strip()
     deadline = time.time() + args.hours * 3600
     print(f"run start commit {start_commit}; review with: git log {start_commit[:12]}..main", flush=True)
+    awake = subprocess.Popen(
+        ["fish", "-c", f"caffeinate {int(args.hours * 3600) + 600}s"],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True,
+    )
+    try:
+        loop(args, deadline)
+    finally:
+        os.killpg(awake.pid, signal.SIGTERM)
+    history = read_lease()["history"]
+    for row in history:
+        print(f"  {row['ticket']}\t{row['outcome']}\t{row['minutes']}m")
+    print(f"done: {len(history)} tickets; git log {start_commit[:12]}..main", flush=True)
 
+
+def loop(args, deadline):
     n = 0
     while time.time() < deadline - 15 * 60:
         if args.max_sessions and n >= args.max_sessions:
@@ -111,11 +177,6 @@ def main():
         print(f"session {n} exit {code}{' (usage limit)' if limited else ''}", flush=True)
         if limited:
             break
-
-    history = read_lease()["history"]
-    for row in history:
-        print(f"  {row['ticket']}\t{row['outcome']}\t{row['minutes']}m")
-    print(f"done: {len(history)} tickets in {n} sessions; git log {start_commit[:12]}..main", flush=True)
 
 
 if __name__ == "__main__":
