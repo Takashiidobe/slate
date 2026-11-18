@@ -1,5 +1,7 @@
 use clap::{Args, Parser, Subcommand};
 use rayon::prelude::*;
+use slate::backend::build_script::{BuildScript, Step};
+use slate::backend::rust_ast::Cfg;
 use slate::backend::{self, codegen, rust_ast};
 use slate::frontend::c_shim;
 use slate::project::merge::{Unit as SlateUnit, collect_all_errors, rust_ident};
@@ -1975,27 +1977,33 @@ fn write_project_crate(
         std::fs::remove_file(&shim_path)
             .map_err(|e| format!("remove {}: {e}", shim_path.display()))?;
     }
-    let statements: String = has_shims
-        .then(|| c_shim::shim_build_statements(&shim_gates))
-        .into_iter()
-        .chain(
-            link_arg_target
-                .filter(|_| profiles.build_script)
-                .map(|target| {
-                    format!(
-                        "    println!(\"cargo:rerun-if-changed=build.rs\");\n    if std::env::var(\"CARGO_CFG_TARGET_OS\").as_deref() == Ok(\"linux\") {{\n        println!(\"cargo:rustc-link-arg-{target}=-Wl,-z,nostart-stop-gc\");\n    }}\n"
-                    )
-                }),
-        )
-        .collect();
+    let mut script = BuildScript::new();
+    if has_shims {
+        script.extend(c_shim::shim_build_steps(&shim_gates));
+    }
+    if let Some(target) = link_arg_target.filter(|_| profiles.build_script) {
+        script.extend([
+            Step::RerunIfChanged("build.rs".into()),
+            Step::When {
+                cfg: Cfg::Opt {
+                    key: "target_os".into(),
+                    value: "linux".into(),
+                },
+                steps: vec![Step::LinkArg {
+                    target: target.to_string(),
+                    arg: "-Wl,-z,nostart-stop-gc".into(),
+                }],
+            },
+        ]);
+    }
     let build_script = crate_dir.join("build.rs");
-    if statements.is_empty() {
+    if script.is_empty() {
         if build_script.exists() {
             std::fs::remove_file(&build_script)
                 .map_err(|e| format!("remove {}: {e}", build_script.display()))?;
         }
     } else {
-        write_file(&build_script, &format!("fn main() {{\n{statements}}}\n"))?;
+        write_file(&build_script, &script.render()?)?;
     }
     if uses_blocks {
         write_blocks_support(crate_dir)?;

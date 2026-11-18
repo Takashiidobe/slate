@@ -5,6 +5,7 @@
 
 /// Rust source emission and code-generation helpers.
 pub mod asm;
+pub mod build_script;
 pub mod codegen;
 pub(crate) mod engine;
 mod format;

@@ -1,3 +1,4 @@
+use crate::backend::build_script::Step;
 use crate::backend::rust_ast::{Attr, Cfg, ExternDecl, Item, Program};
 use std::collections::BTreeSet;
 
@@ -384,49 +385,14 @@ fn collect_item_shim_names(
     }
 }
 
-fn build_script_condition(cfg: &Cfg) -> String {
-    let env_name = |name: &str| name.to_uppercase().replace('-', "_");
-    match cfg {
-        Cfg::Flag(flag) => format!(
-            "std::env::var_os(\"CARGO_CFG_{}\").is_some()",
-            env_name(flag)
-        ),
-        Cfg::Opt { key, value } if key == "feature" => format!(
-            "std::env::var_os(\"CARGO_FEATURE_{}\").is_some()",
-            env_name(value)
-        ),
-        Cfg::Opt { key, value } => format!(
-            "std::env::var(\"CARGO_CFG_{}\").is_ok_and(|v| v.split(',').any(|v| v == {value:?}))",
-            env_name(key)
-        ),
-        Cfg::Not(inner) => format!("!({})", build_script_condition(inner)),
-        Cfg::Any(items) if items.is_empty() => "false".into(),
-        Cfg::All(items) if items.is_empty() => "true".into(),
-        Cfg::Any(items) => format!(
-            "({})",
-            items
-                .iter()
-                .map(build_script_condition)
-                .collect::<Vec<_>>()
-                .join(" || ")
-        ),
-        Cfg::All(items) => format!(
-            "({})",
-            items
-                .iter()
-                .map(build_script_condition)
-                .collect::<Vec<_>>()
-                .join(" && ")
-        ),
-    }
-}
-
-pub fn shim_build_statements(gates: &[Option<Cfg>]) -> String {
-    let compile =
-        "cc::Build::new().file(\"src/slate_long_double.c\").compile(\"slate_long_double\");";
-    let rerun = "println!(\"cargo:rerun-if-changed=src/slate_long_double.c\");";
+pub fn shim_build_steps(gates: &[Option<Cfg>]) -> Vec<Step> {
+    let rerun = Step::RerunIfChanged("src/slate_long_double.c".into());
+    let compile = Step::CompileC {
+        file: "src/slate_long_double.c".into(),
+        library: "slate_long_double".into(),
+    };
     if gates.iter().any(Option::is_none) {
-        return format!("    {rerun}\n    {compile}\n");
+        return vec![rerun, compile];
     }
     let mut unique: Vec<Cfg> = Vec::new();
     for gate in gates.iter().flatten() {
@@ -434,11 +400,17 @@ pub fn shim_build_statements(gates: &[Option<Cfg>]) -> String {
             unique.push(gate.clone());
         }
     }
-    let condition = match unique.as_slice() {
-        [only] => build_script_condition(only),
-        _ => build_script_condition(&Cfg::Any(unique)),
+    let cfg = match <[Cfg; 1]>::try_from(unique) {
+        Ok([only]) => only,
+        Err(unique) => Cfg::Any(unique),
     };
-    format!("    {rerun}\n    if {condition} {{\n        {compile}\n    }}\n")
+    vec![
+        rerun,
+        Step::When {
+            cfg,
+            steps: vec![compile],
+        },
+    ]
 }
 
 fn header_for_shim_name(name: &str) -> Option<&'static str> {
