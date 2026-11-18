@@ -1,3 +1,7 @@
+use super::target_spec::{
+    Arch, CrtObjectsFallback, Feature, Features, LinkerFlavor, Os, PanicStrategy, RelocationModel,
+    RustcAbi, StackProbes, TargetSpec,
+};
 use crate::backend::rust_ast::Runtime;
 use slate_cargo_toml::{BuildConfig, CargoConfig, StdCrate, UnstableConfig};
 use slate_parser::compiler_options::CodeModel;
@@ -12,7 +16,7 @@ pub const I386_SPEC_FILE: &str = "i386-unknown-none.json";
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BuildTarget {
     pub triple: String,
-    pub spec: Option<String>,
+    pub spec: Option<TargetSpec>,
     pub rustflags: Vec<String>,
     pub build_std: bool,
 }
@@ -74,7 +78,12 @@ impl BuildTarget {
     pub fn write_config(target: Option<&Self>, crate_dir: &Path) -> Result<(), String> {
         let spec_path = crate_dir.join(I386_SPEC_FILE);
         match target.and_then(|target| target.spec.as_ref()) {
-            Some(spec) => write(&spec_path, spec)?,
+            Some(spec) => write(
+                &spec_path,
+                &spec
+                    .to_json()
+                    .map_err(|e| format!("serialize {}: {e}", spec_path.display()))?,
+            )?,
             None => remove(&spec_path)?,
         }
         let directory = crate_dir.join(".cargo");
@@ -189,35 +198,36 @@ fn shared_flags(machine: MachineCodegen, isa: X86Isa) -> impl Iterator<Item = St
         )
 }
 
-fn i386_spec(isa: X86Isa, code16: bool) -> String {
-    let mode = if code16 {
-        ",+16bit-mode,-32bit-mode"
-    } else {
-        ""
-    };
-    format!(
-        r#"{{
-  "arch": "x86",
-  "cpu": "{cpu}",
-  "data-layout": "e-m:e-p:32:32-p270:32:32-p271:32:32-p272:64:64-i128:128-f64:32:64-f80:32-n8:16:32-S128",
-  "llvm-target": "i386-unknown-none-elf",
-  "target-pointer-width": 32,
-  "max-atomic-width": 64,
-  "os": "none",
-  "panic-strategy": "abort",
-  "disable-redzone": true,
-  "features": "-mmx,-sse,+soft-float{mode}",
-  "rustc-abi": "softfloat",
-  "linker": "rust-lld",
-  "linker-flavor": "gnu-lld",
-  "relocation-model": "static",
-  "position-independent-executables": false,
-  "crt-objects-fallback": "false",
-  "stack-probes": {{ "kind": "inline" }}
-}}
-"#,
-        cpu = isa.arch.name()
-    )
+fn i386_spec(isa: X86Isa, code16: bool) -> TargetSpec {
+    let mut features = vec![
+        Feature::off("mmx"),
+        Feature::off("sse"),
+        Feature::on("soft-float"),
+    ];
+    if code16 {
+        features.extend([Feature::on("16bit-mode"), Feature::off("32bit-mode")]);
+    }
+    TargetSpec {
+        arch: Arch::X86,
+        cpu: isa.arch.name().to_string(),
+        data_layout:
+            "e-m:e-p:32:32-p270:32:32-p271:32:32-p272:64:64-i128:128-f64:32:64-f80:32-n8:16:32-S128"
+                .to_string(),
+        llvm_target: "i386-unknown-none-elf".to_string(),
+        target_pointer_width: 32,
+        max_atomic_width: 64,
+        os: Os::None,
+        panic_strategy: PanicStrategy::Abort,
+        disable_redzone: true,
+        features: Features(features),
+        rustc_abi: RustcAbi::Softfloat,
+        linker: "rust-lld".to_string(),
+        linker_flavor: LinkerFlavor::GnuLld,
+        relocation_model: RelocationModel::Static,
+        position_independent_executables: false,
+        crt_objects_fallback: CrtObjectsFallback::False,
+        stack_probes: StackProbes::Inline,
+    }
 }
 
 fn write(path: &Path, contents: &str) -> Result<(), String> {
