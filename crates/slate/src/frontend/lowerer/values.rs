@@ -182,7 +182,8 @@ impl FunctionLowerer<'_, '_> {
         if self.tables.stdio.functions.contains_key(&id) {
             self.dependencies.stdio_layout_used = true;
         }
-        if self.tables.intrinsics.contains_key(&id) {
+        if self.tables.intrinsics.contains_key(&id) || self.tables.sve_intrinsics.contains_key(&id)
+        {
             return Err(unsupported_value(value));
         }
         if let Some(nested) = self.tables.nested.get(&id)
@@ -1088,6 +1089,16 @@ impl FunctionLowerer<'_, '_> {
                     args: vec![self.lower_value(operand)?],
                     binding: CallBinding::Generated,
                 }
+            }
+            ValueKind::Convert {
+                kind: ir::ConversionKind::VectorBitCast,
+                operand,
+                ..
+            } if [&operand.ty, &value.ty]
+                .into_iter()
+                .any(|ty| matches!(self.tables.resolve_type(ty), ir::Type::Sizeless(_))) =>
+            {
+                self.lower_sve_bit_cast(value, operand)?
             }
             ValueKind::Convert {
                 kind: ir::ConversionKind::VectorBitCast,
@@ -2149,6 +2160,14 @@ impl FunctionLowerer<'_, '_> {
             } if self.tables.intrinsics.contains_key(id) => {
                 let label = self.tables.names[id].rust.clone();
                 self.lower_intrinsic(&label, self.tables.intrinsics[id], arguments, &value.ty)?
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if let Some(&intrinsic) = self.tables.sve_intrinsics.get(id) => {
+                let label = self.tables.names[id].rust.clone();
+                self.lower_sve_call(&label, intrinsic, arguments)?
             }
             ValueKind::Intrinsic { name, arguments } if name == "slate.clear_padding" => {
                 let [pointer] = arguments.as_slice() else {

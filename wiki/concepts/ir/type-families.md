@@ -129,16 +129,32 @@ with no oracle.
   plain vector is rejected as in gcc. Comparison masks and
   `__builtin_shufflevector` results are plain vectors, as in gcc.
 - AAPCS64 passes and returns it `scalable`. Inside a record it is ordinary data.
-  slate lowers it to `Simd<T, lanes>`. A `scalable` signature is a barrier
-  unless the function is an internal definition, whose Rust-ABI calls never
-  cross into native code.
+  slate lowers it to `Simd<T, lanes>`. Internal definitions keep the Rust ABI.
+  A called extern declares the C symbol with the `core::arch::aarch64` sizeless
+  types (Z/P registers) behind a `#[target_feature(enable = "sve")]` shim
+  that converts each `scalable` operand. An exported definition with a
+  `scalable` signature is still a barrier, and function pointer types with
+  fixed SVE vectors use the Rust ABI, like GNU vectors.
+- Conversion to and from the sizeless type (`vector_bit_cast`) is
+  `svld1_<t>(svptrue_b<w>(), v.as_array().as_ptr())` and an `svst1_<t>` into a
+  lane array, valid because the contract is that the runtime vector length
+  equals `-msve-vector-bits`. A fixed `svbool_t` conversion is a barrier.
+- The sizeless types lower to `core::arch::aarch64::sv*_t`
+  (`#![feature(stdarch_aarch64_sve)]`). A local without an initializer starts
+  at `svdup_n_<t>(0)`, `svpfalse_b()`, or `svcreateN_<t>` of zeros:
+  `mem::zeroed` cannot be instantiated with a scalable type unless `+sve` is
+  enabled crate-wide. Sizeless operands in function pointer types keep the C
+  ABI, which rustc passes in Z/P registers (`fixtures.dylink/abi_sve_scalable`).
 - Rejected like gcc: non-SVE types, tuples and `svcount_t` (non-vector), and a
   type that already has a size. Clang flavor does not model the attribute.
 - Limits: predicate operator restrictions (gcc allows only some operators on
   fixed `svbool_t`) are not checked.
 - Fixtures: `gcc/linux/aarch64/sve_fixed_vectors.c`,
   `sve_fixed_vectors_ignored.c`, `error/gcc/linux/aarch64/sve-fixed-*.c`;
-  slate `fixtures/gcc/aarch64/sve_fixed_vectors.c` and
+  `gcc/linux/aarch64/sizeless_declarators.c`; slate
+  `fixtures/gcc/aarch64/sve_fixed_vectors.c`, `sve_sizeless_intrinsics.c`,
+  `sve_fixed_sizeless_convert.c`, `sve_fixed_extern_zreg.c` (extern defined in
+  file-scope SVE assembly) and
   `fixtures.unsupported/gcc/aarch64/sve_fixed_native_signature.c`.
 
 ## Fixed-point (N1169)

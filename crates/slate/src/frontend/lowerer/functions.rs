@@ -360,10 +360,11 @@ impl Tables<'_> {
         };
         if let Some(signature) = &function.abi
             && signature.passes_scalable()
-            && (function.body.is_none() || !matches!(function.linkage, ir::Linkage::Internal))
+            && function.body.is_some()
+            && !matches!(function.linkage, ir::Linkage::Internal)
         {
             return unsupported(format!(
-                "fixed-length SVE vector passed in Z/P registers to or from native code: {signature}"
+                "exported definition passing a fixed-length SVE vector in Z/P registers: {signature}"
             ));
         }
         if let Some(signature) = &function.abi
@@ -537,34 +538,53 @@ impl FunctionLowerer<'_, '_> {
             noreturn: function.semantics.noreturn,
             safe: false,
         };
-        let shim = vector_feature.map(|feature| {
-            decl.identity = FunctionIdentity::Unknown;
-            let call = Expr::Call {
+        let Some(feature) = vector_feature else {
+            return Ok((abi, rust::ExternDecl::Fn(decl), None));
+        };
+        decl.identity = FunctionIdentity::Unknown;
+        let params = decl.params.clone();
+        let ret = decl.ret.clone();
+        let mut args = Vec::new();
+        for ((param, declared), source) in params.iter().zip(&mut decl.params).zip(fixed) {
+            let arg = Expr::Var(param.name.as_str().into());
+            args.push(match self.tables.scalable_name(&source.ty) {
+                Some(sizeless) => {
+                    declared.ty = self.lower_type(&ir::Type::Sizeless(sizeless.to_owned()))?;
+                    sve::sve_convert(arg, &param.ty, sizeless, true)?
+                }
+                None => arg,
+            });
+        }
+        let mut call = Expr::Unsafe(Box::new(rust::Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::Call {
                 func: Box::new(Expr::Var(decl.name.as_str().into())),
-                args: decl
-                    .params
-                    .iter()
-                    .map(|param| Expr::Var(param.name.as_str().into()))
-                    .collect(),
+                args,
                 binding: CallBinding::Generated,
-            };
-            FnDef {
-                comments: Vec::new(),
-                attrs: vec![Attr::TargetFeature(feature.into())],
-                vis: rust::Visibility::Private,
-                unsafe_: true,
-                abi: None,
-                name: function.name.clone(),
-                params: decl.params.clone(),
-                ret: decl.ret.clone(),
-                noreturn: decl.noreturn,
-                body: vec![Stmt::Return(Some(Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(call)),
-                }))))],
-            }
-        });
-        Ok((abi, rust::ExternDecl::Fn(decl), shim))
+            })),
+        }));
+        if let Some(sizeless) = function
+            .return_type
+            .as_ref()
+            .and_then(|ty| self.tables.scalable_name(ty))
+            && let Some(simd) = &ret
+        {
+            decl.ret = Some(self.lower_type(&ir::Type::Sizeless(sizeless.to_owned()))?);
+            call = sve::sve_convert(call, simd, sizeless, false)?;
+        }
+        let shim = FnDef {
+            comments: Vec::new(),
+            attrs: vec![Attr::TargetFeature(feature.into())],
+            vis: rust::Visibility::Private,
+            unsafe_: true,
+            abi: None,
+            name: function.name.clone(),
+            params,
+            ret,
+            noreturn: decl.noreturn,
+            body: vec![Stmt::Return(Some(call))],
+        };
+        Ok((abi, rust::ExternDecl::Fn(decl), Some(shim)))
     }
 
     pub(super) fn lower_function(

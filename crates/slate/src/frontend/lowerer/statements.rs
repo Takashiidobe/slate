@@ -245,6 +245,9 @@ impl FunctionLowerer<'_, '_> {
                         }
                         _ => Some(zeroed()),
                     },
+                    (None, ir::Type::Sizeless(name)) if let Some(zero) = sve::sve_zero(name) => {
+                        Some(zero)
+                    }
                     (None, ty) => Some(match self.lower_type(ty)? {
                         rust::Type::Prim(Prim::Bool) => Expr::Value(rust::RustValue::Bool(false)),
                         ty @ rust::Type::Prim(_) => Expr::Cast {

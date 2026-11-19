@@ -40,6 +40,8 @@ mod pointers;
 mod selectany;
 mod statements;
 mod stdio;
+mod sve;
+mod sve_table;
 mod switch;
 mod target_features;
 mod types;
@@ -82,6 +84,7 @@ struct Tables<'m> {
     support_functions: HashMap<BindingId, libc_symbols::SupportFunction>,
     support_globals: HashMap<BindingId, &'static crate::libc_catalog::Symbol>,
     intrinsics: HashMap<BindingId, &'static intrinsics_table::IntrinsicSignature>,
+    sve_intrinsics: HashMap<BindingId, &'static sve::SveIntrinsic>,
     bindings: HashMap<BindingId, String>,
     strings: HashMap<BindingId, Vec<u8>>,
     statics: HashSet<BindingId>,
@@ -156,6 +159,7 @@ struct Dependencies {
     f128: bool,
     libgcc: bool,
     simd: bool,
+    sve: bool,
     intrinsics: BTreeMap<String, rust::ExternFnDecl>,
     bridges: BTreeMap<String, rust::ExternFnDecl>,
     align_wrappers: BTreeSet<u32>,
@@ -835,6 +839,13 @@ impl<'m> ModuleLowerer<'m> {
                     ))
                 })
                 .collect(),
+            sve_intrinsics: module
+                .functions
+                .iter()
+                .filter_map(|function| {
+                    Some((function.value.id, sve::builtin_sve(module, function)?))
+                })
+                .collect(),
             bindings,
             strings,
             statics: statics.iter().map(|global| global.variable.id).collect(),
@@ -1161,6 +1172,7 @@ impl<'m> ModuleLowerer<'m> {
                 || self.tables.stdio.functions.contains_key(&function.value.id)
                 || self.tables.stdio.unreachable.contains(&function.value.id)
                 || self.tables.intrinsics.contains_key(&function.value.id)
+                || self.tables.sve_intrinsics.contains_key(&function.value.id)
                 || self.tables.extern_bridges_long_double(function)
                     && function
                         .abi
@@ -1798,6 +1810,9 @@ impl<'m> ModuleLowerer<'m> {
             })
         {
             features.push(rust::CrateAttr::Feature(rust::Feature::ArmTargetFeature));
+        }
+        if dependencies.sve {
+            features.push(rust::CrateAttr::Feature(rust::Feature::StdarchAarch64Sve));
         }
         if dependencies.simd {
             features.extend([

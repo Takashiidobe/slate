@@ -679,7 +679,7 @@ impl<'a> DeclaratorParser<'a> {
         let c23_auto_inference = self.context.features().auto_type_inference
             && specifiers.storage == StorageClass::Auto
             && match self.peek() {
-                Some(Token::Ident(name)) => !self.context.is_typedef(name),
+                Some(Token::Ident(name)) => !self.context.is_type_name(name),
                 Some(Token::Star | Token::LParen) => true,
                 _ => false,
             };
@@ -690,14 +690,14 @@ impl<'a> DeclaratorParser<'a> {
             gnu_auto_type || c23_auto_inference || specifiers.ty == TypeSpecifier::Inferred;
         let implicit_int = implicit_int_function
             && self.context.features().implicit_int.is_accepted()
-            && matches!(self.peek(), Some(Token::Ident(name)) if !self.context.is_typedef(name))
+            && matches!(self.peek(), Some(Token::Ident(name)) if !self.context.is_type_name(name))
             && matches!(
                 self.tokens.value_at(self.pos + 1),
                 Some(Token::LParen | Token::Semi | Token::Comma | Token::Equal)
             );
         if !implicit_int
             && !inferred
-            && matches!(self.peek(), Some(Token::Ident(name)) if !self.context.is_typedef(name))
+            && matches!(self.peek(), Some(Token::Ident(name)) if !self.context.is_type_name(name))
             && matches!(
                 self.tokens.value_at(self.pos + 1),
                 Some(Token::LParen | Token::Semi)

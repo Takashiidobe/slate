@@ -47,6 +47,16 @@ impl<'m> Tables<'m> {
         }
     }
 
+    pub(super) fn scalable_name<'a>(&'a self, ty: &'a ir::Type) -> Option<&'a str> {
+        match self.resolve_type(ty) {
+            ir::Type::Vector {
+                scalable: Some(name),
+                ..
+            } if self.target.family == TargetFamily::AArch64 => Some(name),
+            _ => None,
+        }
+    }
+
     pub(super) fn function_has_vector(&self, function: &ir::Function) -> bool {
         fixed_parameters(&function.parameters)
             .iter()
@@ -1152,6 +1162,11 @@ impl FunctionLowerer<'_, '_> {
                 let ty = vectors::slate_vector_type(lane, (*lanes).into(), alignment)
                     .ok_or_else(|| unsupported_type(ty))?;
                 self.dependencies.slate_vector = true;
+                return Ok(ty);
+            }
+            ir::Type::Sizeless(name) => {
+                let ty = sve::sve_type(name).ok_or_else(|| unsupported_type(ty))?;
+                self.dependencies.sve = true;
                 return Ok(ty);
             }
             ir::Type::VaList => return Ok(rust::Type::VaList),

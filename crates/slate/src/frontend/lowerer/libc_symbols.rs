@@ -45,6 +45,7 @@ impl Tables<'_> {
                 || (function.provenance.system_header.is_none() && !intrinsic)
                 || self.stdio.functions.contains_key(&function.value.id)
                 || self.intrinsics.contains_key(&function.value.id)
+                || self.sve_intrinsics.contains_key(&function.value.id)
                 || !matches!(function.linkage, ir::Linkage::External)
             {
                 continue;

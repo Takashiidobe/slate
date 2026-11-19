@@ -1265,6 +1265,7 @@ impl FunctionLowerer<'_, '_> {
         let id = symbol.binding;
         if let Some(function) = self.tables.names.get(&id) {
             if self.tables.intrinsics.contains_key(&id)
+                || self.tables.sve_intrinsics.contains_key(&id)
                 || (function.builtin.is_some() && function.is_extern)
             {
                 return Err(unsupported_asm("builtin symbol operand"));

@@ -89,7 +89,7 @@ pub(super) fn simd_type(element: rust::Type, lanes: u64) -> Option<rust::Type> {
     })
 }
 
-fn simd_parts(ty: &rust::Type) -> Option<(&rust::Type, u64)> {
+pub(super) fn simd_parts(ty: &rust::Type) -> Option<(&rust::Type, u64)> {
     let rust::Type::Generic { name, args } = ty else {
         return None;
     };
@@ -255,7 +255,7 @@ fn adapt_type(expr: Expr, from: &rust::Type, to: &rust::Type) -> Expr {
     }
 }
 
-fn constant_argument(value: &ir::Value) -> bool {
+pub(super) fn constant_argument(value: &ir::Value) -> bool {
     match &value.node.value {
         ValueKind::Constant(_) | ValueKind::LayoutQuery { .. } => true,
         ValueKind::Copy { operand, .. }

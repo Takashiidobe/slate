@@ -189,8 +189,13 @@ impl Tables<'_> {
             .zip(&signature.arguments)
             .chain(function.return_type.iter().zip([&signature.result]));
         let mut widest = 0;
+        let mut scalable = false;
         for (ty, pass) in passes {
             if !matches!(self.resolve_type(ty), ir::Type::Vector { .. }) {
+                continue;
+            }
+            if *pass == ir::AbiPass::Scalable {
+                scalable = true;
                 continue;
             }
             if *pass != ir::AbiPass::Direct {
@@ -200,6 +205,7 @@ impl Tables<'_> {
             widest = widest.max(size);
         }
         Ok(match widest {
+            _ if scalable => Some("sve"),
             32 if self.is_x86() => Some("avx"),
             64 if self.is_x86() => Some("avx512f"),
             _ => None,

@@ -725,7 +725,7 @@ pub(super) fn bare_identifier_names<'a>(
     for token in tokens {
         if expect_ident {
             match token {
-                Token::Ident(name) if !context.is_typedef(name) => names.push(name.to_string()),
+                Token::Ident(name) if !context.is_type_name(name) => names.push(name.to_string()),
                 _ => return None,
             }
         } else if *token != Token::Comma {

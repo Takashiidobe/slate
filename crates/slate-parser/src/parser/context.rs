@@ -30,6 +30,12 @@ impl<'a> ParseContext<'a> {
     pub(crate) fn is_typedef(self, name: &str) -> bool {
         self.parser().is_some_and(|parser| parser.is_typedef(name))
     }
+
+    pub(crate) fn is_type_name(self, name: &str) -> bool {
+        self.is_typedef(name)
+            || super::is_target_builtin_name(name)
+            || super::builtin_integer_typedef(name).is_some()
+    }
 }
 
 impl Parser {
