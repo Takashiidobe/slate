@@ -143,6 +143,26 @@ impl CTypes {
                 "conversion from nullptr_t to a type other than bool or a pointer",
             ));
         }
+        match (self.canonical_kind(from), self.canonical_kind(to)) {
+            (
+                CTypeKind::Sizeless(sizeless),
+                CTypeKind::Vector {
+                    scalable: Some(fixed),
+                    ..
+                },
+            )
+            | (
+                CTypeKind::Vector {
+                    scalable: Some(fixed),
+                    ..
+                },
+                CTypeKind::Sizeless(sizeless),
+            ) if sizeless == fixed => return Ok(Conversion::plain(CastKind::Vector)),
+            (CTypeKind::Sizeless(_), _) | (_, CTypeKind::Sizeless(_)) => {
+                return Err(ResolveError::Rejected("incompatible SVE types"));
+            }
+            _ => {}
+        }
         if self.is_vector(from) || self.is_vector(to) {
             return Ok(Conversion::plain(CastKind::Vector));
         }
@@ -393,6 +413,10 @@ impl CTypes {
 
     fn is_incomplete_enum(&self, q: QualType) -> bool {
         matches!(self.canonical_kind(q), CTypeKind::Enum(_)) && self.enum_underlying(q).is_none()
+    }
+
+    pub fn is_sizeless(&self, q: QualType) -> bool {
+        matches!(self.canonical_kind(q), CTypeKind::Sizeless(_))
     }
 
     pub fn is_nullptr(&self, q: QualType) -> bool {

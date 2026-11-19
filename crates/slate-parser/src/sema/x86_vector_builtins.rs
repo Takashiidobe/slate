@@ -120,10 +120,7 @@ impl Lowerer {
                     .into_iter()
                     .next()
                     .ok_or(ResolveError::Internal("byte shift operand"))?;
-                let byte_vector = Type::Vector {
-                    element: NumericType::integer(8, false),
-                    lanes: bytes,
-                };
+                let byte_vector = Type::vector(NumericType::integer(8, false), bytes);
                 let source = self.context.vector_convert(
                     vector,
                     byte_vector.clone(),
@@ -588,18 +585,13 @@ impl Lowerer {
         let Type::Vector {
             element: NumericType::Integer { width, .. },
             lanes,
+            ..
         } = left.ty
         else {
             return Err(ResolveError::Internal("integer vector compare operand"));
         };
-        let operand = Type::Vector {
-            element: NumericType::integer(width, !unsigned),
-            lanes,
-        };
-        let mask = Type::Vector {
-            element: NumericType::integer(width, true),
-            lanes,
-        };
+        let operand = Type::vector(NumericType::integer(width, !unsigned), lanes);
+        let mask = Type::vector(NumericType::integer(width, true), lanes);
         let op = match predicate & 7 {
             0 => CompareOp::Eq,
             1 => CompareOp::Lt,
@@ -646,6 +638,7 @@ impl Lowerer {
         let Type::Vector {
             element: NumericType::Float(float),
             lanes,
+            ..
         } = left.ty
         else {
             return Err(ResolveError::Internal("vector compare operand"));
@@ -655,10 +648,7 @@ impl Lowerer {
             FloatType::F64 => 64,
             _ => return Err(ResolveError::Internal("vector compare lane")),
         };
-        let mask = Type::Vector {
-            element: NumericType::integer(width, true),
-            lanes,
-        };
+        let mask = Type::vector(NumericType::integer(width, true), lanes);
         let mut compare = |this: &mut Self, op, x: &Place, y: &Place| {
             let (x, y) = (this.read_place(e, x), this.read_place(e, y));
             this.value(
@@ -739,6 +729,7 @@ impl Lowerer {
         let Type::Vector {
             element: NumericType::Float(float),
             lanes,
+            ..
         } = place.ty
         else {
             return Err(ResolveError::Internal("fpclass operand"));
@@ -748,14 +739,8 @@ impl Lowerer {
             FloatType::F64 => (64, 52),
             _ => return Err(ResolveError::Internal("fpclass lane")),
         };
-        let signed = Type::Vector {
-            element: NumericType::integer(width, true),
-            lanes,
-        };
-        let unsigned = Type::Vector {
-            element: NumericType::integer(width, false),
-            lanes,
-        };
+        let signed = Type::vector(NumericType::integer(width, true), lanes);
+        let unsigned = Type::vector(NumericType::integer(width, false), lanes);
         let one = BigUint::from(1u32);
         let sign: BigUint = &one << (width - 1);
         let infinity: BigUint = (&sign - 1u32) >> mantissa << mantissa;
@@ -976,7 +961,7 @@ fn lanes_of(ty: &Type) -> Option<u32> {
 }
 
 fn byte_count(ty: &Type) -> Option<u32> {
-    let Type::Vector { element, lanes } = ty else {
+    let Type::Vector { element, lanes, .. } = ty else {
         return None;
     };
     let bits = match element {

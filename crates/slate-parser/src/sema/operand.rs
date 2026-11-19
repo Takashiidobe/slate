@@ -395,6 +395,24 @@ impl TypeResolver {
         let vector = matches!(self.ctypes.canonical_kind(left), CTypeKind::Vector { .. })
             || matches!(self.ctypes.canonical_kind(right), CTypeKind::Vector { .. });
         let (operands, result) = if vector {
+            if let (
+                CTypeKind::Vector {
+                    scalable: left_scalable,
+                    ..
+                },
+                CTypeKind::Vector {
+                    scalable: right_scalable,
+                    ..
+                },
+            ) = (
+                self.ctypes.canonical_kind(left),
+                self.ctypes.canonical_kind(right),
+            ) && left_scalable.is_some() != right_scalable.is_some()
+            {
+                return Err(ResolveError::Rejected(
+                    "cannot combine GNU and SVE vectors in a binary operation",
+                ));
+            }
             let c = if matches!(self.ctypes.canonical_kind(left), CTypeKind::Vector { .. }) {
                 left
             } else {
@@ -405,6 +423,7 @@ impl TypeResolver {
                     element,
                     lanes,
                     bytes,
+                    ..
                 } = self.ctypes.canonical_kind(c).clone()
                 else {
                     return Err(ResolveError::Internal("comparison mask of nonvector"));
@@ -432,6 +451,7 @@ impl TypeResolver {
                     element,
                     lanes,
                     bytes,
+                    scalable: None,
                 })
             } else {
                 c

@@ -602,6 +602,12 @@ fn parse_attribute_value(
             Ok(value) => Attribute::NeonVectorType(value),
             Err(_) => invalid_attribute(name, arguments),
         }),
+        "arm_sve_vector_bits" if context.dialect().flavor() == CompilerFlavor::Gcc => {
+            Ok(match parse_expression(arguments) {
+                Ok(value) => Attribute::ArmSveVectorBits(value),
+                Err(_) => invalid_attribute(name, arguments),
+            })
+        }
         "scalar_storage_order" => Ok(string_argument()
             .map(Attribute::ScalarStorageOrder)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),

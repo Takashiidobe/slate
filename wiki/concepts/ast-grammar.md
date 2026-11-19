@@ -195,7 +195,7 @@ FloatingType = "BFloat16" | "Float" | "Float16" | "Fp16"
              | "Decimal32" | "Decimal64" | "Decimal64x" | "Decimal128" ;
 
 VectorType     = VectorType { element: TypeSpecifier, size: VectorSize } ;
-VectorSize     = "Bytes(" expr ")" | "Lanes(" expr ")" ;
+VectorSize     = "Bytes(" expr ")" | "Lanes(" expr ")" | "SveBits(" expr ")" ;
 ModeType       = ModeType { base: TypeSpecifier, mode: string } ;
 FixedPointType = FixedPointType {
                    kind: ( "Fract" | "Accum" ),
@@ -602,7 +602,7 @@ Attribute = (* no arguments *)
             (* expression arguments *)
           | "AddressSpace(" expr ")" | "Aligned(" expr ")"
           | "VectorSize(" expr ")" | "AllocAlign(" expr ")"
-          | "ExtVectorType(" expr ")"
+          | "ExtVectorType(" expr ")" | "ArmSveVectorBits(" expr ")"
           | "AssumeAligned(" vec<expr> ")" | "AllocSize(" vec<expr> ")"
           | PassObjectSize { size_type: expr, dynamic: bool }
           | Malloc { deallocator: opt<expr>, argument: opt<expr> }

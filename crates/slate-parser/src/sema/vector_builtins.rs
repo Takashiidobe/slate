@@ -151,6 +151,7 @@ impl Lowerer {
                     Type::Vector {
                         element: NumericType::Integer { width, .. },
                         lanes,
+                        ..
                     } => Some((*width, *lanes)),
                     _ => None,
                 });
@@ -184,14 +185,12 @@ impl Lowerer {
                 let Type::Vector {
                     element: NumericType::Integer { width: 64, .. },
                     lanes,
+                    ..
                 } = result_type
                 else {
                     return Err(ResolveError::Internal("widening multiply result"));
                 };
-                let wide = Type::Vector {
-                    element: NumericType::integer(64, signed),
-                    lanes,
-                };
+                let wide = Type::vector(NumericType::integer(64, signed), lanes);
                 let [left, right]: [Value; 2] = arguments
                     .try_into()
                     .map_err(|_| ResolveError::Internal("widening multiply argument count"))?;
@@ -334,6 +333,7 @@ impl Lowerer {
             element,
             mut lanes,
             mut bytes,
+            ..
         } = *self.types.ctypes.canonical_kind(vector_c)
         else {
             return Err(ResolveError::Internal("float reduction operand"));
@@ -352,6 +352,7 @@ impl Lowerer {
                 element,
                 lanes: half,
                 bytes,
+                scalable: None,
             });
             let ty = self.types.ir_type(c);
             let part = |range: std::ops::Range<u32>| {

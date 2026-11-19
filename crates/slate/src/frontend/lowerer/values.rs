@@ -2460,7 +2460,7 @@ impl FunctionLowerer<'_, '_> {
                 ir: ty.to_string(),
             })
         };
-        if let ir::Type::Vector { element, lanes } = self.tables.resolve_type(ty) {
+        if let ir::Type::Vector { element, lanes, .. } = self.tables.resolve_type(ty) {
             let vector = self.lower_type(ty)?;
             let array = ir::Type::Array {
                 element: Box::new(ir::Type::Numeric(*element)),

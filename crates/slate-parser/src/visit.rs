@@ -440,7 +440,9 @@ pub fn walk_type_specifier<V: Visitor + ?Sized>(
         TypeSpecifier::Vector(vector) => {
             visitor.visit_type_specifier(&vector.element)?;
             match &vector.size {
-                VectorSize::Bytes(value) | VectorSize::Lanes(value) => visitor.visit_expr(value),
+                VectorSize::Bytes(value)
+                | VectorSize::Lanes(value)
+                | VectorSize::SveBits(value) => visitor.visit_expr(value),
             }
         }
         TypeSpecifier::Tag(TagSpecifier::Reference {
@@ -517,6 +519,7 @@ pub fn walk_attribute<V: Visitor + ?Sized>(
         | Attribute::Cleanup(value)
         | Attribute::ExtVectorType(value)
         | Attribute::NeonVectorType(value)
+        | Attribute::ArmSveVectorBits(value)
         | Attribute::PassObjectSize {
             size_type: value, ..
         } => visitor.visit_expr(value),

@@ -12,6 +12,7 @@ pub enum Type {
     Vector {
         element: NumericType,
         lanes: u32,
+        scalable: Option<String>,
     },
     VaList,
     Sizeless(String),
@@ -83,7 +84,16 @@ impl fmt::Display for Type {
             Self::Complex(ty) => write!(f, "complex<{ty}>"),
             Self::Imaginary(ty) => write!(f, "imaginary<{ty}>"),
             Self::FixedPoint(ty) => write!(f, "{ty}"),
-            Self::Vector { element, lanes } => write!(f, "vector<{element}, {lanes}>"),
+            Self::Vector {
+                element,
+                lanes,
+                scalable: None,
+            } => write!(f, "vector<{element}, {lanes}>"),
+            Self::Vector {
+                element,
+                lanes,
+                scalable: Some(sizeless),
+            } => write!(f, "vector<{element}, {lanes}, {sizeless}>"),
             Self::Pointer {
                 pointee,
                 is_const,
@@ -211,6 +221,14 @@ impl NumericType {
 }
 
 impl Type {
+    pub fn vector(element: NumericType, lanes: u32) -> Self {
+        Self::Vector {
+            element,
+            lanes,
+            scalable: None,
+        }
+    }
+
     pub fn integer(width: u32, signed: bool) -> Self {
         Self::Numeric(NumericType::integer(width, signed))
     }

@@ -1,7 +1,6 @@
 # Cross-target toolchains
 
 <!-- toc -->
-
 - [Translation](#translation)
 - [Building generated Rust](#building-generated-rust)
 - [Coverage](#coverage)

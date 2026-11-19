@@ -1442,6 +1442,7 @@ pub enum Attribute {
     Availability(Vec<String>),
     ExtVectorType(Expr),
     NeonVectorType(Expr),
+    ArmSveVectorBits(Expr),
     ScalarStorageOrder(String),
     TransparentUnion,
     Format(Vec<String>),
@@ -1580,6 +1581,7 @@ pub struct ModeType {
 pub enum VectorSize {
     Bytes(Expr),
     Lanes(Expr),
+    SveBits(Expr),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1756,7 +1758,11 @@ impl Attribute {
     pub fn is_type_attribute(&self) -> bool {
         matches!(
             self,
-            Self::VectorSize(_) | Self::ExtVectorType(_) | Self::NeonVectorType(_) | Self::Mode(_)
+            Self::VectorSize(_)
+                | Self::ExtVectorType(_)
+                | Self::NeonVectorType(_)
+                | Self::ArmSveVectorBits(_)
+                | Self::Mode(_)
         )
     }
 
@@ -1790,6 +1796,7 @@ impl TypeSpecifier {
                 Attribute::ExtVectorType(size) | Attribute::NeonVectorType(size) => {
                     VectorSize::Lanes(size.clone())
                 }
+                Attribute::ArmSveVectorBits(bits) => VectorSize::SveBits(bits.clone()),
                 Attribute::Mode(mode) => {
                     self = Self::Mode(ModeType {
                         base: Box::new(self),

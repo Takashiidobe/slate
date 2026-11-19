@@ -1023,6 +1023,9 @@ impl Lowerer {
             ast::Attribute::NeonVectorType(expression) => {
                 ast::Attribute::NeonVectorType(fold(self, expression)?)
             }
+            ast::Attribute::ArmSveVectorBits(expression) => {
+                ast::Attribute::ArmSveVectorBits(fold(self, expression)?)
+            }
             ast::Attribute::CallingConvention(ast::CallingConvention::RegParm(expression)) => {
                 ast::Attribute::CallingConvention(ast::CallingConvention::RegParm(fold(
                     self, expression,

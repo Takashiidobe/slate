@@ -265,6 +265,18 @@ impl Printer<'_> {
             }
             CTypeKind::Imaginary(kind) => format!("_Imaginary {}", float_name(*kind)),
             CTypeKind::FixedPoint(fixed) => fixed_point_name(*fixed),
+            CTypeKind::Vector {
+                scalable: Some(sizeless),
+                bytes,
+                ..
+            } => format!(
+                "{sizeless} __attribute__((arm_sve_vector_bits({})))",
+                if *sizeless == "svbool_t" {
+                    bytes * 64
+                } else {
+                    bytes * 8
+                }
+            ),
             CTypeKind::Vector { element, bytes, .. } => format!(
                 "{} __attribute__((vector_size({bytes})))",
                 self.print(*element, Declarator::empty())

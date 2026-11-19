@@ -143,6 +143,7 @@ pub enum AbiPass {
     Scalar,
     Direct,
     NativeC,
+    Scalable,
     Coerce(Vec<AbiChunk>),
     ByValue { align: u32 },
     ByReference { align: u32 },
@@ -156,6 +157,7 @@ impl fmt::Display for AbiPass {
             Self::Scalar => f.write_str("scalar"),
             Self::Direct => f.write_str("direct"),
             Self::NativeC => f.write_str("native_c"),
+            Self::Scalable => f.write_str("scalable"),
             Self::Coerce(chunks) => {
                 f.write_str("coerce<")?;
                 for (index, chunk) in chunks.iter().enumerate() {
@@ -184,6 +186,10 @@ pub struct AbiSignature {
 }
 
 impl AbiSignature {
+    pub fn passes_scalable(&self) -> bool {
+        self.result == AbiPass::Scalable || self.arguments.contains(&AbiPass::Scalable)
+    }
+
     pub fn has_nontrivial_pass(&self) -> bool {
         self.calling != CallConv::C
             || self.regparm != 0

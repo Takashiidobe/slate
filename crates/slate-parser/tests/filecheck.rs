@@ -1027,6 +1027,12 @@ fn type_spelling(ty: &TypeSpecifier) -> String {
             VectorSize::Lanes(size) => {
                 format!("{} ext_vector_type({size})", type_spelling(&vector.element))
             }
+            VectorSize::SveBits(bits) => {
+                format!(
+                    "{} arm_sve_vector_bits({bits})",
+                    type_spelling(&vector.element)
+                )
+            }
         },
         TypeSpecifier::Mode(mode) => format!("{} mode({})", type_spelling(&mode.base), mode.mode),
         TypeSpecifier::FixedPoint(fixed) => format!(

@@ -118,6 +118,7 @@ fn general_use(attribute: &Attribute) -> Use {
         | Attribute::VectorSize(_)
         | Attribute::ExtVectorType(_)
         | Attribute::NeonVectorType(_)
+        | Attribute::ArmSveVectorBits(_)
         | Attribute::Packed
         | Attribute::MsStruct
         | Attribute::GccStruct

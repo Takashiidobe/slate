@@ -1139,7 +1139,7 @@ impl FunctionLowerer<'_, '_> {
                     len: 0,
                 });
             }
-            ir::Type::Vector { element, lanes } => {
+            ir::Type::Vector { element, lanes, .. } => {
                 let lane = self.lower_type(&ir::Type::Numeric(*element))?;
                 if let Some(simd) = intrinsics::simd_type(lane.clone(), (*lanes).into()) {
                     self.dependencies.simd = true;

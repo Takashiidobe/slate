@@ -700,6 +700,90 @@ impl TypeResolver {
         }
     }
 
+    fn sve_fixed_vector(
+        &mut self,
+        sizeless: QualType,
+        bits: &crate::ast::Expr,
+    ) -> Result<QualType, ResolveError> {
+        let name = match self.ctypes.canonical_kind(sizeless) {
+            CTypeKind::Sizeless(name) => *name,
+            CTypeKind::Vector {
+                scalable: Some(_), ..
+            } => {
+                return Err(ResolveError::Rejected(
+                    "'arm_sve_vector_bits' applied to a type which already has a size",
+                ));
+            }
+            _ => {
+                return Err(ResolveError::Rejected(
+                    "'arm_sve_vector_bits' applied to non-SVE type",
+                ));
+            }
+        };
+        let target = self.dialect.target();
+        let long_is_64 = super::ctype::rank_width(IntRank::Long, target) == 64;
+        let element = match name {
+            "svuint8_t" | "svmfloat8_t" => CTypeKind::UChar,
+            "svbool_t" | "svint8_t" => CTypeKind::SChar,
+            "svint16_t" | "svuint16_t" => CTypeKind::Int {
+                rank: IntRank::Short,
+                signed: name == "svint16_t",
+            },
+            "svint32_t" | "svuint32_t" => CTypeKind::Int {
+                rank: IntRank::Int,
+                signed: name == "svint32_t",
+            },
+            "svint64_t" | "svuint64_t" => CTypeKind::Int {
+                rank: if long_is_64 {
+                    IntRank::Long
+                } else {
+                    IntRank::LongLong
+                },
+                signed: name == "svint64_t",
+            },
+            "svfloat16_t" => CTypeKind::Float(FloatKind::Fp16),
+            "svbfloat16_t" => CTypeKind::Float(FloatKind::BFloat16),
+            "svfloat32_t" => CTypeKind::Float(FloatKind::Float),
+            "svfloat64_t" => CTypeKind::Float(FloatKind::Double),
+            _ => {
+                return Err(ResolveError::Rejected(
+                    "'arm_sve_vector_bits' applied to non-vector type",
+                ));
+            }
+        };
+        let fixed = match target.isa {
+            crate::target::isa::TargetIsa::AArch64(isa) => match isa.sve_vector_bits {
+                Some(crate::target::aarch64_isa::SveVectorBits::Fixed(fixed)) => Some(fixed),
+                _ => None,
+            },
+            _ => None,
+        };
+        let requested = self.constant_integer(bits)?;
+        let Some(fixed) = fixed.filter(|fixed| requested == num_bigint::BigInt::from(*fixed))
+        else {
+            self.warn(
+                Warning::IgnoredAttributes,
+                "unsupported SVE vector size",
+                bits,
+            );
+            return Ok(sizeless);
+        };
+        let bytes = u64::from(fixed) / if name == "svbool_t" { 64 } else { 8 };
+        let element = self.ctypes.qual(element);
+        let element_bytes = self.storage(self.ir_type(element))?.size_bytes;
+        let lanes = u32::try_from(bytes / element_bytes)
+            .map_err(|_| ResolveError::Rejected("vector lane count is too large"))?;
+        Ok(self
+            .ctypes
+            .qual(CTypeKind::Vector {
+                element,
+                lanes,
+                bytes,
+                scalable: Some(name),
+            })
+            .with(self.ctypes.quals(sizeless)))
+    }
+
     fn machine_mode(&mut self, base: QualType, mode: &str) -> Result<QualType, ResolveError> {
         let name = mode
             .strip_prefix("__")
@@ -722,6 +806,7 @@ impl TypeResolver {
                     element,
                     lanes,
                     bytes,
+                    scalable: None,
                 }
             }
             CTypeKind::Complex(component) => {
@@ -2799,6 +2884,13 @@ impl TypeResolver {
                 let base = self.base(&mode.base)?;
                 return self.machine_mode(base, &mode.mode);
             }
+            TypeSpecifier::Vector(crate::ast::VectorType {
+                element,
+                size: crate::ast::VectorSize::SveBits(bits),
+            }) => {
+                let element = self.base(element)?;
+                return self.sve_fixed_vector(element, bits);
+            }
             TypeSpecifier::Vector(vector) => {
                 let element = self.base(&vector.element)?;
                 let valid = match self.ctypes.canonical_kind(element) {
@@ -2835,6 +2927,9 @@ impl TypeResolver {
                         )?;
                         (lanes * element_bytes, lanes)
                     }
+                    crate::ast::VectorSize::SveBits(_) => {
+                        return Err(ResolveError::Internal("SVE vector size"));
+                    }
                 };
                 let lanes = u32::try_from(lanes)
                     .map_err(|_| ResolveError::Rejected("vector lane count is too large"))?;
@@ -2842,6 +2937,7 @@ impl TypeResolver {
                     element: self.ctypes.canonical(element).local_unqualified(),
                     lanes,
                     bytes,
+                    scalable: None,
                 }
             }
             TypeSpecifier::FixedPoint(fixed) => CTypeKind::FixedPoint(FixedType {

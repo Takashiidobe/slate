@@ -448,6 +448,15 @@ impl TypeResolver {
                 .and_then(|fields| fields.get(index))
                 .copied()
                 .ok_or(ResolveError::Internal("missing initializer field type")),
+            (
+                CTypeKind::Vector {
+                    scalable: Some("svbool_t"),
+                    ..
+                },
+                _,
+            ) => Err(ResolveError::Rejected(
+                "braced initializer for a fixed-length svbool_t, whose lanes gcc packs one bit per element",
+            )),
             (CTypeKind::Vector { element, .. }, _) => Ok(*element),
             (_, AggregateTarget::Index(_) | AggregateTarget::Range { .. }) => self
                 .ctypes
@@ -475,7 +484,7 @@ impl TypeResolver {
                 vector: false,
             });
         }
-        if let Type::Vector { element, lanes } = &ty {
+        if let Type::Vector { element, lanes, .. } = &ty {
             return Ok(Shape::Array {
                 element: Type::Numeric(*element),
                 length: Some(u64::from(*lanes)),

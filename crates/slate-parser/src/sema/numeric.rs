@@ -878,7 +878,7 @@ impl Context {
         right: Value,
     ) -> Result<Resolved, ResolveError> {
         let (left, right) = self.vector_operands(left, right)?;
-        let Type::Vector { element, lanes } = left.ty else {
+        let Type::Vector { element, lanes, .. } = left.ty else {
             return Err(ResolveError::Internal("vector arithmetic conversion"));
         };
         let compare = match op {
@@ -896,6 +896,7 @@ impl Context {
                 Type::Vector {
                     element: NumericType::integer(width, true),
                     lanes,
+                    scalable: None,
                 },
                 ValueKind::Compare {
                     op: compare,
@@ -1032,6 +1033,34 @@ impl Context {
     ) -> Result<Value, ResolveError> {
         if value.ty == to {
             return Ok(value);
+        }
+        if let (
+            Type::Sizeless(sizeless),
+            Type::Vector {
+                scalable: Some(fixed),
+                ..
+            },
+        )
+        | (
+            Type::Vector {
+                scalable: Some(fixed),
+                ..
+            },
+            Type::Sizeless(sizeless),
+        ) = (&value.ty, &to)
+        {
+            if sizeless != fixed {
+                return Err(ResolveError::Internal(
+                    "SVE conversion between different types",
+                ));
+            }
+            return Ok(conversion(
+                value,
+                to,
+                ConversionKind::VectorBitCast,
+                reason,
+                ConversionSema::Exact,
+            ));
         }
         let from_bytes = self.target.storage_of(value.ty.clone())?.size_bytes;
         let to_bytes = self.target.storage_of(to.clone())?.size_bytes;
@@ -2220,7 +2249,7 @@ fn per_lane(converted: Value, operand: Value, lanes: u32) -> Result<Value, Resol
     };
     let inner = per_lane(*inner, operand, lanes)?;
     Ok(Value {
-        ty: Type::Vector { element, lanes },
+        ty: Type::vector(element, lanes),
         node: node.with_value(ValueKind::Convert {
             kind,
             operand: Box::new(inner),

@@ -4,6 +4,8 @@
 - [Complex](#complex)
 - [Imaginary (C23 Annex G)](#imaginary-c23-annex-g)
 - [Vector](#vector)
+  - [SVE fixed-length vectors (gcc,
+    AArch64)](#sve-fixed-length-vectors-gcc-aarch64)
 - [Fixed-point (N1169)](#fixed-point-n1169)
 <!-- /toc -->
 
@@ -105,6 +107,39 @@ with no oracle.
   `__builtin_convertvector` prints the scalar conversion over vector types
   (`int_to_float<vector<f32, 4>>(..)`) with the same policies.
 - Fixtures: `ir_vector.c`, `ir_vector_invalid.c`.
+
+### SVE fixed-length vectors (gcc, AArch64)
+
+- `typedef svint32_t T __attribute__((arm_sve_vector_bits(N)))` is sized only
+  when `N` equals `-msve-vector-bits=N`; otherwise gcc warns `unsupported SVE
+  vector size` and the type stays sizeless, and so do we.
+- It is `Type::Vector { scalable: Some("svint32_t") }`, printed
+  `vector<i32, 8, svint32_t>`: N/8 bytes, alignment 16. `svbool_t` is N/64
+  bytes of `i8` lanes with alignment 2: reading a lane yields the signed byte
+  of the predicate, as gcc does. gcc stores braced-initializer elements one
+  bit per lane, which the byte model cannot express, so a braced initializer
+  for a fixed `svbool_t` is rejected; build one by converting a same-size
+  vector. `svmfloat8_t` lanes are `u8`, like `__mfp8`.
+- Distinct from the plain vector of the same shape and from the sizeless type
+  (`__builtin_types_compatible_p` is 0 for both, as in gcc). Assignment,
+  return, arguments and casts convert implicitly to and from the sizeless type
+  of the same name and to and from a same-size vector, as `vector_bit_cast`.
+  Any other sizeless conversion is `incompatible SVE types`.
+- Operators are the vector ones. An operation mixing a fixed SVE vector with a
+  plain vector is rejected as in gcc. Comparison masks and
+  `__builtin_shufflevector` results are plain vectors, as in gcc.
+- AAPCS64 passes and returns it `scalable`. Inside a record it is ordinary data.
+  slate lowers it to `Simd<T, lanes>`. A `scalable` signature is a barrier
+  unless the function is an internal definition, whose Rust-ABI calls never
+  cross into native code.
+- Rejected like gcc: non-SVE types, tuples and `svcount_t` (non-vector), and a
+  type that already has a size. Clang flavor does not model the attribute.
+- Limits: predicate operator restrictions (gcc allows only some operators on
+  fixed `svbool_t`) are not checked.
+- Fixtures: `gcc/linux/aarch64/sve_fixed_vectors.c`,
+  `sve_fixed_vectors_ignored.c`, `error/gcc/linux/aarch64/sve-fixed-*.c`;
+  slate `fixtures/gcc/aarch64/sve_fixed_vectors.c` and
+  `fixtures.unsupported/gcc/aarch64/sve_fixed_native_signature.c`.
 
 ## Fixed-point (N1169)
 

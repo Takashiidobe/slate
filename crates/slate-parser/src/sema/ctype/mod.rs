@@ -211,6 +211,7 @@ pub enum CTypeKind {
         element: QualType,
         lanes: u32,
         bytes: u64,
+        scalable: Option<&'static str>,
     },
     VaList,
     NullPtr,
@@ -375,6 +376,7 @@ impl CTypes {
                 element,
                 lanes,
                 bytes,
+                scalable,
             } => {
                 let canonical = self.canonical(*element).local_unqualified();
                 (canonical != *element).then(|| {
@@ -382,6 +384,7 @@ impl CTypes {
                         element: canonical,
                         lanes: *lanes,
                         bytes: *bytes,
+                        scalable: *scalable,
                     })
                 })
             }

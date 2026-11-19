@@ -1399,6 +1399,7 @@ impl TypeResolver {
                     element,
                     lanes: *lanes,
                     bytes: u64::from(*lanes) * element_bytes,
+                    scalable: None,
                 }
             }
             BuiltinType::SizeT => return Some(self.ctypes.size_type(target)),

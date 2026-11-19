@@ -218,7 +218,7 @@ impl Painter<'_, '_> {
                 let size = self.size_of(ty)?;
                 self.numeric(&mut writes, NumericType::Float(*format), 0, size);
             }
-            ir::Type::Vector { element, lanes } => {
+            ir::Type::Vector { element, lanes, .. } => {
                 let lane = self.size_of(&ir::Type::Numeric(*element))?;
                 for index in 0..u64::from(*lanes) {
                     self.numeric(&mut writes, *element, index * lane, lane);

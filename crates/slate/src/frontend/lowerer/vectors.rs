@@ -387,7 +387,7 @@ impl FunctionLowerer<'_, '_> {
             return Err(unsupported_value(value));
         };
         let (
-            ir::Type::Vector { element, lanes },
+            ir::Type::Vector { element, lanes, .. },
             ir::Type::Numeric(ir::NumericType::Integer { width, .. }),
         ) = (
             self.tables.resolve_type(&value.ty).clone(),
@@ -453,6 +453,7 @@ impl FunctionLowerer<'_, '_> {
                         ..
                     },
                 lanes,
+                ..
             },
             ir::Type::Numeric(ir::NumericType::Integer { .. }),
         ) = (
@@ -542,7 +543,7 @@ impl FunctionLowerer<'_, '_> {
         mask: &ir::Value,
     ) -> Result<(Expr, rust::Type)> {
         let (
-            ir::Type::Vector { element, lanes },
+            ir::Type::Vector { element, lanes, .. },
             ir::Type::Numeric(ir::NumericType::Integer { width, .. }),
         ) = (
             self.tables.resolve_type(vector).clone(),

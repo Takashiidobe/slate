@@ -712,9 +712,9 @@ impl Resolver {
             TypeSpecifier::Vector(vector) => {
                 self.type_specifier(&vector.element, span)?;
                 match &vector.size {
-                    crate::ast::VectorSize::Bytes(value) | crate::ast::VectorSize::Lanes(value) => {
-                        self.visit_expr(value)
-                    }
+                    crate::ast::VectorSize::Bytes(value)
+                    | crate::ast::VectorSize::Lanes(value)
+                    | crate::ast::VectorSize::SveBits(value) => self.visit_expr(value),
                 }
             }
             _ => Ok(()),

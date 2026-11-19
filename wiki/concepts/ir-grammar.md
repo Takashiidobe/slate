@@ -149,7 +149,8 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
 type          = "void" | "bool" | "va_list" | numeric
               | "complex<" numeric ">"
               | "imaginary<" float_type ">"
-              | "vector<" numeric ", " int ">"
+              | "vector<" numeric ", " int [ ", " sve_name ] ">"
+              | "sizeless<" sve_name ">"
               | [ "sat_" ] "fixed<" int_type ", " int ">"
               | "ptr<" [ "const " ] [ access_prefix ] type [ ", " ptr_space ] ">"
               | "array<" type ", " ( int | "incomplete" ) ">"
@@ -173,7 +174,10 @@ fn_params     = "unprototyped" | type { ", " type } [ ", ..." ] | "..." ;
 - `d32`/`d64`/`d128` are decimal floating types, never converted to binary.
 - `vector<T, N>` is a GNU `vector_size` or Clang `ext_vector_type` or
   `neon_vector_type` type with `N` lanes of the scalar `T`; all source forms
-  print the same way.
+  print the same way. A third argument (`vector<i32, 8, svint32_t>`) marks a gcc
+  `arm_sve_vector_bits` type and names its sizeless SVE type; it is a distinct
+  type from the plain vector of the same shape.
+- `sizeless<svint32_t>` is an SVE/SME type with no compile-time size.
 - `fixed<iW, S>` is an N1169 fixed-point type: a two's-complement `iW`/`uW`
   storage word with `S` fractional bits, leaving `W - S - signed` integral bits.
   `sat_fixed<..>` is the `_Sat` form, whose operations saturate where the plain
@@ -314,7 +318,7 @@ abi_signature = convention [ " " call_conv ] [ " regparm=" integer ] [ " sseregp
                 "(" [ abi_pass { ", " abi_pass } ] ") -> " abi_pass ;
 convention    = "sysv64" | "win64" | "x86_cdecl" | "x86_win32" | "aapcs64" | "win_arm64"
               | "aapcs32" | "aapcs32_hard_float" ;
-abi_pass      = "void" | "scalar" | "direct" | "native_c"
+abi_pass      = "void" | "scalar" | "direct" | "native_c" | "scalable"
               | "coerce<" chunk { ", " chunk } ">"
               | "byval<align=" int ">" | "byref<align=" int ">" | "sret<align=" int ">" ;
 chunk         = "i" digits | float_type | "pair<" float_type ">" | "quad<" float_type ">"
@@ -324,6 +328,9 @@ chunk         = "i" digits | float_type | "pair<" float_type ">" | "quad<" float
 - `native_c`: rustc's `extern "C"` passes a same-layout `repr(C)` type exactly
   as the C compiler does. Other record and complex shapes are explicit because
   rustc would differ.
+- `scalable`: an AAPCS64 fixed-length SVE vector (`vector<T, N, sv..._t>`),
+  passed and returned in a Z register (P register for `svbool_t`) exactly like
+  its sizeless type, not as a short vector.
 - `pair<T>` / `quad<T>`: two or four `T` lanes in one SSE eightbyte.
 - `vector<T, N>`: one vector register holding an x86-64 `vectorcall` HVA member.
 - `void` as an argument: nothing is passed (an empty record under x86-64

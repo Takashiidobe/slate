@@ -354,6 +354,7 @@ impl TypeResolver {
             element,
             lanes,
             bytes,
+            ..
         } = *self.ctypes.canonical_kind(vector)
         else {
             return Err(ResolveError::Internal("expected vector"));
@@ -369,6 +370,7 @@ impl TypeResolver {
                 element,
                 lanes: width,
                 bytes: bytes / u64::from(lanes) * u64::from(width),
+                scalable: None,
             })
         };
         Ok((c.with(self.ctypes.quals(vector)), mask))
@@ -384,6 +386,7 @@ impl TypeResolver {
             element,
             lanes,
             bytes,
+            ..
         } = *self.ctypes.canonical_kind(left)
         else {
             return Err(ResolveError::Rejected("shuffle builtin operand type"));
@@ -420,6 +423,7 @@ impl TypeResolver {
             element,
             lanes: width,
             bytes: bytes / u64::from(lanes) * u64::from(width),
+            scalable: None,
         });
         Ok((c, Some(mask)))
     }
@@ -1654,6 +1658,8 @@ impl TypeResolver {
             && self.null_pointer_constant(e);
         let conversion = self.ctypes.classify_conversion(from, to, context, null)?;
         if conversion.kind == CastKind::Vector
+            && !self.ctypes.is_sizeless(from)
+            && !self.ctypes.is_sizeless(to)
             && self.storage(self.ir_type(from))?.size_bytes
                 != self.storage(self.ir_type(to))?.size_bytes
         {

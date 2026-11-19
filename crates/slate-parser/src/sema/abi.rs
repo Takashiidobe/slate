@@ -670,7 +670,7 @@ impl<'a> AbiClassifier<'a> {
             {
                 AbiChunk::Float(format)
             }
-            Type::Vector { element, lanes } => AbiChunk::Vector { element, lanes },
+            Type::Vector { element, lanes, .. } => AbiChunk::Vector { element, lanes },
             _ => return Ok(None),
         };
         let size = self.types.qualified_storage(ty.clone(), false)?.size_bytes;
@@ -1372,9 +1372,16 @@ impl<'a> AbiClassifier<'a> {
         result: bool,
         convention: AbiConvention,
     ) -> Result<AbiPass, ResolveError> {
-        let Type::Vector { element, .. } = operand.ty else {
+        let Type::Vector {
+            element, scalable, ..
+        } = &operand.ty
+        else {
             return Err(ResolveError::Internal("vector ABI of non-vector type"));
         };
+        let element = *element;
+        if scalable.is_some() && convention == AbiConvention::Aapcs64 {
+            return Ok(AbiPass::Scalable);
+        }
         let layout = self.layout(operand)?;
         let size = layout.size_bytes;
         let align = layout.alignment_bytes;

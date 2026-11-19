@@ -205,7 +205,7 @@ impl Lowerer {
         let value = match op {
             NeonOp::LaneRead => {
                 let Some((vector, lanes)) = arguments.first().and_then(|vector| match vector.ty {
-                    Type::Vector { element, lanes } => Some((element, lanes)),
+                    Type::Vector { element, lanes, .. } => Some((element, lanes)),
                     _ => None,
                 }) else {
                     return Ok(Err((returned, ty, arguments)));
@@ -294,7 +294,7 @@ impl Lowerer {
                 let [scalar, vector, _]: [Value; 3] = arguments
                     .try_into()
                     .map_err(|_| ResolveError::Internal("neon lane write operand count"))?;
-                let Type::Vector { element, lanes } = vector.ty else {
+                let Type::Vector { element, lanes, .. } = vector.ty else {
                     return Err(ResolveError::Internal("neon lane write vector"));
                 };
                 let vector_type = vector.ty.clone();
@@ -354,7 +354,7 @@ impl Lowerer {
                     return Ok(Err((returned, ty, arguments)));
                 };
                 let (_, source) = shape;
-                let Type::Vector { element, lanes } = source else {
+                let Type::Vector { element, lanes, .. } = source else {
                     return Err(ResolveError::Internal("neon splat vector"));
                 };
                 let vector = arguments
@@ -368,10 +368,7 @@ impl Lowerer {
                 let splat_lanes = bits / (element_bytes(element) as u32 * 8);
                 let splat = self.shuffle(
                     e,
-                    Type::Vector {
-                        element,
-                        lanes: splat_lanes,
-                    },
+                    Type::vector(element, splat_lanes),
                     vector,
                     None,
                     vec![Some(index % lanes); splat_lanes as usize],
@@ -389,7 +386,7 @@ impl Lowerer {
             ),
             NeonOp::ScalarVector(name) => {
                 let element = NumericType::integer(16, true);
-                let vector = Type::Vector { element, lanes: 4 };
+                let vector = Type::vector(element, 4);
                 let arguments = arguments
                     .into_iter()
                     .map(|value| {
@@ -471,10 +468,7 @@ impl Lowerer {
                 let element = NumericType::Float(FloatType::F16);
                 let vector = self.context.vector_convert(
                     vector,
-                    Type::Vector {
-                        element,
-                        lanes: lanes / 2,
-                    },
+                    Type::vector(element, lanes / 2),
                     ConversionReason::Explicit,
                 )?;
                 let reduced = self.value(
@@ -532,7 +526,7 @@ impl Lowerer {
     }
 
     fn neon_across(&mut self, e: &Expr, op: NeonOp, vector: Value) -> Result<Value, ResolveError> {
-        let Type::Vector { element, lanes } = vector.ty else {
+        let Type::Vector { element, lanes, .. } = vector.ty else {
             return Err(ResolveError::Internal("neon across-vector operand"));
         };
         let float = matches!(element, NumericType::Float(_));
@@ -620,6 +614,7 @@ impl Lowerer {
         let Type::Vector {
             element: result_element,
             lanes,
+            ..
         } = result
         else {
             return Err(ResolveError::Internal("neon result shape"));
@@ -717,7 +712,7 @@ impl Lowerer {
         lane: u32,
         operands: Vec<Value>,
     ) -> Result<Value, ResolveError> {
-        let Type::Vector { element, lanes } = vector else {
+        let Type::Vector { element, lanes, .. } = vector else {
             return Err(ResolveError::Internal("neon memory vector"));
         };
         let scalar = Type::Numeric(element);
@@ -861,7 +856,7 @@ impl Lowerer {
 
     fn neon_place(&mut self, e: &Expr, pointer: Value, ty: &Type, index: Option<u32>) -> Place {
         let (element, bytes) = match ty {
-            Type::Vector { element, lanes } => {
+            Type::Vector { element, lanes, .. } => {
                 (*element, element_bytes(*element) * u64::from(*lanes))
             }
             Type::Numeric(element) => (*element, element_bytes(*element)),
@@ -1158,7 +1153,7 @@ fn neon_vector(code: u32, shape: NeonShape) -> Option<(Type, Type)> {
         NumericType::Float(_) => 64,
     };
     let lanes = bits / width;
-    let result = Type::Vector { element, lanes };
+    let result = Type::vector(element, lanes);
     let signed = matches!(element, NumericType::Integer { signed: true, .. });
     let operand = match (shape, element) {
         (NeonShape::Same, _) => element,
@@ -1167,13 +1162,7 @@ fn neon_vector(code: u32, shape: NeonShape) -> Option<(Type, Type)> {
                 FloatType::F16 => FloatType::F32,
                 _ => FloatType::F16,
             };
-            return Some((
-                result,
-                Type::Vector {
-                    element: NumericType::Float(resized),
-                    lanes,
-                },
-            ));
+            return Some((result, Type::vector(NumericType::Float(resized), lanes)));
         }
         (NeonShape::Float, _) if width == 16 => NumericType::Float(FloatType::F16),
         (NeonShape::Float, _) if width == 32 => NumericType::Float(FloatType::F32),
@@ -1186,22 +1175,13 @@ fn neon_vector(code: u32, shape: NeonShape) -> Option<(Type, Type)> {
         }
         (NeonShape::Quarter, NumericType::Integer { .. }) if width == 32 => {
             return Some((
-                Type::Vector {
-                    element: NumericType::integer(8, signed),
-                    lanes: lanes * 4,
-                },
+                Type::vector(NumericType::integer(8, signed), lanes * 4),
                 result,
             ));
         }
         _ => return None,
     };
-    Some((
-        Type::Vector {
-            element: operand,
-            lanes,
-        },
-        result,
-    ))
+    Some((Type::vector(operand, lanes), result))
 }
 
 fn element_bytes(element: NumericType) -> u64 {

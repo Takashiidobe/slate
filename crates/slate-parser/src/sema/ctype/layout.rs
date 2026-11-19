@@ -23,9 +23,15 @@ impl CTypes {
             }
             CTypeKind::Imaginary(kind) => Type::Imaginary(float_type(*kind, target)),
             CTypeKind::FixedPoint(fixed) => Type::FixedPoint(fixed_point_type(*fixed)),
-            CTypeKind::Vector { element, lanes, .. } => Type::Vector {
+            CTypeKind::Vector {
+                element,
+                lanes,
+                scalable,
+                ..
+            } => Type::Vector {
                 element: self.numeric(*element, target),
                 lanes: *lanes,
+                scalable: scalable.map(String::from),
             },
             CTypeKind::VaList => Type::VaList,
             CTypeKind::Sizeless(name) => Type::Sizeless((*name).into()),

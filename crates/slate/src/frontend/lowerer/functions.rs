@@ -359,6 +359,14 @@ impl Tables<'_> {
             return unsupported(format!("{convention} calling convention"));
         };
         if let Some(signature) = &function.abi
+            && signature.passes_scalable()
+            && (function.body.is_none() || !matches!(function.linkage, ir::Linkage::Internal))
+        {
+            return unsupported(format!(
+                "fixed-length SVE vector passed in Z/P registers to or from native code: {signature}"
+            ));
+        }
+        if let Some(signature) = &function.abi
             && signature.sse_regparm
         {
             return unsupported(format!(
