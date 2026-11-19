@@ -2,7 +2,7 @@ use crate::compiler_args::CompilerFlavor;
 use crate::ir::TargetFeature;
 use crate::target::aarch64_isa::{AArch64Isa, ArmMarch, ArmVersion, SveVectorBits};
 use crate::target::arm_isa::{ArmFloatAbi, ArmFpu, ArmIsa};
-use crate::target::x86_isa::{X86Arch, X86Isa, X86IsaRequest};
+use crate::target::x86_isa::{X86Arch, X86Feature, X86Isa, X86IsaRequest};
 use crate::target_info::{TargetEnvironment, TargetFamily};
 use std::str::FromStr;
 
@@ -29,6 +29,7 @@ pub struct IsaRequest {
     pub march: Option<March>,
     pub x86: X86IsaRequest,
     pub float_abi: Option<ArmFloatAbi>,
+    pub soft_float: Option<bool>,
     pub fpu: Option<ArmFpu>,
     pub thumb: Option<bool>,
     pub sve_vector_bits: Option<SveVectorBits>,
@@ -70,10 +71,13 @@ impl TargetIsa {
                     Some(March::X86(arch)) => Some(arch),
                     Some(March::Arm(_)) => return Err("expected an x86 architecture".into()),
                 };
-                let x86 = request
+                let mut x86 = request
                     .x86
                     .clone()
                     .with_general_regs_only(&request.general_regs_only);
+                if let Some(soft_float) = request.soft_float {
+                    x86.set(X86Feature::X87, !soft_float);
+                }
                 x86.check(family, arch, flavor)?;
                 let isa = X86Isa::resolve(family, arch, &x86, flavor);
                 isa.check_fpmath(flavor)?;
@@ -85,6 +89,9 @@ impl TargetIsa {
                 }
                 if request.float_abi.is_some() || request.fpu.is_some() || request.thumb.is_some() {
                     return Err("float ABI, FPU, and Thumb options are 32-bit Arm options".into());
+                }
+                if request.soft_float.is_some() && flavor.is_gcc() {
+                    return Err("-msoft-float is unsupported for AArch64".into());
                 }
                 let march = match request.march {
                     None => None,
@@ -141,7 +148,13 @@ impl TargetIsa {
                     version,
                     fp_simd,
                     request.fpu,
-                    request.float_abi,
+                    request.float_abi.or(request.soft_float.map(|soft| {
+                        if soft {
+                            ArmFloatAbi::Soft
+                        } else {
+                            ArmFloatAbi::Hard
+                        }
+                    })),
                     request.thumb,
                     !request.general_regs_only.is_empty(),
                 )))

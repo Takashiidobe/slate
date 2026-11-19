@@ -2149,7 +2149,10 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 Opt::IndirectBranchCsPrefix => parsed.indirect_branch_cs_prefix = Some(value),
                 Opt::Retpoline => parsed.retpoline = Some(value),
                 Opt::X87 | Opt::ClangX87 => parsed.isa.x86.set(X86Feature::X87, value),
-                Opt::SoftFloat => parsed.isa.x86.set(X86Feature::X87, !value),
+                Opt::SoftFloat => {
+                    parsed.isa.soft_float = Some(value);
+                    parsed.isa.float_abi = None;
+                }
                 Opt::FpRetIn387 => {
                     if !value {
                         parsed.isa.x86.set_for_clang(X86Feature::X87, false);
@@ -2772,6 +2775,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
             )?);
         } else if let Some(value) = option_value(argument, "mfloat-abi") {
             parsed.saw(Opt::FloatAbi, argument);
+            parsed.isa.soft_float = None;
             parsed.isa.float_abi = Some(parse_value(
                 next_value(arguments, &mut index, argument, value)?,
                 argument,
