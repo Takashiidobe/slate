@@ -358,6 +358,13 @@ impl Tables<'_> {
         let Some(abi) = self.convention_abi(convention) else {
             return unsupported(format!("{convention} calling convention"));
         };
+        if let Some(signature) = &function.abi
+            && signature.sse_regparm
+        {
+            return unsupported(format!(
+                "-msseregparm float or double in XMM registers rustc cannot pass: {signature}"
+            ));
+        }
         if abi == rust::Abi::CUnwind {
             if self.module.machine.reg_struct_return
                 && let Some(signature) = &function.abi

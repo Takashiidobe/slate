@@ -158,6 +158,7 @@ pub struct TargetAbi {
     pub default_convention: crate::ir::CallConv,
     pub main_takes_default_convention: bool,
     pub struct_return: Option<StructReturn>,
+    pub sse_regparm: bool,
 }
 
 impl Default for TargetAbi {
@@ -169,6 +170,7 @@ impl Default for TargetAbi {
             default_convention: crate::ir::CallConv::C,
             main_takes_default_convention: false,
             struct_return: None,
+            sse_regparm: false,
         }
     }
 }

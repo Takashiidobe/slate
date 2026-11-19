@@ -274,6 +274,14 @@ across an extern boundary (`transparent_union_call.c`).
   arguments on the stack, so variadics get none. It is recorded, not modeled:
   rustc's `-Zregparm=N` is the matching switch. The per-function `regparm(N)`
   attribute is not applied yet.
+- gcc's `-msseregparm` on 32-bit x86 marks `sseregparm` on every signature
+  whose `float`/`double` values move to XMM registers: the result always, the
+  fixed parameters only when the function is not variadic (`long double` stays
+  x87). rustc has no such convention, so slate rejects the definitions, called
+  declarations and indirect calls that carry it; integer-only code is unaffected.
+- gcc's `-mabi=ms` on x86-64 Linux makes `win64` the default convention, so
+  every signature without an explicit one, variadics and `main` included,
+  prints `win64 ms_abi`. `sysv_abi` gives back the plain C convention.
 - Types differing only in convention are incompatible. A redeclaration without
   one inherits it; adding or changing one is rejected (all three compilers).
 - The convention is recorded, not modeled: stack cleanup, `inreg` registers,

@@ -301,6 +301,7 @@ impl<'a> AbiClassifier<'a> {
                 convention,
                 calling,
                 regparm: 0,
+                sse_regparm: false,
                 arguments,
                 result,
             });
@@ -348,10 +349,20 @@ impl<'a> AbiClassifier<'a> {
             ) if !variadic => self.target.abi.default_regparm,
             _ => 0,
         };
+        let sse_float = |operand: &AbiOperand| {
+            matches!(
+                self.types.unaliased(&operand.ty),
+                Type::Numeric(NumericType::Float(FloatType::F32 | FloatType::F64))
+            )
+        };
+        let sse_regparm = self.target.abi.sse_regparm
+            && (return_type.is_some_and(sse_float)
+                || !variadic && operands.iter().take(fixed_count).any(sse_float));
         Ok(AbiSignature {
             convention,
             calling,
             regparm,
+            sse_regparm,
             arguments,
             result,
         })

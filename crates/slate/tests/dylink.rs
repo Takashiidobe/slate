@@ -39,6 +39,8 @@ fn headers_in(dir: &Path) -> Vec<PathBuf> {
 struct FixtureConfig {
     platforms: Option<Vec<String>>,
     args: Vec<String>,
+    compiler: Option<String>,
+    translate_args: Vec<String>,
 }
 
 impl FixtureConfig {
@@ -69,6 +71,13 @@ impl FixtureConfig {
         Self {
             platforms: strings("platforms"),
             args: strings("args").unwrap_or_default(),
+            compiler: value.get("compiler").map(|compiler| {
+                compiler
+                    .as_str()
+                    .unwrap_or_else(|| panic!("{}: `compiler` must be a string", path.display()))
+                    .to_owned()
+            }),
+            translate_args: strings("translate_args").unwrap_or_default(),
         }
     }
 
@@ -339,9 +348,10 @@ impl Platform {
         let entries: Vec<_> = sources
             .iter()
             .map(|source| {
-                let mut arguments = vec!["clang".to_string()];
+                let mut arguments = vec![config.compiler.as_deref().unwrap_or("clang").to_string()];
                 arguments.extend(self.translate_args.iter().cloned());
                 arguments.extend(config.args.iter().cloned());
+                arguments.extend(config.translate_args.iter().cloned());
                 arguments.push(format!("-I{}", fixtures_root().display()));
                 arguments.push(format!("-I{}", work.display()));
                 arguments.push(source.display().to_string());

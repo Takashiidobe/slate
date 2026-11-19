@@ -2230,6 +2230,19 @@ impl FunctionLowerer<'_, '_> {
                 )?
             }
             ValueKind::Call {
+                callee: ir::Callee::Indirect(_),
+                abi,
+                ..
+            } if abi.sse_regparm => {
+                return Err(Construct::Value {
+                    kind: "indirect call".into(),
+                    ir: format!(
+                        "-msseregparm float or double in XMM registers rustc cannot pass: {abi}"
+                    ),
+                }
+                .into());
+            }
+            ValueKind::Call {
                 callee: ir::Callee::Indirect(pointer),
                 arguments,
                 ..

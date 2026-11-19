@@ -16,6 +16,7 @@ use crate::target::isa::{IsaRequest, March, TargetIsa};
 use crate::target::x86_isa::{ApxFlag, X86Feature, X86IsaRequest};
 use crate::target_info::{
     LongDoubleFormat, StructReturn, TargetEnvironment, TargetFamily, TargetInfo, TargetOs,
+    VaListKind,
 };
 use crate::target_registry::{ArchMode, arch_variant};
 use crate::{compiler_headers, native_headers, sysroot};
@@ -291,6 +292,8 @@ struct ParsedCompilerArgs {
     arch_mode: Option<ArchMode>,
     regparm: Option<u8>,
     rtd: Option<bool>,
+    ms_abi: Option<bool>,
+    sse_regparm: bool,
     struct_return: Option<StructReturn>,
     hosted: Option<bool>,
     builtin: Option<bool>,
@@ -593,6 +596,8 @@ enum Opt {
     ArchMode,
     RegParm,
     Rtd,
+    X86Abi,
+    SseRegParm,
     StructReturn,
     Freestanding,
     Hosted,
@@ -776,6 +781,8 @@ impl std::fmt::Display for Opt {
             Self::ArchMode => "m16|m32|m64|mx32",
             Self::RegParm => "mregparm",
             Self::Rtd => "mrtd",
+            Self::X86Abi => "mabi=ms|sysv",
+            Self::SseRegParm => "msseregparm",
             Self::StructReturn => "fpcc-struct-return|freg-struct-return",
             Self::Freestanding => "ffreestanding",
             Self::Hosted => "fhosted",
@@ -1041,10 +1048,12 @@ impl Opt {
             | Self::DollarsInIdentifiers
             | Self::FixedRegister
             | Self::Rtd
+            | Self::X86Abi
             | Self::ExecCharset
             | Self::SoftFloat
             | Self::StructReturn => &[Gcc, Clang],
             Self::PreferredStackBoundary
+            | Self::SseRegParm
             | Self::GccStrictFlexArrays
             | Self::WideExecCharset
             | Self::PermittedFltEvalMethods
@@ -1723,6 +1732,20 @@ impl CompilerArgParser {
                 _ => return Err(not_on_target("-mrtd")),
             }
         }
+        match (target.family, raw.ms_abi, raw.flavor.is_gcc()) {
+            (_, None, _)
+            | (TargetFamily::X86, Some(_), true)
+            | (TargetFamily::X86 | TargetFamily::X86_64, Some(false), _) => {}
+            (TargetFamily::X86_64, Some(true), true) => {
+                target.abi.default_convention = crate::ir::CallConv::Win64;
+                target.abi.main_takes_default_convention = true;
+                target.profile.va_list = VaListKind::CharPointer;
+            }
+            (_, Some(ms), _) => {
+                return Err(not_on_target(if ms { "-mabi=ms" } else { "-mabi=sysv" }));
+            }
+        }
+        target.abi.sse_regparm = raw.sse_regparm && target.family == TargetFamily::X86;
         target.abi.struct_return = match (target.family, raw.struct_return) {
             (_, None) => None,
             (TargetFamily::X86, convention) => convention,
@@ -2327,6 +2350,16 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
         } {
             parsed.saw(Opt::StructReturn, argument);
             parsed.struct_return = Some(convention);
+        } else if let Some(ms) = match argument.as_str() {
+            "-mabi=ms" => Some(true),
+            "-mabi=sysv" => Some(false),
+            _ => None,
+        } {
+            parsed.saw(Opt::X86Abi, argument);
+            parsed.ms_abi = Some(ms);
+        } else if argument == "-msseregparm" {
+            parsed.saw(Opt::SseRegParm, argument);
+            parsed.sse_regparm = true;
         } else if let Some(function) = argument
             .strip_prefix("-fno-builtin-")
             .filter(|function| !function.is_empty())

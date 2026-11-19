@@ -1,0 +1,5 @@
+{
+  "platforms": ["linux"],
+  "compiler": "gcc",
+  "translate_args": ["-mabi=ms"]
+}

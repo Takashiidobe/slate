@@ -205,7 +205,11 @@ one after the leg's runtime comparison passes, for that leg's triple
 
 A fixture's optional `dylink.json` sets `platforms` (leg names, replacing the
 default three) and `args` (passed to the native lib, the native host and
-`translate`). `linux-i686` (`i686-unknown-linux-gnu`, native `-m32`) is opt-in:
+`translate`), `compiler` (argv[0] of the translated host's compile command,
+default `clang`, which picks slate's flavor) and `translate_args` (passed only to
+`translate`). The last two test gcc-only flags such as `-mabi=ms`: the native
+side stays clang and spells the convention with attributes under `__clang__`
+(`abi_mabi_ms`). `linux-i686` (`i686-unknown-linux-gnu`, native `-m32`) is opt-in:
 it runs only fixtures that list it, which is how 32-bit ABI flags such as
 `-mrtd` are tested across a native/translated boundary. Native builds go
 through `compile_c_cached` and the crate through `fresh_tree`, so an unchanged

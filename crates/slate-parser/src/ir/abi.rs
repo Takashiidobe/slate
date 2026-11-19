@@ -178,6 +178,7 @@ pub struct AbiSignature {
     pub convention: AbiConvention,
     pub calling: CallConv,
     pub regparm: u8,
+    pub sse_regparm: bool,
     pub arguments: Vec<AbiPass>,
     pub result: AbiPass,
 }
@@ -186,6 +187,7 @@ impl AbiSignature {
     pub fn has_nontrivial_pass(&self) -> bool {
         self.calling != CallConv::C
             || self.regparm != 0
+            || self.sse_regparm
             || self.result != AbiPass::Scalar && self.result != AbiPass::Void
             || self.arguments.iter().any(|arg| *arg != AbiPass::Scalar)
     }
@@ -199,6 +201,9 @@ impl fmt::Display for AbiSignature {
         }
         if self.regparm != 0 {
             write!(f, " regparm={}", self.regparm)?;
+        }
+        if self.sse_regparm {
+            f.write_str(" sseregparm")?;
         }
         f.write_str("(")?;
         for (index, argument) in self.arguments.iter().enumerate() {

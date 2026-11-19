@@ -2494,6 +2494,12 @@ impl TypeResolver {
                         Some(CallConv::SysV64)
                     }
                     _ if !x86_family => None,
+                    crate::ast::CallingConvention::Cdecl
+                        if family == TargetFamily::X86_64
+                            && target.abi.default_convention == CallConv::Win64 =>
+                    {
+                        Some(CallConv::Win64)
+                    }
                     crate::ast::CallingConvention::Cdecl => Some(CallConv::C),
                     crate::ast::CallingConvention::Vectorcall => Some(CallConv::X86Vectorcall),
                     crate::ast::CallingConvention::Stdcall if x86 => Some(CallConv::X86Stdcall),
@@ -3003,9 +3009,9 @@ impl TypeResolver {
                     params,
                     variadic,
                     prototyped,
-                    convention: match variadic {
-                        true => CallConv::C,
-                        false => self.default_convention(direct_name(core)),
+                    convention: match self.default_convention(direct_name(core)) {
+                        convention if variadic && !convention.admits_variadic() => CallConv::C,
+                        convention => convention,
                     },
                 });
                 let q = match return_convention {
