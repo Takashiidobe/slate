@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:     fn abort();
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: core::arch::global_asm!(".section .data$__Avx2WmemEnabledWeakValue,\"dw\",discard,__Avx2WmemEnabledWeakValue\n.globl __Avx2WmemEnabledWeakValue\n.p2align 2\n__Avx2WmemEnabledWeakValue:\n.long {}\n.section .drectve,\"yni\"\n.ascii \" /include:__Avx2WmemEnabledWeakValue\"\n.text", const 0 as i32);
+// CHECK-NEXT: core::arch::global_asm!(".section .data$__Avx2WmemEnabledWeakValue,\"dw\",discard,__Avx2WmemEnabledWeakValue\n.globl __Avx2WmemEnabledWeakValue\n.p2align 2\n__Avx2WmemEnabledWeakValue:\n.long {0}\n.section .drectve,\"yni\"\n.ascii \" /include:__Avx2WmemEnabledWeakValue\"\n.text", const 0 as i32);
 // CHECK-EMPTY:
 // CHECK-NEXT: fn wmemcpy(_S1: *mut u16, _S2: *const u16, _N: u32) -> *mut u16 {
 // CHECK-NEXT:     // Buffer overrun
@@ -58,11 +58,11 @@ int main(void) {
 // CHECK-NEXT:     }) as *mut u16
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: core::arch::global_asm!(".section .data$_missing_flag_default,\"dw\",discard,_missing_flag_default\n.globl _missing_flag_default\n.p2align 2\n_missing_flag_default:\n.long {}\n.section .drectve,\"yni\"\n.ascii \" /include:_missing_flag_default\"\n.text", const 5 as i32);
+// CHECK-NEXT: core::arch::global_asm!(".section .data$_missing_flag_default,\"dw\",discard,_missing_flag_default\n.globl _missing_flag_default\n.p2align 2\n_missing_flag_default:\n.long {0}\n.section .drectve,\"yni\"\n.ascii \" /include:_missing_flag_default\"\n.text", const 5 as i32);
 // CHECK-EMPTY:
-// CHECK-NEXT: core::arch::global_asm!(".section .data$_present_flag_default,\"dw\",discard,_present_flag_default\n.globl _present_flag_default\n.p2align 2\n_present_flag_default:\n.long {}\n.section .drectve,\"yni\"\n.ascii \" /include:_present_flag_default\"\n.text", const 9 as i32);
+// CHECK-NEXT: core::arch::global_asm!(".section .data$_present_flag_default,\"dw\",discard,_present_flag_default\n.globl _present_flag_default\n.p2align 2\n_present_flag_default:\n.long {0}\n.section .drectve,\"yni\"\n.ascii \" /include:_present_flag_default\"\n.text", const 9 as i32);
 // CHECK-EMPTY:
-// CHECK-NEXT: core::arch::global_asm!(".section .data$_kept_unreferenced,\"dw\",discard,_kept_unreferenced\n.globl _kept_unreferenced\n.p2align 2\n_kept_unreferenced:\n.long {}\n.section .drectve,\"yni\"\n.ascii \" /include:_kept_unreferenced\"\n.text", const 3 as i32);
+// CHECK-NEXT: core::arch::global_asm!(".section .data$_kept_unreferenced,\"dw\",discard,_kept_unreferenced\n.globl _kept_unreferenced\n.p2align 2\n_kept_unreferenced:\n.long {0}\n.section .drectve,\"yni\"\n.ascii \" /include:_kept_unreferenced\"\n.text", const 3 as i32);
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut present_flag: i32 = 1;
 // CHECK-EMPTY:

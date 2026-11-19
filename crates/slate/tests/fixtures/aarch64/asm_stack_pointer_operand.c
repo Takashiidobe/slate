@@ -89,7 +89,7 @@ int main(void) {
 // CHECK-NEXT:     let copy: u64 = stack_copy();
 // CHECK-NEXT:     let direct: u64 = unsafe {
 // CHECK-NEXT:         let [[T_0]]: usize;
-// CHECK-NEXT:         core::arch::asm!("mov {}, sp", lateout(reg) [[T_0]]);
+// CHECK-NEXT:         core::arch::asm!("mov {0}, sp", lateout(reg) [[T_0]]);
 // CHECK-NEXT:         [[T_0]] as u64
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

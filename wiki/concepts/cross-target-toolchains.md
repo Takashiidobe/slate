@@ -1,6 +1,7 @@
 # Cross-target toolchains
 
 <!-- toc -->
+
 - [Translation](#translation)
 - [Building generated Rust](#building-generated-rust)
 - [Coverage](#coverage)
@@ -66,7 +67,7 @@ cargo run --release -p slate-c2rust -- translate \
   trace, and the rest without one. Compiled items are interned per target and
   unit, not across targets, because `NamedPrim` equality ignores the resolved
   width that the signature check reads (`c_long` is 32 bits on i686 and 64 on
-  x86_64). There is no `__slate_types` module, because `Exports::Fixed` never
+  x86*64). There is no `__slate_types` module, because `Exports::Fixed` never
   hoists types. The crate root has a `compile_error!` gated on `not` of the
   selected targets' cfgs, so any other target fails, with that message as its
   first error but followed by whatever else no longer resolves. The guard only
@@ -74,37 +75,17 @@ cargo run --release -p slate-c2rust -- translate \
   with a selected one, such as x32 with x86_64 linux gnu, still passes it.
   Per-target codegen rustflags (`-Zstack-protector`, `-Zsanitizer`,
   `-Zreg-struct-return`, `-Zregparm`) go into Cargo profiles, because Cargo has
-  no per-target package rustflags and `.cargo/config.toml` target rustflags
-  also reach the dependencies. The host target, or the first one when the host
-  is not selected, uses the `dev`/`release` package rustflags; each target
-  whose flags differ gets `[profile.<triple>] inherits = "release"` with its
-  own package rustflags. Every profile adds `--cfg slate_profile_<name>`, and a
-  `compile_error!` per target fails the build when it is built with another
-  target's profile (`build i686-unknown-linux-gnu with --profile
-  i686-unknown-linux-gnu`). rustc cannot compile a build script for an x86_64
-  host with `-Zregparm` or `-Zreg-struct-return`, and package rustflags beat
-  `build-override`, so a crate with those flags has no `build.rs`: the Linux
-  `-Wl,-z,nostart-stop-gc` link argument becomes a `-Clink-arg` rustflag, and
-  long double C shims are refused.
-  Each merged unit takes `runtime` and `no_builtins` from its per-target
-  facts, so a project freestanding on every target is a `#![no_std]` crate
-  with the panic handler, as without `--merge`; a unit hosted on one target and
-  freestanding on another is an error.
-  `--check-projection` is an independent check: it translates whole-project
-  configurations directly and requires the items the merged crate resolves to
-  for that configuration; `all` covers every valid feature subset, and
-  `--projection-triples` limits the check to manifest targets with those
-  triples. A distinct `link_section` depends on other units' address-taken
-  symbols, so the merge protects any symbol taken in any compile of the target;
-  the check allows this extra protection and rejects lost protection. The merge
-  also fails if a symbol shared between units has incompatible signatures in any
-  valid feature assignment. The signature check compares by-value layouts and
-  pointee names, and accepts what C allows across units: an unprototyped
-  declaration, an unsized `extern` array, a pointer to an opaque record, and the
-  alignment wrapper on a definition. A third unit's `#error` can make the
-  reported assignment impossible, so a report can be a false positive. Two
-  pointers to records of the same name match even if the record differs between
-  units, which has no effect on the call.
+  no per-target package rustflags and `.cargo/config.toml` target rustflags also
+  reach the dependencies. The host target, or the first one when the host is not
+  selected, uses the `dev`/`release` package rustflags; each target whose flags
+  differ gets `[profile.<triple>] inherits = "release"` with its own package
+  rustflags. Every profile adds `--cfg
+  slate_profile*<name>`, and a `compile_error!` per target fails the build when it is built with another target's profile (`build
+  i686-unknown-linux-gnu with --profile
+  i686-unknown-linux-gnu`). rustc cannot compile a build script for an x86_64 host with `-Zregparm`or`-Zreg-struct-return`, and package rustflags beat `build-override`, so a crate with those flags has no `build.rs`: the Linux `-Wl,-z,nostart-stop-gc`link argument becomes a`-Clink-arg`rustflag, and long double C shims are refused. Each merged unit takes`runtime`and`no_builtins`from its per-target facts, so a project freestanding on every target is a`#![no_std]`crate with the panic handler, as without`--merge`; a unit hosted on one target and freestanding on another is an error. `--check-projection`is an independent check: it translates whole-project configurations directly and requires the items the merged crate resolves to for that configuration;`all`covers every valid feature subset, and`--projection-triples`limits the check to manifest targets with those triples. A distinct`link_section`depends on other units' address-taken symbols, so the merge protects any symbol taken in any compile of the target; the check allows this extra protection and rejects lost protection. The merge also fails if a symbol shared between units has incompatible signatures in any valid feature assignment. The signature check compares by-value layouts and pointee names, and accepts what C allows across units: an unprototyped declaration, an unsized`extern`array, a pointer to an opaque record, and the alignment wrapper on a definition. A third unit's`#error`
+  can make the reported assignment impossible, so a report can be a false
+  positive. Two pointers to records of the same name match even if the record
+  differs between units, which has no effect on the call.
 
   The file holds `sources` and `args`, relative to `<project>`; `targets`
   (`name`, `triple`, `flavor`, optional `sysroot` and `args`, with generated
@@ -200,8 +181,8 @@ cargo run --release -p slate-c2rust -- translate \
 ## Coverage
 
 - The `slate` nextest profile executes x86_64 Linux differential suites.
-- `slate-i686`, `slate-aarch64` and `slate-targets` run `tests/fixtures` for
-  other Linux targets, under `qemu-aarch64-static` for aarch64
+- `i686`, `aarch64` and `targets` run `tests/fixtures` for other Linux targets,
+  under `qemu-aarch64-static` for aarch64
   ([targets](differential-fixtures.md#targets)). aarch64 needs
   `aarch64-linux-gnu-gcc` and its sysroot in `/usr/aarch64-linux-gnu`.
 - Other environments and OSes are tracked in `slate-5vj0.8`; corpus suites

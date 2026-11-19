@@ -12,21 +12,21 @@ default-filter = 'package(slate-c2rust) & binary(project_merge) & test(=merge_fi
 [profile.parser]
 default-filter = 'package(slate-parser)'
 
-[scripts.setup.target-i686]
+[scripts.setup.i686]
 command = [
   "sh",
   "-c",
   "echo SLATE_TEST_TARGETS=i686-unknown-linux-gnu >> \"$NEXTEST_ENV\"",
 ]
 
-[scripts.setup.target-aarch64]
+[scripts.setup.aarch64]
 command = [
   "sh",
   "-c",
   "echo SLATE_TEST_TARGETS=aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\"",
 ]
 
-[scripts.setup.target-arm]
+[scripts.setup.arm]
 command = [
   "sh",
   "-c",
@@ -40,35 +40,35 @@ command = [
   "echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu,armv7-unknown-linux-gnueabihf >> \"$NEXTEST_ENV\"",
 ]
 
-[profile.slate-i686]
+[profile.i686]
 default-filter = 'package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))'
 
-[[profile.slate-i686.scripts]]
+[[profile.i686.scripts]]
 filter = 'test(=generated_differential) | test(/^fixtures_unsupported_/)'
-setup = "target-i686"
+setup = "i686"
 
-[profile.slate-aarch64]
+[profile.aarch64]
 default-filter = 'package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))'
 
-[[profile.slate-aarch64.scripts]]
+[[profile.aarch64.scripts]]
 filter = 'test(=generated_differential) | test(/^fixtures_unsupported_/)'
-setup = "target-aarch64"
+setup = "aarch64"
 
-[profile.slate-arm]
+[profile.arm]
 default-filter = 'package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))'
 
-[[profile.slate-arm.scripts]]
+[[profile.arm.scripts]]
 filter = 'test(=generated_differential) | test(/^fixtures_unsupported_/)'
-setup = "target-arm"
+setup = "arm"
 
-[profile.slate-targets]
+[profile.targets]
 default-filter = 'package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))'
 
-[[profile.slate-targets.scripts]]
+[[profile.targets.scripts]]
 filter = 'test(=generated_differential) | test(/^fixtures_unsupported_/)'
 setup = "target-all"
 
-[scripts.setup.flavor-clang]
+[scripts.setup.clang]
 command = [
   "sh",
   "-c",
@@ -80,9 +80,9 @@ default-filter = '(package(slate-c2rust) & (test(=generated_differential) | test
 
 [[profile.clang.scripts]]
 filter = 'package(slate-c2rust) & (test(=generated_differential) | test(/^fixtures_unsupported_/))'
-setup = "flavor-clang"
+setup = "clang"
 
-[scripts.setup.flavor-gcc]
+[scripts.setup.gcc]
 command = [
   "sh",
   "-c",
@@ -94,9 +94,9 @@ default-filter = '(package(slate-c2rust) & (test(=generated_differential) | test
 
 [[profile.gcc.scripts]]
 filter = 'package(slate-c2rust) & (test(=generated_differential) | test(/^fixtures_unsupported_/))'
-setup = "flavor-gcc"
+setup = "gcc"
 
-[scripts.setup.flavor-msvc]
+[scripts.setup.msvc]
 command = [
   "sh",
   "-c",
@@ -108,7 +108,7 @@ default-filter = '(package(slate-c2rust) & (test(=generated_differential) | test
 
 [[profile.msvc.scripts]]
 filter = 'package(slate-c2rust) & (test(=generated_differential) | test(/^fixtures_unsupported_/))'
-setup = "flavor-msvc"
+setup = "msvc"
 
 # Overrides for slate profile
 
