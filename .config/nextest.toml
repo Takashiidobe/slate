@@ -13,16 +13,32 @@ default-filter = 'package(slate-c2rust) & binary(project_merge) & test(=merge_fi
 default-filter = 'package(slate-parser)'
 
 [scripts.setup.target-i686]
-command = ["sh", "-c", "echo SLATE_TEST_TARGETS=i686-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
+command = [
+  "sh",
+  "-c",
+  "echo SLATE_TEST_TARGETS=i686-unknown-linux-gnu >> \"$NEXTEST_ENV\"",
+]
 
 [scripts.setup.target-aarch64]
-command = ["sh", "-c", "echo SLATE_TEST_TARGETS=aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
+command = [
+  "sh",
+  "-c",
+  "echo SLATE_TEST_TARGETS=aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\"",
+]
 
 [scripts.setup.target-arm]
-command = ["sh", "-c", "echo SLATE_TEST_TARGETS=armv7-unknown-linux-gnueabihf >> \"$NEXTEST_ENV\""]
+command = [
+  "sh",
+  "-c",
+  "echo SLATE_TEST_TARGETS=armv7-unknown-linux-gnueabihf >> \"$NEXTEST_ENV\"",
+]
 
 [scripts.setup.target-all]
-command = ["sh", "-c", "echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu,armv7-unknown-linux-gnueabihf >> \"$NEXTEST_ENV\""]
+command = [
+  "sh",
+  "-c",
+  "echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu,armv7-unknown-linux-gnueabihf >> \"$NEXTEST_ENV\"",
+]
 
 [profile.slate-i686]
 default-filter = 'package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))'
@@ -52,20 +68,12 @@ default-filter = 'package(slate-c2rust) & (test(=generated_differential) | test(
 filter = 'test(=generated_differential) | test(/^fixtures_unsupported_/)'
 setup = "target-all"
 
-[[profile.default.overrides]]
-filter = 'test(gcc_torture_supported_tests_match_c)'
-priority = 100
-
-[[profile.default.overrides]]
-filter = 'test(generated_differential)'
-priority = 90
-
-[[profile.default.overrides]]
-filter = 'test(c_testsuite_supported_tests_match_c)'
-priority = 80
-
 [scripts.setup.flavor-clang]
-command = ["sh", "-c", "echo SLATE_DIFF_FLAVOR=clang >> \"$NEXTEST_ENV\"; echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
+command = [
+  "sh",
+  "-c",
+  "echo SLATE_DIFF_FLAVOR=clang >> \"$NEXTEST_ENV\"; echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\"",
+]
 
 [profile.clang]
 default-filter = '(package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))) | (package(slate-parser) & test(/^(error\/|suites\/[^\/]+\/)?clang\//))'
@@ -75,7 +83,11 @@ filter = 'package(slate-c2rust) & (test(=generated_differential) | test(/^fixtur
 setup = "flavor-clang"
 
 [scripts.setup.flavor-gcc]
-command = ["sh", "-c", "echo SLATE_DIFF_FLAVOR=gcc >> \"$NEXTEST_ENV\"; echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
+command = [
+  "sh",
+  "-c",
+  "echo SLATE_DIFF_FLAVOR=gcc >> \"$NEXTEST_ENV\"; echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\"",
+]
 
 [profile.gcc]
 default-filter = '(package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))) | (package(slate-parser) & test(/^(error\/|suites\/[^\/]+\/)?gcc\//))'
@@ -85,7 +97,11 @@ filter = 'package(slate-c2rust) & (test(=generated_differential) | test(/^fixtur
 setup = "flavor-gcc"
 
 [scripts.setup.flavor-msvc]
-command = ["sh", "-c", "echo SLATE_DIFF_FLAVOR=msvc >> \"$NEXTEST_ENV\"; echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\""]
+command = [
+  "sh",
+  "-c",
+  "echo SLATE_DIFF_FLAVOR=msvc >> \"$NEXTEST_ENV\"; echo SLATE_TEST_TARGETS=x86_64-unknown-linux-gnu,i686-unknown-linux-gnu,aarch64-unknown-linux-gnu >> \"$NEXTEST_ENV\"",
+]
 
 [profile.msvc]
 default-filter = '(package(slate-c2rust) & (test(=generated_differential) | test(=fixtures_unsupported_tests_still_fail))) | (package(slate-parser) & test(/^(error\/|suites\/[^\/]+\/)?msvc\//))'
@@ -93,3 +109,77 @@ default-filter = '(package(slate-c2rust) & (test(=generated_differential) | test
 [[profile.msvc.scripts]]
 filter = 'package(slate-c2rust) & (test(=generated_differential) | test(/^fixtures_unsupported_/))'
 setup = "flavor-msvc"
+
+# Overrides for slate profile
+
+[[profile.default.overrides]]
+filter = 'test(=manifest_selection_and_merge_match_c_with_same_configuration)'
+priority = 100
+
+[[profile.default.overrides]]
+filter = 'test(=freestanding_projects_build_for_bare_metal_targets)'
+priority = 95
+
+[[profile.default.overrides]]
+filter = 'test(=freestanding_panic_handler_ends_on_a_noreturn_c_panic)'
+priority = 90
+
+[[profile.default.overrides]]
+filter = 'test(=arch_mode_projects_select_their_rust_target)'
+priority = 85
+
+[[profile.default.overrides]]
+filter = 'test(=release_build_differential)'
+priority = 80
+
+[[profile.default.overrides]]
+filter = 'test(=dylink_windows)'
+priority = 75
+
+[[profile.default.overrides]]
+filter = 'test(=dylink_linux_aarch64)'
+priority = 70
+
+[[profile.default.overrides]]
+filter = 'test(=generated_differential)'
+priority = 65
+
+[[profile.default.overrides]]
+filter = 'test(=dylink_linux)'
+priority = 60
+
+[[profile.default.overrides]]
+filter = 'test(=chibicc_supported_tests_match_c)'
+priority = 55
+
+[[profile.default.overrides]]
+filter = 'test(=library_differential)'
+priority = 50
+
+[[profile.default.overrides]]
+filter = 'test(=freestanding_main_links_as_an_ordinary_symbol)'
+priority = 45
+
+[[profile.default.overrides]]
+filter = 'test(=chibicc_unsupported_tests_still_fail)'
+priority = 40
+
+[[profile.default.overrides]]
+filter = 'test(=gcc_dg_gcc_only_unsupported_tests_still_fail)'
+priority = 35
+
+[[profile.default.overrides]]
+filter = 'test(=manifest_merge_gates_units_compiled_for_some_targets)'
+priority = 30
+
+[[profile.default.overrides]]
+filter = 'test(=zlib_projection_sample)'
+priority = 25
+
+[[profile.default.overrides]]
+filter = 'test(=dylink_linux_i686)'
+priority = 20
+
+[[profile.default.overrides]]
+filter = 'test(=project_control_flow_differential)'
+priority = 15
