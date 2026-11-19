@@ -211,7 +211,7 @@ impl<'a> AbiClassifier<'a> {
             ty: ty.clone(),
             atomic: atomic_result,
         });
-        self.from_parts(
+        self.classify_signature(
             result.as_ref(),
             &argument_types,
             *variadic,
@@ -266,12 +266,11 @@ impl<'a> AbiClassifier<'a> {
         {
             return Ok(None);
         }
-        self.from_parts(return_type, parameters, variadic, parameters.len(), calling)
+        self.classify_signature(return_type, parameters, variadic, parameters.len(), calling)
             .map(Some)
     }
 
-    #[expect(clippy::wrong_self_convention, reason = "ok for now")]
-    pub(super) fn from_parts(
+    pub(super) fn classify_signature(
         &self,
         return_type: Option<&AbiOperand>,
         parameters: &[AbiOperand],

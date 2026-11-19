@@ -64,8 +64,8 @@ syntax-highlight = ["miette/syntect-highlighter"]
 
 [lints.clippy]
 large_enum_variant = "allow"
-allow_attributes = "warn"
-allow_attributes_without_reason = "warn"
+allow_attributes = "deny"
+allow_attributes_without_reason = "deny"
 result_large_err = "allow"
 
 [dev-dependencies]

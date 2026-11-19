@@ -320,7 +320,7 @@ fn generate_source(
 ) -> Result<String, syn::Error> {
     let llvm_commit = optional(llvm_commit, |commit| quote!(#commit));
     let mut tokens = quote! {
-        #![allow(dead_code, reason = "catalog retains metadata for future lowering")]
+        #![expect(dead_code, reason = "catalog retains metadata for future lowering")]
         pub const LLVM_COMMIT: Option<&str> = #llvm_commit;
 
         pub struct IntrinsicParam {

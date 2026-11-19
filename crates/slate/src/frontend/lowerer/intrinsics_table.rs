@@ -1,4 +1,4 @@
-#![allow(dead_code, reason = "catalog retains metadata for future lowering")]
+#![expect(dead_code, reason = "catalog retains metadata for future lowering")]
 pub const LLVM_COMMIT: Option<&str> = Some("58dd40228595");
 pub struct IntrinsicParam {
     pub llvm_type: &'static str,

@@ -1,4 +1,4 @@
-#![allow(
+#![expect(
     dead_code,
     reason = "shared helpers are used by different integration test binaries"
 )]
