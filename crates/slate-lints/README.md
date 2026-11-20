@@ -5,8 +5,11 @@ The crate is outside the Cargo workspace and builds against rustc internals.
 
 | Lint | Fires on |
 | --- | --- |
-| `slate::sensitive_wildcard` | A `_`, binding, or `matches!` that covers variants of a `#[slate::sensitive]` enum that another arm names. Arms that return `Err(..)` or diverge (`unreachable!`, `panic!`) are exempt. |
+| `slate::sensitive_wildcard` | A `_`, binding, or `matches!` catch-all over a `#[slate::sensitive]` enum when the arms name two or more variants. Single-variant projections and arms that return `Err(..)` or diverge are exempt. |
 | `slate::sensitive_field_rest` | A `{ .. }` or `( .. )` pattern that skips a `#[slate::sensitive]` field. |
+
+Policy (when to mark, how to resolve a hit, when an `#[expect]` is acceptable):
+[wiki/concepts/linting.md](../../wiki/concepts/linting.md).
 
 Both lints report on the match arm or pattern, so you can suppress one place
 with `#[expect(slate::sensitive_wildcard, reason = "...")]`. The `slate` tool

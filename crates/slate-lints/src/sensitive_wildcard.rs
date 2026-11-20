@@ -2,7 +2,9 @@ use crate::sensitive::sensitive_enum;
 use rustc_attr_ir::lang_items::LangItem;
 use rustc_errors::DiagDecorator;
 use rustc_hir::def::{DefKind, Res};
-use rustc_hir::{Arm, Expr, ExprKind, MatchSource, Pat, PatKind, QPath};
+use rustc_hir::{
+    Arm, Expr, ExprKind, HirId, MatchSource, Pat, PatExpr, PatExprKind, PatKind, QPath,
+};
 use rustc_lint::{LateContext, LateLintPass, LintContext};
 use rustc_span::Span;
 use rustc_span::def_id::DefId;
@@ -21,7 +23,10 @@ struct Step(Option<DefId>, usize);
 
 enum Leaf {
     Wild(Span),
-    Ctor(DefId),
+    Ctor {
+        enumeration: DefId,
+        variant: Option<DefId>,
+    },
 }
 
 impl<'tcx> LateLintPass<'tcx> for SensitiveWildcard {
@@ -41,11 +46,14 @@ impl<'tcx> LateLintPass<'tcx> for SensitiveWildcard {
                 out
             })
             .collect();
-        let ctors: Vec<(&[Step], DefId)> = leaves
+        let ctors: Vec<(&[Step], DefId, Option<DefId>)> = leaves
             .iter()
             .flatten()
             .filter_map(|(path, leaf)| match leaf {
-                Leaf::Ctor(did) => Some((path.as_slice(), *did)),
+                Leaf::Ctor {
+                    enumeration,
+                    variant,
+                } => Some((path.as_slice(), *enumeration, *variant)),
                 Leaf::Wild(_) => None,
             })
             .collect();
@@ -57,10 +65,16 @@ impl<'tcx> LateLintPass<'tcx> for SensitiveWildcard {
                 let Leaf::Wild(span) = leaf else {
                     continue;
                 };
-                let Some(&(_, enum_did)) = ctors.iter().find(|(ctor, _)| ctor.starts_with(path))
-                else {
+                let covered: Vec<_> = ctors
+                    .iter()
+                    .filter(|(ctor, ..)| ctor.starts_with(path))
+                    .collect();
+                let Some(&&(_, enum_did, _)) = covered.first() else {
                     continue;
                 };
+                if is_projection(&covered) {
+                    continue;
+                }
                 let span = if from_matches {
                     expr.span.source_callsite()
                 } else {
@@ -113,8 +127,8 @@ fn collect<'tcx>(
             positional(cx, None, elements, dotdot.as_opt_usize(), arity, path, out);
         }
         PatKind::TupleStruct(ref qpath, elements, dotdot) => {
-            mark_ctor(sensitive, path, out);
-            let variant = variant_of(cx, qpath, pat);
+            let variant = variant_of(cx, qpath, pat.hir_id);
+            mark_ctor(sensitive, variant, path, out);
             let arity = variant.map_or(elements.len(), |did| variant_arity(cx, did));
             positional(
                 cx,
@@ -127,8 +141,8 @@ fn collect<'tcx>(
             );
         }
         PatKind::Struct(ref qpath, fields, _) => {
-            mark_ctor(sensitive, path, out);
-            let variant = variant_of(cx, qpath, pat);
+            let variant = variant_of(cx, qpath, pat.hir_id);
+            mark_ctor(sensitive, variant, path, out);
             for field in fields {
                 let index = cx.typeck_results().field_index(field.hir_id).as_usize();
                 path.push(Step(variant, index));
@@ -136,14 +150,40 @@ fn collect<'tcx>(
                 path.pop();
             }
         }
-        _ => mark_ctor(sensitive, path, out),
+        PatKind::Expr(PatExpr {
+            kind: PatExprKind::Path(qpath),
+            hir_id,
+            ..
+        }) => mark_ctor(sensitive, variant_of(cx, qpath, *hir_id), path, out),
+        _ => mark_ctor(sensitive, None, path, out),
     }
 }
 
-fn mark_ctor(sensitive: Option<DefId>, path: &[Step], out: &mut Vec<(Vec<Step>, Leaf)>) {
-    if let Some(did) = sensitive {
-        out.push((path.to_vec(), Leaf::Ctor(did)));
+fn mark_ctor(
+    sensitive: Option<DefId>,
+    variant: Option<DefId>,
+    path: &[Step],
+    out: &mut Vec<(Vec<Step>, Leaf)>,
+) {
+    if let Some(enumeration) = sensitive {
+        out.push((
+            path.to_vec(),
+            Leaf::Ctor {
+                enumeration,
+                variant,
+            },
+        ));
     }
+}
+
+fn is_projection(covered: &[&(&[Step], DefId, Option<DefId>)]) -> bool {
+    covered.iter().all(|(path, _, variant)| {
+        variant.is_some()
+            && covered
+                .iter()
+                .filter(|(other, ..)| other == path)
+                .all(|(_, _, other)| other == variant)
+    })
 }
 
 fn positional<'tcx>(
@@ -167,8 +207,8 @@ fn positional<'tcx>(
     }
 }
 
-fn variant_of(cx: &LateContext<'_>, qpath: &QPath<'_>, pat: &Pat<'_>) -> Option<DefId> {
-    match cx.qpath_res(qpath, pat.hir_id) {
+fn variant_of(cx: &LateContext<'_>, qpath: &QPath<'_>, hir_id: HirId) -> Option<DefId> {
+    match cx.qpath_res(qpath, hir_id) {
         Res::Def(DefKind::Ctor(..), did) => Some(cx.tcx.parent(did)),
         Res::Def(_, did) => Some(did),
         _ => None,

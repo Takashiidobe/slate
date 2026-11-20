@@ -35,6 +35,7 @@ Specs and grammars are updated in the same change as the code they describe.
 | Warnings and `-W` | [diagnostic-severity](../../wiki/concepts/diagnostic-severity.md) |
 | Sema pass order, C types, entities | [sema-passes](../../wiki/concepts/sema-passes.md), [c-type-layer](../../wiki/concepts/c-type-layer.md), [entity-model](../../wiki/concepts/entity-model.md) |
 | Preprocessor, attributes, asm | [preprocessor](../../wiki/concepts/preprocessor.md), [attributes](../../wiki/concepts/attributes.md), [ir/asm](../../wiki/concepts/ir/asm.md), [msvc-asm](../../wiki/concepts/msvc-asm.md) |
+| An `#[expect]`, a `slate::` lint hit, or `#[slate::sensitive]` | [linting](../../wiki/concepts/linting.md) |
 | Generated or captured sources | [generated-sources](../../wiki/concepts/generated-sources.md) |
 | Fixtures, MSVC oracle, corpus | [fixture-layout](../../wiki/concepts/fixture-layout.md), [msvc-oracle](../../wiki/concepts/msvc-oracle.md), [c-corpus](../../wiki/concepts/c-corpus.md) |
 

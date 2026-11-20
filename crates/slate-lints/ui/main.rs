@@ -27,6 +27,7 @@ enum Error {
 fn wildcard(k: &Kind) -> u8 {
     match k {
         Kind::Int => 1,
+        Kind::Float => 2,
         _ => 0,
     }
 }
@@ -34,6 +35,7 @@ fn wildcard(k: &Kind) -> u8 {
 fn binding(k: &Kind) -> u8 {
     match k {
         Kind::Int => 1,
+        Kind::Float => 2,
         other => size(other),
     }
 }
@@ -79,10 +81,21 @@ fn nested(k: &Kind) -> u8 {
     }
 }
 
+fn projection(k: &Kind) -> Option<&Kind> {
+    match k {
+        Kind::Ptr(inner) => Some(inner),
+        _ => None,
+    }
+}
+
+fn projection_macro(k: &Kind) -> bool {
+    matches!(k, Kind::Ptr(_))
+}
+
 fn nested_elided(k: &Kind) -> u8 {
     match k {
         Kind::Ptr(inner) => match **inner {
-            Kind::Int => 1,
+            Kind::Int | Kind::Float => 1,
             _ => 2,
         },
         _ => 0,
@@ -91,8 +104,8 @@ fn nested_elided(k: &Kind) -> u8 {
 
 fn tuple(a: &Kind, b: &Kind) -> u8 {
     match (a, b) {
-        (Kind::Int, Kind::Int) => 1,
-        (Kind::Int, _) => 2,
+        (Kind::Int, Kind::Float) => 1,
+        (Kind::Float, _) => 2,
         _ => 0,
     }
 }
@@ -111,7 +124,8 @@ fn plain(p: &Plain) -> u8 {
 fn expected_arm(k: &Kind) -> u8 {
     match k {
         Kind::Int => 1,
-        #[expect(slate::sensitive_wildcard, reason = "projection: only Int has a width")]
+        Kind::Float => 2,
+        #[expect(slate::sensitive_wildcard, reason = "default is correct for any variant other than Int and Float")]
         _ => 0,
     }
 }
