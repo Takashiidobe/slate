@@ -1792,7 +1792,9 @@ name = "slate-analysis"
 version = "0.9.0"
 dependencies = [
  "foldhash",
+ "rayon",
  "slate-parser",
+ "stacker",
 ]
 
 [[package]]

@@ -31,10 +31,14 @@ pub struct Program<'m> {
     units: Vec<ProgramUnit<'m>>,
     functions: Vec<FunctionEntry<'m>>,
     resolved: HashMap<ProgramBinding, FunctionId>,
+    exported: Vec<bool>,
 }
 
 impl<'m> Program<'m> {
-    pub fn new(units: impl IntoIterator<Item = (&'m ir::Module, &'m Files)>) -> Self {
+    pub fn new(
+        units: impl IntoIterator<Item = (&'m ir::Module, &'m Files)>,
+        exported: impl Fn(&ir::Module, &ir::Function) -> bool,
+    ) -> Self {
         let units: Vec<_> = units
             .into_iter()
             .map(|(module, files)| ProgramUnit { module, files })
@@ -73,11 +77,22 @@ impl<'m> Program<'m> {
                 }
             }
         }
+        let exported = functions
+            .iter()
+            .map(|entry: &FunctionEntry<'m>| {
+                exported(units[entry.unit.0 as usize].module, &entry.function.value)
+            })
+            .collect();
         Self {
             units,
             functions,
             resolved,
+            exported,
         }
+    }
+
+    pub fn exported(&self, id: FunctionId) -> bool {
+        self.exported.get(id.0 as usize).copied().unwrap_or(true)
     }
 
     pub fn units(&self) -> impl ExactSizeIterator<Item = (UnitId, ProgramUnit<'m>)> + '_ {

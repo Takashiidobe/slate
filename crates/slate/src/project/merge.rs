@@ -319,11 +319,17 @@ pub fn translate_units(
             )
         })
         .collect();
+    let boundary = lowerer::LowerOptions {
+        export_symbols: true,
+        odr_symbols: symbol_owners.symbols.clone(),
+        ..lowerer::LowerOptions::default()
+    };
     let program = slate_analysis::Program::new(
         modules
             .iter()
             .zip(units)
             .map(|(module, unit)| (&**module, &unit.files)),
+        |module, function| lowerer::exports_symbol(&boundary, module, function),
     );
     let facts = slate_analysis::analyze(&program);
     let jobs: Vec<_> = units

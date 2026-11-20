@@ -1,11 +1,14 @@
 use crate::identity::{FunctionIdentity, identify};
+use crate::pointer::{self, PointerFact};
 use crate::program::{Program, ProgramBinding, UnitId};
 use foldhash::{HashMap, HashMapExt};
 use slate_parser::ast::NodeId;
 use slate_parser::ir::BindingId;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
-pub struct BindingFacts {}
+pub struct BindingFacts {
+    pub pointer: Option<PointerFact>,
+}
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct ValueFacts {}
@@ -15,6 +18,7 @@ pub struct Facts {
     bindings: HashMap<ProgramBinding, BindingFacts>,
     values: HashMap<NodeId, ValueFacts>,
     identities: HashMap<ProgramBinding, FunctionIdentity>,
+    pointer_bindings: HashMap<ProgramBinding, Vec<BindingId>>,
 }
 
 impl Facts {
@@ -52,6 +56,13 @@ impl<'f> UnitFacts<'f> {
             .copied()
             .unwrap_or_default()
     }
+
+    pub fn pointer_bindings(&self, function: BindingId) -> &'f [BindingId] {
+        self.facts
+            .pointer_bindings
+            .get(&self.key(function))
+            .map_or(&[], Vec::as_slice)
+    }
 }
 
 pub fn analyze(program: &Program<'_>) -> Facts {
@@ -70,8 +81,23 @@ pub fn analyze(program: &Program<'_>) -> Facts {
             }
         }
     }
+    let pointers = pointer::analyze(program, &identities);
+    let bindings = pointers
+        .bindings
+        .into_iter()
+        .map(|(binding, fact)| {
+            (
+                binding,
+                BindingFacts {
+                    pointer: Some(fact),
+                },
+            )
+        })
+        .collect();
     Facts {
+        bindings,
+        values: HashMap::new(),
         identities,
-        ..Facts::default()
+        pointer_bindings: pointers.functions,
     }
 }

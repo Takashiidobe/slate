@@ -299,12 +299,15 @@ fn lowering_barriers(path: &Path, compiler_args: &[String]) -> ExitCode {
         Err(error) => return run(Err(error)),
     };
     use slate::frontend::lowerer;
-    let program = slate_analysis::Program::new([(&module, &files)]);
+    let options = lowerer::LowerOptions::default();
+    let program = slate_analysis::Program::new([(&module, &files)], |module, function| {
+        lowerer::exports_symbol(&options, module, function)
+    });
     let facts = slate_analysis::analyze(&program);
     let lowered = match lowerer::lower(
         &module,
         &files,
-        &lowerer::LowerOptions::default(),
+        &options,
         facts.unit(slate_analysis::UnitId(0)),
     ) {
         Ok(lowered) => lowered,

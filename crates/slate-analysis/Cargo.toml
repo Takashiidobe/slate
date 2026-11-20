@@ -9,7 +9,9 @@ include = ["/src"]
 
 [dependencies]
 foldhash.workspace = true
+rayon.workspace = true
 slate-parser.workspace = true
+stacker = "0.1.25"
 
 [lints.clippy]
 allow_attributes = "deny"

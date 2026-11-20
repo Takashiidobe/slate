@@ -101,10 +101,6 @@ struct Tables<'m> {
     weak_address_globals: HashSet<BindingId>,
     target: &'m TargetInfo,
     module: &'m ir::Module,
-    #[expect(
-        dead_code,
-        reason = "slate-8ge7: read once the first IR analysis lands"
-    )]
     facts: UnitFacts<'m>,
     unit_features: Vec<&'static str>,
     zero_init_padding_bits: slate_parser::compiler_options::ZeroInitPaddingBits,
@@ -386,7 +382,11 @@ pub fn program_entry(module: &ir::Module, function: &ir::Function) -> bool {
     module.hosted && function.name == "main"
 }
 
-fn exports_symbol(options: &LowerOptions, module: &ir::Module, function: &ir::Function) -> bool {
+pub fn exports_symbol(
+    options: &LowerOptions,
+    module: &ir::Module,
+    function: &ir::Function,
+) -> bool {
     let freestanding_main = !module.hosted && function.name == "main";
     (options.export_symbols || function.symbol.include || freestanding_main)
         && matches!(function.linkage, ir::Linkage::External)
@@ -1874,10 +1874,42 @@ impl<'m> ModuleLowerer<'m> {
                 reg_struct_return: self.module.machine.reg_struct_return,
                 regparm: self.module.machine.regparm,
                 linux: self.module.target.os == slate_parser::target_info::TargetOs::Linux,
-                shadow: Vec::new(),
+                shadow: pointer_shadow(&tables, self.module),
             },
             barriers,
             address_taken: dependencies.taken_functions,
         }
     }
+}
+
+fn pointer_shadow(tables: &Tables<'_>, module: &ir::Module) -> Vec<rust::ShadowDecision> {
+    if !crate::backend::shadow_diff::enabled("pointer_lattice") {
+        return Vec::new();
+    }
+    let mut decisions = Vec::new();
+    for function in &module.functions {
+        let bindings = tables.facts.pointer_bindings(function.value.id);
+        let Some(name) = tables.names.get(&function.value.id) else {
+            continue;
+        };
+        for &binding in bindings {
+            let Some(fact) = tables
+                .facts
+                .binding(binding)
+                .and_then(|facts| facts.pointer)
+            else {
+                continue;
+            };
+            decisions.push(rust::ShadowDecision {
+                pass: "pointer_lattice".to_owned(),
+                function: name.rust.clone(),
+                binding: binding_name(binding, &tables.bindings),
+                decision: crate::backend::shadow_diff::pointer_decision(
+                    &fact.capability,
+                    tables.runtime.has_std(),
+                ),
+            });
+        }
+    }
+    decisions
 }

@@ -62,6 +62,26 @@ pub(in crate::backend) struct Representation {
     pub nullable: bool,
 }
 
+pub(in crate::backend) fn ir_shadow_decision(
+    capability: &slate_analysis::PointerCapability,
+    heap_ownership: bool,
+) -> String {
+    PointerFact {
+        elem_is_byte: capability.byte_elements,
+        write: capability.write,
+        unique: capability.unique,
+        free: capability.free,
+        offset: capability.offset,
+        escape: capability.escape,
+        nullable: capability.nullable,
+        string: capability.string,
+        reassigned: capability.raw,
+        heap_ownership,
+    }
+    .resolved()
+    .shadow_decision()
+}
+
 impl Representation {
     fn shadow_decision(self) -> String {
         let nullable = if self.nullable { "?" } else { "" };

@@ -14,6 +14,13 @@ pub(crate) fn enabled(pass: &str) -> bool {
         .any(|enabled| enabled == pass || enabled == "all")
 }
 
+pub(crate) fn pointer_decision(
+    capability: &slate_analysis::PointerCapability,
+    heap_ownership: bool,
+) -> String {
+    super::interproc::pointer_lattice::ir_shadow_decision(capability, heap_ownership)
+}
+
 type Key<'a> = (usize, &'a str, &'a str);
 
 pub(in crate::backend) fn compare<'a>(

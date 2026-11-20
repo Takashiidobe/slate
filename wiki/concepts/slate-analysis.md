@@ -5,6 +5,7 @@
 - [Keys](#keys)
 - [Call resolution](#call-resolution)
 - [Scaling rule](#scaling-rule)
+- [Pointer capabilities](#pointer-capabilities)
 - [Shadow mode](#shadow-mode)
 - [Related](#related)
 <!-- /toc -->
@@ -94,6 +95,50 @@ Analyses here must stay near-linear (`n` or `n log n` in IR size) on
 Precision is measured by the benchmark's `output #lifted` column and the
 give-up fixtures `pointer_lift_local_copy_chain.c` and
 `pointer_lift_reassigned_local.c`.
+
+## Pointer capabilities
+
+`pointer::analyze` (`slate-8ge7.6`) gives every pointer parameter of a
+candidate function and every named pointer local a `PointerCapability`
+(write, unique, free, offset, escape, nullable, string, raw, byte elements) in
+`BindingFacts::pointer`; `UnitFacts::pointer_bindings(function)` lists them.
+The capabilities are `pointer-capability-lattice`'s flags; lowering maps them
+to a representation (today only for shadow mode, through
+`PointerFact::resolved`).
+
+- Per-function summaries, built in parallel (rayon): one node per pointer
+  parameter, local, temporary, call result and return value. Statement order
+  is ignored: a C binding becomes one Rust binding, so its type must fit every
+  use.
+- Inside a function, copies unify nodes into classes (union-find). A class
+  collects use flags from its members: write through `*p`, `p[i]` and
+  `p->f = ..`; offset from `p[i]`, `p + n`, `p - q`; escape from stores into
+  memory or globals, aggregates, pointer-to-integer conversions, `&p`, opaque
+  calls, intrinsics, atomics, and anything inside `asm`, OpenMP and nested
+  functions; nullable from comparisons with null and null assignments.
+- `raw` is per binding and flows forward along copies: a binding assigned a
+  moved pointer (`p + 1`, `&p->f`), an opaque value (call to an unresolved
+  function, a load from memory), or a non-candidate parameter cannot be a
+  reference, but its source can still be.
+- Across functions, values flow from arguments to parameters and from return
+  values to call results. Use flags (write, offset, free, string, shared,
+  escape) propagate against the flow, so a caller learns what its callees do
+  through its pointer; nullable propagates with the flow. Each flag is one
+  reachability pass, so the join is linear. Unifying across calls instead
+  merged every caller of a helper such as `sqlite3Malloc` into one class.
+- Candidates (functions whose signature may change): defined, not exported
+  (`lowerer::exports_symbol`, passed to `Program::new`), not `main`, not
+  variadic, address never taken. Arguments to any other callee escape.
+- Two arguments of one call that share a class or the same `&local` object
+  alias; if either parameter is written, both escape.
+- Libc calls use the declaration's identity: `free` frees, `mem*`/`str*cpy`
+  write argument 0, `str*` reads mark string and offset, other known
+  functions escape.
+
+Measured (`SLATE_INTERPROC_TIMING`, pass `ir_pointer`): N=800 on every
+`interproc_scaling.py` shape at most 1 ms (Rust-side `pointer_lattice`
+extract 2-4 ms); sqlite 10.9 ms for 17,957 nodes (Rust-side extract 144 ms,
+validate 245 ms).
 
 ## Shadow mode
 

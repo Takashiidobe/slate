@@ -228,7 +228,9 @@ pub fn lower_single_module(
     options: &lowerer::LowerOptions,
     unit: &str,
 ) -> Result<crate::backend::rust_ast::Program, Error> {
-    let program = slate_analysis::Program::new([(module, files)]);
+    let program = slate_analysis::Program::new([(module, files)], |module, function| {
+        lowerer::exports_symbol(options, module, function)
+    });
     let facts = slate_analysis::analyze(&program);
     let mut lowered = lower_module(
         module,
