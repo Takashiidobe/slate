@@ -85,10 +85,10 @@ with empty stdout. A Windows FileCheck block lists `<arch>-pc-windows-msvc`;
 profiles pick targets through setup scripts in `.config/nextest.toml`:
 
 ```bash
-cargo nextest r --release --profile slate-i686      # natively, with -m32
-cargo nextest r --release --profile slate-aarch64   # under qemu-aarch64-static
-cargo nextest r --release --profile slate-arm       # armv7-unknown-linux-gnueabihf under qemu-arm-static
-cargo nextest r --release --profile slate-targets   # x86_64, i686, aarch64 and armv7
+cargo nextest r --release --profile i686      # natively, with -m32
+cargo nextest r --release --profile aarch64   # under qemu-aarch64-static
+cargo nextest r --release --profile arm       # armv7-unknown-linux-gnueabihf under qemu-arm-static
+cargo nextest r --release --profile targets   # x86_64, i686, aarch64 and armv7
 cargo nextest r --release --profile clang           # clang fixtures of both crates
 cargo nextest r --release --profile gcc             # gcc fixtures of both crates
 cargo nextest r --release --profile msvc            # msvc fixtures of both crates
@@ -147,7 +147,7 @@ SLATE_DIFF_FIXTURE=<stem> cargo nextest r --release -p slate-c2rust --test diffe
   -E 'test(fixtures_unsupported_triage_report)' --run-ignored ignored-only --no-capture
 ```
 
-With `--profile slate-targets`, the `tests/fixtures.unsupported` report covers
+With `--profile targets`, the `tests/fixtures.unsupported` report covers
 every target. Coverage beads carry the `coverage` label.
 
 `slate lowering-barriers [compiler args] <file.c>` lists every function defined

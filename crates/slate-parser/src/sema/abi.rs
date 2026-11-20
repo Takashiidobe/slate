@@ -1221,7 +1221,7 @@ impl<'a> AbiClassifier<'a> {
             },
             #[expect(
                 slate::sensitive_wildcard,
-                reason = "HFA bases are real floats, arrays and records of them; complex members are not counted yet (slate-yar4.57), every other type disqualifies the aggregate"
+                reason = "HFA bases are real floats, arrays and records of them; a complex member is left uncounted because both views then fall back to native_c, which rustc's repr(C) Complex already matches, every other type disqualifies the aggregate"
             )]
             _ => None,
         }

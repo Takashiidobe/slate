@@ -1,5 +1,6 @@
 use super::*;
 use slate_parser::compiler_options::ZeroInitPaddingBits;
+use slate_parser::ir::{FloatType, NumericType};
 use slate_parser::target_info::Endian;
 
 impl Tables<'_> {
@@ -45,9 +46,22 @@ impl Tables<'_> {
                 (0..length.unwrap_or(0))
                     .try_for_each(|index| self.mark_data(element, base + index * stride, keep))
             }
+            ir::Type::Numeric(NumericType::Float(FloatType::F80))
+            | ir::Type::Imaginary(FloatType::F80) => mark_bits(base, X87_DATA_BITS, keep),
+            ir::Type::Complex(NumericType::Float(FloatType::F80)) => {
+                let (stride, _) =
+                    self.storage_of(&ir::Type::Numeric(NumericType::Float(FloatType::F80)))?;
+                mark_bits(base, X87_DATA_BITS, keep)?;
+                mark_bits(base + stride, X87_DATA_BITS, keep)
+            }
+            ir::Type::Numeric(NumericType::Integer {
+                width,
+                bit_precise: true,
+                ..
+            }) => mark_bits(base, u64::from(*width), keep),
             #[expect(
                 slate::sensitive_wildcard,
-                reason = "records and arrays are walked; every other type counts as all data bytes, including x87 and _BitInt tail padding (slate-yar4.58)"
+                reason = "records, arrays, x87 floats and _BitInt are walked; every other type counts as all data bytes"
             )]
             ty => {
                 let (size, _) = self.storage_of(ty)?;
@@ -58,6 +72,16 @@ impl Tables<'_> {
             }
         }
     }
+}
+
+const X87_DATA_BITS: u64 = 80;
+
+fn mark_bits(base: u64, bits: u64, keep: &mut [u8]) -> Option<()> {
+    for bit in 0..bits {
+        let byte = usize::try_from(base + bit / 8).ok()?;
+        *keep.get_mut(byte)? |= 1 << (bit % 8);
+    }
+    Some(())
 }
 
 impl FunctionLowerer<'_, '_> {
