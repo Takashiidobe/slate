@@ -1,0 +1,917 @@
+{
+  "chain_ptr": [
+    {
+      "n": 200,
+      "wall_ms": 99.30998900017585,
+      "phases": {
+        "interproc.pinned": 0.235,
+        "pointer_lattice.extract": 1.348,
+        "pointer_lattice.propagate": 0.186,
+        "length_lattice.extract": 0.354,
+        "length_lattice.mixed": 0.443,
+        "interproc.passes": 2.558
+      },
+      "counts": {
+        "pointer_lattice.functions": 203,
+        "pointer_lattice.bindings": 201,
+        "pointer_lattice.iterations": 203
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 285.24086000106763,
+      "phases": {
+        "interproc.pinned": 0.76,
+        "pointer_lattice.extract": 7.085,
+        "pointer_lattice.propagate": 0.769,
+        "length_lattice.extract": 1.218,
+        "length_lattice.mixed": 1.317,
+        "interproc.passes": 12.614
+      },
+      "counts": {
+        "pointer_lattice.functions": 403,
+        "pointer_lattice.bindings": 401,
+        "pointer_lattice.iterations": 403
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 355.1973450012156,
+      "phases": {
+        "interproc.pinned": 2.07,
+        "pointer_lattice.extract": 9.825,
+        "pointer_lattice.propagate": 0.976,
+        "length_lattice.extract": 1.68,
+        "length_lattice.mixed": 2.198,
+        "interproc.passes": 15.993
+      },
+      "counts": {
+        "pointer_lattice.functions": 803,
+        "pointer_lattice.bindings": 801,
+        "pointer_lattice.iterations": 803
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 850.8472989997244,
+      "phases": {
+        "interproc.pinned": 3.959,
+        "pointer_lattice.extract": 27.234,
+        "pointer_lattice.propagate": 2.63,
+        "length_lattice.extract": 6.44,
+        "length_lattice.mixed": 9.17,
+        "interproc.passes": 50.706
+      },
+      "counts": {
+        "pointer_lattice.functions": 1603,
+        "pointer_lattice.bindings": 1601,
+        "pointer_lattice.iterations": 1603
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 1362.5389770022593,
+      "phases": {
+        "interproc.pinned": 6.91,
+        "pointer_lattice.extract": 40.876,
+        "pointer_lattice.propagate": 4.276,
+        "length_lattice.extract": 11.72,
+        "length_lattice.mixed": 11.651,
+        "interproc.passes": 74.616
+      },
+      "counts": {
+        "pointer_lattice.functions": 3203,
+        "pointer_lattice.bindings": 3201,
+        "pointer_lattice.iterations": 3203
+      }
+    }
+  ],
+  "chain_ptr_wrapv": [
+    {
+      "n": 200,
+      "wall_ms": 122.68859799951315,
+      "phases": {
+        "interproc.pinned": 0.284,
+        "pointer_lattice.extract": 1.944,
+        "pointer_lattice.propagate": 0.234,
+        "length_lattice.extract": 0.436,
+        "length_lattice.mixed": 0.524,
+        "interproc.passes": 3.439
+      },
+      "counts": {
+        "pointer_lattice.functions": 203,
+        "pointer_lattice.bindings": 201,
+        "pointer_lattice.iterations": 203
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 195.51362600032007,
+      "phases": {
+        "interproc.pinned": 0.491,
+        "pointer_lattice.extract": 3.431,
+        "pointer_lattice.propagate": 0.495,
+        "length_lattice.extract": 1.0,
+        "length_lattice.mixed": 1.1620000000000001,
+        "interproc.passes": 7.071
+      },
+      "counts": {
+        "pointer_lattice.functions": 403,
+        "pointer_lattice.bindings": 401,
+        "pointer_lattice.iterations": 403
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 358.4556949972466,
+      "phases": {
+        "interproc.pinned": 1.581,
+        "pointer_lattice.extract": 7.562,
+        "pointer_lattice.propagate": 0.89,
+        "length_lattice.extract": 1.83,
+        "length_lattice.mixed": 2.555,
+        "interproc.passes": 14.908
+      },
+      "counts": {
+        "pointer_lattice.functions": 803,
+        "pointer_lattice.bindings": 801,
+        "pointer_lattice.iterations": 803
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 679.4515350011352,
+      "phases": {
+        "interproc.pinned": 3.811,
+        "pointer_lattice.extract": 18.127,
+        "pointer_lattice.propagate": 3.177,
+        "length_lattice.extract": 3.974,
+        "length_lattice.mixed": 4.389,
+        "interproc.passes": 33.145
+      },
+      "counts": {
+        "pointer_lattice.functions": 1603,
+        "pointer_lattice.bindings": 1601,
+        "pointer_lattice.iterations": 1603
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 1413.6960309988353,
+      "phases": {
+        "interproc.pinned": 9.127,
+        "pointer_lattice.extract": 41.973,
+        "pointer_lattice.propagate": 5.217,
+        "length_lattice.extract": 11.628,
+        "length_lattice.mixed": 11.334,
+        "interproc.passes": 79.587
+      },
+      "counts": {
+        "pointer_lattice.functions": 3203,
+        "pointer_lattice.bindings": 3201,
+        "pointer_lattice.iterations": 3203
+      }
+    }
+  ],
+  "chain_kill_leaf": [
+    {
+      "n": 200,
+      "wall_ms": 93.9314640017983,
+      "phases": {
+        "interproc.pinned": 0.132,
+        "pointer_lattice.extract": 0.818,
+        "pointer_lattice.propagate": 0.435,
+        "length_lattice.extract": 0.064,
+        "length_lattice.mixed": 0.045,
+        "interproc.passes": 1.573
+      },
+      "counts": {
+        "pointer_lattice.functions": 203,
+        "pointer_lattice.bindings": 201,
+        "pointer_lattice.iterations": 403
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 144.61544000005233,
+      "phases": {
+        "interproc.pinned": 0.271,
+        "pointer_lattice.extract": 1.959,
+        "pointer_lattice.propagate": 1.054,
+        "length_lattice.extract": 0.166,
+        "length_lattice.mixed": 0.092,
+        "interproc.passes": 3.739
+      },
+      "counts": {
+        "pointer_lattice.functions": 403,
+        "pointer_lattice.bindings": 401,
+        "pointer_lattice.iterations": 803
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 189.33850500252447,
+      "phases": {
+        "interproc.pinned": 0.47,
+        "pointer_lattice.extract": 4.638,
+        "pointer_lattice.propagate": 2.224,
+        "length_lattice.extract": 0.308,
+        "length_lattice.mixed": 0.16699999999999998,
+        "interproc.passes": 9.531
+      },
+      "counts": {
+        "pointer_lattice.functions": 803,
+        "pointer_lattice.bindings": 801,
+        "pointer_lattice.iterations": 1603
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 339.0720589995908,
+      "phases": {
+        "interproc.pinned": 1.166,
+        "pointer_lattice.extract": 11.337,
+        "pointer_lattice.propagate": 4.496,
+        "length_lattice.extract": 0.633,
+        "length_lattice.mixed": 0.358,
+        "interproc.passes": 18.382
+      },
+      "counts": {
+        "pointer_lattice.functions": 1603,
+        "pointer_lattice.bindings": 1601,
+        "pointer_lattice.iterations": 3203
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 621.6909229988232,
+      "phases": {
+        "interproc.pinned": 2.545,
+        "pointer_lattice.extract": 21.862,
+        "pointer_lattice.propagate": 12.156,
+        "length_lattice.extract": 1.451,
+        "length_lattice.mixed": 0.903,
+        "interproc.passes": 45.299
+      },
+      "counts": {
+        "pointer_lattice.functions": 3203,
+        "pointer_lattice.bindings": 3201,
+        "pointer_lattice.iterations": 6403
+      }
+    }
+  ],
+  "chain_kill_root": [
+    {
+      "n": 200,
+      "wall_ms": 77.07152200237033,
+      "phases": {
+        "interproc.pinned": 0.115,
+        "pointer_lattice.extract": 1.286,
+        "pointer_lattice.propagate": 0.537,
+        "length_lattice.extract": 0.105,
+        "length_lattice.mixed": 0.060000000000000005,
+        "interproc.passes": 2.194
+      },
+      "counts": {
+        "pointer_lattice.functions": 203,
+        "pointer_lattice.bindings": 202,
+        "pointer_lattice.iterations": 403
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 86.63927899760893,
+      "phases": {
+        "interproc.pinned": 0.165,
+        "pointer_lattice.extract": 2.461,
+        "pointer_lattice.propagate": 1.09,
+        "length_lattice.extract": 0.201,
+        "length_lattice.mixed": 0.099,
+        "interproc.passes": 4.267
+      },
+      "counts": {
+        "pointer_lattice.functions": 403,
+        "pointer_lattice.bindings": 402,
+        "pointer_lattice.iterations": 803
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 136.69310499972198,
+      "phases": {
+        "interproc.pinned": 0.334,
+        "pointer_lattice.extract": 4.883,
+        "pointer_lattice.propagate": 2.02,
+        "length_lattice.extract": 0.336,
+        "length_lattice.mixed": 0.164,
+        "interproc.passes": 7.942
+      },
+      "counts": {
+        "pointer_lattice.functions": 803,
+        "pointer_lattice.bindings": 802,
+        "pointer_lattice.iterations": 1603
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 274.70485099911457,
+      "phases": {
+        "interproc.pinned": 1.1,
+        "pointer_lattice.extract": 15.191,
+        "pointer_lattice.propagate": 7.359,
+        "length_lattice.extract": 0.877,
+        "length_lattice.mixed": 0.535,
+        "interproc.passes": 27.476
+      },
+      "counts": {
+        "pointer_lattice.functions": 1603,
+        "pointer_lattice.bindings": 1602,
+        "pointer_lattice.iterations": 3203
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 443.8423369974771,
+      "phases": {
+        "interproc.pinned": 1.658,
+        "pointer_lattice.extract": 31.293999999999997,
+        "pointer_lattice.propagate": 14.793,
+        "length_lattice.extract": 1.489,
+        "length_lattice.mixed": 0.99,
+        "interproc.passes": 50.844
+      },
+      "counts": {
+        "pointer_lattice.functions": 3203,
+        "pointer_lattice.bindings": 3202,
+        "pointer_lattice.iterations": 6403
+      }
+    }
+  ],
+  "scc_ring": [
+    {
+      "n": 200,
+      "wall_ms": 113.44741799985059,
+      "phases": {
+        "interproc.pinned": 0.265,
+        "pointer_lattice.extract": 1.222,
+        "pointer_lattice.propagate": 0.196,
+        "length_lattice.extract": 0.275,
+        "length_lattice.mixed": 0.257,
+        "interproc.passes": 2.209
+      },
+      "counts": {
+        "pointer_lattice.functions": 202,
+        "pointer_lattice.bindings": 200,
+        "pointer_lattice.iterations": 202
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 197.3571800008358,
+      "phases": {
+        "interproc.pinned": 0.561,
+        "pointer_lattice.extract": 2.792,
+        "pointer_lattice.propagate": 0.436,
+        "length_lattice.extract": 0.64,
+        "length_lattice.mixed": 0.637,
+        "interproc.passes": 5.058
+      },
+      "counts": {
+        "pointer_lattice.functions": 402,
+        "pointer_lattice.bindings": 400,
+        "pointer_lattice.iterations": 402
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 354.34550599893555,
+      "phases": {
+        "interproc.pinned": 1.367,
+        "pointer_lattice.extract": 5.659,
+        "pointer_lattice.propagate": 1.066,
+        "length_lattice.extract": 1.344,
+        "length_lattice.mixed": 1.253,
+        "interproc.passes": 12.617
+      },
+      "counts": {
+        "pointer_lattice.functions": 802,
+        "pointer_lattice.bindings": 800,
+        "pointer_lattice.iterations": 802
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 664.3403460002446,
+      "phases": {
+        "interproc.pinned": 3.703,
+        "pointer_lattice.extract": 15.545,
+        "pointer_lattice.propagate": 1.746,
+        "length_lattice.extract": 3.292,
+        "length_lattice.mixed": 2.583,
+        "interproc.passes": 25.981
+      },
+      "counts": {
+        "pointer_lattice.functions": 1602,
+        "pointer_lattice.bindings": 1600,
+        "pointer_lattice.iterations": 1602
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 1482.3047669997322,
+      "phases": {
+        "interproc.pinned": 9.145,
+        "pointer_lattice.extract": 36.601,
+        "pointer_lattice.propagate": 4.744,
+        "length_lattice.extract": 7.978,
+        "length_lattice.mixed": 8.015,
+        "interproc.passes": 64.019
+      },
+      "counts": {
+        "pointer_lattice.functions": 3202,
+        "pointer_lattice.bindings": 3200,
+        "pointer_lattice.iterations": 3202
+      }
+    }
+  ],
+  "fanout": [
+    {
+      "n": 200,
+      "wall_ms": 93.91911099737627,
+      "phases": {
+        "interproc.pinned": 0.189,
+        "pointer_lattice.extract": 1.002,
+        "pointer_lattice.propagate": 0.197,
+        "length_lattice.extract": 0.138,
+        "length_lattice.mixed": 0.18,
+        "interproc.passes": 1.83
+      },
+      "counts": {
+        "pointer_lattice.functions": 203,
+        "pointer_lattice.bindings": 201,
+        "pointer_lattice.iterations": 203
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 168.98206800033222,
+      "phases": {
+        "interproc.pinned": 0.65,
+        "pointer_lattice.extract": 2.969,
+        "pointer_lattice.propagate": 0.532,
+        "length_lattice.extract": 0.34,
+        "length_lattice.mixed": 0.429,
+        "interproc.passes": 4.978
+      },
+      "counts": {
+        "pointer_lattice.functions": 403,
+        "pointer_lattice.bindings": 401,
+        "pointer_lattice.iterations": 403
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 267.39995399839245,
+      "phases": {
+        "interproc.pinned": 1.037,
+        "pointer_lattice.extract": 4.076,
+        "pointer_lattice.propagate": 0.853,
+        "length_lattice.extract": 0.53,
+        "length_lattice.mixed": 0.731,
+        "interproc.passes": 7.611
+      },
+      "counts": {
+        "pointer_lattice.functions": 803,
+        "pointer_lattice.bindings": 801,
+        "pointer_lattice.iterations": 803
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 612.033239001903,
+      "phases": {
+        "interproc.pinned": 2.95,
+        "pointer_lattice.extract": 14.338,
+        "pointer_lattice.propagate": 2.01,
+        "length_lattice.extract": 1.15,
+        "length_lattice.mixed": 1.911,
+        "interproc.passes": 22.044
+      },
+      "counts": {
+        "pointer_lattice.functions": 1603,
+        "pointer_lattice.bindings": 1601,
+        "pointer_lattice.iterations": 1603
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 2016.84548099729,
+      "phases": {
+        "interproc.pinned": 7.101,
+        "pointer_lattice.extract": 33.841,
+        "pointer_lattice.propagate": 6.391,
+        "length_lattice.extract": 3.749,
+        "length_lattice.mixed": 5.314,
+        "interproc.passes": 61.227
+      },
+      "counts": {
+        "pointer_lattice.functions": 3203,
+        "pointer_lattice.bindings": 3201,
+        "pointer_lattice.iterations": 3203
+      }
+    }
+  ],
+  "str_chain": [
+    {
+      "n": 200,
+      "wall_ms": 84.9282020026294,
+      "phases": {
+        "interproc.pinned": 0.12,
+        "string_params.extract": 0.807,
+        "string_params.propagate": 0.496,
+        "pointer_lattice.extract": 0.99,
+        "pointer_lattice.propagate": 0.514,
+        "length_lattice.extract": 0.12,
+        "length_lattice.mixed": 0.077,
+        "interproc.passes": 3.498
+      },
+      "counts": {
+        "string_params.functions": 201,
+        "string_params.iterations": 401,
+        "pointer_lattice.functions": 203,
+        "pointer_lattice.bindings": 201,
+        "pointer_lattice.iterations": 403
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 111.75874199761893,
+      "phases": {
+        "interproc.pinned": 0.183,
+        "string_params.extract": 1.718,
+        "string_params.propagate": 1.048,
+        "pointer_lattice.extract": 1.906,
+        "pointer_lattice.propagate": 1.211,
+        "length_lattice.extract": 0.262,
+        "length_lattice.mixed": 0.145,
+        "interproc.passes": 6.979
+      },
+      "counts": {
+        "string_params.functions": 401,
+        "string_params.iterations": 801,
+        "pointer_lattice.functions": 403,
+        "pointer_lattice.bindings": 401,
+        "pointer_lattice.iterations": 803
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 184.84688399985316,
+      "phases": {
+        "interproc.pinned": 0.58,
+        "string_params.extract": 5.398,
+        "string_params.propagate": 2.542,
+        "pointer_lattice.extract": 4.027,
+        "pointer_lattice.propagate": 3.229,
+        "length_lattice.extract": 0.642,
+        "length_lattice.mixed": 0.364,
+        "interproc.passes": 18.274
+      },
+      "counts": {
+        "string_params.functions": 801,
+        "string_params.iterations": 1601,
+        "pointer_lattice.functions": 803,
+        "pointer_lattice.bindings": 801,
+        "pointer_lattice.iterations": 1603
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 276.8856029979361,
+      "phases": {
+        "interproc.pinned": 0.692,
+        "string_params.extract": 8.262,
+        "string_params.propagate": 5.714,
+        "pointer_lattice.extract": 10.521,
+        "pointer_lattice.propagate": 4.882,
+        "length_lattice.extract": 0.886,
+        "length_lattice.mixed": 0.543,
+        "interproc.passes": 35.201
+      },
+      "counts": {
+        "string_params.functions": 1601,
+        "string_params.iterations": 3201,
+        "pointer_lattice.functions": 1603,
+        "pointer_lattice.bindings": 1601,
+        "pointer_lattice.iterations": 3203
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 528.6620309998398,
+      "phases": {
+        "interproc.pinned": 1.878,
+        "string_params.extract": 16.363,
+        "string_params.propagate": 10.931,
+        "pointer_lattice.extract": 23.645,
+        "pointer_lattice.propagate": 10.817,
+        "length_lattice.extract": 3.115,
+        "length_lattice.mixed": 1.384,
+        "interproc.passes": 75.013
+      },
+      "counts": {
+        "string_params.functions": 3201,
+        "string_params.iterations": 6401,
+        "pointer_lattice.functions": 3203,
+        "pointer_lattice.bindings": 3201,
+        "pointer_lattice.iterations": 6403
+      }
+    }
+  ],
+  "buf_chain": [
+    {
+      "n": 200,
+      "wall_ms": 66.29089399939403,
+      "phases": {
+        "interproc.pinned": 0.109,
+        "pointer_lattice.extract": 0.907,
+        "pointer_lattice.propagate": 0.54,
+        "length_lattice.extract": 0.477,
+        "length_lattice.propagate": 0.107,
+        "length_lattice.apply": 0.549,
+        "length_lattice.mixed": 0.061,
+        "interproc.passes": 2.971
+      },
+      "counts": {
+        "pointer_lattice.functions": 203,
+        "pointer_lattice.bindings": 201,
+        "pointer_lattice.iterations": 403,
+        "length_lattice.candidates": 201,
+        "length_lattice.call_sites": 201
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 85.33615499982261,
+      "phases": {
+        "interproc.pinned": 0.151,
+        "pointer_lattice.extract": 1.653,
+        "pointer_lattice.propagate": 1.019,
+        "length_lattice.extract": 0.784,
+        "length_lattice.propagate": 0.16,
+        "length_lattice.apply": 0.8420000000000001,
+        "length_lattice.mixed": 0.096,
+        "interproc.passes": 5.199
+      },
+      "counts": {
+        "pointer_lattice.functions": 403,
+        "pointer_lattice.bindings": 401,
+        "pointer_lattice.iterations": 803,
+        "length_lattice.candidates": 401,
+        "length_lattice.call_sites": 401
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 132.40622299781535,
+      "phases": {
+        "interproc.pinned": 0.273,
+        "pointer_lattice.extract": 3.659,
+        "pointer_lattice.propagate": 2.839,
+        "length_lattice.extract": 2.743,
+        "length_lattice.propagate": 0.456,
+        "length_lattice.apply": 2.0789999999999997,
+        "length_lattice.mixed": 0.198,
+        "interproc.passes": 13.254
+      },
+      "counts": {
+        "pointer_lattice.functions": 803,
+        "pointer_lattice.bindings": 801,
+        "pointer_lattice.iterations": 1603,
+        "length_lattice.candidates": 801,
+        "length_lattice.call_sites": 801
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 210.84674500161782,
+      "phases": {
+        "interproc.pinned": 0.639,
+        "pointer_lattice.extract": 8.456,
+        "pointer_lattice.propagate": 4.189,
+        "length_lattice.extract": 3.372,
+        "length_lattice.propagate": 0.591,
+        "length_lattice.apply": 3.576,
+        "length_lattice.mixed": 0.354,
+        "interproc.passes": 25.47
+      },
+      "counts": {
+        "pointer_lattice.functions": 1603,
+        "pointer_lattice.bindings": 1601,
+        "pointer_lattice.iterations": 3203,
+        "length_lattice.candidates": 1601,
+        "length_lattice.call_sites": 1601
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 492.7146959998936,
+      "phases": {
+        "interproc.pinned": 2.331,
+        "pointer_lattice.extract": 21.218,
+        "pointer_lattice.propagate": 14.264,
+        "length_lattice.extract": 9.452,
+        "length_lattice.propagate": 2.35,
+        "length_lattice.apply": 9.292,
+        "length_lattice.mixed": 0.764,
+        "interproc.passes": 61.849
+      },
+      "counts": {
+        "pointer_lattice.functions": 3203,
+        "pointer_lattice.bindings": 3201,
+        "pointer_lattice.iterations": 6403,
+        "length_lattice.candidates": 3201,
+        "length_lattice.call_sites": 3201
+      }
+    }
+  ],
+  "wide_locals": [
+    {
+      "n": 200,
+      "wall_ms": 74.46334600172122,
+      "phases": {
+        "interproc.pinned": 0.12,
+        "pointer_lattice.extract": 0.725,
+        "pointer_lattice.propagate": 0.002,
+        "length_lattice.extract": 0.008,
+        "length_lattice.mixed": 0.519,
+        "interproc.passes": 1.321
+      },
+      "counts": {
+        "pointer_lattice.functions": 3,
+        "pointer_lattice.bindings": 1,
+        "pointer_lattice.iterations": 3
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 112.26824700133875,
+      "phases": {
+        "interproc.pinned": 0.24,
+        "pointer_lattice.extract": 1.777,
+        "pointer_lattice.propagate": 0.002,
+        "length_lattice.extract": 0.009,
+        "length_lattice.mixed": 1.6099999999999999,
+        "interproc.passes": 3.486
+      },
+      "counts": {
+        "pointer_lattice.functions": 3,
+        "pointer_lattice.bindings": 1,
+        "pointer_lattice.iterations": 3
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 198.62451400331338,
+      "phases": {
+        "interproc.pinned": 0.474,
+        "pointer_lattice.extract": 4.372,
+        "pointer_lattice.propagate": 0.002,
+        "length_lattice.extract": 0.01,
+        "length_lattice.mixed": 3.15,
+        "interproc.passes": 9.233
+      },
+      "counts": {
+        "pointer_lattice.functions": 3,
+        "pointer_lattice.bindings": 1,
+        "pointer_lattice.iterations": 3
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 331.1985399996047,
+      "phases": {
+        "interproc.pinned": 0.807,
+        "pointer_lattice.extract": 7.399,
+        "pointer_lattice.propagate": 0.002,
+        "length_lattice.extract": 0.014,
+        "length_lattice.mixed": 6.621,
+        "interproc.passes": 15.532
+      },
+      "counts": {
+        "pointer_lattice.functions": 3,
+        "pointer_lattice.bindings": 1,
+        "pointer_lattice.iterations": 3
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 698.1252539990237,
+      "phases": {
+        "interproc.pinned": 3.313,
+        "pointer_lattice.extract": 19.158,
+        "pointer_lattice.propagate": 0.002,
+        "length_lattice.extract": 0.026,
+        "length_lattice.mixed": 15.402999999999999,
+        "interproc.passes": 35.726
+      },
+      "counts": {
+        "pointer_lattice.functions": 3,
+        "pointer_lattice.bindings": 1,
+        "pointer_lattice.iterations": 3
+      }
+    }
+  ],
+  "fields": [
+    {
+      "n": 200,
+      "wall_ms": 112.78916300216224,
+      "phases": {
+        "interproc.pinned": 0.202,
+        "pointer_lattice.extract": 1.072,
+        "pointer_lattice.propagate": 0.02,
+        "length_lattice.extract": 0.128,
+        "length_lattice.mixed": 0.05500000000000001,
+        "pointer_lattice.apply": 0.261,
+        "interproc.passes": 1.735
+      },
+      "counts": {
+        "pointer_lattice.functions": 202,
+        "pointer_lattice.bindings": 400,
+        "pointer_lattice.iterations": 202
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 184.36775500231306,
+      "phases": {
+        "interproc.pinned": 0.368,
+        "pointer_lattice.extract": 2.129,
+        "pointer_lattice.propagate": 0.038,
+        "length_lattice.extract": 0.268,
+        "length_lattice.mixed": 0.127,
+        "pointer_lattice.apply": 0.682,
+        "interproc.passes": 3.558
+      },
+      "counts": {
+        "pointer_lattice.functions": 402,
+        "pointer_lattice.bindings": 800,
+        "pointer_lattice.iterations": 402
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 467.995000002702,
+      "phases": {
+        "interproc.pinned": 1.589,
+        "pointer_lattice.extract": 5.9430000000000005,
+        "pointer_lattice.propagate": 0.084,
+        "length_lattice.extract": 0.641,
+        "length_lattice.mixed": 0.294,
+        "pointer_lattice.apply": 1.316,
+        "interproc.passes": 9.459
+      },
+      "counts": {
+        "pointer_lattice.functions": 802,
+        "pointer_lattice.bindings": 1600,
+        "pointer_lattice.iterations": 802
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 1272.9916669995873,
+      "phases": {
+        "interproc.pinned": 3.047,
+        "pointer_lattice.extract": 12.151,
+        "pointer_lattice.propagate": 0.157,
+        "length_lattice.extract": 1.486,
+        "length_lattice.mixed": 0.5800000000000001,
+        "pointer_lattice.apply": 3.409,
+        "interproc.passes": 20.099
+      },
+      "counts": {
+        "pointer_lattice.functions": 1602,
+        "pointer_lattice.bindings": 3200,
+        "pointer_lattice.iterations": 1602
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 4029.9986460013315,
+      "phases": {
+        "interproc.pinned": 7.159,
+        "pointer_lattice.extract": 29.147999999999996,
+        "pointer_lattice.propagate": 0.284,
+        "length_lattice.extract": 2.558,
+        "length_lattice.mixed": 1.536,
+        "pointer_lattice.apply": 6.755,
+        "interproc.passes": 43.23
+      },
+      "counts": {
+        "pointer_lattice.functions": 3202,
+        "pointer_lattice.bindings": 6400,
+        "pointer_lattice.iterations": 3202
+      }
+    }
+  ]
+}

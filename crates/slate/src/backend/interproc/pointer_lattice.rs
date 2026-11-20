@@ -1,5 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 
+use crate::backend::interproc::timing::PhaseTimer;
 use crate::backend::interproc::{self, CallGraph, FnKey, Symbols};
 use crate::backend::rust_ast::{
     AsmOption, BinOp, Block, CLibType, Expr, ExternDecl, ExternFnDecl, FnDef, Ident, Item, Path,
@@ -272,6 +273,7 @@ pub(in crate::backend) fn solve(
     liftable_exports: &BTreeSet<FnKey>,
     pinned: &BTreeSet<FnKey>,
 ) -> BTreeMap<PointerBinding, PointerFact> {
+    let mut timer = PhaseTimer::new("pointer_lattice");
     let fn_defs = interproc::fn_defs(programs);
     let candidates: BTreeMap<FnKey, Candidate> = fn_defs
         .iter()
@@ -358,8 +360,9 @@ pub(in crate::backend) fn solve(
     let empty_calls: Vec<&CallSite> = Vec::new();
     let empty_returns: Vec<&ReturnCallSite> = Vec::new();
     let empty_aliases: Vec<&AliasedArgs> = Vec::new();
+    timer.lap("extract");
 
-    interproc::run_worklist(&graph, &order, |name| {
+    let iterations = interproc::run_worklist(&graph, &order, |name| {
         let mut changed = false;
         for site in outbound.get(name).unwrap_or(&empty_calls) {
             let callee_binding = PointerBinding {
@@ -436,6 +439,10 @@ pub(in crate::backend) fn solve(
         }
         changed
     });
+    timer.lap("propagate");
+    timer.count("functions", fn_defs.len());
+    timer.count("bindings", facts.len());
+    timer.count("iterations", iterations);
 
     if programs.iter().any(|program| !program.runtime.has_std()) {
         for fact in facts.values_mut() {
@@ -1577,6 +1584,7 @@ pub(in crate::backend) fn apply(
         );
     }
 
+    let mut timer = PhaseTimer::new("pointer_lattice");
     let mut plans: BTreeMap<FnKey, BTreeMap<String, LiftPlan>> = BTreeMap::new();
     let mut param_names: BTreeMap<FnKey, Vec<String>> = BTreeMap::new();
     let mut param_mutability: BTreeMap<FnKey, Vec<Option<bool>>> = BTreeMap::new();
@@ -1630,7 +1638,9 @@ pub(in crate::backend) fn apply(
         return;
     }
 
+    timer.lap("extract.plan");
     validate_plans(programs, &symbols, &mut plans, &param_names);
+    timer.lap("extract.validate");
     if plans.is_empty() {
         return;
     }
@@ -1647,6 +1657,7 @@ pub(in crate::backend) fn apply(
         };
         apply_plans(&mut program.items, &scope);
     }
+    timer.lap("apply");
 }
 
 struct Scope<'a> {

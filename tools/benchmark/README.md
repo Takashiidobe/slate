@@ -52,3 +52,24 @@ use `--raw` only with revisions that support it.
   `python3 tools/benchmark/sqlite.py --label after --compare before --compare-only`.
 - `--build-only` builds without timing workloads; `--skip-build` reruns existing
   artifacts. `--profile` collects verified CPU profiles and hardware counters.
+
+# Interprocedural pass scaling
+
+`SLATE_INTERPROC_TIMING=1` makes `slate translate` and `translate-project`
+print per-phase times for `string_params`, `pointer_lattice` and
+`length_lattice` to stderr: `extract` (facts read from the Rust AST),
+`propagate` (call-graph fixpoint), `apply` (rewrite), and `mixed` (analysis and
+rewrite interleaved), plus worklist iteration counts.
+
+```bash
+python3 tools/benchmark/interproc_scaling.py
+python3 tools/benchmark/interproc_scaling.py --shapes fanout,scc_ring --sizes 200,400,800,1600,3200
+python3 tools/benchmark/interproc_scaling.py --shapes "" --sqlite
+```
+
+- Each shape is generated C that grows one axis (call chains, recursive rings,
+  fan-in, string and buffer params, local pointer copies, struct fields).
+- `exp` is the log-log slope over the four largest sizes: 1 is linear.
+- `--sqlite` also times `translate-project` on `~/c-corpus/sqlite`.
+- Baseline: [synthetic](results/interproc-scaling-2026-11-20.json),
+  [sqlite](results/interproc-sqlite-2026-11-20.txt).

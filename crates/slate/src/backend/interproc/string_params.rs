@@ -1,5 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 
+use crate::backend::interproc::timing::PhaseTimer;
 use crate::backend::interproc::{self, CallGraph, FnKey, Symbols};
 use crate::backend::rust_ast::{
     Block, CLibType, Expr, FnDef, Ident, Item, Pattern, Prim, Program, RustValue, Stmt, Type,
@@ -25,6 +26,7 @@ pub(in crate::backend) fn run(
     rust_bound: &BTreeSet<FnKey>,
     pinned: &BTreeSet<FnKey>,
 ) {
+    let mut timer = PhaseTimer::new("string_params");
     let symbols = Symbols::new(programs);
     let fn_defs = interproc::fn_defs(programs);
 
@@ -85,8 +87,9 @@ pub(in crate::backend) fn run(
 
     let order = interproc::scc_order(&graph);
     let empty_sites: Vec<CallSite> = Vec::new();
+    timer.lap("extract");
 
-    interproc::run_worklist(&graph, &order, |key| {
+    let iterations = interproc::run_worklist(&graph, &order, |key| {
         let fn_def = fn_defs[key];
         let candidate = &candidates[key];
         let sites = callsites_by_callee.get(key).unwrap_or(&empty_sites);
@@ -129,6 +132,9 @@ pub(in crate::backend) fn run(
             true
         }
     });
+    timer.lap("propagate");
+    timer.count("functions", candidates.len());
+    timer.count("iterations", iterations);
 
     let lifted: BTreeMap<FnKey, BTreeSet<usize>> = active
         .into_iter()
@@ -148,6 +154,7 @@ pub(in crate::backend) fn run(
             &literal_locals,
         );
     }
+    timer.lap("apply");
 }
 
 fn candidate_for(f: &FnDef, rust_bound: bool) -> Option<CandidateFn> {

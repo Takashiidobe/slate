@@ -2,6 +2,7 @@ use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::backend::interproc::pointer_lattice::{PointerBinding, PointerFact, ResolvedPtrType};
+use crate::backend::interproc::timing::PhaseTimer;
 use crate::backend::interproc::{self, FnKey, Symbols};
 use crate::backend::rust_ast::{
     BinOp, Block, CLibType, Expr, FnDef, Ident, Item, Path, Pattern, Prim, Program, Stmt, Type,
@@ -52,10 +53,12 @@ pub(in crate::backend) fn apply(
     rust_bound: &BTreeSet<FnKey>,
     pinned: &BTreeSet<FnKey>,
 ) {
+    let mut timer = PhaseTimer::new("length_lattice");
     let symbols = Symbols::new(programs);
     let pairings = compute(programs, facts);
+    timer.lap("extract.pairings");
     if !pairings.is_empty() {
-        let lifted = apply_signature_lifts(programs, &symbols, &pairings, facts);
+        let lifted = apply_signature_lifts(programs, &symbols, &pairings, facts, &mut timer);
         let remaining = pairings
             .into_iter()
             .filter(|(binding, pairing)| !lifted.contains(binding) && !pairing.kind.owned())
@@ -63,9 +66,12 @@ pub(in crate::backend) fn apply(
         for (unit, program) in programs.iter_mut().enumerate() {
             apply_items(unit, &mut program.items, &remaining);
         }
+        timer.lap("apply.items");
     }
     apply_const_length(programs, &symbols, facts);
+    timer.lap("mixed.const_length");
     apply_return_buffers(programs, &symbols, rust_bound, pinned);
+    timer.lap("mixed.return_buffers");
 }
 
 #[derive(Clone)]
@@ -136,6 +142,7 @@ fn apply_signature_lifts(
     symbols: &Symbols,
     pairings: &BTreeMap<PointerBinding, Pairing>,
     facts: &BTreeMap<PointerBinding, PointerFact>,
+    timer: &mut PhaseTimer,
 ) -> BTreeSet<PointerBinding> {
     let (candidates, sites) = {
         let fn_defs = interproc::fn_defs(programs);
@@ -150,6 +157,9 @@ fn apply_signature_lifts(
         let sites = signature_call_sites(symbols, &fn_defs, &candidates, &global_arrays);
         (candidates, sites)
     };
+    timer.lap("extract.signatures");
+    timer.count("candidates", candidates.len());
+    timer.count("call_sites", sites.len());
 
     let mut active = vec![true; candidates.len()];
     let mut call_counts = vec![0usize; candidates.len()];
@@ -240,6 +250,7 @@ fn apply_signature_lifts(
         .filter(|(id, _)| active[*id])
         .map(|(_, candidate)| candidate.binding.clone())
         .collect();
+    timer.lap("propagate");
     if lifted.is_empty() {
         return lifted;
     }
@@ -275,6 +286,7 @@ fn apply_signature_lifts(
         };
         apply_signature_items(&mut program.items, &ctx, &mut proofs);
     }
+    timer.lap("apply.signatures");
     lifted
 }
 

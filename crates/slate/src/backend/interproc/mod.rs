@@ -1,6 +1,7 @@
 pub(in crate::backend) mod length_lattice;
 pub(in crate::backend) mod pointer_lattice;
 pub(in crate::backend) mod string_params;
+pub(in crate::backend) mod timing;
 
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::fmt;
@@ -42,12 +43,14 @@ pub enum Exports {
 }
 
 pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) -> Option<Program> {
+    let mut timer = timing::PhaseTimer::new("interproc");
     let named_in_templates = functions_pinned_by_templates(programs);
     let Exports::Liftable {
         address_taken,
         modules,
     } = exports
     else {
+        timer.lap("pinned");
         string_params::run(programs, &BTreeSet::new(), &named_in_templates);
         pointer_lattice::apply(
             programs,
@@ -55,16 +58,21 @@ pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) -> Op
             &BTreeSet::new(),
             &named_in_templates,
         );
+        timer.lap("passes");
         return None;
     };
     let types = link::SharedTypes::plan(programs);
     let (liftable, c_abi) = export_candidates(programs, address_taken, &named_in_templates);
     let rust_bound = link::rust_bound(programs, &liftable, &types);
     let c_bound = link::rust_bound(programs, &c_abi, &types);
+    timer.lap("pinned");
     string_params::run(programs, &rust_bound, &named_in_templates);
     pointer_lattice::apply(programs, &liftable, &rust_bound, &named_in_templates);
+    timer.lap("passes");
     link::bind_calls(programs, &rust_bound, &c_bound, modules);
-    types.hoist(programs)
+    let hoisted = types.hoist(programs);
+    timer.lap("link");
+    hoisted
 }
 
 fn functions_pinned_by_templates(programs: &[Program]) -> BTreeSet<FnKey> {
@@ -417,7 +425,7 @@ pub(in crate::backend) fn run_worklist(
     graph: &CallGraph,
     initial_order: &[FnKey],
     mut recompute: impl FnMut(&FnKey) -> bool,
-) {
+) -> usize {
     let mut queued: BTreeSet<FnKey> = initial_order.iter().cloned().collect();
     let mut queue: VecDeque<FnKey> = initial_order.iter().cloned().collect();
     let mut iterations = 0usize;
@@ -440,4 +448,5 @@ pub(in crate::backend) fn run_worklist(
             }
         }
     }
+    iterations
 }
