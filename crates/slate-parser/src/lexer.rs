@@ -1262,8 +1262,10 @@ impl Lexer {
                 let mut e = j;
                 let mut value = 0u32;
                 let mut count = 0;
-                while count < 3 && Self::char_in(chars, e, end).is_some_and(|c| c.is_digit(8)) {
-                    value = value * 8 + chars[e].to_digit(8).unwrap();
+                while count < 3
+                    && let Some(digit) = Self::char_in(chars, e, end).and_then(|c| c.to_digit(8))
+                {
+                    value = value * 8 + digit;
                     e += 1;
                     count += 1;
                 }
@@ -1284,9 +1286,9 @@ impl Lexer {
         let mut e = start;
         let mut value = 0u32;
         while e - start < max_digits
-            && Self::char_in(chars, e, end).is_some_and(|c| c.is_ascii_hexdigit())
+            && let Some(digit) = Self::char_in(chars, e, end).and_then(|c| c.to_digit(16))
         {
-            value = value * 16 + chars[e].to_digit(16).unwrap();
+            value = value * 16 + digit;
             e += 1;
         }
         (value, e)

@@ -1510,15 +1510,13 @@ fn is_register_variable_type(
     specifiers: &DeclarationSpecifiers,
     declarator: &Declarator,
 ) -> bool {
-    let mut declarator = declarator;
-    while let Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } = declarator {
-        declarator = inner;
-    }
     match declarator {
         Declarator::Pointer { .. } | Declarator::BlockPointer { .. } => true,
         Declarator::Array { .. } | Declarator::Function { .. } => false,
         Declarator::Name(_) | Declarator::Abstract => is_register_scalar_type(&specifiers.ty, unit),
-        Declarator::Grouped(_) | Declarator::Attributed { .. } => unreachable!(),
+        Declarator::Grouped(inner) | Declarator::Attributed { inner, .. } => {
+            is_register_variable_type(unit, specifiers, inner)
+        }
     }
 }
 

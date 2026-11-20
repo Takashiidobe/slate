@@ -114,8 +114,6 @@ fn resolve_module(
     let mut error_count = 0;
     let mut produced: Vec<Produced> = Vec::with_capacity(unit.decls.len());
     for (declaration, item) in unit.decls.iter().zip(items) {
-        produced.push(Produced::default());
-        let slot = produced.last_mut().expect("just pushed");
         if let Some(diagnostics) = lower.types.item_diagnostics.remove(&declaration.id) {
             lower.types.diagnostics.extend(diagnostics);
         }
@@ -128,7 +126,7 @@ fn resolve_module(
                     lower_item(&mut lower, declaration, unit.dialect.features())
                 })
             else {
-                *slot = marks.produced(&lower, declaration);
+                let mut slot = marks.produced(&lower, declaration);
                 if slot.functions.is_empty()
                     && (slot.globals.is_empty()
                         || matches!(declaration.value, DeclKind::Function(_)))
@@ -150,6 +148,7 @@ fn resolve_module(
                                 .map(|global| global.id)
                         });
                 }
+                produced.push(slot);
                 continue;
             };
             lower.reset_after_failed_item();
@@ -164,6 +163,7 @@ fn resolve_module(
         } else {
             item.errors.into_iter().map(ResolveError::Names).collect()
         };
+        produced.push(Produced::default());
         poisoned.extend(item.declared.map(BindingId));
         for error in &errors {
             lower.types.diagnostics.push(item_error(error, declaration));

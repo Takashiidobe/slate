@@ -53,13 +53,74 @@ pub fn resolve_items(unit: &TranslationUnit) -> (NameResolution, Vec<ItemResolut
     (resolver.resolution, items)
 }
 
+struct ScopeStack {
+    file: HashMap<String, Entry>,
+    nested: Vec<HashMap<String, Entry>>,
+}
+
+impl ScopeStack {
+    fn new() -> Self {
+        Self {
+            file: HashMap::new(),
+            nested: Vec::new(),
+        }
+    }
+
+    fn depth(&self) -> usize {
+        self.nested.len() + 1
+    }
+
+    fn is_file_scope(&self) -> bool {
+        self.nested.is_empty()
+    }
+
+    fn innermost(&self) -> &HashMap<String, Entry> {
+        self.nested.last().unwrap_or(&self.file)
+    }
+
+    fn innermost_mut(&mut self) -> &mut HashMap<String, Entry> {
+        self.nested.last_mut().unwrap_or(&mut self.file)
+    }
+
+    fn file_mut(&mut self) -> &mut HashMap<String, Entry> {
+        &mut self.file
+    }
+
+    fn push(&mut self) {
+        self.nested.push(HashMap::new());
+    }
+
+    fn pop(&mut self) {
+        self.nested.pop();
+    }
+
+    fn truncate_to_file(&mut self) {
+        self.nested.clear();
+    }
+
+    fn innermost_first(&self) -> impl Iterator<Item = (usize, &HashMap<String, Entry>)> {
+        let innermost = self.nested.len();
+        self.nested
+            .iter()
+            .rev()
+            .chain(std::iter::once(&self.file))
+            .enumerate()
+            .map(move |(distance, scope)| (innermost - distance, scope))
+    }
+
+    fn lookup(&self, name: &str) -> Option<&Entry> {
+        self.innermost_first()
+            .find_map(|(_, scope)| scope.get(name))
+    }
+}
+
 struct Resolver {
     control_scopes: bool,
     resolution: NameResolution,
-    ordinary: Vec<HashMap<String, Entry>>,
-    tags: Vec<HashMap<String, Entry>>,
+    ordinary: ScopeStack,
+    tags: ScopeStack,
     labels: HashMap<String, Entry>,
-    local_labels: Vec<HashMap<String, Entry>>,
+    local_labels: ScopeStack,
     local_label_declarations: HashMap<crate::ast::NodeId, Entry>,
     ms_asm_labels: HashMap<String, Option<Entry>>,
     defined_labels: HashSet<BindingId>,
@@ -87,10 +148,10 @@ impl Resolver {
         Self {
             control_scopes: unit.dialect.features().control_statement_scopes,
             resolution: NameResolution::default(),
-            ordinary: vec![HashMap::new()],
-            tags: vec![HashMap::new()],
+            ordinary: ScopeStack::new(),
+            tags: ScopeStack::new(),
             labels: HashMap::new(),
-            local_labels: vec![HashMap::new()],
+            local_labels: ScopeStack::new(),
             local_label_declarations: HashMap::new(),
             ms_asm_labels: HashMap::new(),
             defined_labels: HashSet::new(),
@@ -138,11 +199,11 @@ impl Resolver {
                         .specifiers
                         .attributes_with(&function.declarator, &function.attributes),
                 );
-                let file_scope = self.ordinary.len() == 1;
+                let file_scope = self.ordinary.is_file_scope();
                 let forward = self
                     .ordinary
-                    .last()
-                    .and_then(|scope| scope.get(name))
+                    .innermost()
+                    .get(name)
                     .filter(|existing| !file_scope && existing.kind == BindingKind::Function)
                     .cloned();
                 let entry = match forward {
@@ -159,7 +220,7 @@ impl Resolver {
                 }
                 let outer_labels = std::mem::take(&mut self.labels);
                 let outer_local_labels =
-                    std::mem::replace(&mut self.local_labels, vec![HashMap::new()]);
+                    std::mem::replace(&mut self.local_labels, ScopeStack::new());
                 let outer_ms_asm_labels = std::mem::take(&mut self.ms_asm_labels);
                 self.collect_labels(&function.body)?;
                 self.push_scope();
@@ -215,7 +276,7 @@ impl Resolver {
                 && let Some(name) = declarator.declarator.name()
             {
                 let linked = kind != BindingKind::Typedef
-                    && (self.ordinary.len() == 1
+                    && (self.ordinary.is_file_scope()
                         || declaration.specifiers.storage == StorageClass::Extern
                         || (kind == BindingKind::Function
                             && declaration.specifiers.storage == StorageClass::None));
@@ -232,7 +293,7 @@ impl Resolver {
                 } else {
                     let entry = self.bind_ordinary(name, kind, linked, declarator)?;
                     if kind == BindingKind::Typedef
-                        && self.ordinary.len() == 1
+                        && self.ordinary.is_file_scope()
                         && if self.flavor.is_gcc() {
                             crate::sema::is_gcc_aarch64_tuple_name(name)
                         } else {
@@ -546,7 +607,7 @@ impl Resolver {
         let parameters = signature.declarator.function_parameters();
         self.declarator_layers(&signature.declarator, parameters)?;
         let outer_labels = std::mem::take(&mut self.labels);
-        let outer_local_labels = std::mem::replace(&mut self.local_labels, vec![HashMap::new()]);
+        let outer_local_labels = std::mem::replace(&mut self.local_labels, ScopeStack::new());
         let outer_ms_asm_labels = std::mem::take(&mut self.ms_asm_labels);
         self.collect_labels(&block.body)?;
         self.push_scope();
@@ -738,7 +799,7 @@ impl Resolver {
             let declared = tag
                 .name
                 .is_some()
-                .then(|| self.tags.last().and_then(|scope| scope.get(&name)).cloned())
+                .then(|| self.tags.innermost().get(&name).cloned())
                 .flatten();
             let entry = match declared {
                 Some(entry) => entry,
@@ -746,8 +807,7 @@ impl Resolver {
                     let entry = self.new_entry(&name, BindingKind::Tag, span);
                     if tag.name.is_some() {
                         self.tags
-                            .last_mut()
-                            .unwrap()
+                            .innermost_mut()
                             .insert(name.clone(), entry.clone());
                     }
                     entry
@@ -826,7 +886,7 @@ impl Resolver {
 
     fn declare_local_label(&mut self, label: &Span<String>) -> Result<(), ResolveError> {
         let entry = if self.collecting_labels {
-            if self.local_labels.last().unwrap().contains_key(&label.value) {
+            if self.local_labels.innermost().contains_key(&label.value) {
                 return Err(ResolveError::Duplicate {
                     namespace: "label",
                     name: label.value.clone(),
@@ -848,8 +908,7 @@ impl Resolver {
                 })?
         };
         self.local_labels
-            .last_mut()
-            .unwrap()
+            .innermost_mut()
             .insert(label.value.clone(), entry);
         Ok(())
     }
@@ -901,7 +960,7 @@ impl Resolver {
     }
 
     fn forward_parameter(&self, forward: &[Entry], name: &str) -> Option<usize> {
-        let current = self.ordinary.last()?.get(name)?;
+        let current = self.ordinary.innermost().get(name)?;
         forward.iter().position(|entry| entry.id == current.id)
     }
 
@@ -912,8 +971,8 @@ impl Resolver {
         linked: bool,
         span: &Span<T>,
     ) -> Result<Entry, ResolveError> {
-        if let Some(existing) = self.ordinary.last().unwrap().get(name).cloned() {
-            let file_scope = self.ordinary.len() == 1;
+        if let Some(existing) = self.ordinary.innermost().get(name).cloned() {
+            let file_scope = self.ordinary.is_file_scope();
             if (file_scope || linked || kind == BindingKind::Typedef)
                 && redeclares(existing.kind, kind)
             {
@@ -941,8 +1000,7 @@ impl Resolver {
             }
         }
         self.ordinary
-            .last_mut()
-            .unwrap()
+            .innermost_mut()
             .insert(name.into(), entry.clone());
         self.resolution.declarations.insert(span.id, entry.id);
         Ok(entry)
@@ -957,8 +1015,7 @@ impl Resolver {
     ) -> Result<Entry, ResolveError> {
         let existing = self
             .ordinary
-            .last()
-            .unwrap()
+            .innermost()
             .get(name)
             .filter(|existing| existing.kind == BindingKind::Function)
             .cloned();
@@ -984,21 +1041,14 @@ impl Resolver {
             self.linked.insert(name.into(), entry.clone());
         }
         self.ordinary
-            .last_mut()
-            .unwrap()
+            .innermost_mut()
             .insert(name.into(), entry.clone());
         self.resolution.declarations.insert(span.id, entry.id);
         Ok(entry)
     }
 
     fn bind_label(&mut self, label: &Span<String>) -> Result<Entry, ResolveError> {
-        if let Some(entry) = self
-            .local_labels
-            .iter()
-            .rev()
-            .find_map(|scope| scope.get(&label.value))
-            .cloned()
-        {
+        if let Some(entry) = self.local_labels.lookup(&label.value).cloned() {
             if !self.defined_labels.insert(entry.id) {
                 return Err(ResolveError::Duplicate {
                     namespace: "label",
@@ -1082,12 +1132,12 @@ impl Resolver {
                 entry
             }
         };
-        self.ordinary[0].insert(name.into(), entry.clone());
+        self.ordinary.file_mut().insert(name.into(), entry.clone());
         self.push_reference(name, entry, callee);
     }
 
     fn lookup_ordinary(&self, name: &str) -> Option<&Entry> {
-        self.ordinary.iter().rev().find_map(|scope| scope.get(name))
+        self.ordinary.lookup(name)
     }
 
     fn omp_region(
@@ -1105,7 +1155,7 @@ impl Resolver {
         }
         if parallel {
             self.omp_regions.push(OmpRegionFrame {
-                depth: self.ordinary.len(),
+                depth: self.ordinary.depth(),
                 outer: Vec::new(),
             });
         }
@@ -1131,10 +1181,7 @@ impl Resolver {
                     };
                     let entry = self.new_entry(name, BindingKind::Object, variable);
                     self.resolution.declarations.insert(variable.id, entry.id);
-                    self.ordinary
-                        .last_mut()
-                        .unwrap()
-                        .insert(name.clone(), entry);
+                    self.ordinary.innermost_mut().insert(name.clone(), entry);
                 }
             }
             for nested in omp_loop_nest(body, directive.value.associated_loops) {
@@ -1147,7 +1194,7 @@ impl Resolver {
             }
         }
         let result = self.visit_stmt(body);
-        let frame = parallel.then(|| self.omp_regions.pop().unwrap());
+        let frame = parallel.then(|| self.omp_regions.pop()).flatten();
         self.pop_scope();
         if let Some(frame) = frame
             && !self.collecting_labels
@@ -1163,12 +1210,10 @@ impl Resolver {
         let ExprKind::Identifier(name) = &target.value else {
             return;
         };
-        let construct = self.ordinary.len() - 1;
+        let construct = self.ordinary.depth() - 1;
         let Some((depth, original, kind)) = self
             .ordinary
-            .iter()
-            .enumerate()
-            .rev()
+            .innermost_first()
             .find_map(|(depth, scope)| scope.get(name).map(|entry| (depth, entry.id, entry.kind)))
         else {
             return;
@@ -1180,18 +1225,13 @@ impl Resolver {
         self.resolution
             .openmp_iteration_copies
             .insert(entry.id, original);
-        self.ordinary
-            .last_mut()
-            .unwrap()
-            .insert(name.clone(), entry);
+        self.ordinary.innermost_mut().insert(name.clone(), entry);
     }
 
     fn record_omp_reference<T>(&mut self, name: &str, span: &Span<T>) {
         let Some((depth, entry)) = self
             .ordinary
-            .iter()
-            .enumerate()
-            .rev()
+            .innermost_first()
             .find_map(|(depth, scope)| scope.get(name).map(|entry| (depth, entry)))
         else {
             return;
@@ -1213,9 +1253,7 @@ impl Resolver {
         }
         let Some(entry) = self
             .ordinary
-            .iter()
-            .rev()
-            .find_map(|scope| scope.get(name))
+            .lookup(name)
             .filter(|entry| entry.kind == BindingKind::Typedef)
             .cloned()
         else {
@@ -1238,11 +1276,7 @@ impl Resolver {
         if self.collecting_labels {
             return Ok(());
         }
-        if self
-            .tags
-            .last()
-            .is_some_and(|scope| scope.contains_key(name))
-        {
+        if self.tags.innermost().contains_key(name) {
             return self.reference_tag(name, span);
         }
         let entry = self.declare_tag_in_scope(name, span);
@@ -1254,12 +1288,7 @@ impl Resolver {
         if self.collecting_labels {
             return Ok(());
         }
-        let visible = self
-            .tags
-            .iter()
-            .rev()
-            .find_map(|scope| scope.get(name))
-            .cloned();
+        let visible = self.tags.lookup(name).cloned();
         let entry = match visible {
             Some(entry) => entry,
             None => self.declare_tag_in_scope(name, span),
@@ -1270,9 +1299,9 @@ impl Resolver {
 
     fn declare_tag_in_scope<T>(&mut self, name: &str, span: &Span<T>) -> Entry {
         let entry = self.new_entry(name, BindingKind::Tag, span);
-        if let Some(scope) = self.tags.last_mut() {
-            scope.insert(name.to_owned(), entry.clone());
-        }
+        self.tags
+            .innermost_mut()
+            .insert(name.to_owned(), entry.clone());
         entry
     }
 
@@ -1286,9 +1315,7 @@ impl Resolver {
         let name = label.value.as_ref();
         let Some(entry) = self
             .local_labels
-            .iter()
-            .rev()
-            .find_map(|scope| scope.get(name))
+            .lookup(name)
             .or_else(|| self.labels.get(name))
             .or_else(|| {
                 (self.flavor.is_msvc())
@@ -1419,18 +1446,18 @@ impl Resolver {
     }
 
     fn reset_to_file_scope(&mut self) {
-        self.ordinary.truncate(1);
-        self.tags.truncate(1);
-        self.local_labels = vec![HashMap::new()];
+        self.ordinary.truncate_to_file();
+        self.tags.truncate_to_file();
+        self.local_labels = ScopeStack::new();
         self.labels.clear();
         self.ms_asm_labels.clear();
         self.collecting_labels = false;
     }
 
     fn push_scope(&mut self) {
-        self.ordinary.push(HashMap::new());
-        self.tags.push(HashMap::new());
-        self.local_labels.push(HashMap::new());
+        self.ordinary.push();
+        self.tags.push();
+        self.local_labels.push();
     }
     fn pop_scope(&mut self) {
         self.ordinary.pop();

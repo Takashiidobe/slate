@@ -12,23 +12,12 @@ const RAW_BYTE_ESCAPE_BASE: u32 = 0x10_FF00;
 
 pub fn decode_source_bytes(bytes: &[u8]) -> String {
     let mut result = String::with_capacity(bytes.len());
-    let mut rest = bytes;
-    loop {
-        match std::str::from_utf8(rest) {
-            Ok(valid) => {
-                result.push_str(valid);
-                break;
-            }
-            Err(error) => {
-                let valid_len = error.valid_up_to();
-                result.push_str(std::str::from_utf8(&rest[..valid_len]).unwrap());
-                let bad_len = error.error_len().unwrap_or(rest.len() - valid_len);
-                for &byte in &rest[valid_len..valid_len + bad_len] {
-                    result.push(char::from_u32(RAW_BYTE_ESCAPE_BASE + u32::from(byte)).unwrap());
-                }
-                rest = &rest[valid_len + bad_len..];
-            }
-        }
+    for chunk in bytes.utf8_chunks() {
+        result.push_str(chunk.valid());
+        result.extend(chunk.invalid().iter().map(|&byte| {
+            char::from_u32(RAW_BYTE_ESCAPE_BASE + u32::from(byte))
+                .unwrap_or(char::REPLACEMENT_CHARACTER)
+        }));
     }
     result
 }

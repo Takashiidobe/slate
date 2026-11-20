@@ -1,0 +1,8 @@
+disallowed-macros = [
+    { path = "std::assert", reason = "parser paths report failures through Result" },
+    { path = "std::assert_eq", reason = "parser paths report failures through Result" },
+    { path = "std::assert_ne", reason = "parser paths report failures through Result" },
+    { path = "std::debug_assert", reason = "parser paths report failures through Result" },
+    { path = "std::debug_assert_eq", reason = "parser paths report failures through Result" },
+    { path = "std::debug_assert_ne", reason = "parser paths report failures through Result" },
+]

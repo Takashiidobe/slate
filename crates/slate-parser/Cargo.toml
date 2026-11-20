@@ -42,6 +42,7 @@ large_enum_variant = "allow"
 allow_attributes = "deny"
 allow_attributes_without_reason = "deny"
 result_large_err = "allow"
+disallowed_macros = "allow"
 
 [[test]]
 name = "filecheck"

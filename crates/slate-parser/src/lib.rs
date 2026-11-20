@@ -1,3 +1,13 @@
+#![deny(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    clippy::panic,
+    clippy::unreachable,
+    clippy::todo,
+    clippy::unimplemented,
+    clippy::disallowed_macros
+)]
+
 pub mod ast;
 pub mod attribute_support;
 pub mod charset;

@@ -797,11 +797,10 @@ impl<T> Span<T> {
     }
 
     fn cover_runs<U>(value: T, spans: &[Span<U>], same_origin: bool) -> Self {
-        let Some(first) = spans.first() else {
+        let (Some(first), Some(last)) = (spans.first(), spans.last()) else {
             let loc = Loc::new(FileId(0), 0, 0);
             return Self::new(value, loc, loc);
         };
-        let last = spans.last().unwrap();
         Self::new(
             value,
             first.spelling.through(last.spelling),

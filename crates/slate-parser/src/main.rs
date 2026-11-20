@@ -1,3 +1,13 @@
+#![deny(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    clippy::panic,
+    clippy::unreachable,
+    clippy::todo,
+    clippy::unimplemented,
+    clippy::disallowed_macros
+)]
+
 use miette::Severity;
 use slate_parser::compiler_args::CompilerArgParser;
 use slate_parser::dialect::Dialect;

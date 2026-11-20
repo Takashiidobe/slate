@@ -220,15 +220,11 @@ fn substitution(index: usize) -> String {
     let mut n = index - 1;
     let mut digits = Vec::new();
     loop {
-        digits.push(b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[n % 36]);
+        digits.push(char::from(b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"[n % 36]));
         n /= 36;
         if n == 0 {
             break;
         }
     }
-    digits.reverse();
-    format!(
-        "S{}_",
-        String::from_utf8(digits).expect("base-36 digits are ascii")
-    )
+    format!("S{}_", digits.iter().rev().collect::<String>())
 }
