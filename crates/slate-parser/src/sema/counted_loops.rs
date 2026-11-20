@@ -513,7 +513,7 @@ fn recognize(
     }
     let ValueKind::Compare {
         op, left, right, ..
-    } = &condition.value.node.value
+    } = &condition.value.without_macro_structure().node.value
     else {
         return None;
     };
@@ -559,14 +559,14 @@ fn recognize(
 
 fn reads(value: &Value, id: BindingId) -> bool {
     matches!(
-        &value.node.value,
+        &value.without_macro_structure().node.value,
         ValueKind::Read { place, ordering: None }
-            if matches!(place.kind, PlaceKind::Binding(read) if read == id)
+            if matches!(place.without_macro_holes().kind, PlaceKind::Binding(read) if read == id)
     )
 }
 
 fn invariant(value: &Value, reads: &mut HashSet<BindingId>) -> bool {
-    match &value.node.value {
+    match &value.without_macro_structure().node.value {
         ValueKind::Constant(_) | ValueKind::LayoutQuery { .. } => true,
         ValueKind::Copy { operand, .. }
         | ValueKind::Convert { operand, .. }
@@ -584,6 +584,10 @@ fn invariant(value: &Value, reads: &mut HashSet<BindingId>) -> bool {
             reads.insert(*id);
             true
         }
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "invariant only accepts pure arithmetic over constants and plain local reads; any other kind may change across iterations"
+        )]
         _ => false,
     }
 }
@@ -658,13 +662,17 @@ fn integer_range(ty: &Type) -> Option<(BigInt, BigInt)> {
 }
 
 fn integer_constant(value: &Value) -> Option<BigInt> {
-    let constant = match &value.node.value {
+    let constant = match &value.without_macro_structure().node.value {
         ValueKind::Constant(Number::Integer(value)) => BigInt::from(value.clone()),
         ValueKind::Constant(Number::SignedInteger(value)) => value.clone(),
         ValueKind::LayoutQuery { amount, .. } => BigInt::from(*amount),
         ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. } => {
             integer_constant(operand)?
         }
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "integer constants and their conversions are listed; anything else is not a literal bound"
+        )]
         _ => return None,
     };
     let (min, max) = integer_range(&value.ty)?;
@@ -672,7 +680,7 @@ fn integer_constant(value: &Value) -> Option<BigInt> {
 }
 
 fn below_max(end: &Value, ty: &Type) -> bool {
-    match (integer_constant(end), integer_range(ty)) {
+    match (super::fold::integer(end), integer_range(ty)) {
         (Some(end), Some((_, max))) => end < max,
         _ => false,
     }

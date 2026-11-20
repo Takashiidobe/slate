@@ -80,6 +80,7 @@ pub struct BlockCapture {
 }
 
 #[derive(Debug, Clone)]
+#[slate::sensitive]
 pub enum ValueKind {
     Constant(Number),
     LayoutQuery {
@@ -313,7 +314,30 @@ impl Value {
         match &self.node.value {
             ValueKind::MacroArg { .. } => true,
             ValueKind::Read { place, .. } => matches!(place.kind, PlaceKind::MacroArg { .. }),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "a hole is a macro argument read as a value or a place; every other kind is not one"
+            )]
             _ => false,
+        }
+    }
+
+    pub fn without_macro_structure(&self) -> &Value {
+        let mut value = self;
+        loop {
+            value = match &value.node.value {
+                ValueKind::MacroArg { value, .. } => value,
+                ValueKind::MacroExpansion { evaluation, .. }
+                    if evaluation.statements.is_empty() =>
+                {
+                    &evaluation.value
+                }
+                #[expect(
+                    slate::sensitive_wildcard,
+                    reason = "MacroArg and MacroExpansion are the only macro wrappers; an expansion with hoisted statements is not transparent"
+                )]
+                _ => return value,
+            };
         }
     }
 

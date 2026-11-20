@@ -8,21 +8,25 @@ pub(super) fn has_effects(value: &Value) -> bool {
 }
 
 fn is_constant(value: &Value) -> bool {
-    match &value.node.value {
+    match &value.without_macro_structure().node.value {
         ValueKind::Constant(_) | ValueKind::LayoutQuery { .. } | ValueKind::Null => true,
-        ValueKind::Convert { operand, .. } | ValueKind::MacroArg { value: operand, .. } => {
-            is_constant(operand)
-        }
+        ValueKind::Convert { operand, .. } => is_constant(operand),
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "a non-constant result only costs a temporary; the listed kinds are the leaf constants and their conversions"
+        )]
         _ => false,
     }
 }
 
 fn is_null_constant(value: &Value) -> bool {
-    match &value.node.value {
+    match &value.without_macro_structure().node.value {
         ValueKind::Null => true,
-        ValueKind::Convert { operand, .. } | ValueKind::MacroArg { value: operand, .. } => {
-            is_null_constant(operand)
-        }
+        ValueKind::Convert { operand, .. } => is_null_constant(operand),
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "only Null is a null pointer constant; conversions of it are listed"
+        )]
         _ => false,
     }
 }

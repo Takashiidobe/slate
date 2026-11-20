@@ -110,11 +110,11 @@ int main(void) {
 // CHECK-NEXT: macro_rules! PRINT {
 // CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
 // CHECK-NEXT:         loop { let mut lanes : __SlateAlign16 < [i64; 4] > = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         let mut i : i32 = 0; while i < $n { lanes.0[i as usize] = $v [i as usize] as i64;
-// CHECK-NEXT:         let __v : i32 = i; i = __v + 1; } let _ = std::io::Write::flush(& mut
-// CHECK-NEXT:         std::io::stdout()); unsafe { slate_support::printf(c"%s %lld\n".as_ptr(), $label,
-// CHECK-NEXT:         fold(lanes.0.as_mut_ptr() as * const i64, $n)) }; unsafe {
-// CHECK-NEXT:         fflush(core::ptr::null_mut()) }; if true { break; } }
+// CHECK-NEXT:         for i in 0..$n { lanes.0[i as usize] = $v [i as usize] as i64; } let _ =
+// CHECK-NEXT:         std::io::Write::flush(& mut std::io::stdout()); unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%s %lld\n".as_ptr(), $label, fold(lanes.0.as_mut_ptr() as
+// CHECK-NEXT:         * const i64, $n)) }; unsafe { fflush(core::ptr::null_mut()) }; if true { break; }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-NEXT: unsafe extern "C" {
@@ -883,8 +883,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         let mut i: i32 = 0;
-// CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: while i < 4 {
+// CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
 // CHECK-NEXT:             lanes.0[i as usize] = unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_5c586c009dd3a02a(
 // CHECK-NEXT:                     a,
@@ -896,7 +895,6 @@ int main(void) {
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             }[i as usize] as i64;
-// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -913,8 +911,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_2:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         let mut i: i32 = 0;
-// CHECK-NEXT:         '[[SLATE_BREAK_3:__slate_break_[0-9]+]]: while i < 4 {
+// CHECK-NEXT:         '[[SLATE_BREAK_3:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
 // CHECK-NEXT:             lanes.0[i as usize] = unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_d981c1ac60ab73c5(
 // CHECK-NEXT:                     u,
@@ -926,7 +923,6 @@ int main(void) {
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             }[i as usize] as i64;
-// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -943,8 +939,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_4:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         let mut i: i32 = 0;
-// CHECK-NEXT:         '[[SLATE_BREAK_5:__slate_break_[0-9]+]]: while i < 4 {
+// CHECK-NEXT:         '[[SLATE_BREAK_5:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
 // CHECK-NEXT:             lanes.0[i as usize] = unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_afca5a85971f27f(
 // CHECK-NEXT:                     a,
@@ -956,7 +951,6 @@ int main(void) {
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             }[i as usize] as i64;
-// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -977,8 +971,7 @@ int main(void) {
 // CHECK-NEXT:     ]);
 // CHECK-NEXT:     '[[SLATE_BREAK_6:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 16]> = __SlateAlign16([0i64; 16]);
-// CHECK-NEXT:         let mut i: i32 = 0;
-// CHECK-NEXT:         '[[SLATE_BREAK_7:__slate_break_[0-9]+]]: while i < 16 {
+// CHECK-NEXT:         '[[SLATE_BREAK_7:__slate_break_[0-9]+]]: for i in 0i32..16i32 {
 // CHECK-NEXT:             lanes.0[i as usize] = unsafe {
 // CHECK-NEXT:                 __slate_intrinsic_c1676c3c31174ecb(
 // CHECK-NEXT:                     bytes,
@@ -991,7 +984,6 @@ int main(void) {
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             }[i as usize] as i64;
-// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {

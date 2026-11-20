@@ -2118,7 +2118,7 @@ where
     F: Float,
     Single: FloatConvert<F>,
 {
-    match &value.node.value {
+    match &value.without_macro_structure().node.value {
         ValueKind::Constant(Number::FloatBits(bits)) => Some(F::from_bits(*bits)),
         ValueKind::Unary {
             op: UnaryArithOp::Neg,
@@ -2129,23 +2129,31 @@ where
             kind: ConversionKind::IntToFloat,
             operand,
             ..
-        } => match &operand.node.value {
+        } => match &operand.without_macro_structure().node.value {
             ValueKind::Constant(Number::Integer(integer)) => {
                 Some(F::from_u128(u128::try_from(integer).ok()?).value)
             }
             ValueKind::LayoutQuery { amount, .. } => Some(F::from_u128((*amount).into()).value),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only unsigned integer literals and layout queries are exact compile-time integers here"
+            )]
             _ => None,
         },
         ValueKind::Convert {
             kind: ConversionKind::FloatWiden,
             operand,
             ..
-        } => match (&operand.ty, &operand.node.value) {
+        } => match (&operand.ty, &operand.without_macro_structure().node.value) {
             (Type::Numeric(SINGLE), ValueKind::Constant(Number::FloatBits(bits))) => {
                 Some(Single::from_bits(*bits).convert(&mut false).value)
             }
             _ => None,
         },
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "GCC folds only literal operands in the source format; any other operand is computed at run time with x87 excess, as GCC does"
+        )]
         _ => None,
     }
 }

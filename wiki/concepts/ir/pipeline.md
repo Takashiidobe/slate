@@ -167,11 +167,15 @@ and the [cover table](../preprocessor.md#macro-invocations) before lowering:
 Effects hoist out of a hole, into the enclosing `body` or `evaluation`, and stop
 at a `MacroExpansion` value: `r += NEXT()` keeps `*cursor++`'s temporaries in
 that value's `evaluation.statements`. The enclosing operators still see it as
-having effects, so `a && NEXT()` still branches. Sema analyses read through all
-these forms. Slate's lowerer does not: its matches have wildcards, so
-exhaustiveness does not reach them.
+having effects, so `a && NEXT()` still branches. An analysis that matches on
+value shape must look through these forms with `Value::without_macro_structure()`
+(`MacroArg`, and a `MacroExpansion` without hoisted statements);
+`ValueKind` is `#[slate::sensitive]`, so a catch-all that skips them is
+reported. Slate's lowerer mostly does not look through them.
 
-`--merge` builds with structure on; other modes never build it.
+Slate's frontend (`crates/slate/src/frontend.rs`, `lower_parsed`) builds with
+structure on in every mode; `slate-parser ir` builds it only with
+`--show-macros`. Removing the wrappers from the value tree is `slate-8ge7.2`.
 `Sema::with_macro_keep` passes `crates/slate/src/frontend/macro_keep.rs`, which
 picks the expansions that are safe to lift from a normalized module. Hoisting
 has already kept value expansions together by then and cannot be undone, so

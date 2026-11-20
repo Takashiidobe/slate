@@ -8,11 +8,13 @@ pub(super) fn without_macro_holes(mut place: &ir::Place) -> &ir::Place {
 }
 
 fn is_null_constant(value: &ir::Value) -> bool {
-    match &value.node.value {
+    match &value.without_macro_structure().node.value {
         ValueKind::Null => true,
-        ValueKind::Convert { operand, .. } | ValueKind::MacroArg { value: operand, .. } => {
-            is_null_constant(operand)
-        }
+        ValueKind::Convert { operand, .. } => is_null_constant(operand),
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "only Null is a null pointer constant; conversions of it are listed"
+        )]
         _ => false,
     }
 }

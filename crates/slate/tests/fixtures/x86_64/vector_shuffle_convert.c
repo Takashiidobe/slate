@@ -98,15 +98,35 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! PRINT {
+// CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
+// CHECK-NEXT:             for i in 0..$n {
+// CHECK-NEXT:                 lanes.0[i as usize] = $v[i as usize] as i64;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::printf(
+// CHECK-NEXT:                     c"%s %lld\n".as_ptr(),
+// CHECK-NEXT:                     $label,
+// CHECK-NEXT:                     fold(lanes.0.as_mut_ptr() as *const i64, $n),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! PRINT__3 {
 // CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 2]> = __SlateAlign16([0i64; 2]);
-// CHECK-NEXT:             let mut i: i32 = 0;
-// CHECK-NEXT:             while i < $n {
+// CHECK-NEXT:             for i in 0..$n {
 // CHECK-NEXT:                 lanes.0[i as usize] = $v[i as usize] as i64;
-// CHECK-NEXT:                 let __v: i32 = i;
-// CHECK-NEXT:                 i = __v + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -128,37 +148,8 @@ int main(void) {
 // CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 8]> = __SlateAlign16([0i64; 8]);
-// CHECK-NEXT:             let mut i: i32 = 0;
-// CHECK-NEXT:             while i < $n {
+// CHECK-NEXT:             for i in 0..$n {
 // CHECK-NEXT:                 lanes.0[i as usize] = $v[i as usize] as i64;
-// CHECK-NEXT:                 let __v: i32 = i;
-// CHECK-NEXT:                 i = __v + 1;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%s %lld\n".as_ptr(),
-// CHECK-NEXT:                     $label,
-// CHECK-NEXT:                     fold(lanes.0.as_mut_ptr() as *const i64, $n),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! PRINT__5 {
-// CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:             let mut i: i32 = 0;
-// CHECK-NEXT:             while i < $n {
-// CHECK-NEXT:                 lanes.0[i as usize] = $v[i as usize] as i64;
-// CHECK-NEXT:                 let __v: i32 = i;
-// CHECK-NEXT:                 i = __v + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -180,11 +171,8 @@ int main(void) {
 // CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 16]> = __SlateAlign16([0i64; 16]);
-// CHECK-NEXT:             let mut i: i32 = 0;
-// CHECK-NEXT:             while i < $n {
+// CHECK-NEXT:             for i in 0..$n {
 // CHECK-NEXT:                 lanes.0[i as usize] = $v[i as usize] as i64;
-// CHECK-NEXT:                 let __v: i32 = i;
-// CHECK-NEXT:                 i = __v + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -202,15 +190,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! PRINT {
+// CHECK-NEXT: macro_rules! PRINT__5 {
 // CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:             let mut i: i32 = 0;
-// CHECK-NEXT:             while i < $n {
+// CHECK-NEXT:             for i in 0..$n {
 // CHECK-NEXT:                 lanes.0[i as usize] = $v[i as usize] as i64;
-// CHECK-NEXT:                 let __v: i32 = i;
-// CHECK-NEXT:                 i = __v + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
@@ -497,8 +482,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         let mut i: i32 = 0;
-// CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: while i < 4 {
+// CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
 // CHECK-NEXT:             lanes.0[i as usize] = core::simd::num::SimdInt::cast::<i16>(unsafe {
 // CHECK-NEXT:                 *{
 // CHECK-NEXT:                     [[SLATE_COMPOUND_1]] =
@@ -506,7 +490,6 @@ int main(void) {
 // CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             })[i as usize] as i64;
-// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
