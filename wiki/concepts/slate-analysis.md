@@ -5,6 +5,7 @@
 - [Keys](#keys)
 - [Call resolution](#call-resolution)
 - [Scaling rule](#scaling-rule)
+- [Shadow mode](#shadow-mode)
 - [Related](#related)
 <!-- /toc -->
 
@@ -85,6 +86,31 @@ Analyses here must stay near-linear (`n` or `n log n` in IR size) on
 Precision is measured by the benchmark's `output #lifted` column and the
 give-up fixtures `pointer_lift_local_copy_chain.c` and
 `pointer_lift_reassigned_local.c`.
+
+## Shadow mode
+
+A port runs next to the Rust-side pass it replaces until every difference is
+triaged as an improvement (with a fixture) or a bug (`slate-8ge7.4`). Only then
+does lowering read the fact, and the Rust-side pass is deleted.
+
+- `SLATE_SHADOW=<pass>[,<pass>]` (or `all`) turns it on; unset, nothing runs.
+- Decisions are compared per binding, keyed by `(unit, Rust fn name, binding
+  name)`. Interproc passes run on lowering's output before any per-function
+  rule renames a binding, so lowering's names identify the same C entity on
+  both sides.
+- IR side: lowering pushes `rust_ast::ShadowDecision { pass, function, binding,
+  decision }` into `Program.shadow`, rendering each fact with its own name
+  tables (`Tables.names`, `Tables.bindings`).
+- Rust side: the pass calls `backend::shadow_diff::compare` with its decisions,
+  rendered in the same vocabulary. `pointer_lattice` reports `solve`'s
+  `Representation` (`Slice`, `RefMut`, `RawConst?` with `?` for nullable), the
+  analysis decision before `length_lattice` and plan validation.
+- Output is one `slate-shadow pass=.. kind=differ|rust_only|ir_only ..` line per
+  difference and a `summary` line. `tools/shadow_report.py` sweeps fixture
+  directories or a `--project` compile database and groups differences by kind
+  and decision with example sites.
+
+Until a pass has an IR side, every Rust decision is `rust_only`.
 
 ## Related
 

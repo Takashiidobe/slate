@@ -1890,6 +1890,7 @@ impl<'m> ModuleLowerer<'m> {
                 reg_struct_return: self.module.machine.reg_struct_return,
                 regparm: self.module.machine.regparm,
                 linux: self.module.target.os == slate_parser::target_info::TargetOs::Linux,
+                shadow: Vec::new(),
             },
             barriers,
             address_taken: dependencies.taken_functions,

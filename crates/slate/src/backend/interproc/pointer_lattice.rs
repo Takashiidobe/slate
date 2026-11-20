@@ -62,6 +62,13 @@ pub(in crate::backend) struct Representation {
     pub nullable: bool,
 }
 
+impl Representation {
+    fn shadow_decision(self) -> String {
+        let nullable = if self.nullable { "?" } else { "" };
+        format!("{:?}{nullable}", self.base)
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::backend) struct PointerFact {
     elem_is_byte: bool,
@@ -1564,6 +1571,18 @@ pub(in crate::backend) fn apply(
 ) {
     let symbols = Symbols::new(programs);
     let facts = solve(programs, &symbols, liftable_exports, pinned);
+    crate::backend::shadow_diff::compare(
+        "pointer_lattice",
+        programs,
+        facts.iter().map(|(binding, fact)| {
+            (
+                binding.function.unit,
+                binding.function.name.as_str(),
+                binding.name.as_str(),
+                fact.resolved().shadow_decision(),
+            )
+        }),
+    );
 
     if liftable_exports.len() == rust_bound.len() {
         crate::backend::interproc::length_lattice::apply(programs, &facts, rust_bound, pinned);

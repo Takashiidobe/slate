@@ -15,6 +15,7 @@ pub mod link;
 pub(crate) mod printer;
 /// The Rust AST transformed by the backend.
 pub mod rust_ast;
+pub(crate) mod shadow_diff;
 
 use crate::backend::rust_ast::Program;
 
