@@ -14,6 +14,7 @@
 
 ```text
 C + target headers -> slate-parser -> ir::Module
+  -> slate-analysis (one target's units) -> Facts
   -> frontend::lowerer -> rust_ast::Program -> Rust source
 ```
 
@@ -21,6 +22,7 @@ C + target headers -> slate-parser -> ir::Module
 | ----------------------- | ------------------------------------------------------------- | ------------------------------------------------------------ |
 | Arguments and target    | `crates/slate/src/target.rs`                                  | Parser arguments, target default, layout options             |
 | Preprocess, parse, sema | `crates/slate-parser` via `src/frontend.rs`                   | C semantics and typed IR                                     |
+| IR analysis             | `crates/slate-analysis` ([slate-analysis](slate-analysis.md)) | Whole-program facts over one target's IR, read by lowering   |
 | Rust lowering           | `src/frontend/lowerer.rs` and its modules                     | Translate typed values, places, statements and declarations  |
 | Multi-target merge      | `src/project/{merge,cfg,splice,hoist}.rs`                     | Merge per-target translations behind Rust cfg items          |
 | C runtime bridges       | `src/frontend/{c_shim,long_double}.rs`, `src/frontend/shims/` | ABI bridges for values Rust cannot pass directly             |

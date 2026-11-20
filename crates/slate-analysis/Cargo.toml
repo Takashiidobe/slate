@@ -1,0 +1,16 @@
+[package]
+name = "slate-analysis"
+version = "0.9.0"
+edition = "2024"
+description = "Whole-program analyses over slate-parser IR whose facts drive Slate's lowering"
+license.workspace = true
+repository.workspace = true
+include = ["/src"]
+
+[dependencies]
+foldhash.workspace = true
+slate-parser.workspace = true
+
+[lints.clippy]
+allow_attributes = "deny"
+allow_attributes_without_reason = "deny"

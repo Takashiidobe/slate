@@ -12,8 +12,12 @@ that hits it. A missing or wrong IR fact is fixed in `slate-parser`, not worked
 around here.
 
 ```
-ir::Module -> src/frontend/lowerer.rs -> backend::rust_ast -> src/backend rewrites -> Rust
+ir::Module -> slate-analysis Facts -> src/frontend/lowerer.rs -> backend::rust_ast -> src/backend rewrites -> Rust
 ```
+
+New analyses that only need C semantics go in `crates/slate-analysis` as facts
+lowering reads, not as Rust-AST rewrites; see
+[slate-analysis](../../wiki/concepts/slate-analysis.md).
 
 ## Where things live
 

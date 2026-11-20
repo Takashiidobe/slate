@@ -178,22 +178,24 @@ pub fn lower_module(
     module: &Module,
     files: &Files,
     options: &lowerer::LowerOptions,
+    facts: slate_analysis::UnitFacts<'_>,
 ) -> Result<LoweredModule, Error> {
-    let lowered = lowerer::lower(module, files, options).map_err(|invalid| Error::Invalid {
-        report: render_site(
-            &invalid.site,
-            files,
-            format!(
-                "invalid slate-parser IR{}",
-                function_suffix(&invalid.function)
+    let lowered =
+        lowerer::lower(module, files, options, facts).map_err(|invalid| Error::Invalid {
+            report: render_site(
+                &invalid.site,
+                files,
+                format!(
+                    "invalid slate-parser IR{}",
+                    function_suffix(&invalid.function)
+                ),
+                "broken IR invariant",
+                invalid.invariant.to_string(),
+                &invalid.context,
+                false,
             ),
-            "broken IR invariant",
-            invalid.invariant.to_string(),
-            &invalid.context,
-            false,
-        ),
-        invalid: Box::new(invalid),
-    })?;
+            invalid: Box::new(invalid),
+        })?;
     match lowered.barriers.into_iter().next() {
         Some(barrier) => Err(Error::Unsupported {
             report: render_site(
@@ -226,7 +228,14 @@ pub fn lower_single_module(
     options: &lowerer::LowerOptions,
     unit: &str,
 ) -> Result<crate::backend::rust_ast::Program, Error> {
-    let mut lowered = lower_module(module, files, options)?;
+    let program = slate_analysis::Program::new([module]);
+    let facts = slate_analysis::analyze(&program);
+    let mut lowered = lower_module(
+        module,
+        files,
+        options,
+        facts.unit(slate_analysis::UnitId(0)),
+    )?;
     let protected = distinct_functions::mergeable_address_taken(&[distinct_functions::Unit {
         module,
         address_taken: &lowered.address_taken,

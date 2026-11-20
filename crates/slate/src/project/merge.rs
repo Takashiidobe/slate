@@ -319,10 +319,13 @@ pub fn translate_units(
             )
         })
         .collect();
+    let program = slate_analysis::Program::new(modules.iter().map(|module| &**module));
+    let facts = slate_analysis::analyze(&program);
     let jobs: Vec<_> = units
         .iter()
         .zip(&modules)
-        .map(|(unit, module)| {
+        .zip(program.units())
+        .map(|((unit, module), (unit_id, _))| {
             let options = lowerer::LowerOptions {
                 export_symbols: true,
                 explicit_docs_only,
@@ -331,13 +334,13 @@ pub fn translate_units(
                 named_c_types,
                 odr_symbols: symbol_owners.symbols.clone(),
             };
-            (unit, module, options)
+            (unit, module, options, facts.unit(unit_id))
         })
         .collect();
     let results: Vec<Result<_, String>> = jobs
         .into_par_iter()
-        .map(|(unit, module, options)| {
-            frontend::lower_module(module, &unit.files, &options)
+        .map(|(unit, module, options, unit_facts)| {
+            frontend::lower_module(module, &unit.files, &options, unit_facts)
                 .map_err(|error| format!("{}: {error}", unit.path.display()))
         })
         .collect();

@@ -4,6 +4,7 @@ use crate::backend::rust_ast::{self as rust, Attr, BinOp, Expr, FnDef, FnParam, 
 use crate::function_identity::CallBinding;
 use crate::function_identity::{FunctionIdentity, classify_function};
 use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
+use slate_analysis::UnitFacts;
 use slate_parser::ast::Span;
 use slate_parser::files::Files;
 use slate_parser::ir::{self, BindingId, Number, PlaceKind, TypeId, ValueKind};
@@ -101,6 +102,11 @@ struct Tables<'m> {
     weak_address_globals: HashSet<BindingId>,
     target: &'m TargetInfo,
     module: &'m ir::Module,
+    #[expect(
+        dead_code,
+        reason = "slate-8ge7: read once the first IR analysis lands"
+    )]
+    facts: UnitFacts<'m>,
     unit_features: Vec<&'static str>,
     zero_init_padding_bits: slate_parser::compiler_options::ZeroInitPaddingBits,
     alloca_layout: ir::AllocaLayout,
@@ -268,19 +274,20 @@ pub fn lower(
     module: &ir::Module,
     files: &Files,
     options: &LowerOptions,
+    facts: UnitFacts<'_>,
 ) -> std::result::Result<Lowered, InvalidIr> {
-    let mut lowerer = ModuleLowerer::new(module, files, options, true)?;
+    let mut lowerer = ModuleLowerer::new(module, files, options, facts, true)?;
     lowerer.declare()?;
     lowerer.lower_bodies()?;
     if lowerer.dependencies.stdio_layout_used {
-        lowerer = ModuleLowerer::new(module, files, options, false)?;
+        lowerer = ModuleLowerer::new(module, files, options, facts, false)?;
         lowerer.declare()?;
         lowerer.lower_bodies()?;
         return Ok(lowerer.assemble());
     }
     let unreachable = lowerer.unreachable_stdio_helpers();
     if !unreachable.is_empty() {
-        lowerer = ModuleLowerer::new(module, files, options, true)?;
+        lowerer = ModuleLowerer::new(module, files, options, facts, true)?;
         lowerer.tables.stdio.unreachable = unreachable;
         lowerer.declare()?;
         lowerer.lower_bodies()?;
@@ -656,6 +663,7 @@ impl<'m> ModuleLowerer<'m> {
         module: &'m ir::Module,
         files: &Files,
         options: &'m LowerOptions,
+        facts: UnitFacts<'m>,
         stdio_bindings: bool,
     ) -> std::result::Result<Self, InvalidIr> {
         let mut barriers = Vec::new();
@@ -826,6 +834,7 @@ impl<'m> ModuleLowerer<'m> {
         }
         let mut tables = Tables {
             module,
+            facts,
             support_functions: HashMap::new(),
             support_globals: HashMap::new(),
             names,
