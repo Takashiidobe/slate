@@ -1,0 +1,63 @@
+#include <stdlib.h>
+
+static int pick(const int *a, const int *b, int n, int which) {
+    const int *q = a;
+    if (which)
+        q = b;
+    int s = 0;
+    for (int i = 0; i < n; i++)
+        s += q[i];
+    return s;
+}
+
+int main(void) {
+    int a[2] = {1, 2}, b[2] = {3, 4};
+    if (pick(a, b, 2, 0) != 3 || pick(a, b, 2, 1) != 7)
+        abort();
+    return 0;
+}
+
+// SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
+// CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
+// CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
+// CHECK-NEXT: use slate_support::abort;
+// CHECK-EMPTY:
+// CHECK-NEXT: fn pick(mut q: *const i32, b: *const i32, n: i32, which: i32) -> i32 {
+// CHECK-NEXT:     if which != 0 {
+// CHECK-NEXT:         q = b;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let mut s: i32 = 0;
+// CHECK-NEXT:     for i in 0..n {
+// CHECK-NEXT:         s += unsafe { *q.offset(i as isize) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     s
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut a: [i32; 2] = [1, 2];
+// CHECK-NEXT:     let mut b: [i32; 2] = [3, 4];
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = pick(
+// CHECK-NEXT:         a.as_mut_ptr() as *const i32,
+// CHECK-NEXT:         b.as_mut_ptr() as *const i32,
+// CHECK-NEXT:         2i32,
+// CHECK-NEXT:         0i32,
+// CHECK-NEXT:     ) != 3
+// CHECK-NEXT:         || pick(a.as_mut_ptr() as *const i32, b.as_mut_ptr() as *const i32, 2i32, 1i32)
+// CHECK-NEXT:             != 7;
+// CHECK-NEXT:     if [[V_0]] {
+// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     0
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(no_mangle)]
+// CHECK-NEXT: unsafe extern "C-unwind" fn main(
+// CHECK-NEXT:     argc: i32,
+// CHECK-NEXT:     argv: *mut *mut core::ffi::c_char,
+// CHECK-NEXT:     envp: *mut *mut core::ffi::c_char,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     unsafe { __slate_main() }
+// CHECK-NEXT: }
+// CHECK-NOT: {{.}}
+// SLATE-FILECHECK-END

@@ -200,6 +200,30 @@ def str_hub_kill(n):
     return "\n".join(out), []
 
 
+def copy_chain(n):
+    copies = "\n".join(
+        f"    const int *t{i} = {f't{i - 1}' if i else 'p'};" for i in range(n)
+    )
+    src = (
+        f"static int sum(const int *p, int len) {{\n{copies}\n"
+        f"    int s = 0;\n    for (int i = 0; i < len; i++) s += t{n - 1}[i];\n    return s;\n}}\n"
+        "int main(void) { int a[4] = {1, 2, 3, 4}; return sum(a, 4) != 10; }"
+    )
+    return src, []
+
+
+def reassign(n):
+    branches = "\n".join(
+        f"    if (w == {i}) q = b;\n    s += q[0];\n    q = a;" for i in range(n)
+    )
+    src = (
+        f"static int pick(const int *a, const int *b, int w) {{\n"
+        f"    const int *q = a;\n    int s = 0;\n{branches}\n    return s;\n}}\n"
+        "int main(void) { int a[1] = {1}, b[1] = {3}; return pick(a, b, 1) == 0; }"
+    )
+    return src, []
+
+
 SHAPES = {
     "chain_ptr": chain_ptr,
     "chain_ptr_wrapv": chain_ptr_wrapv,
@@ -215,10 +239,13 @@ SHAPES = {
     "rev_alias_ptr": rev_alias_ptr,
     "hub_kill": hub_kill,
     "str_hub_kill": str_hub_kill,
+    "copy_chain": copy_chain,
+    "reassign": reassign,
 }
 
 TIMING = re.compile(r"^interproc-timing pass=(\S+) phase=(\S+) ms=([0-9.]+)$")
 COUNT = re.compile(r"^interproc-count pass=(\S+) name=(\S+) value=(\d+)$")
+POINTER_BINDING = re.compile(r"\b\w+: (&|\*const |\*mut )")
 
 
 def category(phase):
@@ -231,7 +258,7 @@ def translate_once(path, flags):
     proc = subprocess.run(
         [str(SLATE), "translate", *flags, str(path)],
         env=env,
-        stdout=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
     )
@@ -239,7 +266,11 @@ def translate_once(path, flags):
     if proc.returncode != 0:
         raise RuntimeError(f"translate failed on {path}:\n{proc.stderr[-2000:]}")
     phases = defaultdict(float)
-    counts = {}
+    kinds = [m[1] for m in POINTER_BINDING.finditer(proc.stdout)]
+    counts = {
+        ("output", "lifted"): sum(k == "&" for k in kinds),
+        ("output", "raw"): sum(k != "&" for k in kinds),
+    }
     for line in proc.stderr.splitlines():
         if m := TIMING.match(line):
             phases[(m[1], category(m[2]))] += float(m[3])
