@@ -1,4 +1,4 @@
-use super::{CTypeKind, CTypes, Extent, QualType, Qualifiers};
+use super::{CTypeKind, CTypes, Extent, FloatKind, IntRank, IntegerKind, QualType, Qualifiers};
 use crate::ir::PointerSpace;
 
 impl CTypes {
@@ -49,6 +49,10 @@ impl CTypes {
                 },
             ) => a_union == b_union && self.tag_class(*a) == self.tag_class(*b),
             (CTypeKind::Enum(a), CTypeKind::Enum(b)) => self.tag_class(*a) == self.tag_class(*b),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "every kind with a child type or a tag is listed; any other pair is compatible only when canonically equal, checked above"
+            )]
             _ => false,
         }
     }
@@ -99,6 +103,10 @@ impl CTypes {
                         .zip(bp)
                         .all(|(a, b)| self.same_or_enum_underlying(*a, *b))
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "every kind whose child type can be an enum is listed; any other pair matches only when canonically equal, checked above"
+            )]
             _ => false,
         }
     }
@@ -161,18 +169,21 @@ impl CTypes {
     }
 
     fn promotes_to_itself(&self, param: QualType) -> bool {
-        !matches!(
-            self.canonical_kind(param),
-            CTypeKind::Bool
-                | CTypeKind::Char
-                | CTypeKind::SChar
-                | CTypeKind::UChar
-                | CTypeKind::Int {
-                    rank: super::IntRank::Short,
+        let kind = self.canonical_kind(param);
+        match kind.integer() {
+            Some(
+                IntegerKind::Bool
+                | IntegerKind::Char
+                | IntegerKind::SChar
+                | IntegerKind::UChar
+                | IntegerKind::Int {
+                    rank: IntRank::Short,
                     ..
-                }
-                | CTypeKind::Float(super::FloatKind::Float)
-        )
+                },
+            ) => false,
+            Some(IntegerKind::Int { .. } | IntegerKind::BitInt { .. }) => true,
+            None => *kind != CTypeKind::Float(FloatKind::Float),
+        }
     }
 
     fn enum_matches(&self, tag: QualType, other: QualType) -> bool {
@@ -218,9 +229,18 @@ impl CTypes {
                     extent: composite_extent(ae, be),
                 })
             }
+            (CTypeKind::BlockPointer(a), CTypeKind::BlockPointer(b)) => {
+                let (a, b) = (*a, *b);
+                let pointee = self.composite(a, b)?;
+                self.qual(CTypeKind::BlockPointer(pointee))
+            }
             (CTypeKind::Function { .. }, CTypeKind::Function { .. }) => {
                 self.composite_function(canonical_a, canonical_b)?
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "every kind with a child type is listed; a compatible pair of any other kind has nothing to merge, so the left type is the composite"
+            )]
             _ => canonical_a,
         };
         Some(composite.with(quals))

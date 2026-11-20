@@ -29,13 +29,7 @@ pub fn itanium_function_symbol(
 
 fn adjust_parameter(types: &mut CTypes, param: QualType) -> QualType {
     let desugared = types.desugar(param);
-    let unqualified = QualType::new(desugared.ty);
-    let pointee = match types.kind(desugared.ty) {
-        CTypeKind::Array { element, .. } => *element,
-        CTypeKind::Function { .. } => unqualified,
-        _ => return unqualified,
-    };
-    QualType::new(types.intern(CTypeKind::Pointer(pointee, PointerSpace::Default)))
+    QualType::new(types.adjust_parameter(desugared).ty)
 }
 
 struct Mangler<'a> {
@@ -158,24 +152,45 @@ impl<'a> Mangler<'a> {
                 out.push('E');
                 Some(out)
             }
-            _ => None,
+            CTypeKind::FixedPoint(_)
+            | CTypeKind::VaList
+            | CTypeKind::Sizeless(_)
+            | CTypeKind::Pointer(..)
+            | CTypeKind::BlockPointer(_)
+            | CTypeKind::Typedef { .. }
+            | CTypeKind::TypeOf { .. }
+            | CTypeKind::AtomicSpecifier(_) => None,
         }
     }
 }
 
 fn is_builtin(kind: &CTypeKind) -> bool {
-    matches!(
-        kind,
+    match kind {
         CTypeKind::Void
-            | CTypeKind::Bool
-            | CTypeKind::Char
-            | CTypeKind::SChar
-            | CTypeKind::UChar
-            | CTypeKind::Int { .. }
-            | CTypeKind::BitInt { .. }
-            | CTypeKind::Float(_)
-            | CTypeKind::NullPtr
-    )
+        | CTypeKind::Bool
+        | CTypeKind::Char
+        | CTypeKind::SChar
+        | CTypeKind::UChar
+        | CTypeKind::Int { .. }
+        | CTypeKind::BitInt { .. }
+        | CTypeKind::Float(_)
+        | CTypeKind::NullPtr => true,
+        CTypeKind::FixedPoint(_)
+        | CTypeKind::Complex(_)
+        | CTypeKind::Imaginary(_)
+        | CTypeKind::Vector { .. }
+        | CTypeKind::VaList
+        | CTypeKind::Sizeless(_)
+        | CTypeKind::Record { .. }
+        | CTypeKind::Enum(_)
+        | CTypeKind::Pointer(..)
+        | CTypeKind::BlockPointer(_)
+        | CTypeKind::Array { .. }
+        | CTypeKind::Function { .. }
+        | CTypeKind::Typedef { .. }
+        | CTypeKind::TypeOf { .. }
+        | CTypeKind::AtomicSpecifier(_) => false,
+    }
 }
 
 fn integer(rank: IntRank, signed: bool) -> &'static str {

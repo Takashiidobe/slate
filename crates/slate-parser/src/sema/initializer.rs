@@ -458,7 +458,10 @@ impl TypeResolver {
                 "braced initializer for a fixed-length svbool_t, whose lanes gcc packs one bit per element",
             )),
             (CTypeKind::Vector { element, .. }, _) => Ok(*element),
-            (_, AggregateTarget::Index(_) | AggregateTarget::Range { .. }) => self
+            (
+                CTypeKind::Array { .. },
+                AggregateTarget::Index(_) | AggregateTarget::Range { .. },
+            ) => self
                 .ctypes
                 .element(c)
                 .map(|(element, _)| element)

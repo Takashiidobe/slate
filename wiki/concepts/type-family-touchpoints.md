@@ -36,7 +36,12 @@ correct.
   (`target_info.rs`), `abi_pass` (`sema/abi.rs`), `numeric()`
   (`sema/numeric.rs`).
 - `CTypeKind`: `ir_type` and `numeric()` (`sema/ctype/layout.rs`), `name`
-  (`sema/ctype/render.rs`).
+  (`sema/ctype/render.rs`), the views `sugared`, `integer` and
+  `complex_domain` and `canonical_form` (`sema/ctype/mod.rs`), the mangler's
+  `ty_uncached` and `is_builtin` (`sema/ctype/mangle.rs`), `type_class`
+  (`sema/expression.rs`). Predicates over integers or complex domains go
+  through `integer()` / `complex_domain()`, whose `IntegerKind` and
+  `ComplexDomain` are small enough to list at each use.
 - `TypeSpecifier`: `base()` (`sema/types.rs`), plus the AST sites.
 - `ir::FloatType` (a format): `float_to_integer` (`sema/fold.rs`), `float_rank`
   (`sema/ctype/arith.rs`). Not caught: `Display`, `exact_integer_bits`,
@@ -54,7 +59,11 @@ correct.
 
 ## Not caught by the compiler
 
-These have `_ =>` arms that silently accept a new family.
+These have `_ =>` arms that silently accept a new family. `CTypeKind` is
+`#[slate::sensitive]`, so each remaining catch-all over it carries an
+`#[expect(slate::sensitive_wildcard, reason = ...)]` stating why the default
+holds; search for `slate::sensitive_wildcard` and check each reason against the
+new variant. See [linting](linting.md).
 
 Classification (`sema/ctype/convert.rs`):
 
@@ -63,7 +72,8 @@ Classification (`sema/ctype/convert.rs`):
   `is_arithmetic` means no conversions at all.
 - `classify_conversion` is ordered; insert family guards (e.g. fixed-point with
   complex is rejected) before the generic arithmetic case.
-- Kept as `matches!` on purpose: "no" is the right default answer.
+- `is_integer`, `is_floating`, `is_complex_domain` derive from `integer()` and
+  `complex_domain()`; a new integer or complex-like kind is decided there.
 
 Promotion and common type (`sema/ctype/arith.rs`):
 

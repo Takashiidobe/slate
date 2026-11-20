@@ -124,6 +124,10 @@ pub fn shape(
                 }
                 CTypeKind::TypeOf { underlying, .. } => c = Some(*underlying),
                 CTypeKind::Char => return Some("core::ffi::c_char".into()),
+                #[expect(
+                    slate::sensitive_wildcard,
+                    reason = "plain char is the only kind spelled from its C type here; every other kind is spelled from its IR type below"
+                )]
                 _ => break,
             }
         }

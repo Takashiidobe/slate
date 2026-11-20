@@ -65,19 +65,26 @@ Does not fire on:
   (`unreachable!`, `panic!`): a new variant there fails loudly.
 - Code from derives and external macros.
 
-How to resolve a hit, in order:
+The lint is an audit: each hit is a place where an assumption about the variant
+set was implicit. Resolve it so the assumption is written down.
 
-1. List the variants. If several call sites share one set of variants, move it
-   into a named predicate on the owning type (`CTypes::is_sugar`,
-   `is_unsigned_integer`) and write that predicate exhaustively once.
+1. List the variants when a new variant there needs a decision. If the list is
+   unseemly, and especially if the same set recurs at several sites, change the
+   representation instead: an audited view on the owning type that lists the
+   enum once and returns a small enum the call sites can list cheaply
+   (`CTypeKind::integer() -> Option<IntegerKind>`, `complex_domain()`,
+   `sugared()`), or a call to an existing helper that already makes the
+   decision (`CTypes::adjust_parameter`).
 2. Return an error from the catch-all if a new variant reaching it is a bug.
-3. `#[expect(slate::sensitive_wildcard, reason = "...")]` on the arm, only when
-   the default is correct for any variant that could ever be added. The reason
-   states why ("every non-derived type composites to itself"). If you cannot
-   write that sentence, list the variants.
+3. When the wildcard is right, `#[expect(slate::sensitive_wildcard, reason =
+   "...")]` on the arm. The reason is documentation: it names the property the
+   listed arms cover ("every kind with a child type is listed") so the author
+   of a new variant can check it. A new variant that breaks the stated
+   property means the site needs changing.
 
-Do not opt out because the list is long, because current variants all take the
-default, or to keep a diff small. Those are the cases the lint exists for.
+While auditing, look for siblings that should travel together. Missing a
+sibling variant (`BlockPointer` next to `Pointer`) is the usual bug the lint
+uncovers.
 
 ### `slate::sensitive_field_rest`
 

@@ -189,6 +189,7 @@ pub enum Extent {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[slate::sensitive]
 pub enum CTypeKind {
     Void,
     Bool,
@@ -247,12 +248,120 @@ pub enum CTypeKind {
 }
 
 impl CTypeKind {
-    pub fn is_sugar(&self) -> bool {
-        matches!(
-            self,
-            Self::Typedef { .. } | Self::TypeOf { .. } | Self::AtomicSpecifier(_)
-        )
+    pub fn sugared(&self) -> Option<QualType> {
+        match self {
+            Self::Typedef { underlying, .. } | Self::TypeOf { underlying, .. } => Some(*underlying),
+            Self::AtomicSpecifier(inner) => Some(inner.with(Qualifiers::ATOMIC)),
+            Self::Void
+            | Self::Bool
+            | Self::Char
+            | Self::SChar
+            | Self::UChar
+            | Self::Int { .. }
+            | Self::BitInt { .. }
+            | Self::Float(_)
+            | Self::FixedPoint(_)
+            | Self::Complex(_)
+            | Self::Imaginary(_)
+            | Self::Vector { .. }
+            | Self::VaList
+            | Self::NullPtr
+            | Self::Sizeless(_)
+            | Self::Record { .. }
+            | Self::Enum(_)
+            | Self::Pointer(..)
+            | Self::BlockPointer(_)
+            | Self::Array { .. }
+            | Self::Function { .. } => None,
+        }
     }
+
+    pub fn integer(&self) -> Option<IntegerKind> {
+        match *self {
+            Self::Bool => Some(IntegerKind::Bool),
+            Self::Char => Some(IntegerKind::Char),
+            Self::SChar => Some(IntegerKind::SChar),
+            Self::UChar => Some(IntegerKind::UChar),
+            Self::Int { rank, signed } => Some(IntegerKind::Int { rank, signed }),
+            Self::BitInt { width, signed } => Some(IntegerKind::BitInt { width, signed }),
+            Self::Void
+            | Self::Float(_)
+            | Self::FixedPoint(_)
+            | Self::Complex(_)
+            | Self::Imaginary(_)
+            | Self::Vector { .. }
+            | Self::VaList
+            | Self::NullPtr
+            | Self::Sizeless(_)
+            | Self::Record { .. }
+            | Self::Enum(_)
+            | Self::Pointer(..)
+            | Self::BlockPointer(_)
+            | Self::Array { .. }
+            | Self::Function { .. }
+            | Self::Typedef { .. }
+            | Self::TypeOf { .. }
+            | Self::AtomicSpecifier(_) => None,
+        }
+    }
+
+    pub fn complex_domain(&self) -> Option<ComplexDomain> {
+        match self {
+            Self::Complex(_) => Some(ComplexDomain::Complex),
+            Self::Imaginary(_) => Some(ComplexDomain::Imaginary),
+            Self::Void
+            | Self::Bool
+            | Self::Char
+            | Self::SChar
+            | Self::UChar
+            | Self::Int { .. }
+            | Self::BitInt { .. }
+            | Self::Float(_)
+            | Self::FixedPoint(_)
+            | Self::Vector { .. }
+            | Self::VaList
+            | Self::NullPtr
+            | Self::Sizeless(_)
+            | Self::Record { .. }
+            | Self::Enum(_)
+            | Self::Pointer(..)
+            | Self::BlockPointer(_)
+            | Self::Array { .. }
+            | Self::Function { .. }
+            | Self::Typedef { .. }
+            | Self::TypeOf { .. }
+            | Self::AtomicSpecifier(_) => None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[slate::sensitive]
+pub enum IntegerKind {
+    Bool,
+    Char,
+    SChar,
+    UChar,
+    Int { rank: IntRank, signed: bool },
+    BitInt { width: u32, signed: bool },
+}
+
+impl IntegerKind {
+    pub fn is_explicitly_unsigned(self) -> bool {
+        match self {
+            Self::UChar | Self::Int { signed: false, .. } | Self::BitInt { signed: false, .. } => {
+                true
+            }
+            Self::Bool | Self::Char | Self::SChar | Self::Int { .. } | Self::BitInt { .. } => false,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[slate::sensitive]
+pub enum ComplexDomain {
+    Complex,
+    Imaginary,
 }
 
 #[derive(Debug, Clone)]
@@ -357,6 +466,10 @@ impl CTypes {
                 let (canonical, space) = (self.canonical(*pointee), *space);
                 (canonical != *pointee).then(|| self.qual(CTypeKind::Pointer(canonical, space)))
             }
+            CTypeKind::BlockPointer(pointee) => {
+                let canonical = self.canonical(*pointee);
+                (canonical != *pointee).then(|| self.qual(CTypeKind::BlockPointer(canonical)))
+            }
             CTypeKind::Array { element, extent } => {
                 let canonical = self.canonical(*element);
                 let element_type = canonical.local_unqualified();
@@ -413,7 +526,22 @@ impl CTypes {
                     })
                 })
             }
-            _ => None,
+            CTypeKind::Void
+            | CTypeKind::Bool
+            | CTypeKind::Char
+            | CTypeKind::SChar
+            | CTypeKind::UChar
+            | CTypeKind::Int { .. }
+            | CTypeKind::BitInt { .. }
+            | CTypeKind::Float(_)
+            | CTypeKind::FixedPoint(_)
+            | CTypeKind::Complex(_)
+            | CTypeKind::Imaginary(_)
+            | CTypeKind::VaList
+            | CTypeKind::NullPtr
+            | CTypeKind::Sizeless(_)
+            | CTypeKind::Record { .. }
+            | CTypeKind::Enum(_) => None,
         }
     }
 
@@ -434,17 +562,10 @@ impl CTypes {
     }
 
     pub fn desugar(&self, mut q: QualType) -> QualType {
-        loop {
-            match self.kind(q.ty) {
-                CTypeKind::Typedef { underlying, .. } | CTypeKind::TypeOf { underlying, .. } => {
-                    q = underlying.with(q.quals);
-                }
-                CTypeKind::AtomicSpecifier(inner) => {
-                    q = inner.with(q.quals).with(Qualifiers::ATOMIC);
-                }
-                _ => return q,
-            }
+        while let Some(underlying) = self.kind(q.ty).sugared() {
+            q = underlying.with(q.quals);
         }
+        q
     }
 
     pub fn unqualified(&mut self, q: QualType) -> QualType {
@@ -452,17 +573,14 @@ impl CTypes {
         if self.quals(bare).is_empty() {
             return bare;
         }
-        match self.kind(q.ty).clone() {
-            CTypeKind::Typedef { underlying, .. } | CTypeKind::TypeOf { underlying, .. } => {
-                self.unqualified(underlying)
-            }
-            CTypeKind::AtomicSpecifier(inner) => self.unqualified(inner),
-            CTypeKind::Array { element, extent } => {
-                let element = self.unqualified(element);
-                self.qual(CTypeKind::Array { element, extent })
-            }
-            _ => bare,
+        if let Some(underlying) = self.kind(q.ty).sugared() {
+            return self.unqualified(underlying);
         }
+        if let CTypeKind::Array { element, extent } = *self.kind(q.ty) {
+            let element = self.unqualified(element);
+            return self.qual(CTypeKind::Array { element, extent });
+        }
+        bare
     }
 
     // outermost aligned typedef wins, even below natural; clang drops it under _Atomic
@@ -481,6 +599,10 @@ impl CTypes {
                 element: underlying,
                 ..
             } => self.typedef_alignment(*underlying),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "an alignment comes only from a typedef reached through typedef, typeof, or array element chains"
+            )]
             _ => None,
         }
     }
@@ -587,6 +709,10 @@ impl CTypes {
                 element: self.with_convention(element, convention)?,
                 extent,
             },
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "a convention reaches only a function type, through pointers and arrays; other types keep their type unchanged"
+            )]
             _ => return None,
         };
         Some(self.qual(rebuilt).with(q.quals))
@@ -636,6 +762,10 @@ impl CTypes {
                     || self.any_variable_extent(*element, matches)
             }
             CTypeKind::Function { ret, .. } => self.any_variable_extent(*ret, matches),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "C 6.7.6: a variably modified type is an array with a variable extent or a pointer, array, or function return derived from one"
+            )]
             _ => false,
         }
     }

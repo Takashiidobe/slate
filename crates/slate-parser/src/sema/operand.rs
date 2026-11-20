@@ -1,5 +1,5 @@
 use super::ctype::QualType;
-use super::ctype::{CTypeKind, FixedKind, FixedRank, FixedType, FloatKind, IntRank};
+use super::ctype::{CTypeKind, ComplexDomain, FixedKind, FixedRank, FixedType, FloatKind, IntRank};
 use super::numeric::{Context, ResolveError, conversion, integer_fits};
 use super::types::TypeResolver;
 use super::validate::MicrosoftLiteralType;
@@ -346,13 +346,12 @@ impl TypeResolver {
         let target = self.target_info().clone();
         let component = self.ctypes.usual_real_type(left, right, &target)?;
         let domain = match (
-            self.ctypes.canonical_kind(left),
-            self.ctypes.canonical_kind(right),
+            self.ctypes.canonical_kind(left).complex_domain(),
+            self.ctypes.canonical_kind(right).complex_domain(),
         ) {
-            (CTypeKind::Imaginary(_), CTypeKind::Imaginary(_)) => 1,
-            (CTypeKind::Complex(_) | CTypeKind::Imaginary(_), _)
-            | (_, CTypeKind::Complex(_) | CTypeKind::Imaginary(_)) => 2,
-            _ => 0,
+            (Some(ComplexDomain::Imaginary), Some(ComplexDomain::Imaginary)) => 1,
+            (Some(_), _) | (_, Some(_)) => 2,
+            (None, None) => 0,
         };
         self.arithmetic_domain(component, domain)
     }
@@ -465,10 +464,10 @@ impl TypeResolver {
         } else {
             let target = self.target_info().clone();
             let component = self.ctypes.usual_real_type(left, right, &target)?;
-            let domain = |c| match self.ctypes.canonical_kind(c) {
-                CTypeKind::Complex(_) => 2,
-                CTypeKind::Imaginary(_) => 1,
-                _ => 0,
+            let domain = |c| match self.ctypes.canonical_kind(c).complex_domain() {
+                Some(ComplexDomain::Complex) => 2,
+                Some(ComplexDomain::Imaginary) => 1,
+                None => 0,
             };
             let ld = domain(left);
             let rd = domain(right);

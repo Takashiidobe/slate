@@ -24,7 +24,7 @@ use num_bigint::{BigInt, Sign};
 use super::attributes::{FunctionTypeRule, Subject, Use};
 use super::ctype::{
     CTypeKind, CTypeMetadata, CTypes, Extent, FixedKind, FixedRank, FixedType, FloatKind, IntRank,
-    QualType, Qualifiers,
+    IntegerKind, QualType, Qualifiers,
 };
 use super::numeric::ResolveError;
 use super::operand::Operand;
@@ -840,6 +840,10 @@ impl TypeResolver {
                     _ => return Err(ResolveError::Rejected("machine mode")),
                 })
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "the arm matches kind again and rejects every kind that is not an integer or enum"
+            )]
             kind => {
                 let signed = match kind {
                     CTypeKind::Bool | CTypeKind::UChar => false,
@@ -938,12 +942,20 @@ impl TypeResolver {
         resolved: QualType,
         specifier: &TypeSpecifier,
     ) -> Result<QualType, ResolveError> {
+        let plain_signed = match self.ctypes.canonical_kind(resolved).integer() {
+            Some(IntegerKind::Char | IntegerKind::Int { signed: true, .. }) => true,
+            Some(
+                IntegerKind::Bool
+                | IntegerKind::SChar
+                | IntegerKind::UChar
+                | IntegerKind::Int { .. }
+                | IntegerKind::BitInt { .. },
+            )
+            | None => false,
+        };
         if !self.dialect.options().layout.unsigned_bitfields
             || self.explicitly_signed(specifier)
-            || !matches!(
-                self.ctypes.canonical_kind(resolved),
-                CTypeKind::Char | CTypeKind::Int { signed: true, .. }
-            )
+            || !plain_signed
         {
             return Ok(resolved);
         }
@@ -2797,15 +2809,19 @@ impl TypeResolver {
             TypeSpecifier::Complex(inner) => {
                 let component = self.base(inner)?;
                 let component = self.ctypes.canonical(component).ty;
-                if !matches!(
-                    self.ctypes.kind(component),
-                    CTypeKind::Char
-                        | CTypeKind::SChar
-                        | CTypeKind::UChar
-                        | CTypeKind::Int { .. }
-                        | CTypeKind::BitInt { .. }
-                        | CTypeKind::Float(_)
-                ) {
+                let kind = self.ctypes.kind(component);
+                let valid = match kind.integer() {
+                    Some(
+                        IntegerKind::Char
+                        | IntegerKind::SChar
+                        | IntegerKind::UChar
+                        | IntegerKind::Int { .. }
+                        | IntegerKind::BitInt { .. },
+                    ) => true,
+                    Some(IntegerKind::Bool) => false,
+                    None => matches!(kind, CTypeKind::Float(_)),
+                };
+                if !valid {
                     return Err(ResolveError::Rejected("complex component type"));
                 }
                 CTypeKind::Complex(component)
@@ -2893,15 +2909,21 @@ impl TypeResolver {
             }
             TypeSpecifier::Vector(vector) => {
                 let element = self.base(&vector.element)?;
-                let valid = match self.ctypes.canonical_kind(element) {
-                    CTypeKind::Char
-                    | CTypeKind::SChar
-                    | CTypeKind::UChar
-                    | CTypeKind::Int { .. } => true,
-                    CTypeKind::Float(kind) => {
-                        !kind.is_decimal() || self.dialect.flavor() == CompilerFlavor::Gcc
-                    }
-                    _ => false,
+                let kind = self.ctypes.canonical_kind(element);
+                let valid = match kind.integer() {
+                    Some(
+                        IntegerKind::Char
+                        | IntegerKind::SChar
+                        | IntegerKind::UChar
+                        | IntegerKind::Int { .. },
+                    ) => true,
+                    Some(IntegerKind::Bool | IntegerKind::BitInt { .. }) => false,
+                    None => match kind {
+                        CTypeKind::Float(kind) => {
+                            !kind.is_decimal() || self.dialect.flavor() == CompilerFlavor::Gcc
+                        }
+                        _ => false,
+                    },
                 };
                 if !valid {
                     return Err(ResolveError::Rejected(

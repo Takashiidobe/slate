@@ -3920,7 +3920,15 @@ pub(super) fn type_class(ctypes: &CTypes, q: QualType) -> Option<i32> {
         CTypeKind::Record { union: true, .. } => 13,
         CTypeKind::BitInt { .. } => 18,
         CTypeKind::Vector { .. } => 19,
-        _ => return None,
+        CTypeKind::FixedPoint(_)
+        | CTypeKind::VaList
+        | CTypeKind::Sizeless(_)
+        | CTypeKind::BlockPointer(_)
+        | CTypeKind::Array { .. }
+        | CTypeKind::Function { .. }
+        | CTypeKind::Typedef { .. }
+        | CTypeKind::TypeOf { .. }
+        | CTypeKind::AtomicSpecifier(_) => return None,
     })
 }
 

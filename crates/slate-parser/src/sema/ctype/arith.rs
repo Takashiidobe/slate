@@ -1,5 +1,5 @@
 use super::{
-    CTypeKind, CTypes, FixedType, FloatKind, IntRank, QualType,
+    CTypeKind, CTypes, FixedType, FloatKind, IntRank, IntegerKind, QualType,
     layout::{float_type, rank_width},
 };
 use crate::ir::FloatType;
@@ -76,16 +76,15 @@ impl CTypes {
     }
 
     fn integer(&self, q: QualType, target: &TargetInfo) -> Option<Integer> {
-        let (width, signed, rank, standard) = match self.canonical_kind(q) {
-            CTypeKind::Bool => (1, false, 0, true),
-            CTypeKind::Char => (8, target.char_signed, 1, true),
-            CTypeKind::SChar => (8, true, 1, true),
-            CTypeKind::UChar => (8, false, 1, true),
-            CTypeKind::Int { rank, signed } => {
-                (rank_width(*rank, target), *signed, *rank as u32 + 2, true)
+        let (width, signed, rank, standard) = match self.canonical_kind(q).integer()? {
+            IntegerKind::Bool => (1, false, 0, true),
+            IntegerKind::Char => (8, target.char_signed, 1, true),
+            IntegerKind::SChar => (8, true, 1, true),
+            IntegerKind::UChar => (8, false, 1, true),
+            IntegerKind::Int { rank, signed } => {
+                (rank_width(rank, target), signed, rank as u32 + 2, true)
             }
-            CTypeKind::BitInt { width, signed } => (*width, *signed, 0, false),
-            _ => return None,
+            IntegerKind::BitInt { width, signed } => (width, signed, 0, false),
         };
         Some(Integer {
             width,
@@ -207,6 +206,10 @@ impl CTypes {
         match self.canonical_kind(q) {
             CTypeKind::Complex(component) => QualType::new(*component),
             CTypeKind::Imaginary(kind) => self.qual(CTypeKind::Float(*kind)),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "every type other than complex and imaginary is its own arithmetic component"
+            )]
             _ => self.unqualified(q),
         }
     }

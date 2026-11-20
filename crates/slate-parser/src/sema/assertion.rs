@@ -723,6 +723,10 @@ impl Checker<'_> {
                 .record_fields
                 .get(id)
                 .is_none_or(|fields| fields.iter().all(|c| self.constexpr_literal_type(*c))),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only arrays and records have members whose qualifiers can make a type non-literal; qualifiers on c itself were checked above"
+            )]
             _ => true,
         }
     }

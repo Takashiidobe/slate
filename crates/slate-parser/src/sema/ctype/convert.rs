@@ -1,4 +1,4 @@
-use super::{CTypeKind, CTypes, IntRank, QualType};
+use super::{CTypeKind, CTypes, IntRank, IntegerKind, QualType};
 use crate::diagnostics::Warning;
 use crate::sema::numeric::ResolveError;
 
@@ -161,6 +161,10 @@ impl CTypes {
             (CTypeKind::Sizeless(_), _) | (_, CTypeKind::Sizeless(_)) => {
                 return Err(ResolveError::Rejected("incompatible SVE types"));
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "this match only decides pairs involving a sizeless SVE type; every other pair falls through to the general rules below"
+            )]
             _ => {}
         }
         if self.is_vector(from) || self.is_vector(to) {
@@ -364,11 +368,11 @@ impl CTypes {
     }
 
     fn integer_shape(&self, q: QualType) -> Option<IntegerShape> {
-        match self.canonical_kind(q) {
-            CTypeKind::Char | CTypeKind::SChar | CTypeKind::UChar => Some(IntegerShape::Char),
-            CTypeKind::Int { rank, .. } => Some(IntegerShape::Rank(*rank)),
-            CTypeKind::BitInt { width, .. } => Some(IntegerShape::BitInt(*width)),
-            _ => None,
+        match self.canonical_kind(q).integer()? {
+            IntegerKind::Char | IntegerKind::SChar | IntegerKind::UChar => Some(IntegerShape::Char),
+            IntegerKind::Int { rank, .. } => Some(IntegerShape::Rank(rank)),
+            IntegerKind::BitInt { width, .. } => Some(IntegerShape::BitInt(width)),
+            IntegerKind::Bool => None,
         }
     }
 
@@ -385,30 +389,17 @@ impl CTypes {
     }
 
     pub fn is_floating(&self, q: QualType) -> bool {
-        matches!(
-            self.canonical_kind(q),
-            CTypeKind::Float(_) | CTypeKind::Complex(_) | CTypeKind::Imaginary(_)
-        )
+        let kind = self.canonical_kind(q);
+        matches!(kind, CTypeKind::Float(_)) || kind.complex_domain().is_some()
     }
 
     pub fn is_integer(&self, q: QualType) -> bool {
-        matches!(
-            self.canonical_kind(q),
-            CTypeKind::Bool
-                | CTypeKind::Char
-                | CTypeKind::SChar
-                | CTypeKind::UChar
-                | CTypeKind::Int { .. }
-                | CTypeKind::BitInt { .. }
-                | CTypeKind::Enum(_)
-        )
+        let kind = self.canonical_kind(q);
+        kind.integer().is_some() || matches!(kind, CTypeKind::Enum(_))
     }
 
     pub fn is_complex_domain(&self, q: QualType) -> bool {
-        matches!(
-            self.canonical_kind(q),
-            CTypeKind::Complex(_) | CTypeKind::Imaginary(_)
-        )
+        self.canonical_kind(q).complex_domain().is_some()
     }
 
     fn is_incomplete_enum(&self, q: QualType) -> bool {

@@ -866,10 +866,18 @@ impl FunctionLowerer<'_, '_> {
         let types = &tables.c_types.types;
         let shape = types.kind(types.desugar(c).ty);
         match (ty, shape) {
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "a defined IR type lowers from its definition whatever the C shape"
+            )]
             (ir::Type::Defined(id), _) => match tables.types.get(id).map(|d| &d.kind) {
                 Some(ir::TypeDefinitionKind::Alias(inner)) => self.lower_c_type(inner, Some(c)),
                 _ => self.lower_type(ty),
             },
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "an IR integer lowers by its width and sign; the C shape only picks a named spelling in named_prim"
+            )]
             (ir::Type::Numeric(ir::NumericType::Integer { .. }), _) => {
                 let lowered = self.lower_type(ty)?;
                 let rust::Type::Prim(resolved) = lowered else {
@@ -940,6 +948,10 @@ impl FunctionLowerer<'_, '_> {
                 elem: Box::new(self.lower_c_type(element, Some(*c_element))?),
                 len: length.unwrap_or(0),
             }),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "lower_type is a correct lowering for every pair; the arms above only refine it with C spellings"
+            )]
             _ => self.lower_type(ty),
         }
     }
@@ -1278,6 +1290,10 @@ pub(super) fn known_c_name(types: &CTypes, mut c: QualType, target: &str) -> Opt
                 rank: IntRank::Long,
                 signed: false,
             } => return Some("c_ulong"),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "char and long are the only kinds whose core::ffi spelling differs by target; every other kind lowers to a fixed Rust type"
+            )]
             _ => return None,
         };
     }

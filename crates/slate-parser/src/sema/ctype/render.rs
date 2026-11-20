@@ -127,9 +127,15 @@ impl CTypes {
                     *underlying
                 }
                 CTypeKind::TypeOf { underlying, .. } => *underlying,
-                CTypeKind::AtomicSpecifier(inner) | CTypeKind::Pointer(inner, _) => *inner,
+                CTypeKind::AtomicSpecifier(inner)
+                | CTypeKind::Pointer(inner, _)
+                | CTypeKind::BlockPointer(inner) => *inner,
                 CTypeKind::Array { element, .. } => *element,
                 CTypeKind::Function { ret, .. } => *ret,
+                #[expect(
+                    slate::sensitive_wildcard,
+                    reason = "the chain follows sugar and declarator-derived types, whose spelling wraps the inner type's; any other kind is spelled by its own name and ends the chain"
+                )]
                 _ => return chain,
             };
         }
@@ -231,6 +237,10 @@ impl Printer<'_> {
                     format!("{text} __attribute__(({convention}))")
                 }
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "every kind without a declarator suffix is spelled by name(), which lists each kind"
+            )]
             kind => self.base(q.quals, &self.name(kind), declarator),
         }
     }

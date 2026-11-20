@@ -1,5 +1,5 @@
 use super::ctype::convert::ConversionContext;
-use super::ctype::{CTypeKind, FloatKind, IntRank, QualType, Qualifiers};
+use super::ctype::{CTypeKind, FloatKind, IntRank, IntegerKind, QualType, Qualifiers};
 use super::numeric::ResolveError;
 use super::types::TypeResolver;
 use crate::ast::{Expr, ExprKind};
@@ -1221,24 +1221,24 @@ impl TypeResolver {
             }
             (DerivedSignature::Rotate, Some(first)) if arity == 2 => {
                 let second = second.ok_or(ResolveError::Internal("rotate count type"))?;
-                if !matches!(
-                    self.ctypes.canonical_kind(first),
-                    CTypeKind::UChar
-                        | CTypeKind::Int { signed: false, .. }
-                        | CTypeKind::BitInt { signed: false, .. }
-                ) || !self.ctypes.is_integer(second)
+                if !self
+                    .ctypes
+                    .canonical_kind(first)
+                    .integer()
+                    .is_some_and(IntegerKind::is_explicitly_unsigned)
+                    || !self.ctypes.is_integer(second)
                 {
                     return Err(ResolveError::Rejected("rotate builtin operand type"));
                 }
                 Ok(self.function_type(first, vec![first, second]))
             }
             (DerivedSignature::Stdc(operation), Some(first)) if arity == 1 => {
-                if !matches!(
-                    self.ctypes.canonical_kind(first),
-                    CTypeKind::UChar
-                        | CTypeKind::Int { signed: false, .. }
-                        | CTypeKind::BitInt { signed: false, .. }
-                ) {
+                if !self
+                    .ctypes
+                    .canonical_kind(first)
+                    .integer()
+                    .is_some_and(IntegerKind::is_explicitly_unsigned)
+                {
                     return Err(ResolveError::Rejected("stdc builtin operand type"));
                 }
                 let result = match operation {
