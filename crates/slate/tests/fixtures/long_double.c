@@ -299,7 +299,11 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_hypot(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_signbit(__a: LongDouble) -> bool;
 // CHECK-NEXT:     safe fn __slate_f80_is_fp_class(__a: LongDouble, __flags: i32) -> bool;
-// CHECK-NEXT:     safe fn __slate_f80_fma(__a: LongDouble, __b: LongDouble, __c: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_fma(
+// CHECK-NEXT:         __a: LongDouble,
+// CHECK-NEXT:         __b: LongDouble,
+// CHECK-NEXT:         __c: LongDouble,
+// CHECK-NEXT:     ) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_lt(__a: LongDouble, __b: LongDouble) -> bool;
 // CHECK-NEXT:     safe fn __slate_f80_le(__a: LongDouble, __b: LongDouble) -> bool;
 // CHECK-NEXT:     safe fn __slate_f80_gt(__a: LongDouble, __b: LongDouble) -> bool;
@@ -348,8 +352,11 @@ int main(void) {
 // CHECK-NEXT:     fn __slate_fabsl__rf80_f80(_0: LongDouble) -> LongDouble;
 // CHECK-NEXT:     fn __slate_fdiml__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
 // CHECK-NEXT:     fn __slate_floorl__rf80_f80(_0: LongDouble) -> LongDouble;
-// CHECK-NEXT:     fn __slate_fmal__rf80_f80_f80_f80(_0: LongDouble, _1: LongDouble, _2: LongDouble)
-// CHECK-NEXT:     -> LongDouble;
+// CHECK-NEXT:     fn __slate_fmal__rf80_f80_f80_f80(
+// CHECK-NEXT:         _0: LongDouble,
+// CHECK-NEXT:         _1: LongDouble,
+// CHECK-NEXT:         _2: LongDouble,
+// CHECK-NEXT:     ) -> LongDouble;
 // CHECK-NEXT:     fn __slate_fmaxl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
 // CHECK-NEXT:     fn __slate_fminl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
 // CHECK-NEXT:     fn __slate_fmodl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
@@ -371,7 +378,11 @@ int main(void) {
 // CHECK-NEXT:     fn __slate_nextafterl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
 // CHECK-NEXT:     fn __slate_nexttowardl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
 // CHECK-NEXT:     fn __slate_powl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
-// CHECK-NEXT:     fn __slate_printf__ri32_pi8_pi8_f80(_0: *const i8, _1: *const i8, _2: LongDouble) -> i32;
+// CHECK-NEXT:     fn __slate_printf__ri32_pi8_pi8_f80(
+// CHECK-NEXT:         _0: *const i8,
+// CHECK-NEXT:         _1: *const i8,
+// CHECK-NEXT:         _2: LongDouble,
+// CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT:     fn __slate_remainderl__rf80_f80_f80(_0: LongDouble, _1: LongDouble) -> LongDouble;
 // CHECK-NEXT:     fn __slate_remquol__rf80_f80_f80_pi32(
 // CHECK-NEXT:         _0: LongDouble,
@@ -476,16 +487,12 @@ int main(void) {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -522,20 +529,28 @@ int main(void) {
 // CHECK-NEXT:     if __slate_f80_from_u16(u16) != LongDouble([0, 0, 0, 0, 0, 0, 49, 212, 14, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let i32: i32 = __slate_f80_to_i32(LongDouble([0, 0, 0, 0, 164, 5, 44, 147, 29, 192]));
+// CHECK-NEXT:     let i32: i32 = __slate_f80_to_i32(
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 164, 5, 44, 147, 29, 192]),
+// CHECK-NEXT:     );
 // CHECK-NEXT:     if __slate_f80_from_i32(i32) != LongDouble([0, 0, 0, 0, 164, 5, 44, 147, 29, 192]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let u32: u32 = __slate_f80_to_u32(LongDouble([0, 0, 0, 0, 20, 106, 10, 206, 30, 64]));
+// CHECK-NEXT:     let u32: u32 = __slate_f80_to_u32(
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 20, 106, 10, 206, 30, 64]),
+// CHECK-NEXT:     );
 // CHECK-NEXT:     if __slate_f80_from_u32(u32) != LongDouble([0, 0, 0, 0, 20, 106, 10, 206, 30, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let i64: i64 = -123456789012345;
-// CHECK-NEXT:     if __slate_f80_from_i64(i64) != LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]) {
+// CHECK-NEXT:     if __slate_f80_from_i64(i64)
+// CHECK-NEXT:         != LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let u64: u64 = __slate_f80_to_u64(LongDouble([210, 10, 31, 235, 140, 169, 84, 171, 62, 64]));
-// CHECK-NEXT:     if __slate_f80_from_u64(u64) != LongDouble([210, 10, 31, 235, 140, 169, 84, 171, 62, 64]) {
+// CHECK-NEXT:     let u64: u64 = __slate_f80_to_u64(
+// CHECK-NEXT:         LongDouble([210, 10, 31, 235, 140, 169, 84, 171, 62, 64]),
+// CHECK-NEXT:     );
+// CHECK-NEXT:     if __slate_f80_from_u64(u64)
+// CHECK-NEXT:         != LongDouble([210, 10, 31, 235, 140, 169, 84, 171, 62, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -556,16 +571,18 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn check_i128_casts() {
-// CHECK-NEXT:     let i128: i128 = __slate_f80_to_i128(LongDouble([
-// CHECK-NEXT:         254, 255, 255, 255, 255, 255, 255, 255, 61, 192,
-// CHECK-NEXT:     ]));
-// CHECK-NEXT:     if __slate_f80_from_i128(i128) != LongDouble([254, 255, 255, 255, 255, 255, 255, 255, 61, 192])
-// CHECK-NEXT:     {
+// CHECK-NEXT:     let i128: i128 = __slate_f80_to_i128(
+// CHECK-NEXT:         LongDouble([254, 255, 255, 255, 255, 255, 255, 255, 61, 192]),
+// CHECK-NEXT:     );
+// CHECK-NEXT:     if __slate_f80_from_i128(i128)
+// CHECK-NEXT:         != LongDouble([254, 255, 255, 255, 255, 255, 255, 255, 61, 192]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let u128: u128 =
-// CHECK-NEXT:         __slate_f80_to_u128(LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]));
-// CHECK-NEXT:     if __slate_f80_from_u128(u128) != LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]) {
+// CHECK-NEXT:     let u128: u128 = __slate_f80_to_u128(
+// CHECK-NEXT:         LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]),
+// CHECK-NEXT:     );
+// CHECK-NEXT:     if __slate_f80_from_u128(u128)
+// CHECK-NEXT:         != LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -589,76 +606,79 @@ int main(void) {
 // CHECK-NEXT:     if __slate_f80_from_u16(ub9) != LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let b40: i64 = __slate_f80_to_i64(LongDouble([0, 0, 0, 0, 160, 162, 121, 235, 25, 192]));
-// CHECK-NEXT:     if __slate_f80_from_i64(b40) != LongDouble([0, 0, 0, 0, 160, 162, 121, 235, 25, 192]) {
+// CHECK-NEXT:     let b40: i64 = __slate_f80_to_i64(
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 160, 162, 121, 235, 25, 192]),
+// CHECK-NEXT:     );
+// CHECK-NEXT:     if __slate_f80_from_i64(b40)
+// CHECK-NEXT:         != LongDouble([0, 0, 0, 0, 160, 162, 121, 235, 25, 192]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let ub40: u64 = __slate_f80_to_u64(LongDouble([0, 0, 0, 0, 196, 162, 121, 235, 28, 64]));
-// CHECK-NEXT:     if __slate_f80_from_u64(ub40) != LongDouble([0, 0, 0, 0, 196, 162, 121, 235, 28, 64]) {
+// CHECK-NEXT:     let ub40: u64 = __slate_f80_to_u64(
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 196, 162, 121, 235, 28, 64]),
+// CHECK-NEXT:     );
+// CHECK-NEXT:     if __slate_f80_from_u64(ub40)
+// CHECK-NEXT:         != LongDouble([0, 0, 0, 0, 196, 162, 121, 235, 28, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut b101: bitint::BInt<101, 2, 16, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<101, 2, 16, bitint::A8>>::from_f80_bytes(
-// CHECK-NEXT:             LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]).0,
-// CHECK-NEXT:         );
-// CHECK-NEXT:     if LongDouble(b101.to_f80_bytes()) != LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]) {
+// CHECK-NEXT:     let mut b101: bitint::BInt<101, 2, 16, bitint::A8> = <bitint::BInt<101, 2, 16, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:         LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]).0,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     if LongDouble(b101.to_f80_bytes())
+// CHECK-NEXT:         != LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if <bitint::BInt<101, 2, 16, bitint::A8>>::from_f80_bytes(LongDouble(b101.to_f80_bytes()).0)
-// CHECK-NEXT:         .compare(b101)
-// CHECK-NEXT:         != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if <bitint::BInt<101, 2, 16, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:             LongDouble(b101.to_f80_bytes()).0,
+// CHECK-NEXT:         )
+// CHECK-NEXT:         .compare(b101) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut ub150: bitint::BUint<150, 3, 24, bitint::A8> =
-// CHECK-NEXT:         <bitint::BUint<150, 3, 24, bitint::A8>>::from_f80_bytes(
-// CHECK-NEXT:             LongDouble([0, 64, 3, 20, 62, 12, 145, 224, 48, 64]).0,
-// CHECK-NEXT:         );
-// CHECK-NEXT:     if LongDouble(ub150.to_f80_bytes()) != LongDouble([0, 64, 3, 20, 62, 12, 145, 224, 48, 64]) {
+// CHECK-NEXT:     let mut ub150: bitint::BUint<150, 3, 24, bitint::A8> = <bitint::BUint<150, 3, 24, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:         LongDouble([0, 64, 3, 20, 62, 12, 145, 224, 48, 64]).0,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     if LongDouble(ub150.to_f80_bytes())
+// CHECK-NEXT:         != LongDouble([0, 64, 3, 20, 62, 12, 145, 224, 48, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if <bitint::BUint<150, 3, 24, bitint::A8>>::from_f80_bytes(LongDouble(ub150.to_f80_bytes()).0)
-// CHECK-NEXT:         .compare(ub150)
-// CHECK-NEXT:         != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if <bitint::BUint<150, 3, 24, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:             LongDouble(ub150.to_f80_bytes()).0,
+// CHECK-NEXT:         )
+// CHECK-NEXT:         .compare(ub150) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut b256: bitint::BInt<256, 4, 32, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_f80_bytes(
-// CHECK-NEXT:             LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]).0,
-// CHECK-NEXT:         );
-// CHECK-NEXT:     if b256.compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
-// CHECK-NEXT:         9999999999 as i128,
-// CHECK-NEXT:     )) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     let mut b256: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:         LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]).0,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     if b256
+// CHECK-NEXT:         .compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(9999999999 as i128))
+// CHECK-NEXT:         != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if LongDouble(b256.to_f80_bytes()) != LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]) {
+// CHECK-NEXT:     if LongDouble(b256.to_f80_bytes())
+// CHECK-NEXT:         != LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut ub300: bitint::BUint<300, 5, 40, bitint::A8> =
-// CHECK-NEXT:         <bitint::BUint<300, 5, 40, bitint::A8>>::from_f80_bytes(
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]).0,
-// CHECK-NEXT:         );
-// CHECK-NEXT:     if ub300.compare(<bitint::BUint<300, 5, 40, bitint::A8>>::from_u128(
-// CHECK-NEXT:         4200000000 as u128,
-// CHECK-NEXT:     )) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     let mut ub300: bitint::BUint<300, 5, 40, bitint::A8> = <bitint::BUint<300, 5, 40, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]).0,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     if ub300
+// CHECK-NEXT:         .compare(<bitint::BUint<300, 5, 40, bitint::A8>>::from_u128(4200000000 as u128))
+// CHECK-NEXT:         != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if LongDouble(ub300.to_f80_bytes()) != LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]) {
+// CHECK-NEXT:     if LongDouble(ub300.to_f80_bytes())
+// CHECK-NEXT:         != LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut b129: bitint::BInt<129, 3, 24, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<129, 3, 24, bitint::A8>>::from_f80_bytes(
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 246, 5, 64]).0,
-// CHECK-NEXT:         );
+// CHECK-NEXT:     let mut b129: bitint::BInt<129, 3, 24, bitint::A8> = <bitint::BInt<129, 3, 24, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 246, 5, 64]).0,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     if (b129.to_i128() as i32) != 123 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if LongDouble(<bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(123 as i128).to_f80_bytes())
-// CHECK-NEXT:         != LongDouble([0, 0, 0, 0, 0, 0, 0, 246, 5, 64])
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if LongDouble(
+// CHECK-NEXT:         <bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(123 as i128).to_f80_bytes(),
+// CHECK-NEXT:     ) != LongDouble([0, 0, 0, 0, 0, 0, 0, 246, 5, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -676,135 +696,227 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn check_math_functions() {
-// CHECK-NEXT:     print_ld(c"sqrt".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_sqrtl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"cbrt".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_cbrtl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 3, 64]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"sin".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_sinl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"cos".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_cosl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"tan".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_tanl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"asin".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_asinl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"acos".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_acosl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"atan".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_atanl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"atan2".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_atan2l__rf80_f80_f80(
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"sinh".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_sinhl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"cosh".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_coshl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"tanh".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_tanhl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"exp".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_expl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"exp2".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_exp2l__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"log".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_logl__rf80_f80(__slate_expl__rf80_f80(LongDouble([
-// CHECK-NEXT:             0, 0, 0, 0, 0, 0, 0, 128, 255, 63,
-// CHECK-NEXT:         ])))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"log2".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_log2l__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 2, 64]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"log10".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_log10l__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 250, 8, 64]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"pow".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_powl__rf80_f80_f80(
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"floor".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_floorl__rf80_f80(LongDouble([205, 204, 204, 204, 204, 204, 204, 172, 0, 64]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"ceil".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_ceill__rf80_f80(LongDouble([102, 102, 102, 102, 102, 102, 102, 134, 0, 64]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"round".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_roundl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"trunc".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_truncl__rf80_f80(LongDouble([205, 204, 204, 204, 204, 204, 204, 172, 0, 192]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"fabs".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_fabsl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 192]))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"fmod".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_fmodl__rf80_f80_f80(
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]),
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"hypot".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_hypotl__rf80_f80_f80(
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"copysign".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_copysignl__rf80_f80_f80(
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"fmax".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_fmaxl__rf80_f80_f80(
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"fmin".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_fminl__rf80_f80_f80(
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"fma".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_fmal__rf80_f80_f80_f80(
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"ldexp".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_ldexpl__rf80_f80_i32(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]), 4i32)
-// CHECK-NEXT:     });
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"sqrt".as_ptr(),
+// CHECK-NEXT:         unsafe { __slate_sqrtl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64])) },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"cbrt".as_ptr(),
+// CHECK-NEXT:         unsafe { __slate_cbrtl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 3, 64])) },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"sin".as_ptr(),
+// CHECK-NEXT:         unsafe { __slate_sinl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"cos".as_ptr(),
+// CHECK-NEXT:         unsafe { __slate_cosl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"tan".as_ptr(),
+// CHECK-NEXT:         unsafe { __slate_tanl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"asin".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_asinl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"acos".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_acosl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"atan".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_atanl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"atan2".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_atan2l__rf80_f80_f80(
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"sinh".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_sinhl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"cosh".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_coshl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"tanh".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_tanhl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"exp".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_expl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]))
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"exp2".as_ptr(),
+// CHECK-NEXT:         unsafe { __slate_exp2l__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64])) },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"log".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_logl__rf80_f80(
+// CHECK-NEXT:                 __slate_expl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63])),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"log2".as_ptr(),
+// CHECK-NEXT:         unsafe { __slate_log2l__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 2, 64])) },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"log10".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_log10l__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 250, 8, 64]))
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"pow".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_powl__rf80_f80_f80(
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"floor".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_floorl__rf80_f80(
+// CHECK-NEXT:                 LongDouble([205, 204, 204, 204, 204, 204, 204, 172, 0, 64]),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"ceil".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_ceill__rf80_f80(
+// CHECK-NEXT:                 LongDouble([102, 102, 102, 102, 102, 102, 102, 134, 0, 64]),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"round".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_roundl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]))
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"trunc".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_truncl__rf80_f80(
+// CHECK-NEXT:                 LongDouble([205, 204, 204, 204, 204, 204, 204, 172, 0, 192]),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"fabs".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_fabsl__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 192]))
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"fmod".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_fmodl__rf80_f80_f80(
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]),
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"hypot".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_hypotl__rf80_f80_f80(
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"copysign".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_copysignl__rf80_f80_f80(
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"fmax".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_fmaxl__rf80_f80_f80(
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"fmin".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_fminl__rf80_f80_f80(
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"fma".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_fmal__rf80_f80_f80_f80(
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"ldexp".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_ldexpl__rf80_f80_i32(
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
+// CHECK-NEXT:                 4i32,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut exp: i32 = 0;
-// CHECK-NEXT:     print_ld(c"frexp".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_frexpl__rf80_f80_pi32(
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 64]),
-// CHECK-NEXT:             core::ptr::addr_of_mut!(exp),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"frexp".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_frexpl__rf80_f80_pi32(
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 64]),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(exp),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!("frexp_exp={}", exp);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "isnan={} isinf={} signbit_neg={} signbit_pos={} isfinite={}",
-// CHECK-NEXT:         __slate_f80_is_fp_class(LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]), 3) as i32,
-// CHECK-NEXT:         if __slate_f80_is_fp_class(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]), 516) {
+// CHECK-NEXT:         __slate_f80_is_fp_class(LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]), 3)
+// CHECK-NEXT:             as i32,
+// CHECK-NEXT:         if __slate_f80_is_fp_class(
+// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]),
+// CHECK-NEXT:             516,
+// CHECK-NEXT:         ) {
 // CHECK-NEXT:             if __slate_f80_signbit(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127])) {
 // CHECK-NEXT:                 -1i32
 // CHECK-NEXT:             } else {
@@ -817,13 +929,10 @@ int main(void) {
 // CHECK-NEXT:         __slate_f80_signbit(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63])) as i32,
 // CHECK-NEXT:         __slate_f80_is_fp_class(
 // CHECK-NEXT:             LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127]),
-// CHECK-NEXT:             504
+// CHECK-NEXT:             504,
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     print_ld(
-// CHECK-NEXT:         c"epsilon".as_ptr(),
-// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 192, 63]),
-// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(c"epsilon".as_ptr(), LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 192, 63]));
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: /// The functions above all round-trip through the generic call-shim (any
@@ -845,57 +954,90 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     print_ld(c"modf_ipart".as_ptr(), ipart);
 // CHECK-NEXT:     print_ld(c"modf_frac".as_ptr(), frac);
-// CHECK-NEXT:     print_ld(c"remainder".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_remainderl__rf80_f80_f80(
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten)),
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(three)),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"remainder".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_remainderl__rf80_f80_f80(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(three)),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut quo: i32 = 0;
-// CHECK-NEXT:     print_ld(c"remquo".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_remquol__rf80_f80_f80_pi32(
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten)),
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(three)),
-// CHECK-NEXT:             core::ptr::addr_of_mut!(quo),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"remquo".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_remquol__rf80_f80_f80_pi32(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(three)),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(quo),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!("remquo_quo={}", quo);
-// CHECK-NEXT:     print_ld(c"scalbn".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_scalbnl__rf80_f80_i32(core::ptr::read_volatile(core::ptr::addr_of!(ten)), 3i32)
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"scalbln".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_scalblnl__rf80_f80_i64(core::ptr::read_volatile(core::ptr::addr_of!(ten)), 3i64)
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"nextafter".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_nextafterl__rf80_f80_f80(
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten)),
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(three)),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"nexttoward".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_nexttowardl__rf80_f80_f80(
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten)),
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(three)),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"fdim".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_fdiml__rf80_f80_f80(
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten)),
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(three)),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"rint".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_rintl__rf80_f80(
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten))
-// CHECK-NEXT:                 / core::ptr::read_volatile(core::ptr::addr_of!(three)),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"nearbyint".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_nearbyintl__rf80_f80(
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten))
-// CHECK-NEXT:                 / core::ptr::read_volatile(core::ptr::addr_of!(three)),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"scalbn".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_scalbnl__rf80_f80_i32(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten)),
+// CHECK-NEXT:                 3i32,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"scalbln".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_scalblnl__rf80_f80_i64(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten)),
+// CHECK-NEXT:                 3i64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"nextafter".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_nextafterl__rf80_f80_f80(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(three)),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"nexttoward".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_nexttowardl__rf80_f80_f80(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(three)),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"fdim".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_fdiml__rf80_f80_f80(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(three)),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"rint".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_rintl__rf80_f80(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:                     / core::ptr::read_volatile(core::ptr::addr_of!(three)),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"nearbyint".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_nearbyintl__rf80_f80(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:                     / core::ptr::read_volatile(core::ptr::addr_of!(three)),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -919,30 +1061,50 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     println!("ilogb={}", unsafe {
-// CHECK-NEXT:         __slate_ilogbl__ri32_f80(core::ptr::read_volatile(core::ptr::addr_of!(ten)))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"logb".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_logbl__rf80_f80(core::ptr::read_volatile(core::ptr::addr_of!(ten)))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"erf".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_erfl__rf80_f80(
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten))
-// CHECK-NEXT:                 / core::ptr::read_volatile(core::ptr::addr_of!(three)),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"erfc".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_erfcl__rf80_f80(
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ten))
-// CHECK-NEXT:                 / core::ptr::read_volatile(core::ptr::addr_of!(three)),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"tgamma".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_tgammal__rf80_f80(core::ptr::read_volatile(core::ptr::addr_of!(three)))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     print_ld(c"lgamma".as_ptr(), unsafe {
-// CHECK-NEXT:         __slate_lgammal__rf80_f80(core::ptr::read_volatile(core::ptr::addr_of!(ten)))
-// CHECK-NEXT:     });
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "ilogb={}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_ilogbl__ri32_f80(core::ptr::read_volatile(core::ptr::addr_of!(ten)))
+// CHECK-NEXT:         }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"logb".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_logbl__rf80_f80(core::ptr::read_volatile(core::ptr::addr_of!(ten)))
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"erf".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_erfl__rf80_f80(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:                     / core::ptr::read_volatile(core::ptr::addr_of!(three)),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"erfc".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_erfcl__rf80_f80(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:                     / core::ptr::read_volatile(core::ptr::addr_of!(three)),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"tgamma".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_tgammal__rf80_f80(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(three)),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(
+// CHECK-NEXT:         c"lgamma".as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_lgammal__rf80_f80(core::ptr::read_volatile(core::ptr::addr_of!(ten)))
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let vnan: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 127]);
 // CHECK-NEXT:     let vinf: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 127]);
 // CHECK-NEXT:     let vzero: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -950,8 +1112,12 @@ int main(void) {
 // CHECK-NEXT:     let vsub: LongDouble = LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool;
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let __u: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vnan)) };
-// CHECK-NEXT:         let __v: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) };
+// CHECK-NEXT:         let __u: LongDouble = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(vnan))
+// CHECK-NEXT:         };
+// CHECK-NEXT:         let __v: LongDouble = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(vone))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[V_0]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
 // CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) }
 // CHECK-NEXT:             && ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
@@ -961,8 +1127,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bool;
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let __u: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) };
-// CHECK-NEXT:         let __v: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vzero)) };
+// CHECK-NEXT:         let __u: LongDouble = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(vone))
+// CHECK-NEXT:         };
+// CHECK-NEXT:         let __v: LongDouble = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(vzero))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[V_1]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
 // CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) }
 // CHECK-NEXT:             && ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
@@ -974,13 +1144,15 @@ int main(void) {
 // CHECK-NEXT:         "isnan_v={} isinf_v={} isfinite_v={} isnormal_v={} isunordered_v={} isunordered_ok={}",
 // CHECK-NEXT:         __slate_f80_is_fp_class(
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vnan)) },
-// CHECK-NEXT:             3
+// CHECK-NEXT:             3,
 // CHECK-NEXT:         ) as i32,
 // CHECK-NEXT:         if __slate_f80_is_fp_class(
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vinf)) },
-// CHECK-NEXT:             516
+// CHECK-NEXT:             516,
 // CHECK-NEXT:         ) {
-// CHECK-NEXT:             if __slate_f80_signbit(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vinf)) }) {
+// CHECK-NEXT:             if __slate_f80_signbit(
+// CHECK-NEXT:                 unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vinf)) },
+// CHECK-NEXT:             ) {
 // CHECK-NEXT:                 -1i32
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 1i32
@@ -990,11 +1162,11 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:         __slate_f80_is_fp_class(
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) },
-// CHECK-NEXT:             504
+// CHECK-NEXT:             504,
 // CHECK-NEXT:         ) as i32,
 // CHECK-NEXT:         __slate_f80_is_fp_class(
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) },
-// CHECK-NEXT:             264
+// CHECK-NEXT:             264,
 // CHECK-NEXT:         ) as i32,
 // CHECK-NEXT:         [[V_0]] as i32,
 // CHECK-NEXT:         [[V_1]] as i32
@@ -1003,17 +1175,25 @@ int main(void) {
 // CHECK-NEXT:         "subnormal_isnormal={}",
 // CHECK-NEXT:         __slate_f80_is_fp_class(
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vsub)) },
-// CHECK-NEXT:             264
+// CHECK-NEXT:             264,
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let vtwo: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]);
 // CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: bool;
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let __x: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) };
-// CHECK-NEXT:         let __y: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vtwo)) };
+// CHECK-NEXT:         let __x: LongDouble = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(vone))
+// CHECK-NEXT:         };
+// CHECK-NEXT:         let __y: LongDouble = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(vtwo))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         let mut [[V_3:__v[0-9]+]]: bool;
-// CHECK-NEXT:         let __u: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__x)) };
-// CHECK-NEXT:         let __v: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__y)) };
+// CHECK-NEXT:         let __u: LongDouble = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(__x))
+// CHECK-NEXT:         };
+// CHECK-NEXT:         let __v: LongDouble = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(__y))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[V_3]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
 // CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) }
 // CHECK-NEXT:             && ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
@@ -1026,11 +1206,19 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_4:__v[0-9]+]]: bool;
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let __x: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) };
-// CHECK-NEXT:         let __y: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vone)) };
+// CHECK-NEXT:         let __x: LongDouble = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(vone))
+// CHECK-NEXT:         };
+// CHECK-NEXT:         let __y: LongDouble = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(vone))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         let mut [[V_5:__v[0-9]+]]: bool;
-// CHECK-NEXT:         let __u: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__x)) };
-// CHECK-NEXT:         let __v: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__y)) };
+// CHECK-NEXT:         let __u: LongDouble = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(__x))
+// CHECK-NEXT:         };
+// CHECK-NEXT:         let __v: LongDouble = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(__y))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[V_5]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
 // CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) }
 // CHECK-NEXT:             && ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
@@ -1058,9 +1246,13 @@ int main(void) {
 // CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__y)) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "islessgreater_lt={} islessgreater_eq={} islessgreater_nan={}",
-// CHECK-NEXT:         [[V_2]] as i32, [[V_4]] as i32, [[V_6]] as i32
+// CHECK-NEXT:         [[V_2]] as i32,
+// CHECK-NEXT:         [[V_4]] as i32,
+// CHECK-NEXT:         [[V_6]] as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut ten_plain: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
+// CHECK-NEXT:     let mut ten_plain: LongDouble = unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut canon: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // CHECK-NEXT:     let canon_r: i32 = unsafe {
 // CHECK-NEXT:         canonicalizel(
@@ -1070,14 +1262,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     print_ld(c"canonicalize".as_ptr(), canon);
 // CHECK-NEXT:     println!("canonicalize_r={}", canon_r);
-// CHECK-NEXT:     print_ld(
-// CHECK-NEXT:         c"ldbl_min".as_ptr(),
-// CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0]),
-// CHECK-NEXT:     );
-// CHECK-NEXT:     print_ld(
-// CHECK-NEXT:         c"ldbl_true_min".as_ptr(),
-// CHECK-NEXT:         LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// CHECK-NEXT:     );
+// CHECK-NEXT:     print_ld(c"ldbl_min".as_ptr(), LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 0]));
+// CHECK-NEXT:     print_ld(c"ldbl_true_min".as_ptr(), LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "ldbl_mant_dig={} ldbl_dig={} ldbl_min_exp={} ldbl_max_exp={} ldbl_min_10_exp={} ldbl_max_10_exp={}",
 // CHECK-NEXT:         64i32, 18i32, -16381i32, 16384i32, -4931i32, 4932i32
@@ -1090,15 +1276,14 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", truncate_long_double(x + y));
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}",
-// CHECK-NEXT:         truncate_long_double(mix_long_double(
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
-// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64])
-// CHECK-NEXT:         ))
+// CHECK-NEXT:         truncate_long_double(
+// CHECK-NEXT:             mix_long_double(
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
+// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 1, 64]),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}",
-// CHECK-NEXT:         truncate_long_double(LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 64]))
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{}", truncate_long_double(LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 64])));
 // CHECK-NEXT:     check_int_casts();
 // CHECK-NEXT:     check_i128_casts();
 // CHECK-NEXT:     check_bitint_casts();

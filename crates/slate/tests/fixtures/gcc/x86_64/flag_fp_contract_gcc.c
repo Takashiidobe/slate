@@ -26,7 +26,8 @@ int main(void) {
 // CHECK-NEXT:     let base: f64 = 1.0f64 + 9.313225746154785e-10f64;
 // CHECK-NEXT:     let square: f64 = 1.0f64 + 1.862645149230957e-9f64;
 // CHECK-NEXT:     let a: f64 = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(base)) };
-// CHECK-NEXT:     let residual: f64 = a * a - unsafe { core::ptr::read_volatile(core::ptr::addr_of!(square)) };
+// CHECK-NEXT:     let residual: f64 = a * a
+// CHECK-NEXT:         - unsafe { core::ptr::read_volatile(core::ptr::addr_of!(square)) };
 // CHECK-NEXT:     let fa: f32 = 1.0f32 + 0.00012207031f32;
 // CHECK-NEXT:     let fresidual: f32 = fa * fa - (1.0f32 + 0.00024414063f32);
 // CHECK-NEXT:     unsafe { printf(c"%a %a\n".as_ptr(), residual, fresidual as f64) };

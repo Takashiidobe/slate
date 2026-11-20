@@ -9,7 +9,9 @@ int main(int argc, char **argv) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::abort;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8) -> i32 {
 // CHECK-NEXT:     let mut r: i32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if argc == 1 {
@@ -22,6 +24,7 @@ int main(int argc, char **argv) {
 // CHECK-NEXT:     println!("{}", r);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

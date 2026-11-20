@@ -96,26 +96,34 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Counter {
 // CHECK-NEXT:     hits: i32,
 // CHECK-NEXT:     total: f64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut global_count: i32 = 10;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn next_slot(slots: *mut i32) -> *mut i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { slots.offset(calls as isize) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut u: u32 = 4294967295u32;
 // CHECK-NEXT:     let mut before: u32 = 0;
@@ -179,9 +187,9 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(c"%g %g %g\n".as_ptr(), f1 as f64, f2 as f64, f as f64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         0i32, 10i32, 20i32, 30i32, 40i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16(
+// CHECK-NEXT:         [0i32, 10i32, 20i32, 30i32, 40i32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut p: *mut i32 = values.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: *mut i32 = p;
 // CHECK-NEXT:     p = unsafe { [[V_9]].add(1) };
@@ -191,7 +199,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: *mut i32 = unsafe { [[V_10]].add(1) };
 // CHECK-NEXT:     p = [[V_11]];
 // CHECK-NEXT:     at_next = unsafe { *[[V_11]] };
-// CHECK-NEXT:     println!("{} {} {}", unsafe { * [[V_9]] }, at_p, at_next);
+// CHECK-NEXT:     println!("{} {} {}", unsafe { *[[V_9]] }, at_p, at_next);
 // CHECK-NEXT:     let mut was: i32 = 0;
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: *mut i32 = p;
 // CHECK-NEXT:     p = unsafe { [[V_12]].sub(1) };
@@ -208,7 +216,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", [[V_13]]);
 // CHECK-NEXT:     let [[V_14:__v[0-9]+]]: *mut i32 = p;
 // CHECK-NEXT:     p = unsafe { [[V_14]].sub(1) };
-// CHECK-NEXT:     println!("{}", unsafe { * [[V_14]] });
+// CHECK-NEXT:     println!("{}", unsafe { *[[V_14]] });
 // CHECK-NEXT:     println!("{}", values.0[1]);
 // CHECK-NEXT:     let mut i: i32 = 1;
 // CHECK-NEXT:     let mut r: i32 = 0;
@@ -244,8 +252,12 @@ int main(void) {
 // CHECK-NEXT:         *[[V_22]] = *[[V_22]] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} calls={}", slots.0[0], slots.0[1], slots.0[2], slots.0[3], unsafe {
-// CHECK-NEXT:         calls }
+// CHECK-NEXT:         "{} {} {} {} calls={}",
+// CHECK-NEXT:         slots.0[0],
+// CHECK-NEXT:         slots.0[1],
+// CHECK-NEXT:         slots.0[2],
+// CHECK-NEXT:         slots.0[3],
+// CHECK-NEXT:         unsafe { calls }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut counter: Counter = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Counter = unsafe { core::mem::zeroed() };
@@ -309,6 +321,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {}", n, total);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

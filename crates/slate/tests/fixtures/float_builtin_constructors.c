@@ -15,33 +15,40 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn nan([[ARG_0:arg[0-9]+]]: *const i8) -> f64;
 // CHECK-NEXT:     #[link_name = "nan"]
 // CHECK-NEXT:     fn __builtin_nan([[ARG_0]]: *const i8) -> f64;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_float_builtin_constructors_c_9 {
 // CHECK-NEXT:     value: f32,
 // CHECK-NEXT:     bits: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_float_builtin_constructors_c_10 {
 // CHECK-NEXT:     value: f64,
 // CHECK-NEXT:     bits: u64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn payload() -> *const i8 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     c"0x23".as_ptr()
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let infinity: f32 = f32::INFINITY;
 // CHECK-NEXT:     let huge: f64 = f64::INFINITY;
@@ -58,8 +65,7 @@ int main(void) {
 // CHECK-NEXT:             c"%d %d %d %08x %016llx %d\n".as_ptr(),
 // CHECK-NEXT:             ((if core::ptr::read_volatile(core::ptr::addr_of!(infinity)).is_infinite() {
 // CHECK-NEXT:                 if core::ptr::read_volatile(core::ptr::addr_of!(infinity))
-// CHECK-NEXT:                     .is_sign_negative()
-// CHECK-NEXT:                 {
+// CHECK-NEXT:                     .is_sign_negative() {
 // CHECK-NEXT:                     -1i32
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     1i32
@@ -68,8 +74,8 @@ int main(void) {
 // CHECK-NEXT:                 0i32
 // CHECK-NEXT:             }) != 0) as i32,
 // CHECK-NEXT:             ((if core::ptr::read_volatile(core::ptr::addr_of!(huge)).is_infinite() {
-// CHECK-NEXT:                 if core::ptr::read_volatile(core::ptr::addr_of!(huge)).is_sign_negative()
-// CHECK-NEXT:                 {
+// CHECK-NEXT:                 if core::ptr::read_volatile(core::ptr::addr_of!(huge))
+// CHECK-NEXT:                     .is_sign_negative() {
 // CHECK-NEXT:                     -1i32
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     1i32
@@ -86,6 +92,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     ((unsafe { calls }) != 1) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

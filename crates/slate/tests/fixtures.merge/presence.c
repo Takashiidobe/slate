@@ -42,10 +42,7 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut table: [i32; 2] = [1, 2];
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(not(feature = "beta"))]
@@ -114,16 +111,16 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{}",
-// CHECK-NEXT:             ((core::mem::size_of::<[i32; 3]>() as size_t) / (core::mem::size_of::<i32>() as size_t))
-// CHECK-NEXT:                 as i32
+// CHECK-NEXT:             ((core::mem::size_of::<[i32; 3]>() as size_t)
+// CHECK-NEXT:                 / (core::mem::size_of::<i32>() as size_t)) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(unix, feature = "beta"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{}",
-// CHECK-NEXT:             ((core::mem::size_of::<[i32; 2]>() as size_t) / (core::mem::size_of::<i32>() as size_t))
-// CHECK-NEXT:                 as i32
+// CHECK-NEXT:             ((core::mem::size_of::<[i32; 2]>() as size_t)
+// CHECK-NEXT:                 / (core::mem::size_of::<i32>() as size_t)) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

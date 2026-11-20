@@ -33,8 +33,11 @@ int main(void) {
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = x.__slate_bits_0.__get_c();
 // CHECK-NEXT:     x.__slate_bits_0.__set_c([[V_2]] + 1);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", [[V_0]], [[V_1]], [[V_2]], core::mem::size_of::<
-// CHECK-NEXT:         __SlateRecord_bitfield_init_increment_c_7 > () as u64
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         [[V_0]],
+// CHECK-NEXT:         [[V_1]],
+// CHECK-NEXT:         [[V_2]],
+// CHECK-NEXT:         core::mem::size_of::<__SlateRecord_bitfield_init_increment_c_7>() as u64
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = x.__slate_bits_0.__get_a();
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = [[V_3]] + 1;
@@ -46,7 +49,9 @@ int main(void) {
 // CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = [[V_7]] + 1;
 // CHECK-NEXT:     x.__slate_bits_0.__set_c([[V_8]]);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", (([[V_4]] as i16) << 6 >> 6) as i32, (([[V_6]] as i16) << 6 >> 6) as i32,
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         (([[V_4]] as i16) << 6 >> 6) as i32,
+// CHECK-NEXT:         (([[V_6]] as i16) << 6 >> 6) as i32,
 // CHECK-NEXT:         (([[V_8]] as i16) << 6 >> 6) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0

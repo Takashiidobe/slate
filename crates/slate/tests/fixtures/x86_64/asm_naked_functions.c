@@ -29,27 +29,35 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(naked)]
 // CHECK-NEXT: extern "C-unwind" fn identity(x: i32) -> i32 {
 // CHECK-NEXT:     core::arch::naked_asm!("movl %edi, %eax\n\tret", options(att_syntax));
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(naked)]
 // CHECK-NEXT: extern "C-unwind" fn add(a: i64, b: i64) -> i64 {
 // CHECK-NEXT:     core::arch::naked_asm!("leaq (%rdi,%rsi), %rax\nret", options(att_syntax));
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(naked)]
 // CHECK-NEXT: extern "C-unwind" fn forty_two() -> i32 {
 // CHECK-NEXT:     core::arch::naked_asm!(
-// CHECK-NEXT:         "movl ${0}, %eax\n\tret", const 42 as i32, options(att_syntax)
+// CHECK-NEXT:         "movl ${0}, %eax\n\tret",
+// CHECK-NEXT:         const 42 as i32,
+// CHECK-NEXT:         options(att_syntax),
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(naked)]
 // CHECK-NEXT: extern "C-unwind" fn declared() -> i32 {
 // CHECK-NEXT:     core::arch::naked_asm!("movl $5, %eax\n\tret # {{[{][{]}}braces}}", options(att_syntax));
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let fp: Option<unsafe extern "C-unwind" fn(i32) -> i32> = Some(identity);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -66,6 +74,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

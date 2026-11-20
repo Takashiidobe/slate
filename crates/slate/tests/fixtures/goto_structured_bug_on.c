@@ -49,19 +49,25 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! unlikely {
 // CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         ! (!$x) as i64
+// CHECK-NEXT:         !(!$x) as i64
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __builtin_expect([[ARG_0:arg[0-9]+]]: i64, [[ARG_1:arg[0-9]+]]: i64) -> i64;
 // CHECK-NEXT:     fn __builtin_unreachable();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut trapped: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn collapse(values: *const i32, count: i32, mut start: i32) -> i32 {
 // CHECK-NEXT:     let mut copy: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
@@ -112,24 +118,20 @@ int main(void) {
 // CHECK-NEXT:         return total;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 8]> = __SlateAlign16([
-// CHECK-NEXT:         -1i32,
-// CHECK-NEXT:         3i32,
-// CHECK-NEXT:         1i32,
-// CHECK-NEXT:         4i32,
-// CHECK-NEXT:         1i32,
-// CHECK-NEXT:         5i32,
-// CHECK-NEXT:         10i32,
-// CHECK-NEXT:         2i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 8]> = __SlateAlign16(
+// CHECK-NEXT:         [-1i32, 3i32, 1i32, 4i32, 1i32, 5i32, 10i32, 2i32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let __slate_printf_arg0 = collapse(values.0.as_mut_ptr() as *const i32, 8i32, 0i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "collapse {} trapped {}", __slate_printf_arg0, unsafe {
-// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(trapped)) }
+// CHECK-NEXT:         "collapse {} trapped {}",
+// CHECK-NEXT:         __slate_printf_arg0,
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(trapped)) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

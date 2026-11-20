@@ -65,10 +65,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: //! merge-features: alpha beta gamma
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -79,8 +76,7 @@ int main(void) {
 // CHECK-NEXT:         if ({
 // CHECK-NEXT:             let __slate_function: Option<unsafe extern "C-unwind" fn()> = Some(first);
 // CHECK-NEXT:             __slate_function
-// CHECK-NEXT:         }) == Some(second)
-// CHECK-NEXT:         {
+// CHECK-NEXT:         }) == Some(second) {
 // CHECK-NEXT:             value = 8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

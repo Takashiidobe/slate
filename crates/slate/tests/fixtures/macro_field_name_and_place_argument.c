@@ -31,37 +31,51 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! hybrid_var {
 // CHECK-NEXT:     ($_pmu:expr, $_var:expr) => {
-// CHECK-NEXT:         { let mut __v : * mut {{\[\[}}u64; 3]; 2]; let mut [[V_0:__v[0-9]+]] : * mut {{\[\[}}u64; 3]; 2] = unsafe
-// CHECK-NEXT:         { core::ptr::addr_of_mut!($_var) }; if is_hybrid($_pmu) != 0 { [[V_0]] = unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((*$_pmu).regs) }; } __v = [[V_0]]; unsafe { (* __v)
-// CHECK-NEXT:         .as_mut_ptr() as * mut [u64; 3] } }
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut __v: *mut {{\[\[}}u64; 3]; 2];
+// CHECK-NEXT:             let mut [[V_0:__v[0-9]+]]: *mut {{\[\[}}u64; 3]; 2] = unsafe { core::ptr::addr_of_mut!($_var) };
+// CHECK-NEXT:             if is_hybrid($_pmu) != 0 {
+// CHECK-NEXT:                 [[V_0]] = unsafe { core::ptr::addr_of_mut!((*$_pmu).regs) };
+// CHECK-NEXT:             }
+// CHECK-NEXT:             __v = [[V_0]];
+// CHECK-NEXT:             unsafe { (*__v).as_mut_ptr() as *mut [u64; 3] }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct pmu {
 // CHECK-NEXT:     hybrid: i32,
 // CHECK-NEXT:     regs: {{\[\[}}u64; 3]; 2],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
-// CHECK-NEXT: static mut regs: __SlateAlign16<{{\[\[}}u64; 3]; 2]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     core::mem::zeroed()
-// CHECK-NEXT: });
-// CHECK-NEXT: static source: __SlateAlign16<{{\[\[}}u64; 3]; 2]> = __SlateAlign16([
-// CHECK-NEXT:     [1u64, 2u64, 3u64],
-// CHECK-NEXT:     [4u64, 5u64, 6u64],
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut regs: __SlateAlign16<{{\[\[}}u64; 3]; 2]> = __SlateAlign16(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: static source: __SlateAlign16<{{\[\[}}u64; 3]; 2]> = __SlateAlign16(
+// CHECK-NEXT:     {{\[\[}}1u64, 2u64, 3u64], [4u64, 5u64, 6u64]],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memcpy;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn is_hybrid(pmu: *mut pmu) -> i32 {
 // CHECK-NEXT:     unsafe { (*pmu).hybrid }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut hybrid: pmu = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: pmu = unsafe { core::mem::zeroed() };
@@ -103,6 +117,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -31,7 +31,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump80(c"strtold".as_ptr(), value);
-// CHECK-NEXT:     println!("{}", (((unsafe { * end }) as i32) == 0) as i32);
+// CHECK-NEXT:     println!("{}", (((unsafe { *end }) as i32) == 0) as i32);
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

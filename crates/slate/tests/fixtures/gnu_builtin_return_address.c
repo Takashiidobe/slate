@@ -16,12 +16,14 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.frameaddress.p0"]
 // CHECK-NEXT:     fn __slate_intrinsic_2d7c29df8fdf6378([[ARG_0:arg[0-9]+]]: i32) -> *mut ();
 // CHECK-NEXT:     #[link_name = "llvm.returnaddress.p0"]
 // CHECK-NEXT:     fn __slate_intrinsic_ded315013ea6523([[ARG_0]]: i32) -> *mut ();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn address_probe() -> i32 {
 // CHECK-NEXT:     let return_address: *mut () = unsafe {
 // CHECK-NEXT:         __slate_intrinsic_ded315013ea6523(const { ((0 as i32) as u32) as i32 })
@@ -31,10 +33,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (!return_address.is_null() as i32) + (!frame_address.is_null() as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", address_probe());
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -34,11 +34,13 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Data {
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn process(
 // CHECK-NEXT:     flag: i32,
 // CHECK-NEXT:     handler: Option<unsafe extern "C-unwind" fn(*const (), i32)>,
@@ -50,20 +52,24 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { handler.unwrap()(d as *const (), 42i32) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static c: i8 = 0;
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn print_handler(p: *const (), extra: i32) {
 // CHECK-NEXT:     if extra == 0 {
-// CHECK-NEXT:         println!("zero {}", (unsafe { * (p as * const i8) }) as i32);
+// CHECK-NEXT:         println!("zero {}", (unsafe { *(p as *const i8) }) as i32);
 // CHECK-NEXT:         return;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{} {}", unsafe { (* (p as * const Data)).value }, extra);
+// CHECK-NEXT:     println!("{} {}", unsafe { (*(p as *const Data)).value }, extra);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut d: Data = Data { value: 7 };
 // CHECK-NEXT:     process(1i32, Some(print_handler), core::ptr::addr_of_mut!(d));
 // CHECK-NEXT:     process(0i32, Some(print_handler), core::ptr::addr_of_mut!(d));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -31,13 +31,19 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let floats: core::simd::Simd<f32, 4> =
-// CHECK-NEXT:         core::simd::Simd::from_array([1.0f32, -2.0f32, 0.5f32, 0.0f32]);
-// CHECK-NEXT:     let ints: core::simd::Simd<i32, 4> = as_ints(unsafe {
-// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<f32, 4>, core::simd::Simd<i32, 4>>(floats)
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let bytes: core::simd::Simd<u8, 16> =
-// CHECK-NEXT:         unsafe { core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<u8, 16>>(ints) };
+// CHECK-NEXT:     let floats: core::simd::Simd<f32, 4> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [1.0f32, -2.0f32, 0.5f32, 0.0f32],
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let ints: core::simd::Simd<i32, 4> = as_ints(
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<f32, 4>, core::simd::Simd<i32, 4>>(
+// CHECK-NEXT:                 floats,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let bytes: core::simd::Simd<u8, 16> = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<u8, 16>>(ints)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%x %x %x %x %u\n".as_ptr(),

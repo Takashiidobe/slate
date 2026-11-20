@@ -9,10 +9,11 @@ unsigned int clock_numerator(mach_timebase_info_data_t *info) { return info->num
 unsigned int clock_denominator(struct mach_timebase_info *info) { return info->denom; }
 
 // SLATE-FILECHECK-BEGIN x86_64-apple-darwin aarch64-apple-darwin
-// CHECK: {{^}}use slate_support::mach::mach_time::mach_absolute_time;
-// CHECK-NEXT: use slate_support::mach::mach_time::mach_continuous_time;
+// CHECK: {{^}}
 // CHECK-NEXT: use slate_support::mach::mach_time::mach_timebase_info;
 // CHECK-NEXT: use slate_support::mach::mach_time::mach_wait_until;
+// CHECK-NEXT: use slate_support::mach::mach_time::mach_absolute_time;
+// CHECK-NEXT: use slate_support::mach::mach_time::mach_continuous_time;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn clock_ticks() -> u64 {
@@ -34,7 +35,9 @@ unsigned int clock_denominator(struct mach_timebase_info *info) { return info->d
 // CHECK-NEXT:     info: *mut slate_support::mach::mach_time::mach_timebase_info,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         mach_timebase_info(info as *mut slate_support::mach::mach_time::mach_timebase_info) as i32
+// CHECK-NEXT:         mach_timebase_info(
+// CHECK-NEXT:             info as *mut slate_support::mach::mach_time::mach_timebase_info,
+// CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

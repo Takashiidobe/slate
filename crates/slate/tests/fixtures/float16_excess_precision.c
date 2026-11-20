@@ -39,41 +39,49 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(f16)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn chain(a: f16, b: f16, c: f16) -> f16 {
 // CHECK-NEXT:     ((a as f32) * (b as f32) + (c as f32)) as f16
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn stored(a: f16, b: f16, c: f16) -> f16 {
 // CHECK-NEXT:     let p: f16 = ((a as f32) * (b as f32)) as f16;
 // CHECK-NEXT:     ((p as f32) + (c as f32)) as f16
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn cast(a: f16, b: f16, c: f16) -> f16 {
 // CHECK-NEXT:     (((((a as f32) * (b as f32)) as f16) as f32) + (c as f32)) as f16
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn negated(a: f16, b: f16, c: f16) -> f16 {
 // CHECK-NEXT:     (-((a as f32) * (b as f32)) - (c as f32)) as f16
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn compare(a: f16, b: f16, c: f16) -> i32 {
 // CHECK-NEXT:     ((((a as f32) * (b as f32) + (c as f32)) as f16) == (0i32 as f16)) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn compound(a: f16, b: f16, mut c: f16) -> f16 {
 // CHECK-NEXT:     c = ((c as f32) + (a as f32) * (b as f32)) as f16;
 // CHECK-NEXT:     c
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn cmul(
 // CHECK-NEXT:     x: num_complex::Complex<f16>,
 // CHECK-NEXT:     y: num_complex::Complex<f16>,
 // CHECK-NEXT: ) -> num_complex::Complex<f16> {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = {
-// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = x;
-// CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_1]].re as f32,
-// CHECK-NEXT:                 im: [[T_1]].im as f32,
+// CHECK-NEXT:                 let [[T_1:__t[0-9]+]] = x;
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: [[T_1]].re as f32,
+// CHECK-NEXT:                     im: [[T_1]].im as f32,
+// CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:         }
 // CHECK-NEXT:             .c_mul(
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     let [[T_2:__t[0-9]+]] = y;
@@ -90,6 +98,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn cfma(
 // CHECK-NEXT:     x: num_complex::Complex<f16>,
 // CHECK-NEXT:     y: num_complex::Complex<f16>,
@@ -97,12 +106,12 @@ int main(void) {
 // CHECK-NEXT: ) -> num_complex::Complex<f16> {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]] = {
-// CHECK-NEXT:             let [[T_1]] = x;
-// CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_1]].re as f32,
-// CHECK-NEXT:                 im: [[T_1]].im as f32,
+// CHECK-NEXT:                 let [[T_1]] = x;
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: [[T_1]].re as f32,
+// CHECK-NEXT:                     im: [[T_1]].im as f32,
+// CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:         }
 // CHECK-NEXT:             .c_mul(
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     let [[T_2]] = y;
@@ -126,6 +135,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: f16 = (((1i32 as f16) as f32) + (9.7656E-4f16 as f32)) as f16;
 // CHECK-NEXT:     let c: f16 = (((-1i32 as f16) as f32) - (0.0019531f16 as f32)) as f16;
@@ -214,16 +224,51 @@ int main(void) {
 // CHECK-NEXT:         im: 0.0,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", (({ let [[T_6:__t[0-9]+]] = { let [[T_7:__t[0-9]+]] = x; num_complex::Complex { re : [[T_7]].re
-// CHECK-NEXT:         as f32, im : [[T_7]].im as f32 } } .c_mul({ let [[T_8:__t[0-9]+]] = x; num_complex::Complex { re
-// CHECK-NEXT:         : [[T_8]].re as f32, im : [[T_8]].im as f32 } }, false); num_complex::Complex { re :
-// CHECK-NEXT:         [[T_6]].re as f16, im : [[T_6]].im as f16 } }) == num_complex::Complex { re : 0i32 as
-// CHECK-NEXT:         f16, im : 0.0 }) as i32, (num_complex::Complex { re : a, im : 0.0 } == x) as i32,
-// CHECK-NEXT:         (w == num_complex::Complex { re : 2.0f64, im : 0.0 }) as i32,
-// CHECK-NEXT:         (num_complex::Complex { re : 3.0f64, im : 0.0 } != w) as i32
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         (({
+// CHECK-NEXT:             let [[T_6:__t[0-9]+]] = {
+// CHECK-NEXT:                     let [[T_7:__t[0-9]+]] = x;
+// CHECK-NEXT:                     num_complex::Complex {
+// CHECK-NEXT:                         re: [[T_7]].re as f32,
+// CHECK-NEXT:                         im: [[T_7]].im as f32,
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 .c_mul(
+// CHECK-NEXT:                     {
+// CHECK-NEXT:                         let [[T_8:__t[0-9]+]] = x;
+// CHECK-NEXT:                         num_complex::Complex {
+// CHECK-NEXT:                             re: [[T_8]].re as f32,
+// CHECK-NEXT:                             im: [[T_8]].im as f32,
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     },
+// CHECK-NEXT:                     false,
+// CHECK-NEXT:                 );
+// CHECK-NEXT:             num_complex::Complex {
+// CHECK-NEXT:                 re: [[T_6]].re as f16,
+// CHECK-NEXT:                 im: [[T_6]].im as f16,
+// CHECK-NEXT:             }
+// CHECK-NEXT:         })
+// CHECK-NEXT:             == num_complex::Complex {
+// CHECK-NEXT:                 re: 0i32 as f16,
+// CHECK-NEXT:                 im: 0.0,
+// CHECK-NEXT:             }) as i32,
+// CHECK-NEXT:         (num_complex::Complex {
+// CHECK-NEXT:             re: a,
+// CHECK-NEXT:             im: 0.0,
+// CHECK-NEXT:         } == x) as i32,
+// CHECK-NEXT:         (w
+// CHECK-NEXT:             == num_complex::Complex {
+// CHECK-NEXT:                 re: 2.0f64,
+// CHECK-NEXT:                 im: 0.0,
+// CHECK-NEXT:             }) as i32,
+// CHECK-NEXT:         (num_complex::Complex {
+// CHECK-NEXT:             re: 3.0f64,
+// CHECK-NEXT:             im: 0.0,
+// CHECK-NEXT:         } != w) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

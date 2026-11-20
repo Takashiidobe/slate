@@ -30,19 +30,21 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(f16)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn add16(a: f16, b: f16) -> f16 {
 // CHECK-NEXT:     ((a as f32) + (b as f32)) as f16
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn mul16(a: f16, b: f16) -> f16 {
 // CHECK-NEXT:     ((a as f32) * (b as f32)) as f16
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum_variadic(n: i32, mut __va_args: ...) -> f16 {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: f16 = 0i32 as f16;
 // CHECK-NEXT:     for i in 0..n {
@@ -52,6 +54,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: f16 = 3f16;
 // CHECK-NEXT:     let b: f16 = 4f16;
@@ -60,6 +63,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", (unsafe { sum_variadic(3i32, 1f16, 2f16, 3f16) }) as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

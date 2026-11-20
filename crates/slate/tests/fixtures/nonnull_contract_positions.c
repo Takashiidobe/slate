@@ -21,24 +21,36 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn combine(left: &i32, scale: i32, right: &i32, optional: *mut i32) -> i32 {
 // CHECK-NEXT:     (unsafe { *(left as *const i32) }) + scale * unsafe { *(right as *const i32) }
 // CHECK-NEXT:         + if !optional.is_null() { unsafe { *optional } } else { 0 }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn difference(left: &i32, scale: i32, right: &i32) -> i32 {
 // CHECK-NEXT:     (unsafe { *(left as *const i32) }) - scale * unsafe { *(right as *const i32) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut left: i32 = 11;
 // CHECK-NEXT:     let mut right: i32 = 3;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", combine(unsafe { & (* core::ptr::addr_of_mut!(left)) }, 2i32, unsafe { &
-// CHECK-NEXT:         (* core::ptr::addr_of_mut!(right)) }, core::ptr::null_mut::< i32 > ()),
-// CHECK-NEXT:         difference(unsafe { & (* core::ptr::addr_of_mut!(left)) }, 2i32, unsafe { & (*
-// CHECK-NEXT:         core::ptr::addr_of_mut!(right)) })
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         combine(
+// CHECK-NEXT:             unsafe { &(*core::ptr::addr_of_mut!(left)) },
+// CHECK-NEXT:             2i32,
+// CHECK-NEXT:             unsafe { &(*core::ptr::addr_of_mut!(right)) },
+// CHECK-NEXT:             core::ptr::null_mut::<i32>(),
+// CHECK-NEXT:         ),
+// CHECK-NEXT:         difference(
+// CHECK-NEXT:             unsafe { &(*core::ptr::addr_of_mut!(left)) },
+// CHECK-NEXT:             2i32,
+// CHECK-NEXT:             unsafe { &(*core::ptr::addr_of_mut!(right)) },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

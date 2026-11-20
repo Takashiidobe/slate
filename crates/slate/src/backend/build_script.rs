@@ -1,5 +1,4 @@
 use super::codegen::item_to_string;
-use super::format::format_rust;
 use super::rust_ast::{BinOp, Cfg, Expr, FnDef, Ident, Item, RustValue, Stmt, UnaryOp, Visibility};
 use crate::function_identity::CallBinding;
 
@@ -25,7 +24,7 @@ impl BuildScript {
         self.body.extend(steps.into_iter().map(Step::into_stmt));
     }
 
-    pub fn render(self) -> Result<String, String> {
+    pub fn render(self) -> String {
         let main = Item::Fn(FnDef {
             comments: Vec::new(),
             attrs: Vec::new(),
@@ -38,7 +37,7 @@ impl BuildScript {
             noreturn: false,
             body: self.body,
         });
-        format_rust(&item_to_string(&main))
+        item_to_string(&main)
     }
 }
 

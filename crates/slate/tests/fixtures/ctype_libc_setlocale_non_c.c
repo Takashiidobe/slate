@@ -13,7 +13,9 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::setlocale;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         setlocale(6i32 as i32, c"".as_ptr() as *const core::ffi::c_char) as *mut i8
@@ -21,11 +23,13 @@ int main(void) {
 // CHECK-NEXT:     let lower: i32 = 113;
 // CHECK-NEXT:     let upper: i32 = 81;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", unsafe { slate_support::toupper(lower) }, unsafe {
-// CHECK-NEXT:         slate_support::tolower(upper) }
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         unsafe { slate_support::toupper(lower) },
+// CHECK-NEXT:         unsafe { slate_support::tolower(upper) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

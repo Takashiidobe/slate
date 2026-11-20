@@ -109,10 +109,7 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -153,7 +150,9 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d %d\n".as_ptr(), buffer as i32, used, total) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(c"%d %d %d\n".as_ptr(), buffer as i32, used, total)
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
@@ -171,7 +170,9 @@ int main(void) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         #[cfg(windows)]
 // CHECK-NEXT:         {
-// CHECK-NEXT:             unsafe { slate_support::printf(c"%d\n".as_ptr(), bytes.0[i as usize] as i32) };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::printf(c"%d\n".as_ptr(), bytes.0[i as usize] as i32)
+// CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         #[cfg(unix)]
@@ -189,7 +190,7 @@ int main(void) {
 // CHECK-NEXT:     SEND!(value, value + 5);
 // CHECK-NEXT:     ADD!(value);
 // CHECK-NEXT:     SAME_BODY!(value + 1);
-// CHECK-NEXT:     ADD_READS__2!(value);
+// CHECK-NEXT:     ADD_READS!(value);
 // CHECK-NEXT:     TEMP!(value);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -231,19 +232,19 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ADD_READS {
-// CHECK-NEXT:     ($a:expr, $reads__1:expr) => {
+// CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + (($a) + $reads__1);
+// CHECK-NEXT:             total = __v + (($a) + reads);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ADD_READS__2 {
-// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:     ($a:expr, $reads__1:expr) => {
 // CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + (($a) + reads);
+// CHECK-NEXT:             total = __v + (($a) + $reads__1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -271,7 +272,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! LOCAL_READS {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let reads__1: i32 = 40;
-// CHECK-NEXT:         ADD_READS!($a, reads__1);
+// CHECK-NEXT:         ADD_READS__2!($a, reads__1);
 // CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             total = __v + reads__1;
@@ -350,9 +351,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SEND_CODE {
 // CHECK-NEXT:     ($c:expr, $tree:expr) => {
-// CHECK-NEXT:         SEND__2!(unsafe { (*$tree.offset(($c) as isize)).code }, unsafe {
-// CHECK-NEXT:             (*$tree.offset(($c) as isize)).len
-// CHECK-NEXT:         });
+// CHECK-NEXT:         SEND__2!(
+// CHECK-NEXT:             unsafe { (*$tree.offset(($c) as isize)).code },
+// CHECK-NEXT:             unsafe { (*$tree.offset(($c) as isize)).len }
+// CHECK-NEXT:         );
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -406,8 +408,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut buffer: u16 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut bytes: __SlateAlignLargeArray<[u8; 32]> =
-// CHECK-NEXT:     __SlateAlignLargeArray(unsafe { core::mem::zeroed() });
+// CHECK-NEXT: static mut bytes: __SlateAlignLargeArray<[u8; 32]> = __SlateAlignLargeArray(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut reads: i32 = 2;
 // CHECK-EMPTY:
@@ -416,18 +419,9 @@ int main(void) {
 // CHECK-NEXT: static mut used: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: static tree: [code; 3] = [
-// CHECK-NEXT:     code {
-// CHECK-NEXT:         code: 4660u16,
-// CHECK-NEXT:         len: 9u16,
-// CHECK-NEXT:     },
-// CHECK-NEXT:     code {
-// CHECK-NEXT:         code: 258u16,
-// CHECK-NEXT:         len: 3u16,
-// CHECK-NEXT:     },
-// CHECK-NEXT:     code {
-// CHECK-NEXT:         code: 255u16,
-// CHECK-NEXT:         len: 12u16,
-// CHECK-NEXT:     },
+// CHECK-NEXT:     code { code: 4660u16, len: 9u16 },
+// CHECK-NEXT:     code { code: 258u16, len: 3u16 },
+// CHECK-NEXT:     code { code: 255u16, len: 12u16 },
 // CHECK-NEXT: ];
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlignLargeArray<T> {}

@@ -418,15 +418,20 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
-// CHECK-NEXT: static mut results: __SlateAlign16<[i64; 400]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     core::mem::zeroed()
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut results: __SlateAlign16<[i64; 400]> = __SlateAlign16(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn compute(x: i64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         results.0[0] = (x + 1) * 3 - 2;
@@ -1629,6 +1634,7 @@ int main(void) {
 // CHECK-NEXT:         results.0[399] = (x + 400) * 3 - 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     compute(1i64);
 // CHECK-NEXT:     let mut sum: i64 = 0;
@@ -1640,6 +1646,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

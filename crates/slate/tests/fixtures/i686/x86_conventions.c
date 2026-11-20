@@ -63,12 +63,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN i686-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct pair {
 // CHECK-NEXT:     a: i32,
 // CHECK-NEXT:     b: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct triple {
@@ -76,35 +78,44 @@ int main(void) {
 // CHECK-NEXT:     b: i32,
 // CHECK-NEXT:     c: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.std_sum")]
 // CHECK-NEXT: extern "stdcall-unwind" fn std_sum(a: i32, b: i16, c: i64, d: f64) -> i32 {
 // CHECK-NEXT:     a + (b as i32) + (c as i32) + (d as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "stdcall-unwind" fn std_make(p: pair, c: i32) -> triple {
 // CHECK-NEXT:     let t: triple = triple { a: p.a, b: p.b, c: c };
 // CHECK-NEXT:     return t;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "thiscall-unwind" fn this_mix(self_: *mut i32, k: i64, f: f32) -> i64 {
 // CHECK-NEXT:     ((unsafe { *self_ }) as i64) * k + (f as i64)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.this_swap")]
 // CHECK-NEXT: extern "thiscall-unwind" fn this_swap(p: pair) -> pair {
 // CHECK-NEXT:     let q: pair = pair { a: p.b, b: p.a };
 // CHECK-NEXT:     return q;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.fast_ints")]
 // CHECK-NEXT: extern "fastcall-unwind" fn fast_ints(a: i32, b: u8, c: i32, d: i16) -> i32 {
 // CHECK-NEXT:     a * 1000 + (b as i32) * 100 + c * 10 + (d as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "fastcall-unwind" fn fast_mix(x: f64, a: i32, y: f32, b: i32, c: i32) -> f64 {
 // CHECK-NEXT:     x + ((a * 2) as f64) + (y as f64) + ((b * 3) as f64) + ((c * 4) as f64)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "fastcall-unwind" fn fast_wide(a: i32, b: i64) -> i64 {
 // CHECK-NEXT:     (a as i64) + b
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let p: pair = pair { a: 3, b: 4 };
 // CHECK-NEXT:     let mut self_: i32 = 7;
@@ -118,8 +129,9 @@ int main(void) {
 // CHECK-NEXT:     let t: triple = std_make(p, 5i32);
 // CHECK-NEXT:     let q: pair = unsafe { wf.unwrap()(p) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", std_sum(1i32, 2i16, 3i64, 4.5f64), unsafe { sf.unwrap() (- 1i32, - 2i16,
-// CHECK-NEXT:         - 3i64, - 4.5f64) }
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         std_sum(1i32, 2i16, 3i64, 4.5f64),
+// CHECK-NEXT:         unsafe { sf.unwrap()(-1i32, -2i16, -3i64, -4.5f64) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {} {}", t.a, t.b, t.c);
 // CHECK-NEXT:     unsafe {
@@ -131,8 +143,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{} {}", q.a, q.b);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", fast_ints(1i32, 2u8, 3i32, 4i16), unsafe { ff.unwrap() (5i32, 6u8, 7i32,
-// CHECK-NEXT:         8i16) }
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         fast_ints(1i32, 2u8, 3i32, 4i16),
+// CHECK-NEXT:         unsafe { ff.unwrap()(5i32, 6u8, 7i32, 8i16) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -148,6 +161,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

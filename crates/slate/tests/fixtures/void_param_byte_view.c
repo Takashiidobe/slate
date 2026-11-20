@@ -73,8 +73,7 @@ int main(void) {
 // CHECK-NEXT:     let mut i: u8 = 0;
 // CHECK-NEXT:     let mut j: u8 = 0;
 // CHECK-NEXT:     let s: *mut u8 = unsafe {
-// CHECK-NEXT:         (*((handle as *mut ()) as *mut __SlateRecord_void_param_byte_view_c_5))
-// CHECK-NEXT:             .s
+// CHECK-NEXT:         (*((handle as *mut ()) as *mut __SlateRecord_void_param_byte_view_c_5)).s
 // CHECK-NEXT:             .as_mut_ptr() as *mut u8
 // CHECK-NEXT:     };
 // CHECK-NEXT:     i = unsafe {

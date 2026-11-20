@@ -101,9 +101,7 @@ int main(void) {
 // CHECK-NEXT:     impl<T> Drop for ByrefSlot<T> {
 // CHECK-NEXT:         fn drop(&mut self) {
 // CHECK-NEXT:             if self.live {
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     _Block_object_dispose(self.byref.as_ptr() as *const c_void, FIELD_IS_BYREF)
-// CHECK-NEXT:                 }
+// CHECK-NEXT:                 unsafe { _Block_object_dispose(self.byref.as_ptr() as *const c_void, FIELD_IS_BYREF) }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -227,48 +225,42 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut global_double: *mut core::ffi::c_void = (core::ptr::addr_of!(__slate_block_0_literal)
-// CHECK-NEXT:     as *const core::ffi::c_void)
-// CHECK-NEXT:     as *mut core::ffi::c_void;
+// CHECK-NEXT:     as *const core::ffi::c_void) as *mut core::ffi::c_void;
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut exported: *mut core::ffi::c_void = (core::ptr::addr_of!(__slate_block_1_literal)
-// CHECK-NEXT:     as *const core::ffi::c_void)
-// CHECK-NEXT:     as *mut core::ffi::c_void;
+// CHECK-NEXT:     as *const core::ffi::c_void) as *mut core::ffi::c_void;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let local_static: *mut core::ffi::c_void = (core::ptr::addr_of!(__slate_block_2_literal)
-// CHECK-NEXT:         as *const core::ffi::c_void)
-// CHECK-NEXT:         as *mut core::ffi::c_void;
+// CHECK-NEXT:         as *const core::ffi::c_void) as *mut core::ffi::c_void;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = local_static;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 *const core::ffi::c_void,
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32) -> i32>,
-// CHECK-NEXT:             >(__slate_blocks::invoke([[T_0]]))
-// CHECK-NEXT:         }
-// CHECK-NEXT:         .unwrap()([[T_0]], 1i32)
+// CHECK-NEXT:                 core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32) -> i32>>(
+// CHECK-NEXT:                     __slate_blocks::invoke([[T_0]]),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .unwrap()([[T_0]], 1i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             let [[T_1:__t[0-9]+]] = global_double;
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     *const core::ffi::c_void,
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32) -> i32>,
-// CHECK-NEXT:                 >(__slate_blocks::invoke([[T_1]]))
-// CHECK-NEXT:             }
-// CHECK-NEXT:             .unwrap()([[T_1]], 4i32)
+// CHECK-NEXT:                     core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32) -> i32>>(
+// CHECK-NEXT:                         __slate_blocks::invoke([[T_1]]),
+// CHECK-NEXT:                     )
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 .unwrap()([[T_1]], 4i32)
 // CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             let [[T_2:__t[0-9]+]] = exported;
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     *const core::ffi::c_void,
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32) -> i32>,
-// CHECK-NEXT:                 >(__slate_blocks::invoke([[T_2]]))
-// CHECK-NEXT:             }
-// CHECK-NEXT:             .unwrap()([[T_2]], 4i32)
+// CHECK-NEXT:                     core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32) -> i32>>(
+// CHECK-NEXT:                         __slate_blocks::invoke([[T_2]]),
+// CHECK-NEXT:                     )
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 .unwrap()([[T_2]], 4i32)
 // CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe { hits }
 // CHECK-NEXT:     );
@@ -282,16 +274,18 @@ int main(void) {
 // CHECK-NEXT:     [[V_0]] * 2
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static __slate_block_0_literal: __slate_blocks::Block<()> =
-// CHECK-NEXT:     __slate_blocks::global(__slate_block_0 as *const core::ffi::c_void);
+// CHECK-NEXT: static __slate_block_0_literal: __slate_blocks::Block<()> = __slate_blocks::global(
+// CHECK-NEXT:     __slate_block_0 as *const core::ffi::c_void,
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn __slate_block_1(__block: *mut core::ffi::c_void, [[V_0]]: i32) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_blocks::captures::<()>(__block) };
 // CHECK-NEXT:     [[V_0]] + 1
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static __slate_block_1_literal: __slate_blocks::Block<()> =
-// CHECK-NEXT:     __slate_blocks::global(__slate_block_1 as *const core::ffi::c_void);
+// CHECK-NEXT: static __slate_block_1_literal: __slate_blocks::Block<()> = __slate_blocks::global(
+// CHECK-NEXT:     __slate_block_1 as *const core::ffi::c_void,
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn __slate_block_2(__block: *mut core::ffi::c_void, [[V_0]]: i32) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_blocks::captures::<()>(__block) };
@@ -301,8 +295,9 @@ int main(void) {
 // CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static __slate_block_2_literal: __slate_blocks::Block<()> =
-// CHECK-NEXT:     __slate_blocks::global(__slate_block_2 as *const core::ffi::c_void);
+// CHECK-NEXT: static __slate_block_2_literal: __slate_blocks::Block<()> = __slate_blocks::global(
+// CHECK-NEXT:     __slate_block_2 as *const core::ffi::c_void,
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

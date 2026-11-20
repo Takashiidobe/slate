@@ -28,6 +28,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_constant_comparison_initializers_c_7 {
@@ -35,17 +36,27 @@ int main(void) {
 // CHECK-NEXT:     size: i32,
 // CHECK-NEXT:     is_unsigned: bool,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut from_int: bool = 5i32 != 0i32;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut from_zero: bool = 0i32 != 0i32;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut less: i32 = (1i32 < 2i32) as i32;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut greater: i32 = (4294967295u32 > 2u32) as i32;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut equal: i32 = (3i32 == 3i32) as i32;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut both: i32 = (1i32 != 0i32 && 0i32 != 0i32) as i32;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut either: i32 = (0i32 != 0i32 || 7i32 != 0i32) as i32;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut float_order: i32 = (1.5f64 < 2.5f64) as i32;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut uchar: *mut __SlateRecord_constant_comparison_initializers_c_7 = unsafe {
 // CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_compound_uchar_0)
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut plain: __SlateRecord_constant_comparison_initializers_c_7 = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: __SlateRecord_constant_comparison_initializers_c_7 = unsafe {
 // CHECK-NEXT:         core::mem::zeroed()
@@ -55,18 +66,29 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]].is_unsigned = 0i32 != 0i32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {} {}", (unsafe { from_int }) as i32, (unsafe { from_zero })
-// CHECK-NEXT:         as i32, unsafe { less }, unsafe { greater }, unsafe { equal }, unsafe { both },
-// CHECK-NEXT:         unsafe { either }, unsafe { float_order }
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {}",
+// CHECK-NEXT:         (unsafe { from_int }) as i32,
+// CHECK-NEXT:         (unsafe { from_zero }) as i32,
+// CHECK-NEXT:         unsafe { less },
+// CHECK-NEXT:         unsafe { greater },
+// CHECK-NEXT:         unsafe { equal },
+// CHECK-NEXT:         unsafe { both },
+// CHECK-NEXT:         unsafe { either },
+// CHECK-NEXT:         unsafe { float_order }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { (* uchar).kind }, (unsafe { (* uchar).is_unsigned }) as
-// CHECK-NEXT:         i32, unsafe { plain.size }, (unsafe { plain.is_unsigned }) as i32
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         unsafe { (*uchar).kind },
+// CHECK-NEXT:         (unsafe { (*uchar).is_unsigned }) as i32,
+// CHECK-NEXT:         unsafe { plain.size },
+// CHECK-NEXT:         (unsafe { plain.is_unsigned }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut __slate_compound_uchar_0: __SlateRecord_constant_comparison_initializers_c_7 = {
 // CHECK-NEXT:     let mut [[T_0]]: __SlateRecord_constant_comparison_initializers_c_7 = unsafe {
 // CHECK-NEXT:         core::mem::zeroed()
@@ -76,6 +98,7 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]].is_unsigned = 1i32 != 0i32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -66,6 +66,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_builtin_atomic() -> i32 {
 // CHECK-NEXT:     let mut value: i32 = 0;
 // CHECK-NEXT:     let mut expected: i32 = 20;
@@ -112,7 +113,7 @@ int main(void) {
 // CHECK-NEXT:             Err([[T_5:__t[0-9]+]]) => {
 // CHECK-NEXT:                 *[[T_2]] = [[T_5]];
 // CHECK-NEXT:                 false
-// CHECK-NEXT:             }
+// CHECK-NEXT:             },
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: bool = [[V_3]];
@@ -272,6 +273,7 @@ int main(void) {
 // CHECK-NEXT:     total += true as i32;
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_builtin_sync() -> i32 {
 // CHECK-NEXT:     let mut value: i32 = 10;
 // CHECK-NEXT:     let mut total: i32 = 0;
@@ -418,10 +420,12 @@ int main(void) {
 // CHECK-NEXT:     core::sync::atomic::fence(core::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{} {}", gnu_builtin_atomic(), gnu_builtin_sync());
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

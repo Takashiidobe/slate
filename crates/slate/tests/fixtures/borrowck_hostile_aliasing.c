@@ -139,31 +139,39 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn add_in_place([[V_0:__v[0-9]+]]: *mut i32, b: *mut i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] = *[[V_0]] + *b;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn alias_same_object() -> i32 {
 // CHECK-NEXT:     let mut x: i32 = 5;
 // CHECK-NEXT:     add_in_place(core::ptr::addr_of_mut!(x), core::ptr::addr_of_mut!(x));
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Pair {
 // CHECK-NEXT:     lo: i32,
 // CHECK-NEXT:     hi: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pair_lo(p: &mut Pair) -> *mut i32 {
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!((* (p as * mut Pair)).lo) }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!((*(p as *mut Pair)).lo) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pair_hi(p: &mut Pair) -> *mut i32 {
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!((* (p as * mut Pair)).hi) }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!((*(p as *mut Pair)).hi) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn alias_struct_fields() -> i32 {
 // CHECK-NEXT:     let mut pair: Pair = Pair { lo: 1, hi: 2 };
 // CHECK-NEXT:     let lo: *mut i32 = pair_lo(unsafe { &mut (*core::ptr::addr_of_mut!(pair)) });
@@ -176,6 +184,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     pair.lo + pair.hi
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Node {
@@ -183,6 +192,7 @@ int main(void) {
 // CHECK-NEXT:     next: *mut Node,
 // CHECK-NEXT:     prev: *mut Node,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn circular_list() -> i32 {
 // CHECK-NEXT:     let mut a: Node = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Node = unsafe { core::mem::zeroed() };
@@ -223,6 +233,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum + a.val + b.val + c.val
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Tree {
@@ -231,6 +242,7 @@ int main(void) {
 // CHECK-NEXT:     left: *mut Tree,
 // CHECK-NEXT:     right: *mut Tree,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn parent_pointer_tree() -> i32 {
 // CHECK-NEXT:     let mut root: Tree = {
 // CHECK-NEXT:         let mut [[T_0]]: Tree = unsafe { core::mem::zeroed() };
@@ -268,12 +280,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     root.val + left.val + right.val
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Buf {
 // CHECK-NEXT:     data: [i8; 8],
 // CHECK-NEXT:     cursor: *mut i8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn self_referential_struct() -> i32 {
 // CHECK-NEXT:     let mut buf: Buf = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     for i in 0i32..8i32 {
@@ -286,6 +300,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (buf.data[3] as i32) + ((unsafe { *buf.cursor.add(0) }) as i32) - 2 * 97
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn reverse_in_place(mut lo: *mut i32, mut hi: *mut i32) {
 // CHECK-NEXT:     while lo < hi {
 // CHECK-NEXT:         let t: i32 = unsafe { *lo };
@@ -301,10 +316,11 @@ int main(void) {
 // CHECK-NEXT:         hi = unsafe { [[V_3]].sub(1) };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn overlapping_array_pointers() -> i32 {
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         1i32, 2i32, 3i32, 4i32, 5i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16(
+// CHECK-NEXT:         [1i32, 2i32, 3i32, 4i32, 5i32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     reverse_in_place(
 // CHECK-NEXT:         unsafe { (values.0.as_mut_ptr() as *mut i32).add(0) },
 // CHECK-NEXT:         unsafe { (values.0.as_mut_ptr() as *mut i32).add(4) },
@@ -312,12 +328,15 @@ int main(void) {
 // CHECK-NEXT:     values.0[0] * 10000 + values.0[1] * 1000 + values.0[2] * 100 + values.0[3] * 10
 // CHECK-NEXT:         + values.0[4]
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut g_ptr: *mut i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn capture_global(p: *mut i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         g_ptr = p;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn global_alias_with_local() -> i32 {
 // CHECK-NEXT:     let mut x: i32 = 7;
 // CHECK-NEXT:     capture_global(core::ptr::addr_of_mut!(x));
@@ -328,12 +347,14 @@ int main(void) {
 // CHECK-NEXT:     x += 1;
 // CHECK-NEXT:     x + unsafe { *g_ptr }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union Pun {
 // CHECK-NEXT:     i: i32,
 // CHECK-NEXT:     f: f32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn type_punning() -> i32 {
 // CHECK-NEXT:     let mut u: Pun = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -345,14 +366,22 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if bits == unsafe { u.i } { -1 } else { (unsafe { u.f }) as i32 }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {} {}", alias_same_object(), alias_struct_fields(),
-// CHECK-NEXT:         circular_list(), parent_pointer_tree(), self_referential_struct(),
-// CHECK-NEXT:         overlapping_array_pointers(), global_alias_with_local(), type_punning()
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {}",
+// CHECK-NEXT:         alias_same_object(),
+// CHECK-NEXT:         alias_struct_fields(),
+// CHECK-NEXT:         circular_list(),
+// CHECK-NEXT:         parent_pointer_tree(),
+// CHECK-NEXT:         self_referential_struct(),
+// CHECK-NEXT:         overlapping_array_pointers(),
+// CHECK-NEXT:         global_alias_with_local(),
+// CHECK-NEXT:         type_punning()
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

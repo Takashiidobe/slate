@@ -68,7 +68,11 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_hypot(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_signbit(__a: LongDouble) -> bool;
 // CHECK-NEXT:     safe fn __slate_f80_is_fp_class(__a: LongDouble, __flags: i32) -> bool;
-// CHECK-NEXT:     safe fn __slate_f80_fma(__a: LongDouble, __b: LongDouble, __c: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_fma(
+// CHECK-NEXT:         __a: LongDouble,
+// CHECK-NEXT:         __b: LongDouble,
+// CHECK-NEXT:         __c: LongDouble,
+// CHECK-NEXT:     ) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_lt(__a: LongDouble, __b: LongDouble) -> bool;
 // CHECK-NEXT:     safe fn __slate_f80_le(__a: LongDouble, __b: LongDouble) -> bool;
 // CHECK-NEXT:     safe fn __slate_f80_gt(__a: LongDouble, __b: LongDouble) -> bool;
@@ -185,25 +189,25 @@ int main(void) {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(export_name = "__slate_ldv____slate_ldfp_long_double_variadic_no_fixed_parameters_first__rf80")]
-// CHECK-NEXT: unsafe extern "C-unwind" fn first(mut __va_args: core::ffi::VaList<'static>) -> LongDouble {
+// CHECK-NEXT: unsafe extern "C-unwind" fn first(
+// CHECK-NEXT:     mut __va_args: core::ffi::VaList<'static>,
+// CHECK-NEXT: ) -> LongDouble {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let value: LongDouble = unsafe { __slate_f80_va_arg(core::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT:     value
@@ -212,12 +216,15 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}",
-// CHECK-NEXT:         __slate_f80_to_i32(unsafe {
-// CHECK-NEXT:             __slate_icall__rf80__f80(
-// CHECK-NEXT:                 __slate_ldfp_long_double_variadic_no_fixed_parameters_first as *const (),
-// CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         })
+// CHECK-NEXT:         __slate_f80_to_i32(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 __slate_icall__rf80__f80(
+// CHECK-NEXT:                     __slate_ldfp_long_double_variadic_no_fixed_parameters_first
+// CHECK-NEXT:                         as *const (),
+// CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

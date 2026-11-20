@@ -87,11 +87,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: //! merge-extra-targets: linux-i686 i686-unknown-linux-gnu clang
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -181,18 +177,20 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! GUARD {
-// CHECK-NEXT:     ($x:expr) => {{[{][{]}}
-// CHECK-NEXT:         if !$x {
-// CHECK-NEXT:             return -1i32;
+// CHECK-NEXT:     ($x:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             if !$x {
+// CHECK-NEXT:                 return -1i32;
+// CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! NOTE {
 // CHECK-NEXT:     ($c:expr, $x__0:expr $(, $x:expr)*) => {
 // CHECK-NEXT:         if (unsafe { verbose }) > 0 && $c {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $($x),*) };
+// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $($x,)*) };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
@@ -202,7 +200,7 @@ int main(void) {
 // CHECK-NEXT:     ($x__0:expr $(, $x:expr)*) => {
 // CHECK-NEXT:         if (unsafe { verbose }) > 0 {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $($x),*) };
+// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $($x,)*) };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };

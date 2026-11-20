@@ -120,25 +120,12 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u8,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u8, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits2U0 {
 // CHECK-NEXT:         #[bits(2)]
 // CHECK-NEXT:         pub flag: u32,
@@ -149,17 +136,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u32,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u32, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits10U0 {
 // CHECK-NEXT:         #[bits(2)]
 // CHECK-NEXT:         pub flag: u32,
@@ -174,10 +151,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg_attr(
-// CHECK-NEXT:     unix,
-// CHECK-NEXT:     unsafe(link_section = ".text.slate_distinct.macro_arguments.thrice")
-// CHECK-NEXT: )]
+// CHECK-NEXT: #[cfg_attr(unix, unsafe(link_section = ".text.slate_distinct.macro_arguments.thrice"))]
 // CHECK-NEXT: extern "C-unwind" fn thrice(x: i32) -> i32 {
 // CHECK-NEXT:     x * 3
 // CHECK-NEXT: }
@@ -237,11 +211,7 @@ int main(void) {
 // CHECK-NEXT:     let mut n: c_long = 4;
 // CHECK-NEXT:     let mut u1: u32 = 5;
 // CHECK-NEXT:     let mut u2: u32 = 6;
-// CHECK-NEXT:     let mut s: pair = pair {
-// CHECK-NEXT:         left: 5,
-// CHECK-NEXT:         right: 6,
-// CHECK-NEXT:         wide: 7,
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut s: pair = pair { left: 5, right: 6, wide: 7 };
 // CHECK-NEXT:     let mut t: pair = pair {
 // CHECK-NEXT:         left: 8,
 // CHECK-NEXT:         right: 9,
@@ -278,7 +248,9 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].r#type = 1i32;
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_flag(2u32);
 // CHECK-NEXT:         [[T_0]].count = 3i32;
-// CHECK-NEXT:         [[T_0]].[[SLATE_ANON_0]] = __SlateRecord_macro_arguments_c_32 { inner_value: 4 };
+// CHECK-NEXT:         [[T_0]].[[SLATE_ANON_0]] = __SlateRecord_macro_arguments_c_32 {
+// CHECK-NEXT:             inner_value: 4,
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let op: *mut odd_fields = core::ptr::addr_of_mut!(odd);
@@ -375,7 +347,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ARGS_OF {
 // CHECK-NEXT:     ($($args:expr),*) => {
-// CHECK-NEXT:         add($($args),*)
+// CHECK-NEXT:         add($($args,)*)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -476,7 +448,7 @@ int main(void) {
 // CHECK-NEXT:     ($x__0:expr $(, $x:expr)*) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $($x),*) };
+// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $($x,)*) };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;

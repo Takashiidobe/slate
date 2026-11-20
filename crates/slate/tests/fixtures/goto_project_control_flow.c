@@ -51,13 +51,16 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn choose(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value % 4
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn accumulate(n: i32, total: *mut i32) {
 // CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -88,6 +91,7 @@ int main(void) {
 // CHECK-NEXT:         *total = *total + calls;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn classify(mut s: *const i8) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
@@ -127,6 +131,7 @@ int main(void) {
 // CHECK-NEXT:         return 6;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for n in 0i32..12i32 {
@@ -137,11 +142,15 @@ int main(void) {
 // CHECK-NEXT:         println!("{} {} {}", n, unsafe { calls }, total);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", classify(c"  a".as_ptr()), classify(c"\t b".as_ptr()),
-// CHECK-NEXT:         classify(c"  n".as_ptr()), classify(c" x".as_ptr())
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         classify(c"  a".as_ptr()),
+// CHECK-NEXT:         classify(c"\t b".as_ptr()),
+// CHECK-NEXT:         classify(c"  n".as_ptr()),
+// CHECK-NEXT:         classify(c" x".as_ptr())
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

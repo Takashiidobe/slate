@@ -44,9 +44,12 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sum_then_next(p: *mut i32) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 0;
@@ -56,6 +59,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s + unsafe { *p.offset(i as isize) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn two_loops(p: &[i32], q: &mut [i32]) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..4i32 {
@@ -68,6 +72,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn shifted(p: *mut i32) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 0;
@@ -80,6 +85,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: __SlateAlign16<[i32; 5]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32, 5i32]);
 // CHECK-NEXT:     let mut small: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
@@ -100,6 +106,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

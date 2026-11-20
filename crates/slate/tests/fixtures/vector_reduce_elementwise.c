@@ -44,6 +44,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.vector.reduce.mul.v4i32"]
 // CHECK-NEXT:     fn __slate_intrinsic_272366d7b5a63fe7([[ARG_0:arg[0-9]+]]: core::simd::Simd<i32, 4>) -> i32;
@@ -93,38 +94,37 @@ int main(void) {
 // CHECK-NEXT:     #[link_name = "llvm.vector.reduce.or.v4i32"]
 // CHECK-NEXT:     fn __slate_intrinsic_fea3c7216354bd59([[ARG_0]]: core::simd::Simd<u32, 4>) -> u32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: core::simd::Simd<f64, 2> = unsafe {
 // CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut i: core::simd::Simd<i32, 4> = core::simd::Simd::from_array([
-// CHECK-NEXT:         3i32,
-// CHECK-NEXT:         -7i32,
-// CHECK-NEXT:         12i32,
-// CHECK-NEXT:         5i32,
-// CHECK-NEXT:     ]);
-// CHECK-NEXT:     let u: core::simd::Simd<u32, 4> = core::simd::Simd::from_array([
-// CHECK-NEXT:         3u32, 7u32, 12u32, 5u32,
-// CHECK-NEXT:     ]);
-// CHECK-NEXT:     let b: core::simd::Simd<u8, 16> = core::simd::Simd::from_array([
-// CHECK-NEXT:         1u8, 2u8, 3u8, 4u8, 5u8, 6u8, 7u8, 8u8, 9u8, 10u8, 11u8, 12u8, 13u8, 14u8, 15u8,
-// CHECK-NEXT:         250u8,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut i: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [3i32, -7i32, 12i32, 5i32],
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let u: core::simd::Simd<u32, 4> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [3u32, 7u32, 12u32, 5u32],
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let b: core::simd::Simd<u8, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             1u8, 2u8, 3u8, 4u8, 5u8, 6u8, 7u8, 8u8, 9u8, 10u8, 11u8, 12u8, 13u8, 14u8,
+// CHECK-NEXT:             15u8, 250u8,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let l: core::simd::Simd<i64, 2> = core::simd::Simd::from_array([-4i64, 9i64]);
-// CHECK-NEXT:     let mut f: core::simd::Simd<f32, 4> = core::simd::Simd::from_array([
-// CHECK-NEXT:         1.5f32,
-// CHECK-NEXT:         -2.5f32,
-// CHECK-NEXT:         4.0f32,
-// CHECK-NEXT:         0.5f32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut f: core::simd::Simd<f32, 4> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [1.5f32, -2.5f32, 4.0f32, 0.5f32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let d: core::simd::Simd<f64, 2> = core::simd::Simd::from_array([2.5f64, -8.0f64]);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", unsafe { __slate_intrinsic_98bc3c92f4c5619d(i) }, unsafe {
-// CHECK-NEXT:         __slate_intrinsic_272366d7b5a63fe7(i) }, unsafe {
-// CHECK-NEXT:         __slate_intrinsic_9a56b33d8f4248b0(i) }
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         unsafe { __slate_intrinsic_98bc3c92f4c5619d(i) },
+// CHECK-NEXT:         unsafe { __slate_intrinsic_272366d7b5a63fe7(i) },
+// CHECK-NEXT:         unsafe { __slate_intrinsic_9a56b33d8f4248b0(i) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -220,6 +220,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

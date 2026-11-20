@@ -24,15 +24,18 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn _setjmp([[ARG_0:arg[0-9]+]]: *mut __jmp_buf_tag) -> i32;
 // CHECK-NEXT:     fn longjmp([[ARG_0]]: *mut __jmp_buf_tag, [[ARG_1:arg[0-9]+]]: i32);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord___sigset_t_h_8 {
 // CHECK-NEXT:     __val: [u64; 16],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __jmp_buf_tag {
@@ -40,12 +43,16 @@ int main(void) {
 // CHECK-NEXT:     __mask_was_saved: i32,
 // CHECK-NEXT:     __saved_mask: __SlateRecord___sigset_t_h_8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
-// CHECK-NEXT: static mut retry_buf: __SlateAlign16<[__jmp_buf_tag; 1]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     core::mem::zeroed()
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut retry_buf: __SlateAlign16<[__jmp_buf_tag; 1]> = __SlateAlign16(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn might_fail(attempt: i32) {
 // CHECK-NEXT:     if attempt < 3 {
 // CHECK-NEXT:         unsafe {
@@ -56,6 +63,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let attempt: i32 = unsafe {
@@ -69,6 +77,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

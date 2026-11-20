@@ -21,14 +21,18 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __storeu_si128 {
 // CHECK-NEXT:     __v: core::simd::Simd<i64, 2>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_set_epi32(
@@ -41,27 +45,25 @@ int main(void) {
 // CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::simd::Simd<i32, 4>,
-// CHECK-NEXT:             core::simd::Simd<i64, 2>,
-// CHECK-NEXT:         >(unsafe {
-// CHECK-NEXT:             *{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array([
-// CHECK-NEXT:                     __i0,
-// CHECK-NEXT:                     __i1,
-// CHECK-NEXT:                     __i2,
-// CHECK-NEXT:                     __i3,
-// CHECK-NEXT:                 ]);
-// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:             }
-// CHECK-NEXT:         })
+// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i64, 2>>(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
+// CHECK-NEXT:                         [__i0, __i1, __i2, __i3],
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_set1_epi32(__i: i32) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return unsafe { _mm_set_epi32(__i, __i, __i, __i) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_storeu_si128(
@@ -69,10 +71,11 @@ int main(void) {
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 2>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((* (__p as * mut __storeu_si128)).__v)
+// CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_si128)).__v)
 // CHECK-NEXT:             .write_unaligned(__b);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512vl")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_mask_loadu_epi32(
@@ -81,23 +84,20 @@ int main(void) {
 // CHECK-NEXT:     __P: *const (),
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::simd::Simd<i32, 4>,
-// CHECK-NEXT:             core::simd::Simd<i64, 2>,
-// CHECK-NEXT:         >(
+// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i64, 2>>(
 // CHECK-NEXT:             core::simd::Simd::load_select_ptr(
 // CHECK-NEXT:                 __P as *const i32,
 // CHECK-NEXT:                 core::simd::Mask::<i32, 4>::from_bitmask((__U as u8) as u64),
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<
-// CHECK-NEXT:                         core::simd::Simd<i64, 2>,
-// CHECK-NEXT:                         core::simd::Simd<i32, 4>,
-// CHECK-NEXT:                     >(__W)
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
+// CHECK-NEXT:                         __W,
+// CHECK-NEXT:                     )
 // CHECK-NEXT:                 },
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f,avx512vl")]
 // CHECK-NEXT: unsafe fn masked_load_probe(p: *mut i32, mask: u32, out: *mut i32) {
 // CHECK-NEXT:     let w: core::simd::Simd<i64, 2> = unsafe { _mm_set1_epi32(-1i32) };
@@ -106,10 +106,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { _mm_storeu_si128(out as *mut core::simd::Simd<i64, 2>, v) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut data: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         10i32, 20i32, 30i32, 40i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut data: __SlateAlign16<[i32; 4]> = __SlateAlign16(
+// CHECK-NEXT:         [10i32, 20i32, 30i32, 40i32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut out: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         masked_load_probe(
@@ -121,6 +122,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {} {} {}", out.0[0], out.0[1], out.0[2], out.0[3]);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

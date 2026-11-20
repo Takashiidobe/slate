@@ -32,22 +32,34 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut greeting: [i8; 6] = [104, 101, 108, 108, 111, 0];
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut padded: [i8; 8] = [97, 98, 0, 0, 0, 0, 0, 0];
+// CHECK-EMPTY:
 // CHECK-NEXT: static label: [i8; 6] = [108, 97, 98, 101, 108, 0];
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut grid: {{\[\[}}i8; 4]; 2] = {{\[\[}}97, 98, 99, 0], [120, 121, 122, 0]];
-// CHECK-NEXT: static mut words: __SlateAlign16<[*const i8; 3]> = __SlateAlign16([
-// CHECK-NEXT:     (b"zero\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:     (b"one\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:     (b"two\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut words: __SlateAlign16<[*const i8; 3]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         (b"zero\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         (b"one\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         (b"two\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut high: [i8; 4] = [-128, -1, 127, 0];
+// CHECK-EMPTY:
 // CHECK-NEXT: fn total(mut s: *const i8) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     while (unsafe { *s }) != 0 {
@@ -57,6 +69,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut local: [i8; 6] = [108, 111, 99, 97, 108, 0];
 // CHECK-NEXT:     unsafe {
@@ -83,9 +96,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", (unsafe { padded[5] }) as i32, total(unsafe { words.0[1] }),
-// CHECK-NEXT:         total(unsafe { words.0[2] }), (unsafe { high[0] }) as i32, (unsafe { high[1] })
-// CHECK-NEXT:         as i32, (unsafe { high[2] }) as i32
+// CHECK-NEXT:         "{} {} {} {} {} {}",
+// CHECK-NEXT:         (unsafe { padded[5] }) as i32,
+// CHECK-NEXT:         total(unsafe { words.0[1] }),
+// CHECK-NEXT:         total(unsafe { words.0[2] }),
+// CHECK-NEXT:         (unsafe { high[0] }) as i32,
+// CHECK-NEXT:         (unsafe { high[1] }) as i32,
+// CHECK-NEXT:         (unsafe { high[2] }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -94,6 +111,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total((unsafe { core::ptr::addr_of_mut!(greeting) as *mut i8 }) as *const i8) % 256
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

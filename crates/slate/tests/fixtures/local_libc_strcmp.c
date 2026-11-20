@@ -24,7 +24,9 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::strcmp;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn cmp_texts(a: &str, b: &str) -> i32 {
 // CHECK-NEXT:     let mut sa: i32 = 0;
 // CHECK-NEXT:     let mut sb: i32 = 0;
@@ -46,26 +48,52 @@ int main(void) {
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     sign * 1000 + eq * 100 + (sa - sb)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut x: [i8; 4] = [97, 98, 99, 0];
 // CHECK-NEXT:     let mut y: [i8; 4] = [97, 98, 100, 0];
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", cmp_texts(unsafe {
-// CHECK-NEXT:         core::str::from_utf8_unchecked(core::slice::from_raw_parts(x.as_ptr() as * const
-// CHECK-NEXT:         u8, 3 as usize)) }, unsafe {
-// CHECK-NEXT:         core::str::from_utf8_unchecked(core::slice::from_raw_parts(y.as_ptr() as * const
-// CHECK-NEXT:         u8, 3 as usize)) }), cmp_texts(unsafe {
-// CHECK-NEXT:         core::str::from_utf8_unchecked(core::slice::from_raw_parts(y.as_ptr() as * const
-// CHECK-NEXT:         u8, 3 as usize)) }, unsafe {
-// CHECK-NEXT:         core::str::from_utf8_unchecked(core::slice::from_raw_parts(x.as_ptr() as * const
-// CHECK-NEXT:         u8, 3 as usize)) }), cmp_texts(unsafe {
-// CHECK-NEXT:         core::str::from_utf8_unchecked(core::slice::from_raw_parts(x.as_ptr() as * const
-// CHECK-NEXT:         u8, 3 as usize)) }, unsafe {
-// CHECK-NEXT:         core::str::from_utf8_unchecked(core::slice::from_raw_parts(x.as_ptr() as * const
-// CHECK-NEXT:         u8, 3 as usize)) })
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         cmp_texts(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::str::from_utf8_unchecked(
+// CHECK-NEXT:                     core::slice::from_raw_parts(x.as_ptr() as *const u8, 3 as usize),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::str::from_utf8_unchecked(
+// CHECK-NEXT:                     core::slice::from_raw_parts(y.as_ptr() as *const u8, 3 as usize),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:         ),
+// CHECK-NEXT:         cmp_texts(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::str::from_utf8_unchecked(
+// CHECK-NEXT:                     core::slice::from_raw_parts(y.as_ptr() as *const u8, 3 as usize),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::str::from_utf8_unchecked(
+// CHECK-NEXT:                     core::slice::from_raw_parts(x.as_ptr() as *const u8, 3 as usize),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:         ),
+// CHECK-NEXT:         cmp_texts(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::str::from_utf8_unchecked(
+// CHECK-NEXT:                     core::slice::from_raw_parts(x.as_ptr() as *const u8, 3 as usize),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::str::from_utf8_unchecked(
+// CHECK-NEXT:                     core::slice::from_raw_parts(x.as_ptr() as *const u8, 3 as usize),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -146,7 +146,11 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_cf80_neg(
 // CHECK-NEXT:         __a: num_complex::Complex<LongDouble>,
 // CHECK-NEXT:     ) -> num_complex::Complex<LongDouble>;
-// CHECK-NEXT:     safe fn __slate_f80_fma(__a: LongDouble, __b: LongDouble, __c: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_fma(
+// CHECK-NEXT:         __a: LongDouble,
+// CHECK-NEXT:         __b: LongDouble,
+// CHECK-NEXT:         __c: LongDouble,
+// CHECK-NEXT:     ) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_lt(__a: LongDouble, __b: LongDouble) -> bool;
 // CHECK-NEXT:     safe fn __slate_f80_le(__a: LongDouble, __b: LongDouble) -> bool;
 // CHECK-NEXT:     safe fn __slate_f80_gt(__a: LongDouble, __b: LongDouble) -> bool;
@@ -266,16 +270,12 @@ int main(void) {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -317,7 +317,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c" %02x".as_ptr(), *bytes.add(i as usize) as i32) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(c" %02x".as_ptr(), *bytes.add(i as usize) as i32)
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
@@ -329,16 +331,18 @@ int main(void) {
 // CHECK-NEXT:     let mut a: x87 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_bytes(
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(a) as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(a) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (171i32 as i32) as u8,
 // CHECK-NEXT:             ((core::mem::size_of::<x87>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(one_and_half) as *const ()) as *const core::ffi::c_void)
-// CHECK-NEXT:                 as *const u8,
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(a) as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(one_and_half) as *const ())
+// CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(a) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (10u64 as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -354,7 +358,8 @@ int main(void) {
 // CHECK-NEXT:     let mut m: x87_mixed = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_bytes(
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(m) as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(m) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (205i32 as i32) as u8,
 // CHECK-NEXT:             ((core::mem::size_of::<x87_mixed>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
@@ -362,9 +367,10 @@ int main(void) {
 // CHECK-NEXT:     m.c = 1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(two_and_half) as *const ()) as *const core::ffi::c_void)
-// CHECK-NEXT:                 as *const u8,
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(m.x) as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(two_and_half) as *const ())
+// CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(m.x) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (10u64 as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -383,7 +389,8 @@ int main(void) {
 // CHECK-NEXT:     let mut b: bitint = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_bytes(
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(b) as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(b) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (239i32 as i32) as u8,
 // CHECK-NEXT:             (8u64 as usize) as usize,
 // CHECK-NEXT:         )
@@ -398,31 +405,29 @@ int main(void) {
 // CHECK-NEXT:         [[T_2]].add(3usize).write_bytes(0u8, 1usize);
 // CHECK-NEXT:         [[T_2]].add(5usize).write_bytes(0u8, 3usize);
 // CHECK-NEXT:     };
-// CHECK-NEXT:     dump(
-// CHECK-NEXT:         c"bitint".as_ptr(),
-// CHECK-NEXT:         core::ptr::addr_of_mut!(b) as *const (),
-// CHECK-NEXT:         8u64,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     dump(c"bitint".as_ptr(), core::ptr::addr_of_mut!(b) as *const (), 8u64);
 // CHECK-NEXT:     let mut z: complex_x87 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_bytes(
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(z) as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(z) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (153i32 as i32) as u8,
 // CHECK-NEXT:             (32u64 as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(one_and_half) as *const ()) as *const core::ffi::c_void)
-// CHECK-NEXT:                 as *const u8,
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(z) as *mut ()) as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(one_and_half) as *const ())
+// CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(z) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (10u64 as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(two_and_half) as *const ()) as *const core::ffi::c_void)
-// CHECK-NEXT:                 as *const u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(two_and_half) as *const ())
+// CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             (((core::ptr::addr_of_mut!(z) as *mut i8)
 // CHECK-NEXT:                 .offset(core::mem::size_of::<LongDouble>() as isize) as *mut ())
 // CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
@@ -434,11 +439,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_3]].add(10usize).write_bytes(0u8, 6usize);
 // CHECK-NEXT:         [[T_3]].add(26usize).write_bytes(0u8, 6usize);
 // CHECK-NEXT:     };
-// CHECK-NEXT:     dump(
-// CHECK-NEXT:         c"complex_x87".as_ptr(),
-// CHECK-NEXT:         core::ptr::addr_of_mut!(z) as *const (),
-// CHECK-NEXT:         32u64,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     dump(c"complex_x87".as_ptr(), core::ptr::addr_of_mut!(z) as *const (), 32u64);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

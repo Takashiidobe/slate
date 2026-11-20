@@ -73,10 +73,7 @@ int main(void) {
 // CHECK-NEXT: //! merge-sources: units/signature_mismatch_helper.c
 // CHECK-NEXT: //!
 // CHECK-NEXT: //! merge-expect-exit: 1
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -92,8 +89,7 @@ int main(void) {
 // CHECK-NEXT:                 (*{
 // CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = make_pair(2i32);
 // CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:                 })
-// CHECK-NEXT:                 .first,
+// CHECK-NEXT:                 }).first,
 // CHECK-NEXT:                 table_size,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
@@ -108,8 +104,7 @@ int main(void) {
 // CHECK-NEXT:                 (*{
 // CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = make_pair(2i32);
 // CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:                 })
-// CHECK-NEXT:                 .first
+// CHECK-NEXT:                 }).first
 // CHECK-NEXT:             },
 // CHECK-NEXT:             unsafe { table_size }
 // CHECK-NEXT:         );

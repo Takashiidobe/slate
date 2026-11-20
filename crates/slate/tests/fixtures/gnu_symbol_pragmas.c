@@ -19,21 +19,31 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.pragma_weak_target")]
 // CHECK-NEXT: extern "C-unwind" fn pragma_weak_target(value: i32) -> i32 {
 // CHECK-NEXT:     value + 7
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pragma_renamed(value: i32) -> i32 {
 // CHECK-NEXT:     value * 3
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", pragma_weak_target(29i32), (({ let __slate_function : Option < unsafe
-// CHECK-NEXT:         extern "C-unwind" fn (i32) -> i32 > = Some(pragma_weak_target); __slate_function
-// CHECK-NEXT:         }) == Some(pragma_weak_target)) as i32, pragma_renamed(13i32)
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         pragma_weak_target(29i32),
+// CHECK-NEXT:         (({
+// CHECK-NEXT:             let __slate_function: Option<unsafe extern "C-unwind" fn(i32) -> i32> = Some(
+// CHECK-NEXT:                 pragma_weak_target,
+// CHECK-NEXT:             );
+// CHECK-NEXT:             __slate_function
+// CHECK-NEXT:         }) == Some(pragma_weak_target)) as i32,
+// CHECK-NEXT:         pragma_renamed(13i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

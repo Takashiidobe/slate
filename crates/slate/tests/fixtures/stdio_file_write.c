@@ -52,11 +52,13 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 16]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0i8;
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 16]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]][0] = 0i8;
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         fgets(buf.0.as_mut_ptr() as *mut i8, core::mem::size_of::<[i8; 16]>() as i32, g)
 // CHECK-NEXT:     };

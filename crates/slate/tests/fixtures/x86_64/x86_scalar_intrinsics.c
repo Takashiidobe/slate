@@ -21,6 +21,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.x86.sse2.lfence"]
 // CHECK-NEXT:     fn __slate_intrinsic_6f7c5327cf9e8272();
@@ -37,6 +38,7 @@ int main(void) {
 // CHECK-NEXT:     #[link_name = "llvm.x86.sse2.pause"]
 // CHECK-NEXT:     fn __slate_intrinsic_cf7232a07549d448();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn instructions() -> i32 {
 // CHECK-NEXT:     let flags: u64 = (unsafe { __slate_intrinsic_9f2888a0dbec63c7() }) as u64;
 // CHECK-NEXT:     unsafe { __slate_intrinsic_c6a72ac15744325c(flags as i64) };
@@ -48,10 +50,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe { __slate_intrinsic_b2ae1adafd1df521() };
 // CHECK-NEXT:     (first != 0 && second >= first) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", instructions());
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

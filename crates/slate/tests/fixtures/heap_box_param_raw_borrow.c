@@ -27,15 +27,18 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_heap_box_param_raw_borrow_c_7 {
 // CHECK-NEXT:     loaded: u64,
 // CHECK-NEXT:     size: u64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn consume(
 // CHECK-NEXT:     [[V_0:__v[0-9]+]]: *mut __SlateRecord_heap_box_param_raw_borrow_c_7,
 // CHECK-NEXT:     n: u64,
@@ -45,11 +48,14 @@ int main(void) {
 // CHECK-NEXT:         (*[[V_0]]).loaded = [[V_1]].wrapping_sub(n);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::calloc;
 // CHECK-NEXT: use slate_support::free;
-// CHECK-NEXT: static mut hook: Option<
-// CHECK-NEXT:     unsafe extern "C-unwind" fn(*mut __SlateRecord_heap_box_param_raw_borrow_c_7, u64),
-// CHECK-NEXT: > = Some(consume);
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut hook: Option<unsafe extern "C-unwind" fn(*mut __SlateRecord_heap_box_param_raw_borrow_c_7, u64)> = Some(
+// CHECK-NEXT:     consume,
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn destroy(mut ctx: Box<__SlateRecord_heap_box_param_raw_borrow_c_7>) {
 // CHECK-NEXT:     consume(
 // CHECK-NEXT:         &mut (*ctx) as *mut __SlateRecord_heap_box_param_raw_borrow_c_7,
@@ -58,6 +64,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let ctx: *mut __SlateRecord_heap_box_param_raw_borrow_c_7 = (unsafe {
 // CHECK-NEXT:         calloc(
@@ -78,6 +85,7 @@ int main(void) {
 // CHECK-NEXT:     destroy(unsafe { Box::from_raw(ctx) });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

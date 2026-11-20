@@ -58,19 +58,20 @@ int count_vowels(const char *text) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}use crate::__slate_types::__SlateRecord_shapes_h_9;
+// CHECK: {{^}}
 // CHECK-NEXT: use crate::__slate_types::__SlateRecord_shapes_h_18;
+// CHECK-NEXT: use crate::__slate_types::__SlateRecord_shapes_h_9;
 // CHECK-NEXT: use crate::__slate_types::flags;
 // CHECK-NEXT: use crate::__slate_types::registry;
 // CHECK-NEXT: use crate::__slate_types::registry_stats;
 // CHECK-NEXT: use crate::__slate_types::shape;
-// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn registry_new() -> *mut registry {
-// CHECK-NEXT:     let registry: *mut registry =
-// CHECK-NEXT:         (unsafe { malloc((core::mem::size_of::<registry>() as u64) as usize) as *mut () })
-// CHECK-NEXT:             as *mut registry;
+// CHECK-NEXT:     let registry: *mut registry = (unsafe {
+// CHECK-NEXT:         malloc((core::mem::size_of::<registry>() as u64) as usize) as *mut ()
+// CHECK-NEXT:     }) as *mut registry;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*registry).head = core::ptr::null_mut::<shape>();
 // CHECK-NEXT:     }
@@ -114,7 +115,8 @@ int count_vowels(const char *text) {
 // CHECK-NEXT:         (*shape).origin.y = (*shape).origin.y + dy;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (((*shape).flags.__slate_bits_0.__get_level() as i32) + 1 & 15) as u32;
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (((*shape).flags.__slate_bits_0.__get_level() as i32) + 1 & 15)
+// CHECK-NEXT:             as u32;
 // CHECK-NEXT:         (*shape).flags.__slate_bits_0.__set_level([[T_0]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -122,7 +124,8 @@ int count_vowels(const char *text) {
 // CHECK-NEXT: pub fn shape_area_sum(shapes: &[shape]) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..shapes.len() as i32 {
-// CHECK-NEXT:         sum += (unsafe { shapes[i as usize].origin.x }) * unsafe { shapes[i as usize].origin.y };
+// CHECK-NEXT:         sum += (unsafe { shapes[i as usize].origin.x })
+// CHECK-NEXT:             * unsafe { shapes[i as usize].origin.y };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
@@ -136,12 +139,8 @@ int count_vowels(const char *text) {
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while (unsafe { *text.offset(i as isize) }) != 0 {
 // CHECK-NEXT:         let c: i8 = unsafe { *text.offset(i as isize) };
-// CHECK-NEXT:         if (c as i32) == 97
-// CHECK-NEXT:             || (c as i32) == 101
-// CHECK-NEXT:             || (c as i32) == 105
-// CHECK-NEXT:             || (c as i32) == 111
-// CHECK-NEXT:             || (c as i32) == 117
-// CHECK-NEXT:         {
+// CHECK-NEXT:         if (c as i32) == 97 || (c as i32) == 101 || (c as i32) == 105
+// CHECK-NEXT:             || (c as i32) == 111 || (c as i32) == 117 {
 // CHECK-NEXT:             count += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i += 1;

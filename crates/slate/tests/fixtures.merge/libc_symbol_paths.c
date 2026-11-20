@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(target_os = "freebsd")]
 // CHECK-NEXT: core::arch::global_asm!(
 // CHECK-NEXT:     ".symver __qsort_r_compat, qsort_r@FBSD_1.0",
-// CHECK-NEXT:     options(att_syntax)
+// CHECK-NEXT:     options(att_syntax),
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -60,14 +60,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: //! merge-extra-targets: musl-x86_64 x86_64-unknown-linux-musl clang android-x86_64 x86_64-linux-android clang darwin-x86_64 x86_64-apple-darwin clang freebsd-x86_64 x86_64-unknown-freebsd clang
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "android"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "macos"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "freebsd"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "musl"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "android"), all(target_arch = "x86_64", target_os = "macos"), all(target_arch = "x86_64", target_os = "freebsd"), all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", target_os = "linux", target_env = "musl"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

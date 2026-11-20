@@ -116,11 +116,17 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT: static mut words: [u16; 8] = unsafe { core::mem::zeroed() };
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
 // I686-PC-WINDOWS-MSVC-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static mut bytes: __SlateAlign16<[u8; 16]> = __SlateAlign16(unsafe { core::mem::zeroed() });
+// X86_64-PC-WINDOWS-MSVC-NEXT: static mut bytes: __SlateAlign16<[u8; 16]> = __SlateAlign16(
+// X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe { core::mem::zeroed() },
+// X86_64-PC-WINDOWS-MSVC-NEXT: );
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static mut words: __SlateAlign16<[u16; 8]> = __SlateAlign16(unsafe { core::mem::zeroed() });
+// X86_64-PC-WINDOWS-MSVC-NEXT: static mut words: __SlateAlign16<[u16; 8]> = __SlateAlign16(
+// X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe { core::mem::zeroed() },
+// X86_64-PC-WINDOWS-MSVC-NEXT: );
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static mut dwords: __SlateAlign16<[u32; 8]> = __SlateAlign16(unsafe { core::mem::zeroed() });
+// X86_64-PC-WINDOWS-MSVC-NEXT: static mut dwords: __SlateAlign16<[u32; 8]> = __SlateAlign16(
+// X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe { core::mem::zeroed() },
+// X86_64-PC-WINDOWS-MSVC-NEXT: );
 // I686-PC-WINDOWS-MSVC-NEXT: static mut dwords: [u32; 8] = unsafe { core::mem::zeroed() };
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
 // I686-PC-WINDOWS-MSVC-EMPTY:
@@ -166,10 +172,8 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:     for i in 0i32..16i32 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         if ((unsafe { bytes.0[i as usize] }) as i32)
 // I686-PC-WINDOWS-MSVC-NEXT:         if ((unsafe { bytes[i as usize] }) as i32)
-// X86_64-PC-WINDOWS-MSVC-NEXT:             != (((unsafe { *want.offset(i as isize) }) as u8) as i32)
-// I686-PC-WINDOWS-MSVC-NEXT:             != (((unsafe { *want.offset(i as isize) }) as u8) as i32)
-// X86_64-PC-WINDOWS-MSVC-NEXT:         {
-// I686-PC-WINDOWS-MSVC-NEXT:         {
+// X86_64-PC-WINDOWS-MSVC-NEXT:             != (((unsafe { *want.offset(i as isize) }) as u8) as i32) {
+// I686-PC-WINDOWS-MSVC-NEXT:             != (((unsafe { *want.offset(i as isize) }) as u8) as i32) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:             return 0;
 // I686-PC-WINDOWS-MSVC-NEXT:             return 0;
 // X86_64-PC-WINDOWS-MSVC-NEXT:         }
@@ -207,17 +211,16 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:         memcmp(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (out.0.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes.0) as *mut u8) as *const ())
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 as *const core::ffi::c_void,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             16u64 as usize,
 // I686-PC-WINDOWS-MSVC-NEXT:             (out.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
-// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes) as *mut u8) as *const ()) as *const core::ffi::c_void,
+// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes) as *mut u8) as *const ())
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 as *const core::ffi::c_void,
+// I686-PC-WINDOWS-MSVC-NEXT:                 as *const core::ffi::c_void,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             16u64 as usize,
 // I686-PC-WINDOWS-MSVC-NEXT:             16u32 as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         ) as i32
 // I686-PC-WINDOWS-MSVC-NEXT:         ) as i32
-// X86_64-PC-WINDOWS-MSVC-NEXT:     }) != 0
-// I686-PC-WINDOWS-MSVC-NEXT:     }) != 0
-// X86_64-PC-WINDOWS-MSVC-NEXT:     {
-// I686-PC-WINDOWS-MSVC-NEXT:     {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     }) != 0 {
+// I686-PC-WINDOWS-MSVC-NEXT:     }) != 0 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
@@ -229,17 +232,21 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __movsb(
 // I686-PC-WINDOWS-MSVC-NEXT:         __movsb(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(bytes.0) as *mut u8) as *mut u8,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes.0) as *mut u8).add(3) as *const u8) as *const u8,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             10u64 as usize,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes.0) as *mut u8).add(3) as *const u8)
 // I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(bytes) as *mut u8) as *mut u8,
-// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes) as *mut u8).add(3) as *const u8) as *const u8,
+// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes) as *mut u8).add(3) as *const u8)
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 as *const u8,
+// I686-PC-WINDOWS-MSVC-NEXT:                 as *const u8,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             10u64 as usize,
 // I686-PC-WINDOWS-MSVC-NEXT:             10u32 as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // I686-PC-WINDOWS-MSVC-NEXT:         )
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // I686-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if bytes_are(c"\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0b\x0c\r\x0e\x0f\x10".as_ptr()) == 0 {
-// I686-PC-WINDOWS-MSVC-NEXT:     if bytes_are(c"\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0b\x0c\r\x0e\x0f\x10".as_ptr()) == 0 {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if bytes_are(c"\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0b\x0c\r\x0e\x0f\x10".as_ptr())
+// I686-PC-WINDOWS-MSVC-NEXT:     if bytes_are(c"\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0b\x0c\r\x0e\x0f\x10".as_ptr())
+// X86_64-PC-WINDOWS-MSVC-NEXT:         == 0 {
+// I686-PC-WINDOWS-MSVC-NEXT:         == 0 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
@@ -260,8 +267,12 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:         )
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // I686-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if bytes_are(c"\x01\x02\x01\x02\x01\x02\x01\x02\x01\x02\x01\x02\r\x0e\x0f\x10".as_ptr()) == 0 {
-// I686-PC-WINDOWS-MSVC-NEXT:     if bytes_are(c"\x01\x02\x01\x02\x01\x02\x01\x02\x01\x02\x01\x02\r\x0e\x0f\x10".as_ptr()) == 0 {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if bytes_are(
+// I686-PC-WINDOWS-MSVC-NEXT:     if bytes_are(
+// X86_64-PC-WINDOWS-MSVC-NEXT:         c"\x01\x02\x01\x02\x01\x02\x01\x02\x01\x02\x01\x02\r\x0e\x0f\x10".as_ptr(),
+// I686-PC-WINDOWS-MSVC-NEXT:         c"\x01\x02\x01\x02\x01\x02\x01\x02\x01\x02\x01\x02\r\x0e\x0f\x10".as_ptr(),
+// X86_64-PC-WINDOWS-MSVC-NEXT:     ) == 0 {
+// I686-PC-WINDOWS-MSVC-NEXT:     ) == 0 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
@@ -273,10 +284,12 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __movsb(
 // I686-PC-WINDOWS-MSVC-NEXT:         __movsb(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(bytes.0) as *mut u8).add(5) as *mut u8,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes.0) as *mut u8).add(5) as *const u8) as *const u8,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             4u64 as usize,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes.0) as *mut u8).add(5) as *const u8)
 // I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(bytes) as *mut u8).add(5) as *mut u8,
-// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes) as *mut u8).add(5) as *const u8) as *const u8,
+// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes) as *mut u8).add(5) as *const u8)
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 as *const u8,
+// I686-PC-WINDOWS-MSVC-NEXT:                 as *const u8,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             4u64 as usize,
 // I686-PC-WINDOWS-MSVC-NEXT:             4u32 as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // I686-PC-WINDOWS-MSVC-NEXT:         )
@@ -287,17 +300,21 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __movsb(
 // I686-PC-WINDOWS-MSVC-NEXT:         __movsb(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(bytes.0) as *mut u8) as *mut u8,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes.0) as *mut u8).add(8) as *const u8) as *const u8,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             0u64 as usize,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes.0) as *mut u8).add(8) as *const u8)
 // I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(bytes) as *mut u8) as *mut u8,
-// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes) as *mut u8).add(8) as *const u8) as *const u8,
+// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes) as *mut u8).add(8) as *const u8)
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 as *const u8,
+// I686-PC-WINDOWS-MSVC-NEXT:                 as *const u8,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             0u64 as usize,
 // I686-PC-WINDOWS-MSVC-NEXT:             0u32 as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // I686-PC-WINDOWS-MSVC-NEXT:         )
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // I686-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if bytes_are(c"\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10".as_ptr()) == 0 {
-// I686-PC-WINDOWS-MSVC-NEXT:     if bytes_are(c"\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10".as_ptr()) == 0 {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if bytes_are(c"\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10".as_ptr())
+// I686-PC-WINDOWS-MSVC-NEXT:     if bytes_are(c"\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10".as_ptr())
+// X86_64-PC-WINDOWS-MSVC-NEXT:         == 0 {
+// I686-PC-WINDOWS-MSVC-NEXT:         == 0 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
@@ -336,7 +353,8 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:         }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if ((unsafe { words.0[0] }) as i32) != 4096 || ((unsafe { words.0[7] }) as i32) != 4103 {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if ((unsafe { words.0[0] }) as i32) != 4096
+// X86_64-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words.0[7] }) as i32) != 4103 {
 // I686-PC-WINDOWS-MSVC-NEXT:     if ((unsafe { words[0] }) as i32) != 4096 || ((unsafe { words[7] }) as i32) != 4103 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
@@ -357,23 +375,21 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __movsd(
 // I686-PC-WINDOWS-MSVC-NEXT:         __movsd(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(dwords.0) as *mut u32) as *mut u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(dwords.0) as *mut u32).add(2) as *const u32) as *const u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             5u64 as usize,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(dwords.0) as *mut u32).add(2) as *const u32)
 // I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(dwords) as *mut u32) as *mut u32,
-// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(dwords) as *mut u32).add(2) as *const u32) as *const u32,
+// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(dwords) as *mut u32).add(2) as *const u32)
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 as *const u32,
+// I686-PC-WINDOWS-MSVC-NEXT:                 as *const u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             5u64 as usize,
 // I686-PC-WINDOWS-MSVC-NEXT:             5u32 as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // I686-PC-WINDOWS-MSVC-NEXT:         )
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // I686-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords.0[0] }) != 268435458
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[4] }) != 268435462
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[5] }) != 268435461
-// I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords[0] }) != 268435458
-// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[4] }) != 268435462
-// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[5] }) != 268435461
-// X86_64-PC-WINDOWS-MSVC-NEXT:     {
-// I686-PC-WINDOWS-MSVC-NEXT:     {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords.0[0] }) != 268435458 || (unsafe { dwords.0[4] }) != 268435462
+// X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[5] }) != 268435461 {
+// I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords[0] }) != 268435458 || (unsafe { dwords[4] }) != 268435462
+// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[5] }) != 268435461 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
@@ -383,7 +399,8 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __movsd(
 // I686-PC-WINDOWS-MSVC-NEXT:         __movsd(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(dwords.0) as *mut u32).add(2) as *mut u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(dwords.0) as *mut u32) as *const u32) as *const u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(dwords.0) as *mut u32) as *const u32)
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 as *const u32,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             4u64 as usize,
 // I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(dwords) as *mut u32).add(2) as *mut u32,
 // I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(dwords) as *mut u32) as *const u32) as *const u32,
@@ -392,34 +409,20 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:         )
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // I686-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords.0[2] }) != 268435458
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[3] }) != 268435459
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[4] }) != 268435458
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[5] }) != 268435459
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[6] }) != 268435462
-// I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords[2] }) != 268435458
-// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[3] }) != 268435459
-// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[4] }) != 268435458
-// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[5] }) != 268435459
-// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[6] }) != 268435462
-// X86_64-PC-WINDOWS-MSVC-NEXT:     {
-// I686-PC-WINDOWS-MSVC-NEXT:     {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords.0[2] }) != 268435458 || (unsafe { dwords.0[3] }) != 268435459
+// X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[4] }) != 268435458 || (unsafe { dwords.0[5] }) != 268435459
+// X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[6] }) != 268435462 {
+// I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords[2] }) != 268435458 || (unsafe { dwords[3] }) != 268435459
+// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[4] }) != 268435458 || (unsafe { dwords[5] }) != 268435459
+// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[6] }) != 268435462 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:     unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         __stosb(
-// I686-PC-WINDOWS-MSVC-NEXT:         __stosb(
-// X86_64-PC-WINDOWS-MSVC-NEXT:             (out.0.as_mut_ptr() as *mut u8) as *mut u8,
-// I686-PC-WINDOWS-MSVC-NEXT:             (out.as_mut_ptr() as *mut u8) as *mut u8,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             171u8 as u8,
-// I686-PC-WINDOWS-MSVC-NEXT:             171u8 as u8,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             7u64 as usize,
-// I686-PC-WINDOWS-MSVC-NEXT:             7u32 as usize,
-// X86_64-PC-WINDOWS-MSVC-NEXT:         )
-// I686-PC-WINDOWS-MSVC-NEXT:         )
+// X86_64-PC-WINDOWS-MSVC-NEXT:         __stosb((out.0.as_mut_ptr() as *mut u8) as *mut u8, 171u8 as u8, 7u64 as usize)
+// I686-PC-WINDOWS-MSVC-NEXT:         __stosb((out.as_mut_ptr() as *mut u8) as *mut u8, 171u8 as u8, 7u32 as usize)
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // I686-PC-WINDOWS-MSVC-NEXT:     };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     for i in 0i32..7i32 {
@@ -455,13 +458,10 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     if ((unsafe { words.0[1] }) as i32) != 4096
 // X86_64-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words.0[2] }) as i32) != 48879
 // X86_64-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words.0[4] }) as i32) != 48879
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words.0[5] }) as i32) != 4096
-// I686-PC-WINDOWS-MSVC-NEXT:     if ((unsafe { words[1] }) as i32) != 4096
-// I686-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words[2] }) as i32) != 48879
+// X86_64-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words.0[5] }) as i32) != 4096 {
+// I686-PC-WINDOWS-MSVC-NEXT:     if ((unsafe { words[1] }) as i32) != 4096 || ((unsafe { words[2] }) as i32) != 48879
 // I686-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words[4] }) as i32) != 48879
-// I686-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words[5] }) as i32) != 4096
-// X86_64-PC-WINDOWS-MSVC-NEXT:     {
-// I686-PC-WINDOWS-MSVC-NEXT:     {
+// I686-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words[5] }) as i32) != 4096 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
@@ -480,19 +480,14 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:         )
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // I686-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords.0[0] }) != 268435458
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[1] }) != 3735928559
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords.0[0] }) != 268435458 || (unsafe { dwords.0[1] }) != 3735928559
 // X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[2] }) != 3735928559
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[3] }) != 268435459
-// I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords[0] }) != 268435458
-// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[1] }) != 3735928559
-// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[2] }) != 3735928559
-// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[3] }) != 268435459
-// X86_64-PC-WINDOWS-MSVC-NEXT:     {
-// I686-PC-WINDOWS-MSVC-NEXT:     {
+// X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[3] }) != 268435459 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let mut qwords: __SlateAlign16<[u64; 6]> = __SlateAlign16([1u64, 2u64, 3u64, 4u64, 5u64, 6u64]);
+// X86_64-PC-WINDOWS-MSVC-NEXT:     let mut qwords: __SlateAlign16<[u64; 6]> = __SlateAlign16(
+// X86_64-PC-WINDOWS-MSVC-NEXT:         [1u64, 2u64, 3u64, 4u64, 5u64, 6u64],
+// X86_64-PC-WINDOWS-MSVC-NEXT:     );
 // X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __movsq(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (qwords.0.as_mut_ptr() as *mut u64).add(1) as *mut u64,
@@ -520,7 +515,10 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:             3u64 as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if qwords.0[1] != 6 || qwords.0[2] != 81985529216486895 || qwords.0[4] != 81985529216486895 {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if qwords.0[1] != 6 || qwords.0[2] != 81985529216486895
+// X86_64-PC-WINDOWS-MSVC-NEXT:         || qwords.0[4] != 81985529216486895 {
+// I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords[0] }) != 268435458 || (unsafe { dwords[1] }) != 3735928559
+// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[2] }) != 3735928559 || (unsafe { dwords[3] }) != 268435459 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }

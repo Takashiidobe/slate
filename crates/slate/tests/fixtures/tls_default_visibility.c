@@ -47,6 +47,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(thread_local)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn pthread_create(
 // CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: *mut u64,
@@ -55,21 +56,30 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut (),
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut malloc_conf: *const i8 = (b"background_thread:true\0".as_ptr() as *mut i8)
 // CHECK-NEXT:     as *const i8;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut exported_count: i32 = 3;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut reusable_buffer: *mut i8 = core::ptr::null_mut::<i8>();
+// CHECK-EMPTY:
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut reusable_used: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut thread_index: i64 = -1;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn detect() -> i32 {
 // CHECK-NEXT:     if (unsafe { supported }) == -1 {
 // CHECK-NEXT:         unsafe {
@@ -78,10 +88,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { supported }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut supported: i32 = -1;
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::pthread_join;
 // CHECK-NEXT: use slate_support::strlen;
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn worker(argument: *mut ()) -> *mut () {
 // CHECK-NEXT:     let out: *mut i64 = argument as *mut i64;
 // CHECK-NEXT:     unsafe {
@@ -101,6 +114,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     core::ptr::null_mut::<()>()
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         thread_index = 7;
@@ -144,7 +158,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut storage: [i8; 8] = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -39,18 +39,22 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn _setjmp([[ARG_0:arg[0-9]+]]: *mut __jmp_buf_tag) -> i32;
 // CHECK-NEXT:     fn longjmp([[ARG_0]]: *mut __jmp_buf_tag, [[ARG_1:arg[0-9]+]]: i32);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord___sigset_t_h_8 {
 // CHECK-NEXT:     __val: [u64; 16],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __jmp_buf_tag {
@@ -58,13 +62,18 @@ int main(void) {
 // CHECK-NEXT:     __mask_was_saved: i32,
 // CHECK-NEXT:     __saved_mask: __SlateRecord___sigset_t_h_8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
-// CHECK-NEXT: static mut env: __SlateAlign16<[__jmp_buf_tag; 1]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     core::mem::zeroed()
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut env: __SlateAlign16<[__jmp_buf_tag; 1]> = __SlateAlign16(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut failures: i32 = 0;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn record_failure(phase: *const i8) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         failures = failures + 1;
@@ -73,11 +82,13 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"FAIL: %s\n".as_ptr(), phase) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn inner_check(ok: i32) {
 // CHECK-NEXT:     if ok == 0 {
 // CHECK-NEXT:         unsafe { longjmp(core::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1i32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn run_case(id: i32, should_fail: i32) {
 // CHECK-NEXT:     if (unsafe { _setjmp(core::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0 {
 // CHECK-NEXT:         record_failure(c"case".as_ptr());
@@ -86,11 +97,11 @@ int main(void) {
 // CHECK-NEXT:     inner_check((should_fail == 0) as i32);
 // CHECK-NEXT:     println!("PASS: case {}", id);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         if (unsafe { _setjmp(core::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) })
-// CHECK-NEXT:             != 0
-// CHECK-NEXT:         {
+// CHECK-NEXT:             != 0 {
 // CHECK-NEXT:             record_failure(c"loop".as_ptr());
 // CHECK-NEXT:             continue;
 // CHECK-NEXT:         }
@@ -99,6 +110,7 @@ int main(void) {
 // CHECK-NEXT:     println!("failures: {}", unsafe { failures });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

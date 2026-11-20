@@ -21,6 +21,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn countdown(mut n: i32) -> i32 {
 // CHECK-NEXT:     let mut steps: i32 = 0;
 // CHECK-NEXT:     while true {
@@ -32,11 +33,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     steps
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", countdown(100i32));
 // CHECK-NEXT:     println!("{}", countdown(0i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

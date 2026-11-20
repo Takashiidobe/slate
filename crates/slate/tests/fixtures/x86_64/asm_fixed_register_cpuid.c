@@ -20,9 +20,13 @@ int main(void) { return cpuid_leaf1_nonzero(); }
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov %rbx, {0:r}\ncpuid\n\t\nmov {0:r}, %rbx", out(reg) _, lateout("ax")
-// CHECK-NEXT:             [[T_0]], lateout("cx") [[T_1]], lateout("dx") [[T_2]], in ("ax") (1 as i32) as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "mov %rbx, {0:r}\ncpuid\n\t\nmov {0:r}, %rbx",
+// CHECK-NEXT:             out(reg) _,
+// CHECK-NEXT:             lateout("ax") [[T_0]],
+// CHECK-NEXT:             lateout("cx") [[T_1]],
+// CHECK-NEXT:             lateout("dx") [[T_2]],
+// CHECK-NEXT:             in("ax") (1 as i32) as u32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         f1a = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:         f1c = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };

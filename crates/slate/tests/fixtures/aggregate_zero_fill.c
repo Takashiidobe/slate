@@ -47,6 +47,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Sample {
@@ -55,18 +56,23 @@ int main(void) {
 // CHECK-NEXT:     target: *mut i32,
 // CHECK-NEXT:     data: [i32; 4],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Cell {
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     value: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn checksum(s: Sample) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = s.id + ((s.scale * 10.0f64) as i32);
 // CHECK-NEXT:     if s.id != 0 {
@@ -77,13 +83,16 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let partial: __SlateAlign16<[i32; 5]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 5] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 1i32;
-// CHECK-NEXT:         [[T_0]][1] = 2i32;
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let partial: __SlateAlign16<[i32; 5]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: [i32; 5] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]][0] = 1i32;
+// CHECK-NEXT:             [[T_0]][1] = 2i32;
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in partial.0.iter().copied() {
 // CHECK-NEXT:         sum = sum * 7 + i;
@@ -115,20 +124,22 @@ int main(void) {
 // CHECK-NEXT:         [[T_4]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {}", checksum(zero), checksum(some), checksum(full));
-// CHECK-NEXT:     let cells: __SlateAlign16<[Cell; 4]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_5:__t[0-9]+]]: [Cell; 4] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_5]][1] = {
-// CHECK-NEXT:             let mut [[T_6:__t[0-9]+]]: Cell = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             [[T_6]].value = 7i64;
-// CHECK-NEXT:             [[T_6]]
-// CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_5]][3] = {
-// CHECK-NEXT:             let mut [[T_7:__t[0-9]+]]: Cell = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             [[T_7]].tag = 122i8;
-// CHECK-NEXT:             [[T_7]]
-// CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_5]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let cells: __SlateAlign16<[Cell; 4]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_5:__t[0-9]+]]: [Cell; 4] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_5]][1] = {
+// CHECK-NEXT:                 let mut [[T_6:__t[0-9]+]]: Cell = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:                 [[T_6]].value = 7i64;
+// CHECK-NEXT:                 [[T_6]]
+// CHECK-NEXT:             };
+// CHECK-NEXT:             [[T_5]][3] = {
+// CHECK-NEXT:                 let mut [[T_7:__t[0-9]+]]: Cell = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:                 [[T_7]].tag = 122i8;
+// CHECK-NEXT:                 [[T_7]]
+// CHECK-NEXT:             };
+// CHECK-NEXT:             [[T_5]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -142,6 +153,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

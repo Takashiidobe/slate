@@ -41,25 +41,17 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn classify(seed: i32) -> i32 {
-// CHECK-NEXT:     let mut v: bitint::BUint<128, 2, 16, bitint::A8> = <bitint::BUint<
-// CHECK-NEXT:         128,
-// CHECK-NEXT:         2,
-// CHECK-NEXT:         16,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_u128(340282366920938463463374607431768211440)
+// CHECK-NEXT:     let mut v: bitint::BUint<128, 2, 16, bitint::A8> = <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
+// CHECK-NEXT:             340282366920938463463374607431768211440,
+// CHECK-NEXT:         )
 // CHECK-NEXT:         .wrapping_add(
-// CHECK-NEXT:             <bitint::BUint<
-// CHECK-NEXT:                 128,
-// CHECK-NEXT:                 2,
-// CHECK-NEXT:                 16,
-// CHECK-NEXT:                 bitint::A8,
-// CHECK-NEXT:             >>::from_bint(
+// CHECK-NEXT:             <bitint::BUint<128, 2, 16, bitint::A8>>::from_bint(
 // CHECK-NEXT:                 <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(seed as i128),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     match v.to_u128() {
 // CHECK-NEXT:         340282366920938463463374607431768211441
-// CHECK-NEXT:         | 340282366920938463463374607431768211443 => {
+// CHECK-NEXT:             | 340282366920938463463374607431768211443 => {
 // CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         340282366920938463463374607431768211450..=340282366920938463463374607431768211453 => {
@@ -72,19 +64,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn classify_run(seed: i32) -> i32 {
-// CHECK-NEXT:     let mut v: bitint::BUint<128, 2, 16, bitint::A8> = <bitint::BUint<
-// CHECK-NEXT:         128,
-// CHECK-NEXT:         2,
-// CHECK-NEXT:         16,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_u128(340282366920938463463374607431768211440)
+// CHECK-NEXT:     let mut v: bitint::BUint<128, 2, 16, bitint::A8> = <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
+// CHECK-NEXT:             340282366920938463463374607431768211440,
+// CHECK-NEXT:         )
 // CHECK-NEXT:         .wrapping_add(
-// CHECK-NEXT:             <bitint::BUint<
-// CHECK-NEXT:                 128,
-// CHECK-NEXT:                 2,
-// CHECK-NEXT:                 16,
-// CHECK-NEXT:                 bitint::A8,
-// CHECK-NEXT:             >>::from_bint(
+// CHECK-NEXT:             <bitint::BUint<128, 2, 16, bitint::A8>>::from_bint(
 // CHECK-NEXT:                 <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(seed as i128),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         );

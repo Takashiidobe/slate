@@ -19,7 +19,8 @@ int clock_scale(struct mach_timebase_info *info) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}#[repr(C)]
+// CHECK: {{^}}
+// CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct mach_timebase_info {
 // CHECK-NEXT:     numer: u32,

@@ -52,9 +52,14 @@ int main(void) {
 // CHECK-NEXT: fn branch__const1(key: *mut key) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut __slate_asm_target: bool = false;
-// CHECK-NEXT:         core::arch::asm!("jmp {1}\n\t# {0}", sym k1, label {
-// CHECK-NEXT: __slate_asm_target = true;
-// CHECK-NEXT: }, options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "jmp {1}\n\t# {0}",
+// CHECK-NEXT:             sym k1,
+// CHECK-NEXT:             label {
+// CHECK-NEXT:                 __slate_asm_target = true;
+// CHECK-NEXT:             },
+// CHECK-NEXT:             options(nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         if __slate_asm_target {
 // CHECK-NEXT:             return 1;
 // CHECK-NEXT:         } else {
@@ -77,8 +82,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn guarded(mut guard: *mut i32) -> i32 {
 // CHECK-NEXT:     let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(guard) as *mut _;
-// CHECK-NEXT:     let __slate_cleanup_0 =
-// CHECK-NEXT:         ::slate_support::Guard(&mut || release(__slate_cleanup_ptr_0 as *mut _));
+// CHECK-NEXT:     let __slate_cleanup_0 = ::slate_support::Guard(
+// CHECK-NEXT:         &mut || release(__slate_cleanup_ptr_0 as *mut _),
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!("held {}", unsafe { *guard });
 // CHECK-NEXT:     (unsafe { *guard }) + 1
 // CHECK-NEXT: }

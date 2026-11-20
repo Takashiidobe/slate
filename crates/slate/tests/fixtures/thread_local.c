@@ -33,6 +33,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(thread_local)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn thrd_create(
 // CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: *mut u64,
@@ -41,8 +42,10 @@ int main(void) {
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT:     fn thrd_join([[ARG_0]]: u64, [[ARG_1]]: *mut i32) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut file_value: i32 = 5;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn update_values(file_next: i32, block_next: i32) -> i32 {
 // CHECK-NEXT:     let result: i32 = (unsafe { file_value }) * 100 + unsafe { block_value };
 // CHECK-NEXT:     unsafe {
@@ -53,12 +56,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut block_value: i32 = 7;
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn worker(argument: *mut ()) -> i32 {
 // CHECK-NEXT:     let values: *mut i32 = argument as *mut i32;
 // CHECK-NEXT:     update_values(unsafe { *values.add(0) }, unsafe { *values.add(1) })
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut thread: u64 = 0;
 // CHECK-NEXT:     let mut values: [i32; 2] = [11, 13];
@@ -82,6 +88,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {} {} {} {}", main_before, worker_result, main_after, created, joined);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

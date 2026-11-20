@@ -62,6 +62,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __slate_ldfp_long_double_variadic_definition_address_mixed();
 // CHECK-NEXT:     fn __slate_ldfp_long_double_variadic_definition_address_twice_sum();
@@ -183,36 +184,43 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     fn __slate_printf__ri32_pi8_f80(_0: *const i8, _1: LongDouble) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct LongDouble([u8; 10]);
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Add for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_add(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Sub for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_sub(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Mul for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_mul(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Div for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_div(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::AddAssign for LongDouble {
 // CHECK-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -220,6 +228,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::SubAssign for LongDouble {
 // CHECK-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -227,6 +236,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::MulAssign for LongDouble {
 // CHECK-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -234,6 +244,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::DivAssign for LongDouble {
 // CHECK-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -241,41 +252,42 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Neg for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn neg(self) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_neg(self)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialEq for LongDouble {
 // CHECK-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
 // CHECK-NEXT:         __slate_f80_eq(*self, *__other)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memcpy;
-// CHECK-NEXT: #[unsafe(
-// CHECK-NEXT:     export_name = "__slate_ldv____slate_ldfp_long_double_variadic_definition_address_twice_sum__rf80_f80_i32"
-// CHECK-NEXT: )]
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(export_name = "__slate_ldv____slate_ldfp_long_double_variadic_definition_address_twice_sum__rf80_f80_i32")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.twice_sum")]
 // CHECK-NEXT: unsafe extern "C-unwind" fn twice_sum(
 // CHECK-NEXT:     scale: LongDouble,
@@ -286,10 +298,9 @@ int main(void) {
 // CHECK-NEXT:     let mut total: LongDouble = __slate_f80_from_i32(0i32);
 // CHECK-NEXT:     for pass in 0i32..2i32 {
 // CHECK-NEXT:         ap = unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 core::ffi::VaList<'_>,
-// CHECK-NEXT:                 core::ffi::VaList<'static>,
-// CHECK-NEXT:             >(__va_args.clone())
+// CHECK-NEXT:             core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:                 __va_args.clone(),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         for i in 0..count {
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: LongDouble = unsafe {
@@ -300,9 +311,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total * scale
 // CHECK-NEXT: }
-// CHECK-NEXT: #[unsafe(
-// CHECK-NEXT:     export_name = "__slate_ldv____slate_ldfp_long_double_variadic_definition_address_mixed__rf80_f80_pi8"
-// CHECK-NEXT: )]
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(export_name = "__slate_ldv____slate_ldfp_long_double_variadic_definition_address_mixed__rf80_f80_pi8")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.mixed")]
 // CHECK-NEXT: unsafe extern "C-unwind" fn mixed(
 // CHECK-NEXT:     mut base: LongDouble,
@@ -311,10 +321,9 @@ int main(void) {
 // CHECK-NEXT: ) -> LongDouble {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     while (unsafe { *f }) != 0 {
 // CHECK-NEXT:         if ((unsafe { *f }) as i32) == 105 {
@@ -338,14 +347,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     base
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.report")]
 // CHECK-NEXT: unsafe extern "C-unwind" fn report(count: i32, mut __va_args: ...) {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -358,6 +367,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn dump(name: *const i8, mut value: LongDouble) {
 // CHECK-NEXT:     let mut bytes: __SlateAlign16<[u8; 16]> = __SlateAlign16([0u8; 16]);
 // CHECK-NEXT:     unsafe {
@@ -384,23 +394,20 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let third: LongDouble = LongDouble([
-// CHECK-NEXT:         171, 170, 170, 170, 170, 170, 170, 170, 253, 63,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let third: LongDouble = LongDouble(
+// CHECK-NEXT:         [171, 170, 170, 170, 170, 170, 170, 170, 253, 63],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let sum: Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *const (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>,
-// CHECK-NEXT:         >(__slate_ldfp_long_double_variadic_definition_address_twice_sum as *const ())
+// CHECK-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>>(
+// CHECK-NEXT:             __slate_ldfp_long_double_variadic_definition_address_twice_sum as *const (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mix: Option<
-// CHECK-NEXT:         unsafe extern "C-unwind" fn(LongDouble, *const i8, ...) -> LongDouble,
-// CHECK-NEXT:     > = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *const (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(LongDouble, *const i8, ...) -> LongDouble>,
-// CHECK-NEXT:         >(__slate_ldfp_long_double_variadic_definition_address_mixed as *const ())
+// CHECK-NEXT:     let mix: Option<unsafe extern "C-unwind" fn(LongDouble, *const i8, ...) -> LongDouble> = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble, *const i8, ...) -> LongDouble>>(
+// CHECK-NEXT:             __slate_ldfp_long_double_variadic_definition_address_mixed as *const (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let print: Option<unsafe extern "C-unwind" fn(i32, ...)> = Some(report);
 // CHECK-NEXT:     dump(
@@ -421,16 +428,9 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             __slate_icall__rf80_f80_i32__f80_f80(
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<
-// CHECK-NEXT:                         Option<
-// CHECK-NEXT:                             unsafe extern "C-unwind" fn(
-// CHECK-NEXT:                                 LongDouble,
-// CHECK-NEXT:                                 i32,
-// CHECK-NEXT:                                 ...
-// CHECK-NEXT:                             ) -> LongDouble,
-// CHECK-NEXT:                         >,
-// CHECK-NEXT:                         *const (),
-// CHECK-NEXT:                     >(sum)
+// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, *const ()>(
+// CHECK-NEXT:                         sum,
+// CHECK-NEXT:                     )
 // CHECK-NEXT:                 },
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]),
 // CHECK-NEXT:                 2i32,
@@ -444,16 +444,9 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             __slate_icall__rf80_f80_i32__(
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<
-// CHECK-NEXT:                         Option<
-// CHECK-NEXT:                             unsafe extern "C-unwind" fn(
-// CHECK-NEXT:                                 LongDouble,
-// CHECK-NEXT:                                 i32,
-// CHECK-NEXT:                                 ...
-// CHECK-NEXT:                             ) -> LongDouble,
-// CHECK-NEXT:                         >,
-// CHECK-NEXT:                         *const (),
-// CHECK-NEXT:                     >(sum)
+// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, *const ()>(
+// CHECK-NEXT:                         sum,
+// CHECK-NEXT:                     )
 // CHECK-NEXT:                 },
 // CHECK-NEXT:                 third,
 // CHECK-NEXT:                 0i32,
@@ -465,16 +458,9 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             __slate_icall__rf80_f80_pi8__i32_f64_f80_i32(
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<
-// CHECK-NEXT:                         Option<
-// CHECK-NEXT:                             unsafe extern "C-unwind" fn(
-// CHECK-NEXT:                                 LongDouble,
-// CHECK-NEXT:                                 *const i8,
-// CHECK-NEXT:                                 ...
-// CHECK-NEXT:                             ) -> LongDouble,
-// CHECK-NEXT:                         >,
-// CHECK-NEXT:                         *const (),
-// CHECK-NEXT:                     >(mix)
+// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, *const i8, ...) -> LongDouble>, *const ()>(
+// CHECK-NEXT:                         mix,
+// CHECK-NEXT:                     )
 // CHECK-NEXT:                 },
 // CHECK-NEXT:                 third,
 // CHECK-NEXT:                 c"idLi".as_ptr(),
@@ -488,25 +474,17 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_icall__rv_i32__f80_f80(
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(i32, ...)>,
-// CHECK-NEXT:                     *const (),
-// CHECK-NEXT:                 >(print)
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, ...)>, *const ()>(
+// CHECK-NEXT:                     print,
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:             2i32,
 // CHECK-NEXT:             third,
 // CHECK-NEXT:             __slate_icall__rf80_f80_i32__f80(
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<
-// CHECK-NEXT:                         Option<
-// CHECK-NEXT:                             unsafe extern "C-unwind" fn(
-// CHECK-NEXT:                                 LongDouble,
-// CHECK-NEXT:                                 i32,
-// CHECK-NEXT:                                 ...
-// CHECK-NEXT:                             ) -> LongDouble,
-// CHECK-NEXT:                         >,
-// CHECK-NEXT:                         *const (),
-// CHECK-NEXT:                     >(sum)
+// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, *const ()>(
+// CHECK-NEXT:                         sum,
+// CHECK-NEXT:                     )
 // CHECK-NEXT:                 },
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
 // CHECK-NEXT:                 1i32,
@@ -516,6 +494,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

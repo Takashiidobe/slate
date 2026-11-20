@@ -57,6 +57,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct holes {
@@ -65,30 +66,23 @@ int main(void) {
 // CHECK-NEXT:     s: i16,
 // CHECK-NEXT:     d: f64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct nested {
 // CHECK-NEXT:     inner: [holes; 2],
 // CHECK-NEXT:     tail: i8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(4))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct bits {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits3U0,
 // CHECK-NEXT:     c: i8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u16,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u16, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits3U0 {
 // CHECK-NEXT:         #[bits(3)]
 // CHECK-NEXT:         pub a: i32,
@@ -100,10 +94,13 @@ int main(void) {
 // CHECK-NEXT:         pub __slate_pad_3: u8,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memset;
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn dump(name: *const i8, p: *const (), n: u64) {
 // CHECK-NEXT:     let bytes: *const u8 = p as *const u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -118,6 +115,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut h: holes = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -190,6 +188,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

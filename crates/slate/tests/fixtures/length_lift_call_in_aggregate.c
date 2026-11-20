@@ -25,12 +25,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct pair {
 // CHECK-NEXT:     a: i32,
 // CHECK-NEXT:     b: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sum(values: &[i32]) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..values.len() as i32 {
@@ -38,6 +40,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let values: [i32; 3] = [1, 2, 5];
 // CHECK-NEXT:     let p: pair = pair {
@@ -51,11 +54,16 @@ int main(void) {
 // CHECK-NEXT:         n += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut w: i32 = 0;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if n > 1 { sum(&values) } else { -sum(&values) };
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if n > 1 {
+// CHECK-NEXT:         sum(&values)
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         -sum(&values)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     w = [[V_0]];
 // CHECK-NEXT:     println!("{} {} {} {} {} {} {}", z, p.a, p.b, arr[0], arr[1], n, w);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

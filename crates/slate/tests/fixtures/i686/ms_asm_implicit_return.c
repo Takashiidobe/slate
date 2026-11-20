@@ -54,7 +54,11 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!("mov eax, [{0}]\nshl eax, 1", in(reg) core::ptr::addr_of!(v), out("ax") [[T_0]]);
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov eax, [{0}]\nshl eax, 1",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!(v),
+// CHECK-NEXT:             out("ax") [[T_0]],
+// CHECK-NEXT:         );
 // CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]] as i32
@@ -66,7 +70,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!("mov eax, 287454020\nmov edx, 1432778632", out("ax") [[T_0]], out("dx") [[T_1]]);
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov eax, 287454020\nmov edx, 1432778632",
+// CHECK-NEXT:             out("ax") [[T_0]],
+// CHECK-NEXT:             out("dx") [[T_1]],
+// CHECK-NEXT:         );
 // CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:         [[V_1]] = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
@@ -77,7 +85,11 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0]]: u32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!("mov eax, [{0}]", in(reg) core::ptr::addr_of!(v), out("ax") [[T_0]]);
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov eax, [{0}]",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!(v),
+// CHECK-NEXT:             out("ax") [[T_0]],
+// CHECK-NEXT:         );
 // CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]] as u8
@@ -87,7 +99,11 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0]]: u32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!("mov eax, [{0}]\nadd eax, 1", in(reg) core::ptr::addr_of!(v), out("ax") [[T_0]]);
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov eax, [{0}]\nadd eax, 1",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!(v),
+// CHECK-NEXT:             out("ax") [[T_0]],
+// CHECK-NEXT:         );
 // CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]] as i16
@@ -99,7 +115,11 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0]]: u32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!("lea eax, [{0}]", in(reg) core::ptr::addr_of!(global_value), out("ax") [[T_0]]);
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "lea eax, [{0}]",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!(global_value),
+// CHECK-NEXT:             out("ax") [[T_0]],
+// CHECK-NEXT:         );
 // CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]] as *mut i32

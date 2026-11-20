@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::abort;
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
-// CHECK-NEXT:     ".section .drectve,\"yni\"\n.ascii \" /nodefaultlib:libcmt.lib /defaultlib:msvcrt.lib\""
+// CHECK-NEXT:     ".section .drectve,\"yni\"\n.ascii \" /nodefaultlib:libcmt.lib /defaultlib:msvcrt.lib\"",
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

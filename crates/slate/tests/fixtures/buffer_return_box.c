@@ -84,8 +84,13 @@ int main(void) {
 // CHECK-NEXT:     let raw: *mut i32 = make_raw(2i32);
 // CHECK-NEXT:     let raw2: *mut i32 = make_raw(2i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", unsafe { * q.add(3) }, unsafe { * r.add(7) }, ! m.is_null()
-// CHECK-NEXT:         as i32, ! a.is_null() as i32, read_first(raw), unsafe { * raw2.add(1) }
+// CHECK-NEXT:         "{} {} {} {} {} {}",
+// CHECK-NEXT:         unsafe { *q.add(3) },
+// CHECK-NEXT:         unsafe { *r.add(7) },
+// CHECK-NEXT:         !m.is_null() as i32,
+// CHECK-NEXT:         !a.is_null() as i32,
+// CHECK-NEXT:         read_first(raw),
+// CHECK-NEXT:         unsafe { *raw2.add(1) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { free((q as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     unsafe { free((r as *mut ()) as *mut core::ffi::c_void) };

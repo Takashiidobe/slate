@@ -41,30 +41,39 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Pair {
 // CHECK-NEXT:     a: i32,
 // CHECK-NEXT:     b: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sign(x: i32) -> i32 {
-// CHECK-NEXT:     if x > 0 { 1 } else { if x < 0 { -1 } else { 0 } }
+// CHECK-NEXT:     if x > 0 { 1 } else if x < 0 { -1 } else { 0 }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn clamp_add(x: i32, y: i32) -> i32 {
 // CHECK-NEXT:     (if x > y { x } else { y }) * 2 + if x < y { x } else { y }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pick(which: i32, left: *const i8, right: *const i8) -> *const i8 {
 // CHECK-NEXT:     if which != 0 { left } else { right }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sum_pair(pair: Pair) -> i32 {
 // CHECK-NEXT:     pair.a * 10 + pair.b
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let values: __SlateAlign16<[i32; 4]> = __SlateAlign16([5i32, -7i32, 0i32, 12i32]);
 // CHECK-NEXT:     let mut total: i32 = 0;
@@ -91,7 +100,7 @@ int main(void) {
 // CHECK-NEXT:     if (if x > 2 { (y > 2) as i32 } else { (y < 2) as i32 }) != 0 {
 // CHECK-NEXT:         total += 1000;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{} {} {} {}", total, clamp_add(3i32, 8i32), clamp_add(9i32, - 1i32), seq);
+// CHECK-NEXT:     println!("{} {} {} {}", total, clamp_add(3i32, 8i32), clamp_add(9i32, -1i32), seq);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%d %.1f %lu %d\n".as_ptr(), nested, half, wide, *cursor)
 // CHECK-NEXT:     };
@@ -108,6 +117,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", sum_pair(if y > x { first } else { second }));
 // CHECK-NEXT:     sign(-x) + 1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

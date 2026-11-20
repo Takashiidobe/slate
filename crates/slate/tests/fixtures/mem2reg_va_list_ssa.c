@@ -22,10 +22,9 @@ int main(void) {
 // CHECK-LABEL: {{^}}unsafe extern "C-unwind" fn relay(count: i32, mut __va_args: ...) -> i32 {
 // CHECK-NEXT:     let mut arguments: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     arguments = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let value: i32 = consume(arguments.clone());
 // CHECK-NEXT:     value

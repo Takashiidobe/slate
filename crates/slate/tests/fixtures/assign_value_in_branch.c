@@ -15,9 +15,11 @@ int main() {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bump(p: &mut u64, c: i32) -> u64 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = if c != 0 {
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: u64 = unsafe { *p };
@@ -36,6 +38,7 @@ int main() {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut x: u64 = 10;
 // CHECK-NEXT:     let a: u64 = bump(unsafe { &mut (*core::ptr::addr_of_mut!(x)) }, 1i32);
@@ -45,6 +48,7 @@ int main() {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

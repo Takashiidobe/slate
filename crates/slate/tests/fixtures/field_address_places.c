@@ -69,12 +69,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Inner {
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT:     weight: f64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Outer {
@@ -83,37 +85,42 @@ int main(void) {
 // CHECK-NEXT:     items: [i32; 4],
 // CHECK-NEXT:     link: *mut Inner,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut global_outer: Outer = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bump([[V_0:__v[0-9]+]]: *mut i32, by: i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] = *[[V_0]] + by;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn scale([[V_0]]: *mut f64, factor: f64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] = *[[V_0]] * factor;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pick(outer: &mut Outer, which: i32) -> *mut i32 {
 // CHECK-NEXT:     if which == 0 {
-// CHECK-NEXT:         return unsafe { core::ptr::addr_of_mut!((* (outer as * mut Outer)).id) };
+// CHECK-NEXT:         return unsafe { core::ptr::addr_of_mut!((*(outer as *mut Outer)).id) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if which == 1 {
-// CHECK-NEXT:         return unsafe {
-// CHECK-NEXT:             core::ptr::addr_of_mut!((* (outer as * mut Outer)).inner.value)
-// CHECK-NEXT:         };
+// CHECK-NEXT:         return unsafe { core::ptr::addr_of_mut!((*(outer as *mut Outer)).inner.value) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         ((*(outer as *mut Outer)).items.as_mut_ptr() as *mut i32)
 // CHECK-NEXT:             .offset((which - 2) as isize)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn inner_of(outer: &mut Outer) -> *mut Inner {
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!((* (outer as * mut Outer)).inner) }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!((*(outer as *mut Outer)).inner) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut local: Outer = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Outer = unsafe { core::mem::zeroed() };
@@ -139,8 +146,8 @@ int main(void) {
 // CHECK-NEXT:     bump(core::ptr::addr_of_mut!(local.inner.value), 3i32);
 // CHECK-NEXT:     bump(unsafe { (local.items.as_mut_ptr() as *mut i32).add(2) }, 100i32);
 // CHECK-NEXT:     scale(core::ptr::addr_of_mut!(local.inner.weight), 4.0f64);
-// CHECK-NEXT:     bump(unsafe { core::ptr::addr_of_mut!((* local.link).value) }, 9i32);
-// CHECK-NEXT:     scale(unsafe { core::ptr::addr_of_mut!((* local.link).weight) }, 8.0f64);
+// CHECK-NEXT:     bump(unsafe { core::ptr::addr_of_mut!((*local.link).value) }, 9i32);
+// CHECK-NEXT:     scale(unsafe { core::ptr::addr_of_mut!((*local.link).weight) }, 8.0f64);
 // CHECK-NEXT:     let slot: *mut i32 = pick(unsafe { &mut (*core::ptr::addr_of_mut!(local)) }, 3i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *slot = *slot * 2;
@@ -168,10 +175,15 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         global_outer.link = core::ptr::addr_of_mut!(global_outer.inner);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     bump(unsafe { core::ptr::addr_of_mut!((* global_outer.link).value) }, 1i32);
+// CHECK-NEXT:     bump(unsafe { core::ptr::addr_of_mut!((*global_outer.link).value) }, 1i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", local.id, local.inner.value, local.items[0], local.items[1],
-// CHECK-NEXT:         local.items[2], local.items[3]
+// CHECK-NEXT:         "{} {} {} {} {} {}",
+// CHECK-NEXT:         local.id,
+// CHECK-NEXT:         local.inner.value,
+// CHECK-NEXT:         local.items[0],
+// CHECK-NEXT:         local.items[1],
+// CHECK-NEXT:         local.items[2],
+// CHECK-NEXT:         local.items[3]
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -195,6 +207,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     local.id % 7
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

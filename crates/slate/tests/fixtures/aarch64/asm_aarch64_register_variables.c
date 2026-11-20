@@ -41,55 +41,71 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN aarch64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush([[ARG_0:arg[0-9]+]]: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn syscall3(mut x8: i64, mut x0: i64, mut x1: i64, mut x2: i64) -> i64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "svc #0", inlateout("x0") x0 as u64 => [[T_0]], in ("x8") x8 as u64, in ("x1")
-// CHECK-NEXT:             x1 as u64, in ("x2") x2 as u64, options(nostack, preserves_flags)
+// CHECK-NEXT:             "svc #0",
+// CHECK-NEXT:             inlateout("x0") x0 as u64 => [[T_0]],
+// CHECK-NEXT:             in("x8") x8 as u64,
+// CHECK-NEXT:             in("x1") x1 as u64,
+// CHECK-NEXT:             in("x2") x2 as u64,
+// CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         x0 = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::getpid;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn syscall0(mut x8: i64) -> i64 {
 // CHECK-NEXT:     let mut x0: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "svc #0", lateout("x0") [[T_0]], in ("x8") x8 as u64, options(nostack,
-// CHECK-NEXT:             preserves_flags)
+// CHECK-NEXT:             "svc #0",
+// CHECK-NEXT:             lateout("x0") [[T_0]],
+// CHECK-NEXT:             in("x8") x8 as u64,
+// CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         x0 = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn add_w1(mut w: i32, mut b: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "add w1, w1, {0:w}", in (reg) b as u32, inlateout("x1") w as u32 => [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags)
+// CHECK-NEXT:             "add w1, w1, {0:w}",
+// CHECK-NEXT:             in(reg) b as u32,
+// CHECK-NEXT:             inlateout("x1") w as u32 => [[T_0]],
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         w = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     w
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn double_d3(mut d: f64) -> f64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fadd d3, d3, d3", inlateout("v3") unsafe { core::mem::transmute::< f64, u64
-// CHECK-NEXT:             > (d) } => [[T_0]], options(pure, nomem, nostack, preserves_flags)
+// CHECK-NEXT:             "fadd d3, d3, d3",
+// CHECK-NEXT:             inlateout("v3") unsafe { core::mem::transmute::<f64, u64>(d) } => [[T_0]],
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         d = unsafe { core::mem::transmute::<u64, f64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     d
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe { fflush(slate_support::stdout()) };
 // CHECK-NEXT:     let written: i64 = syscall3(
@@ -118,9 +134,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static message: [u8; 16] = [
 // CHECK-NEXT:     104, 101, 108, 108, 111, 32, 102, 114, 111, 109, 32, 115, 118, 99, 10, 0,
 // CHECK-NEXT: ];
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

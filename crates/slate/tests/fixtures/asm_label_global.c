@@ -14,12 +14,16 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     #[link_name = "environ"]
 // CHECK-NEXT:     static mut environ_alias: *mut *mut i8;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut counter: i32 = 5;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut hidden: i32 = 2;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bump() -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { counter }) + 1;
 // CHECK-NEXT:     unsafe {
@@ -27,10 +31,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]] + unsafe { hidden }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{} {}", bump(), ! unsafe { environ_alias } .is_null() as i32);
+// CHECK-NEXT:     println!("{} {}", bump(), !unsafe { environ_alias }.is_null() as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

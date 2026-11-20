@@ -69,13 +69,12 @@ int main(void) {
 // CHECK-NEXT:     if (unsafe { *rsize }) == 6
 // CHECK-NEXT:         && (unsafe {
 // CHECK-NEXT:             memcmp(
-// CHECK-NEXT:                 (rdesc.wrapping_offset(1 as isize) as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:                 (rdesc.wrapping_offset(1 as isize) as *const ())
+// CHECK-NEXT:                     as *const core::ffi::c_void,
 // CHECK-NEXT:                 (b"\x02\x07\0".as_ptr() as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:                 2u64 as usize,
 // CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0
-// CHECK-NEXT:         && ((unsafe { *rdesc.wrapping_offset(4 as isize) }) as i32) == 64
-// CHECK-NEXT:     {
+// CHECK-NEXT:         }) == 0 && ((unsafe { *rdesc.wrapping_offset(4 as isize) }) as i32) == 64 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *rdesc.wrapping_offset(1 as isize) = 255;
 // CHECK-NEXT:         }
@@ -88,16 +87,18 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memcmp;
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "C-unwind" fn outer_fixup(product: i32, mut rdesc: *mut u8, rsize: *mut u32) -> *const u8 {
+// CHECK-NEXT: extern "C-unwind" fn outer_fixup(
+// CHECK-NEXT:     product: i32,
+// CHECK-NEXT:     mut rdesc: *mut u8,
+// CHECK-NEXT:     rsize: *mut u32,
+// CHECK-NEXT: ) -> *const u8 {
 // CHECK-NEXT:     if product == 1 {
 // CHECK-NEXT:         rdesc = inner_fixup(rdesc, rsize);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     rdesc as *const u8
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut drv: driver = driver {
-// CHECK-NEXT:     fixup: Some(outer_fixup),
-// CHECK-NEXT: };
+// CHECK-NEXT: static mut drv: driver = driver { fixup: Some(outer_fixup) };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fill(slots: *mut *mut i32, n: i32, v: *mut i32) {
 // CHECK-NEXT:     for i in 0..n {
@@ -119,11 +120,8 @@ int main(void) {
 // CHECK-NEXT:     let mut buf: [u8; 6] = [1, 2, 7, 4, 64, 0];
 // CHECK-NEXT:     let mut n: u32 = 6;
 // CHECK-NEXT:     let r: *const u8 = unsafe {
-// CHECK-NEXT:         unsafe { drv.fixup }.unwrap()(
-// CHECK-NEXT:             1i32,
-// CHECK-NEXT:             buf.as_mut_ptr() as *mut u8,
-// CHECK-NEXT:             core::ptr::addr_of_mut!(n),
-// CHECK-NEXT:         )
+// CHECK-NEXT:         unsafe { drv.fixup }
+// CHECK-NEXT:             .unwrap()(1i32, buf.as_mut_ptr() as *mut u8, core::ptr::addr_of_mut!(n))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
@@ -133,15 +131,8 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut x: i32 = 3;
 // CHECK-NEXT:     let mut slots: __SlateAlign16<[*mut i32; 3]> = __SlateAlign16([0 as *mut i32; 3]);
-// CHECK-NEXT:     fill(
-// CHECK-NEXT:         slots.0.as_mut_ptr() as *mut *mut i32,
-// CHECK-NEXT:         3i32,
-// CHECK-NEXT:         core::ptr::addr_of_mut!(x),
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}",
-// CHECK-NEXT:         unsafe { *slots.0[0] }.wrapping_add(unsafe { *slots.0[2] })
-// CHECK-NEXT:     );
+// CHECK-NEXT:     fill(slots.0.as_mut_ptr() as *mut *mut i32, 3i32, core::ptr::addr_of_mut!(x));
+// CHECK-NEXT:     println!("{}", unsafe { *slots.0[0] }.wrapping_add(unsafe { *slots.0[2] }));
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
 // CHECK-NEXT:     let __slate_printf_arg0 = sum(values.0.as_mut_ptr() as *const i32, 4i32);
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);

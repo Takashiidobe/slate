@@ -30,32 +30,38 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Pair {
 // CHECK-NEXT:     left: i32,
 // CHECK-NEXT:     right: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union Slot {
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT:     raw: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sizeof_values() -> i32 {
 // CHECK-NEXT:     (core::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:         .wrapping_add(core::mem::size_of::<[i32; 3]>() as u64)
 // CHECK-NEXT:         .wrapping_add(core::mem::size_of::<Pair>() as u64)
 // CHECK-NEXT:         .wrapping_add(core::mem::size_of::<Slot>() as u64) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sizeof_expr() -> i32 {
 // CHECK-NEXT:     core::mem::size_of::<i32>() as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", sizeof_values());
 // CHECK-NEXT:     println!("{}", sizeof_expr());
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

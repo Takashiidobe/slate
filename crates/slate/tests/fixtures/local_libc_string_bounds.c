@@ -30,32 +30,40 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::strncmp;
 // CHECK-NEXT: use slate_support::strcspn;
 // CHECK-NEXT: use slate_support::strspn;
 // CHECK-NEXT: use slate_support::strnlen;
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bounded_cmp(a: *const i8, b: *const i8, n: u64) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         strncmp(a as *const core::ffi::c_char, b as *const core::ffi::c_char, n as usize)
 // CHECK-NEXT:             as i32
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bounded_len(s: *const i8, n: u64) -> u64 {
 // CHECK-NEXT:     unsafe { strnlen(s as *const core::ffi::c_char, n as usize) as u64 }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn spans(s: *const i8, set: *const i8) -> u64 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         strspn(s as *const core::ffi::c_char, set as *const core::ffi::c_char) as u64
-// CHECK-NEXT:     }
+// CHECK-NEXT:             strspn(s as *const core::ffi::c_char, set as *const core::ffi::c_char) as u64
+// CHECK-NEXT:         }
 // CHECK-NEXT:         .wrapping_mul(100)
-// CHECK-NEXT:         .wrapping_add(unsafe {
-// CHECK-NEXT:             strcspn(s as *const core::ffi::c_char, set as *const core::ffi::c_char)
-// CHECK-NEXT:                 as u64
-// CHECK-NEXT:         })
+// CHECK-NEXT:         .wrapping_add(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 strcspn(s as *const core::ffi::c_char, set as *const core::ffi::c_char)
+// CHECK-NEXT:                     as u64
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut abc: [i8; 4] = [97, 98, 99, 0];
 // CHECK-NEXT:     let mut abd: [i8; 4] = [97, 98, 100, 0];
@@ -85,6 +93,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

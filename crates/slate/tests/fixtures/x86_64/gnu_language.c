@@ -233,8 +233,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut targets: __SlateAlign16<[*mut (); 3]> =
-// CHECK-NEXT:     __SlateAlign16([19usize as *mut (), 20usize as *mut (), 21usize as *mut ()]);
+// CHECK-NEXT: static mut targets: __SlateAlign16<[*mut (); 3]> = __SlateAlign16(
+// CHECK-NEXT:     [19usize as *mut (), 20usize as *mut (), 21usize as *mut ()],
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_case_range(value: i32) -> i32 {
 // CHECK-NEXT:     match value {
@@ -253,24 +254,27 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.gnu_function_name")]
 // CHECK-NEXT: extern "C-unwind" fn gnu_function_name() -> i32 {
-// CHECK-NEXT:     ((((unsafe { *(c"gnu_function_name".as_ptr() as *mut i8).add(0) }) as i32) == 103) as i32)
-// CHECK-NEXT:         + ((((unsafe { *(c"int gnu_function_name(void)".as_ptr() as *mut i8).add(0) }) as i32)
-// CHECK-NEXT:             == 105) as i32)
+// CHECK-NEXT:     ((((unsafe { *(c"gnu_function_name".as_ptr() as *mut i8).add(0) }) as i32) == 103)
+// CHECK-NEXT:         as i32)
+// CHECK-NEXT:         + ((((unsafe { *(c"int gnu_function_name(void)".as_ptr() as *mut i8).add(0) })
+// CHECK-NEXT:             as i32) == 105) as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_function_pointer() -> i32 {
 // CHECK-NEXT:     let distance: i64 = ((unsafe {
-// CHECK-NEXT:         core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(unsafe {
-// CHECK-NEXT:             core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn() -> i32>>(
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
-// CHECK-NEXT:                         Some(gnu_function_name),
+// CHECK-NEXT:                     core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn() -> i32>>(
+// CHECK-NEXT:                         unsafe {
+// CHECK-NEXT:                                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                                     Some(gnu_function_name),
+// CHECK-NEXT:                                 )
+// CHECK-NEXT:                             }
+// CHECK-NEXT:                             .wrapping_offset(3 as isize),
 // CHECK-NEXT:                     )
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 .wrapping_offset(3 as isize),
+// CHECK-NEXT:                 },
 // CHECK-NEXT:             )
-// CHECK-NEXT:         })
-// CHECK-NEXT:     }) as isize)
+// CHECK-NEXT:         }) as isize)
 // CHECK-NEXT:         .wrapping_sub(
 // CHECK-NEXT:             (unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
@@ -292,17 +296,19 @@ int main(void) {
 // CHECK-NEXT:     let inferred: i32 = 37;
 // CHECK-NEXT:     let same_type: i32 = 41;
 // CHECK-NEXT:     let raw: *const i8 = c"gnu\\n".as_ptr();
-// CHECK-NEXT:     let range_values: __SlateAlign16<[i32; 6]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 6] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = 5i32;
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: usize = 1;
-// CHECK-NEXT:         while [[T_2]] <= 3 {
-// CHECK-NEXT:             [[T_0]][[[T_2]]] = [[T_1]];
-// CHECK-NEXT:             [[T_2]] += 1;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         [[T_0]][5] = 7i32;
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let range_values: __SlateAlign16<[i32; 6]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: [i32; 6] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = 5i32;
+// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: usize = 1;
+// CHECK-NEXT:             while [[T_2]] <= 3 {
+// CHECK-NEXT:                 [[T_0]][[[T_2]]] = [[T_1]];
+// CHECK-NEXT:                 [[T_2]] += 1;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             [[T_0]][5] = 7i32;
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let old_array: [i32; 3] = {
 // CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [i32; 3] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]][1] = 11i32;
@@ -313,33 +319,22 @@ int main(void) {
 // CHECK-NEXT:         second: 17,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let macro_total: i32 = 43 + 47 + 53 + 61;
-// CHECK-NEXT:     let initializer_total: i32 = range_values.0[0]
-// CHECK-NEXT:         + range_values.0[1]
-// CHECK-NEXT:         + range_values.0[3]
-// CHECK-NEXT:         + range_values.0[5]
-// CHECK-NEXT:         + old_array[1]
-// CHECK-NEXT:         + old_record.first
+// CHECK-NEXT:     let initializer_total: i32 = range_values.0[0] + range_values.0[1]
+// CHECK-NEXT:         + range_values.0[3] + range_values.0[5] + old_array[1] + old_record.first
 // CHECK-NEXT:         + old_record.second;
 // CHECK-NEXT:     let mut spelling_total: i32 = 0;
 // CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: i32;
 // CHECK-NEXT:     let value: i32 = 67;
 // CHECK-NEXT:     [[V_3]] = value;
 // CHECK-NEXT:     spelling_total = [[V_3]]
-// CHECK-NEXT:         + (((core::mem::align_of::<i64>() as u64) >= (core::mem::align_of::<i32>() as u64)) as i32)
-// CHECK-NEXT:         + (true as i32)
+// CHECK-NEXT:         + (((core::mem::align_of::<i64>() as u64)
+// CHECK-NEXT:             >= (core::mem::align_of::<i32>() as u64)) as i32) + (true as i32)
 // CHECK-NEXT:         + ((((unsafe { *raw.add(0) }) as i32) == 103) as i32)
 // CHECK-NEXT:         + ((((unsafe { *raw.add(3) }) as i32) == 92) as i32)
-// CHECK-NEXT:         + ((((unsafe { *raw.add(4) }) as i32) == 110) as i32)
-// CHECK-NEXT:         + 6
+// CHECK-NEXT:         + ((((unsafe { *raw.add(4) }) as i32) == 110) as i32) + 6
 // CHECK-NEXT:         + (core::mem::offset_of!(GNUOldInitializer, second) as i32);
-// CHECK-NEXT:     gnu_dollar_dollar
-// CHECK-NEXT:         + omitted
-// CHECK-NEXT:         + side_effect
-// CHECK-NEXT:         + inferred
-// CHECK-NEXT:         + same_type
-// CHECK-NEXT:         + macro_total
-// CHECK-NEXT:         + initializer_total
-// CHECK-NEXT:         + spelling_total
+// CHECK-NEXT:     gnu_dollar_dollar + omitted + side_effect + inferred + same_type + macro_total
+// CHECK-NEXT:         + initializer_total + spelling_total
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_aggregate_types() -> i32 {
@@ -350,10 +345,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let forward: u32 = 23;
 // CHECK-NEXT:     (((core::mem::size_of::<GNUZeroArray>() as i32)
-// CHECK-NEXT:         + (core::mem::size_of::<GNUEmpty>() as i32)
-// CHECK-NEXT:         + 4
-// CHECK-NEXT:         + 0
-// CHECK-NEXT:         + unsafe { cast_value.integer }) as u32)
+// CHECK-NEXT:             + (core::mem::size_of::<GNUEmpty>() as i32) + 4 + 0
+// CHECK-NEXT:             + unsafe { cast_value.integer }) as u32)
 // CHECK-NEXT:         .wrapping_add(forward as u32) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -364,20 +357,22 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let begin: *mut () = values.as_mut_ptr() as *mut ();
 // CHECK-NEXT:     let middle: *mut () = (unsafe { (begin as *const u8).add(3) }) as *mut ();
-// CHECK-NEXT:     ((((unsafe { (middle as *const u8).offset_from(begin as *const u8) }) as i64) == 3) as i32)
-// CHECK-NEXT:         + ((middle == ((unsafe { (values.as_mut_ptr() as *mut u8).add(3) }) as *mut ())) as i32)
-// CHECK-NEXT:         + (true as i32)
-// CHECK-NEXT:         + gnu_function_pointer()
+// CHECK-NEXT:     ((((unsafe { (middle as *const u8).offset_from(begin as *const u8) }) as i64) == 3)
+// CHECK-NEXT:         as i32)
+// CHECK-NEXT:         + ((middle == ((unsafe { (values.as_mut_ptr() as *mut u8).add(3) }) as *mut ()))
+// CHECK-NEXT:             as i32) + (true as i32) + gnu_function_pointer()
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_numeric_types() -> i32 {
 // CHECK-NEXT:     let wide_integer: i128 = ((1 as i128) << 100i32) + 73;
-// CHECK-NEXT:     let integer_complex: num_complex::Complex<i32> = 5 + num_complex::Complex { re: 0, im: 7 };
+// CHECK-NEXT:     let integer_complex: num_complex::Complex<i32> = 5
+// CHECK-NEXT:         + num_complex::Complex {
+// CHECK-NEXT:             re: 0,
+// CHECK-NEXT:             im: 7,
+// CHECK-NEXT:         };
 // CHECK-NEXT:     let wide_float: f128 = 3.25f128;
 // CHECK-NEXT:     let complex_total: i32 = integer_complex.re + integer_complex.im;
-// CHECK-NEXT:     ((wide_integer >> 100i32) as i32)
-// CHECK-NEXT:         + ((wide_integer & 127) as i32)
-// CHECK-NEXT:         + complex_total
+// CHECK-NEXT:     ((wide_integer >> 100i32) as i32) + ((wide_integer & 127) as i32) + complex_total
 // CHECK-NEXT:         + ((wide_float * (4i32 as f128)) as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -76,6 +76,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -168,36 +169,43 @@ int main(void) {
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT:     fn __slate_strtold__rf80_pi8_ppi8(_0: *const i8, _1: *mut *mut i8) -> LongDouble;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct LongDouble([u8; 10]);
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Add for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_add(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Sub for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_sub(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Mul for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_mul(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Div for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_div(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::AddAssign for LongDouble {
 // CHECK-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -205,6 +213,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::SubAssign for LongDouble {
 // CHECK-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -212,6 +221,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::MulAssign for LongDouble {
 // CHECK-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -219,6 +229,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::DivAssign for LongDouble {
 // CHECK-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -226,39 +237,42 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Neg for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn neg(self) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_neg(self)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialEq for LongDouble {
 // CHECK-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
 // CHECK-NEXT:         __slate_f80_eq(*self, *__other)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: use slate_support::strlen;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn string2ld(s: *const i8, slen: u64, dp: *mut LongDouble) -> i32 {
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     let mut eptr: *mut i8 = unsafe { core::mem::zeroed() };
@@ -289,13 +303,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn ld2string(buf: *mut i8, len: u64, value: LongDouble) -> i32 {
 // CHECK-NEXT:     if (if __slate_f80_is_fp_class(value, 516) {
 // CHECK-NEXT:         if __slate_f80_signbit(value) { -1i32 } else { 1i32 }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         0i32
-// CHECK-NEXT:     }) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) != 0 {
 // CHECK-NEXT:         if len < 5 {
 // CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
@@ -324,6 +338,7 @@ int main(void) {
 // CHECK-NEXT:         __slate_snprintf__ri32_pi8_u64_pi8_f80(buf, len, c"%.17Lg".as_ptr(), value)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn arOpAccumulate(acc: &mut LongDouble, v: LongDouble) -> i32 {
 // CHECK-NEXT:     let next: LongDouble = (unsafe { *(acc as *mut LongDouble) }) + v;
 // CHECK-NEXT:     if __slate_f80_is_fp_class(next, 3)
@@ -331,8 +346,7 @@ int main(void) {
 // CHECK-NEXT:             if __slate_f80_signbit(next) { -1i32 } else { 1i32 }
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             0i32
-// CHECK-NEXT:         }) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:         }) != 0 {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
@@ -340,6 +354,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn classify(x: LongDouble) -> i32 {
 // CHECK-NEXT:     (!(!__slate_f80_is_fp_class(x, 3)) as i32)
 // CHECK-NEXT:         | (((if __slate_f80_is_fp_class(x, 516) {
@@ -351,31 +366,28 @@ int main(void) {
 // CHECK-NEXT:         | (!(!__slate_f80_signbit(x)) as i32) << 4i32
 // CHECK-NEXT:         | (((if __slate_f80_is_fp_class(x, 3) {
 // CHECK-NEXT:             0i32
+// CHECK-NEXT:         } else if __slate_f80_is_fp_class(x, 516) {
+// CHECK-NEXT:             1i32
+// CHECK-NEXT:         } else if __slate_f80_is_fp_class(x, 264) {
+// CHECK-NEXT:             4i32
+// CHECK-NEXT:         } else if __slate_f80_is_fp_class(x, 144) {
+// CHECK-NEXT:             3i32
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_is_fp_class(x, 516) {
-// CHECK-NEXT:                 1i32
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_is_fp_class(x, 264) {
-// CHECK-NEXT:                     4i32
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     if __slate_f80_is_fp_class(x, 144) { 3i32 } else { 2i32 }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             2i32
 // CHECK-NEXT:         }) == 3) as i32) << 5i32
 // CHECK-NEXT:         | (((if __slate_f80_is_fp_class(x, 3) {
 // CHECK-NEXT:             0i32
+// CHECK-NEXT:         } else if __slate_f80_is_fp_class(x, 516) {
+// CHECK-NEXT:             1i32
+// CHECK-NEXT:         } else if __slate_f80_is_fp_class(x, 264) {
+// CHECK-NEXT:             4i32
+// CHECK-NEXT:         } else if __slate_f80_is_fp_class(x, 144) {
+// CHECK-NEXT:             3i32
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_is_fp_class(x, 516) {
-// CHECK-NEXT:                 1i32
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_is_fp_class(x, 264) {
-// CHECK-NEXT:                     4i32
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     if __slate_f80_is_fp_class(x, 144) { 3i32 } else { 2i32 }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             2i32
 // CHECK-NEXT:         }) == 2) as i32) << 6i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let values: [LongDouble; 14] = [
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
@@ -394,25 +406,25 @@ int main(void) {
 // CHECK-NEXT:         LongDouble([7, 0, 0, 0, 0, 0, 0, 192, 255, 255]),
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     for i in 0..((core::mem::size_of::<[LongDouble; 14]>() as u64)
-// CHECK-NEXT:         / (core::mem::size_of::<LongDouble>() as u64))
-// CHECK-NEXT:     {
+// CHECK-NEXT:         / (core::mem::size_of::<LongDouble>() as u64)) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(c"%zu %#x\n".as_ptr(), i, classify(values[i as usize]))
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let inputs: __SlateAlign16<[*const i8; 6]> = __SlateAlign16([
-// CHECK-NEXT:         c"3.25".as_ptr(),
-// CHECK-NEXT:         c"nan".as_ptr(),
-// CHECK-NEXT:         c"-inf".as_ptr(),
-// CHECK-NEXT:         c"1e5000".as_ptr(),
-// CHECK-NEXT:         c"12x".as_ptr(),
-// CHECK-NEXT:         c"".as_ptr(),
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let inputs: __SlateAlign16<[*const i8; 6]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             c"3.25".as_ptr(),
+// CHECK-NEXT:             c"nan".as_ptr(),
+// CHECK-NEXT:             c"-inf".as_ptr(),
+// CHECK-NEXT:             c"1e5000".as_ptr(),
+// CHECK-NEXT:             c"12x".as_ptr(),
+// CHECK-NEXT:             c"".as_ptr(),
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0..((core::mem::size_of::<[*const i8; 6]>() as u64)
-// CHECK-NEXT:         / (core::mem::size_of::<*const i8>() as u64))
-// CHECK-NEXT:     {
+// CHECK-NEXT:         / (core::mem::size_of::<*const i8>() as u64)) {
 // CHECK-NEXT:         let mut d: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
 // CHECK-NEXT:         let ok: i32 = string2ld(
 // CHECK-NEXT:             inputs.0[i as usize],
@@ -452,8 +464,7 @@ int main(void) {
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     let mut accepted: i32 = 0;
 // CHECK-NEXT:     for i in 0..((core::mem::size_of::<[LongDouble; 5]>() as u64)
-// CHECK-NEXT:         / (core::mem::size_of::<LongDouble>() as u64))
-// CHECK-NEXT:     {
+// CHECK-NEXT:         / (core::mem::size_of::<LongDouble>() as u64)) {
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = arOpAccumulate(
 // CHECK-NEXT:             unsafe { &mut (*core::ptr::addr_of_mut!(acc)) },
 // CHECK-NEXT:             addends[i as usize],
@@ -478,6 +489,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

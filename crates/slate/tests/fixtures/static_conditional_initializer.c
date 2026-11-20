@@ -32,16 +32,23 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static bittab: __SlateAlign16<[u32; 6]> = __SlateAlign16([
-// CHECK-NEXT:     4294967295u32, 3221225474u32, 3221225487u32, 3003121664u32, 3271557121u32,
-// CHECK-NEXT:     3539992589u32,
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static bittab: __SlateAlign16<[u32; 6]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         4294967295u32, 3221225474u32, 3221225487u32, 3003121664u32, 3271557121u32,
+// CHECK-NEXT:         3539992589u32,
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct addr {
@@ -49,11 +56,13 @@ int main(void) {
 // CHECK-NEXT:     port: u16,
 // CHECK-NEXT:     host: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static lo: addr = addr {
 // CHECK-NEXT:     family: 2u16,
 // CHECK-NEXT:     port: 65535u16,
 // CHECK-NEXT:     host: 16777343u32,
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static values: [i16; 6] = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [i16; 6] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]][0] = -1i16;
@@ -61,14 +70,15 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]][5] = 100i16;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static scales: __SlateAlign16<[f64; 2]> = __SlateAlign16([0.5f64, 3.0f32 as f64]);
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: u32 = 0;
 // CHECK-NEXT:         while (i as u64)
 // CHECK-NEXT:             < (core::mem::size_of::<[u32; 6]>() as u64)
-// CHECK-NEXT:                 / (core::mem::size_of::<u32>() as u64)
-// CHECK-NEXT:         {
+// CHECK-NEXT:                 / (core::mem::size_of::<u32>() as u64) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 slate_support::printf(c"%u %08x\n".as_ptr(), i, bittab.0[i as usize])
@@ -90,8 +100,7 @@ int main(void) {
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (core::mem::size_of::<[i16; 6]>() as u64)
-// CHECK-NEXT:             / (core::mem::size_of::<i16>() as u64)
-// CHECK-NEXT:     {
+// CHECK-NEXT:             / (core::mem::size_of::<i16>() as u64) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(c"v%u %d\n".as_ptr(), i, values[i as usize] as i32)
@@ -104,6 +113,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

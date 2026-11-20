@@ -41,6 +41,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut error_message_count: u32;
 // CHECK-NEXT:     static mut error_one_per_line: i32;
@@ -60,17 +61,21 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_1]]: *mut (),
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn handle_exit(status: i32, arg: *mut ()) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(arg as *mut i32) = status;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("on_exit:{}", status);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut captured: i32 = -1;
 // CHECK-NEXT:     unsafe { on_exit(Some(handle_exit), core::ptr::addr_of_mut!(captured) as *mut ()) };
@@ -133,6 +138,7 @@ int main(void) {
 // CHECK-NEXT:     println!("unreachable");
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

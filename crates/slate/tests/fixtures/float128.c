@@ -25,13 +25,16 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(f128)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_libgcc {
 // CHECK-NEXT:     #[link(name = "gcc", kind = "static")]
 // CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn add(a: f128, b: f128) -> f128 {
 // CHECK-NEXT:     a + b
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let one: f128 = 1f128;
 // CHECK-NEXT:     let tiny: f128 = 7.88860905221011805411728565282786229E-31f128;
@@ -59,6 +62,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

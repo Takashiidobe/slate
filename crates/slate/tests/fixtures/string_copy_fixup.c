@@ -20,36 +20,49 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::strcpy;
 // CHECK-NEXT: use slate_support::strncpy;
 // CHECK-NEXT: use slate_support::strcat;
 // CHECK-NEXT: use slate_support::strncat;
 // CHECK-NEXT: use slate_support::strlen;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut copy: __SlateAlign16<[i8; 16]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0i8;
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let mut append: __SlateAlign16<[i8; 16]> = __SlateAlign16([
-// CHECK-NEXT:         102i8, 111i8, 111i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
-// CHECK-NEXT:         0i8,
-// CHECK-NEXT:     ]);
-// CHECK-NEXT:     let mut trunc_copy: __SlateAlign16<[i8; 16]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [i8; 16] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]][0] = 0i8;
-// CHECK-NEXT:         [[T_1]]
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let mut trunc_append: __SlateAlign16<[i8; 16]> = __SlateAlign16([
-// CHECK-NEXT:         112i8, 114i8, 101i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
-// CHECK-NEXT:         0i8,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut copy: __SlateAlign16<[i8; 16]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]][0] = 0i8;
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut append: __SlateAlign16<[i8; 16]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             102i8, 111i8, 111i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
+// CHECK-NEXT:             0i8, 0i8,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut trunc_copy: __SlateAlign16<[i8; 16]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: [i8; 16] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]][0] = 0i8;
+// CHECK-NEXT:             [[T_1]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut trunc_append: __SlateAlign16<[i8; 16]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             112i8, 114i8, 101i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8, 0i8,
+// CHECK-NEXT:             0i8, 0i8,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         strcpy(
 // CHECK-NEXT:             (copy.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
@@ -92,6 +105,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

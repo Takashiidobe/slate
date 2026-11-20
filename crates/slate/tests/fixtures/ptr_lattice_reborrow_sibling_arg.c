@@ -39,9 +39,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn count(mut format: *const i8, end: i8) -> i32 {
 // CHECK-NEXT:     let mut n: i32 = 0;
 // CHECK-NEXT:     while (unsafe { *format }) != 0 && ((unsafe { *format }) as i32) != (end as i32) {
@@ -51,6 +53,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     n
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn group(p_format: &mut *const i8, end: i8, n: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
@@ -68,6 +71,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn value(p_format: &mut *const i8) -> i32 {
 // CHECK-NEXT:     let mut c: i8 = 0;
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *const i8 = unsafe { *p_format };
@@ -83,6 +87,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     c as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let format: *const i8 = c"(abc)d".as_ptr();
 // CHECK-NEXT:     let mut p: *const i8 = format;
@@ -93,6 +98,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

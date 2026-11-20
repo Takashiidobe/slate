@@ -56,9 +56,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn s5(a: i8, d: f64, f: f32) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -75,6 +77,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}{}", ((a as f64) == d) as i32, ((a as f32) < f) as i32);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn s9(a: i16, d: f64, f: f32) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -91,6 +94,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}{}", ((a as f64) == d) as i32, ((a as f32) < f) as i32);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn s33(a: i64, d: f64, f: f32) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -107,6 +111,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}{}", ((a as f64) == d) as i32, ((a as f32) < f) as i32);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn s64(a: i64, d: f64, f: f32) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -123,91 +128,74 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}{}", ((a as f64) == d) as i32, ((a as f32) < f) as i32);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn s100(mut a: bitint::BInt<100, 2, 16, bitint::A8>, d: f64, f: f32) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%.17g %.9g ".as_ptr(), a.to_f64(), a.to_f32() as f64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut x: bitint::BInt<100, 2, 16, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         100,
-// CHECK-NEXT:         2,
-// CHECK-NEXT:         16,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_f64(d);
+// CHECK-NEXT:     let mut x: bitint::BInt<100, 2, 16, bitint::A8> = <bitint::BInt<100, 2, 16, bitint::A8>>::from_f64(
+// CHECK-NEXT:         d,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), x.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut y: bitint::BInt<100, 2, 16, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         100,
-// CHECK-NEXT:         2,
-// CHECK-NEXT:         16,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_f32(f);
+// CHECK-NEXT:     let mut y: bitint::BInt<100, 2, 16, bitint::A8> = <bitint::BInt<100, 2, 16, bitint::A8>>::from_f32(
+// CHECK-NEXT:         f,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), y.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}{}", (a.to_f64() == d) as i32, (a.to_f32() < f) as i32);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn s128(mut a: bitint::BInt<128, 2, 16, bitint::A8>, d: f64, f: f32) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%.17g %.9g ".as_ptr(), a.to_f64(), a.to_f32() as f64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut x: bitint::BInt<128, 2, 16, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         128,
-// CHECK-NEXT:         2,
-// CHECK-NEXT:         16,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_f64(d);
+// CHECK-NEXT:     let mut x: bitint::BInt<128, 2, 16, bitint::A8> = <bitint::BInt<128, 2, 16, bitint::A8>>::from_f64(
+// CHECK-NEXT:         d,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), x.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut y: bitint::BInt<128, 2, 16, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         128,
-// CHECK-NEXT:         2,
-// CHECK-NEXT:         16,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_f32(f);
+// CHECK-NEXT:     let mut y: bitint::BInt<128, 2, 16, bitint::A8> = <bitint::BInt<128, 2, 16, bitint::A8>>::from_f32(
+// CHECK-NEXT:         f,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), y.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}{}", (a.to_f64() == d) as i32, (a.to_f32() < f) as i32);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn s200(mut a: bitint::BInt<200, 4, 32, bitint::A8>, d: f64, f: f32) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%.17g %.9g ".as_ptr(), a.to_f64(), a.to_f32() as f64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut x: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_f64(d);
+// CHECK-NEXT:     let mut x: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_f64(
+// CHECK-NEXT:         d,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), x.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut y: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_f32(f);
+// CHECK-NEXT:     let mut y: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_f32(
+// CHECK-NEXT:         f,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld ".as_ptr(), y.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}{}", (a.to_f64() == d) as i32, (a.to_f32() < f) as i32);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn wide() {
-// CHECK-NEXT:     let mut big: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(1 as i128);
+// CHECK-NEXT:     let mut big: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:         1 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = big;
 // CHECK-NEXT:     big = [[V_0]].shl_bits(150 as usize);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -216,61 +204,43 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.9g\n".as_ptr(), big.to_f32() as f64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut ub: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_bint(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(3 as i128));
+// CHECK-NEXT:     let mut ub: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<200, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(3 as i128),
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bitint::BUint<200, 4, 32, bitint::A8> = ub;
 // CHECK-NEXT:     ub = [[V_1]].shl_bits(190 as usize);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.17g\n".as_ptr(), ub.to_f64()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let d: f64 = 1.2345678901234566e40f64;
-// CHECK-NEXT:     let mut fromd: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_f64(d);
+// CHECK-NEXT:     let mut fromd: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_f64(
+// CHECK-NEXT:         d,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.17g\n".as_ptr(), fromd.to_f64()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let neg: f64 = -9.87654321e50f64;
-// CHECK-NEXT:     let mut fromneg: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_f64(neg);
+// CHECK-NEXT:     let mut fromneg: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_f64(
+// CHECK-NEXT:         neg,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.17g\n".as_ptr(), fromneg.to_f64()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut fromu: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_f64(1e45f64);
+// CHECK-NEXT:     let mut fromu: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<200, 4, 32, bitint::A8>>::from_f64(
+// CHECK-NEXT:         1e45f64,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.17g\n".as_ptr(), fromu.to_f64()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut rounding: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(9007199254740993 as i128);
+// CHECK-NEXT:     let mut rounding: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:         9007199254740993 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.17g\n".as_ptr(), rounding.to_f64()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut tie: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(9007199254740993 as i128)
+// CHECK-NEXT:     let mut tie: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:             9007199254740993 as i128,
+// CHECK-NEXT:         )
 // CHECK-NEXT:         .wrapping_mul(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1024 as i128))
 // CHECK-NEXT:         .wrapping_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(512 as i128));
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -286,11 +256,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", < bitint::BInt < 200, 4, 32, bitint::A8 >>::from_f64(- 3.99f64)
-// CHECK-NEXT:         .to_i128() as i32, < bitint::BInt < 200, 4, 32, bitint::A8 >>::from_f64(3.99f64)
-// CHECK-NEXT:         .to_i128() as i32
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_f64(-3.99f64).to_i128() as i32,
+// CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_f64(3.99f64).to_i128() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     s5(7i8, 3.9f64, -2.5f32);
 // CHECK-NEXT:     s5(-16i8, -15.5f64, 14.9f32);
@@ -315,6 +286,7 @@ int main(void) {
 // CHECK-NEXT:     wide();
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

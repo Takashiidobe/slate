@@ -18,19 +18,28 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
-// CHECK-NEXT: static typenames: __SlateAlign16<[*const i8; 3]> = __SlateAlign16([
-// CHECK-NEXT:     (b"nil\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:     (b"boolean\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:     (b"number\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static typenames: __SlateAlign16<[*const i8; 3]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         (b"nil\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         (b"boolean\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         (b"number\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut counter: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: static opmodes: [u8; 4] = [1, 2, 4, 8];
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         unsafe {
@@ -49,6 +58,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     if (unsafe { counter }) == 15 { 0 } else { 1 }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

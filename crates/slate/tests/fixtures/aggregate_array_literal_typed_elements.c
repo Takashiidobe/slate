@@ -37,22 +37,28 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct pair {
 // CHECK-NEXT:     name: *const i8,
 // CHECK-NEXT:     value: *const i8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn count_null_pairs() -> i32 {
-// CHECK-NEXT:     let pairs: __SlateAlign16<[pair; 1]> = __SlateAlign16([
-// CHECK-NEXT:         pair {
-// CHECK-NEXT:             name: core::ptr::null::<i8>(),
-// CHECK-NEXT:             value: core::ptr::null::<i8>(),
-// CHECK-NEXT:         },
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let pairs: __SlateAlign16<[pair; 1]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             pair {
+// CHECK-NEXT:                 name: core::ptr::null::<i8>(),
+// CHECK-NEXT:                 value: core::ptr::null::<i8>(),
+// CHECK-NEXT:             },
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..1i32 {
 // CHECK-NEXT:         if pairs.0[i as usize].name.is_null() && pairs.0[i as usize].value.is_null() {
@@ -61,22 +67,24 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn count_true_flags() -> i32 {
 // CHECK-NEXT:     let values: [bool; 2] = [true, false];
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..((core::mem::size_of::<[bool; 2]>() as u64)
-// CHECK-NEXT:         / (core::mem::size_of::<bool>() as u64))
-// CHECK-NEXT:     {
+// CHECK-NEXT:         / (core::mem::size_of::<bool>() as u64)) {
 // CHECK-NEXT:         if values[i as usize] {
 // CHECK-NEXT:             total += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{} {}", count_null_pairs(), count_true_flags());
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

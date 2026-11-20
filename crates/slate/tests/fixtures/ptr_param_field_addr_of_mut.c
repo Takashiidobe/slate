@@ -37,22 +37,29 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn freeCResources(ress: &mut __SlateRecord_ptr_param_field_addr_of_mut_c_16) {
-// CHECK-NEXT:     freeDict(unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!(
-// CHECK-NEXT:             (*(ress as *mut __SlateRecord_ptr_param_field_addr_of_mut_c_16)).dict
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
-// CHECK-NEXT:     syncDestroy(unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((*(ress as *mut __SlateRecord_ptr_param_field_addr_of_mut_c_16)).io)
-// CHECK-NEXT:     });
+// CHECK-NEXT:     freeDict(
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*(ress
+// CHECK-NEXT:                 as *mut __SlateRecord_ptr_param_field_addr_of_mut_c_16)).dict)
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     syncDestroy(
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*(ress
+// CHECK-NEXT:                 as *mut __SlateRecord_ptr_param_field_addr_of_mut_c_16)).io)
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut r: __SlateRecord_ptr_param_field_addr_of_mut_c_16 =
-// CHECK-NEXT:         __SlateRecord_ptr_param_field_addr_of_mut_c_16 {
-// CHECK-NEXT:             dict: __SlateRecord_ptr_param_field_addr_of_mut_c_6 { x: 5 },
-// CHECK-NEXT:             cctx: 9,
-// CHECK-NEXT:             io: __SlateRecord_ptr_param_field_addr_of_mut_c_10 { y: 7 },
-// CHECK-NEXT:         };
+// CHECK-NEXT:     let mut r: __SlateRecord_ptr_param_field_addr_of_mut_c_16 = __SlateRecord_ptr_param_field_addr_of_mut_c_16 {
+// CHECK-NEXT:         dict: __SlateRecord_ptr_param_field_addr_of_mut_c_6 {
+// CHECK-NEXT:             x: 5,
+// CHECK-NEXT:         },
+// CHECK-NEXT:         cctx: 9,
+// CHECK-NEXT:         io: __SlateRecord_ptr_param_field_addr_of_mut_c_10 {
+// CHECK-NEXT:             y: 7,
+// CHECK-NEXT:         },
+// CHECK-NEXT:     };
 // CHECK-NEXT:     freeCResources(unsafe { &mut (*core::ptr::addr_of_mut!(r)) });
 // CHECK-NEXT:     println!("{} {} {}", r.dict.x, r.io.y, r.cctx);
 // CHECK-NEXT:     0

@@ -45,57 +45,65 @@ int main(void) {
 // CHECK-NEXT:     let mut fa: i32 = 0;
 // CHECK-NEXT:     fa = unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = 5i32;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(a) as *mut i32,
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .fetch_add([[T_0]], core::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:         [[T_1]]
-// CHECK-NEXT:     };
-// CHECK-NEXT:     // returns 100, a = 105
+// CHECK-NEXT:     }; // returns 100, a = 105
 // CHECK-NEXT:     let mut fs: i32 = 0;
 // CHECK-NEXT:     fs = unsafe {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]] = 10i32;
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
+// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(a) as *mut i32,
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .fetch_sub([[T_2]], core::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:         [[T_3]]
-// CHECK-NEXT:     };
-// CHECK-NEXT:     // returns 105, a = 95
+// CHECK-NEXT:     }; // returns 105, a = 95
 // CHECK-NEXT:     let mut fand: i32 = 0;
 // CHECK-NEXT:     fand = unsafe {
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]] = 60i32;
-// CHECK-NEXT:         let [[T_5:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
+// CHECK-NEXT:         let [[T_5:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(a) as *mut i32,
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .fetch_and([[T_4]], core::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:         [[T_5]]
-// CHECK-NEXT:     };
-// CHECK-NEXT:     // 95 & 60 = 28
+// CHECK-NEXT:     }; // 95 & 60 = 28
 // CHECK-NEXT:     let mut forr: i32 = 0;
 // CHECK-NEXT:     forr = unsafe {
 // CHECK-NEXT:         let [[T_6:__t[0-9]+]] = 1i32;
-// CHECK-NEXT:         let [[T_7:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
+// CHECK-NEXT:         let [[T_7:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(a) as *mut i32,
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .fetch_or([[T_6]], core::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:         [[T_7]]
-// CHECK-NEXT:     };
-// CHECK-NEXT:     // 28 | 1 = 29
+// CHECK-NEXT:     }; // 28 | 1 = 29
 // CHECK-NEXT:     let mut fxor: i32 = 0;
 // CHECK-NEXT:     fxor = unsafe {
 // CHECK-NEXT:         let [[T_8:__t[0-9]+]] = 15i32;
-// CHECK-NEXT:         let [[T_9:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
+// CHECK-NEXT:         let [[T_9:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(a) as *mut i32,
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .fetch_xor([[T_8]], core::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:         [[T_9]]
-// CHECK-NEXT:     };
-// CHECK-NEXT:     // 29 ^ 15 = 18
+// CHECK-NEXT:     }; // 29 ^ 15 = 18
 // CHECK-NEXT:     let mut xchg_old: i32 = 0;
 // CHECK-NEXT:     xchg_old = unsafe {
 // CHECK-NEXT:         let [[T_10:__t[0-9]+]] = 7i32;
-// CHECK-NEXT:         let [[T_11:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
+// CHECK-NEXT:         let [[T_11:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(a) as *mut i32,
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .swap([[T_10]], core::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:         [[T_11]]
-// CHECK-NEXT:     };
-// CHECK-NEXT:     // returns 18, a = 7
+// CHECK-NEXT:     }; // returns 18, a = 7
 // CHECK-NEXT:     let mut expected: i32 = 7;
 // CHECK-NEXT:     let mut ok: i32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = unsafe {
 // CHECK-NEXT:         let [[T_12:__t[0-9]+]] = core::ptr::addr_of_mut!(expected);
 // CHECK-NEXT:         let [[T_13:__t[0-9]+]] = 42i32;
-// CHECK-NEXT:         let [[T_14:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
+// CHECK-NEXT:         let [[T_14:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(a) as *mut i32,
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .compare_exchange(
 // CHECK-NEXT:                 *[[T_12]],
 // CHECK-NEXT:                 [[T_13]],
@@ -107,7 +115,7 @@ int main(void) {
 // CHECK-NEXT:             Err([[T_15:__t[0-9]+]]) => {
 // CHECK-NEXT:                 *[[T_12]] = [[T_15]];
 // CHECK-NEXT:                 false
-// CHECK-NEXT:             }
+// CHECK-NEXT:             },
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ok = [[V_0]] as i32; // success, a = 42
@@ -116,7 +124,9 @@ int main(void) {
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = unsafe {
 // CHECK-NEXT:         let [[T_16:__t[0-9]+]] = core::ptr::addr_of_mut!(expected2);
 // CHECK-NEXT:         let [[T_17:__t[0-9]+]] = 0i32;
-// CHECK-NEXT:         let [[T_18:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
+// CHECK-NEXT:         let [[T_18:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(a) as *mut i32,
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .compare_exchange(
 // CHECK-NEXT:                 *[[T_16]],
 // CHECK-NEXT:                 [[T_17]],
@@ -128,7 +138,7 @@ int main(void) {
 // CHECK-NEXT:             Err([[T_19:__t[0-9]+]]) => {
 // CHECK-NEXT:                 *[[T_16]] = [[T_19]];
 // CHECK-NEXT:                 false
-// CHECK-NEXT:             }
+// CHECK-NEXT:             },
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     bad = [[V_1]] as i32; // fail, a stays 42

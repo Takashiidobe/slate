@@ -48,6 +48,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn classify(value: i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     match value {
@@ -69,6 +70,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn classify_direct(value: i32) -> i32 {
 // CHECK-NEXT:     match value {
 // CHECK-NEXT:         -2..=2 => {
@@ -80,6 +82,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn classify_empty(value: i32) -> i32 {
 // CHECK-NEXT:     match value {
 // CHECK-NEXT:         4 => {
@@ -89,18 +92,32 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     3
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {}", classify(1i32), classify(2i32),
-// CHECK-NEXT:         classify(4i32), classify(5i32), classify(7i32), classify(8i32), classify(9i32),
-// CHECK-NEXT:         classify(10i32), classify(11i32), classify(12i32), classify_direct(- 1i32),
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {}",
+// CHECK-NEXT:         classify(1i32),
+// CHECK-NEXT:         classify(2i32),
+// CHECK-NEXT:         classify(4i32),
+// CHECK-NEXT:         classify(5i32),
+// CHECK-NEXT:         classify(7i32),
+// CHECK-NEXT:         classify(8i32),
+// CHECK-NEXT:         classify(9i32),
+// CHECK-NEXT:         classify(10i32),
+// CHECK-NEXT:         classify(11i32),
+// CHECK-NEXT:         classify(12i32),
+// CHECK-NEXT:         classify_direct(-1i32),
 // CHECK-NEXT:         classify_direct(3i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", classify_empty(3i32), classify_empty(4i32), classify_empty(5i32)
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         classify_empty(3i32),
+// CHECK-NEXT:         classify_empty(4i32),
+// CHECK-NEXT:         classify_empty(5i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

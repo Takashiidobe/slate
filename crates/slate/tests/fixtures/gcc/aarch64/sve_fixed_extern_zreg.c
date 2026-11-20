@@ -118,30 +118,43 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
-// CHECK-NEXT:     ".arch armv8.2-a+sve\n.text\n.globl zreg_mul_add\n.type zreg_mul_add, %function\nzreg_mul_add:\n  ptrue p0.s\n  mul z0.s, p0/m, z0.s, z1.s\n  mov z2.s, w0\n  add z0.s, z0.s, z2.s\n  ret\n.size zreg_mul_add, .-zreg_mul_add\n.globl zreg_scale\n.type zreg_scale, %function\nzreg_scale:\n  ptrue p0.d\n  fmul z0.d, p0/m, z0.d, z1.d\n  ret\n.size zreg_scale, .-zreg_scale\n"
+// CHECK-NEXT:     ".arch armv8.2-a+sve\n.text\n.globl zreg_mul_add\n.type zreg_mul_add, %function\nzreg_mul_add:\n  ptrue p0.s\n  mul z0.s, p0/m, z0.s, z1.s\n  mov z2.s, w0\n  add z0.s, z0.s, z2.s\n  ret\n.size zreg_mul_add, .-zreg_mul_add\n.globl zreg_scale\n.type zreg_scale, %function\nzreg_scale:\n  ptrue p0.d\n  fmul z0.d, p0/m, z0.d, z1.d\n  ret\n.size zreg_scale, .-zreg_scale\n",
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,crc,lse,sve,fcma")]
 // CHECK-NEXT: unsafe fn __slate_main() -> i32 {
-// CHECK-NEXT:     let a: core::simd::Simd<i32, 16> = core::simd::Simd::from_array([
-// CHECK-NEXT:         1i32, 2i32, 3i32, 4i32, 5i32, 6i32, 7i32, 8i32, 9i32, 10i32, 11i32, 12i32, 13i32, 14i32,
-// CHECK-NEXT:         15i32, 16i32,
-// CHECK-NEXT:     ]);
-// CHECK-NEXT:     let b: core::simd::Simd<i32, 16> = core::simd::Simd::from_array([
-// CHECK-NEXT:         2i32, 2i32, 2i32, 2i32, 3i32, 3i32, 3i32, 3i32, 4i32, 4i32, 4i32, 4i32, 5i32, 5i32, 5i32,
-// CHECK-NEXT:         5i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let a: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             1i32, 2i32, 3i32, 4i32, 5i32, 6i32, 7i32, 8i32, 9i32, 10i32, 11i32, 12i32,
+// CHECK-NEXT:             13i32, 14i32, 15i32, 16i32,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let b: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             2i32, 2i32, 2i32, 2i32, 3i32, 3i32, 3i32, 3i32, 4i32, 4i32, 4i32, 4i32, 5i32,
+// CHECK-NEXT:             5i32, 5i32, 5i32,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let r: core::simd::Simd<i32, 16> = unsafe { zreg_mul_add(a, b, 100i32) };
-// CHECK-NEXT:     let x: core::simd::Simd<f64, 8> = core::simd::Simd::from_array([
-// CHECK-NEXT:         0.5f64, 1.5f64, 2.5f64, 3.5f64, 4.5f64, 5.5f64, 6.5f64, 7.5f64,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let x: core::simd::Simd<f64, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [0.5f64, 1.5f64, 2.5f64, 3.5f64, 4.5f64, 5.5f64, 6.5f64, 7.5f64],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let y: core::simd::Simd<f64, 8> = unsafe { zreg_scale(x, x) };
 // CHECK-NEXT:     let mut sum: i64 = 0;
 // CHECK-NEXT:     for i in 0i32..16i32 {
 // CHECK-NEXT:         sum += (r[i as usize] * (i + 1)) as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%ld %d %d %g %g\n".as_ptr(), sum, r[0], r[15], y[0], y[7]) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%ld %d %d %g %g\n".as_ptr(),
+// CHECK-NEXT:             sum,
+// CHECK-NEXT:             r[0],
+// CHECK-NEXT:             r[15],
+// CHECK-NEXT:             y[0],
+// CHECK-NEXT:             y[7],
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

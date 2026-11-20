@@ -20,29 +20,32 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.add")]
 // CHECK-NEXT: extern "C-unwind" fn add(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     a + b
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.sub")]
 // CHECK-NEXT: extern "C-unwind" fn sub(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     a - b
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn apply(useAdd: i32, a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_0:__t[0-9]+]]: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = if useAdd
-// CHECK-NEXT:                 != 0
-// CHECK-NEXT:             {
-// CHECK-NEXT:                 Some(add)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 Some(sub)
-// CHECK-NEXT:             };
-// CHECK-NEXT:             [[T_0]]
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 let [[T_0:__t[0-9]+]]: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = if useAdd
+// CHECK-NEXT:                     != 0 {
+// CHECK-NEXT:                     Some(add)
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     Some(sub)
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 [[T_0]]
+// CHECK-NEXT:             }
 // CHECK-NEXT:             .unwrap()(a, b)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let useAdd: i32 = 1;
 // CHECK-NEXT:     let op: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = {
@@ -54,13 +57,26 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { op.unwrap() (10i32, 3i32) }, apply(0i32, 10i32, 3i32),
-// CHECK-NEXT:         apply(1i32, 4i32, 4i32), unsafe { { let [[T_1:__t[0-9]+]] : Option < unsafe extern "C-unwind"
-// CHECK-NEXT:         fn (i32, i32) -> i32 > = if useAdd != 0 { Some(sub) } else { Some(add) }; [[T_1]] }
-// CHECK-NEXT:         .unwrap() (9i32, 2i32) }
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         unsafe { op.unwrap()(10i32, 3i32) },
+// CHECK-NEXT:         apply(0i32, 10i32, 3i32),
+// CHECK-NEXT:         apply(1i32, 4i32, 4i32),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             {
+// CHECK-NEXT:                     let [[T_1:__t[0-9]+]]: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = if useAdd
+// CHECK-NEXT:                         != 0 {
+// CHECK-NEXT:                         Some(sub)
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         Some(add)
+// CHECK-NEXT:                     };
+// CHECK-NEXT:                     [[T_1]]
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 .unwrap()(9i32, 2i32)
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

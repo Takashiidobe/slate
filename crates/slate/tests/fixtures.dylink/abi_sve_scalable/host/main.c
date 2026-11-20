@@ -50,10 +50,8 @@ int main(void) {
 // CHECK-NEXT: macro_rules! dl_open {
 // CHECK-NEXT:     ($path:expr) => {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             dlopen(
-// CHECK-NEXT:                 (($path) as *const u8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 2i32 as i32,
-// CHECK-NEXT:             ) as *mut ()
+// CHECK-NEXT:             dlopen((($path) as *const u8) as *const core::ffi::c_char, 2i32 as i32)
+// CHECK-NEXT:                 as *mut ()
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -69,8 +67,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::dlclose;
 // CHECK-NEXT: use slate_support::dlopen;
+// CHECK-NEXT: use slate_support::dlclose;
 // CHECK-NEXT: use slate_support::dlsym;
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
@@ -85,7 +83,11 @@ int main(void) {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::arch::aarch64::svadd_n_s32_x(
 // CHECK-NEXT:             core::arch::aarch64::svptrue_b32(),
-// CHECK-NEXT:             core::arch::aarch64::svmul_n_s32_x(core::arch::aarch64::svptrue_b32(), v, 2i32),
+// CHECK-NEXT:             core::arch::aarch64::svmul_n_s32_x(
+// CHECK-NEXT:                 core::arch::aarch64::svptrue_b32(),
+// CHECK-NEXT:                 v,
+// CHECK-NEXT:                 2i32,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:             1i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -98,81 +100,36 @@ int main(void) {
 // CHECK-NEXT:         println!("open failed");
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mul_add: Option<
-// CHECK-NEXT:         unsafe extern "C-unwind" fn(
-// CHECK-NEXT:             core::arch::aarch64::svint32_t,
-// CHECK-NEXT:             core::arch::aarch64::svint32_t,
-// CHECK-NEXT:             i32,
-// CHECK-NEXT:         ) -> core::arch::aarch64::svint32_t,
-// CHECK-NEXT:     > = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *mut (),
-// CHECK-NEXT:             Option<
-// CHECK-NEXT:                 unsafe extern "C-unwind" fn(
-// CHECK-NEXT:                     core::arch::aarch64::svint32_t,
-// CHECK-NEXT:                     core::arch::aarch64::svint32_t,
-// CHECK-NEXT:                     i32,
-// CHECK-NEXT:                 ) -> core::arch::aarch64::svint32_t,
-// CHECK-NEXT:             >,
-// CHECK-NEXT:         >(dl_sym!(lib, c"sve_mul_add".as_ptr() as *mut u8))
+// CHECK-NEXT:     let mul_add: Option<unsafe extern "C-unwind" fn(core::arch::aarch64::svint32_t, core::arch::aarch64::svint32_t, i32) -> core::arch::aarch64::svint32_t> = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn(core::arch::aarch64::svint32_t, core::arch::aarch64::svint32_t, i32) -> core::arch::aarch64::svint32_t>>(
+// CHECK-NEXT:             dl_sym!(lib, c"sve_mul_add".as_ptr() as *mut u8),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let first_n: Option<unsafe extern "C-unwind" fn(u32) -> core::arch::aarch64::svbool_t> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *mut (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(u32) -> core::arch::aarch64::svbool_t>,
-// CHECK-NEXT:         >(dl_sym!(lib, c"sve_first_n".as_ptr() as *mut u8))
+// CHECK-NEXT:         core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn(u32) -> core::arch::aarch64::svbool_t>>(
+// CHECK-NEXT:             dl_sym!(lib, c"sve_first_n".as_ptr() as *mut u8),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let masked_scale: Option<
-// CHECK-NEXT:         unsafe extern "C-unwind" fn(
-// CHECK-NEXT:             core::arch::aarch64::svbool_t,
-// CHECK-NEXT:             core::arch::aarch64::svfloat64_t,
-// CHECK-NEXT:             f64,
-// CHECK-NEXT:         ) -> core::arch::aarch64::svfloat64_t,
-// CHECK-NEXT:     > = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *mut (),
-// CHECK-NEXT:             Option<
-// CHECK-NEXT:                 unsafe extern "C-unwind" fn(
-// CHECK-NEXT:                     core::arch::aarch64::svbool_t,
-// CHECK-NEXT:                     core::arch::aarch64::svfloat64_t,
-// CHECK-NEXT:                     f64,
-// CHECK-NEXT:                 ) -> core::arch::aarch64::svfloat64_t,
-// CHECK-NEXT:             >,
-// CHECK-NEXT:         >(dl_sym!(lib, c"sve_masked_scale".as_ptr() as *mut u8))
+// CHECK-NEXT:     let masked_scale: Option<unsafe extern "C-unwind" fn(core::arch::aarch64::svbool_t, core::arch::aarch64::svfloat64_t, f64) -> core::arch::aarch64::svfloat64_t> = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn(core::arch::aarch64::svbool_t, core::arch::aarch64::svfloat64_t, f64) -> core::arch::aarch64::svfloat64_t>>(
+// CHECK-NEXT:             dl_sym!(lib, c"sve_masked_scale".as_ptr() as *mut u8),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let apply: Option<
-// CHECK-NEXT:         unsafe extern "C-unwind" fn(
-// CHECK-NEXT:             Option<
-// CHECK-NEXT:                 unsafe extern "C-unwind" fn(
-// CHECK-NEXT:                     core::arch::aarch64::svint32_t,
-// CHECK-NEXT:                 ) -> core::arch::aarch64::svint32_t,
-// CHECK-NEXT:             >,
-// CHECK-NEXT:             core::arch::aarch64::svint32_t,
-// CHECK-NEXT:         ) -> i64,
-// CHECK-NEXT:     > = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *mut (),
-// CHECK-NEXT:             Option<
-// CHECK-NEXT:                 unsafe extern "C-unwind" fn(
-// CHECK-NEXT:                     Option<
-// CHECK-NEXT:                         unsafe extern "C-unwind" fn(
-// CHECK-NEXT:                             core::arch::aarch64::svint32_t,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                             -> core::arch::aarch64::svint32_t,
-// CHECK-NEXT:                     >,
-// CHECK-NEXT:                     core::arch::aarch64::svint32_t,
-// CHECK-NEXT:                 ) -> i64,
-// CHECK-NEXT:             >,
-// CHECK-NEXT:         >(dl_sym!(lib, c"sve_apply".as_ptr() as *mut u8))
+// CHECK-NEXT:     let apply: Option<unsafe extern "C-unwind" fn(Option<unsafe extern "C-unwind" fn(core::arch::aarch64::svint32_t) -> core::arch::aarch64::svint32_t>, core::arch::aarch64::svint32_t) -> i64> = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn(Option<unsafe extern "C-unwind" fn(core::arch::aarch64::svint32_t) -> core::arch::aarch64::svint32_t>, core::arch::aarch64::svint32_t) -> i64>>(
+// CHECK-NEXT:             dl_sym!(lib, c"sve_apply".as_ptr() as *mut u8),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if mul_add == None || first_n == None || masked_scale == None || apply == None {
 // CHECK-NEXT:         println!("resolve failed");
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let index: core::arch::aarch64::svint32_t =
-// CHECK-NEXT:         unsafe { core::arch::aarch64::svindex_s32(1i32, 1i32) };
-// CHECK-NEXT:     let r: core::arch::aarch64::svint32_t =
-// CHECK-NEXT:         unsafe { mul_add.unwrap()(index, core::arch::aarch64::svdup_n_s32(3i32), 7i32) };
+// CHECK-NEXT:     let index: core::arch::aarch64::svint32_t = unsafe {
+// CHECK-NEXT:         core::arch::aarch64::svindex_s32(1i32, 1i32)
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let r: core::arch::aarch64::svint32_t = unsafe {
+// CHECK-NEXT:         mul_add.unwrap()(index, core::arch::aarch64::svdup_n_s32(3i32), 7i32)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut lanes: [i32; 64] = [0i32; 64];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::aarch64::svst1_s32(
@@ -187,13 +144,15 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"first_n: %ld active\n".as_ptr(),
-// CHECK-NEXT:             core::arch::aarch64::svcntp_b32(core::arch::aarch64::svptrue_b32(), pg) as i64,
+// CHECK-NEXT:             core::arch::aarch64::svcntp_b32(core::arch::aarch64::svptrue_b32(), pg)
+// CHECK-NEXT:                 as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut out: [f64; 8] = [0 as f64; 8];
 // CHECK-NEXT:     let scaled: core::arch::aarch64::svfloat64_t = unsafe {
-// CHECK-NEXT:         masked_scale.unwrap()(
+// CHECK-NEXT:         masked_scale
+// CHECK-NEXT:             .unwrap()(
 // CHECK-NEXT:             core::arch::aarch64::svwhilelt_b64_u32(0u32, 2u32),
 // CHECK-NEXT:             core::arch::aarch64::svdup_n_f64(1.5f64),
 // CHECK-NEXT:             4.0f64,
@@ -207,13 +166,18 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"masked_scale: %g %g %g\n".as_ptr(), out[0], out[1], out[2]) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"masked_scale: %g %g %g\n".as_ptr(),
+// CHECK-NEXT:             out[0],
+// CHECK-NEXT:             out[1],
+// CHECK-NEXT:             out[2],
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let applied: i64 = unsafe {
-// CHECK-NEXT:         apply.unwrap()(
-// CHECK-NEXT:             Some(host_double_plus_one),
-// CHECK-NEXT:             core::arch::aarch64::svdup_n_s32(1i32),
-// CHECK-NEXT:         )
+// CHECK-NEXT:         apply
+// CHECK-NEXT:             .unwrap()(Some(host_double_plus_one), core::arch::aarch64::svdup_n_s32(1i32))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

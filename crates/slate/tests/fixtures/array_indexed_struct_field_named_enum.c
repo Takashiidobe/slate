@@ -22,20 +22,23 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct CaseData {
 // CHECK-NEXT:     input: i32,
 // CHECK-NEXT:     expected: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let cases: __SlateAlign16<[CaseData; 2]> = __SlateAlign16([
-// CHECK-NEXT:         CaseData { input: 1, expected: 0 },
-// CHECK-NEXT:         CaseData { input: 2, expected: 1 },
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let cases: __SlateAlign16<[CaseData; 2]> = __SlateAlign16(
+// CHECK-NEXT:         [CaseData { input: 1, expected: 0 }, CaseData { input: 2, expected: 1 }],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let actual: u32 = 0;
 // CHECK-NEXT:     for i in 0i32..2i32 {
 // CHECK-NEXT:         if (actual as u32) != (cases.0[i as usize].expected as u32) {
@@ -46,6 +49,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

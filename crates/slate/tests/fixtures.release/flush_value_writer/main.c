@@ -30,7 +30,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { later(written) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     written = unsafe { slate_support::fprintf(slate_support::stdout(), c"third\n".as_ptr()) };
+// CHECK-NEXT:     written = unsafe {
+// CHECK-NEXT:         slate_support::fprintf(slate_support::stdout(), c"third\n".as_ptr())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { later(written) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

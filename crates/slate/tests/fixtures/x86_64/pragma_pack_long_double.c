@@ -28,6 +28,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -114,33 +115,39 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
 // CHECK-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct LongDouble([u8; 10]);
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Add for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_add(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Sub for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_sub(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Mul for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_mul(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Div for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_div(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::AddAssign for LongDouble {
 // CHECK-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -148,6 +155,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::SubAssign for LongDouble {
 // CHECK-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -155,6 +163,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::MulAssign for LongDouble {
 // CHECK-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -162,6 +171,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::DivAssign for LongDouble {
 // CHECK-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -169,34 +179,34 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Neg for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn neg(self) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_neg(self)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialEq for LongDouble {
 // CHECK-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
 // CHECK-NEXT:         __slate_f80_eq(*self, *__other)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed(8))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct extended {
@@ -204,12 +214,16 @@ int main(void) {
 // CHECK-NEXT:     x: core::mem::MaybeUninit<[u64; 2]>,
 // CHECK-NEXT:     tail: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn offset(base: *const (), field: *const ()) -> u32 {
 // CHECK-NEXT:     ((unsafe { (field as *const i8).offset_from(base as *const i8) }) as i64) as u32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut e: extended = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: extended = unsafe { core::mem::zeroed() };
@@ -221,28 +235,30 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].tail = 3i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut list: __SlateAlign16<[extended; 2]> = __SlateAlign16([
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: extended = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             [[T_1]].c = 4i8;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!([[T_1]].x) as *mut LongDouble)
-// CHECK-NEXT:                     .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 176, 1, 64]));
-// CHECK-NEXT:             }
-// CHECK-NEXT:             [[T_1]].tail = 6i32;
-// CHECK-NEXT:             [[T_1]]
-// CHECK-NEXT:         },
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: extended = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             [[T_2]].c = 7i8;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!([[T_2]].x) as *mut LongDouble)
-// CHECK-NEXT:                     .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 136, 2, 64]));
-// CHECK-NEXT:             }
-// CHECK-NEXT:             [[T_2]].tail = 9i32;
-// CHECK-NEXT:             [[T_2]]
-// CHECK-NEXT:         },
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut list: __SlateAlign16<[extended; 2]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let mut [[T_1:__t[0-9]+]]: extended = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:                 [[T_1]].c = 4i8;
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     (core::ptr::addr_of_mut!([[T_1]].x) as *mut LongDouble)
+// CHECK-NEXT:                         .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 176, 1, 64]));
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 [[T_1]].tail = 6i32;
+// CHECK-NEXT:                 [[T_1]]
+// CHECK-NEXT:             },
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let mut [[T_2:__t[0-9]+]]: extended = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:                 [[T_2]].c = 7i8;
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     (core::ptr::addr_of_mut!([[T_2]].x) as *mut LongDouble)
+// CHECK-NEXT:                         .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 136, 2, 64]));
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 [[T_2]].tail = 9i32;
+// CHECK-NEXT:                 [[T_2]]
+// CHECK-NEXT:             },
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: LongDouble = unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of!(e.x) as *const LongDouble).read_unaligned()
 // CHECK-NEXT:     };
@@ -303,6 +319,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

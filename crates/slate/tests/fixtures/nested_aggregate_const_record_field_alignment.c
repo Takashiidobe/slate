@@ -39,32 +39,39 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.add1")]
 // CHECK-NEXT: extern "C-unwind" fn add1(x: i32) -> i32 {
 // CHECK-NEXT:     x + 1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.add2")]
 // CHECK-NEXT: extern "C-unwind" fn add2(x: i32) -> i32 {
 // CHECK-NEXT:     x + 2
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.add3")]
 // CHECK-NEXT: extern "C-unwind" fn add3(x: i32) -> i32 {
 // CHECK-NEXT:     x + 3
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.mul5")]
 // CHECK-NEXT: extern "C-unwind" fn mul5(x: i32) -> i32 {
 // CHECK-NEXT:     x * 5
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.mul7")]
 // CHECK-NEXT: extern "C-unwind" fn mul7(x: i32) -> i32 {
 // CHECK-NEXT:     x * 7
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Inner {
 // CHECK-NEXT:     scanners: [Option<unsafe extern "C-unwind" fn(i32) -> i32>; 3],
 // CHECK-NEXT:     tag: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Outer {
@@ -74,6 +81,7 @@ int main(void) {
 // CHECK-NEXT:     trailing2: Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // CHECK-NEXT:     trailing3: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut g: Outer = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Outer = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].inner = {
@@ -88,11 +96,14 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]].trailing3 = 99i32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { unsafe { g.inner.scanners[0] } .unwrap() (10i32) },
-// CHECK-NEXT:         unsafe { unsafe { g.inner.scanners[1] } .unwrap() (10i32) }, unsafe { unsafe { g
-// CHECK-NEXT:         .inner.scanners[2] } .unwrap() (10i32) }, unsafe { g.inner.tag }
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         unsafe { unsafe { g.inner.scanners[0] }.unwrap()(10i32) },
+// CHECK-NEXT:         unsafe { unsafe { g.inner.scanners[1] }.unwrap()(10i32) },
+// CHECK-NEXT:         unsafe { unsafe { g.inner.scanners[2] }.unwrap()(10i32) },
+// CHECK-NEXT:         unsafe { g.inner.tag }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         print!("{} ", (unsafe { g.bytes[i as usize] }) as i32);
@@ -100,11 +111,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", unsafe { unsafe { g.trailing1 } .unwrap() (10i32) }, unsafe { unsafe
-// CHECK-NEXT:         { g.trailing2 } .unwrap() (10i32) }, unsafe { g.trailing3 }
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         unsafe { unsafe { g.trailing1 }.unwrap()(10i32) },
+// CHECK-NEXT:         unsafe { unsafe { g.trailing2 }.unwrap()(10i32) },
+// CHECK-NEXT:         unsafe { g.trailing3 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

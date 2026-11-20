@@ -44,30 +44,38 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn shl_mixed(value: i64, amount: i32) -> i64 {
 // CHECK-NEXT:     value << amount
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn shl_by_wide(value: i32, amount: u64) -> i32 {
 // CHECK-NEXT:     value << amount
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sar(value: i32, amount: u8) -> i32 {
 // CHECK-NEXT:     value >> (amount as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn shr(value: u32, amount: i64) -> u32 {
 // CHECK-NEXT:     value >> amount
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), shl_mixed(1i64, 40i32)) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", shl_by_wide(3i32, 4u64));
-// CHECK-NEXT:     println!("{} {} {}", sar(- 1i32, 31u8), sar(- 7i32, 1u8), sar(- 256i32, 4u8));
+// CHECK-NEXT:     println!("{} {} {}", sar(-1i32, 31u8), sar(-7i32, 1u8), sar(-256i32, 4u8));
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u\n".as_ptr(),
@@ -120,6 +128,7 @@ int main(void) {
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

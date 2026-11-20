@@ -47,18 +47,24 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! IS_DEBUG_ENABLED {
 // CHECK-NEXT:     ($level:expr, $component:expr) => {
-// CHECK-NEXT:         ($level) & unsafe { debug_level } != 0 && (($component) as u32) & unsafe {
-// CHECK-NEXT:         debug_layer } != 0
+// CHECK-NEXT:         ($level) & unsafe { debug_level } != 0
+// CHECK-NEXT:             && (($component) as u32) & unsafe { debug_layer } != 0
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut debug_level: u32 = 3;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut debug_layer: u32 = 16;
+// CHECK-EMPTY:
 // CHECK-NEXT: static module_name: [i8; 5] = [117, 110, 105, 116, 0];
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn debug_print(
 // CHECK-NEXT:     level: u32,
 // CHECK-NEXT:     line: u32,
@@ -66,7 +72,7 @@ int main(void) {
 // CHECK-NEXT:     module: *const i8,
 // CHECK-NEXT:     component: u32,
 // CHECK-NEXT:     format: *const i8,
-// CHECK-NEXT:     __va_args: ...
+// CHECK-NEXT:     __va_args: ...,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -82,6 +88,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn run() {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         if IS_DEBUG_ENABLED!(2u32, 16i32) {
@@ -118,10 +125,12 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     run();
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

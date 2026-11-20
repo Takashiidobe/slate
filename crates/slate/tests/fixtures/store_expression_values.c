@@ -67,40 +67,50 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Node {
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT:     next: *mut Node,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT: static mut slots: __SlateAlign16<[i32; 6]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     core::mem::zeroed()
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut slots: __SlateAlign16<[i32; 6]> = __SlateAlign16(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn idx() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { calls }) % 6
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn slot() -> *mut i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { (core::ptr::addr_of_mut!(slots.0) as *mut i32).add(2) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn produce() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 100;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     7
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn twice(value: i32) -> i32 {
 // CHECK-NEXT:     value * 2
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: i32 = 0;
 // CHECK-NEXT:     let mut b: i32 = 0;
@@ -151,11 +161,13 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         length += ((ch as i32) == 111) as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut buffer: __SlateAlign16<[i32; 4]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 4] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0i32;
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut buffer: __SlateAlign16<[i32; 4]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: [i32; 4] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]][0] = 0i32;
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut out: *mut i32 = buffer.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     for i in 1..4i32 {
 // CHECK-NEXT:         let [[V_8:__v[0-9]+]]: *mut i32 = out;
@@ -209,19 +221,31 @@ int main(void) {
 // CHECK-NEXT:     let widened: i32 = 45i32;
 // CHECK-NEXT:     println!("{} {} {} {} {} {}", a, b, c, d, e, unsafe { calls });
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {}", unsafe { slots.0[0] }, unsafe { slots.0[1] }, unsafe {
-// CHECK-NEXT:         slots.0[2] }, unsafe { slots.0[3] }, f, g, length
+// CHECK-NEXT:         "{} {} {} {} {} {} {}",
+// CHECK-NEXT:         unsafe { slots.0[0] },
+// CHECK-NEXT:         unsafe { slots.0[1] },
+// CHECK-NEXT:         unsafe { slots.0[2] },
+// CHECK-NEXT:         unsafe { slots.0[3] },
+// CHECK-NEXT:         f,
+// CHECK-NEXT:         g,
+// CHECK-NEXT:         length
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let __slate_printf_arg3 = ((unsafe {
 // CHECK-NEXT:         out.offset_from(buffer.0.as_mut_ptr() as *mut i32)
 // CHECK-NEXT:     }) as i64) as i32;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", buffer.0[0], buffer.0[1], buffer.0[2], __slate_printf_arg3,
-// CHECK-NEXT:         total, second.value
+// CHECK-NEXT:         "{} {} {} {} {} {}",
+// CHECK-NEXT:         buffer.0[0],
+// CHECK-NEXT:         buffer.0[1],
+// CHECK-NEXT:         buffer.0[2],
+// CHECK-NEXT:         __slate_printf_arg3,
+// CHECK-NEXT:         total,
+// CHECK-NEXT:         second.value
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {} {} {}", flag, picked, narrow as i32, widened);
 // CHECK-NEXT:     a + b + c & 127
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

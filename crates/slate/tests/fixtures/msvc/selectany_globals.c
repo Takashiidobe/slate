@@ -112,48 +112,89 @@ int main(void) { return 0; }
 // CHECK-NEXT:     word: u32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$counter,\"dw\",discard,counter\n.globl counter\n.p2align 2\ncounter:\n.long {0}\n.text", const 30 as i32);
-// I686-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$_counter,\"dw\",discard,_counter\n.globl _counter\n.p2align 2\n_counter:\n.long {0}\n.text", const 30 as i32);
-// AARCH64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$counter,\"dw\",discard,counter\n.globl counter\n.p2align 2\ncounter:\n.long {0}\n.text", const 30 as i32);
-// CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .rdata$clsid,\"dr\",discard,clsid\n.globl clsid\n.p2align 2\nclsid:\n.long {0}\n.short {1}\n.short {2}\n.byte {3}\n.byte {4}\n.byte {5}\n.byte {6}\n.byte {7}\n.byte {8}\n.byte {9}\n.byte {10}\n.text", const (1010256448 as i32) as u32, const (47844 as i32) as u16, const (4559 as i32) as u16, const (191 as i32) as u8, const (125 as i32) as u8, const (0 as i32) as u8, const (170 as i32) as u8, const (0 as i32) as u8, const (105 as i32) as u8, const (70 as i32) as u8, const (238 as i32) as u8);
-// I686-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .rdata$_clsid,\"dr\",discard,_clsid\n.globl _clsid\n.p2align 2\n_clsid:\n.long {0}\n.short {1}\n.short {2}\n.byte {3}\n.byte {4}\n.byte {5}\n.byte {6}\n.byte {7}\n.byte {8}\n.byte {9}\n.byte {10}\n.text", const (1010256448 as i32) as u32, const (47844 as i32) as u16, const (4559 as i32) as u16, const (191 as i32) as u8, const (125 as i32) as u8, const (0 as i32) as u8, const (170 as i32) as u8, const (0 as i32) as u8, const (105 as i32) as u8, const (70 as i32) as u8, const (238 as i32) as u8);
-// AARCH64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .rdata$clsid,\"dr\",discard,clsid\n.globl clsid\n.p2align 2\nclsid:\n.long {0}\n.short {1}\n.short {2}\n.byte {3}\n.byte {4}\n.byte {5}\n.byte {6}\n.byte {7}\n.byte {8}\n.byte {9}\n.byte {10}\n.text", const (1010256448 as i32) as u32, const (47844 as i32) as u16, const (4559 as i32) as u16, const (191 as i32) as u8, const (125 as i32) as u8, const (0 as i32) as u8, const (170 as i32) as u8, const (0 as i32) as u8, const (105 as i32) as u8, const (70 as i32) as u8, const (238 as i32) as u8);
-// CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .rdata$max_buffers,\"dr\",discard,max_buffers\n.globl max_buffers\n.p2align 2\nmax_buffers:\n.long {0}\n.text", const (8 as i32) as u32);
-// I686-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .rdata$_max_buffers,\"dr\",discard,_max_buffers\n.globl _max_buffers\n.p2align 2\n_max_buffers:\n.long {0}\n.text", const (8 as i32) as u32);
-// AARCH64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .rdata$max_buffers,\"dr\",discard,max_buffers\n.globl max_buffers\n.p2align 2\nmax_buffers:\n.long {0}\n.text", const (8 as i32) as u32);
-// CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$mixed,\"dw\",discard,mixed\n.globl mixed\n.p2align 3\nmixed:\n.byte {0}\n.zero 7\n.quad {1}\n.short {2}\n.short {3}\n.zero 4\n.text", const (109 as i32) as i8, const (-2.5f64).to_bits(), const -(7 as i32) as i16, const (300 as i32) as i16);
-// I686-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$_mixed,\"dw\",discard,_mixed\n.globl _mixed\n.p2align 3\n_mixed:\n.byte {0}\n.zero 7\n.quad {1}\n.short {2}\n.short {3}\n.zero 4\n.text", const (109 as i32) as i8, const (-2.5f64).to_bits(), const -(7 as i32) as i16, const (300 as i32) as i16);
-// AARCH64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$mixed,\"dw\",discard,mixed\n.globl mixed\n.p2align 3\nmixed:\n.byte {0}\n.zero 7\n.quad {1}\n.short {2}\n.short {3}\n.zero 4\n.text", const (109 as i32) as i8, const (-2.5f64).to_bits(), const -(7 as i32) as i16, const (300 as i32) as i16);
-// CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$word,\"dw\",discard,word\n.globl word\n.p2align 2\nword:\n.byte {0}\n.byte {1}\n.byte {2}\n.byte {3}\n.text", const (1 as i32) as u8, const (2 as i32) as u8, const (3 as i32) as u8, const (4 as i32) as u8);
-// I686-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$_word,\"dw\",discard,_word\n.globl _word\n.p2align 2\n_word:\n.byte {0}\n.byte {1}\n.byte {2}\n.byte {3}\n.text", const (1 as i32) as u8, const (2 as i32) as u8, const (3 as i32) as u8, const (4 as i32) as u8);
-// AARCH64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$word,\"dw\",discard,word\n.globl word\n.p2align 2\nword:\n.byte {0}\n.byte {1}\n.byte {2}\n.byte {3}\n.text", const (1 as i32) as u8, const (2 as i32) as u8, const (3 as i32) as u8, const (4 as i32) as u8);
-// CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$aligned,\"dw\",discard,aligned\n.globl aligned\n.p2align 5\naligned:\n.quad {0}\n.text", const -(1 as i32) as i64);
-// I686-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$_aligned,\"dw\",discard,_aligned\n.globl _aligned\n.p2align 5\n_aligned:\n.quad {0}\n.text", const -(1 as i32) as i64);
-// AARCH64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$aligned,\"dw\",discard,aligned\n.globl aligned\n.p2align 5\naligned:\n.quad {0}\n.text", const -(1 as i32) as i64);
-// CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$partial,\"dw\",discard,partial\n.globl partial\n.p2align 4\npartial:\n.long {0}\n.long {1}\n.zero 16\n.text", const 1 as i32, const 2 as i32);
-// I686-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$_partial,\"dw\",discard,_partial\n.globl _partial\n.p2align 2\n_partial:\n.long {0}\n.long {1}\n.zero 16\n.text", const 1 as i32, const 2 as i32);
-// AARCH64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$partial,\"dw\",discard,partial\n.globl partial\n.p2align 2\npartial:\n.long {0}\n.long {1}\n.zero 16\n.text", const 1 as i32, const 2 as i32);
-// CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$ratio,\"dw\",discard,ratio\n.globl ratio\n.p2align 2\nratio:\n.long {0}\n.text", const 0.75f32.to_bits());
-// I686-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$_ratio,\"dw\",discard,_ratio\n.globl _ratio\n.p2align 2\n_ratio:\n.long {0}\n.text", const 0.75f32.to_bits());
-// AARCH64-PC-WINDOWS-MSVC-NEXT: core::arch::global_asm!(".section .data$ratio,\"dw\",discard,ratio\n.globl ratio\n.p2align 2\nratio:\n.long {0}\n.text", const 0.75f32.to_bits());
-// CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
-// X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .data$zeroed,\"dw\",discard,zeroed\n.globl zeroed\n.p2align 0\nzeroed:\n.zero 3\n.text"
-// I686-PC-WINDOWS-MSVC-NEXT:     ".section .data$_zeroed,\"dw\",discard,_zeroed\n.globl _zeroed\n.p2align 0\n_zeroed:\n.zero 3\n.text"
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .data$zeroed,\"dw\",discard,zeroed\n.globl zeroed\n.p2align 0\nzeroed:\n.zero 3\n.text"
+// X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .data$counter,\"dw\",discard,counter\n.globl counter\n.p2align 2\ncounter:\n.long {0}\n.text",
+// I686-PC-WINDOWS-MSVC-NEXT:     ".section .data$_counter,\"dw\",discard,_counter\n.globl _counter\n.p2align 2\n_counter:\n.long {0}\n.text",
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .data$counter,\"dw\",discard,counter\n.globl counter\n.p2align 2\ncounter:\n.long {0}\n.text",
+// CHECK-NEXT:     const 30 as i32,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
-// X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$banner,\"dr\",discard,banner\n.globl banner\n.p2align 0\nbanner:\n.byte 115\n.byte 108\n.byte 97\n.byte 116\n.byte 101\n.byte 0\n.text"
-// I686-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$_banner,\"dr\",discard,_banner\n.globl _banner\n.p2align 0\n_banner:\n.byte 115\n.byte 108\n.byte 97\n.byte 116\n.byte 101\n.byte 0\n.text"
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$banner,\"dr\",discard,banner\n.globl banner\n.p2align 0\nbanner:\n.byte 115\n.byte 108\n.byte 97\n.byte 116\n.byte 101\n.byte 0\n.text"
+// X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$clsid,\"dr\",discard,clsid\n.globl clsid\n.p2align 2\nclsid:\n.long {0}\n.short {1}\n.short {2}\n.byte {3}\n.byte {4}\n.byte {5}\n.byte {6}\n.byte {7}\n.byte {8}\n.byte {9}\n.byte {10}\n.text",
+// I686-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$_clsid,\"dr\",discard,_clsid\n.globl _clsid\n.p2align 2\n_clsid:\n.long {0}\n.short {1}\n.short {2}\n.byte {3}\n.byte {4}\n.byte {5}\n.byte {6}\n.byte {7}\n.byte {8}\n.byte {9}\n.byte {10}\n.text",
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$clsid,\"dr\",discard,clsid\n.globl clsid\n.p2align 2\nclsid:\n.long {0}\n.short {1}\n.short {2}\n.byte {3}\n.byte {4}\n.byte {5}\n.byte {6}\n.byte {7}\n.byte {8}\n.byte {9}\n.byte {10}\n.text",
+// CHECK-NEXT:     const (1010256448 as i32) as u32,
+// CHECK-NEXT:     const (47844 as i32) as u16,
+// CHECK-NEXT:     const (4559 as i32) as u16,
+// CHECK-NEXT:     const (191 as i32) as u8,
+// CHECK-NEXT:     const (125 as i32) as u8,
+// CHECK-NEXT:     const (0 as i32) as u8,
+// CHECK-NEXT:     const (170 as i32) as u8,
+// CHECK-NEXT:     const (0 as i32) as u8,
+// CHECK-NEXT:     const (105 as i32) as u8,
+// CHECK-NEXT:     const (70 as i32) as u8,
+// CHECK-NEXT:     const (238 as i32) as u8,
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: core::arch::global_asm!(
+// X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$max_buffers,\"dr\",discard,max_buffers\n.globl max_buffers\n.p2align 2\nmax_buffers:\n.long {0}\n.text",
+// I686-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$_max_buffers,\"dr\",discard,_max_buffers\n.globl _max_buffers\n.p2align 2\n_max_buffers:\n.long {0}\n.text",
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$max_buffers,\"dr\",discard,max_buffers\n.globl max_buffers\n.p2align 2\nmax_buffers:\n.long {0}\n.text",
+// CHECK-NEXT:     const (8 as i32) as u32,
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: core::arch::global_asm!(
+// X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .data$mixed,\"dw\",discard,mixed\n.globl mixed\n.p2align 3\nmixed:\n.byte {0}\n.zero 7\n.quad {1}\n.short {2}\n.short {3}\n.zero 4\n.text",
+// I686-PC-WINDOWS-MSVC-NEXT:     ".section .data$_mixed,\"dw\",discard,_mixed\n.globl _mixed\n.p2align 3\n_mixed:\n.byte {0}\n.zero 7\n.quad {1}\n.short {2}\n.short {3}\n.zero 4\n.text",
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .data$mixed,\"dw\",discard,mixed\n.globl mixed\n.p2align 3\nmixed:\n.byte {0}\n.zero 7\n.quad {1}\n.short {2}\n.short {3}\n.zero 4\n.text",
+// CHECK-NEXT:     const (109 as i32) as i8,
+// CHECK-NEXT:     const (-2.5f64).to_bits(),
+// CHECK-NEXT:     const -(7 as i32) as i16,
+// CHECK-NEXT:     const (300 as i32) as i16,
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: core::arch::global_asm!(
+// X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .data$word,\"dw\",discard,word\n.globl word\n.p2align 2\nword:\n.byte {0}\n.byte {1}\n.byte {2}\n.byte {3}\n.text",
+// I686-PC-WINDOWS-MSVC-NEXT:     ".section .data$_word,\"dw\",discard,_word\n.globl _word\n.p2align 2\n_word:\n.byte {0}\n.byte {1}\n.byte {2}\n.byte {3}\n.text",
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .data$word,\"dw\",discard,word\n.globl word\n.p2align 2\nword:\n.byte {0}\n.byte {1}\n.byte {2}\n.byte {3}\n.text",
+// CHECK-NEXT:     const (1 as i32) as u8,
+// CHECK-NEXT:     const (2 as i32) as u8,
+// CHECK-NEXT:     const (3 as i32) as u8,
+// CHECK-NEXT:     const (4 as i32) as u8,
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: core::arch::global_asm!(
+// X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .data$aligned,\"dw\",discard,aligned\n.globl aligned\n.p2align 5\naligned:\n.quad {0}\n.text",
+// I686-PC-WINDOWS-MSVC-NEXT:     ".section .data$_aligned,\"dw\",discard,_aligned\n.globl _aligned\n.p2align 5\n_aligned:\n.quad {0}\n.text",
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .data$aligned,\"dw\",discard,aligned\n.globl aligned\n.p2align 5\naligned:\n.quad {0}\n.text",
+// CHECK-NEXT:     const -(1 as i32) as i64,
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: core::arch::global_asm!(
+// X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .data$partial,\"dw\",discard,partial\n.globl partial\n.p2align 4\npartial:\n.long {0}\n.long {1}\n.zero 16\n.text",
+// I686-PC-WINDOWS-MSVC-NEXT:     ".section .data$_partial,\"dw\",discard,_partial\n.globl _partial\n.p2align 2\n_partial:\n.long {0}\n.long {1}\n.zero 16\n.text",
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .data$partial,\"dw\",discard,partial\n.globl partial\n.p2align 2\npartial:\n.long {0}\n.long {1}\n.zero 16\n.text",
+// CHECK-NEXT:     const 1 as i32,
+// CHECK-NEXT:     const 2 as i32,
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: core::arch::global_asm!(
+// X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .data$ratio,\"dw\",discard,ratio\n.globl ratio\n.p2align 2\nratio:\n.long {0}\n.text",
+// I686-PC-WINDOWS-MSVC-NEXT:     ".section .data$_ratio,\"dw\",discard,_ratio\n.globl _ratio\n.p2align 2\n_ratio:\n.long {0}\n.text",
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .data$ratio,\"dw\",discard,ratio\n.globl ratio\n.p2align 2\nratio:\n.long {0}\n.text",
+// CHECK-NEXT:     const 0.75f32.to_bits(),
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: core::arch::global_asm!(
+// X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .data$zeroed,\"dw\",discard,zeroed\n.globl zeroed\n.p2align 0\nzeroed:\n.zero 3\n.text",
+// I686-PC-WINDOWS-MSVC-NEXT:     ".section .data$_zeroed,\"dw\",discard,_zeroed\n.globl _zeroed\n.p2align 0\n_zeroed:\n.zero 3\n.text",
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .data$zeroed,\"dw\",discard,zeroed\n.globl zeroed\n.p2align 0\nzeroed:\n.zero 3\n.text",
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: core::arch::global_asm!(
+// X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$banner,\"dr\",discard,banner\n.globl banner\n.p2align 0\nbanner:\n.byte 115\n.byte 108\n.byte 97\n.byte 116\n.byte 101\n.byte 0\n.text",
+// I686-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$_banner,\"dr\",discard,_banner\n.globl _banner\n.p2align 0\n_banner:\n.byte 115\n.byte 108\n.byte 97\n.byte 116\n.byte 101\n.byte 0\n.text",
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$banner,\"dr\",discard,banner\n.globl banner\n.p2align 0\nbanner:\n.byte 115\n.byte 108\n.byte 97\n.byte 116\n.byte 101\n.byte 0\n.text",
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump([[V_0:__v[0-9]+]]: *mut i32) -> i32 {
@@ -169,30 +210,24 @@ int main(void) { return 0; }
 // CHECK-NEXT:     if (unsafe { clsid.Data1 }) != 1010256448
 // CHECK-NEXT:         || ((unsafe { clsid.Data2 }) as i32) != 47844
 // CHECK-NEXT:         || ((unsafe { clsid.Data3 }) as i32) != 4559
-// CHECK-NEXT:         || ((unsafe { clsid.Data4[7] }) as i32) != 238
-// CHECK-NEXT:     {
+// CHECK-NEXT:         || ((unsafe { clsid.Data4[7] }) as i32) != 238 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if ((unsafe { *raw.add(0) }) as i32) != 64
 // CHECK-NEXT:         || ((unsafe { *raw.add(4) }) as i32) != 228
 // CHECK-NEXT:         || ((unsafe { *raw.add(15) }) as i32) != 238
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || (core::mem::size_of::<__SlateRecord_selectany_globals_c_9>() as u64) != 16
-// I686-PC-WINDOWS-MSVC-NEXT:         || (core::mem::size_of::<__SlateRecord_selectany_globals_c_9>() as u32) != 16
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         || (core::mem::size_of::<__SlateRecord_selectany_globals_c_9>() as u64) != 16
-// CHECK-NEXT:     {
+// X86_64-PC-WINDOWS-MSVC-NEXT:         || (core::mem::size_of::<__SlateRecord_selectany_globals_c_9>() as u64) != 16 {
+// I686-PC-WINDOWS-MSVC-NEXT:         || (core::mem::size_of::<__SlateRecord_selectany_globals_c_9>() as u32) != 16 {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         || (core::mem::size_of::<__SlateRecord_selectany_globals_c_9>() as u64) != 16 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if bump(unsafe { core::ptr::addr_of_mut!(counter) }) != 42
-// CHECK-NEXT:         || (unsafe { counter }) != 42
-// CHECK-NEXT:         || (unsafe { max_buffers }) != 8
-// CHECK-NEXT:     {
+// CHECK-NEXT:         || (unsafe { counter }) != 42 || (unsafe { max_buffers }) != 8 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if ((unsafe { mixed.tag }) as i32) != 109
-// CHECK-NEXT:         || (unsafe { mixed.scale }) != -2.5f64
+// CHECK-NEXT:     if ((unsafe { mixed.tag }) as i32) != 109 || (unsafe { mixed.scale }) != -2.5f64
 // CHECK-NEXT:         || ((unsafe { mixed.pair[0] }) as i32) != -7
-// CHECK-NEXT:         || ((unsafe { mixed.pair[1] }) as i32) != 300
-// CHECK-NEXT:     {
+// CHECK-NEXT:         || ((unsafe { mixed.pair[1] }) as i32) != 300 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
@@ -205,24 +240,19 @@ int main(void) { return 0; }
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if ((unsafe { core::ptr::addr_of_mut!(aligned) }) as u64) & 31 != 0
-// CHECK-NEXT:         || (unsafe { aligned }) != -1
-// CHECK-NEXT:     {
+// CHECK-NEXT:         || (unsafe { aligned }) != -1 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe { partial[0] }) != 1 || (unsafe { partial[1] }) != 2 || (unsafe { partial[5] }) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if (unsafe { partial[0] }) != 1 || (unsafe { partial[1] }) != 2
+// CHECK-NEXT:         || (unsafe { partial[5] }) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         partial[5] = 9;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe { partial[5] }) != 9
-// CHECK-NEXT:         || (unsafe { ratio }) != 0.75f32
-// CHECK-NEXT:         || ((unsafe { zeroed[0] }) as i32)
-// CHECK-NEXT:             | ((unsafe { zeroed[1] }) as i32)
-// CHECK-NEXT:             | ((unsafe { zeroed[2] }) as i32)
-// CHECK-NEXT:             != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if (unsafe { partial[5] }) != 9 || (unsafe { ratio }) != 0.75f32
+// CHECK-NEXT:         || ((unsafe { zeroed[0] }) as i32) | ((unsafe { zeroed[1] }) as i32)
+// CHECK-NEXT:             | ((unsafe { zeroed[2] }) as i32) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     if ((const { core::mem::size_of::<[i8; 6]>() }) as u64) != 6
@@ -230,8 +260,7 @@ int main(void) { return 0; }
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     if ((const { core::mem::size_of::<[i8; 6]>() }) as u64) != 6
 // CHECK-NEXT:         || ((unsafe { banner[0] }) as i32) != 115
 // CHECK-NEXT:         || ((unsafe { banner[4] }) as i32) != 101
-// CHECK-NEXT:         || ((unsafe { banner[5] }) as i32) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:         || ((unsafe { banner[5] }) as i32) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

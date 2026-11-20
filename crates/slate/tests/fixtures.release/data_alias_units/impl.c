@@ -23,7 +23,8 @@ int read_sbox_memory(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}/// { dg-options "-fPIE" }
+// CHECK: {{^}}
+// CHECK-NEXT: /// { dg-options "-fPIE" }
 // CHECK-NEXT: static sbox: [u8; 4] = [1, 2, 3, 4];
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -37,7 +38,7 @@ int read_sbox_memory(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // CHECK-NEXT:     ".section .data.alias_refs,\"aw\"\n.balign 8\n.globl alias_refs\nalias_refs:\n.quad crypto_sbox\n.quad table_alias\n.previous",
-// CHECK-NEXT:     options(att_syntax)
+// CHECK-NEXT:     options(att_syntax),
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn sbox_at(i: i32) -> i32 {
@@ -48,7 +49,7 @@ int read_sbox_memory(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             ".pushsection .data.alias_operand_refs,\"aw\"\n.balign 8\n.globl alias_operand_refs\nalias_operand_refs:\n.quad crypto_sbox\n.quad table_alias\n.popsection",
-// CHECK-NEXT:             options(nostack, att_syntax)
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -57,7 +58,11 @@ int read_sbox_memory(void) {
 // CHECK-NEXT:     let mut value: u32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!("movzbl crypto_sbox(%rip), {0:e}", lateout(reg) [[T_0]], options(pure, readonly, nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "movzbl crypto_sbox(%rip), {0:e}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             options(pure, readonly, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value as i32

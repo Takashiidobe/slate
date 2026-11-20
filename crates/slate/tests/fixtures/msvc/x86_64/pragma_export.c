@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::abort;
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
-// CHECK-NEXT:     ".section .drectve,\"yni\"\n.ascii \" /export:exp_fn /export:alias_fn=inner_fn /export:exp_data,DATA\""
+// CHECK-NEXT:     ".section .drectve,\"yni\"\n.ascii \" /export:exp_fn /export:alias_fn=inner_fn /export:exp_data,DATA\"",
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -77,21 +77,19 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let self_: *mut HINSTANCE__ = unsafe { GetModuleHandleA(core::ptr::null::<i8>()) };
 // CHECK-NEXT:     let exported: Option<unsafe extern "C-unwind" fn() -> i32> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn() -> i64>,
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn() -> i32>,
-// CHECK-NEXT:         >(unsafe { GetProcAddress(self_, c"exp_fn".as_ptr()) })
+// CHECK-NEXT:         core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i64>, Option<unsafe extern "C-unwind" fn() -> i32>>(
+// CHECK-NEXT:             unsafe { GetProcAddress(self_, c"exp_fn".as_ptr()) },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let aliased: Option<unsafe extern "C-unwind" fn() -> i32> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn() -> i64>,
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn() -> i32>,
-// CHECK-NEXT:         >(unsafe { GetProcAddress(self_, c"alias_fn".as_ptr()) })
+// CHECK-NEXT:         core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i64>, Option<unsafe extern "C-unwind" fn() -> i32>>(
+// CHECK-NEXT:             unsafe { GetProcAddress(self_, c"alias_fn".as_ptr()) },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let data: *mut i32 = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i64>, *mut i32>(unsafe {
-// CHECK-NEXT:             GetProcAddress(self_, c"exp_data".as_ptr())
-// CHECK-NEXT:         })
+// CHECK-NEXT:         core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i64>, *mut i32>(
+// CHECK-NEXT:             unsafe { GetProcAddress(self_, c"exp_data".as_ptr()) },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = exported == None || (unsafe { exported.unwrap()() }) != 7;
 // CHECK-NEXT:     if [[V_0]] {

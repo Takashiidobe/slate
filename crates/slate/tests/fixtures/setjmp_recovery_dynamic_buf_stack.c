@@ -37,22 +37,35 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! THROW {
 // CHECK-NEXT:     ($v:expr) => {
-// CHECK-NEXT:         let __v : i32 = unsafe { jb_top }; let [[V_0:__v[0-9]+]] : i32 = __v - 1; unsafe { jb_top =
-// CHECK-NEXT:         [[V_0]]; } unsafe { longjmp((* unsafe { jb_stack } .offset([[V_0]] as isize))
-// CHECK-NEXT:         .as_mut_ptr() as * mut __jmp_buf_tag, $v) };
+// CHECK-NEXT:         let __v: i32 = unsafe { jb_top };
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = __v - 1;
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             jb_top = [[V_0]];
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             longjmp(
+// CHECK-NEXT:                 (*unsafe { jb_stack }.offset([[V_0]] as isize)).as_mut_ptr()
+// CHECK-NEXT:                     as *mut __jmp_buf_tag,
+// CHECK-NEXT:                 $v,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn _setjmp([[ARG_0:arg[0-9]+]]: *mut __jmp_buf_tag) -> i32;
 // CHECK-NEXT:     fn longjmp([[ARG_0]]: *mut __jmp_buf_tag, [[ARG_1:arg[0-9]+]]: i32);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord___sigset_t_h_8 {
 // CHECK-NEXT:     __val: [u64; 16],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __jmp_buf_tag {
@@ -60,15 +73,20 @@ int main(void) {
 // CHECK-NEXT:     __mask_was_saved: i32,
 // CHECK-NEXT:     __saved_mask: __SlateRecord___sigset_t_h_8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut jb_stack: *mut [__jmp_buf_tag; 1] = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut jb_top: i32 = 0;
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn inner(fail: i32) {
 // CHECK-NEXT:     if fail != 0 {
 // CHECK-NEXT:         THROW!(42i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn run_case(id: i32, fail: i32) {
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = unsafe { jb_top };
 // CHECK-NEXT:     unsafe {
@@ -79,14 +97,14 @@ int main(void) {
 // CHECK-NEXT:             (*unsafe { jb_stack }.offset([[V_1]] as isize)).as_mut_ptr()
 // CHECK-NEXT:                 as *mut __jmp_buf_tag,
 // CHECK-NEXT:         )
-// CHECK-NEXT:     }) == 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) == 0 {
 // CHECK-NEXT:         inner(fail);
 // CHECK-NEXT:         println!("case {}: no exception", id);
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         println!("case {}: caught", id);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         jb_stack = (malloc(
@@ -99,6 +117,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { free((jb_stack as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -14,11 +14,14 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.debugtrap"]
 // CHECK-NEXT:     fn __slate_intrinsic_b996fac1ccf0610c();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut debugtrap_never: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(debugtrap_never)) }) != 0 {
 // CHECK-NEXT:         unsafe { __slate_intrinsic_b996fac1ccf0610c() };
@@ -26,6 +29,7 @@ int main(void) {
 // CHECK-NEXT:     println!("ok");
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

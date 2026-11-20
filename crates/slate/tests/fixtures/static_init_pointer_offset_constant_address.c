@@ -30,21 +30,27 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static sysctl_vals: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:     0i32, 1i32, 2i32, 100i32,
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static sysctl_vals: __SlateAlign16<[i32; 4]> = __SlateAlign16(
+// CHECK-NEXT:     [0i32, 1i32, 2i32, 100i32],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct list_head {
 // CHECK-NEXT:     next: *mut list_head,
 // CHECK-NEXT:     prev: *mut list_head,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct ctl {
@@ -52,6 +58,7 @@ int main(void) {
 // CHECK-NEXT:     min: *mut (),
 // CHECK-NEXT:     max: *mut (),
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut poisoned: list_head = list_head {
 // CHECK-NEXT:     next: ((unsafe {
 // CHECK-NEXT:         ((256i32 as *mut ()) as *const u8)
@@ -62,29 +69,40 @@ int main(void) {
 // CHECK-NEXT:             .wrapping_offset(16045481047390945280u64 as isize)
 // CHECK-NEXT:     }) as *mut ()) as *mut list_head,
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut skb_next: *mut () = 16045481047390947328u64 as *mut ();
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut char_offset: *mut i8 = (4096i32 as *mut i8).wrapping_offset(32i32 as isize);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut int_offset: *mut i32 = (4096i32 as *mut i32).wrapping_offset(4i32 as isize);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut back: *mut i32 = (4096i32 as *mut i32).wrapping_offset(-(2i32 as isize));
-// CHECK-NEXT: static mut table: __SlateAlign16<[ctl; 2]> = __SlateAlign16([
-// CHECK-NEXT:     ctl {
-// CHECK-NEXT:         name: (b"one\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         min: unsafe { core::ptr::addr_of!(sysctl_vals.0) as *const i32 }
-// CHECK-NEXT:             .wrapping_offset(1i32 as isize) as *mut (),
-// CHECK-NEXT:         max: unsafe { core::ptr::addr_of!(sysctl_vals.0) as *const i32 }
-// CHECK-NEXT:             .wrapping_offset(3i32 as isize) as *mut (),
-// CHECK-NEXT:     },
-// CHECK-NEXT:     ctl {
-// CHECK-NEXT:         name: core::ptr::null::<i8>(),
-// CHECK-NEXT:         min: core::ptr::null_mut::<()>(),
-// CHECK-NEXT:         max: core::ptr::null_mut::<()>(),
-// CHECK-NEXT:     },
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut table: __SlateAlign16<[ctl; 2]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         ctl {
+// CHECK-NEXT:             name: (b"one\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:             min: unsafe { core::ptr::addr_of!(sysctl_vals.0) as *const i32 }
+// CHECK-NEXT:                 .wrapping_offset(1i32 as isize) as *mut (),
+// CHECK-NEXT:             max: unsafe { core::ptr::addr_of!(sysctl_vals.0) as *const i32 }
+// CHECK-NEXT:                 .wrapping_offset(3i32 as isize) as *mut (),
+// CHECK-NEXT:         },
+// CHECK-NEXT:         ctl {
+// CHECK-NEXT:             name: core::ptr::null::<i8>(),
+// CHECK-NEXT:             min: core::ptr::null_mut::<()>(),
+// CHECK-NEXT:             max: core::ptr::null_mut::<()>(),
+// CHECK-NEXT:         },
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut later: *const i32 = unsafe { core::ptr::addr_of!(unsized_vals) as *const i32 }
 // CHECK-NEXT:     .wrapping_offset(2i32 as isize);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut past: *const i32 = unsafe { core::ptr::addr_of!(sysctl_vals.0) as *const i32 }
 // CHECK-NEXT:     .wrapping_offset(4i32 as isize);
+// CHECK-EMPTY:
 // CHECK-NEXT: static unsized_vals: [i32; 3] = [7, 8, 9];
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
@@ -119,6 +137,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

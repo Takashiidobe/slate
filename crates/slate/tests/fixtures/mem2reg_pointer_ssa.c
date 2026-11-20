@@ -21,8 +21,9 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", (unsafe { * return_global() }) + unsafe { * (* return_global_pointer()) } +
-// CHECK-NEXT:         unsafe { * return_element() }
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         (unsafe { *return_global() }) + unsafe { *(*return_global_pointer()) }
+// CHECK-NEXT:             + unsafe { *return_element() }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

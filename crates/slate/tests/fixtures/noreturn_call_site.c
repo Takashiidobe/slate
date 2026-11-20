@@ -34,22 +34,29 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush([[ARG_0:arg[0-9]+]]: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut stage: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.finish")]
 // CHECK-NEXT: extern "C-unwind" fn finish(code: i32) {
 // CHECK-NEXT:     println!("finish {} stage {}", code, unsafe { stage });
 // CHECK-NEXT:     unsafe { fflush(slate_support::stdout()) };
 // CHECK-NEXT:     unsafe { std::process::exit(code as i32) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::exit;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn stop(code: i32) {
 // CHECK-NEXT:     finish(code + 1);
 // CHECK-NEXT:     unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut finisher: Option<unsafe extern "C-unwind" fn(i32)> = Some(finish);
+// CHECK-EMPTY:
 // CHECK-NEXT: fn step(value: i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         stage = value;
@@ -62,6 +69,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         step(i);
@@ -70,6 +78,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { unsafe { finisher }.unwrap()(9i32) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

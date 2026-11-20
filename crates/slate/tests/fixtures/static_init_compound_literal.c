@@ -63,32 +63,38 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct key {
 // CHECK-NEXT:     enabled: i32,
 // CHECK-NEXT:     [[SLATE_ANON_0:__slate_anon_[0-9]+]]: __SlateRecord_static_init_compound_literal_c_5,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_static_init_compound_literal_c_5 {
 // CHECK-NEXT:     r#type: u64,
 // CHECK-NEXT:     entries: *mut (),
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct key_false {
 // CHECK-NEXT:     key: key,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct lock {
 // CHECK-NEXT:     raw: u32,
 // CHECK-NEXT:     name: *const i8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct tracepoint {
@@ -96,12 +102,14 @@ int main(void) {
 // CHECK-NEXT:     key: key_false,
 // CHECK-NEXT:     reg: Option<unsafe extern "C-unwind" fn() -> i32>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union word {
 // CHECK-NEXT:     value: u32,
 // CHECK-NEXT:     bytes: [u8; 4],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct ratelimit {
@@ -109,13 +117,17 @@ int main(void) {
 // CHECK-NEXT:     interval: i32,
 // CHECK-NEXT:     burst: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.reg_fn")]
 // CHECK-NEXT: extern "C-unwind" fn reg_fn() -> i32 {
 // CHECK-NEXT:     5
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut single: key_false = key_false {
 // CHECK-NEXT:     key: {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: key = unsafe { core::mem::zeroed() };
@@ -126,12 +138,14 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut spin: lock = {
 // CHECK-NEXT:     let mut [[T_0]]: lock = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].raw = 1u32;
 // CHECK-NEXT:     [[T_0]].name = (b"spin\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut tracepoint: tracepoint = tracepoint {
 // CHECK-NEXT:     name: (b"tp\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:     key: key_false {
@@ -146,24 +160,30 @@ int main(void) {
 // CHECK-NEXT:     },
 // CHECK-NEXT:     reg: Some(reg_fn),
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut locks: __SlateAlign16<[lock; 2]> = __SlateAlign16([
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_0]]: lock = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].raw = 1u32;
-// CHECK-NEXT:         [[T_0]].name = (b"a\0".as_ptr() as *mut i8) as *const i8;
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     },
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: lock = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]].raw = 1u32;
-// CHECK-NEXT:         [[T_1]].name = (b"b\0".as_ptr() as *mut i8) as *const i8;
-// CHECK-NEXT:         [[T_1]]
-// CHECK-NEXT:     },
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut locks: __SlateAlign16<[lock; 2]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0]]: lock = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]].raw = 1u32;
+// CHECK-NEXT:             [[T_0]].name = (b"a\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: lock = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]].raw = 1u32;
+// CHECK-NEXT:             [[T_1]].name = (b"b\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:             [[T_1]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut word: word = word { value: 16909060u32 };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut spin_address: *mut lock = unsafe {
 // CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_compound_spin_address_0)
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn ratelimited() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         rs.burst = rs.burst - 1;
@@ -173,6 +193,7 @@ int main(void) {
 // CHECK-NEXT:         .wrapping_add((unsafe { rs.interval }) as u32)
 // CHECK-NEXT:         .wrapping_add((unsafe { rs.burst }) as u32) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut rs: ratelimit = ratelimit {
 // CHECK-NEXT:     lock: {
 // CHECK-NEXT:         let mut [[T_0]]: lock = unsafe { core::mem::zeroed() };
@@ -183,6 +204,7 @@ int main(void) {
 // CHECK-NEXT:     interval: 10i32,
 // CHECK-NEXT:     burst: 3i32,
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
@@ -209,12 +231,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), first, ratelimited()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut __slate_compound_spin_address_0: lock = {
 // CHECK-NEXT:     let mut [[T_0]]: lock = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].raw = 9u32;
 // CHECK-NEXT:     [[T_0]].name = (b"addr\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -22,20 +22,26 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __builtin_assume_aligned([[ARG_0:arg[0-9]+]]: *const (), [[ARG_1:arg[0-9]+]]: u64, ...) -> *mut ();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign32<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn first_word(p: *mut ()) -> *mut () {
 // CHECK-NEXT:     let q: *mut () = p as *mut ();
 // CHECK-NEXT:     q
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn first_word_offset(p: *mut (), off: u64) -> *mut () {
 // CHECK-NEXT:     let q: *mut () = p as *mut ();
 // CHECK-NEXT:     q
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: *mut () = first_word(
 // CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(buf.0) as *mut u8 }) as *mut (),
@@ -45,15 +51,20 @@ int main(void) {
 // CHECK-NEXT:         8u64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", (a == ((unsafe { core::ptr::addr_of_mut!(buf.0) as * mut u8 }) as * mut
-// CHECK-NEXT:         ())) as i32, (b == ((unsafe { (core::ptr::addr_of_mut!(buf.0) as * mut u8).add(8)
-// CHECK-NEXT:         }) as * mut ())) as i32
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         (a == ((unsafe { core::ptr::addr_of_mut!(buf.0) as *mut u8 }) as *mut ()))
+// CHECK-NEXT:             as i32,
+// CHECK-NEXT:         (b
+// CHECK-NEXT:             == ((unsafe { (core::ptr::addr_of_mut!(buf.0) as *mut u8).add(8) })
+// CHECK-NEXT:                 as *mut ())) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut buf: __SlateAlign32<[u8; 64]> = __SlateAlign32(unsafe {
-// CHECK-NEXT:     core::mem::zeroed()
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut buf: __SlateAlign32<[u8; 64]> = __SlateAlign32(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

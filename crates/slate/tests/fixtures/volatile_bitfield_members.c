@@ -40,30 +40,23 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct flags {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits0U0,
 // CHECK-NEXT:     x: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct wide {
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits1U0,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u16,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u16, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits0U0 {
 // CHECK-NEXT:         #[bits(3)]
 // CHECK-NEXT:         pub g: i32,
@@ -72,17 +65,7 @@ int main(void) {
 // CHECK-NEXT:         #[bits(9)]
 // CHECK-NEXT:         pub u: u32,
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         [u8;8],
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield([u8; 8], c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits1U0 {
 // CHECK-NEXT:         #[bits(40)]
 // CHECK-NEXT:         pub big: u64,
@@ -92,9 +75,11 @@ int main(void) {
 // CHECK-NEXT:         pub __slate_pad_2: u8,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut global: flags = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: flags = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_g(-1i32);
@@ -103,34 +88,37 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]].x = 7i32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bump(f: *mut flags) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe {
-// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!((* f).__slate_bits_0)).__get_g()
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!((*f).__slate_bits_0)).__get_g()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[T_0]] = [[V_0]] + 1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]] = core::ptr::read_volatile(
-// CHECK-NEXT:             core::ptr::addr_of_mut!((* f).__slate_bits_0),
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*f).__slate_bits_0),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         [[T_1]].__set_g([[T_0]]);
-// CHECK-NEXT:         core::ptr::write_volatile(core::ptr::addr_of_mut!((* f).__slate_bits_0), [[T_1]]);
+// CHECK-NEXT:         core::ptr::write_volatile(core::ptr::addr_of_mut!((*f).__slate_bits_0), [[T_1]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[T_2:__t[0-9]+]] = (((unsafe {
-// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!((* f).__slate_bits_0)).__get_u()
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!((*f).__slate_bits_0)).__get_u()
 // CHECK-NEXT:     }) as i32) * 2 + 1) as u32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut [[T_3:__t[0-9]+]] = core::ptr::read_volatile(
-// CHECK-NEXT:             core::ptr::addr_of_mut!((* f).__slate_bits_0),
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*f).__slate_bits_0),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         [[T_3]].__set_u([[T_2]]);
-// CHECK-NEXT:         core::ptr::write_volatile(core::ptr::addr_of_mut!((* f).__slate_bits_0), [[T_3]]);
+// CHECK-NEXT:         core::ptr::write_volatile(core::ptr::addr_of_mut!((*f).__slate_bits_0), [[T_3]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn read_h(f: *const flags) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!((* f).__slate_bits_0)).__get_h()
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!((*f).__slate_bits_0)).__get_h()
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut w: flags = {
 // CHECK-NEXT:         let mut [[T_0]]: flags = unsafe { core::mem::zeroed() };
@@ -207,12 +195,12 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %u %d\n".as_ptr(),
 // CHECK-NEXT:             core::ptr::read_volatile(
-// CHECK-NEXT:                     core::ptr::addr_of!(* core::ptr::addr_of!(global.__slate_bits_0)),
+// CHECK-NEXT:                     core::ptr::addr_of!(*core::ptr::addr_of!(global.__slate_bits_0)),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .__get_g(),
 // CHECK-NEXT:             read_h(core::ptr::addr_of_mut!(global) as *const flags),
 // CHECK-NEXT:             core::ptr::read_volatile(
-// CHECK-NEXT:                     core::ptr::addr_of!(* core::ptr::addr_of!(global.__slate_bits_0)),
+// CHECK-NEXT:                     core::ptr::addr_of!(*core::ptr::addr_of!(global.__slate_bits_0)),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .__get_u() as i32,
 // CHECK-NEXT:             global.x,
@@ -233,6 +221,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

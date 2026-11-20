@@ -38,25 +38,38 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut quiet_f: f32 = f32::from_bits(0x7fc00000);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut quiet_payload_f: f32 = f32::from_bits(0x7fc00015);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut signaling_f: f32 = f32::from_bits(0x7fa00000);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut signaling_payload_f: f32 = f32::from_bits(0x7f800015);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut quiet_d: f64 = f64::from_bits(0x7ff8000000000000);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut quiet_payload_d: f64 = f64::from_bits(0x7ff8000000000053);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut signaling_d: f64 = f64::from_bits(0x7ff4000000000000);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut signaling_payload_d: f64 = f64::from_bits(0x7ff0000000000123);
-// CHECK-NEXT: static table: __SlateAlign16<[f64; 2]> = __SlateAlign16([
-// CHECK-NEXT:     f64::from_bits(0x7ff0000000000001),
-// CHECK-NEXT:     f64::from_bits(0x7ff8000000000002),
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static table: __SlateAlign16<[f64; 2]> = __SlateAlign16(
+// CHECK-NEXT:     [f64::from_bits(0x7ff0000000000001), f64::from_bits(0x7ff8000000000002)],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memcpy;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bits_f(mut value: f32) -> u32 {
 // CHECK-NEXT:     let mut bits: u32 = 0;
 // CHECK-NEXT:     unsafe {
@@ -70,6 +83,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     bits
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bits_d(mut value: f64) -> u64 {
 // CHECK-NEXT:     let mut bits: u64 = 0;
 // CHECK-NEXT:     unsafe {
@@ -83,6 +97,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     bits
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -117,6 +132,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

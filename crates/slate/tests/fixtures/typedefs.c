@@ -31,19 +31,23 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Box {
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT:     tag: u8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn add_alias(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let c: i32 = a + b;
 // CHECK-NEXT:     c
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: i32 = 40;
 // CHECK-NEXT:     let y: u8 = 200;
@@ -55,9 +59,10 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", bx.tag as i32);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), z) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{}", core::mem::size_of::< i32 > () as i32);
+// CHECK-NEXT:     println!("{}", core::mem::size_of::<i32>() as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

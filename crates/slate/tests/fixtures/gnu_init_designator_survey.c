@@ -52,53 +52,64 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union Castable {
 // CHECK-NEXT:     i: i32,
 // CHECK-NEXT:     f: f32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Point {
 // CHECK-NEXT:     x: i32,
 // CHECK-NEXT:     y: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Sized {
 // CHECK-NEXT:     n: i32,
 // CHECK-NEXT:     data: [i32; 0],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateStorage_sized {
 // CHECK-NEXT:     n: i32,
 // CHECK-NEXT:     data: [i32; 3],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut sized: __SlateStorage_sized = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: __SlateStorage_sized = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].n = 3i32;
 // CHECK-NEXT:     [[T_0]].data = [10i32, 20i32, 30i32];
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let range_values: __SlateAlign16<[i32; 10]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0]]: [i32; 10] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = 9i32;
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: usize = 2;
-// CHECK-NEXT:         while [[T_2]] <= 5 {
-// CHECK-NEXT:             [[T_0]][[[T_2]]] = [[T_1]];
-// CHECK-NEXT:             [[T_2]] += 1;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let range_values: __SlateAlign16<[i32; 10]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0]]: [i32; 10] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = 9i32;
+// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: usize = 2;
+// CHECK-NEXT:             while [[T_2]] <= 5 {
+// CHECK-NEXT:                 [[T_0]][[[T_2]]] = [[T_1]];
+// CHECK-NEXT:                 [[T_2]] += 1;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let old_index: [i32; 3] = {
 // CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: [i32; 3] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]][1] = 11i32;
@@ -113,16 +124,28 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu\n".as_ptr(), 4u64, 0u64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", unsafe { * (core::ptr::addr_of_mut!((*
-// CHECK-NEXT:         (core::ptr::addr_of_mut!(sized) as * mut Sized)).data) as * mut i32).add(0) },
-// CHECK-NEXT:         unsafe { * (core::ptr::addr_of_mut!((* (core::ptr::addr_of_mut!(sized) as * mut
-// CHECK-NEXT:         Sized)).data) as * mut i32).add(1) }, unsafe { * (core::ptr::addr_of_mut!((*
-// CHECK-NEXT:         (core::ptr::addr_of_mut!(sized) as * mut Sized)).data) as * mut i32).add(2) }
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *(core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(sized)
+// CHECK-NEXT:                     as *mut Sized)).data) as *mut i32)
+// CHECK-NEXT:                 .add(0)
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *(core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(sized)
+// CHECK-NEXT:                     as *mut Sized)).data) as *mut i32)
+// CHECK-NEXT:                 .add(1)
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *(core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(sized)
+// CHECK-NEXT:                     as *mut Sized)).data) as *mut i32)
+// CHECK-NEXT:                 .add(2)
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), 4u64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

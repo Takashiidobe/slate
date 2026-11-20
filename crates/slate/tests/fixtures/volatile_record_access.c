@@ -35,12 +35,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union Interrupt {
 // CHECK-NEXT:     flag: i32,
 // CHECK-NEXT:     padding: f64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct State {
@@ -49,23 +51,29 @@ int main(void) {
 // CHECK-NEXT:     counters: [u16; 3],
 // CHECK-NEXT:     pointer: *mut i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_volatile_record_access_c_6 {
 // CHECK-NEXT:     interrupted: i32,
 // CHECK-NEXT:     padding: f64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut global: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn once(state: &State) -> *mut State {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (state as *const State) as *mut State
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut interrupt: Interrupt = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Interrupt = unsafe { core::mem::zeroed() };
@@ -81,9 +89,9 @@ int main(void) {
 // CHECK-NEXT:     state.pointer = core::ptr::addr_of_mut!(target) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_volatile(
-// CHECK-NEXT:             core::ptr::addr_of_mut!(
-// CHECK-NEXT:                 (* once(& (* core::ptr::addr_of_mut!(state)))).[[SLATE_ANON_0]].interrupted
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*once(
+// CHECK-NEXT:                 &(*core::ptr::addr_of_mut!(state)),
+// CHECK-NEXT:             )).[[SLATE_ANON_0]].interrupted),
 // CHECK-NEXT:             17i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -102,7 +110,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_volatile(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(global),
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!((* view).flag))
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!((*view).flag))
 // CHECK-NEXT:                 + core::ptr::read_volatile(
 // CHECK-NEXT:                     core::ptr::addr_of!(state.[[SLATE_ANON_0]].interrupted),
 // CHECK-NEXT:                 ),
@@ -112,13 +120,12 @@ int main(void) {
 // CHECK-NEXT:         core::ptr::read_volatile((state.counters.as_mut_ptr() as *mut u16).add(2))
 // CHECK-NEXT:     }) as i32) != 123 || target != 11
 // CHECK-NEXT:         || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(global)) }) != 26
-// CHECK-NEXT:         || (unsafe { calls }) != 1
-// CHECK-NEXT:     {
+// CHECK-NEXT:         || (unsafe { calls }) != 1 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let all: *mut State = core::ptr::addr_of_mut!(state) as *mut State;
-// CHECK-NEXT:     unsafe { core::ptr::write_volatile(core::ptr::addr_of_mut!((* all).before), 31i32) };
-// CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!((* all).before)) }) != 31 {
+// CHECK-NEXT:     unsafe { core::ptr::write_volatile(core::ptr::addr_of_mut!((*all).before), 31i32) };
+// CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!((*all).before)) }) != 31 {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -129,12 +136,13 @@ int main(void) {
 // CHECK-NEXT:             core::ptr::read_volatile((state.counters.as_mut_ptr() as *mut u16).add(2))
 // CHECK-NEXT:                 as i32,
 // CHECK-NEXT:             target,
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!((* all).before)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!((*all).before)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

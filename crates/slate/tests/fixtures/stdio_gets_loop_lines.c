@@ -29,16 +29,22 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fgets([[ARG_0:arg[0-9]+]]: *mut i8, [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: *mut slate_support::FILE) -> *mut i8;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::remove;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         remove(c"slate_stdio_gets_loop_lines.tmp".as_ptr() as *const core::ffi::c_char)
@@ -74,10 +80,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut line: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     while !unsafe {
-// CHECK-NEXT:         fgets(line.0.as_mut_ptr() as *mut i8, core::mem::size_of::<[i8; 64]>() as i32, g)
-// CHECK-NEXT:     }
-// CHECK-NEXT:         .is_null()
-// CHECK-NEXT:     {
+// CHECK-NEXT:             fgets(
+// CHECK-NEXT:                 line.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:                 core::mem::size_of::<[i8; 64]>() as i32,
+// CHECK-NEXT:                 g,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
+// CHECK-NEXT:         .is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::fputs(
@@ -94,6 +103,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

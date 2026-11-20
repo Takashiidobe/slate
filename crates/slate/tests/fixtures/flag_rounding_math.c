@@ -186,7 +186,9 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-EMPTY:
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // X86_64-UNKNOWN-LINUX-GNU-EMPTY:
-// X86_64-UNKNOWN-LINUX-GNU-NEXT: static modes: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32, 2048i32, 1024i32, 3072i32]);
+// X86_64-UNKNOWN-LINUX-GNU-NEXT: static modes: __SlateAlign16<[i32; 4]> = __SlateAlign16(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:     [0i32, 2048i32, 1024i32, 3072i32],
+// X86_64-UNKNOWN-LINUX-GNU-NEXT: );
 // I686-UNKNOWN-LINUX-GNU-NEXT: static modes: [i32; 4] = [0, 2048, 1024, 3072];
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT: static modes: [i32; 4] = [0, 4194304, 8388608, 12582912];
 // CHECK-EMPTY:
@@ -209,9 +211,12 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         unsafe { fesetround(modes[m as usize]) };
 // CHECK-NEXT:         let folded: f64 = unsafe { __slate_fenv_div_f64(1.0f64, 3.0f64) };
 // CHECK-NEXT:         let sum: f64 = unsafe { __slate_fenv_add_f64(1.0f64, 8.673617379884035e-19f64) };
-// CHECK-NEXT:         let diff: f64 = unsafe { __slate_fenv_sub_f64(-1.0f64, 8.673617379884035e-19f64) };
-// CHECK-NEXT:         let prod: f64 =
-// CHECK-NEXT:             unsafe { __slate_fenv_mul_f64(1.0000000037252903f64, 1.0000000037252903f64) };
+// CHECK-NEXT:         let diff: f64 = unsafe {
+// CHECK-NEXT:             __slate_fenv_sub_f64(-1.0f64, 8.673617379884035e-19f64)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         let prod: f64 = unsafe {
+// CHECK-NEXT:             __slate_fenv_mul_f64(1.0000000037252903f64, 1.0000000037252903f64)
+// CHECK-NEXT:         };
 // CHECK-NEXT:         let foldedf: f32 = unsafe { __slate_fenv_div_f32(1.0f32, 3.0f32) };
 // CHECK-NEXT:         let quot: f64 = unsafe {
 // CHECK-NEXT:             __slate_fenv_div_f64(
@@ -221,7 +226,10 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let mut acc: f64 = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) };
 // CHECK-NEXT:         acc = unsafe {
-// CHECK-NEXT:             __slate_fenv_add_f64(acc, core::ptr::read_volatile(core::ptr::addr_of!(tiny)))
+// CHECK-NEXT:             __slate_fenv_add_f64(
+// CHECK-NEXT:                 acc,
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(tiny)),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         acc = unsafe {
 // CHECK-NEXT:             __slate_fenv_sub_f64(
@@ -233,10 +241,16 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         acc = unsafe {
-// CHECK-NEXT:             __slate_fenv_mul_f64(acc, core::ptr::read_volatile(core::ptr::addr_of!(three)))
+// CHECK-NEXT:             __slate_fenv_mul_f64(
+// CHECK-NEXT:                 acc,
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(three)),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         acc = unsafe {
-// CHECK-NEXT:             __slate_fenv_div_f64(acc, core::ptr::read_volatile(core::ptr::addr_of!(three)))
+// CHECK-NEXT:             __slate_fenv_div_f64(
+// CHECK-NEXT:                 acc,
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(three)),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let quotf: f32 = unsafe {
 // CHECK-NEXT:             __slate_fenv_div_f32(
@@ -245,18 +259,28 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let narrow: f32 = unsafe { __slate_fenv_f64_to_f32(quot) };
-// CHECK-NEXT:         let narrowc: f32 = unsafe { __slate_fenv_f64_to_f32(__slate_fenv_div_f64(1.0f64, 3.0f64)) };
+// CHECK-NEXT:         let narrowc: f32 = unsafe {
+// CHECK-NEXT:             __slate_fenv_f64_to_f32(__slate_fenv_div_f64(1.0f64, 3.0f64))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         let fromi: f64 = unsafe {
-// CHECK-NEXT:             __slate_fenv_i64_to_f64(core::ptr::read_volatile(core::ptr::addr_of!(big)) as i64)
+// CHECK-NEXT:             __slate_fenv_i64_to_f64(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(big)) as i64,
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let fromu: f64 = unsafe {
-// CHECK-NEXT:             __slate_fenv_u64_to_f64(core::ptr::read_volatile(core::ptr::addr_of!(ubig)) as u64)
+// CHECK-NEXT:             __slate_fenv_u64_to_f64(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(ubig)) as u64,
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let fromodd: f32 = unsafe {
-// CHECK-NEXT:             __slate_fenv_i64_to_f32(core::ptr::read_volatile(core::ptr::addr_of!(odd)) as i64)
+// CHECK-NEXT:             __slate_fenv_i64_to_f32(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(odd)) as i64,
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let fromi64: f32 = unsafe {
-// CHECK-NEXT:             __slate_fenv_i64_to_f32(core::ptr::read_volatile(core::ptr::addr_of!(big)) as i64)
+// CHECK-NEXT:             __slate_fenv_i64_to_f32(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(big)) as i64,
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         let fromwide: f64 = __slate_rounding::i128_to_f64(
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(wide)) },

@@ -40,6 +40,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(linkage)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     #[linkage = "extern_weak"]
 // CHECK-NEXT:     static missing_vendor: *mut kobj_attribute;
@@ -54,24 +55,30 @@ int main(void) {
 // CHECK-NEXT:     #[link_name = "missing_counter"]
 // CHECK-NEXT:     static mut __slate_weak_address_missing_counter: i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct attribute {
 // CHECK-NEXT:     name: *const i8,
 // CHECK-NEXT:     mode: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct kobj_attribute {
 // CHECK-NEXT:     attr: attribute,
 // CHECK-NEXT:     show: Option<unsafe extern "C-unwind" fn() -> i64>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut present: kobj_attribute = kobj_attribute {
 // CHECK-NEXT:     attr: {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: attribute = unsafe { core::mem::zeroed() };
@@ -81,18 +88,24 @@ int main(void) {
 // CHECK-NEXT:     },
 // CHECK-NEXT:     show: None,
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut attributes: __SlateAlign16<[*mut attribute; 4]> = __SlateAlign16([
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(present.attr) },
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(__slate_weak_address_missing_vendor.attr) },
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(__slate_weak_address_missing_runtime.attr) },
-// CHECK-NEXT:     core::ptr::null_mut::<attribute>(),
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut attributes: __SlateAlign16<[*mut attribute; 4]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(present.attr) },
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(__slate_weak_address_missing_vendor.attr) },
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(__slate_weak_address_missing_runtime.attr) },
+// CHECK-NEXT:         core::ptr::null_mut::<attribute>(),
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut counter: *mut i32 = unsafe {
 // CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_weak_address_missing_counter)
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut whole: *mut kobj_attribute = unsafe {
 // CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_weak_address_missing_runtime)
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0u32..4u32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -111,18 +124,24 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "counter {} whole {}", unsafe { counter } .is_null() as i32, unsafe { whole }
-// CHECK-NEXT:         .is_null() as i32
+// CHECK-NEXT:         "counter {} whole {}",
+// CHECK-NEXT:         unsafe { counter }.is_null() as i32,
+// CHECK-NEXT:         unsafe { whole }.is_null() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "runtime {} {}", unsafe { core::ptr::addr_of_mut!(* missing_vendor) } .is_null()
-// CHECK-NEXT:         as i32, unsafe { core::ptr::addr_of_mut!(* missing_counter) } .is_null() as i32
+// CHECK-NEXT:         "runtime {} {}",
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(*missing_vendor) }.is_null() as i32,
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(*missing_counter) }.is_null() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(".weak {0}", sym __slate_weak_address_missing_vendor);
+// CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(".weak {0}", sym __slate_weak_address_missing_runtime);
+// CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(".weak {0}", sym __slate_weak_address_missing_counter);
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

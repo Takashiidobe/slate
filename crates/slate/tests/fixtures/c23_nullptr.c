@@ -14,15 +14,19 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let null_value: *mut () = core::ptr::null_mut::<()>();
 // CHECK-NEXT:     let null_pointer: *mut i32 = core::ptr::null_mut::<i32>();
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", unsafe { core::ptr::read_volatile(core::ptr::addr_of!(null_value)) }
-// CHECK-NEXT:         .is_null() as i32, null_pointer.is_null() as i32
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(null_value)) }.is_null()
+// CHECK-NEXT:             as i32,
+// CHECK-NEXT:         null_pointer.is_null() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

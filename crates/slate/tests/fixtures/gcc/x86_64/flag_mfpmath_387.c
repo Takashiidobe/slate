@@ -63,7 +63,11 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_hypot(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_signbit(__a: LongDouble) -> bool;
 // CHECK-NEXT:     safe fn __slate_f80_is_fp_class(__a: LongDouble, __flags: i32) -> bool;
-// CHECK-NEXT:     safe fn __slate_f80_fma(__a: LongDouble, __b: LongDouble, __c: LongDouble) -> LongDouble;
+// CHECK-NEXT:     safe fn __slate_f80_fma(
+// CHECK-NEXT:         __a: LongDouble,
+// CHECK-NEXT:         __b: LongDouble,
+// CHECK-NEXT:         __c: LongDouble,
+// CHECK-NEXT:     ) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_lt(__a: LongDouble, __b: LongDouble) -> bool;
 // CHECK-NEXT:     safe fn __slate_f80_le(__a: LongDouble, __b: LongDouble) -> bool;
 // CHECK-NEXT:     safe fn __slate_f80_gt(__a: LongDouble, __b: LongDouble) -> bool;
@@ -183,32 +187,32 @@ int main(void) {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let huge: f64 = __slate_f80_to_f64(LongDouble([143, 255, 68, 94, 47, 156, 103, 142, 254, 67]));
+// CHECK-NEXT:     let huge: f64 = __slate_f80_to_f64(
+// CHECK-NEXT:         LongDouble([143, 255, 68, 94, 47, 156, 103, 142, 254, 67]),
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let scaled: f64 = __slate_f80_to_f64(
-// CHECK-NEXT:         __slate_f80_from_f64(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) })
-// CHECK-NEXT:             * __slate_f80_from_i32(10i32)
-// CHECK-NEXT:             / __slate_f80_from_i32(10i32),
+// CHECK-NEXT:         __slate_f80_from_f64(
+// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) },
+// CHECK-NEXT:         ) * __slate_f80_from_i32(10i32) / __slate_f80_from_i32(10i32),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let f: f32 = 16777216.0f32;
 // CHECK-NEXT:     let g: f32 = __slate_f80_to_f32(
 // CHECK-NEXT:         __slate_f80_from_f32(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(f)) })
 // CHECK-NEXT:             + __slate_f80_from_f32(1.0f32)
-// CHECK-NEXT:             - __slate_f80_from_f32(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(f)) }),
+// CHECK-NEXT:             - __slate_f80_from_f32(
+// CHECK-NEXT:                 unsafe { core::ptr::read_volatile(core::ptr::addr_of!(f)) },
+// CHECK-NEXT:             ),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d %g %g\n".as_ptr(), 2i32, scaled, g as f64) };

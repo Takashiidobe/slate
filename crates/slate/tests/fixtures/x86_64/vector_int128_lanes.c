@@ -59,39 +59,62 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_vector {
 // CHECK-NEXT:     use core::ops::*;
+// CHECK-EMPTY:
 // CHECK-NEXT:     #[repr(C)]
 // CHECK-NEXT:     pub struct __SlateVector<T, const N: usize, A>(pub [T; N], pub [A; 0]);
+// CHECK-EMPTY:
 // CHECK-NEXT:     impl<T: Copy, const N: usize, A: Copy> Clone for __SlateVector<T, N, A> {
 // CHECK-NEXT:         fn clone(&self) -> Self {
 // CHECK-NEXT:             *self
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     impl<T: Copy, const N: usize, A: Copy> Copy for __SlateVector<T, N, A> {}
+// CHECK-EMPTY:
 // CHECK-NEXT:     macro_rules! alignments {
-// CHECK-NEXT:         ($($name:ident = $align:literal),*) => {
-// CHECK-NEXT:             $(#[repr(align($align))] #[derive(Clone, Copy)] pub struct $name;)*
-// CHECK-NEXT:         };
+// CHECK-NEXT:         ($($name:ident = $align:literal),*) => {$(
+// CHECK-NEXT:             #[repr(align($align))]
+// CHECK-NEXT:             #[derive(Clone, Copy)]
+// CHECK-NEXT:             pub struct $name;
+// CHECK-NEXT:         )*};
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     alignments!(
-// CHECK-NEXT:         Align1 = 1, Align2 = 2, Align4 = 4, Align8 = 8, Align16 = 16, Align32 = 32,
-// CHECK-NEXT:         Align64 = 64, Align128 = 128, Align256 = 256, Align512 = 512, Align1024 = 1024,
-// CHECK-NEXT:         Align2048 = 2048, Align4096 = 4096
+// CHECK-NEXT:         Align1 = 1,
+// CHECK-NEXT:         Align2 = 2,
+// CHECK-NEXT:         Align4 = 4,
+// CHECK-NEXT:         Align8 = 8,
+// CHECK-NEXT:         Align16 = 16,
+// CHECK-NEXT:         Align32 = 32,
+// CHECK-NEXT:         Align64 = 64,
+// CHECK-NEXT:         Align128 = 128,
+// CHECK-NEXT:         Align256 = 256,
+// CHECK-NEXT:         Align512 = 512,
+// CHECK-NEXT:         Align1024 = 1024,
+// CHECK-NEXT:         Align2048 = 2048,
+// CHECK-NEXT:         Align4096 = 4096
 // CHECK-NEXT:     );
+// CHECK-EMPTY:
 // CHECK-NEXT:     impl<T: Copy, const N: usize, A: Copy> __SlateVector<T, N, A> {
 // CHECK-NEXT:         pub const fn from_array(lanes: [T; N]) -> Self {
 // CHECK-NEXT:             Self(lanes, [])
 // CHECK-NEXT:         }
+// CHECK-EMPTY:
 // CHECK-NEXT:         pub const fn splat(lane: T) -> Self {
 // CHECK-NEXT:             Self([lane; N], [])
 // CHECK-NEXT:         }
+// CHECK-EMPTY:
 // CHECK-NEXT:         pub const fn to_array(self) -> [T; N] {
 // CHECK-NEXT:             self.0
 // CHECK-NEXT:         }
+// CHECK-EMPTY:
 // CHECK-NEXT:         fn map(self, f: impl Fn(T) -> T) -> Self {
 // CHECK-NEXT:             Self(self.0.map(f), [])
 // CHECK-NEXT:         }
+// CHECK-EMPTY:
 // CHECK-NEXT:         fn zip(self, other: Self, f: impl Fn(T, T) -> T) -> Self {
 // CHECK-NEXT:             let mut lanes = self.0;
 // CHECK-NEXT:             for (lane, other) in lanes.iter_mut().zip(other.0) {
@@ -100,68 +123,109 @@ int main(void) {
 // CHECK-NEXT:             Self(lanes, [])
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     impl<T, const N: usize, A> Index<usize> for __SlateVector<T, N, A> {
 // CHECK-NEXT:         type Output = T;
+// CHECK-EMPTY:
 // CHECK-NEXT:         fn index(&self, index: usize) -> &T {
 // CHECK-NEXT:             &self.0[index]
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     impl<T, const N: usize, A> IndexMut<usize> for __SlateVector<T, N, A> {
 // CHECK-NEXT:         fn index_mut(&mut self, index: usize) -> &mut T {
 // CHECK-NEXT:             &mut self.0[index]
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     macro_rules! binary {
-// CHECK-NEXT:         (
-// CHECK-NEXT:             $t:ty, $($trait:ident $method:ident $assign:ident $assign_method:ident
-// CHECK-NEXT:             $f:expr),*
-// CHECK-NEXT:         ) => {
-// CHECK-NEXT:             $(impl < const N : usize, A : Copy > $trait for __SlateVector <$t, N, A > {
-// CHECK-NEXT:             type Output = Self; fn $method (self, other : Self) -> Self { self.zip(other,
-// CHECK-NEXT:             $f) } } impl < const N : usize, A : Copy > $assign for __SlateVector <$t, N,
-// CHECK-NEXT:             A > { fn $assign_method (& mut self, other : Self) { * self = self.zip(other,
-// CHECK-NEXT:             $f); } })*
-// CHECK-NEXT:         };
+// CHECK-NEXT:         ($t:ty, $($trait:ident $method:ident $assign:ident $assign_method:ident $f:expr),*) => {$(
+// CHECK-NEXT:             impl<const N: usize, A: Copy> $trait for __SlateVector<$t, N, A> {
+// CHECK-NEXT:                 type Output = Self;
+// CHECK-EMPTY:
+// CHECK-NEXT:                 fn $method(self, other: Self) -> Self {
+// CHECK-NEXT:                     self.zip(other, $f)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-EMPTY:
+// CHECK-NEXT:             impl<const N: usize, A: Copy> $assign for __SlateVector<$t, N, A> {
+// CHECK-NEXT:                 fn $assign_method(&mut self, other: Self) {
+// CHECK-NEXT:                     *self = self.zip(other, $f);
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:         )*};
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     macro_rules! integer {
-// CHECK-NEXT:         ($($t:ty),*) => {
-// CHECK-NEXT:             $(binary!($t, Add add AddAssign add_assign <$t >::wrapping_add, Sub sub
-// CHECK-NEXT:             SubAssign sub_assign <$t >::wrapping_sub, Mul mul MulAssign mul_assign <$t
-// CHECK-NEXT:             >::wrapping_mul, Div div DivAssign div_assign <$t >::wrapping_div, Rem rem
-// CHECK-NEXT:             RemAssign rem_assign <$t >::wrapping_rem, BitAnd bitand BitAndAssign
-// CHECK-NEXT:             bitand_assign | a : $t, b : $t | a & b, BitOr bitor BitOrAssign bitor_assign
-// CHECK-NEXT:             | a : $t, b : $t | a | b, BitXor bitxor BitXorAssign bitxor_assign | a : $t,
-// CHECK-NEXT:             b : $t | a ^ b, Shl shl ShlAssign shl_assign | a : $t, b : $t | a
-// CHECK-NEXT:             .wrapping_shl(b as u32), Shr shr ShrAssign shr_assign | a : $t, b : $t | a
-// CHECK-NEXT:             .wrapping_shr(b as u32)); impl < const N : usize, A : Copy > Neg for
-// CHECK-NEXT:             __SlateVector <$t, N, A > { type Output = Self; fn neg(self) -> Self { self
-// CHECK-NEXT:             .map(<$t >::wrapping_neg) } } impl < const N : usize, A : Copy > Not for
-// CHECK-NEXT:             __SlateVector <$t, N, A > { type Output = Self; fn not(self) -> Self { self
-// CHECK-NEXT:             .map(| a | ! a) } })*
-// CHECK-NEXT:         };
+// CHECK-NEXT:         ($($t:ty),*) => {$(
+// CHECK-NEXT:             binary!(
+// CHECK-NEXT:                 $t,
+// CHECK-NEXT:                 Add add AddAssign add_assign <$t>::wrapping_add,
+// CHECK-NEXT:                 Sub sub SubAssign sub_assign <$t>::wrapping_sub,
+// CHECK-NEXT:                 Mul mul MulAssign mul_assign <$t>::wrapping_mul,
+// CHECK-NEXT:                 Div div DivAssign div_assign <$t>::wrapping_div,
+// CHECK-NEXT:                 Rem rem RemAssign rem_assign <$t>::wrapping_rem,
+// CHECK-NEXT:                 BitAnd bitand BitAndAssign bitand_assign |a: $t, b: $t| a & b,
+// CHECK-NEXT:                 BitOr bitor BitOrAssign bitor_assign |a: $t, b: $t| a | b,
+// CHECK-NEXT:                 BitXor bitxor BitXorAssign bitxor_assign |a: $t, b: $t| a ^ b,
+// CHECK-NEXT:                 Shl shl ShlAssign shl_assign |a: $t, b: $t| a.wrapping_shl(b as u32),
+// CHECK-NEXT:                 Shr shr ShrAssign shr_assign |a: $t, b: $t| a.wrapping_shr(b as u32)
+// CHECK-NEXT:             );
+// CHECK-EMPTY:
+// CHECK-NEXT:             impl<const N: usize, A: Copy> Neg for __SlateVector<$t, N, A> {
+// CHECK-NEXT:                 type Output = Self;
+// CHECK-EMPTY:
+// CHECK-NEXT:                 fn neg(self) -> Self {
+// CHECK-NEXT:                     self.map(<$t>::wrapping_neg)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-EMPTY:
+// CHECK-NEXT:             impl<const N: usize, A: Copy> Not for __SlateVector<$t, N, A> {
+// CHECK-NEXT:                 type Output = Self;
+// CHECK-EMPTY:
+// CHECK-NEXT:                 fn not(self) -> Self {
+// CHECK-NEXT:                     self.map(|a| !a)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:         )*};
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     macro_rules! float {
-// CHECK-NEXT:         ($($t:ty),*) => {
-// CHECK-NEXT:             $(binary!($t, Add add AddAssign add_assign | a : $t, b : $t | a + b, Sub sub
-// CHECK-NEXT:             SubAssign sub_assign | a : $t, b : $t | a - b, Mul mul MulAssign mul_assign |
-// CHECK-NEXT:             a : $t, b : $t | a * b, Div div DivAssign div_assign | a : $t, b : $t | a /
-// CHECK-NEXT:             b, Rem rem RemAssign rem_assign | a : $t, b : $t | a % b); impl < const N :
-// CHECK-NEXT:             usize, A : Copy > Neg for __SlateVector <$t, N, A > { type Output = Self; fn
-// CHECK-NEXT:             neg(self) -> Self { self.map(| a | - a) } })*
-// CHECK-NEXT:         };
+// CHECK-NEXT:         ($($t:ty),*) => {$(
+// CHECK-NEXT:             binary!(
+// CHECK-NEXT:                 $t,
+// CHECK-NEXT:                 Add add AddAssign add_assign |a: $t, b: $t| a + b,
+// CHECK-NEXT:                 Sub sub SubAssign sub_assign |a: $t, b: $t| a - b,
+// CHECK-NEXT:                 Mul mul MulAssign mul_assign |a: $t, b: $t| a * b,
+// CHECK-NEXT:                 Div div DivAssign div_assign |a: $t, b: $t| a / b,
+// CHECK-NEXT:                 Rem rem RemAssign rem_assign |a: $t, b: $t| a % b
+// CHECK-NEXT:             );
+// CHECK-EMPTY:
+// CHECK-NEXT:             impl<const N: usize, A: Copy> Neg for __SlateVector<$t, N, A> {
+// CHECK-NEXT:                 type Output = Self;
+// CHECK-EMPTY:
+// CHECK-NEXT:                 fn neg(self) -> Self {
+// CHECK-NEXT:                     self.map(|a| -a)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:         )*};
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     integer!(i8, u8, i16, u16, i32, u32, i64, u64, i128, u128);
 // CHECK-NEXT:     float!(f32, f64);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct holder {
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     lanes: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn show(name: *const i8, x: u128) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -174,30 +238,26 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn mix(
 // CHECK-NEXT:     a: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32>,
 // CHECK-NEXT:     b: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32>,
 // CHECK-NEXT: ) -> __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: __slate_vector::__SlateVector<
-// CHECK-NEXT:         u128,
-// CHECK-NEXT:         2,
-// CHECK-NEXT:         __slate_vector::Align32,
-// CHECK-NEXT:     > = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: __slate_vector::__SlateVector<
-// CHECK-NEXT:         u128,
-// CHECK-NEXT:         2,
-// CHECK-NEXT:         __slate_vector::Align32,
-// CHECK-NEXT:     > = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = unsafe {
+// CHECK-NEXT:         core::mem::zeroed()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = unsafe {
+// CHECK-NEXT:         core::mem::zeroed()
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut r: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = a * b
 // CHECK-NEXT:         + (a ^ b);
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = r;
 // CHECK-NEXT:     r = [[V_0]]
 // CHECK-NEXT:         - unsafe {
 // CHECK-NEXT:             *{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = __slate_vector::__SlateVector::from_array([
-// CHECK-NEXT:                     1 as u128,
-// CHECK-NEXT:                     2 as u128,
-// CHECK-NEXT:                 ]);
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = __slate_vector::__SlateVector::from_array(
+// CHECK-NEXT:                     [1 as u128, 2 as u128],
+// CHECK-NEXT:                 );
 // CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:             }
 // CHECK-NEXT:         };
@@ -206,44 +266,34 @@ int main(void) {
 // CHECK-NEXT:         | a
 // CHECK-NEXT:             << unsafe {
 // CHECK-NEXT:                 *{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_1]] = __slate_vector::__SlateVector::from_array([
-// CHECK-NEXT:                         3 as u128,
-// CHECK-NEXT:                         65 as u128,
-// CHECK-NEXT:                     ]);
+// CHECK-NEXT:                     [[SLATE_COMPOUND_1]] = __slate_vector::__SlateVector::from_array(
+// CHECK-NEXT:                         [3 as u128, 65 as u128],
+// CHECK-NEXT:                     );
 // CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             };
 // CHECK-NEXT:     return r;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: __slate_vector::__SlateVector<
-// CHECK-NEXT:         u128,
-// CHECK-NEXT:         2,
-// CHECK-NEXT:         __slate_vector::Align32,
-// CHECK-NEXT:     > = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_3:__slate_compound_[0-9]+]]: __slate_vector::__SlateVector<
-// CHECK-NEXT:         i128,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         __slate_vector::Align64,
-// CHECK-NEXT:     > = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: __slate_vector::__SlateVector<
-// CHECK-NEXT:         i128,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         __slate_vector::Align64,
-// CHECK-NEXT:     > = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_4:__slate_compound_[0-9]+]]: __slate_vector::__SlateVector<
-// CHECK-NEXT:         u128,
-// CHECK-NEXT:         2,
-// CHECK-NEXT:         __slate_vector::Align32,
-// CHECK-NEXT:     > = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let a: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = __slate_vector::__SlateVector::from_array([
-// CHECK-NEXT:         (1 as u128) << 100i32 | 7,
-// CHECK-NEXT:         !(0 as u128),
-// CHECK-NEXT:     ]);
-// CHECK-NEXT:     let mut b: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = __slate_vector::__SlateVector::from_array([
-// CHECK-NEXT:         3 as u128,
-// CHECK-NEXT:         (5 as u128) << 70i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = unsafe {
+// CHECK-NEXT:         core::mem::zeroed()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_3:__slate_compound_[0-9]+]]: __slate_vector::__SlateVector<i128, 4, __slate_vector::Align64> = unsafe {
+// CHECK-NEXT:         core::mem::zeroed()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0]]: __slate_vector::__SlateVector<i128, 4, __slate_vector::Align64> = unsafe {
+// CHECK-NEXT:         core::mem::zeroed()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_4:__slate_compound_[0-9]+]]: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = unsafe {
+// CHECK-NEXT:         core::mem::zeroed()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let a: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = __slate_vector::__SlateVector::from_array(
+// CHECK-NEXT:         [(1 as u128) << 100i32 | 7, !(0 as u128)],
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut b: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = __slate_vector::__SlateVector::from_array(
+// CHECK-NEXT:         [3 as u128, (5 as u128) << 70i32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let m: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = mix(a, b);
 // CHECK-NEXT:     show(c"m0".as_ptr(), m[0]);
 // CHECK-NEXT:     show(c"m1".as_ptr(), m[1]);
@@ -255,41 +305,31 @@ int main(void) {
 // CHECK-NEXT:         (a
 // CHECK-NEXT:             >> unsafe {
 // CHECK-NEXT:                 *{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_2]] = __slate_vector::__SlateVector::from_array([
-// CHECK-NEXT:                         1 as u128,
-// CHECK-NEXT:                         127 as u128,
-// CHECK-NEXT:                     ]);
+// CHECK-NEXT:                     [[SLATE_COMPOUND_2]] = __slate_vector::__SlateVector::from_array(
+// CHECK-NEXT:                         [1 as u128, 127 as u128],
+// CHECK-NEXT:                     );
 // CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             })[1],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut s: __slate_vector::__SlateVector<i128, 4, __slate_vector::Align64> = __slate_vector::__SlateVector::from_array([
-// CHECK-NEXT:         -5 as i128,
-// CHECK-NEXT:         7 as i128,
-// CHECK-NEXT:         -9 as i128,
-// CHECK-NEXT:         11 as i128,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut s: __slate_vector::__SlateVector<i128, 4, __slate_vector::Align64> = __slate_vector::__SlateVector::from_array(
+// CHECK-NEXT:         [-5 as i128, 7 as i128, -9 as i128, 11 as i128],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     s = s
 // CHECK-NEXT:         / unsafe {
 // CHECK-NEXT:             *{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_3]] = __slate_vector::__SlateVector::from_array([
-// CHECK-NEXT:                     2 as i128,
-// CHECK-NEXT:                     -2 as i128,
-// CHECK-NEXT:                     4 as i128,
-// CHECK-NEXT:                     3 as i128,
-// CHECK-NEXT:                 ]);
+// CHECK-NEXT:                 [[SLATE_COMPOUND_3]] = __slate_vector::__SlateVector::from_array(
+// CHECK-NEXT:                     [2 as i128, -2 as i128, 4 as i128, 3 as i128],
+// CHECK-NEXT:                 );
 // CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_3]])
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         + s
 // CHECK-NEXT:             % unsafe {
 // CHECK-NEXT:                 *{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = __slate_vector::__SlateVector::from_array([
-// CHECK-NEXT:                         3 as i128,
-// CHECK-NEXT:                         3 as i128,
-// CHECK-NEXT:                         5 as i128,
-// CHECK-NEXT:                         5 as i128,
-// CHECK-NEXT:                     ]);
+// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = __slate_vector::__SlateVector::from_array(
+// CHECK-NEXT:                         [3 as i128, 3 as i128, 5 as i128, 5 as i128],
+// CHECK-NEXT:                     );
 // CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             };
@@ -304,9 +344,9 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"s[2]=%lld\n".as_ptr(), s[2] as i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut narrow: core::simd::Simd<u64, 2> = core::simd::Simd::from_array([
-// CHECK-NEXT:         18446744073709551615u64, 3u64,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut narrow: core::simd::Simd<u64, 2> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [18446744073709551615u64, 3u64],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut wide: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = __slate_vector::__SlateVector::from_array(
 // CHECK-NEXT:         narrow.to_array().map(|__lane| __lane as u128),
 // CHECK-NEXT:     );
@@ -318,10 +358,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"back %llx %llx\n".as_ptr(), back[0], back[1]) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let bytes: core::simd::Simd<u8, 32> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32>,
-// CHECK-NEXT:             core::simd::Simd<u8, 32>,
-// CHECK-NEXT:         >(a)
+// CHECK-NEXT:         core::mem::transmute::<__slate_vector::__SlateVector<u128, 2, __slate_vector::Align32>, core::simd::Simd<u8, 32>>(
+// CHECK-NEXT:             a,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("bytes {} {} {}", bytes[0] as i32, bytes[12] as i32, bytes[31] as i32);
 // CHECK-NEXT:     let mut h: holder = {
@@ -334,10 +373,9 @@ int main(void) {
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = [[V_2]]
 // CHECK-NEXT:         + unsafe {
 // CHECK-NEXT:             *{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_4]] = __slate_vector::__SlateVector::from_array([
-// CHECK-NEXT:                     1 as u128,
-// CHECK-NEXT:                     1 as u128,
-// CHECK-NEXT:                 ]);
+// CHECK-NEXT:                 [[SLATE_COMPOUND_4]] = __slate_vector::__SlateVector::from_array(
+// CHECK-NEXT:                     [1 as u128, 1 as u128],
+// CHECK-NEXT:                 );
 // CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_4]])
 // CHECK-NEXT:             }
 // CHECK-NEXT:         };
@@ -357,6 +395,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

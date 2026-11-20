@@ -33,17 +33,15 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn get(p: &mut P, slot: &i32) -> i32 {
 // CHECK-NEXT:     if unsafe {
-// CHECK-NEXT:         *((*(p as *mut P)).u.apSub.as_mut_ptr() as *mut *mut B)
-// CHECK-NEXT:             .offset(*(slot as *const i32) as isize)
-// CHECK-NEXT:     }
-// CHECK-NEXT:         .is_null()
-// CHECK-NEXT:     {
+// CHECK-NEXT:             *((*(p as *mut P)).u.apSub.as_mut_ptr() as *mut *mut B)
+// CHECK-NEXT:                 .offset(*(slot as *const i32) as isize)
+// CHECK-NEXT:         }
+// CHECK-NEXT:         .is_null() {
 // CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe {
 // CHECK-NEXT:         (*(*((*(p as *mut P)).u.apSub.as_mut_ptr() as *mut *mut B)
-// CHECK-NEXT:             .offset(*(slot as *const i32) as isize)))
-// CHECK-NEXT:             .n
+// CHECK-NEXT:             .offset(*(slot as *const i32) as isize))).n
 // CHECK-NEXT:     }) + unsafe { (*(*(p as *mut P)).next).v }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

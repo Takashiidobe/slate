@@ -79,8 +79,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn same_prefix() -> i32 {
 // CHECK-NEXT:     if (unsafe {
 // CHECK-NEXT:         "abx".as_bytes()[0usize..2usize].cmp(&"aby".as_bytes()[0usize..2usize]) as i32
-// CHECK-NEXT:     }) == 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) == 0 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
@@ -110,7 +109,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn embedded(n: i32) -> i32 {
 // CHECK-NEXT:     ((unsafe {
 // CHECK-NEXT:         ("ab\u{0}cd"
-// CHECK-NEXT:             .as_bytes()[0usize.."ab\u{0}cd"
+// CHECK-NEXT:                 .as_bytes()[0usize.."ab\u{0}cd"
 // CHECK-NEXT:                 .as_bytes()
 // CHECK-NEXT:                 .iter()
 // CHECK-NEXT:                 .position(|__slate_byte| *__slate_byte == 0u8)
@@ -119,7 +118,7 @@ int main(void) {
 // CHECK-NEXT:             .position(|__slate_byte| !"abcd".as_bytes().contains(__slate_byte))
 // CHECK-NEXT:             .unwrap_or(
 // CHECK-NEXT:                 "ab\u{0}cd"
-// CHECK-NEXT:                     .as_bytes()[0usize.."ab\u{0}cd"
+// CHECK-NEXT:                         .as_bytes()[0usize.."ab\u{0}cd"
 // CHECK-NEXT:                         .as_bytes()
 // CHECK-NEXT:                         .iter()
 // CHECK-NEXT:                         .position(|__slate_byte| *__slate_byte == 0u8)
@@ -129,7 +128,7 @@ int main(void) {
 // CHECK-NEXT:     }) as i32)
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             "ab\u{0}cd"
-// CHECK-NEXT:                 .as_bytes()[0usize.."ab\u{0}cd"
+// CHECK-NEXT:                     .as_bytes()[0usize.."ab\u{0}cd"
 // CHECK-NEXT:                     .as_bytes()
 // CHECK-NEXT:                     .iter()
 // CHECK-NEXT:                     .position(|__slate_byte| *__slate_byte == 0u8)
@@ -148,8 +147,7 @@ int main(void) {
 // CHECK-NEXT:             next_word() as *const core::ffi::c_char,
 // CHECK-NEXT:             c"beta".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:         ) as i32
-// CHECK-NEXT:     }) == 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) == 0 {
 // CHECK-NEXT:         return 7;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     8

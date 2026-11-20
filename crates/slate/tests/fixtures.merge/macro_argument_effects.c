@@ -48,10 +48,7 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -106,8 +103,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*it).index = [[V_1]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     second = scale((unsafe { *unsafe { (*seq).items }.offset([[V_1]] as isize) }) as c_long);
-// CHECK-NEXT:     let third: c_long = WRAP!(unsafe { *unsafe { (*it).items }.offset((*it).index as isize) });
+// CHECK-NEXT:     second = scale(
+// CHECK-NEXT:         (unsafe { *unsafe { (*seq).items }.offset([[V_1]] as isize) }) as c_long,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let third: c_long = WRAP!(
+// CHECK-NEXT:         unsafe { *unsafe { (*it).items }.offset((*it).index as isize) }
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

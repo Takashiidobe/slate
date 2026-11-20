@@ -47,30 +47,35 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct IgnoredBadAlign {
 // CHECK-NEXT:     a: i8,
 // CHECK-NEXT:     b: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct NamedPushed {
 // CHECK-NEXT:     a: i8,
 // CHECK-NEXT:     b: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct AfterNamedPop {
 // CHECK-NEXT:     a: i8,
 // CHECK-NEXT:     b: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct AfterExtraPop {
 // CHECK-NEXT:     a: i8,
 // CHECK-NEXT:     b: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct PackedButAligned {
@@ -78,16 +83,21 @@ int main(void) {
 // CHECK-NEXT:     b: core::mem::MaybeUninit<[u8; 4]>,
 // CHECK-NEXT:     c: core::mem::MaybeUninit<[u8; 1]>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {}", core::mem::size_of::< IgnoredBadAlign > () as i32,
-// CHECK-NEXT:         core::mem::size_of::< NamedPushed > () as i32, core::mem::size_of::<
-// CHECK-NEXT:         AfterNamedPop > () as i32, core::mem::size_of::< AfterExtraPop > () as i32,
-// CHECK-NEXT:         core::mem::size_of::< PackedButAligned > () as i32, core::mem::align_of::<
-// CHECK-NEXT:         PackedButAligned > () as i32, 1i32
+// CHECK-NEXT:         "{} {} {} {} {} {} {}",
+// CHECK-NEXT:         core::mem::size_of::<IgnoredBadAlign>() as i32,
+// CHECK-NEXT:         core::mem::size_of::<NamedPushed>() as i32,
+// CHECK-NEXT:         core::mem::size_of::<AfterNamedPop>() as i32,
+// CHECK-NEXT:         core::mem::size_of::<AfterExtraPop>() as i32,
+// CHECK-NEXT:         core::mem::size_of::<PackedButAligned>() as i32,
+// CHECK-NEXT:         core::mem::align_of::<PackedButAligned>() as i32,
+// CHECK-NEXT:         1i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -29,6 +29,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn strerror_r([[ARG_0:arg[0-9]+]]: i32, [[ARG_1:arg[0-9]+]]: *mut i8, [[ARG_2:arg[0-9]+]]: u64) -> *mut i8;
 // CHECK-NEXT:     fn getrlimit([[ARG_0]]: u32, [[ARG_1]]: *mut slate_support::rlimit) -> i32;
@@ -43,9 +44,11 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_2]]: *mut slate_support::itimerval,
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct rusage {
@@ -66,93 +69,110 @@ int main(void) {
 // CHECK-NEXT:     [[SLATE_ANON_12:__slate_anon_[0-9]+]]: __SlateRecord_struct_rusage_h_117,
 // CHECK-NEXT:     [[SLATE_ANON_13:__slate_anon_[0-9]+]]: __SlateRecord_struct_rusage_h_124,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_struct_rusage_h_40 {
 // CHECK-NEXT:     ru_maxrss: i64,
 // CHECK-NEXT:     __ru_maxrss_word: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_struct_rusage_h_47 {
 // CHECK-NEXT:     ru_ixrss: i64,
 // CHECK-NEXT:     __ru_ixrss_word: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_struct_rusage_h_53 {
 // CHECK-NEXT:     ru_idrss: i64,
 // CHECK-NEXT:     __ru_idrss_word: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_struct_rusage_h_59 {
 // CHECK-NEXT:     ru_isrss: i64,
 // CHECK-NEXT:     __ru_isrss_word: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_struct_rusage_h_66 {
 // CHECK-NEXT:     ru_minflt: i64,
 // CHECK-NEXT:     __ru_minflt_word: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_struct_rusage_h_72 {
 // CHECK-NEXT:     ru_majflt: i64,
 // CHECK-NEXT:     __ru_majflt_word: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_struct_rusage_h_78 {
 // CHECK-NEXT:     ru_nswap: i64,
 // CHECK-NEXT:     __ru_nswap_word: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_struct_rusage_h_85 {
 // CHECK-NEXT:     ru_inblock: i64,
 // CHECK-NEXT:     __ru_inblock_word: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_struct_rusage_h_91 {
 // CHECK-NEXT:     ru_oublock: i64,
 // CHECK-NEXT:     __ru_oublock_word: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_struct_rusage_h_97 {
 // CHECK-NEXT:     ru_msgsnd: i64,
 // CHECK-NEXT:     __ru_msgsnd_word: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_struct_rusage_h_103 {
 // CHECK-NEXT:     ru_msgrcv: i64,
 // CHECK-NEXT:     __ru_msgrcv_word: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_struct_rusage_h_109 {
 // CHECK-NEXT:     ru_nsignals: i64,
 // CHECK-NEXT:     __ru_nsignals_word: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_struct_rusage_h_117 {
 // CHECK-NEXT:     ru_nvcsw: i64,
 // CHECK-NEXT:     __ru_nvcsw_word: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_struct_rusage_h_124 {
 // CHECK-NEXT:     ru_nivcsw: i64,
 // CHECK-NEXT:     __ru_nivcsw_word: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 128]> = __SlateAlign16([0i8; 128]);
 // CHECK-NEXT:     let message: *mut i8 = unsafe {
@@ -179,9 +199,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"strerror_r: %s\n".as_ptr(), message) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "setitimer: {}", unsafe { setitimer((slate_support::ITIMER_REAL as i32) as u32,
-// CHECK-NEXT:         core::ptr::addr_of_mut!(timer) as * const slate_support::itimerval,
-// CHECK-NEXT:         core::ptr::addr_of_mut!(old)) }
+// CHECK-NEXT:         "setitimer: {}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             setitimer(
+// CHECK-NEXT:                 (slate_support::ITIMER_REAL as i32) as u32,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(timer) as *const slate_support::itimerval,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(old),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -195,28 +220,47 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "getrlimit: {}", unsafe { getrlimit((slate_support::RLIMIT_NOFILE as i32) as u32,
-// CHECK-NEXT:         core::ptr::addr_of_mut!(limit)) }
+// CHECK-NEXT:         "getrlimit: {}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             getrlimit(
+// CHECK-NEXT:                 (slate_support::RLIMIT_NOFILE as i32) as u32,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(limit),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "setrlimit: {}", unsafe { setrlimit((slate_support::RLIMIT_NOFILE as i32) as u32,
-// CHECK-NEXT:         core::ptr::addr_of_mut!(limit) as * const slate_support::rlimit) }
+// CHECK-NEXT:         "setrlimit: {}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             setrlimit(
+// CHECK-NEXT:                 (slate_support::RLIMIT_NOFILE as i32) as u32,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(limit) as *const slate_support::rlimit,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "getrusage: {}", unsafe { getrusage(slate_support::RUSAGE_SELF as i32,
-// CHECK-NEXT:         core::ptr::addr_of_mut!(usage)) }
+// CHECK-NEXT:         "getrusage: {}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             getrusage(slate_support::RUSAGE_SELF as i32, core::ptr::addr_of_mut!(usage))
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *slate_support::errno_location() = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { getpriority((slate_support::PRIO_PROCESS as i32) as u32, 0u32) };
-// CHECK-NEXT:     println!("getpriority errno: {}", unsafe { * slate_support::errno_location() });
+// CHECK-NEXT:     println!("getpriority errno: {}", unsafe { *slate_support::errno_location() });
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "setpriority: {}", unsafe { setpriority((slate_support::PRIO_PROCESS as i32) as
-// CHECK-NEXT:         u32, 0u32, getpriority((slate_support::PRIO_PROCESS as i32) as u32, 0u32)) }
+// CHECK-NEXT:         "setpriority: {}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             setpriority(
+// CHECK-NEXT:                 (slate_support::PRIO_PROCESS as i32) as u32,
+// CHECK-NEXT:                 0u32,
+// CHECK-NEXT:                 getpriority((slate_support::PRIO_PROCESS as i32) as u32, 0u32),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

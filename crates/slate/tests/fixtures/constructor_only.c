@@ -13,22 +13,27 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(used_with_arg)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn greet() {
 // CHECK-NEXT:     println!("constructor ran");
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn __slate_init_greet() {
 // CHECK-NEXT:     greet();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
 // CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".init_array")]
 // CHECK-NEXT: static __SLATE_INIT_greet: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_init_greet,
 // CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("main ran");
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

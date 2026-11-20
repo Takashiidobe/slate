@@ -37,22 +37,16 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         putchar(
-// CHECK-NEXT:             (if high < 10 {
-// CHECK-NEXT:                 48u32.wrapping_add(high)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 87u32.wrapping_add(high)
-// CHECK-NEXT:             }) as i32,
+// CHECK-NEXT:             (if high < 10 { 48u32.wrapping_add(high) } else { 87u32.wrapping_add(high) })
+// CHECK-NEXT:                 as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         putchar(
-// CHECK-NEXT:             (if low < 10 {
-// CHECK-NEXT:                 48u32.wrapping_add(low)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 87u32.wrapping_add(low)
-// CHECK-NEXT:             }) as i32,
+// CHECK-NEXT:             (if low < 10 { 48u32.wrapping_add(low) } else { 87u32.wrapping_add(low) })
+// CHECK-NEXT:                 as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

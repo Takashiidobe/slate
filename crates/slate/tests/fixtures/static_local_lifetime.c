@@ -111,19 +111,25 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Point {
 // CHECK-NEXT:     x: i32,
 // CHECK-NEXT:     y: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut global_base: i32 = 100;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn counter() -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { count__11 }) + 1;
 // CHECK-NEXT:     unsafe {
@@ -131,7 +137,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut count__11: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn other_counter() -> i32 {
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = unsafe { count__16 };
 // CHECK-NEXT:     unsafe {
@@ -139,7 +147,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_1]]
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut count__16: i32 = 50;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn history(value: i32) -> *mut i32 {
 // CHECK-NEXT:     let [[V_1]]: i32 = unsafe { next };
 // CHECK-NEXT:     unsafe {
@@ -150,10 +160,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(slots.0) as *mut i32 }
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut slots: __SlateAlign16<[i32; 4]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     core::mem::zeroed()
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut slots: __SlateAlign16<[i32; 4]> = __SlateAlign16(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut next: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn moved(dx: i32) -> *mut Point {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         point.x = point.x + dx;
@@ -163,21 +176,31 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(point) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut point: Point = Point { x: 1i32, y: 2i32 };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn base_pointer() -> *mut i32 {
 // CHECK-NEXT:     unsafe { pointer }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut pointer: *mut i32 = unsafe { core::ptr::addr_of_mut!(global_base) };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn depth(n: i32) -> i32 {
 // CHECK-NEXT:     if n > unsafe { deepest } {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             deepest = n;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_1]]: i32 = if n == 0 { unsafe { deepest } } else { depth(n - 1) };
+// CHECK-NEXT:     let [[V_1]]: i32 = if n == 0 {
+// CHECK-NEXT:         unsafe { deepest }
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         depth(n - 1)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[V_1]]
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut deepest: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn running_mean(sample: f64) -> f64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         sum = sum + sample;
@@ -188,16 +211,23 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { sum }) / ([[V_2]] as f64)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut sum: f64 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut samples: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn name_of(index: i32) -> *const i8 {
 // CHECK-NEXT:     unsafe { names.0[index as usize] }
 // CHECK-NEXT: }
-// CHECK-NEXT: static names: __SlateAlign16<[*const i8; 3]> = __SlateAlign16([
-// CHECK-NEXT:     (b"zero\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:     (b"one\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:     (b"two\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static names: __SlateAlign16<[*const i8; 3]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         (b"zero\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         (b"one\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         (b"two\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn loop_scoped() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..3i32 {
@@ -210,7 +240,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut seen: i32 = 7;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn tally() -> i32 {
 // CHECK-NEXT:     let [[V_1]]: i32 = unsafe { counter__68 };
 // CHECK-NEXT:     unsafe {
@@ -218,7 +250,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_1]]
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut counter__68: i32 = 100;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let c1: i32 = counter();
 // CHECK-NEXT:     let c2: i32 = counter();
@@ -234,16 +268,19 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let slots__0: *mut i32 = history(70i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { * slots__0.add(0) }, unsafe { * slots__0.add(1) }, unsafe
-// CHECK-NEXT:         { * slots__0.add(2) }, unsafe { * slots__0.add(3) }
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         unsafe { *slots__0.add(0) },
+// CHECK-NEXT:         unsafe { *slots__0.add(1) },
+// CHECK-NEXT:         unsafe { *slots__0.add(2) },
+// CHECK-NEXT:         unsafe { *slots__0.add(3) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     moved(3i32);
 // CHECK-NEXT:     let point__1: *mut Point = moved(4i32);
-// CHECK-NEXT:     println!("{} {}", unsafe { (* point__1).x }, unsafe { (* point__1).y });
+// CHECK-NEXT:     println!("{} {}", unsafe { (*point__1).x }, unsafe { (*point__1).y });
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*point__1).x = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{}", unsafe { (* moved(1i32)).x });
+// CHECK-NEXT:     println!("{}", unsafe { (*moved(1i32)).x });
 // CHECK-NEXT:     let [[V_0]]: *mut i32 = base_pointer();
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 5;
@@ -266,6 +303,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {}", first, second);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

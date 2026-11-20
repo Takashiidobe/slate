@@ -26,63 +26,89 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ilog2 {
 // CHECK-NEXT:     ($n:expr) => {
-// CHECK-NEXT:         if false { if ($n) < 2 { 0i32 } else { 63 - ($n .leading_zeros() as i32) } } else
-// CHECK-NEXT:         { if (core::mem::size_of::< u64 > () as u64) <= 4 { __ilog2_u32(($n) as u32) }
-// CHECK-NEXT:         else { __ilog2_u64($n) } }
+// CHECK-NEXT:         if false {
+// CHECK-NEXT:             if ($n) < 2 { 0i32 } else { 63 - ($n.leading_zeros() as i32) }
+// CHECK-NEXT:         } else if (core::mem::size_of::<u64>() as u64) <= 4 {
+// CHECK-NEXT:             __ilog2_u32(($n) as u32)
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             __ilog2_u64($n)
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ilog2__2 {
 // CHECK-NEXT:     ($n:expr) => {
-// CHECK-NEXT:         if true { if ($n) < 2 { 0i32 } else { 63 - ((($n) as u64).leading_zeros() as i32)
-// CHECK-NEXT:         } } else { if (core::mem::size_of::< u32 > () as u64) <= 4 { __ilog2_u32($n) }
-// CHECK-NEXT:         else { __ilog2_u64(($n) as u64) } }
+// CHECK-NEXT:         if true {
+// CHECK-NEXT:             if ($n) < 2 { 0i32 } else { 63 - ((($n) as u64).leading_zeros() as i32) }
+// CHECK-NEXT:         } else if (core::mem::size_of::<u32>() as u64) <= 4 {
+// CHECK-NEXT:             __ilog2_u32($n)
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             __ilog2_u64(($n) as u64)
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! order_base_2 {
 // CHECK-NEXT:     ($n:expr) => {
-// CHECK-NEXT:         if true { if ($n) == 0 || ($n) == 1 { 0i32 } else { ilog2__2!($n
-// CHECK-NEXT:         .wrapping_sub(1)) + 1 } } else { __order_base_2(($n) as u64) }
+// CHECK-NEXT:         if true {
+// CHECK-NEXT:             if ($n) == 0 || ($n) == 1 { 0i32 } else { ilog2__2!($n.wrapping_sub(1)) + 1 }
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             __order_base_2(($n) as u64)
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __ilog2_u32(n: u32) -> i32 {
 // CHECK-NEXT:     31 - (n.leading_zeros() as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __ilog2_u64(n: u64) -> i32 {
 // CHECK-NEXT:     63 - (n.leading_zeros() as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __order_base_2(n: u64) -> i32 {
 // CHECK-NEXT:     if n > 1 { ilog2!(n.wrapping_sub(1)) + 1 } else { 0 }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn nr_cpus_bits() -> i32 {
 // CHECK-NEXT:     let mut v: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov ${1}, {0:e}", lateout(reg) [[T_0]], const 6 as i32, options(pure, nomem,
-// CHECK-NEXT:             nostack, att_syntax)
+// CHECK-NEXT:             "mov ${1}, {0:e}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             const 6 as i32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn popcount_operand(mut x: u32) -> i32 {
 // CHECK-NEXT:     let mut v: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov {1:e}, {0:e}\n# {2}", lateout(reg) [[T_0]], in (reg) (x.count_ones() as
-// CHECK-NEXT:             i32) as u32, const 4 as i32, options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "mov {1:e}, {0:e}\n# {2}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) (x.count_ones() as i32) as u32,
+// CHECK-NEXT:             const 4 as i32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{} {} {}", nr_cpus_bits(), popcount_operand(7u32), order_base_2!(5u32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

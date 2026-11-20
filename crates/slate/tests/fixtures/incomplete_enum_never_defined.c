@@ -37,9 +37,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct mode_funcs {
@@ -47,6 +49,7 @@ int main(void) {
 // CHECK-NEXT:     attach: Option<unsafe extern "C-unwind" fn(*mut i32, i32) -> i32>,
 // CHECK-NEXT:     id: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct mode_config {
@@ -54,19 +57,26 @@ int main(void) {
 // CHECK-NEXT:     pending: *mut i32,
 // CHECK-NEXT:     count: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(transparent)]
 // CHECK-NEXT: struct __SlateConst<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn attach_noop(mode: *mut i32, flags: i32) -> i32 {
 // CHECK-NEXT:     (mode.is_null() as i32) + flags
 // CHECK-NEXT: }
-// CHECK-NEXT: static funcs: __SlateConst<mode_funcs> = __SlateConst({
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: mode_funcs = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].mode_valid = None;
-// CHECK-NEXT:     [[T_0]].attach = Some(attach_noop);
-// CHECK-NEXT:     [[T_0]].id = 7i32;
-// CHECK-NEXT:     [[T_0]]
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static funcs: __SlateConst<mode_funcs> = __SlateConst(
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: mode_funcs = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].mode_valid = None;
+// CHECK-NEXT:         [[T_0]].attach = Some(attach_noop);
+// CHECK-NEXT:         [[T_0]].id = 7i32;
+// CHECK-NEXT:         [[T_0]]
+// CHECK-NEXT:     },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn config_score(config: &mode_config) -> i32 {
 // CHECK-NEXT:     let mut score: i32 = (unsafe { (*(config as *const mode_config)).count }) * 10
 // CHECK-NEXT:         + unsafe { (*(*(config as *const mode_config)).funcs).id };
@@ -78,6 +88,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     score
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut config: mode_config = {
 // CHECK-NEXT:         let mut [[T_0]]: mode_config = unsafe { core::mem::zeroed() };
@@ -95,6 +106,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

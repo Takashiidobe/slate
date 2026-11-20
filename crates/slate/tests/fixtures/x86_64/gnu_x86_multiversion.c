@@ -32,26 +32,35 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_target_default(value: i32) -> i32 {
 // CHECK-NEXT:     value + 1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: unsafe fn gnu_target_sse2(value: i32) -> i32 {
 // CHECK-NEXT:     value + 2
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_target_clones(value: i32) -> i32 {
 // CHECK-NEXT:     value + 3
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_cpu_dispatch(value: i32) -> i32 {
 // CHECK-NEXT:     value + 4
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { gnu_target_default(10i32) }, unsafe {
-// CHECK-NEXT:         gnu_target_sse2(10i32) }, gnu_target_clones(10i32), gnu_cpu_dispatch(10i32)
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         unsafe { gnu_target_default(10i32) },
+// CHECK-NEXT:         unsafe { gnu_target_sse2(10i32) },
+// CHECK-NEXT:         gnu_target_clones(10i32),
+// CHECK-NEXT:         gnu_cpu_dispatch(10i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

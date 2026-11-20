@@ -46,13 +46,13 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
+// X86_64-PC-WINDOWS-MSVC-NEXT: use slate_support::abort;
+// I686-PC-WINDOWS-MSVC-NEXT: use slate_support::abort;
 // X86_64-PC-WINDOWS-MSVC-NEXT: use slate_support::__cpuid;
 // I686-PC-WINDOWS-MSVC-NEXT: use slate_support::__cpuid;
 // X86_64-PC-WINDOWS-MSVC-NEXT: use slate_support::__cpuidex;
 // I686-PC-WINDOWS-MSVC-NEXT: use slate_support::__cpuidex;
 // X86_64-PC-WINDOWS-MSVC-NEXT: use slate_support::_umul128;
-// X86_64-PC-WINDOWS-MSVC-NEXT: use slate_support::abort;
-// I686-PC-WINDOWS-MSVC-NEXT: use slate_support::abort;
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
 // I686-PC-WINDOWS-MSVC-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: fn check_cpuid() {

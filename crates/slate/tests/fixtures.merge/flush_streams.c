@@ -64,11 +64,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: //! merge-extra-targets: android-x86_64 x86_64-linux-android clang
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "android"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "android"), all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -87,15 +83,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { slate_support::printf(c"two %s\n".as_ptr(), c"x".as_ptr() as *mut c_char) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     TRACE!(
-// CHECK-NEXT:         slate_support::stderr(),
-// CHECK-NEXT:         c"traced %d\n".as_ptr() as *mut c_char,
-// CHECK-NEXT:         2i32
-// CHECK-NEXT:     );
-// CHECK-NEXT:     CHECK!(
-// CHECK-NEXT:         (unsafe { verbose }) == 0,
-// CHECK-NEXT:         c"checked\n".as_ptr() as *mut c_char
-// CHECK-NEXT:     );
+// CHECK-NEXT:     TRACE!(slate_support::stderr(), c"traced %d\n".as_ptr() as *mut c_char, 2i32);
+// CHECK-NEXT:     CHECK!((unsafe { verbose }) == 0, c"checked\n".as_ptr() as *mut c_char);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::fputs(c"three\n".as_ptr(), slate_support::stdout()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -171,7 +160,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn report(value: i32) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::fprintf(slate_support::stderr(), c"value %d\n".as_ptr(), value) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::fprintf(slate_support::stderr(), c"value %d\n".as_ptr(), value)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -179,7 +170,9 @@ int main(void) {
 // CHECK-NEXT:     ($c:expr, $m:expr) => {
 // CHECK-NEXT:         if !$c {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::fputs(($m) as *const c_char, slate_support::stderr()) };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::fputs(($m) as *const c_char, slate_support::stderr())
+// CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
@@ -189,9 +182,7 @@ int main(void) {
 // CHECK-NEXT:     ($x__0:expr, $x__1:expr $(, $x:expr)*) => {
 // CHECK-NEXT:         if (unsafe { verbose }) > 0 {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::fprintf($x__0, ($x__1) as *const c_char, $($x),*)
-// CHECK-NEXT:             };
+// CHECK-NEXT:             unsafe { slate_support::fprintf($x__0, ($x__1) as *const c_char, $($x,)*) };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };

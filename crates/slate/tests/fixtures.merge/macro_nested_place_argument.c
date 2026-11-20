@@ -45,10 +45,7 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -85,10 +82,12 @@ int main(void) {
 // CHECK-NEXT:         suboffsets: core::ptr::null_mut::<c_long>(),
 // CHECK-NEXT:         strides: strides.as_mut_ptr() as *mut c_long,
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut rows: __SlateAlignLargeArray<[*mut c_char; 2]> =
-// CHECK-NEXT:         __SlateAlignLargeArray([data.as_mut_ptr() as *mut c_char, unsafe {
-// CHECK-NEXT:             (data.as_mut_ptr() as *mut c_char).add(1)
-// CHECK-NEXT:         }]);
+// CHECK-NEXT:     let mut rows: __SlateAlignLargeArray<[*mut c_char; 2]> = __SlateAlignLargeArray(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             data.as_mut_ptr() as *mut c_char,
+// CHECK-NEXT:             unsafe { (data.as_mut_ptr() as *mut c_char).add(1) },
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut subs: [c_long; 1] = [1];
 // CHECK-NEXT:     let mut one: [c_long; 1] = [core::mem::size_of::<*mut c_char>() as c_long];
 // CHECK-NEXT:     let mut indirect: view = view {
@@ -100,11 +99,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%c %c\n".as_ptr(),
-// CHECK-NEXT:             *lookup(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(plain) as *const view,
-// CHECK-NEXT:                 (2 as c_long),
-// CHECK-NEXT:                 0i32,
-// CHECK-NEXT:             ) as i32,
+// CHECK-NEXT:             *lookup(core::ptr::addr_of_mut!(plain) as *const view, (2 as c_long), 0i32)
+// CHECK-NEXT:                 as i32,
 // CHECK-NEXT:             *lookup(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(indirect) as *const view,
 // CHECK-NEXT:                 (1 as c_long),
@@ -119,8 +115,9 @@ int main(void) {
 // CHECK-NEXT: fn lookup(view: *const view, index: c_long, dim: i32) -> *mut c_char {
 // CHECK-NEXT:     let mut ptr: *mut c_char = unsafe { (*view).buf };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut c_char = ptr;
-// CHECK-NEXT:     ptr =
-// CHECK-NEXT:         unsafe { [[V_0]].offset((*unsafe { (*view).strides }.offset(dim as isize) * index) as isize) };
+// CHECK-NEXT:     ptr = unsafe {
+// CHECK-NEXT:         [[V_0]].offset((*unsafe { (*view).strides }.offset(dim as isize) * index) as isize)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     ptr = ADJUST_PTR!(ptr, (*view).suboffsets, dim);
 // CHECK-NEXT:     ptr
 // CHECK-NEXT: }

@@ -13,7 +13,9 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::perror;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let fp: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         slate_support::fopen(c"slate_perror_fopen_missing.tmp".as_ptr(), c"r".as_ptr())
@@ -25,6 +27,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::fclose(fp) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

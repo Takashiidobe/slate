@@ -37,28 +37,36 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! likely {
 // CHECK-NEXT:     ($x:expr) => {
 // CHECK-NEXT:         (($x) != 0) as i64
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! unlikely {
 // CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         ! (!$x) as i64
+// CHECK-NEXT:         !(!$x) as i64
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __builtin_prefetch([[ARG_0:arg[0-9]+]]: *const (), ...);
 // CHECK-NEXT:     fn __builtin_expect([[ARG_0]]: i64, [[ARG_1:arg[0-9]+]]: i64) -> i64;
 // CHECK-NEXT:     fn __builtin_expect_with_probability([[ARG_0]]: i64, [[ARG_1]]: i64, [[ARG_2:arg[0-9]+]]: f64) -> i64;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn next() -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { calls }) + 1;
 // CHECK-NEXT:     unsafe {
@@ -66,6 +74,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn weigh(words: &[u64]) -> i64 {
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0..words.len() as i32 {
@@ -73,25 +82,26 @@ int main(void) {
 // CHECK-NEXT:         if unlikely!(word == 0) != 0 {
 // CHECK-NEXT:             continue;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         total
-// CHECK-NEXT:             += ((word.count_ones() as i32) * 100 + (word.trailing_zeros() as i32))
-// CHECK-NEXT:                 as i64;
+// CHECK-NEXT:         total += ((word.count_ones() as i32) * 100 + (word.trailing_zeros() as i32))
+// CHECK-NEXT:             as i64;
 // CHECK-NEXT:         if likely!(word & 1) != 0 {
 // CHECK-NEXT:             total += ((word >> 32i32).count_ones() as i32) as i64;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         total
-// CHECK-NEXT:             += ((((word as u32) | 2147483648).trailing_zeros() as i32)
-// CHECK-NEXT:                 + ((word as u32).count_ones() as i32)) as i64;
+// CHECK-NEXT:         total += ((((word as u32) | 2147483648).trailing_zeros() as i32)
+// CHECK-NEXT:             + ((word as u32).count_ones() as i32)) as i64;
 // CHECK-NEXT:         total += (word.trailing_zeros() as i32) as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let words: __SlateAlign16<[u64; 12]> = __SlateAlign16([
-// CHECK-NEXT:         0u64, 1u64, 9223372036854775808u64, 18446744073709551615u64,
-// CHECK-NEXT:         67818912035696640u64, 12345u64, 11400714819323198485u64, 2u64, 4294967296u64,
-// CHECK-NEXT:         2147483647u64, 6u64, 6148914691236517205u64,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let words: __SlateAlign16<[u64; 12]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             0u64, 1u64, 9223372036854775808u64, 18446744073709551615u64,
+// CHECK-NEXT:             67818912035696640u64, 12345u64, 11400714819323198485u64, 2u64, 4294967296u64,
+// CHECK-NEXT:             2147483647u64, 6u64, 6148914691236517205u64,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), weigh(&words.0)) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -104,6 +114,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

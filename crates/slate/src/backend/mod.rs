@@ -1,7 +1,7 @@
 //! Backend processing for generated Rust.
 //!
 //! The backend rewrites the baseline Rust AST produced by the frontend, then
-//! emits formatted Rust source through [`crate::backend::format_rust`].
+//! emits formatted Rust source through [`crate::backend::codegen`].
 
 /// Rust source emission and code-generation helpers.
 pub mod asm;
@@ -12,6 +12,7 @@ pub(crate) mod engine;
 mod format;
 mod interproc;
 pub mod link;
+pub(crate) mod printer;
 /// The Rust AST transformed by the backend.
 pub mod rust_ast;
 
@@ -19,7 +20,7 @@ use crate::backend::rust_ast::Program;
 
 pub use engine::macro_templates::assign_template_names;
 pub use engine::shadow::visit_names;
-pub use format::{format_rust, pretty_rust, write_if_changed, write_pretty_rust, write_rust};
+pub use format::write_if_changed;
 pub use interproc::Exports;
 
 /// Applies the backend rewrite pipeline to a generated Rust program.

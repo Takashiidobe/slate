@@ -11,6 +11,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut left: i32 = 0;
 // CHECK-NEXT:     let mut right: i32 = 0;
@@ -18,8 +19,10 @@ int main(void) {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movl $3, {0:e}\n\tmovl $4, {1:e}", lateout(reg) [[T_0]], lateout(reg) [[T_1]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "movl $3, {0:e}\n\tmovl $4, {1:e}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             lateout(reg) [[T_1]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         left = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:         right = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
@@ -27,6 +30,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} _v9 anon_4 anon_struct_i32", left * 10 + right);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

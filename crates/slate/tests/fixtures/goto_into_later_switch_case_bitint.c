@@ -39,6 +39,7 @@ int main() {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn classify(c: bitint::BInt<200, 4, 32, bitint::A8>) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
@@ -47,24 +48,16 @@ int main() {
 // CHECK-NEXT:                 if [[T_0]] != <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(1) {
 // CHECK-NEXT:                     if [[T_0]] != <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(2) {
 // CHECK-NEXT:                         if [[T_0]]
-// CHECK-NEXT:                             == <bitint::BInt<
-// CHECK-NEXT:                                 200,
-// CHECK-NEXT:                                 4,
-// CHECK-NEXT:                                 32,
-// CHECK-NEXT:                                 bitint::A8,
-// CHECK-NEXT:                             >>::from_le_bytes::<
-// CHECK-NEXT:                                 160,
-// CHECK-NEXT:                                 20,
-// CHECK-NEXT:                             >([
-// CHECK-NEXT:                                 121, 223, 226, 241, 116, 124, 91, 239, 146, 170, 195, 158,
-// CHECK-NEXT:                                 103, 173, 39, 229, 54, 137, 5, 0,
-// CHECK-NEXT:                             ])
-// CHECK-NEXT:                         {
+// CHECK-NEXT:                             == <bitint::BInt<200, 4, 32, bitint::A8>>::from_le_bytes::<160, 20>(
+// CHECK-NEXT:                                 [
+// CHECK-NEXT:                                     121, 223, 226, 241, 116, 124, 91, 239, 146, 170, 195, 158,
+// CHECK-NEXT:                                     103, 173, 39, 229, 54, 137, 5, 0,
+// CHECK-NEXT:                                 ],
+// CHECK-NEXT:                             ) {
 // CHECK-NEXT:                             break '[[JOIN_0]];
 // CHECK-NEXT:                         } else {
 // CHECK-NEXT:                             if [[T_0]]
-// CHECK-NEXT:                                 == <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(4)
-// CHECK-NEXT:                             {
+// CHECK-NEXT:                                 == <bitint::BInt<200, 4, 32, bitint::A8>>::from_u128(4) {
 // CHECK-NEXT:                                 break '[[JOIN_1]];
 // CHECK-NEXT:                             } else {
 // CHECK-NEXT:                                 return -1;
@@ -86,30 +79,44 @@ int main() {
 // CHECK-NEXT:         return 100;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", classify(< bitint::BInt < 200, 4, 32, bitint::A8 >>::from_i128(1 as i128))
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         classify(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128))
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", classify(< bitint::BInt < 200, 4, 32, bitint::A8 >>::from_bint(<
-// CHECK-NEXT:         bitint::BInt < 148, 3, 24, bitint::A8 >>::from_le_bytes::< 160, 20 > ([121, 223,
-// CHECK-NEXT:         226, 241, 116, 124, 91, 239, 146, 170, 195, 158, 103, 173, 39, 229, 54, 137, 5,
-// CHECK-NEXT:         0])))
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         classify(
+// CHECK-NEXT:             <bitint::BInt<200, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:                 <bitint::BInt<148, 3, 24, bitint::A8>>::from_le_bytes::<160, 20>(
+// CHECK-NEXT:                     [
+// CHECK-NEXT:                         121, 223, 226, 241, 116, 124, 91, 239, 146, 170, 195, 158, 103,
+// CHECK-NEXT:                         173, 39, 229, 54, 137, 5, 0,
+// CHECK-NEXT:                     ],
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", classify(< bitint::BInt < 200, 4, 32, bitint::A8 >>::from_i128(4 as i128))
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         classify(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(4 as i128))
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", classify(< bitint::BInt < 200, 4, 32, bitint::A8 >>::from_i128(5 as i128))
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         classify(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(5 as i128))
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", classify(< bitint::BInt < 200, 4, 32, bitint::A8 >>::from_i128(6 as i128))
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         classify(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(6 as i128))
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", classify(< bitint::BInt < 200, 4, 32, bitint::A8 >>::from_i128(9 as i128))
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         classify(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(9 as i128))
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

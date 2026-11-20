@@ -27,8 +27,8 @@ int main(void) {
 // CHECK-NEXT: #[path = "shapes.rs"]
 // CHECK-NEXT: mod __slate_unit_shapes;
 // CHECK-EMPTY:
-// CHECK-NEXT: use crate::__slate_types::__SlateRecord_shapes_h_9;
 // CHECK-NEXT: use crate::__slate_types::__SlateRecord_shapes_h_18;
+// CHECK-NEXT: use crate::__slate_types::__SlateRecord_shapes_h_9;
 // CHECK-NEXT: use crate::__slate_types::flags;
 // CHECK-NEXT: use crate::__slate_types::registry;
 // CHECK-NEXT: use crate::__slate_types::shape;
@@ -51,49 +51,56 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut shapes: __SlateAlign16<[shape; 3]> = __SlateAlign16([
-// CHECK-NEXT:         shape {
-// CHECK-NEXT:             next: core::ptr::null_mut::<shape>(),
-// CHECK-NEXT:             origin: __SlateRecord_shapes_h_9 { x: 1, y: 2 },
-// CHECK-NEXT:             flags: {
-// CHECK-NEXT:                 let mut [[T_0:__t[0-9]+]]: flags = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:                 [[T_0]].__slate_bits_0.__set_ready(1u32);
-// CHECK-NEXT:                 [[T_0]].__slate_bits_0.__set_level(0u32);
-// CHECK-NEXT:                 [[T_0]].id = 10i32;
-// CHECK-NEXT:                 [[T_0]]
+// CHECK-NEXT:     let mut shapes: __SlateAlign16<[shape; 3]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             shape {
+// CHECK-NEXT:                 next: core::ptr::null_mut::<shape>(),
+// CHECK-NEXT:                 origin: __SlateRecord_shapes_h_9 {
+// CHECK-NEXT:                     x: 1,
+// CHECK-NEXT:                     y: 2,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 flags: {
+// CHECK-NEXT:                     let mut [[T_0:__t[0-9]+]]: flags = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:                     [[T_0]].__slate_bits_0.__set_ready(1u32);
+// CHECK-NEXT:                     [[T_0]].__slate_bits_0.__set_level(0u32);
+// CHECK-NEXT:                     [[T_0]].id = 10i32;
+// CHECK-NEXT:                     [[T_0]]
+// CHECK-NEXT:                 },
 // CHECK-NEXT:             },
-// CHECK-NEXT:         },
-// CHECK-NEXT:         shape {
-// CHECK-NEXT:             next: core::ptr::null_mut::<shape>(),
-// CHECK-NEXT:             origin: __SlateRecord_shapes_h_9 { x: 3, y: 4 },
-// CHECK-NEXT:             flags: {
-// CHECK-NEXT:                 let mut [[T_1:__t[0-9]+]]: flags = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:                 [[T_1]].__slate_bits_0.__set_ready(0u32);
-// CHECK-NEXT:                 [[T_1]].__slate_bits_0.__set_level(2u32);
-// CHECK-NEXT:                 [[T_1]].id = 11i32;
-// CHECK-NEXT:                 [[T_1]]
+// CHECK-NEXT:             shape {
+// CHECK-NEXT:                 next: core::ptr::null_mut::<shape>(),
+// CHECK-NEXT:                 origin: __SlateRecord_shapes_h_9 {
+// CHECK-NEXT:                     x: 3,
+// CHECK-NEXT:                     y: 4,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 flags: {
+// CHECK-NEXT:                     let mut [[T_1:__t[0-9]+]]: flags = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:                     [[T_1]].__slate_bits_0.__set_ready(0u32);
+// CHECK-NEXT:                     [[T_1]].__slate_bits_0.__set_level(2u32);
+// CHECK-NEXT:                     [[T_1]].id = 11i32;
+// CHECK-NEXT:                     [[T_1]]
+// CHECK-NEXT:                 },
 // CHECK-NEXT:             },
-// CHECK-NEXT:         },
-// CHECK-NEXT:         shape {
-// CHECK-NEXT:             next: core::ptr::null_mut::<shape>(),
-// CHECK-NEXT:             origin: __SlateRecord_shapes_h_9 { x: 5, y: 6 },
-// CHECK-NEXT:             flags: {
-// CHECK-NEXT:                 let mut [[T_2:__t[0-9]+]]: flags = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:                 [[T_2]].__slate_bits_0.__set_ready(1u32);
-// CHECK-NEXT:                 [[T_2]].__slate_bits_0.__set_level(3u32);
-// CHECK-NEXT:                 [[T_2]].id = 12i32;
-// CHECK-NEXT:                 [[T_2]]
+// CHECK-NEXT:             shape {
+// CHECK-NEXT:                 next: core::ptr::null_mut::<shape>(),
+// CHECK-NEXT:                 origin: __SlateRecord_shapes_h_9 {
+// CHECK-NEXT:                     x: 5,
+// CHECK-NEXT:                     y: 6,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 flags: {
+// CHECK-NEXT:                     let mut [[T_2:__t[0-9]+]]: flags = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:                     [[T_2]].__slate_bits_0.__set_ready(1u32);
+// CHECK-NEXT:                     [[T_2]].__slate_bits_0.__set_level(3u32);
+// CHECK-NEXT:                     [[T_2]].id = 12i32;
+// CHECK-NEXT:                     [[T_2]]
+// CHECK-NEXT:                 },
 // CHECK-NEXT:             },
-// CHECK-NEXT:         },
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let registry: *mut registry = unsafe { registry_new() };
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             shape_move(
-// CHECK-NEXT:                 (shapes.0.as_mut_ptr() as *mut shape).offset(i as isize),
-// CHECK-NEXT:                 i,
-// CHECK-NEXT:                 1i32,
-// CHECK-NEXT:             )
+// CHECK-NEXT:             shape_move((shapes.0.as_mut_ptr() as *mut shape).offset(i as isize), i, 1i32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             registry_add(
@@ -125,7 +132,9 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             tag_score(&(*(core::ptr::addr_of_mut!(tag) as *const __SlateRecord_shapes_h_18)))
+// CHECK-NEXT:             tag_score(
+// CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(tag) as *const __SlateRecord_shapes_h_18)),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe { count_vowels(c"translation unit".as_ptr()) }
 // CHECK-NEXT:     );

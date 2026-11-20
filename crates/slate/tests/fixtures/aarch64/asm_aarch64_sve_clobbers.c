@@ -51,9 +51,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN aarch64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sve")]
 // CHECK-NEXT: unsafe fn add_arrays(
 // CHECK-NEXT:     mut out: *mut i64,
@@ -64,36 +66,49 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "mov x9, #0\n1:\n\twhilelo p1.d, x9, {3:x}\n\tb.none 2f\n\tld1d z1.d, p1/z, [{1:x}, x9, lsl #3]\n\tld1d z2.d, p1/z, [{2:x}, x9, lsl #3]\n\tadd z1.d, z1.d, z2.d\n\tst1d z1.d, p1, [{0:x}, x9, lsl #3]\n\tincd x9\n\tb 1b\n2:",
-// CHECK-NEXT:             in (reg) out as u64, in (reg) left as u64, in (reg) right as u64, in (reg)
-// CHECK-NEXT:             count as u64, out("x9") _, out("p1") _, out("v1") _, out("v2") _,
-// CHECK-NEXT:             options(nostack)
+// CHECK-NEXT:             in(reg) out as u64,
+// CHECK-NEXT:             in(reg) left as u64,
+// CHECK-NEXT:             in(reg) right as u64,
+// CHECK-NEXT:             in(reg) count as u64,
+// CHECK-NEXT:             out("x9") _,
+// CHECK-NEXT:             out("p1") _,
+// CHECK-NEXT:             out("v1") _,
+// CHECK-NEXT:             out("v2") _,
+// CHECK-NEXT:             options(nostack),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sve")]
 // CHECK-NEXT: unsafe fn lanes_positive() -> i32 {
 // CHECK-NEXT:     let mut lanes: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "ptrue p3.d\n\tcntp {0:x}, p3, p3.d", lateout(reg) [[T_0]], out("p3") _,
-// CHECK-NEXT:             options(nostack, preserves_flags)
+// CHECK-NEXT:             "ptrue p3.d\n\tcntp {0:x}, p3, p3.d",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             out("p3") _,
+// CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         lanes = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (lanes > 0) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sve")]
 // CHECK-NEXT: unsafe fn keep_live(value: f64) -> f64 {
 // CHECK-NEXT:     let scaled: f64 = value * 2.0f64;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov z0.d, #0\n\tmov z31.d, #0", out("v0") _, out("v31") _, options(nostack,
-// CHECK-NEXT:             preserves_flags)
+// CHECK-NEXT:             "mov z0.d, #0\n\tmov z31.d, #0",
+// CHECK-NEXT:             out("v0") _,
+// CHECK-NEXT:             out("v31") _,
+// CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     scaled + value
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut left: [i64; 11] = [0i64; 11];
 // CHECK-NEXT:     let mut right: [i64; 11] = [0i64; 11];
@@ -121,6 +136,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -18,10 +18,12 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(f128)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_libgcc {
 // CHECK-NEXT:     #[link(name = "gcc", kind = "static")]
 // CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let f: num_complex::Complex<f32> = num_complex::Complex {
 // CHECK-NEXT:         re: 1.0f32,
@@ -36,19 +38,47 @@ int main(void) {
 // CHECK-NEXT:         im: 6f128,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", (f == num_complex::Complex { re : 1.0f32, im : 2.0f32 }) as i32, (f !=
-// CHECK-NEXT:         num_complex::Complex { re : 1.0f32, im : 3.0f32 }) as i32
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         (f
+// CHECK-NEXT:             == num_complex::Complex {
+// CHECK-NEXT:                 re: 1.0f32,
+// CHECK-NEXT:                 im: 2.0f32,
+// CHECK-NEXT:             }) as i32,
+// CHECK-NEXT:         (f
+// CHECK-NEXT:             != num_complex::Complex {
+// CHECK-NEXT:                 re: 1.0f32,
+// CHECK-NEXT:                 im: 3.0f32,
+// CHECK-NEXT:             }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", (d == num_complex::Complex { re : 3.0f64, im : 4.0f64 }) as i32, (d !=
-// CHECK-NEXT:         num_complex::Complex { re : 3.0f64, im : 5.0f64 }) as i32
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         (d
+// CHECK-NEXT:             == num_complex::Complex {
+// CHECK-NEXT:                 re: 3.0f64,
+// CHECK-NEXT:                 im: 4.0f64,
+// CHECK-NEXT:             }) as i32,
+// CHECK-NEXT:         (d
+// CHECK-NEXT:             != num_complex::Complex {
+// CHECK-NEXT:                 re: 3.0f64,
+// CHECK-NEXT:                 im: 5.0f64,
+// CHECK-NEXT:             }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", (l == num_complex::Complex { re : 5f128, im : 6f128 }) as i32, (l !=
-// CHECK-NEXT:         num_complex::Complex { re : 5f128, im : 7f128 }) as i32
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         (l
+// CHECK-NEXT:             == num_complex::Complex {
+// CHECK-NEXT:                 re: 5f128,
+// CHECK-NEXT:                 im: 6f128,
+// CHECK-NEXT:             }) as i32,
+// CHECK-NEXT:         (l
+// CHECK-NEXT:             != num_complex::Complex {
+// CHECK-NEXT:                 re: 5f128,
+// CHECK-NEXT:                 im: 7f128,
+// CHECK-NEXT:             }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

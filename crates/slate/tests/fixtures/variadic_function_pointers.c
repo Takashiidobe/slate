@@ -35,25 +35,30 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Dispatch {
 // CHECK-NEXT:     callback: Option<unsafe extern "C-unwind" fn(i32, ...) -> i32>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::snprintf;
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn total(count: i32, mut __va_args: ...) -> i32 {
 // CHECK-NEXT:     let mut args: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     args = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut result: i32 = unsafe { args.next_arg::<i32>() };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { args.next_arg::<f64>() }) as i32;
@@ -62,11 +67,13 @@ int main(void) {
 // CHECK-NEXT:     result += [[V_1]];
 // CHECK-NEXT:     count + result
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn select_callback(
 // CHECK-NEXT:     callback: Option<unsafe extern "C-unwind" fn(i32, ...) -> i32>,
 // CHECK-NEXT: ) -> Option<unsafe extern "C-unwind" fn(i32, ...) -> i32> {
 // CHECK-NEXT:     callback
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let dispatch: Dispatch = Dispatch { callback: Some(total) };
 // CHECK-NEXT:     let mut callback: Option<unsafe extern "C-unwind" fn(i32, ...) -> i32> = select_callback(
@@ -82,13 +89,10 @@ int main(void) {
 // CHECK-NEXT:     if callback != None {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let format: Option<
-// CHECK-NEXT:         unsafe extern "C-unwind" fn(*mut i8, u64, *const i8, ...) -> i32,
-// CHECK-NEXT:     > = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *const (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(*mut i8, u64, *const i8, ...) -> i32>,
-// CHECK-NEXT:         >(snprintf as *const ())
+// CHECK-NEXT:     let format: Option<unsafe extern "C-unwind" fn(*mut i8, u64, *const i8, ...) -> i32> = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(*mut i8, u64, *const i8, ...) -> i32>>(
+// CHECK-NEXT:             snprintf as *const (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 32]> = __SlateAlign16([0i8; 32]);
 // CHECK-NEXT:     if (unsafe {
@@ -100,8 +104,7 @@ int main(void) {
 // CHECK-NEXT:             a as i32,
 // CHECK-NEXT:             b as f64,
 // CHECK-NEXT:         )
-// CHECK-NEXT:     }) != 5
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) != 5 {
 // CHECK-NEXT:         return 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -109,6 +112,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

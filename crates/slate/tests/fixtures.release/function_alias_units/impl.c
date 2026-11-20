@@ -8,7 +8,8 @@ int        weak_alias(int) __attribute__((weak, alias("target")));
 int local_identity(void) { return aliased == target; }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}core::arch::global_asm!(".globl aliased\n.set aliased, {0}", sym target);
+// CHECK: {{^}}
+// CHECK-NEXT: core::arch::global_asm!(".globl aliased\n.set aliased, {0}", sym target);
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(".globl from_static\n.set from_static, {0}", sym hidden);
 // CHECK-EMPTY:
@@ -26,7 +27,9 @@ int local_identity(void) { return aliased == target; }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn local_identity() -> i32 {
 // CHECK-NEXT:     (({
-// CHECK-NEXT:         let __slate_function: Option<unsafe extern "C-unwind" fn(i32) -> i32> = Some(target);
+// CHECK-NEXT:         let __slate_function: Option<unsafe extern "C-unwind" fn(i32) -> i32> = Some(
+// CHECK-NEXT:             target,
+// CHECK-NEXT:         );
 // CHECK-NEXT:         __slate_function
 // CHECK-NEXT:     }) == Some(target)) as i32
 // CHECK-NEXT: }

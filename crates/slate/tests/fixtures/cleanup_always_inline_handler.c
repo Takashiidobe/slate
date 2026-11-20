@@ -39,7 +39,9 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut released: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn unlock(depth: *mut i32) {
 // CHECK-NEXT:     unsafe {
@@ -52,6 +54,7 @@ int main(void) {
 // CHECK-NEXT:         *depth = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn guarded(mut held: i32, bail: i32) -> i32 {
 // CHECK-NEXT:     let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(held) as *mut _;
 // CHECK-NEXT:     let __slate_cleanup_0 = ::slate_support::Guard(
@@ -63,6 +66,7 @@ int main(void) {
 // CHECK-NEXT:     held += 10;
 // CHECK-NEXT:     held
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn skipped(n: i32) -> i32 {
 // CHECK-NEXT:     let mut held: core::mem::MaybeUninit<i32> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut i32 = core::ptr::addr_of_mut!(held) as *mut i32;
@@ -86,6 +90,7 @@ int main(void) {
 // CHECK-NEXT:         return released;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", guarded(3i32, 0i32));
 // CHECK-NEXT:     println!("{}", guarded(4i32, 1i32));
@@ -94,6 +99,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", unsafe { released });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

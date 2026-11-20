@@ -40,21 +40,26 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn self_(value: i32) -> i32 {
 // CHECK-NEXT:     value + 1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn crate_() -> i32 {
 // CHECK-NEXT:     7
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn shifted(x: i32) -> i32 {
 // CHECK-NEXT:     if x > 32 {
 // CHECK-NEXT:         return x << -64i32 & 255;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn divided(x: i32) -> i32 {
 // CHECK-NEXT:     let zero: i32 = 0;
 // CHECK-NEXT:     if x > 100 {
@@ -62,10 +67,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x % 7
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.same")]
 // CHECK-NEXT: extern "C-unwind" fn same() -> i32 {
 // CHECK-NEXT:     3
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: i32 = 0;
 // CHECK-NEXT:     let b: i32 = 2;
@@ -80,9 +87,15 @@ int main(void) {
 // CHECK-NEXT:     let tag: u64 = 12;
 // CHECK-NEXT:     println!("{} {}", self_(4i32), crate_());
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", shifted(5i32), divided(20i32), (({ let __slate_function : Option <
-// CHECK-NEXT:         unsafe extern "C-unwind" fn () -> i32 > = Some(same); __slate_function }) ==
-// CHECK-NEXT:         Some(same)) as i32
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         shifted(5i32),
+// CHECK-NEXT:         divided(20i32),
+// CHECK-NEXT:         (({
+// CHECK-NEXT:             let __slate_function: Option<unsafe extern "C-unwind" fn() -> i32> = Some(
+// CHECK-NEXT:                 same,
+// CHECK-NEXT:             );
+// CHECK-NEXT:             __slate_function
+// CHECK-NEXT:         }) == Some(same)) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%d %d %lu %lu\n".as_ptr(), elvis, other, tail, tag)
@@ -90,6 +103,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

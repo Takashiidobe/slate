@@ -15,7 +15,8 @@ unsigned long tcp_tlp_bytes(struct tcp_info *info) { return info->tcpi_total_tlp
 unsigned int cpu_capacity(void) { return CPU_SETSIZE; }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-freebsd aarch64-unknown-freebsd
-// CHECK: {{^}}#[repr(C)]
+// CHECK: {{^}}
+// CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct _cpuset {
 // CHECK-NEXT:     __bits: [u64; 16],
@@ -82,17 +83,7 @@ unsigned int cpu_capacity(void) { return CPU_SETSIZE; }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u8,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u8, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits8U0 {
 // CHECK-NEXT:         #[bits(4)]
 // CHECK-NEXT:         pub tcpi_snd_wscale: u8,

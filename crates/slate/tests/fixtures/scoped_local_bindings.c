@@ -91,15 +91,19 @@ int read_static_total(void) { return total; }
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut total: i32 = 100;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn fill(out: &mut i32, value: i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(out as *mut i32) = value;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn fill_pair(first: &mut i64, second: &mut i64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(first as *mut i64) = 11;
@@ -108,6 +112,7 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:         *(second as *mut i64) = 22;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn shadow_params(value: i32, step: i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = value;
 // CHECK-NEXT:     {
@@ -118,6 +123,7 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result + value + step
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: i32 = 1;
 // CHECK-NEXT:     let mut outer_seen: i32 = 0;
@@ -159,7 +165,11 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(a)) },
 // CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(b)) },
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let chosen: i32 = if x > 0 { 10 } else { 20 };
+// CHECK-NEXT:     let chosen: i32 = if x > 0 {
+// CHECK-NEXT:         10
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         20
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for round in 0i32..3i32 {
 // CHECK-NEXT:         let mut fresh: i32 = 1;
@@ -180,9 +190,11 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     total__0 + x & 63
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn read_static_total() -> i32 {
 // CHECK-NEXT:     unsafe { total }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

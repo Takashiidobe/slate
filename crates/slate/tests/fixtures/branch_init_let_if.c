@@ -60,13 +60,16 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn probe(p: *const i8) -> i32 {
 // CHECK-NEXT:     if !p.is_null() { (unsafe { *p.add(0) }) as i32 } else { 0 }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn both(p: *const i8) -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = !p.is_null() && probe(p) != 0;
 // CHECK-NEXT:     [[V_0]] as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn either(p: *const i8, a: i32) -> i32 {
 // CHECK-NEXT:     let r: i32 = if !p.is_null() {
 // CHECK-NEXT:         let t: i32 = probe(p);
@@ -76,10 +79,16 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn zeroed(a: i32) -> i32 {
-// CHECK-NEXT:     let r: i32 = if a > 3 { a * 2 } else { a + 7 };
+// CHECK-NEXT:     let r: i32 = if a > 3 {
+// CHECK-NEXT:         a * 2
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         a + 7
+// CHECK-NEXT:     };
 // CHECK-NEXT:     r + 1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn one_armed(a: i32) -> i32 {
 // CHECK-NEXT:     let mut r: i32 = 0;
 // CHECK-NEXT:     if a > 3 {
@@ -91,6 +100,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn reads_before(a: i32) -> i32 {
 // CHECK-NEXT:     let mut r: i32 = 5;
 // CHECK-NEXT:     if a > 3 {
@@ -100,17 +110,25 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", both(c"x".as_ptr()), both(core::ptr::null::< i8 > ()), either(c"a"
-// CHECK-NEXT:         .as_ptr(), 2i32)
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         both(c"x".as_ptr()),
+// CHECK-NEXT:         both(core::ptr::null::<i8>()),
+// CHECK-NEXT:         either(c"a".as_ptr(), 2i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", zeroed(1i32), zeroed(9i32), one_armed(1i32), one_armed(8i32)
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         zeroed(1i32),
+// CHECK-NEXT:         zeroed(9i32),
+// CHECK-NEXT:         one_armed(1i32),
+// CHECK-NEXT:         one_armed(8i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {}", reads_before(1i32), reads_before(9i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -19,15 +19,19 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(used_with_arg)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut __start_slate_gnu_retain: [i32; 0];
 // CHECK-NEXT:     static mut __stop_slate_gnu_retain: [i32; 0];
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[used(linker)]
 // CHECK-NEXT: #[unsafe(link_section = "slate_gnu_retain")]
 // CHECK-NEXT: static mut kept: i32 = 41;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[used(linker)]
 // CHECK-NEXT: static mut counter: i32 = 3;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         counter = counter + 4;
@@ -44,6 +48,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {}", unsafe { counter }, sum);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

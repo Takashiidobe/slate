@@ -19,7 +19,9 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::strlen;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn first_byte(bytes: *const u8, len: i32) -> i32 {
 // CHECK-NEXT:     let __bytes_view = unsafe {
 // CHECK-NEXT:         core::slice::from_raw_parts(bytes as *const u8, len as usize)
@@ -31,12 +33,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut bytes: [u8; 3] = [195, 169, 0];
 // CHECK-NEXT:     let value: i32 = first_byte(bytes.as_ptr() as *const u8, 1i32);
 // CHECK-NEXT:     println!("{}", value);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -151,10 +151,7 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -179,7 +176,9 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), checks(-1i32), checks(1i32)) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(c"%d %d\n".as_ptr(), checks(-1i32), checks(1i32))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
@@ -325,18 +324,15 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), with_goto(1i32), with_goto(-1i32)) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(c"%d %d\n".as_ptr(), with_goto(1i32), with_goto(-1i32))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{} {}", value_position(-1i32), value_position(2i32));
-// CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {} {}",
-// CHECK-NEXT:             in_switch(0i32),
-// CHECK-NEXT:             in_switch(1i32),
-// CHECK-NEXT:             in_switch(2i32)
-// CHECK-NEXT:         );
+// CHECK-NEXT:         println!("{} {} {}", in_switch(0i32), in_switch(1i32), in_switch(2i32));
 // CHECK-NEXT:         println!("{} {}", in_loop(6i32), unsafe { trace });
 // CHECK-NEXT:         println!("{} {}", with_goto(1i32), with_goto(-1i32));
 // CHECK-NEXT:     }
@@ -381,12 +377,14 @@ int main(void) {
 // CHECK-NEXT:         core::ptr::null_mut::<()>()
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             malloc((4 as size_t).wrapping_mul(core::mem::size_of::<i32>() as size_t) as usize)
-// CHECK-NEXT:                 as *mut ()
+// CHECK-NEXT:             malloc(
+// CHECK-NEXT:                 (4 as size_t).wrapping_mul(core::mem::size_of::<i32>() as size_t)
+// CHECK-NEXT:                     as usize,
+// CHECK-NEXT:             ) as *mut ()
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let p: *mut i32 = [[V_0]] as *mut i32;
-// CHECK-NEXT:     NULL_GUARD!(p);
+// CHECK-NEXT:     NULL_GUARD__2!(p);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.add(0) = n;
 // CHECK-NEXT:     }
@@ -394,15 +392,16 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn guarded_pointer(s: *mut c_char, n: i32) -> *mut c_char {
-// CHECK-NEXT:     NULL_GUARD__2!(s);
+// CHECK-NEXT:     NULL_GUARD!(s);
 // CHECK-NEXT:     unsafe { s.offset(n as isize) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn hidden_buffer_return(n: i32) -> *mut i32 {
 // CHECK-NEXT:     NEG_NULL!(n);
 // CHECK-NEXT:     let p: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc((n as size_t).wrapping_mul(core::mem::size_of::<i32>() as size_t) as usize)
-// CHECK-NEXT:             as *mut ()
+// CHECK-NEXT:         malloc(
+// CHECK-NEXT:             (n as size_t).wrapping_mul(core::mem::size_of::<i32>() as size_t) as usize,
+// CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.add(0) = n;
@@ -421,13 +420,14 @@ int main(void) {
 // CHECK-NEXT: fn in_loop(n: i32) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         if i != 1 {
-// CHECK-NEXT:             if i == 3 {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             CHECK!(sum - 100);
-// CHECK-NEXT:             sum += i;
+// CHECK-NEXT:         if i == 1 {
+// CHECK-NEXT:             continue;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         if i == 3 {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         CHECK!(sum - 100);
+// CHECK-NEXT:         sum += i;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     OWN_LOOP!(n);
 // CHECK-NEXT:     sum
@@ -478,87 +478,102 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! BAIL {
-// CHECK-NEXT:     () => {{[{][{]}}
-// CHECK-NEXT:         return;
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     () => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! BAIL_IF {
-// CHECK-NEXT:     ($c:expr) => {{[{][{]}}
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             if $c {
-// CHECK-NEXT:                 return;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
+// CHECK-NEXT:     ($c:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             loop {
+// CHECK-NEXT:                 if $c {
+// CHECK-NEXT:                     return;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 if true {
+// CHECK-NEXT:                     break;
+// CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! CHECK {
-// CHECK-NEXT:     ($x:expr) => {{[{][{]}}
-// CHECK-NEXT:         if ($x) < 0 {
-// CHECK-NEXT:             return -1i32;
+// CHECK-NEXT:     ($x:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             if ($x) < 0 {
+// CHECK-NEXT:                 return -1i32;
+// CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! CHECK_BOTH {
-// CHECK-NEXT:     ($x:expr) => {{[{][{]}}
-// CHECK-NEXT:         CHECK!($x);
-// CHECK-NEXT:         CHECK!(($x) - 1);
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     ($x:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             CHECK!($x);
+// CHECK-NEXT:             CHECK!(($x) - 1);
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! FAIL {
-// CHECK-NEXT:     ($x:expr) => {{[{][{]}}
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             trace = $x;
+// CHECK-NEXT:     ($x:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 trace = $x;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             return $x;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return $x;
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! NEG_NULL {
-// CHECK-NEXT:     ($n:expr) => {{[{][{]}}
-// CHECK-NEXT:         if ($n) < 0 {
-// CHECK-NEXT:             return core::ptr::null_mut::<i32>();
+// CHECK-NEXT:     ($n:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             if ($n) < 0 {
+// CHECK-NEXT:                 return core::ptr::null_mut::<i32>();
+// CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! NULL_GUARD {
-// CHECK-NEXT:     ($p:expr) => {{[{][{]}}
-// CHECK-NEXT:         if $p.is_null() {
-// CHECK-NEXT:             return core::ptr::null_mut::<i32>();
+// CHECK-NEXT:     ($p:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             if $p.is_null() {
+// CHECK-NEXT:                 return core::ptr::null_mut::<c_char>();
+// CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! NULL_GUARD__2 {
-// CHECK-NEXT:     ($p:expr) => {{[{][{]}}
-// CHECK-NEXT:         if $p.is_null() {
-// CHECK-NEXT:             return core::ptr::null_mut::<c_char>();
+// CHECK-NEXT:     ($p:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             if $p.is_null() {
+// CHECK-NEXT:                 return core::ptr::null_mut::<i32>();
+// CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! OWN_LOOP {
 // CHECK-NEXT:     ($n:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut i: i32 = 0;
-// CHECK-NEXT:             while i < $n {
+// CHECK-NEXT:             for i in 0..$n {
 // CHECK-NEXT:                 if i == 3 {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 if i != 1 {
-// CHECK-NEXT:                     let __v: i32 = unsafe { trace };
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         trace = __v + i;
-// CHECK-NEXT:                     }
+// CHECK-NEXT:                 if i == 1 {
+// CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 i += 1;
+// CHECK-NEXT:                 let __v: i32 = unsafe { trace };
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     trace = __v + i;
+// CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
@@ -568,24 +583,28 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! PICK {
-// CHECK-NEXT:     ($x:expr) => {{[{][{]}}
-// CHECK-NEXT:         if $x {
-// CHECK-NEXT:             return 1i32;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             return 2i32;
+// CHECK-NEXT:     ($x:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             if $x {
+// CHECK-NEXT:                 return 1i32;
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 return 2i32;
+// CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! TAKE {
-// CHECK-NEXT:     ($x:expr) => {{[{][{]}}
-// CHECK-NEXT:         let mut __v: i32;
-// CHECK-NEXT:         if ($x) < 0 {
-// CHECK-NEXT:             return -2i32;
+// CHECK-NEXT:     ($x:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut __v: i32;
+// CHECK-NEXT:             if ($x) < 0 {
+// CHECK-NEXT:                 return -2i32;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             __v = ($x) + 1;
+// CHECK-NEXT:             __v
 // CHECK-NEXT:         }
-// CHECK-NEXT:         __v = ($x) + 1;
-// CHECK-NEXT:         __v
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut trace: i32 = unsafe { core::mem::zeroed() };
@@ -597,7 +616,7 @@ int main(void) {
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use slate_support::size_t;
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

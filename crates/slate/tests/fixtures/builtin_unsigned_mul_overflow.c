@@ -27,40 +27,84 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: macro_rules! TEST__2 {
-// CHECK-NEXT:     ($T:ty, $MAX:expr) => {
-// CHECK-NEXT:         '__slate_label_0 : loop { let mut r : $T = 0i32 as $T; let values :
-// CHECK-NEXT:         __SlateAlign16 < {{\[\[}}u32; 2]; 4] > = __SlateAlign16({{\[\[}}0i32 as $T, $MAX], [1i32 as
-// CHECK-NEXT:         $T, $MAX], [$MAX, 2i32 as $T], [$MAX, $MAX]]); '__slate_label_2 : for i in 0i32
-// CHECK-NEXT:         as $T ..4i32 as $T { let overflow : i32 = ({ let __t : i128 = values.0[i as
-// CHECK-NEXT:         usize] [0] as i128; let [[T_0:__t[0-9]+]] : i128 = values.0[i as usize] [1] as i128; let [[T_1:__t[0-9]+]]
-// CHECK-NEXT:         : i128 = __t.wrapping_mul([[T_0]]); unsafe { * core::ptr::addr_of_mut!(r) = [[T_1]] as
-// CHECK-NEXT:         $T; } __t.checked_mul([[T_0]]).is_none() || (([[T_1]] as $T) as i128) != [[T_1]] }) as
-// CHECK-NEXT:         i32; let _ = std::io::Write::flush(& mut std::io::stdout()); unsafe {
-// CHECK-NEXT:         slate_support::printf(c"%d %llu\n".as_ptr(), overflow, r as u64) }; unsafe {
-// CHECK-NEXT:         fflush(core::ptr::null_mut()) }; } if true { break; } }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! TEST {
 // CHECK-NEXT:     ($T:ty, $MAX:expr) => {
-// CHECK-NEXT:         '__slate_label_0 : loop { let mut r : $T = 0i32 as $T; let values :
-// CHECK-NEXT:         __SlateAlign16 < {{\[\[}}u64; 2]; 4] > = __SlateAlign16({{\[\[}}0i32 as $T, $MAX], [1i32 as
-// CHECK-NEXT:         $T, $MAX], [$MAX, 2i32 as $T], [$MAX, $MAX]]); '__slate_label_2 : for i in 0u32
-// CHECK-NEXT:         ..4u32 { let overflow : i32 = ({ let __t : i128 = values.0[i as usize] [0] as
-// CHECK-NEXT:         i128; let [[T_0]] : i128 = values.0[i as usize] [1] as i128; let [[T_1]] : i128 = __t
-// CHECK-NEXT:         .wrapping_mul([[T_0]]); unsafe { * core::ptr::addr_of_mut!(r) = [[T_1]] as $T; } __t
-// CHECK-NEXT:         .checked_mul([[T_0]]).is_none() || (([[T_1]] as $T) as i128) != [[T_1]] }) as i32; let _ =
-// CHECK-NEXT:         std::io::Write::flush(& mut std::io::stdout()); unsafe {
-// CHECK-NEXT:         slate_support::printf(c"%d %llu\n".as_ptr(), overflow, r) }; unsafe {
-// CHECK-NEXT:         fflush(core::ptr::null_mut()) }; } if true { break; } }
+// CHECK-NEXT:         '__slate_label_0: loop {
+// CHECK-NEXT:             let mut r: $T = 0i32 as $T;
+// CHECK-NEXT:             let values: __SlateAlign16<{{\[\[}}u64; 2]; 4]> = __SlateAlign16(
+// CHECK-NEXT:                 [
+// CHECK-NEXT:                     [0i32 as $T, $MAX],
+// CHECK-NEXT:                     [1i32 as $T, $MAX],
+// CHECK-NEXT:                     [$MAX, 2i32 as $T],
+// CHECK-NEXT:                     [$MAX, $MAX],
+// CHECK-NEXT:                 ],
+// CHECK-NEXT:             );
+// CHECK-NEXT:             '__slate_label_2: for i in 0u32..4u32 {
+// CHECK-NEXT:                 let overflow: i32 = ({
+// CHECK-NEXT:                     let __t: i128 = values.0[i as usize][0] as i128;
+// CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: i128 = values.0[i as usize][1] as i128;
+// CHECK-NEXT:                     let [[T_1:__t[0-9]+]]: i128 = __t.wrapping_mul([[T_0]]);
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         *core::ptr::addr_of_mut!(r) = [[T_1]] as $T;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     __t.checked_mul([[T_0]]).is_none() || (([[T_1]] as $T) as i128) != [[T_1]]
+// CHECK-NEXT:                 }) as i32;
+// CHECK-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:                 unsafe { slate_support::printf(c"%d %llu\n".as_ptr(), overflow, r) };
+// CHECK-NEXT:                 unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:             }
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! TEST__2 {
+// CHECK-NEXT:     ($T:ty, $MAX:expr) => {
+// CHECK-NEXT:         '__slate_label_0: loop {
+// CHECK-NEXT:             let mut r: $T = 0i32 as $T;
+// CHECK-NEXT:             let values: __SlateAlign16<{{\[\[}}u32; 2]; 4]> = __SlateAlign16(
+// CHECK-NEXT:                 [
+// CHECK-NEXT:                     [0i32 as $T, $MAX],
+// CHECK-NEXT:                     [1i32 as $T, $MAX],
+// CHECK-NEXT:                     [$MAX, 2i32 as $T],
+// CHECK-NEXT:                     [$MAX, $MAX],
+// CHECK-NEXT:                 ],
+// CHECK-NEXT:             );
+// CHECK-NEXT:             '__slate_label_2: for i in 0i32 as $T..4i32 as $T {
+// CHECK-NEXT:                 let overflow: i32 = ({
+// CHECK-NEXT:                     let __t: i128 = values.0[i as usize][0] as i128;
+// CHECK-NEXT:                     let [[T_0]]: i128 = values.0[i as usize][1] as i128;
+// CHECK-NEXT:                     let [[T_1]]: i128 = __t.wrapping_mul([[T_0]]);
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         *core::ptr::addr_of_mut!(r) = [[T_1]] as $T;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     __t.checked_mul([[T_0]]).is_none() || (([[T_1]] as $T) as i128) != [[T_1]]
+// CHECK-NEXT:                 }) as i32;
+// CHECK-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     slate_support::printf(c"%d %llu\n".as_ptr(), overflow, r as u64)
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:             }
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     TEST__2!(u32, 4294967295u32);
 // CHECK-NEXT:     TEST!(u64, 18446744073709551615u64);
@@ -111,6 +155,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

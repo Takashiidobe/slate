@@ -222,7 +222,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! TEMP {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = $a;
+// CHECK-NEXT:         let temp: i32 = ($a) as i32;
 // CHECK-NEXT:         println!("{}", temp + 1);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -230,7 +230,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! TEMP__2 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = ($a) as i32;
+// CHECK-NEXT:         let temp: i32 = $a;
 // CHECK-NEXT:         println!("{}", temp + 1);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -316,7 +316,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! TEMP {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = $a;
+// CHECK-NEXT:         let temp: i32 = ($a) as i32;
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), temp + 1) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -326,7 +326,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! TEMP__2 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = ($a) as i32;
+// CHECK-NEXT:         let temp: i32 = $a;
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), temp + 1) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -380,10 +380,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: //! merge-sources: units/macro_templates_helper.c
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -411,8 +408,8 @@ int main(void) {
 // CHECK-NEXT:     let moved: i32 = unsafe { calls };
 // CHECK-NEXT:     AFTER!(moved);
 // CHECK-NEXT:     UNUSED!(local);
-// CHECK-NEXT:     TEMP!(local);
-// CHECK-NEXT:     TEMP__2!(byte);
+// CHECK-NEXT:     TEMP__2!(local);
+// CHECK-NEXT:     TEMP!(byte);
 // CHECK-NEXT:     OUTER!(local, wide > 0);
 // CHECK-NEXT:     OUTER!(local + 2, 3i32);
 // CHECK-NEXT:     BUMP!(core::ptr::addr_of_mut!(s));
@@ -462,11 +459,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! FILL {
 // CHECK-NEXT:     ($p:expr, $n:expr) => {
-// CHECK-NEXT:         let mut i: i32 = 0;
-// CHECK-NEXT:         while i < $n {
+// CHECK-NEXT:         for i in 0..$n {
 // CHECK-NEXT:             $p[i as usize] = i;
-// CHECK-NEXT:             let __v: i32 = i;
-// CHECK-NEXT:             i = __v + 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

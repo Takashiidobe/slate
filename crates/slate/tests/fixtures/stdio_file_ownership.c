@@ -27,22 +27,30 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fgets([[ARG_0:arg[0-9]+]]: *mut i8, [[ARG_1:arg[0-9]+]]: i32, [[ARG_2:arg[0-9]+]]: *mut slate_support::FILE) -> *mut i8;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::remove;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut name: __SlateAlign16<[i8; 31]> = __SlateAlign16([
-// CHECK-NEXT:         115i8, 108i8, 97i8, 116i8, 101i8, 95i8, 115i8, 116i8, 100i8, 105i8, 111i8, 95i8,
-// CHECK-NEXT:         102i8, 105i8, 108i8, 101i8, 95i8, 111i8, 119i8, 110i8, 101i8, 114i8, 115i8,
-// CHECK-NEXT:         104i8, 105i8, 112i8, 46i8, 116i8, 109i8, 112i8, 0i8,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut name: __SlateAlign16<[i8; 31]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             115i8, 108i8, 97i8, 116i8, 101i8, 95i8, 115i8, 116i8, 100i8, 105i8, 111i8,
+// CHECK-NEXT:             95i8, 102i8, 105i8, 108i8, 101i8, 95i8, 111i8, 119i8, 110i8, 101i8, 114i8,
+// CHECK-NEXT:             115i8, 104i8, 105i8, 112i8, 46i8, 116i8, 109i8, 112i8, 0i8,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         remove((name.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as i32
 // CHECK-NEXT:     };
@@ -68,11 +76,13 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 16]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0i8;
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 16]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]][0] = 0i8;
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         fgets(buf.0.as_mut_ptr() as *mut i8, core::mem::size_of::<[i8; 16]>() as i32, g)
 // CHECK-NEXT:     };
@@ -87,6 +97,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

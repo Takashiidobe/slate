@@ -68,10 +68,7 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -85,10 +82,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg_attr(
-// CHECK-NEXT:     unix,
-// CHECK-NEXT:     unsafe(link_section = ".text.slate_distinct.macro_name_arguments.twice")
-// CHECK-NEXT: )]
+// CHECK-NEXT: #[cfg_attr(unix, unsafe(link_section = ".text.slate_distinct.macro_name_arguments.twice"))]
 // CHECK-NEXT: extern "C-unwind" fn twice(x: i32) -> i32 {
 // CHECK-NEXT:     x * 2
 // CHECK-NEXT: }
@@ -210,10 +204,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn run(n: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut func: core::mem::MaybeUninit<Option<unsafe extern "C-unwind" fn(i32) -> i32>> =
-// CHECK-NEXT:         core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut Option<unsafe extern "C-unwind" fn(i32) -> i32> =
-// CHECK-NEXT:         core::ptr::addr_of_mut!(func) as *mut Option<unsafe extern "C-unwind" fn(i32) -> i32>;
+// CHECK-NEXT:     let mut func: core::mem::MaybeUninit<Option<unsafe extern "C-unwind" fn(i32) -> i32>> = core::mem::MaybeUninit::uninit();
+// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut Option<unsafe extern "C-unwind" fn(i32) -> i32> = core::ptr::addr_of_mut!(func)
+// CHECK-NEXT:         as *mut Option<unsafe extern "C-unwind" fn(i32) -> i32>;
 // CHECK-NEXT:     let mut s: core::mem::MaybeUninit<slot> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_1:__slate_slot_[0-9]+]]: *mut slot = core::ptr::addr_of_mut!(s) as *mut slot;
 // CHECK-NEXT:     unsafe {
@@ -244,12 +237,11 @@ int main(void) {
 // CHECK-NEXT:     ($ptr:expr, $hash_val:expr, $key:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             if !$ptr.is_null()
-// CHECK-NEXT:                 && ((unsafe { (*$ptr).hash }) != $hash_val || !EQUAL!($key, unsafe { (*$ptr).key }))
-// CHECK-NEXT:             {
+// CHECK-NEXT:                 && ((unsafe { (*$ptr).hash }) != $hash_val
+// CHECK-NEXT:                     || !EQUAL!($key, unsafe { (*$ptr).key })) {
 // CHECK-NEXT:                 while !unsafe { (*$ptr).next }.is_null()
 // CHECK-NEXT:                     && ((unsafe { (*(*$ptr).next).hash }) != $hash_val
-// CHECK-NEXT:                         || !EQUAL!($key, unsafe { (*(*$ptr).next).key }))
-// CHECK-NEXT:                 {
+// CHECK-NEXT:                         || !EQUAL!($key, unsafe { (*(*$ptr).next).key })) {
 // CHECK-NEXT:                     $ptr = unsafe { (*$ptr).next };
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 $ptr = unsafe { (*$ptr).next };

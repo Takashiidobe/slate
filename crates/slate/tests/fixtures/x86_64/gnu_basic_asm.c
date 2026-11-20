@@ -29,7 +29,9 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn gnu_function_basic_asm() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movl $23, {0}(%rip)", sym gnu_basic_asm_value, options(att_syntax)
+// CHECK-NEXT:             "movl $23, {0}(%rip)",
+// CHECK-NEXT:             sym gnu_basic_asm_value,
+// CHECK-NEXT:             options(att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { gnu_basic_asm_value }

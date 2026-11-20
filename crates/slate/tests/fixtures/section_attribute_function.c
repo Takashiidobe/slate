@@ -29,45 +29,53 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut __start_slate_gnu_text: [i8; 0];
 // CHECK-NEXT:     static mut __stop_slate_gnu_text: [i8; 0];
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: #[unsafe(link_section = "slate_gnu_text")]
 // CHECK-NEXT: extern "C-unwind" fn placed(value: i32) -> i32 {
 // CHECK-NEXT:     value + 13
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: #[unsafe(link_section = "slate_gnu_text")]
 // CHECK-NEXT: extern "C-unwind" fn placed_static(value: i32) -> i32 {
 // CHECK-NEXT:     value * 2
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.elsewhere")]
 // CHECK-NEXT: extern "C-unwind" fn elsewhere(value: i32) -> i32 {
 // CHECK-NEXT:     value - 1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn inside(function: Option<unsafe extern "C-unwind" fn(i32) -> i32>) -> i32 {
 // CHECK-NEXT:     let address: *mut i8 = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:             *mut i8,
-// CHECK-NEXT:         >(function)
+// CHECK-NEXT:         core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *mut i8>(
+// CHECK-NEXT:             function,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (address >= unsafe { core::ptr::addr_of_mut!(__start_slate_gnu_text) as *mut i8 }
 // CHECK-NEXT:         && address
 // CHECK-NEXT:             < unsafe { core::ptr::addr_of_mut!(__stop_slate_gnu_text) as *mut i8 })
 // CHECK-NEXT:         as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{} {} {}", placed(1i32), placed_static(2i32), elsewhere(3i32));
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", inside(Some(placed)), inside(Some(placed_static)),
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         inside(Some(placed)),
+// CHECK-NEXT:         inside(Some(placed_static)),
 // CHECK-NEXT:         inside(Some(elsewhere))
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

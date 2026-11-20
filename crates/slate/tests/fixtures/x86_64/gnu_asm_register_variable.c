@@ -14,7 +14,11 @@ int main(void) {
 // CHECK-NEXT:     let mut x: i32 = 5;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!("incl %eax", inlateout("ax") x as u32 => [[T_0]], options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "incl %eax",
+// CHECK-NEXT:             inlateout("ax") x as u32 => [[T_0]],
+// CHECK-NEXT:             options(nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x

@@ -53,10 +53,7 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -185,14 +182,16 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! UPDATE_CHECK {
-// CHECK-NEXT:     ($check:expr, $len:expr) => {{[{][{]}}
-// CHECK-NEXT:         let __v: u32 = if (unsafe { flags }) != 0 {
-// CHECK-NEXT:             crc($check, $len)
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             adl($check, $len)
-// CHECK-NEXT:         };
-// CHECK-NEXT:         __v
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     ($check:expr, $len:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let __v: u32 = if (unsafe { flags }) != 0 {
+// CHECK-NEXT:                 crc($check, $len)
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 adl($check, $len)
+// CHECK-NEXT:             };
+// CHECK-NEXT:             __v
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut flags: i32 = unsafe { core::mem::zeroed() };

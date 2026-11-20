@@ -46,6 +46,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.x86.ssse3.pshuf.b.128"]
 // CHECK-NEXT:     fn __slate_intrinsic_e12fb0911d3faa01(
@@ -53,19 +54,24 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_1:arg[0-9]+]]: core::simd::Simd<u8, 16>,
 // CHECK-NEXT:     ) -> core::simd::Simd<u8, 16>;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __storeu_si128 {
 // CHECK-NEXT:     __v: core::simd::Simd<i64, 2>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __storeu_si256 {
 // CHECK-NEXT:     __v: core::simd::Simd<i64, 4>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_add_epi32(
@@ -73,25 +79,21 @@ int main(void) {
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::simd::Simd<u32, 4>,
-// CHECK-NEXT:             core::simd::Simd<i64, 2>,
-// CHECK-NEXT:         >(
+// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<u32, 4>, core::simd::Simd<i64, 2>>(
 // CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     core::simd::Simd<i64, 2>,
-// CHECK-NEXT:                     core::simd::Simd<u32, 4>,
-// CHECK-NEXT:                 >(__a)
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<u32, 4>>(
+// CHECK-NEXT:                     __a,
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             })
 // CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<
-// CHECK-NEXT:                         core::simd::Simd<i64, 2>,
-// CHECK-NEXT:                         core::simd::Simd<u32, 4>,
-// CHECK-NEXT:                     >(__b)
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<u32, 4>>(
+// CHECK-NEXT:                         __b,
+// CHECK-NEXT:                     )
 // CHECK-NEXT:                 },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_set_epi32(
@@ -104,22 +106,19 @@ int main(void) {
 // CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::simd::Simd<i32, 4>,
-// CHECK-NEXT:             core::simd::Simd<i64, 2>,
-// CHECK-NEXT:         >(unsafe {
-// CHECK-NEXT:             *{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array([
-// CHECK-NEXT:                     __i0,
-// CHECK-NEXT:                     __i1,
-// CHECK-NEXT:                     __i2,
-// CHECK-NEXT:                     __i3,
-// CHECK-NEXT:                 ]);
-// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:             }
-// CHECK-NEXT:         })
+// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i64, 2>>(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
+// CHECK-NEXT:                         [__i0, __i1, __i2, __i3],
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_set_epi8(
@@ -144,39 +143,42 @@ int main(void) {
 // CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::simd::Simd<i8, 16>,
-// CHECK-NEXT:             core::simd::Simd<i64, 2>,
-// CHECK-NEXT:         >(unsafe {
-// CHECK-NEXT:             *{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array([
-// CHECK-NEXT:                     __b0,
-// CHECK-NEXT:                     __b1,
-// CHECK-NEXT:                     __b2,
-// CHECK-NEXT:                     __b3,
-// CHECK-NEXT:                     __b4,
-// CHECK-NEXT:                     __b5,
-// CHECK-NEXT:                     __b6,
-// CHECK-NEXT:                     __b7,
-// CHECK-NEXT:                     __b8,
-// CHECK-NEXT:                     __b9,
-// CHECK-NEXT:                     __b10,
-// CHECK-NEXT:                     __b11,
-// CHECK-NEXT:                     __b12,
-// CHECK-NEXT:                     __b13,
-// CHECK-NEXT:                     __b14,
-// CHECK-NEXT:                     __b15,
-// CHECK-NEXT:                 ]);
-// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:             }
-// CHECK-NEXT:         })
+// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
+// CHECK-NEXT:                         [
+// CHECK-NEXT:                             __b0,
+// CHECK-NEXT:                             __b1,
+// CHECK-NEXT:                             __b2,
+// CHECK-NEXT:                             __b3,
+// CHECK-NEXT:                             __b4,
+// CHECK-NEXT:                             __b5,
+// CHECK-NEXT:                             __b6,
+// CHECK-NEXT:                             __b7,
+// CHECK-NEXT:                             __b8,
+// CHECK-NEXT:                             __b9,
+// CHECK-NEXT:                             __b10,
+// CHECK-NEXT:                             __b11,
+// CHECK-NEXT:                             __b12,
+// CHECK-NEXT:                             __b13,
+// CHECK-NEXT:                             __b14,
+// CHECK-NEXT:                             __b15,
+// CHECK-NEXT:                         ],
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_set1_epi32(__i: i32) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return unsafe { _mm_set_epi32(__i, __i, __i, __i) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_set1_epi8(__b: i8) -> core::simd::Simd<i64, 2> {
@@ -201,6 +203,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_setzero_si128() -> core::simd::Simd<i64, 2> {
@@ -214,6 +217,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_storeu_si128(
@@ -221,31 +225,29 @@ int main(void) {
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 2>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((* (__p as * mut __storeu_si128)).__v)
+// CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_si128)).__v)
 // CHECK-NEXT:             .write_unaligned(__b);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "ssse3")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_abs_epi8(__a: core::simd::Simd<i64, 2>) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::simd::Simd<i8, 16>,
-// CHECK-NEXT:             core::simd::Simd<i64, 2>,
-// CHECK-NEXT:         >(
+// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
 // CHECK-NEXT:             core::simd::Simd::from_array(
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<
-// CHECK-NEXT:                         core::simd::Simd<i64, 2>,
-// CHECK-NEXT:                         core::simd::Simd<i8, 16>,
-// CHECK-NEXT:                     >(__a)
-// CHECK-NEXT:                 }
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                             __a,
+// CHECK-NEXT:                         )
+// CHECK-NEXT:                     }
 // CHECK-NEXT:                     .to_array()
 // CHECK-NEXT:                     .map(|__lane| __lane.wrapping_abs()),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "ssse3")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_shuffle_epi8(
@@ -253,42 +255,37 @@ int main(void) {
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::simd::Simd<i8, 16>,
-// CHECK-NEXT:             core::simd::Simd<i64, 2>,
-// CHECK-NEXT:         >(unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 core::simd::Simd<u8, 16>,
-// CHECK-NEXT:                 core::simd::Simd<i8, 16>,
-// CHECK-NEXT:             >(unsafe {
-// CHECK-NEXT:                 __slate_intrinsic_e12fb0911d3faa01(
+// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
 // CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<
-// CHECK-NEXT:                             core::simd::Simd<i8, 16>,
-// CHECK-NEXT:                             core::simd::Simd<u8, 16>,
-// CHECK-NEXT:                         >(unsafe {
-// CHECK-NEXT:                             core::mem::transmute::<
-// CHECK-NEXT:                                 core::simd::Simd<i64, 2>,
-// CHECK-NEXT:                                 core::simd::Simd<i8, 16>,
-// CHECK-NEXT:                             >(__a)
-// CHECK-NEXT:                         })
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<
-// CHECK-NEXT:                             core::simd::Simd<i8, 16>,
-// CHECK-NEXT:                             core::simd::Simd<u8, 16>,
-// CHECK-NEXT:                         >(unsafe {
-// CHECK-NEXT:                             core::mem::transmute::<
-// CHECK-NEXT:                                 core::simd::Simd<i64, 2>,
-// CHECK-NEXT:                                 core::simd::Simd<i8, 16>,
-// CHECK-NEXT:                             >(__b)
-// CHECK-NEXT:                         })
+// CHECK-NEXT:                         __slate_intrinsic_e12fb0911d3faa01(
+// CHECK-NEXT:                             unsafe {
+// CHECK-NEXT:                                 core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
+// CHECK-NEXT:                                     unsafe {
+// CHECK-NEXT:                                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                                             __a,
+// CHECK-NEXT:                                         )
+// CHECK-NEXT:                                     },
+// CHECK-NEXT:                                 )
+// CHECK-NEXT:                             },
+// CHECK-NEXT:                             unsafe {
+// CHECK-NEXT:                                 core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
+// CHECK-NEXT:                                     unsafe {
+// CHECK-NEXT:                                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                                             __b,
+// CHECK-NEXT:                                         )
+// CHECK-NEXT:                                     },
+// CHECK-NEXT:                                 )
+// CHECK-NEXT:                             },
+// CHECK-NEXT:                         )
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
-// CHECK-NEXT:             })
-// CHECK-NEXT:         })
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_storeu_si256(
@@ -296,10 +293,11 @@ int main(void) {
 // CHECK-NEXT:     __a: core::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((* (__p as * mut __storeu_si256)).__v)
+// CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_si256)).__v)
 // CHECK-NEXT:             .write_unaligned(__a);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set_epi32(
@@ -316,31 +314,25 @@ int main(void) {
 // CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::simd::Simd<i32, 8>,
-// CHECK-NEXT:             core::simd::Simd<i64, 4>,
-// CHECK-NEXT:         >(unsafe {
-// CHECK-NEXT:             *{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array([
-// CHECK-NEXT:                     __i7,
-// CHECK-NEXT:                     __i6,
-// CHECK-NEXT:                     __i5,
-// CHECK-NEXT:                     __i4,
-// CHECK-NEXT:                     __i3,
-// CHECK-NEXT:                     __i2,
-// CHECK-NEXT:                     __i1,
-// CHECK-NEXT:                     __i0,
-// CHECK-NEXT:                 ]);
-// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:             }
-// CHECK-NEXT:         })
+// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<i64, 4>>(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
+// CHECK-NEXT:                         [__i7, __i6, __i5, __i4, __i3, __i2, __i1, __i0],
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_set1_epi32(__i: i32) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return unsafe { _mm256_set_epi32(__i, __i, __i, __i, __i, __i, __i, __i) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_add_epi32(
@@ -348,31 +340,28 @@ int main(void) {
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::simd::Simd<u32, 8>,
-// CHECK-NEXT:             core::simd::Simd<i64, 4>,
-// CHECK-NEXT:         >(
+// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<u32, 8>, core::simd::Simd<i64, 4>>(
 // CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     core::simd::Simd<i64, 4>,
-// CHECK-NEXT:                     core::simd::Simd<u32, 8>,
-// CHECK-NEXT:                 >(__a)
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<u32, 8>>(
+// CHECK-NEXT:                     __a,
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             })
 // CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<
-// CHECK-NEXT:                         core::simd::Simd<i64, 4>,
-// CHECK-NEXT:                         core::simd::Simd<u32, 8>,
-// CHECK-NEXT:                     >(__b)
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<u32, 8>>(
+// CHECK-NEXT:                         __b,
+// CHECK-NEXT:                     )
 // CHECK-NEXT:                 },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sse2_probe(out: *mut i32) {
 // CHECK-NEXT:     let a: core::simd::Simd<i64, 2> = unsafe { _mm_set1_epi32(5i32) };
 // CHECK-NEXT:     let b: core::simd::Simd<i64, 2> = unsafe { _mm_set1_epi32(3i32) };
 // CHECK-NEXT:     let c: core::simd::Simd<i64, 2> = unsafe { _mm_add_epi32(a, b) };
 // CHECK-NEXT:     unsafe { _mm_storeu_si128(out as *mut core::simd::Simd<i64, 2>, c) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "ssse3")]
 // CHECK-NEXT: unsafe fn ssse3_probe(out: *mut i8) {
 // CHECK-NEXT:     let a: core::simd::Simd<i64, 2> = unsafe { _mm_set1_epi8(-1i8) };
@@ -381,6 +370,7 @@ int main(void) {
 // CHECK-NEXT:     let shuf: core::simd::Simd<i64, 2> = unsafe { _mm_shuffle_epi8(abs_a, idx) };
 // CHECK-NEXT:     unsafe { _mm_storeu_si128(out as *mut core::simd::Simd<i64, 2>, shuf) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
 // CHECK-NEXT: unsafe fn avx2_probe(out: *mut i32) {
 // CHECK-NEXT:     let a: core::simd::Simd<i64, 4> = unsafe { _mm256_set1_epi32(7i32) };
@@ -388,6 +378,7 @@ int main(void) {
 // CHECK-NEXT:     let c: core::simd::Simd<i64, 4> = unsafe { _mm256_add_epi32(a, b) };
 // CHECK-NEXT:     unsafe { _mm256_storeu_si256(out as *mut core::simd::Simd<i64, 4>, c) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut sse2_out: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
 // CHECK-NEXT:     let mut ssse3_out: __SlateAlign16<[i8; 16]> = __SlateAlign16([0i8; 16]);
@@ -398,11 +389,19 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {} {} {}", sse2_out.0[0], sse2_out.0[1], sse2_out.0[2], sse2_out.0[3]);
 // CHECK-NEXT:     println!("{} {}", ssse3_out.0[0] as i32, ssse3_out.0[15] as i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {} {}", avx2_out.0[0], avx2_out.0[1], avx2_out.0[2], avx2_out
-// CHECK-NEXT:         .0[3], avx2_out.0[4], avx2_out.0[5], avx2_out.0[6], avx2_out.0[7]
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {}",
+// CHECK-NEXT:         avx2_out.0[0],
+// CHECK-NEXT:         avx2_out.0[1],
+// CHECK-NEXT:         avx2_out.0[2],
+// CHECK-NEXT:         avx2_out.0[3],
+// CHECK-NEXT:         avx2_out.0[4],
+// CHECK-NEXT:         avx2_out.0[5],
+// CHECK-NEXT:         avx2_out.0[6],
+// CHECK-NEXT:         avx2_out.0[7]
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

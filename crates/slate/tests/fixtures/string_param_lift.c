@@ -18,8 +18,10 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::atoi;
 // CHECK-NEXT: use slate_support::strlen;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_atoi(s: *const i8) -> i32 {
 // CHECK-NEXT:     let bytes = unsafe { core::ffi::CStr::from_ptr(s) }.to_bytes();
 // CHECK-NEXT:     let n = bytes.len();
@@ -44,17 +46,21 @@ int main(void) {
 // CHECK-NEXT:         .unwrap_or(0i128)
 // CHECK-NEXT:         .clamp(i32::MIN as i128, i32::MAX as i128) as i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn parse_num(s: *mut i8) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_atoi(((s as *const i8) as *const core::ffi::c_char) as *const i8) as i32
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn forward_num(s: *mut i8) -> i32 {
 // CHECK-NEXT:     parse_num(s)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn text_len(s: *mut i8) -> i32 {
 // CHECK-NEXT:     (unsafe { strlen((s as *const i8) as *const core::ffi::c_char) as u64 }) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut digits: [i8; 3] = [52, 50, 0];
 // CHECK-NEXT:     let mut word: [i8; 6] = [104, 101, 108, 108, 111, 0];
@@ -63,6 +69,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

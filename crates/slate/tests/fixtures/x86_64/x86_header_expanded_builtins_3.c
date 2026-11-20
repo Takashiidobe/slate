@@ -73,236 +73,324 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
-// CHECK-NEXT: macro_rules! SHOW {
-// CHECK-NEXT:     ($name:expr, $v:expr) => {
-// CHECK-NEXT:         loop { let mut t_ : core::simd::Simd < i64, 2 > = $v; show(($name) as * const i8,
-// CHECK-NEXT:         core::ptr::addr_of_mut!(t_) as * const (), 16i32); if true { break; } }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SHOW__4 {
 // CHECK-NEXT:     ($name:expr, $v:expr) => {
-// CHECK-NEXT:         loop { let mut t_ : core::simd::Simd < f32, 4 > = $v; show(($name) as * const i8,
-// CHECK-NEXT:         core::ptr::addr_of_mut!(t_) as * const (), 16i32); if true { break; } }
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut t_: core::simd::Simd<f64, 8> = $v;
+// CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 64i32);
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
-// CHECK-NEXT: macro_rules! SHOW__2 {
-// CHECK-NEXT:     ($name:expr, $v:expr) => {
-// CHECK-NEXT:         loop { let mut t_ : core::simd::Simd < i64, 8 > = $v; show(($name) as * const i8,
-// CHECK-NEXT:         core::ptr::addr_of_mut!(t_) as * const (), 64i32); if true { break; } }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SHOW__5 {
 // CHECK-NEXT:     ($name:expr, $v:expr) => {
-// CHECK-NEXT:         loop { let mut t_ : core::simd::Simd < f64, 8 > = $v; show(($name) as * const i8,
-// CHECK-NEXT:         core::ptr::addr_of_mut!(t_) as * const (), 64i32); if true { break; } }
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut t_: core::simd::Simd<f64, 4> = $v;
+// CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 32i32);
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SHOW__6 {
 // CHECK-NEXT:     ($name:expr, $v:expr) => {
-// CHECK-NEXT:         loop { let mut t_ : core::simd::Simd < f32, 8 > = $v; show(($name) as * const i8,
-// CHECK-NEXT:         core::ptr::addr_of_mut!(t_) as * const (), 32i32); if true { break; } }
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut t_: core::simd::Simd<f32, 8> = $v;
+// CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 32i32);
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
-// CHECK-NEXT: macro_rules! SHOW__3 {
-// CHECK-NEXT:     ($name:expr, $v:expr) => {
-// CHECK-NEXT:         loop { let mut t_ : core::simd::Simd < i64, 4 > = $v; show(($name) as * const i8,
-// CHECK-NEXT:         core::ptr::addr_of_mut!(t_) as * const (), 32i32); if true { break; } }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SHOW__7 {
 // CHECK-NEXT:     ($name:expr, $v:expr) => {
-// CHECK-NEXT:         loop { let mut t_ : core::simd::Simd < f64, 2 > = $v; show(($name) as * const i8,
-// CHECK-NEXT:         core::ptr::addr_of_mut!(t_) as * const (), 16i32); if true { break; } }
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut t_: core::simd::Simd<f32, 16> = $v;
+// CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 64i32);
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SHOW__8 {
 // CHECK-NEXT:     ($name:expr, $v:expr) => {
-// CHECK-NEXT:         loop { let mut t_ : core::simd::Simd < f64, 4 > = $v; show(($name) as * const i8,
-// CHECK-NEXT:         core::ptr::addr_of_mut!(t_) as * const (), 32i32); if true { break; } }
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut t_: core::simd::Simd<f32, 4> = $v;
+// CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 16i32);
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SHOW {
+// CHECK-NEXT:     ($name:expr, $v:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut t_: core::simd::Simd<i64, 4> = $v;
+// CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 32i32);
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SHOW__2 {
+// CHECK-NEXT:     ($name:expr, $v:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut t_: core::simd::Simd<i64, 2> = $v;
+// CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 16i32);
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SHOW__9 {
 // CHECK-NEXT:     ($name:expr, $v:expr) => {
-// CHECK-NEXT:         loop { let mut t_ : core::simd::Simd < f32, 16 > = $v; show(($name) as * const
-// CHECK-NEXT:         i8, core::ptr::addr_of_mut!(t_) as * const (), 64i32); if true { break; } }
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut t_: core::simd::Simd<f64, 2> = $v;
+// CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 16i32);
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SHOW__3 {
+// CHECK-NEXT:     ($name:expr, $v:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut t_: core::simd::Simd<i64, 8> = $v;
+// CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 64i32);
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __builtin_cpu_supports([[ARG_0:arg[0-9]+]]: *const i8) -> bool;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __loadu_ps__1858 {
 // CHECK-NEXT:     __v: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __loadu_pd__1620 {
 // CHECK-NEXT:     __v: core::simd::Simd<f64, 2>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __loadu_si128 {
 // CHECK-NEXT:     __v: core::simd::Simd<i64, 2>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __loadu_pd__3129 {
 // CHECK-NEXT:     __v: core::simd::Simd<f64, 4>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __loadu_ps__3149 {
 // CHECK-NEXT:     __v: core::simd::Simd<f32, 8>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __loadu_si256 {
 // CHECK-NEXT:     __v: core::simd::Simd<i64, 4>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __loadu_si512 {
 // CHECK-NEXT:     __v: core::simd::Simd<i64, 8>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __loadu_pd__4144 {
 // CHECK-NEXT:     __v: core::simd::Simd<f64, 8>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __loadu_ps__4153 {
 // CHECK-NEXT:     __v: core::simd::Simd<f32, 16>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_loadu_ps(__p: *const f32) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_ps__1858)).__v).read_unaligned()
+// CHECK-NEXT:         core::ptr::addr_of!((*(__p as *const __loadu_ps__1858)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_loadu_pd(__dp: *const f64) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!((* (__dp as * const __loadu_pd__1620)).__v).read_unaligned()
+// CHECK-NEXT:         core::ptr::addr_of!((*(__dp as *const __loadu_pd__1620)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_loadu_si128(
 // CHECK-NEXT:     __p: *const core::simd::Simd<i64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_si128)).__v).read_unaligned()
+// CHECK-NEXT:         core::ptr::addr_of!((*(__p as *const __loadu_si128)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_loadu_pd(__p: *const f64) -> core::simd::Simd<f64, 4> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_pd__3129)).__v).read_unaligned()
+// CHECK-NEXT:         core::ptr::addr_of!((*(__p as *const __loadu_pd__3129)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_loadu_ps(__p: *const f32) -> core::simd::Simd<f32, 8> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_ps__3149)).__v).read_unaligned()
+// CHECK-NEXT:         core::ptr::addr_of!((*(__p as *const __loadu_ps__3149)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_loadu_si256(
 // CHECK-NEXT:     __p: *const core::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_si256)).__v).read_unaligned()
+// CHECK-NEXT:         core::ptr::addr_of!((*(__p as *const __loadu_si256)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_loadu_si512(__P: *const ()) -> core::simd::Simd<i64, 8> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!((* (__P as * const __loadu_si512)).__v).read_unaligned()
+// CHECK-NEXT:         core::ptr::addr_of!((*(__P as *const __loadu_si512)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_loadu_pd(__p: *const ()) -> core::simd::Simd<f64, 8> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_pd__4144)).__v).read_unaligned()
+// CHECK-NEXT:         core::ptr::addr_of!((*(__p as *const __loadu_pd__4144)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_loadu_ps(__p: *const ()) -> core::simd::Simd<f32, 16> {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!((* (__p as * const __loadu_ps__4153)).__v).read_unaligned()
+// CHECK-NEXT:         core::ptr::addr_of!((*(__p as *const __loadu_ps__4153)).__v).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_knot(__M: u16) -> u16 {
 // CHECK-NEXT:     !__M
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kand(__A: u16, __B: u16) -> u16 {
 // CHECK-NEXT:     __A & __B
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kandn(__A: u16, __B: u16) -> u16 {
 // CHECK-NEXT:     !__A & __B
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kor(__A: u16, __B: u16) -> u16 {
 // CHECK-NEXT:     __A | __B
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kunpackb(__A: u16, __B: u16) -> u16 {
 // CHECK-NEXT:     __A << 8u16 | __B & 255
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kxnor(__A: u16, __B: u16) -> u16 {
 // CHECK-NEXT:     !(__A ^ __B)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kxor(__A: u16, __B: u16) -> u16 {
 // CHECK-NEXT:     __A ^ __B
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _knot_mask64(__M: u64) -> u64 {
 // CHECK-NEXT:     !__M
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _cvtmask32_u32(__A: u32) -> u32 {
 // CHECK-NEXT:     __A
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _cvtu64_mask64(__A: u64) -> u64 {
 // CHECK-NEXT:     __A
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _load_mask32(__A: &u32) -> u32 {
 // CHECK-NEXT:     unsafe { *(__A as *const u32) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _store_mask64(__A: &mut u64, __B: u64) {
@@ -310,26 +398,31 @@ int main(void) {
 // CHECK-NEXT:         *(__A as *mut u64) = __B;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kunpackd(__A: u64, __B: u64) -> u64 {
 // CHECK-NEXT:     __A << 32u64 | __B & 4294967295
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kunpackw(__A: u32, __B: u32) -> u32 {
 // CHECK-NEXT:     __A << 16u32 | __B & 65535
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512dq")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _kadd_mask16(__A: u16, __B: u16) -> u16 {
 // CHECK-NEXT:     __A.wrapping_add(__B)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512dq")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _cvtmask8_u32(__A: u8) -> u32 {
 // CHECK-NEXT:     __A as u32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn show(name: *const i8, data: *const (), bytes: i32) {
 // CHECK-NEXT:     let p: *const u8 = data as *const u8;
 // CHECK-NEXT:     let mut hash: u32 = 2166136261;
@@ -341,6 +434,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s %08x\n".as_ptr(), name, hash) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn avx(fa: *const f32, da: *const f64, words: *const i16) {
@@ -350,76 +444,139 @@ int main(void) {
 // CHECK-NEXT:     let w256: core::simd::Simd<i64, 4> = unsafe {
 // CHECK-NEXT:         _mm256_loadu_si256(words as *const core::simd::Simd<i64, 4>)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"shufflelo".as_ptr() as * mut i8, unsafe { core::mem::transmute::<
-// CHECK-NEXT:         core::simd::Simd < i16, 8 >, core::simd::Simd < i64, 2 >>
-// CHECK-NEXT:         (core::simd::simd_swizzle!(unsafe { core::mem::transmute::< core::simd::Simd <
-// CHECK-NEXT:         i64, 2 >, core::simd::Simd < i16, 8 >> (w) }, [3, 2, 1, 0, 4, 5, 6, 7])) }
+// CHECK-NEXT:     SHOW__2!(
+// CHECK-NEXT:         c"shufflelo".as_ptr() as *mut i8,
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<i64, 2>>(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i16, 8>>(
+// CHECK-NEXT:                             w,
+// CHECK-NEXT:                         )
+// CHECK-NEXT:                     },
+// CHECK-NEXT:                     [3, 2, 1, 0, 4, 5, 6, 7]
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     SHOW__2!(
+// CHECK-NEXT:         c"shufflehi".as_ptr() as *mut i8,
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<i64, 2>>(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i16, 8>>(
+// CHECK-NEXT:                             w,
+// CHECK-NEXT:                         )
+// CHECK-NEXT:                     },
+// CHECK-NEXT:                     [0, 1, 2, 3, 5, 4, 7, 6]
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"shufflehi".as_ptr() as * mut i8, unsafe { core::mem::transmute::<
-// CHECK-NEXT:         core::simd::Simd < i16, 8 >, core::simd::Simd < i64, 2 >>
-// CHECK-NEXT:         (core::simd::simd_swizzle!(unsafe { core::mem::transmute::< core::simd::Simd <
-// CHECK-NEXT:         i64, 2 >, core::simd::Simd < i16, 8 >> (w) }, [0, 1, 2, 3, 5, 4, 7, 6])) }
+// CHECK-NEXT:         c"shufflelo256".as_ptr() as *mut i8,
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 16>, core::simd::Simd<i64, 4>>(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i16, 16>>(
+// CHECK-NEXT:                             w256,
+// CHECK-NEXT:                         )
+// CHECK-NEXT:                     },
+// CHECK-NEXT:                     [2, 3, 0, 1, 4, 5, 6, 7, 10, 11, 8, 9, 12, 13, 14, 15]
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"shufflelo256".as_ptr() as * mut i8, unsafe { core::mem::transmute::<
-// CHECK-NEXT:         core::simd::Simd < i16, 16 >, core::simd::Simd < i64, 4 >>
-// CHECK-NEXT:         (core::simd::simd_swizzle!(unsafe { core::mem::transmute::< core::simd::Simd <
-// CHECK-NEXT:         i64, 4 >, core::simd::Simd < i16, 16 >> (w256) }, [2, 3, 0, 1, 4, 5, 6, 7, 10,
-// CHECK-NEXT:         11, 8, 9, 12, 13, 14, 15])) }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"shufflehi256".as_ptr() as * mut i8, unsafe { core::mem::transmute::<
-// CHECK-NEXT:         core::simd::Simd < i16, 16 >, core::simd::Simd < i64, 4 >>
-// CHECK-NEXT:         (core::simd::simd_swizzle!(unsafe { core::mem::transmute::< core::simd::Simd <
-// CHECK-NEXT:         i64, 4 >, core::simd::Simd < i16, 16 >> (w256) }, [0, 1, 2, 3, 7, 4, 5, 6, 8, 9,
-// CHECK-NEXT:         10, 11, 15, 12, 13, 14])) }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__4!(
-// CHECK-NEXT:         c"permute_ps".as_ptr() as * mut i8, core::simd::simd_swizzle!(unsafe {
-// CHECK-NEXT:         _mm_loadu_ps(fa) }, [1, 2, 3, 0])
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__6!(
-// CHECK-NEXT:         c"permute256_ps".as_ptr() as * mut i8, core::simd::simd_swizzle!(unsafe {
-// CHECK-NEXT:         _mm256_loadu_ps(fa) }, [2, 1, 0, 3, 6, 5, 4, 7])
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__7!(
-// CHECK-NEXT:         c"permute_pd".as_ptr() as * mut i8, core::simd::simd_swizzle!(unsafe {
-// CHECK-NEXT:         _mm_loadu_pd(da) }, [1, 0])
+// CHECK-NEXT:     SHOW!(
+// CHECK-NEXT:         c"shufflehi256".as_ptr() as *mut i8,
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 16>, core::simd::Simd<i64, 4>>(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i16, 16>>(
+// CHECK-NEXT:                             w256,
+// CHECK-NEXT:                         )
+// CHECK-NEXT:                     },
+// CHECK-NEXT:                     [0, 1, 2, 3, 7, 4, 5, 6, 8, 9, 10, 11, 15, 12, 13, 14]
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     SHOW__8!(
-// CHECK-NEXT:         c"permute256_pd".as_ptr() as * mut i8, core::simd::simd_swizzle!(unsafe {
-// CHECK-NEXT:         _mm256_loadu_pd(da) }, [1, 0, 3, 2])
+// CHECK-NEXT:         c"permute_ps".as_ptr() as *mut i8,
+// CHECK-NEXT:         core::simd::simd_swizzle!(unsafe { _mm_loadu_ps(fa) }, [1, 2, 3, 0])
+// CHECK-NEXT:     );
+// CHECK-NEXT:     SHOW__6!(
+// CHECK-NEXT:         c"permute256_ps".as_ptr() as *mut i8,
+// CHECK-NEXT:         core::simd::simd_swizzle!(
+// CHECK-NEXT:             unsafe { _mm256_loadu_ps(fa) },
+// CHECK-NEXT:             [2, 1, 0, 3, 6, 5, 4, 7]
+// CHECK-NEXT:         )
+// CHECK-NEXT:     );
+// CHECK-NEXT:     SHOW__9!(
+// CHECK-NEXT:         c"permute_pd".as_ptr() as *mut i8,
+// CHECK-NEXT:         core::simd::simd_swizzle!(unsafe { _mm_loadu_pd(da) }, [1, 0])
+// CHECK-NEXT:     );
+// CHECK-NEXT:     SHOW__5!(
+// CHECK-NEXT:         c"permute256_pd".as_ptr() as *mut i8,
+// CHECK-NEXT:         core::simd::simd_swizzle!(unsafe { _mm256_loadu_pd(da) }, [1, 0, 3, 2])
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f,avx512bw,avx512dq")]
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn avx512(fa: *const f32, da: *const f64, words: *const i16, seed: u32) {
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"shufflelo512".as_ptr() as * mut i8, unsafe { core::mem::transmute::<
-// CHECK-NEXT:         core::simd::Simd < i16, 32 >, core::simd::Simd < i64, 8 >>
-// CHECK-NEXT:         (core::simd::simd_swizzle!(unsafe { core::mem::transmute::< core::simd::Simd <
-// CHECK-NEXT:         i64, 8 >, core::simd::Simd < i16, 32 >> (unsafe { _mm512_loadu_si512(words as *
-// CHECK-NEXT:         const ()) }) }, [1, 0, 2, 3, 4, 5, 6, 7, 9, 8, 10, 11, 12, 13, 14, 15, 17, 16,
-// CHECK-NEXT:         18, 19, 20, 21, 22, 23, 25, 24, 26, 27, 28, 29, 30, 31])) }
+// CHECK-NEXT:     SHOW__3!(
+// CHECK-NEXT:         c"shufflelo512".as_ptr() as *mut i8,
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 32>, core::simd::Simd<i64, 8>>(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i16, 32>>(
+// CHECK-NEXT:                             unsafe { _mm512_loadu_si512(words as *const ()) },
+// CHECK-NEXT:                         )
+// CHECK-NEXT:                     },
+// CHECK-NEXT:                     [
+// CHECK-NEXT:                         1, 0, 2, 3, 4, 5, 6, 7, 9, 8, 10, 11, 12, 13, 14, 15, 17, 16, 18,
+// CHECK-NEXT:                         19, 20, 21, 22, 23, 25, 24, 26, 27, 28, 29, 30, 31,
+// CHECK-NEXT:                     ]
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"shufflehi512".as_ptr() as * mut i8, unsafe { core::mem::transmute::<
-// CHECK-NEXT:         core::simd::Simd < i16, 32 >, core::simd::Simd < i64, 8 >>
-// CHECK-NEXT:         (core::simd::simd_swizzle!(unsafe { core::mem::transmute::< core::simd::Simd <
-// CHECK-NEXT:         i64, 8 >, core::simd::Simd < i16, 32 >> (unsafe { _mm512_loadu_si512(words as *
-// CHECK-NEXT:         const ()) }) }, [0, 1, 2, 3, 5, 7, 6, 4, 8, 9, 10, 11, 13, 15, 14, 12, 16, 17,
-// CHECK-NEXT:         18, 19, 21, 23, 22, 20, 24, 25, 26, 27, 29, 31, 30, 28])) }
+// CHECK-NEXT:     SHOW__3!(
+// CHECK-NEXT:         c"shufflehi512".as_ptr() as *mut i8,
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 32>, core::simd::Simd<i64, 8>>(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i16, 32>>(
+// CHECK-NEXT:                             unsafe { _mm512_loadu_si512(words as *const ()) },
+// CHECK-NEXT:                         )
+// CHECK-NEXT:                     },
+// CHECK-NEXT:                     [
+// CHECK-NEXT:                         0, 1, 2, 3, 5, 7, 6, 4, 8, 9, 10, 11, 13, 15, 14, 12, 16, 17, 18,
+// CHECK-NEXT:                         19, 21, 23, 22, 20, 24, 25, 26, 27, 29, 31, 30, 28,
+// CHECK-NEXT:                     ]
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__9!(
-// CHECK-NEXT:         c"permute512_ps".as_ptr() as * mut i8, core::simd::simd_swizzle!(unsafe {
-// CHECK-NEXT:         _mm512_loadu_ps(fa as * const ()) }, [2, 0, 3, 1, 6, 4, 7, 5, 10, 8, 11, 9, 14,
-// CHECK-NEXT:         12, 15, 13])
+// CHECK-NEXT:     SHOW__7!(
+// CHECK-NEXT:         c"permute512_ps".as_ptr() as *mut i8,
+// CHECK-NEXT:         core::simd::simd_swizzle!(
+// CHECK-NEXT:             unsafe { _mm512_loadu_ps(fa as *const ()) },
+// CHECK-NEXT:             [2, 0, 3, 1, 6, 4, 7, 5, 10, 8, 11, 9, 14, 12, 15, 13]
+// CHECK-NEXT:         )
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__5!(
-// CHECK-NEXT:         c"permute512_pd".as_ptr() as * mut i8, core::simd::simd_swizzle!(unsafe {
-// CHECK-NEXT:         _mm512_loadu_pd(da as * const ()) }, [0, 1, 3, 2, 4, 5, 6, 7])
+// CHECK-NEXT:     SHOW__4!(
+// CHECK-NEXT:         c"permute512_pd".as_ptr() as *mut i8,
+// CHECK-NEXT:         core::simd::simd_swizzle!(
+// CHECK-NEXT:             unsafe { _mm512_loadu_pd(da as *const ()) },
+// CHECK-NEXT:             [0, 1, 3, 2, 4, 5, 6, 7]
+// CHECK-NEXT:         )
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let a: u16 = seed.wrapping_mul(2654435761) as u16;
 // CHECK-NEXT:     let b: u16 = seed.wrapping_mul(40503).wrapping_add(7) as u16;
@@ -510,35 +667,31 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut fa: __SlateAlign16<[f32; 16]> = __SlateAlign16([
-// CHECK-NEXT:         1.5f32,
-// CHECK-NEXT:         -2.5f32,
-// CHECK-NEXT:         3.25f32,
-// CHECK-NEXT:         4.49f32,
-// CHECK-NEXT:         -0.0f32,
-// CHECK-NEXT:         6.5f32,
-// CHECK-NEXT:         7.75f32,
-// CHECK-NEXT:         -8.25f32,
-// CHECK-NEXT:         9i32 as f32,
-// CHECK-NEXT:         10i32 as f32,
-// CHECK-NEXT:         11.5f32,
-// CHECK-NEXT:         12i32 as f32,
-// CHECK-NEXT:         13i32 as f32,
-// CHECK-NEXT:         -14.5f32,
-// CHECK-NEXT:         15i32 as f32,
-// CHECK-NEXT:         16i32 as f32,
-// CHECK-NEXT:     ]);
-// CHECK-NEXT:     let mut da: __SlateAlign16<[f64; 8]> = __SlateAlign16([
-// CHECK-NEXT:         1.5f64,
-// CHECK-NEXT:         -2.5f64,
-// CHECK-NEXT:         9.25f64,
-// CHECK-NEXT:         16.75f64,
-// CHECK-NEXT:         -0.5f64,
-// CHECK-NEXT:         3i32 as f64,
-// CHECK-NEXT:         7.5f64,
-// CHECK-NEXT:         -8i32 as f64,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut fa: __SlateAlign16<[f32; 16]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             1.5f32,
+// CHECK-NEXT:             -2.5f32,
+// CHECK-NEXT:             3.25f32,
+// CHECK-NEXT:             4.49f32,
+// CHECK-NEXT:             -0.0f32,
+// CHECK-NEXT:             6.5f32,
+// CHECK-NEXT:             7.75f32,
+// CHECK-NEXT:             -8.25f32,
+// CHECK-NEXT:             9i32 as f32,
+// CHECK-NEXT:             10i32 as f32,
+// CHECK-NEXT:             11.5f32,
+// CHECK-NEXT:             12i32 as f32,
+// CHECK-NEXT:             13i32 as f32,
+// CHECK-NEXT:             -14.5f32,
+// CHECK-NEXT:             15i32 as f32,
+// CHECK-NEXT:             16i32 as f32,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut da: __SlateAlign16<[f64; 8]> = __SlateAlign16(
+// CHECK-NEXT:         [1.5f64, -2.5f64, 9.25f64, 16.75f64, -0.5f64, 3i32 as f64, 7.5f64, -8i32 as f64],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut words: __SlateAlign16<[i16; 32]> = __SlateAlign16([0i16; 32]);
 // CHECK-NEXT:     for i in 0i32..32i32 {
 // CHECK-NEXT:         words.0[i as usize] = (i * 4099 - 777) as i16;
@@ -553,8 +706,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if std::arch::is_x86_feature_detected!("avx512bw")
-// CHECK-NEXT:         && std::arch::is_x86_feature_detected!("avx512dq")
-// CHECK-NEXT:     {
+// CHECK-NEXT:         && std::arch::is_x86_feature_detected!("avx512dq") {
 // CHECK-NEXT:         let mut seed: u32 = 1;
 // CHECK-NEXT:         while seed < 40 {
 // CHECK-NEXT:             unsafe {
@@ -570,6 +722,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

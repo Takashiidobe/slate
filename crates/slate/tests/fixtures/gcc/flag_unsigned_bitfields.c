@@ -39,17 +39,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u16,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u16, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits1U0 {
 // CHECK-NEXT:         #[bits(3)]
 // CHECK-NEXT:         pub a: u32,
@@ -80,10 +70,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d\n".as_ptr(),
-// CHECK-NEXT:             ((v.__slate_bits_0.__get_a() as i32) - 8 < 0) as i32,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%d\n".as_ptr(), ((v.__slate_bits_0.__get_a() as i32) - 8 < 0) as i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

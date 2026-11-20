@@ -67,10 +67,7 @@ int main(void) {
 // CHECK-NEXT:     __SLATE_HOIST_gated + 1
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
@@ -152,8 +149,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         number() + in_cast() + repeated(295i32) - 3 * 295
-// CHECK-NEXT:             + (same_type_everywhere((2 as c_long)) as i32)
-// CHECK-NEXT:             - 4
+// CHECK-NEXT:             + (same_type_everywhere((2 as c_long)) as i32) - 4
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(windows, feature = "alpha"))]
 // CHECK-NEXT:     {
@@ -164,8 +160,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         number() + in_cast() + repeated(387i32) - 3 * 387
-// CHECK-NEXT:             + (same_type_everywhere((2 as c_long)) as i32)
-// CHECK-NEXT:             - 4
+// CHECK-NEXT:             + (same_type_everywhere((2 as c_long)) as i32) - 4
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

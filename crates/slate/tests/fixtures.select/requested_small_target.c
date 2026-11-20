@@ -29,6 +29,7 @@ int value(void) {
 // CHECK-NEXT:     unsafe { __slate_main() }
 // CHECK-NEXT: }
 // CHECK-NEXT: file requested_small_target.rs
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn helper_value() -> i32;
 // CHECK-NEXT: }

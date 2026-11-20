@@ -33,6 +33,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: i32 = 0;
 // CHECK-NEXT:     unsafe {
@@ -105,20 +106,30 @@ int main(void) {
 // CHECK-NEXT:             Err([[T_9:__t[0-9]+]]) => {
 // CHECK-NEXT:                 *[[T_6]] = [[T_9]];
 // CHECK-NEXT:                 false
-// CHECK-NEXT:             }
+// CHECK-NEXT:             },
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ok = [[V_0]] as i32;
 // CHECK-NEXT:     core::sync::atomic::fence(core::sync::atomic::Ordering::Release);
 // CHECK-NEXT:     core::sync::atomic::fence(core::sync::atomic::Ordering::Acquire);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {}", relaxed_load, acquire_load, consume_load, old_add,
-// CHECK-NEXT:         old_or, old_xchg, ok, expected, unsafe {
-// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of!(a) as * mut i32)
-// CHECK-NEXT:         .load(core::sync::atomic::Ordering::SeqCst) }
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {}",
+// CHECK-NEXT:         relaxed_load,
+// CHECK-NEXT:         acquire_load,
+// CHECK-NEXT:         consume_load,
+// CHECK-NEXT:         old_add,
+// CHECK-NEXT:         old_or,
+// CHECK-NEXT:         old_xchg,
+// CHECK-NEXT:         ok,
+// CHECK-NEXT:         expected,
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of!(a) as *mut i32)
+// CHECK-NEXT:                 .load(core::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

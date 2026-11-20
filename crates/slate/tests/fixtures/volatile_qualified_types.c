@@ -31,23 +31,30 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut marker: i8 = 65;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut gain: f64 = 1.5f64;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct VolatileFields {
 // CHECK-NEXT:     count: i32,
 // CHECK-NEXT:     ratio: f64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bump_return(value: i32) -> i32 {
 // CHECK-NEXT:     value + 1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn read_volatile_param(value: f64) -> f64 {
 // CHECK-NEXT:     (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(value)) }) + 0.5f64
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn use_volatile_fields(input: f64) -> f64 {
 // CHECK-NEXT:     let mut fields: VolatileFields = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -66,6 +73,7 @@ int main(void) {
 // CHECK-NEXT:         + ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(fields.count)) })
 // CHECK-NEXT:             as f64)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_volatile(
@@ -100,6 +108,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

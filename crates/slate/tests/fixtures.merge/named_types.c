@@ -117,10 +117,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: #[cfg_attr(
-// CHECK-NEXT:     unix,
-// CHECK-NEXT:     unsafe(link_section = ".text.slate_distinct.named_types.add_total")
-// CHECK-NEXT: )]
+// CHECK-NEXT: #[cfg_attr(unix, unsafe(link_section = ".text.slate_distinct.named_types.add_total"))]
 // CHECK-NEXT: extern "C-unwind" fn add_total(left: c_ulong, right: c_ulong) -> c_ulong {
 // CHECK-NEXT:     left.wrapping_add(right)
 // CHECK-NEXT: }
@@ -134,7 +131,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn clamp_base(mut value: c_ulong, byte: u8, length: size_t) -> c_ulong {
+// CHECK-NEXT: extern "C-unwind" fn clamp_base(
+// CHECK-NEXT:     mut value: c_ulong,
+// CHECK-NEXT:     byte: u8,
+// CHECK-NEXT:     length: size_t,
+// CHECK-NEXT: ) -> c_ulong {
 // CHECK-NEXT:     if length < 16 {
 // CHECK-NEXT:         value = value.wrapping_add((byte as i32) as c_ulong);
 // CHECK-NEXT:     }
@@ -178,10 +179,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: //! merge-sources: units/named_types_helper.c
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -194,8 +192,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let total: c_ulong = add_total(unsafe { shared.total }, (41 as c_ulong));
 // CHECK-NEXT:     let delta: c_long = negate(unsafe { shared.delta });
-// CHECK-NEXT:     let bytes: size_t =
-// CHECK-NEXT:         measure(unsafe { shared.name }, (16 as size_t)).wrapping_add(unsafe { shared.bytes });
+// CHECK-NEXT:     let bytes: size_t = measure(unsafe { shared.name }, (16 as size_t))
+// CHECK-NEXT:         .wrapping_add(unsafe { shared.bytes });
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -287,8 +285,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn tally_sum(tally: *const tally) -> c_long {
-// CHECK-NEXT:     (unsafe { (*tally).count })
-// CHECK-NEXT:         + ((unsafe { (*tally).bytes }) as c_long)
+// CHECK-NEXT:     (unsafe { (*tally).count }) + ((unsafe { (*tally).bytes }) as c_long)
 // CHECK-NEXT:         + ((unsafe { (*tally).tag }) as c_long)
 // CHECK-NEXT: }
 // CHECK-EMPTY:

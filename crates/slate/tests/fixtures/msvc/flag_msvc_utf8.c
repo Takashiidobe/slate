@@ -39,7 +39,8 @@ int main(void) {
 // CHECK-NEXT:     check(core::mem::size_of::<[i8; 3]>() as i32, 3i32);
 // CHECK-NEXT:     check(((unsafe { narrow[0] }) as u8) as i32, 195i32);
 // CHECK-NEXT:     check(
-// CHECK-NEXT:         ((core::mem::size_of::<[u16; 2]>() as u64) / (core::mem::size_of::<u16>() as u64)) as i32,
+// CHECK-NEXT:         ((core::mem::size_of::<[u16; 2]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<u16>() as u64)) as i32,
 // CHECK-NEXT:         2i32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     check((unsafe { __slate_str6[0] }) as i32, 233i32);

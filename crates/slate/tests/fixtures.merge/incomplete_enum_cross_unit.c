@@ -45,18 +45,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg_attr(
-// CHECK-NEXT:     unix,
-// CHECK-NEXT:     unsafe(link_section = ".text.slate_distinct.incomplete_enum_modes.access_for")
-// CHECK-NEXT: )]
+// CHECK-NEXT: #[cfg_attr(unix, unsafe(link_section = ".text.slate_distinct.incomplete_enum_modes.access_for"))]
 // CHECK-NEXT: extern "C-unwind" fn access_for(flags: i32) -> u32 {
 // CHECK-NEXT:     (if flags & 1 != 0 { 3i32 } else { 1i32 }) as u32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg_attr(
-// CHECK-NEXT:     unix,
-// CHECK-NEXT:     unsafe(link_section = ".text.slate_distinct.incomplete_enum_modes.mode_valid")
-// CHECK-NEXT: )]
+// CHECK-NEXT: #[cfg_attr(unix, unsafe(link_section = ".text.slate_distinct.incomplete_enum_modes.mode_valid"))]
 // CHECK-NEXT: extern "C-unwind" fn mode_valid(width: i32, height: i32) -> i32 {
 // CHECK-NEXT:     if width <= 0 || height <= 0 {
 // CHECK-NEXT:         return -1;
@@ -92,7 +86,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn mode_config_check(config: *const mode_config, width: i32, height: i32) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn mode_config_check(
+// CHECK-NEXT:     config: *const mode_config,
+// CHECK-NEXT:     width: i32,
+// CHECK-NEXT:     height: i32,
+// CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     (unsafe { unsafe { (*(*config).funcs).mode_valid }.unwrap()(width, height) }) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -103,9 +101,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn mode_config_new() -> *mut mode_config {
-// CHECK-NEXT:     let config: *mut mode_config =
-// CHECK-NEXT:         (unsafe { malloc((core::mem::size_of::<mode_config>() as size_t) as usize) as *mut () })
-// CHECK-NEXT:             as *mut mode_config;
+// CHECK-NEXT:     let config: *mut mode_config = (unsafe {
+// CHECK-NEXT:         malloc((core::mem::size_of::<mode_config>() as size_t) as usize) as *mut ()
+// CHECK-NEXT:     }) as *mut mode_config;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*config).funcs = core::ptr::addr_of!(funcs.0);
 // CHECK-NEXT:     }
@@ -118,20 +116,22 @@ int main(void) {
 // CHECK-NEXT:     config
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static funcs: __SlateConst<mode_funcs> = __SlateConst({
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: mode_funcs = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].mode_valid = Some(mode_valid);
-// CHECK-NEXT:     [[T_0]].access = Some(access_for);
-// CHECK-NEXT:     [[T_0]].id = 7i32;
-// CHECK-NEXT:     [[T_0]]
-// CHECK-NEXT: });
+// CHECK-NEXT: static funcs: __SlateConst<mode_funcs> = __SlateConst(
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: mode_funcs = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].mode_valid = Some(mode_valid);
+// CHECK-NEXT:         [[T_0]].access = Some(access_for);
+// CHECK-NEXT:         [[T_0]].id = 7i32;
+// CHECK-NEXT:         [[T_0]]
+// CHECK-NEXT:     },
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut pending_access: u32 = 2;
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::size_t;
 // CHECK-NEXT: file main.rs
@@ -177,10 +177,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: //! merge-sources: units/incomplete_enum_modes.c
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -190,7 +187,10 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(c"%d\n".as_ptr(), config_score(config as *const mode_config))
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%d\n".as_ptr(),
+// CHECK-NEXT:                 config_score(config as *const mode_config),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
@@ -241,7 +241,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn config_score(config: *const mode_config) -> i32 {
-// CHECK-NEXT:     let mut score: i32 = (unsafe { (*config).count }) * 10 + unsafe { (*(*config).funcs).id };
+// CHECK-NEXT:     let mut score: i32 = (unsafe { (*config).count }) * 10
+// CHECK-NEXT:         + unsafe { (*(*config).funcs).id };
 // CHECK-NEXT:     if (unsafe { (*(*config).funcs).mode_valid }) != None {
 // CHECK-NEXT:         score += 100;
 // CHECK-NEXT:     }

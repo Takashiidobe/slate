@@ -24,6 +24,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(f128)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_i386_va {
 // CHECK-NEXT:     pub unsafe fn arg<L, T>(list: *mut L) -> T {
 // CHECK-NEXT:         unsafe {
@@ -38,13 +39,16 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_libgcc {
 // CHECK-NEXT:     #[link(name = "gcc", kind = "static")]
 // CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum(n: i32, mut __va_args: ...) -> f128 {
 // CHECK-NEXT:     let mut ap: *mut i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
@@ -61,6 +65,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let big: f128 = 1f128 + 7.88860905221011805411728565282786229E-31f128;
 // CHECK-NEXT:     let total: f128 = unsafe {
@@ -86,6 +91,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -26,22 +26,31 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut small: i8 = 12;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut byte: u8 = 200;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut ratio: f32 = 1.5f32;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut total: f64 = 2.25f64;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn add_char(a: i8, b: i8) -> i8 {
 // CHECK-NEXT:     ((a as i32) + (b as i32)) as i8
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn scale(value: f32, factor: f32) -> f32 {
 // CHECK-NEXT:     value * factor
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn add_double(a: f64, b: f64) -> f64 {
 // CHECK-NEXT:     a + b
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         small = add_char(small, 3i8);
@@ -66,6 +75,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -314,29 +314,24 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn switch_wide_selector(mut [[T_0:__t[0-9]+]]: bitint::BInt<256, 4, 32, bitint::A8>) -> i32 {
-// CHECK-NEXT:     let [[T_1:__t[0-9]+]]: i64 = if [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(1)) == 0
-// CHECK-NEXT:         || [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(2)) == 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     let [[T_1:__t[0-9]+]]: i64 = if [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(1))
+// CHECK-NEXT:         == 0 || [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(2)) == 0 {
 // CHECK-NEXT:         0
+// CHECK-NEXT:     } else if [[T_0]]
+// CHECK-NEXT:         .compare(
+// CHECK-NEXT:             <bitint::BInt<256, 4, 32, bitint::A8>>::from_le_bytes::<208, 26>(
+// CHECK-NEXT:                 [
+// CHECK-NEXT:                     22, 129, 57, 174, 40, 152, 225, 202, 105, 52, 211, 44, 12, 27, 248,
+// CHECK-NEXT:                     174, 51, 43, 71, 18, 204, 192, 87, 168, 98, 255,
+// CHECK-NEXT:                 ],
+// CHECK-NEXT:             ),
+// CHECK-NEXT:         ) == 0 {
+// CHECK-NEXT:         1
+// CHECK-NEXT:     } else if [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(300)) >= 0
+// CHECK-NEXT:         && [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(400)) <= 0 {
+// CHECK-NEXT:         2
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         if [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_le_bytes::<
-// CHECK-NEXT:             208,
-// CHECK-NEXT:             26,
-// CHECK-NEXT:         >([
-// CHECK-NEXT:             22, 129, 57, 174, 40, 152, 225, 202, 105, 52, 211, 44, 12, 27, 248, 174, 51, 43, 71,
-// CHECK-NEXT:             18, 204, 192, 87, 168, 98, 255,
-// CHECK-NEXT:         ])) == 0
-// CHECK-NEXT:         {
-// CHECK-NEXT:             1
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             if [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(300)) >= 0
-// CHECK-NEXT:                 && [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(400)) <= 0
-// CHECK-NEXT:             {
-// CHECK-NEXT:                 2
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 3
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         3
 // CHECK-NEXT:     };
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         match [[T_1]] {
@@ -360,22 +355,23 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn switch_wide_selector_unsigned(mut [[T_0]]: bitint::BUint<256, 4, 32, bitint::A8>) -> i32 {
-// CHECK-NEXT:     let [[T_1]]: i64 = if [[T_0]].compare(<bitint::BUint<256, 4, 32, bitint::A8>>::from_le_bytes::<
-// CHECK-NEXT:         208,
-// CHECK-NEXT:         26,
-// CHECK-NEXT:     >([
-// CHECK-NEXT:         210, 10, 63, 206, 150, 241, 207, 140, 156, 180, 55, 140, 55, 164, 135, 63, 23, 98, 30, 188,
-// CHECK-NEXT:         228, 4, 245, 170, 19, 0,
-// CHECK-NEXT:     ])) == 0
-// CHECK-NEXT:     {
+// CHECK-NEXT: fn switch_wide_selector_unsigned(
+// CHECK-NEXT:     mut [[T_0]]: bitint::BUint<256, 4, 32, bitint::A8>,
+// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT:     let [[T_1]]: i64 = if [[T_0]]
+// CHECK-NEXT:         .compare(
+// CHECK-NEXT:             <bitint::BUint<256, 4, 32, bitint::A8>>::from_le_bytes::<208, 26>(
+// CHECK-NEXT:                 [
+// CHECK-NEXT:                     210, 10, 63, 206, 150, 241, 207, 140, 156, 180, 55, 140, 55, 164,
+// CHECK-NEXT:                     135, 63, 23, 98, 30, 188, 228, 4, 245, 170, 19, 0,
+// CHECK-NEXT:                 ],
+// CHECK-NEXT:             ),
+// CHECK-NEXT:         ) == 0 {
 // CHECK-NEXT:         0
+// CHECK-NEXT:     } else if [[T_0]].compare(<bitint::BUint<256, 4, 32, bitint::A8>>::from_u128(0)) == 0 {
+// CHECK-NEXT:         1
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         if [[T_0]].compare(<bitint::BUint<256, 4, 32, bitint::A8>>::from_u128(0)) == 0 {
-// CHECK-NEXT:             1
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             2
-// CHECK-NEXT:         }
+// CHECK-NEXT:         2
 // CHECK-NEXT:     };
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         match [[T_1]] {
@@ -398,18 +394,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn switch_wide_fallthrough(mut [[T_0]]: bitint::BInt<256, 4, 32, bitint::A8>) -> i32 {
 // CHECK-NEXT:     let mut acc: i32 = 0;
-// CHECK-NEXT:     let mut [[T_1]]: i64 = if [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(1)) == 0 {
+// CHECK-NEXT:     let mut [[T_1]]: i64 = if [[T_0]]
+// CHECK-NEXT:         .compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(1)) == 0 {
 // CHECK-NEXT:         0
+// CHECK-NEXT:     } else if [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(2)) == 0 {
+// CHECK-NEXT:         1
+// CHECK-NEXT:     } else if [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(3)) == 0 {
+// CHECK-NEXT:         2
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         if [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(2)) == 0 {
-// CHECK-NEXT:             1
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             if [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(3)) == 0 {
-// CHECK-NEXT:                 2
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 3
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         3
 // CHECK-NEXT:     };
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         match [[T_1]] {
@@ -485,10 +478,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn check_bitint129() {
-// CHECK-NEXT:     let mut x: bitint::BInt<129, 3, 24, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(123456789 as i128);
-// CHECK-NEXT:     let mut y: bitint::BInt<129, 3, 24, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(-987654321 as i128);
+// CHECK-NEXT:     let mut x: bitint::BInt<129, 3, 24, bitint::A8> = <bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(
+// CHECK-NEXT:         123456789 as i128,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut y: bitint::BInt<129, 3, 24, bitint::A8> = <bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(
+// CHECK-NEXT:         -987654321 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut s2: bitint::BInt<129, 3, 24, bitint::A8> = x.wrapping_add(y);
 // CHECK-NEXT:     if s2.wrapping_sub(y).compare(x) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
@@ -499,14 +494,12 @@ int main(void) {
 // CHECK-NEXT:     if y.compare(x) >= 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut ux: bitint::BUint<129, 3, 24, bitint::A8> =
-// CHECK-NEXT:         <bitint::BUint<129, 3, 24, bitint::A8>>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(123456789 as i128),
-// CHECK-NEXT:         );
-// CHECK-NEXT:     let uy: bitint::BUint<129, 3, 24, bitint::A8> =
-// CHECK-NEXT:         <bitint::BUint<129, 3, 24, bitint::A8>>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(987654321 as i128),
-// CHECK-NEXT:         );
+// CHECK-NEXT:     let mut ux: bitint::BUint<129, 3, 24, bitint::A8> = <bitint::BUint<129, 3, 24, bitint::A8>>::from_bint(
+// CHECK-NEXT:         <bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(123456789 as i128),
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let uy: bitint::BUint<129, 3, 24, bitint::A8> = <bitint::BUint<129, 3, 24, bitint::A8>>::from_bint(
+// CHECK-NEXT:         <bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(987654321 as i128),
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut usum: bitint::BUint<129, 3, 24, bitint::A8> = ux.wrapping_add(uy);
 // CHECK-NEXT:     if usum.wrapping_sub(uy).compare(ux) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
@@ -514,10 +507,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn check_bitint512() {
-// CHECK-NEXT:     let mut x: bitint::BInt<512, 8, 64, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<512, 8, 64, bitint::A8>>::from_i128(123456789012345 as i128);
-// CHECK-NEXT:     let mut y: bitint::BInt<512, 8, 64, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<512, 8, 64, bitint::A8>>::from_i128(-987654321098765 as i128);
+// CHECK-NEXT:     let mut x: bitint::BInt<512, 8, 64, bitint::A8> = <bitint::BInt<512, 8, 64, bitint::A8>>::from_i128(
+// CHECK-NEXT:         123456789012345 as i128,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut y: bitint::BInt<512, 8, 64, bitint::A8> = <bitint::BInt<512, 8, 64, bitint::A8>>::from_i128(
+// CHECK-NEXT:         -987654321098765 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut s3: bitint::BInt<512, 8, 64, bitint::A8> = x.wrapping_add(y);
 // CHECK-NEXT:     if s3.wrapping_sub(y).compare(x) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
@@ -528,10 +523,12 @@ int main(void) {
 // CHECK-NEXT:     if y.compare(x) >= 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut ux: bitint::BUint<512, 8, 64, bitint::A8> =
-// CHECK-NEXT:         <bitint::BUint<512, 8, 64, bitint::A8>>::from_u128(123456789012345 as u128);
-// CHECK-NEXT:     let uy: bitint::BUint<512, 8, 64, bitint::A8> =
-// CHECK-NEXT:         <bitint::BUint<512, 8, 64, bitint::A8>>::from_u128(987654321098765 as u128);
+// CHECK-NEXT:     let mut ux: bitint::BUint<512, 8, 64, bitint::A8> = <bitint::BUint<512, 8, 64, bitint::A8>>::from_u128(
+// CHECK-NEXT:         123456789012345 as u128,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let uy: bitint::BUint<512, 8, 64, bitint::A8> = <bitint::BUint<512, 8, 64, bitint::A8>>::from_u128(
+// CHECK-NEXT:         987654321098765 as u128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut usum: bitint::BUint<512, 8, 64, bitint::A8> = ux.wrapping_add(uy);
 // CHECK-NEXT:     if usum.wrapping_sub(uy).compare(ux) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
@@ -544,26 +541,26 @@ int main(void) {
 // CHECK-NEXT: ///
 // CHECK-NEXT: /// parse path instead of the i128/u128 fast paths.
 // CHECK-NEXT: fn check_bitint_wide_literal() {
-// CHECK-NEXT:     let mut x256: bitint::BInt<256, 4, 32, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<198, 4, 32, bitint::A8>>::from_le_bytes::<208, 26>([
-// CHECK-NEXT:                 210, 10, 63, 206, 150, 241, 207, 140, 156, 180, 55, 140, 55, 164, 135, 63, 23, 98,
-// CHECK-NEXT:                 30, 188, 228, 4, 245, 170, 19, 0,
-// CHECK-NEXT:             ]),
-// CHECK-NEXT:         );
-// CHECK-NEXT:     let mut y256: bitint::BInt<256, 4, 32, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<198, 4, 32, bitint::A8>>::from_le_bytes::<208, 26>([
-// CHECK-NEXT:                 210, 10, 63, 206, 150, 241, 207, 140, 156, 180, 55, 140, 55, 164, 135, 63, 23, 98,
-// CHECK-NEXT:                 30, 188, 228, 4, 245, 170, 19, 0,
-// CHECK-NEXT:             ])
+// CHECK-NEXT:     let mut x256: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:         <bitint::BInt<198, 4, 32, bitint::A8>>::from_le_bytes::<208, 26>(
+// CHECK-NEXT:             [
+// CHECK-NEXT:                 210, 10, 63, 206, 150, 241, 207, 140, 156, 180, 55, 140, 55, 164, 135,
+// CHECK-NEXT:                 63, 23, 98, 30, 188, 228, 4, 245, 170, 19, 0,
+// CHECK-NEXT:             ],
+// CHECK-NEXT:         ),
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut y256: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:         <bitint::BInt<198, 4, 32, bitint::A8>>::from_le_bytes::<208, 26>(
+// CHECK-NEXT:                 [
+// CHECK-NEXT:                     210, 10, 63, 206, 150, 241, 207, 140, 156, 180, 55, 140, 55, 164,
+// CHECK-NEXT:                     135, 63, 23, 98, 30, 188, 228, 4, 245, 170, 19, 0,
+// CHECK-NEXT:                 ],
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .wrapping_neg(),
-// CHECK-NEXT:         );
+// CHECK-NEXT:     );
 // CHECK-NEXT:     if x256
 // CHECK-NEXT:         .wrapping_add(y256)
-// CHECK-NEXT:         .compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(0 as i128))
-// CHECK-NEXT:         != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:         .compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(0 as i128)) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if x256.wrapping_neg().compare(y256) != 0 {
@@ -572,41 +569,43 @@ int main(void) {
 // CHECK-NEXT:     if y256.compare(x256) >= 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut ux256: bitint::BUint<256, 4, 32, bitint::A8> =
-// CHECK-NEXT:         <bitint::BUint<256, 4, 32, bitint::A8>>::from_buint(
-// CHECK-NEXT:             <bitint::BUint<197, 4, 32, bitint::A8>>::from_le_bytes::<208, 26>([
-// CHECK-NEXT:                 210, 10, 63, 206, 150, 241, 207, 140, 156, 180, 55, 140, 55, 164, 135, 63, 23, 98,
-// CHECK-NEXT:                 30, 188, 228, 4, 245, 170, 19, 0,
-// CHECK-NEXT:             ]),
-// CHECK-NEXT:         );
-// CHECK-NEXT:     let uy256: bitint::BUint<256, 4, 32, bitint::A8> =
-// CHECK-NEXT:         <bitint::BUint<256, 4, 32, bitint::A8>>::from_u128(300 as u128);
+// CHECK-NEXT:     let mut ux256: bitint::BUint<256, 4, 32, bitint::A8> = <bitint::BUint<256, 4, 32, bitint::A8>>::from_buint(
+// CHECK-NEXT:         <bitint::BUint<197, 4, 32, bitint::A8>>::from_le_bytes::<208, 26>(
+// CHECK-NEXT:             [
+// CHECK-NEXT:                 210, 10, 63, 206, 150, 241, 207, 140, 156, 180, 55, 140, 55, 164, 135,
+// CHECK-NEXT:                 63, 23, 98, 30, 188, 228, 4, 245, 170, 19, 0,
+// CHECK-NEXT:             ],
+// CHECK-NEXT:         ),
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let uy256: bitint::BUint<256, 4, 32, bitint::A8> = <bitint::BUint<256, 4, 32, bitint::A8>>::from_u128(
+// CHECK-NEXT:         300 as u128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut usum256: bitint::BUint<256, 4, 32, bitint::A8> = ux256.wrapping_add(uy256);
 // CHECK-NEXT:     if usum256.wrapping_sub(uy256).compare(ux256) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut x512: bitint::BInt<512, 8, 64, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<512, 8, 64, bitint::A8>>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<297, 5, 40, bitint::A8>>::from_le_bytes::<304, 38>([
-// CHECK-NEXT:                 210, 10, 63, 206, 150, 241, 207, 172, 75, 241, 123, 231, 130, 233, 195, 64, 33, 8,
-// CHECK-NEXT:                 215, 205, 158, 24, 11, 164, 143, 195, 150, 106, 88, 231, 93, 89, 13, 215, 23, 62,
-// CHECK-NEXT:                 248, 0,
-// CHECK-NEXT:             ]),
-// CHECK-NEXT:         );
-// CHECK-NEXT:     let mut y512: bitint::BInt<512, 8, 64, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<512, 8, 64, bitint::A8>>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<297, 5, 40, bitint::A8>>::from_le_bytes::<304, 38>([
-// CHECK-NEXT:                 210, 10, 63, 206, 150, 241, 207, 172, 75, 241, 123, 231, 130, 233, 195, 64, 33, 8,
-// CHECK-NEXT:                 215, 205, 158, 24, 11, 164, 143, 195, 150, 106, 88, 231, 93, 89, 13, 215, 23, 62,
-// CHECK-NEXT:                 248, 0,
-// CHECK-NEXT:             ])
+// CHECK-NEXT:     let mut x512: bitint::BInt<512, 8, 64, bitint::A8> = <bitint::BInt<512, 8, 64, bitint::A8>>::from_bint(
+// CHECK-NEXT:         <bitint::BInt<297, 5, 40, bitint::A8>>::from_le_bytes::<304, 38>(
+// CHECK-NEXT:             [
+// CHECK-NEXT:                 210, 10, 63, 206, 150, 241, 207, 172, 75, 241, 123, 231, 130, 233, 195,
+// CHECK-NEXT:                 64, 33, 8, 215, 205, 158, 24, 11, 164, 143, 195, 150, 106, 88, 231, 93,
+// CHECK-NEXT:                 89, 13, 215, 23, 62, 248, 0,
+// CHECK-NEXT:             ],
+// CHECK-NEXT:         ),
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut y512: bitint::BInt<512, 8, 64, bitint::A8> = <bitint::BInt<512, 8, 64, bitint::A8>>::from_bint(
+// CHECK-NEXT:         <bitint::BInt<297, 5, 40, bitint::A8>>::from_le_bytes::<304, 38>(
+// CHECK-NEXT:                 [
+// CHECK-NEXT:                     210, 10, 63, 206, 150, 241, 207, 172, 75, 241, 123, 231, 130, 233,
+// CHECK-NEXT:                     195, 64, 33, 8, 215, 205, 158, 24, 11, 164, 143, 195, 150, 106, 88,
+// CHECK-NEXT:                     231, 93, 89, 13, 215, 23, 62, 248, 0,
+// CHECK-NEXT:                 ],
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .wrapping_neg(),
-// CHECK-NEXT:         );
+// CHECK-NEXT:     );
 // CHECK-NEXT:     if x512
 // CHECK-NEXT:         .wrapping_add(y512)
-// CHECK-NEXT:         .compare(<bitint::BInt<512, 8, 64, bitint::A8>>::from_i128(0 as i128))
-// CHECK-NEXT:         != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:         .compare(<bitint::BInt<512, 8, 64, bitint::A8>>::from_i128(0 as i128)) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if x512.wrapping_neg().compare(y512) != 0 {
@@ -615,16 +614,18 @@ int main(void) {
 // CHECK-NEXT:     if y512.compare(x512) >= 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut ux512: bitint::BUint<512, 8, 64, bitint::A8> =
-// CHECK-NEXT:         <bitint::BUint<512, 8, 64, bitint::A8>>::from_buint(
-// CHECK-NEXT:             <bitint::BUint<296, 5, 40, bitint::A8>>::from_le_bytes::<304, 38>([
-// CHECK-NEXT:                 210, 10, 63, 206, 150, 241, 207, 172, 75, 241, 123, 231, 130, 233, 195, 64, 33, 8,
-// CHECK-NEXT:                 215, 205, 158, 24, 11, 164, 143, 195, 150, 106, 88, 231, 93, 89, 13, 215, 23, 62,
-// CHECK-NEXT:                 248, 0,
-// CHECK-NEXT:             ]),
-// CHECK-NEXT:         );
-// CHECK-NEXT:     let uy512: bitint::BUint<512, 8, 64, bitint::A8> =
-// CHECK-NEXT:         <bitint::BUint<512, 8, 64, bitint::A8>>::from_u128(512 as u128);
+// CHECK-NEXT:     let mut ux512: bitint::BUint<512, 8, 64, bitint::A8> = <bitint::BUint<512, 8, 64, bitint::A8>>::from_buint(
+// CHECK-NEXT:         <bitint::BUint<296, 5, 40, bitint::A8>>::from_le_bytes::<304, 38>(
+// CHECK-NEXT:             [
+// CHECK-NEXT:                 210, 10, 63, 206, 150, 241, 207, 172, 75, 241, 123, 231, 130, 233, 195,
+// CHECK-NEXT:                 64, 33, 8, 215, 205, 158, 24, 11, 164, 143, 195, 150, 106, 88, 231, 93,
+// CHECK-NEXT:                 89, 13, 215, 23, 62, 248, 0,
+// CHECK-NEXT:             ],
+// CHECK-NEXT:         ),
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let uy512: bitint::BUint<512, 8, 64, bitint::A8> = <bitint::BUint<512, 8, 64, bitint::A8>>::from_u128(
+// CHECK-NEXT:         512 as u128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut usum512: bitint::BUint<512, 8, 64, bitint::A8> = ux512.wrapping_add(uy512);
 // CHECK-NEXT:     if usum512.wrapping_sub(uy512).compare(ux512) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
@@ -632,20 +633,22 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let x128: bitint::BInt<128, 2, 16, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(-12345 as i128);
-// CHECK-NEXT:     let y128: bitint::BInt<128, 2, 16, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(100 as i128);
+// CHECK-NEXT:     let x128: bitint::BInt<128, 2, 16, bitint::A8> = <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(
+// CHECK-NEXT:         -12345 as i128,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let y128: bitint::BInt<128, 2, 16, bitint::A8> = <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(
+// CHECK-NEXT:         100 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut sum128: bitint::BInt<128, 2, 16, bitint::A8> = add128(x128, y128);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), sum128.to_i128() as i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let p128: bitint::BUint<128, 2, 16, bitint::A8> =
-// CHECK-NEXT:         <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(1000000000000 as u128);
-// CHECK-NEXT:     let q128: bitint::BUint<128, 2, 16, bitint::A8> =
-// CHECK-NEXT:         <bitint::BUint<128, 2, 16, bitint::A8>>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(3 as i128),
-// CHECK-NEXT:         );
+// CHECK-NEXT:     let p128: bitint::BUint<128, 2, 16, bitint::A8> = <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
+// CHECK-NEXT:         1000000000000 as u128,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let q128: bitint::BUint<128, 2, 16, bitint::A8> = <bitint::BUint<128, 2, 16, bitint::A8>>::from_bint(
+// CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(3 as i128),
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut prod128: bitint::BUint<128, 2, 16, bitint::A8> = mul128(p128, q128);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%llu\n".as_ptr(), prod128.to_u128() as u64) };
@@ -653,18 +656,20 @@ int main(void) {
 // CHECK-NEXT:     let mut w: W = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     w.tag = 1;
 // CHECK-NEXT:     w.s = <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(-5 as i128);
-// CHECK-NEXT:     w.u = <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(12345678901234567890 as u128);
+// CHECK-NEXT:     w.u = <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
+// CHECK-NEXT:         12345678901234567890 as u128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bitint::BInt<128, 2, 16, bitint::A8> = w.s;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bitint::BInt<128, 2, 16, bitint::A8> =
-// CHECK-NEXT:         [[V_0]].wrapping_add(<bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(
-// CHECK-NEXT:             10 as i128,
-// CHECK-NEXT:         ));
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bitint::BInt<128, 2, 16, bitint::A8> = [[V_0]]
+// CHECK-NEXT:         .wrapping_add(<bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(10 as i128));
 // CHECK-NEXT:     w.s = [[V_1]];
 // CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: bitint::BUint<128, 2, 16, bitint::A8> = w.u;
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: bitint::BUint<128, 2, 16, bitint::A8> =
-// CHECK-NEXT:         [[V_2]].wrapping_mul(<bitint::BUint<128, 2, 16, bitint::A8>>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(2 as i128),
-// CHECK-NEXT:         ));
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: bitint::BUint<128, 2, 16, bitint::A8> = [[V_2]]
+// CHECK-NEXT:         .wrapping_mul(
+// CHECK-NEXT:             <bitint::BUint<128, 2, 16, bitint::A8>>::from_bint(
+// CHECK-NEXT:                 <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(2 as i128),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     w.u = [[V_3]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), 40u64) };
@@ -675,42 +680,38 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%llu\n".as_ptr(), w.u.to_u128() as u64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut x256: bitint::BInt<256, 4, 32, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(12345 as i128);
-// CHECK-NEXT:     let mut y256: bitint::BInt<256, 4, 32, bitint::A8> =
-// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(-300 as i128);
+// CHECK-NEXT:     let mut x256: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:         12345 as i128,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut y256: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:         -300 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut sum256: bitint::BInt<256, 4, 32, bitint::A8> = add256(x256, y256);
-// CHECK-NEXT:     if sum256.compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
-// CHECK-NEXT:         12045 as i128,
-// CHECK-NEXT:     )) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if sum256.compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(12045 as i128))
+// CHECK-NEXT:         != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let p256: bitint::BUint<256, 4, 32, bitint::A8> =
-// CHECK-NEXT:         <bitint::BUint<256, 4, 32, bitint::A8>>::from_u128(1000000000000 as u128);
-// CHECK-NEXT:     let q256: bitint::BUint<256, 4, 32, bitint::A8> =
-// CHECK-NEXT:         <bitint::BUint<256, 4, 32, bitint::A8>>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(3 as i128),
-// CHECK-NEXT:         );
+// CHECK-NEXT:     let p256: bitint::BUint<256, 4, 32, bitint::A8> = <bitint::BUint<256, 4, 32, bitint::A8>>::from_u128(
+// CHECK-NEXT:         1000000000000 as u128,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let q256: bitint::BUint<256, 4, 32, bitint::A8> = <bitint::BUint<256, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(3 as i128),
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut prod256: bitint::BUint<256, 4, 32, bitint::A8> = mul256(p256, q256);
-// CHECK-NEXT:     if prod256.compare(<bitint::BUint<256, 4, 32, bitint::A8>>::from_u128(
-// CHECK-NEXT:         3000000000000 as u128,
-// CHECK-NEXT:     )) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if prod256
+// CHECK-NEXT:         .compare(
+// CHECK-NEXT:             <bitint::BUint<256, 4, 32, bitint::A8>>::from_u128(3000000000000 as u128),
+// CHECK-NEXT:         ) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut neg256: bitint::BInt<256, 4, 32, bitint::A8> = x256.wrapping_neg();
-// CHECK-NEXT:     if neg256.compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
-// CHECK-NEXT:         -12345 as i128,
-// CHECK-NEXT:     )) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if neg256.compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(-12345 as i128))
+// CHECK-NEXT:         != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut diff256: bitint::BInt<256, 4, 32, bitint::A8> = x256.wrapping_sub(y256);
-// CHECK-NEXT:     if diff256.compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
-// CHECK-NEXT:         12645 as i128,
-// CHECK-NEXT:     )) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if diff256.compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(12645 as i128))
+// CHECK-NEXT:         != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if y256.compare(x256) >= 0 {
@@ -723,91 +724,105 @@ int main(void) {
 // CHECK-NEXT:     check_bitint129();
 // CHECK-NEXT:     check_bitint512();
 // CHECK-NEXT:     check_bitint_wide_literal();
-// CHECK-NEXT:     if switch_wide_case_u128(<bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
-// CHECK-NEXT:         200000000000000000000000000000000000000,
-// CHECK-NEXT:     )) != 1
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if switch_wide_case_u128(
+// CHECK-NEXT:         <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
+// CHECK-NEXT:             200000000000000000000000000000000000000,
+// CHECK-NEXT:         ),
+// CHECK-NEXT:     ) != 1 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_case_u128(<bitint::BUint<128, 2, 16, bitint::A8>>::from_bint(
-// CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(1 as i128),
-// CHECK-NEXT:     )) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if switch_wide_case_u128(
+// CHECK-NEXT:         <bitint::BUint<128, 2, 16, bitint::A8>>::from_bint(
+// CHECK-NEXT:             <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(1 as i128),
+// CHECK-NEXT:         ),
+// CHECK-NEXT:     ) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_selector(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(1 as i128)) != 10 {
+// CHECK-NEXT:     if switch_wide_selector(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(1 as i128))
+// CHECK-NEXT:         != 10 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_selector(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(2 as i128)) != 10 {
+// CHECK-NEXT:     if switch_wide_selector(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(2 as i128))
+// CHECK-NEXT:         != 10 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_selector(<bitint::BInt<256, 4, 32, bitint::A8>>::from_bint(
-// CHECK-NEXT:         <bitint::BInt<201, 4, 32, bitint::A8>>::from_le_bytes::<208, 26>([
-// CHECK-NEXT:             234, 126, 198, 81, 215, 103, 30, 53, 150, 203, 44, 211, 243, 228, 7, 81, 204, 212, 184,
-// CHECK-NEXT:             237, 51, 63, 168, 87, 157, 0,
-// CHECK-NEXT:         ])
-// CHECK-NEXT:         .wrapping_neg(),
-// CHECK-NEXT:     )) != 20
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if switch_wide_selector(
+// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:             <bitint::BInt<201, 4, 32, bitint::A8>>::from_le_bytes::<208, 26>(
+// CHECK-NEXT:                     [
+// CHECK-NEXT:                         234, 126, 198, 81, 215, 103, 30, 53, 150, 203, 44, 211, 243, 228,
+// CHECK-NEXT:                         7, 81, 204, 212, 184, 237, 51, 63, 168, 87, 157, 0,
+// CHECK-NEXT:                     ],
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .wrapping_neg(),
+// CHECK-NEXT:         ),
+// CHECK-NEXT:     ) != 20 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_selector(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
-// CHECK-NEXT:         350 as i128,
-// CHECK-NEXT:     )) != 30
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if switch_wide_selector(
+// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(350 as i128),
+// CHECK-NEXT:     ) != 30 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_selector(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
-// CHECK-NEXT:         300 as i128,
-// CHECK-NEXT:     )) != 30
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if switch_wide_selector(
+// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(300 as i128),
+// CHECK-NEXT:     ) != 30 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_selector(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
-// CHECK-NEXT:         400 as i128,
-// CHECK-NEXT:     )) != 30
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if switch_wide_selector(
+// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(400 as i128),
+// CHECK-NEXT:     ) != 30 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_selector(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
-// CHECK-NEXT:         999 as i128,
-// CHECK-NEXT:     )) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if switch_wide_selector(
+// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(999 as i128),
+// CHECK-NEXT:     ) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_selector_unsigned(<bitint::BUint<256, 4, 32, bitint::A8>>::from_buint(
-// CHECK-NEXT:         <bitint::BUint<197, 4, 32, bitint::A8>>::from_le_bytes::<208, 26>([
-// CHECK-NEXT:             210, 10, 63, 206, 150, 241, 207, 140, 156, 180, 55, 140, 55, 164, 135, 63, 23, 98, 30,
-// CHECK-NEXT:             188, 228, 4, 245, 170, 19, 0,
-// CHECK-NEXT:         ]),
-// CHECK-NEXT:     )) != 1
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if switch_wide_selector_unsigned(
+// CHECK-NEXT:         <bitint::BUint<256, 4, 32, bitint::A8>>::from_buint(
+// CHECK-NEXT:             <bitint::BUint<197, 4, 32, bitint::A8>>::from_le_bytes::<208, 26>(
+// CHECK-NEXT:                 [
+// CHECK-NEXT:                     210, 10, 63, 206, 150, 241, 207, 140, 156, 180, 55, 140, 55, 164,
+// CHECK-NEXT:                     135, 63, 23, 98, 30, 188, 228, 4, 245, 170, 19, 0,
+// CHECK-NEXT:                 ],
+// CHECK-NEXT:             ),
+// CHECK-NEXT:         ),
+// CHECK-NEXT:     ) != 1 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_selector_unsigned(<bitint::BUint<256, 4, 32, bitint::A8>>::from_bint(
-// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(0 as i128),
-// CHECK-NEXT:     )) != 2
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if switch_wide_selector_unsigned(
+// CHECK-NEXT:         <bitint::BUint<256, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:             <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(0 as i128),
+// CHECK-NEXT:         ),
+// CHECK-NEXT:     ) != 2 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_selector_unsigned(<bitint::BUint<256, 4, 32, bitint::A8>>::from_bint(
-// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(42 as i128),
-// CHECK-NEXT:     )) != 3
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if switch_wide_selector_unsigned(
+// CHECK-NEXT:         <bitint::BUint<256, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:             <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(42 as i128),
+// CHECK-NEXT:         ),
+// CHECK-NEXT:     ) != 3 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_fallthrough(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(1 as i128)) != 101
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if switch_wide_fallthrough(
+// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(1 as i128),
+// CHECK-NEXT:     ) != 101 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_fallthrough(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(2 as i128)) != 1 {
+// CHECK-NEXT:     if switch_wide_fallthrough(
+// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(2 as i128),
+// CHECK-NEXT:     ) != 1 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_fallthrough(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(3 as i128)) != 999
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if switch_wide_fallthrough(
+// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(3 as i128),
+// CHECK-NEXT:     ) != 999 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if switch_wide_fallthrough(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(4 as i128)) != -1 {
+// CHECK-NEXT:     if switch_wide_fallthrough(
+// CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(4 as i128),
+// CHECK-NEXT:     ) != -1 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

@@ -41,7 +41,7 @@ cargo run --release -p slate-c2rust -- translate-project \
 - `SLATE_TARGET` sets the default target. Explicit compiler arguments take
   precedence; [target queries](slate-target-queries.md) documents configuration.
 - `SLATE_JOBS` controls project worker parallelism; `SLATE_CARGO` selects the
-  generated-code compiler and `SLATE_RUSTFMT` the fallback formatter.
+  generated-code compiler.
 - Published package: `slate-c2rust`; executable and library target: `slate`.
   [Release setup](../../RELEASING.md).
 - Embedded support manifests use `Cargo.toml.template`; Cargo always excludes

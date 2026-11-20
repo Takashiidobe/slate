@@ -101,6 +101,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn parse_printf_format([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: u64, [[ARG_2:arg[0-9]+]]: *mut i32) -> u64;
 // CHECK-NEXT:     fn fflush([[ARG_0]]: *mut slate_support::FILE) -> i32;
@@ -128,6 +129,7 @@ int main(void) {
 // CHECK-NEXT:     fn __fwriting([[ARG_0]]: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT:     fn __fpending([[ARG_0]]: *mut slate_support::FILE) -> u64;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct _IO_cookie_io_functions_t {
@@ -136,6 +138,7 @@ int main(void) {
 // CHECK-NEXT:     seek: Option<unsafe extern "C-unwind" fn(*mut (), *mut i64, i32) -> i32>,
 // CHECK-NEXT:     close: Option<unsafe extern "C-unwind" fn(*mut ()) -> i32>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct GNUCookie {
@@ -143,14 +146,18 @@ int main(void) {
 // CHECK-NEXT:     length: u64,
 // CHECK-NEXT:     closed: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: use slate_support::memcmp;
 // CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: use slate_support::strlen;
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn gnu_cookie_write(
 // CHECK-NEXT:     state: *mut (),
 // CHECK-NEXT:     buffer: *const i8,
@@ -171,12 +178,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     size as i64
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn gnu_cookie_close(state: *mut ()) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*(state as *mut GNUCookie)).closed = 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_allocating_stdio() -> i32 {
 // CHECK-NEXT:     let mut formatted: *mut i8 = core::ptr::null_mut::<i8>();
 // CHECK-NEXT:     let mut stream_data: *mut i8 = core::ptr::null_mut::<i8>();
@@ -237,6 +246,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { free((stream_data as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_memory_stdio() -> i32 {
 // CHECK-NEXT:     let mut source: [i8; 12] = [97, 108, 112, 104, 97, 124, 98, 101, 116, 97, 10, 0];
 // CHECK-NEXT:     let mut line: *mut i8 = core::ptr::null_mut::<i8>();
@@ -290,6 +300,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { free((line as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_cookie_stdio() -> i32 {
 // CHECK-NEXT:     let mut cookie: GNUCookie = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: GNUCookie = unsafe { core::mem::zeroed() };
@@ -331,11 +342,14 @@ int main(void) {
 // CHECK-NEXT:         }) == 0) as i32);
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_printf_introspection() -> i32 {
-// CHECK-NEXT:     let mut types: __SlateAlign16<[i32; 4]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0]]: [i32; 4] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut types: __SlateAlign16<[i32; 4]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0]]: [i32; 4] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let arguments: u64 = unsafe {
 // CHECK-NEXT:         parse_printf_format(
 // CHECK-NEXT:             c"%2$d %1$s".as_ptr(),
@@ -345,6 +359,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (arguments == 2 && types.0[0] & !65280 == 3 && types.0[1] & !65280 == 0) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -357,6 +372,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

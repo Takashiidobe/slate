@@ -49,85 +49,35 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u8,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u8, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits0U0 {
 // CHECK-NEXT:         #[bits(3)]
 // CHECK-NEXT:         pub a: i8,
 // CHECK-NEXT:         #[bits(5, access = na)]
 // CHECK-NEXT:         pub __slate_pad_1: u8,
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u32,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u32, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits0U1 {
 // CHECK-NEXT:         #[bits(4)]
 // CHECK-NEXT:         pub b: i32,
 // CHECK-NEXT:         #[bits(28, access = na)]
 // CHECK-NEXT:         pub __slate_pad_1: u32,
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u32,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u32, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits1U0 {
 // CHECK-NEXT:         #[bits(3)]
 // CHECK-NEXT:         pub x: i32,
 // CHECK-NEXT:         #[bits(29, access = na)]
 // CHECK-NEXT:         pub __slate_pad_1: u32,
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u64,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u64, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits1U1 {
 // CHECK-NEXT:         #[bits(3)]
 // CHECK-NEXT:         pub y: i64,
 // CHECK-NEXT:         #[bits(61, access = na)]
 // CHECK-NEXT:         pub __slate_pad_1: u64,
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u32,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u32, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits1U2 {
 // CHECK-NEXT:         #[bits(3)]
 // CHECK-NEXT:         pub z: i32,

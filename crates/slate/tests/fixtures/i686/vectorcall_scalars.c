@@ -35,12 +35,15 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(abi_vectorcall)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "vectorcall-unwind" fn add_ints(a: i32, b: i16, c: i64, d: u8, e: i32) -> i32 {
 // CHECK-NEXT:     a + (b as i32) + (c as i32) + (d as i32) + e
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "vectorcall-unwind" fn mix(
 // CHECK-NEXT:     a: i32,
 // CHECK-NEXT:     b: f64,
@@ -54,30 +57,23 @@ int main(void) {
 // CHECK-NEXT: ) -> f64 {
 // CHECK-NEXT:     (a as f64) + b + (c as f64) + (d as f64) + e + (f as f64) + g + (h as f64) + i
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "vectorcall-unwind" fn scale(p: *const f32, k: f32) -> f32 {
 // CHECK-NEXT:     (unsafe { *p }) * k
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "vectorcall-unwind" fn store(out: *mut i32, v: f64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *out = (v * 2.0f64) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut x: f32 = 1.5f32;
 // CHECK-NEXT:     let mut out: i32 = 0;
-// CHECK-NEXT:     let fp: Option<
-// CHECK-NEXT:         unsafe extern "vectorcall-unwind" fn(
-// CHECK-NEXT:             i32,
-// CHECK-NEXT:             f64,
-// CHECK-NEXT:             f32,
-// CHECK-NEXT:             i32,
-// CHECK-NEXT:             f64,
-// CHECK-NEXT:             f32,
-// CHECK-NEXT:             f64,
-// CHECK-NEXT:             i64,
-// CHECK-NEXT:             f64,
-// CHECK-NEXT:         ) -> f64,
-// CHECK-NEXT:     > = Some(mix);
+// CHECK-NEXT:     let fp: Option<unsafe extern "vectorcall-unwind" fn(i32, f64, f32, i32, f64, f32, f64, i64, f64) -> f64> = Some(
+// CHECK-NEXT:         mix,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", add_ints(1i32, 2i16, 3i64, 4u8, 5i32));
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -92,15 +88,7 @@ int main(void) {
 // CHECK-NEXT:             c"%.2f\n".as_ptr(),
 // CHECK-NEXT:             fp
 // CHECK-NEXT:                 .unwrap()(
-// CHECK-NEXT:                 -1i32,
-// CHECK-NEXT:                 0.5f64,
-// CHECK-NEXT:                 0.25f32,
-// CHECK-NEXT:                 -4i32,
-// CHECK-NEXT:                 1.5f64,
-// CHECK-NEXT:                 2.0f32,
-// CHECK-NEXT:                 3.0f64,
-// CHECK-NEXT:                 -8i64,
-// CHECK-NEXT:                 0.125f64,
+// CHECK-NEXT:                 -1i32, 0.5f64, 0.25f32, -4i32, 1.5f64, 2.0f32, 3.0f64, -8i64, 0.125f64,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -117,6 +105,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", out);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

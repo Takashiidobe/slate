@@ -158,6 +158,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     #[link_name = "__isoc23_sscanf"]
 // CHECK-NEXT:     fn sscanf([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: *const i8, ...) -> i32;
@@ -275,33 +276,39 @@ int main(void) {
 // CHECK-NEXT:         _3: LongDouble,
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct LongDouble([u8; 10]);
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Add for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_add(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Sub for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_sub(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Mul for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_mul(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Div for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_div(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::AddAssign for LongDouble {
 // CHECK-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -309,6 +316,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::SubAssign for LongDouble {
 // CHECK-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -316,6 +324,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::MulAssign for LongDouble {
 // CHECK-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -323,6 +332,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::DivAssign for LongDouble {
 // CHECK-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -330,134 +340,161 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Neg for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn neg(self) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_neg(self)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialEq for LongDouble {
 // CHECK-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
 // CHECK-NEXT:         __slate_f80_eq(*self, *__other)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord___mbstate_t_h_21 {
 // CHECK-NEXT:     __count: i32,
 // CHECK-NEXT:     __value: __SlateRecord___mbstate_t_h_21_2,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord___mbstate_t_h_21_2 {
 // CHECK-NEXT:     __wch: u32,
 // CHECK-NEXT:     __wchb: [i8; 4],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c23_stdbit() -> i32 {
 // CHECK-NEXT:     let value: u32 = 176;
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = value;
-// CHECK-NEXT:         [[T_0]].leading_zeros() as u32
-// CHECK-NEXT:     }
-// CHECK-NEXT:         .wrapping_add({
-// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = value;
-// CHECK-NEXT:             (![[T_1]] as u32).leading_zeros() as u32
-// CHECK-NEXT:         })
-// CHECK-NEXT:         .wrapping_add({
-// CHECK-NEXT:             let [[T_2:__t[0-9]+]] = value;
-// CHECK-NEXT:             [[T_2]].trailing_zeros() as u32
-// CHECK-NEXT:         })
-// CHECK-NEXT:         .wrapping_add({
-// CHECK-NEXT:             let [[T_3:__t[0-9]+]] = value;
-// CHECK-NEXT:             (![[T_3]] as u32).trailing_zeros() as u32
-// CHECK-NEXT:         })
-// CHECK-NEXT:         .wrapping_add({
-// CHECK-NEXT:             let [[T_4:__t[0-9]+]] = value;
-// CHECK-NEXT:             ({
-// CHECK-NEXT:                 let [[T_5:__t[0-9]+]] = (![[T_4]] as u32).leading_zeros();
-// CHECK-NEXT:                 if [[T_5]] == 32 { 0u32 } else { [[T_5]] + 1 }
-// CHECK-NEXT:             }) as u32
-// CHECK-NEXT:         })
-// CHECK-NEXT:         .wrapping_add({
-// CHECK-NEXT:             let [[T_6:__t[0-9]+]] = value;
-// CHECK-NEXT:             ({
-// CHECK-NEXT:                 let [[T_7:__t[0-9]+]] = [[T_6]].leading_zeros();
-// CHECK-NEXT:                 if [[T_7]] == 32 { 0u32 } else { [[T_7]] + 1 }
-// CHECK-NEXT:             }) as u32
-// CHECK-NEXT:         })
-// CHECK-NEXT:         .wrapping_add({
-// CHECK-NEXT:             let [[T_8:__t[0-9]+]] = value;
-// CHECK-NEXT:             ({
-// CHECK-NEXT:                 let [[T_9:__t[0-9]+]] = (![[T_8]] as u32).trailing_zeros();
-// CHECK-NEXT:                 if [[T_9]] == 32 { 0u32 } else { [[T_9]] + 1 }
-// CHECK-NEXT:             }) as u32
-// CHECK-NEXT:         })
-// CHECK-NEXT:         .wrapping_add({
-// CHECK-NEXT:             let [[T_10:__t[0-9]+]] = value;
-// CHECK-NEXT:             ({
-// CHECK-NEXT:                 let [[T_11:__t[0-9]+]] = [[T_10]].trailing_zeros();
-// CHECK-NEXT:                 if [[T_11]] == 32 { 0u32 } else { [[T_11]] + 1 }
-// CHECK-NEXT:             }) as u32
-// CHECK-NEXT:         })
-// CHECK-NEXT:         .wrapping_add({
-// CHECK-NEXT:             let [[T_12:__t[0-9]+]] = value;
-// CHECK-NEXT:             (32 - [[T_12]].count_ones()) as u32
-// CHECK-NEXT:         })
-// CHECK-NEXT:         .wrapping_add({
-// CHECK-NEXT:             let [[T_13:__t[0-9]+]] = value;
-// CHECK-NEXT:             [[T_13]].count_ones() as u32
-// CHECK-NEXT:         })
+// CHECK-NEXT:             let [[T_0:__t[0-9]+]] = value;
+// CHECK-NEXT:             [[T_0]].leading_zeros() as u32
+// CHECK-NEXT:         }
+// CHECK-NEXT:         .wrapping_add(
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_1:__t[0-9]+]] = value;
+// CHECK-NEXT:                 (![[T_1]] as u32).leading_zeros() as u32
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
+// CHECK-NEXT:         .wrapping_add(
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_2:__t[0-9]+]] = value;
+// CHECK-NEXT:                 [[T_2]].trailing_zeros() as u32
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
+// CHECK-NEXT:         .wrapping_add(
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_3:__t[0-9]+]] = value;
+// CHECK-NEXT:                 (![[T_3]] as u32).trailing_zeros() as u32
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
+// CHECK-NEXT:         .wrapping_add(
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_4:__t[0-9]+]] = value;
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_5:__t[0-9]+]] = (![[T_4]] as u32).leading_zeros();
+// CHECK-NEXT:                     if [[T_5]] == 32 { 0u32 } else { [[T_5]] + 1 }
+// CHECK-NEXT:                 }) as u32
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
+// CHECK-NEXT:         .wrapping_add(
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_6:__t[0-9]+]] = value;
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_7:__t[0-9]+]] = [[T_6]].leading_zeros();
+// CHECK-NEXT:                     if [[T_7]] == 32 { 0u32 } else { [[T_7]] + 1 }
+// CHECK-NEXT:                 }) as u32
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
+// CHECK-NEXT:         .wrapping_add(
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_8:__t[0-9]+]] = value;
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_9:__t[0-9]+]] = (![[T_8]] as u32).trailing_zeros();
+// CHECK-NEXT:                     if [[T_9]] == 32 { 0u32 } else { [[T_9]] + 1 }
+// CHECK-NEXT:                 }) as u32
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
+// CHECK-NEXT:         .wrapping_add(
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_10:__t[0-9]+]] = value;
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_11:__t[0-9]+]] = [[T_10]].trailing_zeros();
+// CHECK-NEXT:                     if [[T_11]] == 32 { 0u32 } else { [[T_11]] + 1 }
+// CHECK-NEXT:                 }) as u32
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
+// CHECK-NEXT:         .wrapping_add(
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_12:__t[0-9]+]] = value;
+// CHECK-NEXT:                 (32 - [[T_12]].count_ones()) as u32
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
+// CHECK-NEXT:         .wrapping_add(
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_13:__t[0-9]+]] = value;
+// CHECK-NEXT:                 [[T_13]].count_ones() as u32
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
 // CHECK-NEXT:         .wrapping_add(
 // CHECK-NEXT:             (({
 // CHECK-NEXT:                 let [[T_14:__t[0-9]+]] = 64u32;
 // CHECK-NEXT:                 [[T_14]].count_ones() == 1
 // CHECK-NEXT:             }) as i32) as u32,
 // CHECK-NEXT:         )
-// CHECK-NEXT:         .wrapping_add({
-// CHECK-NEXT:             let [[T_15:__t[0-9]+]] = value;
-// CHECK-NEXT:             (32 - [[T_15]].leading_zeros()) as u32
-// CHECK-NEXT:         })
-// CHECK-NEXT:         .wrapping_add({
-// CHECK-NEXT:             let [[T_16:__t[0-9]+]] = value;
-// CHECK-NEXT:             if [[T_16]].leading_zeros() == 32 {
-// CHECK-NEXT:                 0u32
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 1u32.checked_shl(31 - [[T_16]].leading_zeros()).unwrap_or(0u32) as u32
-// CHECK-NEXT:             }
-// CHECK-NEXT:         })
-// CHECK-NEXT:         .wrapping_add({
-// CHECK-NEXT:             let [[T_17:__t[0-9]+]] = value;
-// CHECK-NEXT:             if [[T_17]].count_ones() == 0 {
-// CHECK-NEXT:                 1u32
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if [[T_17]].count_ones() == 1 {
+// CHECK-NEXT:         .wrapping_add(
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_15:__t[0-9]+]] = value;
+// CHECK-NEXT:                 (32 - [[T_15]].leading_zeros()) as u32
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
+// CHECK-NEXT:         .wrapping_add(
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_16:__t[0-9]+]] = value;
+// CHECK-NEXT:                 if [[T_16]].leading_zeros() == 32 {
+// CHECK-NEXT:                     0u32
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     1u32.checked_shl(31 - [[T_16]].leading_zeros()).unwrap_or(0u32) as u32
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
+// CHECK-NEXT:         .wrapping_add(
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_17:__t[0-9]+]] = value;
+// CHECK-NEXT:                 if [[T_17]].count_ones() == 0 {
+// CHECK-NEXT:                     1u32
+// CHECK-NEXT:                 } else if [[T_17]].count_ones() == 1 {
 // CHECK-NEXT:                     [[T_17]]
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     1u32.checked_shl(32 - [[T_17]].leading_zeros()).unwrap_or(0u32) as u32
 // CHECK-NEXT:                 }
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }) as i32
+// CHECK-NEXT:             },
+// CHECK-NEXT:         ) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c23_checked_arithmetic() -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     let mut total: i32 = 0;
@@ -503,6 +540,7 @@ int main(void) {
 // CHECK-NEXT:     total += [[V_3]] as i32;
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c23_utf8() -> i32 {
 // CHECK-NEXT:     let mut input_state: __SlateRecord___mbstate_t_h_21 = {
 // CHECK-NEXT:         let mut [[T_0]]: __SlateRecord___mbstate_t_h_21 = unsafe { core::mem::zeroed() };
@@ -513,10 +551,12 @@ int main(void) {
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut character: u8 = 0;
-// CHECK-NEXT:     let mut output: __SlateAlign16<[i8; 16]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_2]]: [i8; 16] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_2]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut output: __SlateAlign16<[i8; 16]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_2]]: [i8; 16] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_2]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let input_size: u64 = unsafe {
 // CHECK-NEXT:         mbrtoc8(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(character),
@@ -548,6 +588,7 @@ int main(void) {
 // CHECK-NEXT:                 .load(core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:         }) as i32) == 66) as i32) + (true as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c23_memory() -> i32 {
 // CHECK-NEXT:     let mut source: [i8; 7] = [97, 98, 99, 100, 101, 102, 0];
 // CHECK-NEXT:     let mut destination: [i8; 8] = {
@@ -619,43 +660,46 @@ int main(void) {
 // CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_6]]
 // CHECK-NEXT:         + (!((unsafe {
-// CHECK-NEXT:             memchr(
-// CHECK-NEXT:                 (phrase as *const ()) as *const core::ffi::c_void,
-// CHECK-NEXT:                 111i32 as i32,
-// CHECK-NEXT:                 11u64 as usize,
-// CHECK-NEXT:             ) as *mut ()
-// CHECK-NEXT:         }) as *const ())
+// CHECK-NEXT:                 memchr(
+// CHECK-NEXT:                     (phrase as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:                     111i32 as i32,
+// CHECK-NEXT:                     11u64 as usize,
+// CHECK-NEXT:                 ) as *mut ()
+// CHECK-NEXT:             }) as *const ())
 // CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_7]]
 // CHECK-NEXT:         + (!unsafe {
-// CHECK-NEXT:             memchr(
-// CHECK-NEXT:                 (mutable_phrase.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
-// CHECK-NEXT:                 111i32 as i32,
-// CHECK-NEXT:                 11u64 as usize,
-// CHECK-NEXT:             ) as *mut ()
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 memchr(
+// CHECK-NEXT:                     (mutable_phrase.as_mut_ptr() as *const ())
+// CHECK-NEXT:                         as *const core::ffi::c_void,
+// CHECK-NEXT:                     111i32 as i32,
+// CHECK-NEXT:                     11u64 as usize,
+// CHECK-NEXT:                 ) as *mut ()
+// CHECK-NEXT:             }
 // CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_8]]
 // CHECK-NEXT:         + (!((unsafe {
-// CHECK-NEXT:             strstr(
-// CHECK-NEXT:                 phrase as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"world".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as *mut i8
-// CHECK-NEXT:         }) as *const i8)
+// CHECK-NEXT:                 strstr(
+// CHECK-NEXT:                     phrase as *const core::ffi::c_char,
+// CHECK-NEXT:                     c"world".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:                 ) as *mut i8
+// CHECK-NEXT:             }) as *const i8)
 // CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_9]]
 // CHECK-NEXT:         + (!unsafe {
-// CHECK-NEXT:             strstr(
-// CHECK-NEXT:                 (mutable_phrase.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"world".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as *mut i8
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 strstr(
+// CHECK-NEXT:                     (mutable_phrase.as_mut_ptr() as *const i8)
+// CHECK-NEXT:                         as *const core::ffi::c_char,
+// CHECK-NEXT:                     c"world".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:                 ) as *mut i8
+// CHECK-NEXT:             }
 // CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::snprintf;
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::memccpy;
@@ -669,6 +713,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::gmtime_r;
 // CHECK-NEXT: use slate_support::localtime_r;
 // CHECK-NEXT: use slate_support::timegm;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c23_time() -> i32 {
 // CHECK-NEXT:     let mut timestamp: i64 = 0;
 // CHECK-NEXT:     let mut utc: slate_support::tm = {
@@ -683,14 +728,18 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_2]]: slate_support::timespec = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut month: __SlateAlign16<[i8; 32]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_3]]: [i8; 32] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_3]]
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let mut wide_month: __SlateAlign16<[i32; 32]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_4]]: [i32; 32] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_4]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut month: __SlateAlign16<[i8; 32]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_3]]: [i8; 32] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_3]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut wide_month: __SlateAlign16<[i32; 32]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_4]]: [i32; 32] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_4]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut total: i32 = ((unsafe {
 // CHECK-NEXT:         gmtime_r(
 // CHECK-NEXT:             (core::ptr::addr_of_mut!(timestamp) as *const i64) as *const i64,
@@ -759,44 +808,57 @@ int main(void) {
 // CHECK-NEXT:     let [[V_15:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_15]]
 // CHECK-NEXT:         + (!((unsafe {
-// CHECK-NEXT:             wcsstr(
-// CHECK-NEXT:                 const_month,
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(__slate_str287) as *mut i32) as *const i32,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) as *const i32)
+// CHECK-NEXT:                 wcsstr(
+// CHECK-NEXT:                     const_month,
+// CHECK-NEXT:                     (core::ptr::addr_of_mut!(__slate_str287) as *mut i32) as *const i32,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             }) as *const i32)
 // CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_16]]
 // CHECK-NEXT:         + (!unsafe {
-// CHECK-NEXT:             wcsstr(
-// CHECK-NEXT:                 wide_month.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(__slate_str289) as *mut i32) as *const i32,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 wcsstr(
+// CHECK-NEXT:                     wide_month.0.as_mut_ptr() as *const i32,
+// CHECK-NEXT:                     (core::ptr::addr_of_mut!(__slate_str289) as *mut i32) as *const i32,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             }
 // CHECK-NEXT:             .is_null() as i32);
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut __slate_str281: [i32; 4] = [37, 79, 66, 0];
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut __slate_str283: [i32; 8] = [74, 97, 110, 117, 97, 114, 121, 0];
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut __slate_str287: [i32; 4] = [74, 97, 110, 0];
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut __slate_str289: [i32; 4] = [74, 97, 110, 0];
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c23_io() -> i32 {
-// CHECK-NEXT:     let mut output: __SlateAlign16<[i8; 64]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0]]: [i8; 64] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let mut float_output: __SlateAlign16<[i8; 16]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_1]]: [i8; 16] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]]
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let mut double_output: __SlateAlign16<[i8; 16]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_2]]: [i8; 16] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_2]]
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let mut long_double_output: __SlateAlign16<[i8; 16]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_3]]: [i8; 16] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_3]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut output: __SlateAlign16<[i8; 64]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0]]: [i8; 64] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut float_output: __SlateAlign16<[i8; 16]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_1]]: [i8; 16] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut double_output: __SlateAlign16<[i8; 16]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_2]]: [i8; 16] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_2]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut long_double_output: __SlateAlign16<[i8; 16]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_3]]: [i8; 16] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_3]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut binary_value: u32 = 0;
 // CHECK-NEXT:     let mut exact_value: u16 = 0;
 // CHECK-NEXT:     let mut fast_value: u64 = 0;
@@ -872,6 +934,7 @@ int main(void) {
 // CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         }) == 0) as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c23_limits() -> i32 {
 // CHECK-NEXT:     let integer_widths: i32 = 1 + 8 + 8 + 8 + 16 + 16 + 32 + 32 + 64 + 64 + 64 + 64 + 64
 // CHECK-NEXT:         + 64;
@@ -894,13 +957,20 @@ int main(void) {
 // CHECK-NEXT:         + (true as i32) + (true as i32) + (true as i32) + (true as i32);
 // CHECK-NEXT:     integer_widths + floating_limits + header_versions
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", c23_stdbit(), c23_checked_arithmetic(), c23_utf8(),
-// CHECK-NEXT:         c23_memory(), c23_time(), c23_io() + c23_limits()
+// CHECK-NEXT:         "{} {} {} {} {} {}",
+// CHECK-NEXT:         c23_stdbit(),
+// CHECK-NEXT:         c23_checked_arithmetic(),
+// CHECK-NEXT:         c23_utf8(),
+// CHECK-NEXT:         c23_memory(),
+// CHECK-NEXT:         c23_time(),
+// CHECK-NEXT:         c23_io() + c23_limits()
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

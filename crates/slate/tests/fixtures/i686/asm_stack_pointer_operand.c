@@ -32,37 +32,48 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN i686-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut helper_value: i32 = 7;
+// CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
-// CHECK-NEXT:     ".text\n.globl slate_sp_helper\nslate_sp_helper:\n\tmovl $42, {0}\n\tret\n", sym
-// CHECK-NEXT:     helper_value, options(att_syntax)
+// CHECK-NEXT:     ".text\n.globl slate_sp_helper\nslate_sp_helper:\n\tmovl $42, {0}\n\tret\n",
+// CHECK-NEXT:     sym helper_value,
+// CHECK-NEXT:     options(att_syntax),
 // CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn count(mut w: u32) -> u32 {
 // CHECK-NEXT:     let mut res: u32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "popcntl {1:e}, {0:e}", lateout(reg) [[T_0]], in (reg) w as u32, options(pure,
-// CHECK-NEXT:             nomem, att_syntax)
+// CHECK-NEXT:             "popcntl {1:e}, {0:e}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) w as u32,
+// CHECK-NEXT:             options(pure, nomem, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         res = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     res
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn stack_aligned() -> i32 {
 // CHECK-NEXT:     let mut copy: u32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movl %esp, {0:e}", lateout(reg) [[T_0]], options(pure, nomem, att_syntax)
+// CHECK-NEXT:             "movl %esp, {0:e}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             options(pure, nomem, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         copy = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (copy != 0 && copy & 3 == 0) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!("call slate_sp_helper", options(att_syntax));
@@ -80,6 +91,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -57,40 +57,54 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut gnu_pragma_inner_macro: i32 = 11;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut gnu_pragma_outer_macro: i32 = 7;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct GNUPragmaPacked {
 // CHECK-NEXT:     tag: u8,
 // CHECK-NEXT:     value: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_pragma_hidden(value: i32) -> i32 {
 // CHECK-NEXT:     value + 13
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_pragma_weak_target() -> i32 {
 // CHECK-NEXT:     17
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_pragma_renamed() -> i32 {
 // CHECK-NEXT:     19
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_pragma_diagnostic() -> i32 {
 // CHECK-NEXT:     23
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let packed: GNUPragmaPacked = GNUPragmaPacked {
 // CHECK-NEXT:         tag: 29,
 // CHECK-NEXT:         value: 31,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {} {}", 5i32, unsafe { gnu_pragma_inner_macro }, unsafe {
-// CHECK-NEXT:         gnu_pragma_outer_macro }, core::mem::size_of::< GNUPragmaPacked > () as i32,
-// CHECK-NEXT:         core::mem::offset_of!(GNUPragmaPacked, value) as i32, gnu_pragma_hidden(37i32),
-// CHECK-NEXT:         gnu_pragma_weak_target(), gnu_pragma_renamed() + gnu_pragma_diagnostic() +
-// CHECK-NEXT:         (packed.tag as i32) + (packed.value as i32)
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {}",
+// CHECK-NEXT:         5i32,
+// CHECK-NEXT:         unsafe { gnu_pragma_inner_macro },
+// CHECK-NEXT:         unsafe { gnu_pragma_outer_macro },
+// CHECK-NEXT:         core::mem::size_of::<GNUPragmaPacked>() as i32,
+// CHECK-NEXT:         core::mem::offset_of!(GNUPragmaPacked, value) as i32,
+// CHECK-NEXT:         gnu_pragma_hidden(37i32),
+// CHECK-NEXT:         gnu_pragma_weak_target(),
+// CHECK-NEXT:         gnu_pragma_renamed() + gnu_pragma_diagnostic() + (packed.tag as i32)
+// CHECK-NEXT:             + (packed.value as i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

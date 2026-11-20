@@ -37,18 +37,22 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn htonl([[ARG_0:arg[0-9]+]]: u32) -> u32;
 // CHECK-NEXT:     fn inet_pton([[ARG_0]]: i32, [[ARG_1:arg[0-9]+]]: *const i8, [[ARG_2:arg[0-9]+]]: *mut ()) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct in6_addr {
 // CHECK-NEXT:     __in6_u: __SlateRecord_in_h_225,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_in_h_225 {
@@ -56,6 +60,7 @@ int main(void) {
 // CHECK-NEXT:     __u6_addr16: [u16; 8],
 // CHECK-NEXT:     __u6_addr32: [u32; 4],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct sockaddr_in6 {
@@ -65,15 +70,19 @@ int main(void) {
 // CHECK-NEXT:     sin6_addr: in6_addr,
 // CHECK-NEXT:     sin6_scope_id: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memset;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn classify(address: &sockaddr_in6) -> i32 {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let __a: *const in6_addr = unsafe {
-// CHECK-NEXT:             core::ptr::addr_of!((* (address as * const sockaddr_in6)).sin6_addr)
+// CHECK-NEXT:             core::ptr::addr_of!((*(address as *const sockaddr_in6)).sin6_addr)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[V_0]] = (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(0) })
 // CHECK-NEXT:             == 0
@@ -89,7 +98,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bool;
 // CHECK-NEXT:     let __a: *const in6_addr = unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!((* (address as * const sockaddr_in6)).sin6_addr)
+// CHECK-NEXT:         core::ptr::addr_of!((*(address as *const sockaddr_in6)).sin6_addr)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     [[V_1]] = (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(0) }) == 0
 // CHECK-NEXT:         && (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(1) }) == 0
@@ -100,12 +109,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     6
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let inputs: __SlateAlign16<[*const i8; 3]> = __SlateAlign16([
-// CHECK-NEXT:         c"::".as_ptr(),
-// CHECK-NEXT:         c"::ffff:10.0.0.1".as_ptr(),
-// CHECK-NEXT:         c"2001:db8::1".as_ptr(),
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let inputs: __SlateAlign16<[*const i8; 3]> = __SlateAlign16(
+// CHECK-NEXT:         [c"::".as_ptr(), c"::ffff:10.0.0.1".as_ptr(), c"2001:db8::1".as_ptr()],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut address: sockaddr_in6 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut sum: u32 = 0;
 // CHECK-NEXT:     for i in 0i32..3i32 {
@@ -124,8 +132,7 @@ int main(void) {
 // CHECK-NEXT:                 inputs.0[i as usize],
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(address.sin6_addr) as *mut (),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }) != 1
-// CHECK-NEXT:         {
+// CHECK-NEXT:         }) != 1 {
 // CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         for byte in 0i32..16i32 {
@@ -159,6 +166,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

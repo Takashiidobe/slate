@@ -21,29 +21,37 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn next() -> u64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     4294967296
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut values: __SlateAlign16<[u64; 7]> = __SlateAlign16([
-// CHECK-NEXT:         1u64, 2u64, 3u64, 2147483648u64, 4294967296u64, 9223372036854775808u64,
-// CHECK-NEXT:         18446744073709551615u64,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut values: __SlateAlign16<[u64; 7]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             1u64, 2u64, 3u64, 2147483648u64, 4294967296u64, 9223372036854775808u64,
+// CHECK-NEXT:             18446744073709551615u64,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (core::mem::size_of::<[u64; 7]>() as u64)
-// CHECK-NEXT:             / (core::mem::size_of::<u64>() as u64)
-// CHECK-NEXT:     {
+// CHECK-NEXT:             / (core::mem::size_of::<u64>() as u64) {
 // CHECK-NEXT:         let __slate_printf_arg0 = unsafe {
-// CHECK-NEXT:             core::ptr::read_volatile((values.0.as_mut_ptr() as *mut u64).add(i as usize))
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 core::ptr::read_volatile(
+// CHECK-NEXT:                     (values.0.as_mut_ptr() as *mut u64).add(i as usize),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             }
 // CHECK-NEXT:             .leading_zeros() as i32;
 // CHECK-NEXT:         print!("{} ", __slate_printf_arg0);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -52,15 +60,18 @@ int main(void) {
 // CHECK-NEXT:     let small: u32 = 1;
 // CHECK-NEXT:     let wide: u64 = 1;
 // CHECK-NEXT:     print!(
-// CHECK-NEXT:         "{} {} {} ", unsafe { core::ptr::read_volatile(core::ptr::addr_of!(small)) }
-// CHECK-NEXT:         .leading_zeros() as i32, unsafe {
-// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(wide)) } .leading_zeros() as i32,
+// CHECK-NEXT:         "{} {} {} ",
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(small)) }.leading_zeros()
+// CHECK-NEXT:             as i32,
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(wide)) }.leading_zeros()
+// CHECK-NEXT:             as i32,
 // CHECK-NEXT:         next().leading_zeros() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     println!("{}", unsafe { calls });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

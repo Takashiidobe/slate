@@ -61,63 +61,78 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __builtin_cpu_supports([[ARG_0:arg[0-9]+]]: *const i8) -> bool;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sqrt_via_x(mut value: f32) -> f32 {
 // CHECK-NEXT:     let mut result: f32 = 0 as f32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "sqrtss {1}, {0}", lateout(xmm_reg) [[T_0]], in (xmm_reg) unsafe {
-// CHECK-NEXT:             core::mem::transmute::< f32, u32 > (value) }, options(pure, nomem, nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             "sqrtss {1}, {0}",
+// CHECK-NEXT:             lateout(xmm_reg) [[T_0]],
+// CHECK-NEXT:             in(xmm_reg) unsafe { core::mem::transmute::<f32, u32>(value) },
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, f32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: unsafe fn avx_sum() -> f32 {
-// CHECK-NEXT:     let mut left: core::simd::Simd<f32, 8> = core::simd::Simd::from_array([
-// CHECK-NEXT:         1i32 as f32,
-// CHECK-NEXT:         2i32 as f32,
-// CHECK-NEXT:         3i32 as f32,
-// CHECK-NEXT:         4i32 as f32,
-// CHECK-NEXT:         5i32 as f32,
-// CHECK-NEXT:         6i32 as f32,
-// CHECK-NEXT:         7i32 as f32,
-// CHECK-NEXT:         8i32 as f32,
-// CHECK-NEXT:     ]);
-// CHECK-NEXT:     let mut right: core::simd::Simd<f32, 8> = core::simd::Simd::from_array([
-// CHECK-NEXT:         10i32 as f32,
-// CHECK-NEXT:         20i32 as f32,
-// CHECK-NEXT:         30i32 as f32,
-// CHECK-NEXT:         40i32 as f32,
-// CHECK-NEXT:         50i32 as f32,
-// CHECK-NEXT:         60i32 as f32,
-// CHECK-NEXT:         70i32 as f32,
-// CHECK-NEXT:         80i32 as f32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut left: core::simd::Simd<f32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             1i32 as f32,
+// CHECK-NEXT:             2i32 as f32,
+// CHECK-NEXT:             3i32 as f32,
+// CHECK-NEXT:             4i32 as f32,
+// CHECK-NEXT:             5i32 as f32,
+// CHECK-NEXT:             6i32 as f32,
+// CHECK-NEXT:             7i32 as f32,
+// CHECK-NEXT:             8i32 as f32,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut right: core::simd::Simd<f32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             10i32 as f32,
+// CHECK-NEXT:             20i32 as f32,
+// CHECK-NEXT:             30i32 as f32,
+// CHECK-NEXT:             40i32 as f32,
+// CHECK-NEXT:             50i32 as f32,
+// CHECK-NEXT:             60i32 as f32,
+// CHECK-NEXT:             70i32 as f32,
+// CHECK-NEXT:             80i32 as f32,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut result: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: core::arch::x86_64::__m256i;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "vaddps {2}, {1}, {0}", lateout(ymm_reg) [[T_0]], in (ymm_reg) unsafe {
-// CHECK-NEXT:             core::mem::transmute::< core::simd::Simd < f32, 8 >,
-// CHECK-NEXT:             core::arch::x86_64::__m256i > (left) }, in (ymm_reg) unsafe {
-// CHECK-NEXT:             core::mem::transmute::< core::simd::Simd < f32, 8 >,
-// CHECK-NEXT:             core::arch::x86_64::__m256i > (right) }, options(pure, nomem, nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             "vaddps {2}, {1}, {0}",
+// CHECK-NEXT:             lateout(ymm_reg) [[T_0]],
+// CHECK-NEXT:             in(ymm_reg) unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<f32, 8>, core::arch::x86_64::__m256i>(
+// CHECK-NEXT:                     left,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:             in(ymm_reg) unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<f32, 8>, core::arch::x86_64::__m256i>(
+// CHECK-NEXT:                     right,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 core::arch::x86_64::__m256i,
-// CHECK-NEXT:                 core::simd::Simd<f32, 8>,
-// CHECK-NEXT:             >([[T_0]])
+// CHECK-NEXT:             core::mem::transmute::<core::arch::x86_64::__m256i, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 [[T_0]],
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut sum: f32 = 0i32 as f32;
@@ -126,33 +141,45 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: unsafe fn avx512_masked_sum() -> i32 {
-// CHECK-NEXT:     let mut left: core::simd::Simd<i32, 16> = core::simd::Simd::from_array([
-// CHECK-NEXT:         1i32, 2i32, 3i32, 4i32, 5i32, 6i32, 7i32, 8i32, 9i32, 10i32, 11i32, 12i32, 13i32,
-// CHECK-NEXT:         14i32, 15i32, 16i32,
-// CHECK-NEXT:     ]);
-// CHECK-NEXT:     let mut right: core::simd::Simd<i32, 16> = core::simd::Simd::from_array([
-// CHECK-NEXT:         100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32,
-// CHECK-NEXT:         100i32, 100i32, 100i32, 100i32, 100i32, 100i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut left: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             1i32, 2i32, 3i32, 4i32, 5i32, 6i32, 7i32, 8i32, 9i32, 10i32, 11i32, 12i32,
+// CHECK-NEXT:             13i32, 14i32, 15i32, 16i32,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut right: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32,
+// CHECK-NEXT:             100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut mask: u16 = 240;
 // CHECK-NEXT:     let mut result: core::simd::Simd<i32, 16> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: core::arch::x86_64::__m512i;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "vpaddd {2}, {1}, {0}{{[{][{]}}{3}}}{{[{][{]}}z}}", lateout(zmm_reg) [[T_0]], in (zmm_reg)
-// CHECK-NEXT:             unsafe { core::mem::transmute::< core::simd::Simd < i32, 16 >,
-// CHECK-NEXT:             core::arch::x86_64::__m512i > (left) }, in (zmm_reg) unsafe {
-// CHECK-NEXT:             core::mem::transmute::< core::simd::Simd < i32, 16 >,
-// CHECK-NEXT:             core::arch::x86_64::__m512i > (right) }, in (kreg) mask as u16, options(pure,
-// CHECK-NEXT:             nomem, nostack, att_syntax)
+// CHECK-NEXT:             "vpaddd {2}, {1}, {0}{{[{][{]}}{3}}}{{[{][{]}}z}}",
+// CHECK-NEXT:             lateout(zmm_reg) [[T_0]],
+// CHECK-NEXT:             in(zmm_reg) unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 16>, core::arch::x86_64::__m512i>(
+// CHECK-NEXT:                     left,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:             in(zmm_reg) unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 16>, core::arch::x86_64::__m512i>(
+// CHECK-NEXT:                     right,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:             in(kreg) mask as u16,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 core::arch::x86_64::__m512i,
-// CHECK-NEXT:                 core::simd::Simd<i32, 16>,
-// CHECK-NEXT:             >([[T_0]])
+// CHECK-NEXT:             core::mem::transmute::<core::arch::x86_64::__m512i, core::simd::Simd<i32, 16>>(
+// CHECK-NEXT:                 [[T_0]],
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut sum: i32 = 0;
@@ -161,31 +188,44 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: unsafe fn avx512_equal_lanes() -> u32 {
-// CHECK-NEXT:     let mut left: core::simd::Simd<i32, 16> = core::simd::Simd::from_array([
-// CHECK-NEXT:         1i32, 2i32, 3i32, 4i32, 5i32, 6i32, 7i32, 8i32, 9i32, 10i32, 11i32, 12i32, 13i32,
-// CHECK-NEXT:         14i32, 15i32, 16i32,
-// CHECK-NEXT:     ]);
-// CHECK-NEXT:     let mut right: core::simd::Simd<i32, 16> = core::simd::Simd::from_array([
-// CHECK-NEXT:         1i32, 0i32, 3i32, 0i32, 5i32, 0i32, 7i32, 0i32, 9i32, 0i32, 11i32, 0i32, 13i32,
-// CHECK-NEXT:         0i32, 15i32, 0i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut left: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             1i32, 2i32, 3i32, 4i32, 5i32, 6i32, 7i32, 8i32, 9i32, 10i32, 11i32, 12i32,
+// CHECK-NEXT:             13i32, 14i32, 15i32, 16i32,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut right: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             1i32, 0i32, 3i32, 0i32, 5i32, 0i32, 7i32, 0i32, 9i32, 0i32, 11i32, 0i32,
+// CHECK-NEXT:             13i32, 0i32, 15i32, 0i32,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut mask: u16 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u16;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "vpcmpeqd {2}, {1}, {0}", lateout(kreg) [[T_0]], in (zmm_reg) unsafe {
-// CHECK-NEXT:             core::mem::transmute::< core::simd::Simd < i32, 16 >,
-// CHECK-NEXT:             core::arch::x86_64::__m512i > (left) }, in (zmm_reg) unsafe {
-// CHECK-NEXT:             core::mem::transmute::< core::simd::Simd < i32, 16 >,
-// CHECK-NEXT:             core::arch::x86_64::__m512i > (right) }, options(pure, nomem, nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             "vpcmpeqd {2}, {1}, {0}",
+// CHECK-NEXT:             lateout(kreg) [[T_0]],
+// CHECK-NEXT:             in(zmm_reg) unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 16>, core::arch::x86_64::__m512i>(
+// CHECK-NEXT:                     left,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:             in(zmm_reg) unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 16>, core::arch::x86_64::__m512i>(
+// CHECK-NEXT:                     right,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         mask = unsafe { core::mem::transmute::<u16, u16>([[T_0]] as u16) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     mask as u32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.1f\n".as_ptr(), sqrt_via_x(6.25f32) as f64) };
@@ -208,6 +248,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

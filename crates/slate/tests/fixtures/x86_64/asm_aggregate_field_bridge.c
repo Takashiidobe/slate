@@ -41,54 +41,51 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct padded {
 // CHECK-NEXT:     first: u8,
 // CHECK-NEXT:     second: u16,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct flags {
 // CHECK-NEXT:     first: bool,
 // CHECK-NEXT:     second: u8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(4))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct bits {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits2U0,
 // CHECK-NEXT:     tail: u16,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union partial {
 // CHECK-NEXT:     byte: u8,
 // CHECK-NEXT:     word: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct nested {
 // CHECK-NEXT:     inner: flags,
 // CHECK-NEXT:     done: [bool; 2],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct wide {
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u16,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u16, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits2U0 {
 // CHECK-NEXT:         #[bits(3)]
 // CHECK-NEXT:         pub low: u32,
@@ -98,9 +95,11 @@ int main(void) {
 // CHECK-NEXT:         pub __slate_pad_2: u8,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut padded: padded = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: padded = unsafe { core::mem::zeroed() };
@@ -112,22 +111,23 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "\n# {0:e}", inlateout(reg) unsafe { core::mem::transmute::< padded, u32 >
-// CHECK-NEXT:             (padded) } => [[T_1]], options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "\n# {0:e}",
+// CHECK-NEXT:             inlateout(reg) unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<padded, u32>(padded)
+// CHECK-NEXT:             } => [[T_1]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         padded = unsafe { core::mem::transmute::<u32, padded>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u16;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "\n# {0:x}", inlateout(reg) unsafe { core::mem::transmute::< flags, u16 >
-// CHECK-NEXT:             (flags) } => [[T_2]], options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "\n# {0:x}",
+// CHECK-NEXT:             inlateout(reg) unsafe { core::mem::transmute::<flags, u16>(flags) } => [[T_2]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         flags = unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 u16,
-// CHECK-NEXT:                 flags,
-// CHECK-NEXT:             >(
+// CHECK-NEXT:             core::mem::transmute::<u16, flags>(
 // CHECK-NEXT:                 ([[T_2]] as u16) & 65280u16
 // CHECK-NEXT:                     | ((((([[T_2]] as u16) >> 0) as u8) != 0) as u16) << 0,
 // CHECK-NEXT:             )
@@ -147,8 +147,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addl $0x00030000, {0:e}", inlateout(reg) unsafe { core::mem::transmute::<
-// CHECK-NEXT:             padded, u32 > (padded) } => [[T_3]], options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "addl $0x00030000, {0:e}",
+// CHECK-NEXT:             inlateout(reg) unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<padded, u32>(padded)
+// CHECK-NEXT:             } => [[T_3]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         padded = unsafe { core::mem::transmute::<u32, padded>([[T_3]] as u32) };
 // CHECK-NEXT:     }
@@ -165,14 +168,13 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]]: u16;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movw $0x2a00, {0:x}\n\tcmpb $1, {1:l}\n\tsete {0:l}", out(reg) [[T_4]], in
-// CHECK-NEXT:             (reg) (5 as i32) as u32, options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "movw $0x2a00, {0:x}\n\tcmpb $1, {1:l}\n\tsete {0:l}",
+// CHECK-NEXT:             out(reg) [[T_4]],
+// CHECK-NEXT:             in(reg) (5 as i32) as u32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         set = unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 u16,
-// CHECK-NEXT:                 flags,
-// CHECK-NEXT:             >(
+// CHECK-NEXT:             core::mem::transmute::<u16, flags>(
 // CHECK-NEXT:                 ([[T_4]] as u16) & 65280u16
 // CHECK-NEXT:                     | ((((([[T_4]] as u16) >> 0) as u8) != 0) as u16) << 0,
 // CHECK-NEXT:             )
@@ -193,8 +195,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_6:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xorl $0x00010009, {0:e}", inlateout(reg) unsafe { core::mem::transmute::<
-// CHECK-NEXT:             bits, u32 > (bits) } => [[T_6]], options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "xorl $0x00010009, {0:e}",
+// CHECK-NEXT:             inlateout(reg) unsafe { core::mem::transmute::<bits, u32>(bits) } => [[T_6]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         bits = unsafe { core::mem::transmute::<u32, bits>([[T_6]] as u32) };
 // CHECK-NEXT:     }
@@ -219,9 +222,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_7:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movl {1:e}, {0:e}", lateout(reg) [[T_7]], in (reg) unsafe {
-// CHECK-NEXT:             core::mem::transmute::< partial, u32 > (partial) }, options(pure, nomem,
-// CHECK-NEXT:             nostack, att_syntax)
+// CHECK-NEXT:             "movl {1:e}, {0:e}",
+// CHECK-NEXT:             lateout(reg) [[T_7]],
+// CHECK-NEXT:             in(reg) unsafe { core::mem::transmute::<partial, u32>(partial) },
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         seen = unsafe { core::mem::transmute::<u32, u32>([[T_7]] as u32) };
 // CHECK-NEXT:     }
@@ -231,8 +235,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_8:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movl $0x01020304, {0:e}", lateout(reg) [[T_8]], options(pure, nomem, nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             "movl $0x01020304, {0:e}",
+// CHECK-NEXT:             lateout(reg) [[T_8]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         partial = unsafe { core::mem::transmute::<u32, partial>([[T_8]] as u32) };
 // CHECK-NEXT:     }
@@ -248,14 +253,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_9:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xorl $0x01000101, {0:e}", inlateout(reg) unsafe { core::mem::transmute::<
-// CHECK-NEXT:             nested, u32 > (nested) } => [[T_9]], options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "xorl $0x01000101, {0:e}",
+// CHECK-NEXT:             inlateout(reg) unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<nested, u32>(nested)
+// CHECK-NEXT:             } => [[T_9]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         nested = unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 u32,
-// CHECK-NEXT:                 nested,
-// CHECK-NEXT:             >(
+// CHECK-NEXT:             core::mem::transmute::<u32, nested>(
 // CHECK-NEXT:                 ([[T_9]] as u32) & 65280u32
 // CHECK-NEXT:                     | ((((([[T_9]] as u32) >> 0) as u8) != 0) as u32) << 0
 // CHECK-NEXT:                     | ((((([[T_9]] as u32) >> 16) as u8) != 0) as u32) << 16
@@ -284,9 +289,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_11:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movq {1:r}, {0:r}\n\taddq $1, {0:r}", lateout(reg) [[T_11]], in (reg) unsafe {
-// CHECK-NEXT:             core::mem::transmute::< wide, u64 > (wide) }, options(pure, nomem, nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             "movq {1:r}, {0:r}\n\taddq $1, {0:r}",
+// CHECK-NEXT:             lateout(reg) [[T_11]],
+// CHECK-NEXT:             in(reg) unsafe { core::mem::transmute::<wide, u64>(wide) },
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         copy = unsafe { core::mem::transmute::<u64, wide>([[T_11]] as u64) };
 // CHECK-NEXT:     }
@@ -295,6 +301,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

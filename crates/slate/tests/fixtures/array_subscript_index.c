@@ -102,9 +102,9 @@ int main(void) {
 // CHECK-NEXT:     r.v[0] + r.v[1] + r.v[2]
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn grid() -> i32 {
-// CHECK-NEXT:     let mut g: __SlateAlign16<{{\[\[}}i32; 3]; 2]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:         core::mem::zeroed()
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut g: __SlateAlign16<{{\[\[}}i32; 3]; 2]> = __SlateAlign16(
+// CHECK-NEXT:         unsafe { core::mem::zeroed() },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..2i32 {
 // CHECK-NEXT:         for j in 0i32..3i32 {
 // CHECK-NEXT:             g.0[i as usize][j as usize] = i * 3 + j;

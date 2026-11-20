@@ -142,17 +142,22 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct guard {
 // CHECK-NEXT:     lock: *mut i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn guard_release(g: *mut guard) {
 // CHECK-NEXT:     if !unsafe { (*g).lock }.is_null() {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { (*g).lock };
@@ -161,6 +166,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn guard_take(lock: *mut i32, ok: i32) -> guard {
 // CHECK-NEXT:     let g: guard = guard {
 // CHECK-NEXT:         lock: if ok != 0 { lock } else { core::ptr::null_mut::<i32>() },
@@ -173,6 +179,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     return g;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn set_value(lock: *mut i32, slot: &mut i32, value: i32, ok: i32) -> i32 {
 // CHECK-NEXT:     let mut scope: core::mem::MaybeUninit<guard> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut guard = core::ptr::addr_of_mut!(scope) as *mut guard;
@@ -201,6 +208,7 @@ int main(void) {
 // CHECK-NEXT:         return ret;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn read_value(lock: *mut i32, slot: &i32) -> i32 {
 // CHECK-NEXT:     let mut scope: core::mem::MaybeUninit<guard> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_0]]: *mut guard = core::ptr::addr_of_mut!(scope) as *mut guard;
@@ -226,9 +234,11 @@ int main(void) {
 // CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn guard_lock_ptr(g: &guard) -> *mut i32 {
 // CHECK-NEXT:     unsafe { (*(g as *const guard)).lock }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn locked_by_address(lock: *mut i32, slot: *mut i32) -> i32 {
 // CHECK-NEXT:     let mut scope: core::mem::MaybeUninit<guard> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_1:__slate_slot_[0-9]+]]: *mut guard = core::ptr::addr_of_mut!(scope) as *mut guard;
@@ -244,7 +254,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_1]], guard_take(lock, 1i32));
 // CHECK-NEXT:         __slate_cleanup_armed_3.set(true);
-// CHECK-NEXT:         if !guard_lock_ptr(&(*core::ptr::addr_of_mut!(* [[SLATE_SLOT_1]]))).is_null() {
+// CHECK-NEXT:         if !guard_lock_ptr(&(*core::ptr::addr_of_mut!(*[[SLATE_SLOT_1]]))).is_null() {
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 *slot = *slot + 1;
 // CHECK-NEXT:             }
@@ -254,6 +264,7 @@ int main(void) {
 // CHECK-NEXT:         return *lock;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn free_box(p: *mut *mut i32) {
 // CHECK-NEXT:     if !unsafe { *p }.is_null() {
 // CHECK-NEXT:         unsafe {
@@ -261,6 +272,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn reassigned(r#box: *mut i32, pick: i32) -> i32 {
 // CHECK-NEXT:     let mut owned: core::mem::MaybeUninit<*mut i32> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_0]]: *mut *mut i32 = core::ptr::addr_of_mut!(owned) as *mut *mut i32;
@@ -288,10 +300,13 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut order: __SlateAlign16<[i8; 32]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     core::mem::zeroed()
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut order: __SlateAlign16<[i8; 32]> = __SlateAlign16(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut order_len: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn note(c: *mut i8) {
 // CHECK-NEXT:     let [[V_0]]: i32 = unsafe { order_len };
 // CHECK-NEXT:     unsafe {
@@ -301,6 +316,7 @@ int main(void) {
 // CHECK-NEXT:         order.0[[[V_0]] as usize] = *c;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn nested(outer_lock: *mut i32, inner_lock: *mut i32, mode: i32) -> i32 {
 // CHECK-NEXT:     let mut b: core::mem::MaybeUninit<i8> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_2:__slate_slot_[0-9]+]]: *mut i8 = core::ptr::addr_of_mut!(b) as *mut i8;
@@ -401,6 +417,7 @@ int main(void) {
 // CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn loop_guards(counter: *mut i32, n: i32) -> i32 {
 // CHECK-NEXT:     let mut c: core::mem::MaybeUninit<i8> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_2]]: *mut i8 = core::ptr::addr_of_mut!(c) as *mut i8;
@@ -467,6 +484,7 @@ int main(void) {
 // CHECK-NEXT:         return total;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut outer: i32 = 0;
 // CHECK-NEXT:     let mut inner: i32 = 0;
@@ -542,6 +560,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {}", e, r#box);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

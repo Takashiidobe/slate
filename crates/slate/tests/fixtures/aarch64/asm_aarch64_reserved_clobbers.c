@@ -48,61 +48,77 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN aarch64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn through_x19(mut value: i64) -> i64 {
 // CHECK-NEXT:     let mut result: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "mov {2:x}, x19\nmov x19, {1:x}\n\tadd x19, x19, #1\n\tmov {0:x}, x19\nmov x19, {2:x}",
-// CHECK-NEXT:             lateout(reg) [[T_0]], in (reg) value as u64, out(reg) _, options(pure, nomem,
-// CHECK-NEXT:             nostack, preserves_flags)
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) value as u64,
+// CHECK-NEXT:             out(reg) _,
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn through_x29(mut value: i64) -> i64 {
 // CHECK-NEXT:     let mut result: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "mov {2:x}, x29\nmov x29, {1:x}\n\tadd {0:x}, x29, #2\nmov x29, {2:x}",
-// CHECK-NEXT:             out(reg) [[T_0]], in (reg) value as u64, out(reg) _, options(pure, nomem,
-// CHECK-NEXT:             nostack, preserves_flags)
+// CHECK-NEXT:             out(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) value as u64,
+// CHECK-NEXT:             out(reg) _,
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn through_fp(mut value: i64) -> i64 {
 // CHECK-NEXT:     let mut result: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "mov {2:x}, x29\nmov x29, {1:x}\n\tadd {0:x}, x29, #3\nmov x29, {2:x}",
-// CHECK-NEXT:             out(reg) [[T_0]], in (reg) value as u64, out(reg) _, options(pure, nomem,
-// CHECK-NEXT:             nostack, preserves_flags)
+// CHECK-NEXT:             out(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) value as u64,
+// CHECK-NEXT:             out(reg) _,
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn through_both(mut left: i64, mut right: i64) -> i64 {
 // CHECK-NEXT:     let mut result: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "mov {4:x}, x29\nmov {3:x}, x19\nmov x19, {1:x}\n\tmov x29, {2:x}\n\tadd {0:x}, x19, x29\nmov x19, {3:x}\nmov x29, {4:x}",
-// CHECK-NEXT:             out(reg) [[T_0]], in (reg) left as u64, in (reg) right as u64, out(reg) _,
-// CHECK-NEXT:             out(reg) _, options(nostack, preserves_flags)
+// CHECK-NEXT:             out(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) left as u64,
+// CHECK-NEXT:             in(reg) right as u64,
+// CHECK-NEXT:             out(reg) _,
+// CHECK-NEXT:             out(reg) _,
+// CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn recurse(depth: i64) -> i64 {
 // CHECK-NEXT:     if depth == 0 {
 // CHECK-NEXT:         return 0;
@@ -110,12 +126,14 @@ int main(void) {
 // CHECK-NEXT:     let local: i64 = depth * 3;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov {0:x}, x19\nmov x19, #0\nmov x19, {0:x}", out(reg) _, options(nostack,
-// CHECK-NEXT:             preserves_flags)
+// CHECK-NEXT:             "mov {0:x}, x19\nmov x19, #0\nmov x19, {0:x}",
+// CHECK-NEXT:             out(reg) _,
+// CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     local + recurse(depth - 1)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), through_x19(41i64)) };
@@ -134,6 +152,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

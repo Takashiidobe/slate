@@ -31,9 +31,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fmov {0:s}, {1:s}", lateout(vreg) [[T_0]], in (vreg) unsafe {
-// CHECK-NEXT:             core::mem::transmute::< f32, u32 > (value) }, options(nostack,
-// CHECK-NEXT:             preserves_flags)
+// CHECK-NEXT:             "fmov {0:s}, {1:s}",
+// CHECK-NEXT:             lateout(vreg) [[T_0]],
+// CHECK-NEXT:             in(vreg) unsafe { core::mem::transmute::<f32, u32>(value) },
+// CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, f32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
@@ -44,16 +45,19 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: core::arch::aarch64::uint8x16_t;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "orr {0:v}.16b, {1:v}.16b, {1:v}.16b", lateout(vreg_low16) [[T_0]], in
-// CHECK-NEXT:             (vreg_low16) unsafe { core::mem::transmute::< core::simd::Simd < f32, 4 >,
-// CHECK-NEXT:             core::arch::aarch64::uint8x16_t > (value) }, options(nostack,
-// CHECK-NEXT:             preserves_flags)
+// CHECK-NEXT:             "orr {0:v}.16b, {1:v}.16b, {1:v}.16b",
+// CHECK-NEXT:             lateout(vreg_low16) [[T_0]],
+// CHECK-NEXT:             in(vreg_low16) unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<f32, 4>, core::arch::aarch64::uint8x16_t>(
+// CHECK-NEXT:                     value,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 core::arch::aarch64::uint8x16_t,
-// CHECK-NEXT:                 core::simd::Simd<f32, 4>,
-// CHECK-NEXT:             >([[T_0]])
+// CHECK-NEXT:             core::mem::transmute::<core::arch::aarch64::uint8x16_t, core::simd::Simd<f32, 4>>(
+// CHECK-NEXT:                 [[T_0]],
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     return result;

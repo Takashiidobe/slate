@@ -277,10 +277,7 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
@@ -303,10 +300,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg_attr(
-// CHECK-NEXT:     unix,
-// CHECK-NEXT:     unsafe(link_section = ".text.slate_distinct.macro_values.double_it")
-// CHECK-NEXT: )]
+// CHECK-NEXT: #[cfg_attr(unix, unsafe(link_section = ".text.slate_distinct.macro_values.double_it"))]
 // CHECK-NEXT: extern "C-unwind" fn double_it(value: i32) -> i32 {
 // CHECK-NEXT:     value * 2
 // CHECK-NEXT: }
@@ -565,8 +559,9 @@ int main(void) {
 // CHECK-NEXT:                 c"%d %d\n".as_ptr(),
 // CHECK-NEXT:                 r,
 // CHECK-NEXT:                 (unsafe { cursor }
-// CHECK-NEXT:                     .offset_from((core::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32)
-// CHECK-NEXT:                     as ptrdiff_t) as i32,
+// CHECK-NEXT:                     .offset_from(
+// CHECK-NEXT:                         (core::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32,
+// CHECK-NEXT:                     ) as ptrdiff_t) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -578,7 +573,9 @@ int main(void) {
 // CHECK-NEXT:             r,
 // CHECK-NEXT:             ((unsafe {
 // CHECK-NEXT:                 unsafe { cursor }
-// CHECK-NEXT:                     .offset_from((core::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32)
+// CHECK-NEXT:                     .offset_from(
+// CHECK-NEXT:                         (core::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32,
+// CHECK-NEXT:                     )
 // CHECK-NEXT:             }) as ptrdiff_t) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
@@ -593,8 +590,10 @@ int main(void) {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %d\n".as_ptr(),
 // CHECK-NEXT:                 sum,
-// CHECK-NEXT:                 (local.offset_from((core::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32)
-// CHECK-NEXT:                     as ptrdiff_t) as i32,
+// CHECK-NEXT:                 (local
+// CHECK-NEXT:                     .offset_from(
+// CHECK-NEXT:                         (core::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32,
+// CHECK-NEXT:                     ) as ptrdiff_t) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -605,7 +604,10 @@ int main(void) {
 // CHECK-NEXT:             "{} {}",
 // CHECK-NEXT:             sum,
 // CHECK-NEXT:             ((unsafe {
-// CHECK-NEXT:                 local.offset_from((core::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32)
+// CHECK-NEXT:                 local
+// CHECK-NEXT:                     .offset_from(
+// CHECK-NEXT:                         (core::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32,
+// CHECK-NEXT:                     )
 // CHECK-NEXT:             }) as ptrdiff_t) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
@@ -642,7 +644,9 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), COUNT_CALL!(), COUNT_CALL!()) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(c"%d %d\n".as_ptr(), COUNT_CALL!(), COUNT_CALL!())
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
@@ -760,8 +764,9 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let sized: __SlateAlignLargeArray<[i32; 4]> =
-// CHECK-NEXT:         __SlateAlignLargeArray([MIN!(1i32, 2i32), 2i32, 3i32, MAX!(3i32, 4i32)]);
+// CHECK-NEXT:     let sized: __SlateAlignLargeArray<[i32; 4]> = __SlateAlignLargeArray(
+// CHECK-NEXT:         [MIN!(1i32, 2i32), 2i32, 3i32, MAX!(3i32, 4i32)],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -827,7 +832,9 @@ int main(void) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             #[cfg(windows)]
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 unsafe { slate_support::printf(c"%d\n".as_ptr(), MIN!(selector, 100i32)) };
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     slate_support::printf(c"%d\n".as_ptr(), MIN!(selector, 100i32))
+// CHECK-NEXT:                 };
 // CHECK-NEXT:                 unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             #[cfg(unix)]
@@ -1058,11 +1065,13 @@ int main(void) {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: holder = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut pair: holder = holder { count: 3, other: 4 };
 // CHECK-NEXT:     let pointer: *mut holder = core::ptr::addr_of_mut!(pair);
-// CHECK-NEXT:     let mut many: __SlateAlignLargeArray<[holder; 3]> = __SlateAlignLargeArray([
-// CHECK-NEXT:         holder { count: 1, other: 0 },
-// CHECK-NEXT:         holder { count: 2, other: 0 },
-// CHECK-NEXT:         holder { count: 2, other: 0 },
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut many: __SlateAlignLargeArray<[holder; 3]> = __SlateAlignLargeArray(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             holder { count: 1, other: 0 },
+// CHECK-NEXT:             holder { count: 2, other: 0 },
+// CHECK-NEXT:             holder { count: 2, other: 0 },
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let depth: [i32; 3] = [4, 5, 3];
 // CHECK-NEXT:     let function: Option<unsafe extern "C-unwind" fn(i32) -> i32> = Some(double_it);
 // CHECK-NEXT:     #[cfg(windows)]
@@ -1070,7 +1079,11 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(c"%d %d\n".as_ptr(), FIELD_OF!(pointer), AT!(many.0, 1i32))
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%d %d\n".as_ptr(),
+// CHECK-NEXT:                 FIELD_OF!(pointer),
+// CHECK-NEXT:                 AT!(many.0, 1i32),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
@@ -1106,10 +1119,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let made: holder = unsafe {
 // CHECK-NEXT:         *{
-// CHECK-NEXT:             [[SLATE_COMPOUND_0]] = holder {
-// CHECK-NEXT:                 count: 8,
-// CHECK-NEXT:                 other: 8 + 1,
-// CHECK-NEXT:             };
+// CHECK-NEXT:             [[SLATE_COMPOUND_0]] = holder { count: 8, other: 8 + 1 };
 // CHECK-NEXT:             core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
@@ -1152,7 +1162,9 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), pair.count, many.0[2].count) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(c"%d %d\n".as_ptr(), pair.count, many.0[2].count)
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
@@ -1173,11 +1185,7 @@ int main(void) {
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 let [[V_3]]: i32 = total;
 // CHECK-NEXT:                 total = [[V_3]] + TWICE!(i);
-// CHECK-NEXT:                 total += if NEXT_FROM__2!(cursor) > MAX!(i, 100i32) {
-// CHECK-NEXT:                     1
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     2
-// CHECK-NEXT:                 };
+// CHECK-NEXT:                 total += if NEXT_FROM__2!(cursor) > MAX!(i, 100i32) { 1 } else { 2 };
 // CHECK-NEXT:                 i += 1;
 // CHECK-NEXT:                 cursor = core::ptr::addr_of_mut!(table.0) as *mut i32;
 // CHECK-NEXT:             }
@@ -1187,12 +1195,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ASSIGN_TO {
-// CHECK-NEXT:     ($p:expr, $v:expr) => {{[{][{]}}
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *$p = $v;
+// CHECK-NEXT:     ($p:expr, $v:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *$p = $v;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             $v
 // CHECK-NEXT:         }
-// CHECK-NEXT:         $v
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! AT {
@@ -1208,19 +1218,23 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! BOTH {
-// CHECK-NEXT:     ($a:expr, $b:expr) => {{[{][{]}}
-// CHECK-NEXT:         let __v: bool = ($a) && $b;
-// CHECK-NEXT:         __v
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     ($a:expr, $b:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let __v: bool = ($a) && $b;
+// CHECK-NEXT:             __v
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! BUMP_AND {
-// CHECK-NEXT:     ($x:expr, $y:expr) => {{[{][{]}}
-// CHECK-NEXT:         let __v: i32 = $x;
-// CHECK-NEXT:         let [[V_1]]: i32 = __v + 1;
-// CHECK-NEXT:         $x = [[V_1]];
-// CHECK-NEXT:         $y
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     ($x:expr, $y:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let __v: i32 = $x;
+// CHECK-NEXT:             let [[V_1]]: i32 = __v + 1;
+// CHECK-NEXT:             $x = [[V_1]];
+// CHECK-NEXT:             $y
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! CALL_WITH {
@@ -1236,10 +1250,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! EITHER {
-// CHECK-NEXT:     ($a:expr, $b:expr) => {{[{][{]}}
-// CHECK-NEXT:         let __v: bool = ($a) || $b;
-// CHECK-NEXT:         __v
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     ($a:expr, $b:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let __v: bool = ($a) || $b;
+// CHECK-NEXT:             __v
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! FIELD_OF {
@@ -1273,47 +1289,65 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! MIN__2 {
-// CHECK-NEXT:     ($a:expr, $b:expr) => {{[{][{]}}
-// CHECK-NEXT:         let __v: i32 = if ($a) < $b { $a } else { $b };
-// CHECK-NEXT:         __v
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     ($a:expr, $b:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let __v: i32 = if ($a) < $b {
+// CHECK-NEXT:                 $a
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 $b
+// CHECK-NEXT:             };
+// CHECK-NEXT:             __v
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! NEXT {
-// CHECK-NEXT:     () => {{[{][{]}}
-// CHECK-NEXT:         let __v: *mut i32 = unsafe { cursor };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             cursor = __v.add(1);
+// CHECK-NEXT:     () => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let __v: *mut i32 = unsafe { cursor };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 cursor = __v.add(1);
+// CHECK-NEXT:             }
+// CHECK-NEXT:             unsafe { *__v }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe { *__v }
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! NEXT_FROM {
-// CHECK-NEXT:     ($p:expr) => {{[{][{]}}
-// CHECK-NEXT:         let __v: *mut i32 = $p;
-// CHECK-NEXT:         let [[V_1]]: *mut i32 = unsafe { __v.add(1) };
-// CHECK-NEXT:         $p = [[V_1]];
-// CHECK-NEXT:         unsafe { *__v }
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     ($p:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let __v: *mut i32 = $p;
+// CHECK-NEXT:             let [[V_1]]: *mut i32 = unsafe { __v.add(1) };
+// CHECK-NEXT:             $p = [[V_1]];
+// CHECK-NEXT:             unsafe { *__v }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! NEXT_FROM__2 {
-// CHECK-NEXT:     ($p:expr) => {{[{][{]}}
-// CHECK-NEXT:         let __v: *mut i32 = unsafe { $p };
-// CHECK-NEXT:         let [[V_1]]: *mut i32 = unsafe { __v.add(1) };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             $p = [[V_1]];
+// CHECK-NEXT:     ($p:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let __v: *mut i32 = unsafe { $p };
+// CHECK-NEXT:             let [[V_1]]: *mut i32 = unsafe { __v.add(1) };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 $p = [[V_1]];
+// CHECK-NEXT:             }
+// CHECK-NEXT:             unsafe { *__v }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe { *__v }
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! PICK {
-// CHECK-NEXT:     ($c:expr, $a:expr, $b:expr) => {{[{][{]}}
-// CHECK-NEXT:         let __v: i32 = if $c { $a } else { $b };
-// CHECK-NEXT:         __v
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     ($c:expr, $a:expr, $b:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let __v: i32 = if $c {
+// CHECK-NEXT:                 $a
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 $b
+// CHECK-NEXT:             };
+// CHECK-NEXT:             __v
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SMALLER {
@@ -1324,12 +1358,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! STMT_EXPR {
-// CHECK-NEXT:     ($x:expr) => {{[{][{]}}
-// CHECK-NEXT:         let mut __v: i32;
-// CHECK-NEXT:         let [[V_1]]: i32 = ($x) * 2;
-// CHECK-NEXT:         __v = [[V_1]] + 1;
-// CHECK-NEXT:         __v
-// CHECK-NEXT:     }};
+// CHECK-NEXT:     ($x:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut __v: i32;
+// CHECK-NEXT:             let [[V_1]]: i32 = ($x) * 2;
+// CHECK-NEXT:             __v = [[V_1]] + 1;
+// CHECK-NEXT:             __v
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! TWICE {
@@ -1346,11 +1382,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! WIDE_MIN {
 // CHECK-NEXT:     ($a:expr, $b:expr) => {
-// CHECK-NEXT:         if ($a) > (($b) as c_ulong) {
-// CHECK-NEXT:             ($b) as c_ulong
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             $a
-// CHECK-NEXT:         }
+// CHECK-NEXT:         if ($a) > (($b) as c_ulong) { ($b) as c_ulong } else { $a }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -1362,11 +1394,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut kept_static: i32 = 4;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut table: __SlateAlignLargeArray<[i32; 5]> =
-// CHECK-NEXT:     __SlateAlignLargeArray([5i32, 7i32, 11i32, 13i32, 17i32]);
+// CHECK-NEXT: static mut table: __SlateAlignLargeArray<[i32; 5]> = __SlateAlignLargeArray(
+// CHECK-NEXT:     [5i32, 7i32, 11i32, 13i32, 17i32],
+// CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut trace: __SlateAlignLargeArray<[i32; 16]> =
-// CHECK-NEXT:     __SlateAlignLargeArray(unsafe { core::mem::zeroed() });
+// CHECK-NEXT: static mut trace: __SlateAlignLargeArray<[i32; 16]> = __SlateAlignLargeArray(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut trace_length: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:

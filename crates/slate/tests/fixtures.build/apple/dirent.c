@@ -5,7 +5,8 @@ unsigned long entry_size(struct dirent *entry) { return sizeof(*entry); }
 char *entry_name(struct dirent *entry) { return entry->d_name; }
 
 // SLATE-FILECHECK-BEGIN x86_64-apple-darwin aarch64-apple-darwin
-// X86_64-APPLE-DARWIN: {{^}}#[repr(C)]
+// CHECK: {{^}}
+// X86_64-APPLE-DARWIN-NEXT: #[repr(C)]
 // X86_64-APPLE-DARWIN-NEXT: #[derive(Clone, Copy)]
 // X86_64-APPLE-DARWIN-NEXT: struct dirent {
 // X86_64-APPLE-DARWIN-NEXT:     d_ino: u32,
@@ -13,7 +14,7 @@ char *entry_name(struct dirent *entry) { return entry->d_name; }
 // X86_64-APPLE-DARWIN-NEXT:     d_type: u8,
 // X86_64-APPLE-DARWIN-NEXT:     d_namlen: u8,
 // X86_64-APPLE-DARWIN-NEXT:     d_name: [i8; 256],
-// AARCH64-APPLE-DARWIN: {{^}}#[unsafe(no_mangle)]
+// AARCH64-APPLE-DARWIN-NEXT: #[unsafe(no_mangle)]
 // AARCH64-APPLE-DARWIN-NEXT: extern "C-unwind" fn entry_size(entry: *mut slate_support::dirent) -> u64 {
 // AARCH64-APPLE-DARWIN-NEXT:     core::mem::size_of::<slate_support::dirent>() as u64
 // CHECK-NEXT: }

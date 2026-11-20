@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
-// CHECK-NEXT:     ".section .drectve,\"yni\"\n.ascii \" /alternatename:_missing_defined=_fallback_defined /alternatename:_missing_libc=_strlen /alternatename:_present=_fallback_unused\""
+// CHECK-NEXT:     ".section .drectve,\"yni\"\n.ascii \" /alternatename:_missing_defined=_fallback_defined /alternatename:_missing_libc=_strlen /alternatename:_present=_fallback_unused\"",
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

@@ -108,11 +108,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_1]] = *[[V_1]] - bump;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (unsafe { *c }) * 10000
-// CHECK-NEXT:         + (unsafe { (*p).x }) * 100
-// CHECK-NEXT:         + unsafe { (*p).y }
-// CHECK-NEXT:         + unsafe { *pair_a().add(0) }
-// CHECK-NEXT:         + unsafe { *pair_b().add(1) }
+// CHECK-NEXT:     (unsafe { *c }) * 10000 + (unsafe { (*p).x }) * 100 + unsafe { (*p).y }
+// CHECK-NEXT:         + unsafe { *pair_a().add(0) } + unsafe { *pair_b().add(1) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn worker(argument: *mut ()) -> i32 {

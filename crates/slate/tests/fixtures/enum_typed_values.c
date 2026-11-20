@@ -49,6 +49,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Lamp {
@@ -56,11 +57,15 @@ int main(void) {
 // CHECK-NEXT:     color: u32,
 // CHECK-NEXT:     size: u8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut favorite: u32 = 5;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut levels: [i32; 3] = [-3, -2, 7];
+// CHECK-EMPTY:
 // CHECK-NEXT: fn next(color: u32) -> u32 {
 // CHECK-NEXT:     if (color as u32) == 0 {
 // CHECK-NEXT:         return 4;
@@ -70,12 +75,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn flip(value: u32) -> u32 {
 // CHECK-NEXT:     if (value as u32) == 1 {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut lamp: Lamp = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Lamp = unsafe { core::mem::zeroed() };
@@ -95,11 +102,18 @@ int main(void) {
 // CHECK-NEXT:     let mut size: u8 = lamp.size;
 // CHECK-NEXT:     size = (((size as u8) as i32) + 3) as u8;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", sum, lamp.state as u32, lamp.color as u32, (size as u8) as i32
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         sum,
+// CHECK-NEXT:         lamp.state as u32,
+// CHECK-NEXT:         lamp.color as u32,
+// CHECK-NEXT:         (size as u8) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", (unsafe { favorite }) as u32, (unsafe { levels[0] }) as i32,
-// CHECK-NEXT:         (unsafe { levels[1] }) as i32, (unsafe { levels[2] }) as i32
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         (unsafe { favorite }) as u32,
+// CHECK-NEXT:         (unsafe { levels[0] }) as i32,
+// CHECK-NEXT:         (unsafe { levels[1] }) as i32,
+// CHECK-NEXT:         (unsafe { levels[2] }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -113,6 +127,7 @@ int main(void) {
 // CHECK-NEXT:     (((unsafe { levels[0] }) as i32) as u32).wrapping_add((unsafe { favorite }) as u32)
 // CHECK-NEXT:         as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

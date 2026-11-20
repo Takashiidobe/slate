@@ -71,8 +71,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let quick_registered: i32 = unsafe { at_quick_exit(Some(quick_handler)) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", thread_created, thread_joined, thread_result, unsafe {
-// CHECK-NEXT:         once_total }, key_created, quick_registered
+// CHECK-NEXT:         "{} {} {} {} {} {}",
+// CHECK-NEXT:         thread_created,
+// CHECK-NEXT:         thread_joined,
+// CHECK-NEXT:         thread_result,
+// CHECK-NEXT:         unsafe { once_total },
+// CHECK-NEXT:         key_created,
+// CHECK-NEXT:         quick_registered
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

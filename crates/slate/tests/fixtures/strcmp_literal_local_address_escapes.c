@@ -41,11 +41,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: use slate_support::strlen;
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn fill(out: &mut *mut i8, value: *const i8) -> i32 {
 // CHECK-NEXT:     if value.is_null() {
 // CHECK-NEXT:         return 0;
@@ -55,11 +58,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn retarget(slot: &mut *const i8) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(slot as *mut *const i8) = c"gpu".as_ptr();
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn check(value: *const i8) -> i32 {
 // CHECK-NEXT:     let mut device: *mut i8 = c"".as_ptr() as *mut i8;
 // CHECK-NEXT:     if fill(unsafe { &mut (*core::ptr::addr_of_mut!(device)) }, value) == 0 {
@@ -70,12 +75,12 @@ int main(void) {
 // CHECK-NEXT:             (device as *const i8) as *const core::ffi::c_char,
 // CHECK-NEXT:             c"cpu".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:         ) as i32
-// CHECK-NEXT:     }) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) != 0 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn check_const() -> i32 {
 // CHECK-NEXT:     let mut device: *const i8 = c"cpu".as_ptr();
 // CHECK-NEXT:     retarget(unsafe { &mut (*core::ptr::addr_of_mut!(device)) });
@@ -86,21 +91,26 @@ int main(void) {
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }) == 0) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn length_after() -> u64 {
 // CHECK-NEXT:     let mut name: *mut i8 = c"".as_ptr() as *mut i8;
 // CHECK-NEXT:     fill(unsafe { &mut (*core::ptr::addr_of_mut!(name)) }, c"numpy".as_ptr());
 // CHECK-NEXT:     unsafe { strlen((name as *const i8) as *const core::ffi::c_char) as u64 }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", check(c"cpu".as_ptr()), check(c"cuda".as_ptr()),
-// CHECK-NEXT:         check(core::ptr::null::< i8 > ())
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         check(c"cpu".as_ptr()),
+// CHECK-NEXT:         check(c"cuda".as_ptr()),
+// CHECK-NEXT:         check(core::ptr::null::<i8>())
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", check_const());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), length_after()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

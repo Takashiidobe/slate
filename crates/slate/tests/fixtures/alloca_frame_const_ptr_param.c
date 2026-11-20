@@ -20,11 +20,13 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_alloca_frame_const_ptr_param_c_3 {
 // CHECK-NEXT:     windowLog: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn use_params(
 // CHECK-NEXT:     params: &__SlateRecord_alloca_frame_const_ptr_param_c_3,
 // CHECK-NEXT:     out: &mut u32,
@@ -34,10 +36,11 @@ int main(void) {
 // CHECK-NEXT:     let diff: i64 = (unsafe { hi.offset_from(lo as *const i8) }) as i64;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(out as *mut u32) = ((*(params
-// CHECK-NEXT:             as *const __SlateRecord_alloca_frame_const_ptr_param_c_3))
-// CHECK-NEXT:             .windowLog + (diff as i32)) as u32;
+// CHECK-NEXT:             as *const __SlateRecord_alloca_frame_const_ptr_param_c_3)).windowLog
+// CHECK-NEXT:             + (diff as i32)) as u32;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut p: __SlateRecord_alloca_frame_const_ptr_param_c_3 = unsafe {
 // CHECK-NEXT:         core::mem::zeroed()
@@ -56,6 +59,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     out as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

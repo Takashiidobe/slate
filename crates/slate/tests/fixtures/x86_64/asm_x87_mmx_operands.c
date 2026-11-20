@@ -77,6 +77,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -163,36 +164,43 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // CHECK-NEXT:     fn __slate_printf__ri32_pi8_f80(_0: *const i8, _1: LongDouble) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct LongDouble([u8; 10]);
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Add for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_add(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Sub for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_sub(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Mul for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_mul(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Div for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_div(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::AddAssign for LongDouble {
 // CHECK-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -200,6 +208,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::SubAssign for LongDouble {
 // CHECK-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -207,6 +216,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::MulAssign for LongDouble {
 // CHECK-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -214,6 +224,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::DivAssign for LongDouble {
 // CHECK-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -221,49 +232,58 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Neg for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn neg(self) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_neg(self)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialEq for LongDouble {
 // CHECK-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
 // CHECK-NEXT:         __slate_f80_eq(*self, *__other)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn root(x: LongDouble) -> LongDouble {
 // CHECK-NEXT:     let mut r: LongDouble = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: LongDouble = x;
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: LongDouble = core::mem::zeroed();
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fldt ({0:r})\nfsqrt\nfstpt ({1:r})", in (reg) core::ptr::addr_of!([[T_0]]), in
-// CHECK-NEXT:             (reg) core::ptr::addr_of_mut!([[T_1]]), lateout("st(0)") _, lateout("st(1)") _,
-// CHECK-NEXT:             lateout("st(2)") _, lateout("st(3)") _, lateout("st(4)") _, lateout("st(5)")
-// CHECK-NEXT:             _, lateout("st(6)") _, lateout("st(7)") _, options(nostack, att_syntax)
+// CHECK-NEXT:             "fldt ({0:r})\nfsqrt\nfstpt ({1:r})",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_0]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!([[T_1]]),
+// CHECK-NEXT:             lateout("st(0)") _,
+// CHECK-NEXT:             lateout("st(1)") _,
+// CHECK-NEXT:             lateout("st(2)") _,
+// CHECK-NEXT:             lateout("st(3)") _,
+// CHECK-NEXT:             lateout("st(4)") _,
+// CHECK-NEXT:             lateout("st(5)") _,
+// CHECK-NEXT:             lateout("st(6)") _,
+// CHECK-NEXT:             lateout("st(7)") _,
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         r = [[T_1]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn arctan2(y: LongDouble, x: LongDouble) -> LongDouble {
 // CHECK-NEXT:     let mut r: LongDouble = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -271,32 +291,50 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_1]]: LongDouble = core::mem::zeroed();
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: LongDouble = y;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fldt ({2:r})\nfldt ({0:r})\nfpatan\nfstpt ({1:r})", in (reg)
-// CHECK-NEXT:             core::ptr::addr_of!([[T_0]]), in (reg) core::ptr::addr_of_mut!([[T_1]]), in (reg)
-// CHECK-NEXT:             core::ptr::addr_of!([[T_2]]), lateout("st(0)") _, lateout("st(1)") _,
-// CHECK-NEXT:             lateout("st(2)") _, lateout("st(3)") _, lateout("st(4)") _, lateout("st(5)")
-// CHECK-NEXT:             _, lateout("st(6)") _, lateout("st(7)") _, options(nostack, att_syntax)
+// CHECK-NEXT:             "fldt ({2:r})\nfldt ({0:r})\nfpatan\nfstpt ({1:r})",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_0]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!([[T_1]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_2]]),
+// CHECK-NEXT:             lateout("st(0)") _,
+// CHECK-NEXT:             lateout("st(1)") _,
+// CHECK-NEXT:             lateout("st(2)") _,
+// CHECK-NEXT:             lateout("st(3)") _,
+// CHECK-NEXT:             lateout("st(4)") _,
+// CHECK-NEXT:             lateout("st(5)") _,
+// CHECK-NEXT:             lateout("st(6)") _,
+// CHECK-NEXT:             lateout("st(7)") _,
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         r = [[T_1]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sincos(x: f64, s: &mut f64, c: &mut f64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: f64 = x;
 // CHECK-NEXT:         let mut [[T_1]]: f64 = core::mem::zeroed();
 // CHECK-NEXT:         let mut [[T_2]]: f64 = core::mem::zeroed();
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fldl ({0:r})\nfsincos\nfstpl ({1:r})\nfstpl ({2:r})", in (reg)
-// CHECK-NEXT:             core::ptr::addr_of!([[T_0]]), in (reg) core::ptr::addr_of_mut!([[T_1]]), in (reg)
-// CHECK-NEXT:             core::ptr::addr_of_mut!([[T_2]]), lateout("st(0)") _, lateout("st(1)") _,
-// CHECK-NEXT:             lateout("st(2)") _, lateout("st(3)") _, lateout("st(4)") _, lateout("st(5)")
-// CHECK-NEXT:             _, lateout("st(6)") _, lateout("st(7)") _, options(nostack, att_syntax)
+// CHECK-NEXT:             "fldl ({0:r})\nfsincos\nfstpl ({1:r})\nfstpl ({2:r})",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_0]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!([[T_1]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!([[T_2]]),
+// CHECK-NEXT:             lateout("st(0)") _,
+// CHECK-NEXT:             lateout("st(1)") _,
+// CHECK-NEXT:             lateout("st(2)") _,
+// CHECK-NEXT:             lateout("st(3)") _,
+// CHECK-NEXT:             lateout("st(4)") _,
+// CHECK-NEXT:             lateout("st(5)") _,
+// CHECK-NEXT:             lateout("st(6)") _,
+// CHECK-NEXT:             lateout("st(7)") _,
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         *(c as *mut f64) = [[T_1]];
 // CHECK-NEXT:         *(s as *mut f64) = [[T_2]];
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn below(a: LongDouble, b: LongDouble) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     unsafe {
@@ -305,32 +343,48 @@ int main(void) {
 // CHECK-NEXT:         let [[T_2]]: LongDouble = b;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "fldt ({2:r})\nfldt ({1:r})\nfucomi %st(1), %st\nsetb {0}\nfstp %st(0)\nfstp %st(0)",
-// CHECK-NEXT:             lateout(reg_byte) [[T_0]], in (reg) core::ptr::addr_of!([[T_1]]), in (reg)
-// CHECK-NEXT:             core::ptr::addr_of!([[T_2]]), lateout("st(0)") _, lateout("st(1)") _,
-// CHECK-NEXT:             lateout("st(2)") _, lateout("st(3)") _, lateout("st(4)") _, lateout("st(5)")
-// CHECK-NEXT:             _, lateout("st(6)") _, lateout("st(7)") _, options(pure, readonly, nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             lateout(reg_byte) [[T_0]],
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_1]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_2]]),
+// CHECK-NEXT:             lateout("st(0)") _,
+// CHECK-NEXT:             lateout("st(1)") _,
+// CHECK-NEXT:             lateout("st(2)") _,
+// CHECK-NEXT:             lateout("st(3)") _,
+// CHECK-NEXT:             lateout("st(4)") _,
+// CHECK-NEXT:             lateout("st(5)") _,
+// CHECK-NEXT:             lateout("st(6)") _,
+// CHECK-NEXT:             lateout("st(7)") _,
+// CHECK-NEXT:             options(pure, readonly, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn square(x: f32) -> f32 {
 // CHECK-NEXT:     let mut r: f32 = 0 as f32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut [[T_0]]: f32 = core::mem::zeroed();
 // CHECK-NEXT:         let [[T_1]]: f32 = x;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "flds ({1:r})\nfld %st\n\tfmul %st(0), %st\nfstps ({0:r})\nfstp %st(0)", in
-// CHECK-NEXT:             (reg) core::ptr::addr_of_mut!([[T_0]]), in (reg) core::ptr::addr_of!([[T_1]]),
-// CHECK-NEXT:             lateout("st(0)") _, lateout("st(1)") _, lateout("st(2)") _, lateout("st(3)")
-// CHECK-NEXT:             _, lateout("st(4)") _, lateout("st(5)") _, lateout("st(6)") _,
-// CHECK-NEXT:             lateout("st(7)") _, options(nostack, att_syntax)
+// CHECK-NEXT:             "flds ({1:r})\nfld %st\n\tfmul %st(0), %st\nfstps ({0:r})\nfstp %st(0)",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!([[T_0]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_1]]),
+// CHECK-NEXT:             lateout("st(0)") _,
+// CHECK-NEXT:             lateout("st(1)") _,
+// CHECK-NEXT:             lateout("st(2)") _,
+// CHECK-NEXT:             lateout("st(3)") _,
+// CHECK-NEXT:             lateout("st(4)") _,
+// CHECK-NEXT:             lateout("st(5)") _,
+// CHECK-NEXT:             lateout("st(6)") _,
+// CHECK-NEXT:             lateout("st(7)") _,
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         r = [[T_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sum3(a: LongDouble, b: LongDouble, c: LongDouble) -> LongDouble {
 // CHECK-NEXT:     let mut r: LongDouble = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -340,45 +394,71 @@ int main(void) {
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]]: LongDouble = b;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "fldt ({2:r})\nfldt ({3:r})\nfldt ({0:r})\nfadd %st(2), %st\n\tfadd %st(1), %st\nfstpt ({1:r})\nfstp %st(0)\nfstp %st(0)",
-// CHECK-NEXT:             in (reg) core::ptr::addr_of!([[T_0]]), in (reg) core::ptr::addr_of_mut!([[T_1]]),
-// CHECK-NEXT:             in (reg) core::ptr::addr_of!([[T_2]]), in (reg) core::ptr::addr_of!([[T_3]]),
-// CHECK-NEXT:             lateout("st(0)") _, lateout("st(1)") _, lateout("st(2)") _, lateout("st(3)")
-// CHECK-NEXT:             _, lateout("st(4)") _, lateout("st(5)") _, lateout("st(6)") _,
-// CHECK-NEXT:             lateout("st(7)") _, options(nostack, att_syntax)
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_0]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!([[T_1]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_2]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_3]]),
+// CHECK-NEXT:             lateout("st(0)") _,
+// CHECK-NEXT:             lateout("st(1)") _,
+// CHECK-NEXT:             lateout("st(2)") _,
+// CHECK-NEXT:             lateout("st(3)") _,
+// CHECK-NEXT:             lateout("st(4)") _,
+// CHECK-NEXT:             lateout("st(5)") _,
+// CHECK-NEXT:             lateout("st(6)") _,
+// CHECK-NEXT:             lateout("st(7)") _,
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         r = [[T_1]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn from_int(mut i: i32) -> f64 {
 // CHECK-NEXT:     let mut r: f64 = 0 as f64;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut [[T_0]]: f64 = core::mem::zeroed();
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fildl ({1:r})\nfstpl ({0:r})", in (reg) core::ptr::addr_of_mut!([[T_0]]), in
-// CHECK-NEXT:             (reg) core::ptr::addr_of!(i), lateout("st(0)") _, lateout("st(1)") _,
-// CHECK-NEXT:             lateout("st(2)") _, lateout("st(3)") _, lateout("st(4)") _, lateout("st(5)")
-// CHECK-NEXT:             _, lateout("st(6)") _, lateout("st(7)") _, options(nostack, att_syntax)
+// CHECK-NEXT:             "fildl ({1:r})\nfstpl ({0:r})",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!([[T_0]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!(i),
+// CHECK-NEXT:             lateout("st(0)") _,
+// CHECK-NEXT:             lateout("st(1)") _,
+// CHECK-NEXT:             lateout("st(2)") _,
+// CHECK-NEXT:             lateout("st(3)") _,
+// CHECK-NEXT:             lateout("st(4)") _,
+// CHECK-NEXT:             lateout("st(5)") _,
+// CHECK-NEXT:             lateout("st(6)") _,
+// CHECK-NEXT:             lateout("st(7)") _,
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         r = [[T_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn scale(mut x: LongDouble) -> LongDouble {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: LongDouble = x;
 // CHECK-NEXT:         let mut [[T_1]]: LongDouble = core::mem::zeroed();
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fldt ({0:r})\nfadd %st(0), %st\nfstpt ({1:r})", in (reg)
-// CHECK-NEXT:             core::ptr::addr_of!([[T_0]]), in (reg) core::ptr::addr_of_mut!([[T_1]]),
-// CHECK-NEXT:             lateout("st(0)") _, lateout("st(1)") _, lateout("st(2)") _, lateout("st(3)")
-// CHECK-NEXT:             _, lateout("st(4)") _, lateout("st(5)") _, lateout("st(6)") _,
-// CHECK-NEXT:             lateout("st(7)") _, options(nostack, att_syntax)
+// CHECK-NEXT:             "fldt ({0:r})\nfadd %st(0), %st\nfstpt ({1:r})",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_0]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!([[T_1]]),
+// CHECK-NEXT:             lateout("st(0)") _,
+// CHECK-NEXT:             lateout("st(1)") _,
+// CHECK-NEXT:             lateout("st(2)") _,
+// CHECK-NEXT:             lateout("st(3)") _,
+// CHECK-NEXT:             lateout("st(4)") _,
+// CHECK-NEXT:             lateout("st(5)") _,
+// CHECK-NEXT:             lateout("st(6)") _,
+// CHECK-NEXT:             lateout("st(7)") _,
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         x = [[T_1]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn add_words(mut a: u64, b: u64) -> u64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64 = a;
@@ -386,9 +466,12 @@ int main(void) {
 // CHECK-NEXT:         let [[T_2]]: u64 = b;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movq ({0:r}), %mm0\nmovq ({2:r}), %mm1\npaddw %mm1, %mm0\nmovq %mm0, ({1:r})",
-// CHECK-NEXT:             in (reg) core::ptr::addr_of!([[T_0]]), in (reg) core::ptr::addr_of_mut!([[T_1]]),
-// CHECK-NEXT:             in (reg) core::ptr::addr_of!([[T_2]]), lateout("mm0") _, lateout("mm1") _,
-// CHECK-NEXT:             options(nostack, att_syntax)
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_0]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!([[T_1]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_2]]),
+// CHECK-NEXT:             lateout("mm0") _,
+// CHECK-NEXT:             lateout("mm1") _,
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         a = [[T_1]];
 // CHECK-NEXT:     }
@@ -397,6 +480,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn add_dwords(mut a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: i32 = a;
@@ -404,9 +488,12 @@ int main(void) {
 // CHECK-NEXT:         let [[T_2]]: i32 = b;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movd ({0:r}), %mm0\nmovd ({2:r}), %mm1\npaddd %mm1, %mm0\nmovd %mm0, ({1:r})",
-// CHECK-NEXT:             in (reg) core::ptr::addr_of!([[T_0]]), in (reg) core::ptr::addr_of_mut!([[T_1]]),
-// CHECK-NEXT:             in (reg) core::ptr::addr_of!([[T_2]]), lateout("mm0") _, lateout("mm1") _,
-// CHECK-NEXT:             options(nostack, att_syntax)
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_0]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!([[T_1]]),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_2]]),
+// CHECK-NEXT:             lateout("mm0") _,
+// CHECK-NEXT:             lateout("mm1") _,
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         a = [[T_1]];
 // CHECK-NEXT:     }
@@ -415,6 +502,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut s: f64 = 0 as f64;
 // CHECK-NEXT:     let mut c: f64 = 0 as f64;
@@ -446,9 +534,15 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.12f %.12f\n".as_ptr(), s, c) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", below(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]), LongDouble([0, 0,
-// CHECK-NEXT:         0, 0, 0, 0, 0, 128, 0, 64])), below(LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0,
-// CHECK-NEXT:         64]), LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]))
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         below(
+// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
+// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
+// CHECK-NEXT:         ),
+// CHECK-NEXT:         below(
+// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
+// CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.3f\n".as_ptr(), square(1.5f32) as f64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -483,9 +577,10 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{}", add_dwords(5i32, - 7i32));
+// CHECK-NEXT:     println!("{}", add_dwords(5i32, -7i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

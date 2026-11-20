@@ -31,11 +31,13 @@ int main(void) {
 // CHECK-NEXT:     let mut whole_unsigned: [i8; 3] = [55, 55, 0];
 // CHECK-NEXT:     let mut leading: [i8; 10] = [32, 32, 45, 49, 55, 116, 97, 105, 108, 0];
 // CHECK-NEXT:     let mut empty: [i8; 1] = [0];
-// CHECK-NEXT:     let mut large: __SlateAlign16<[i8; 31]> = __SlateAlign16([
-// CHECK-NEXT:         57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8,
-// CHECK-NEXT:         57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8,
-// CHECK-NEXT:         57i8, 57i8, 57i8, 57i8, 0i8,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut large: __SlateAlign16<[i8; 31]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8,
+// CHECK-NEXT:             57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8, 57i8,
+// CHECK-NEXT:             57i8, 57i8, 57i8, 57i8, 0i8,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut flt: [i8; 13] = [32, 32, 45, 51, 46, 53, 101, 50, 114, 101, 115, 116, 0];
 // CHECK-NEXT:     let mut end_source: [i8; 7] = [49, 50, 116, 97, 105, 108, 0];
 // CHECK-NEXT:     let mut end: *mut i8 = core::ptr::null_mut::<i8>();

@@ -90,19 +90,21 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn ignore_rest(first: i32, __va_args: ...) -> i32 {
 // CHECK-NEXT:     first * 3
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn promoted(count: i32, mut __va_args: ...) -> f64 {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: f64 = 0i32 as f64;
 // CHECK-NEXT:     for i in 0..count {
@@ -113,13 +115,13 @@ int main(void) {
 // CHECK-NEXT:     let small: i32 = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:     total + (letter as f64) + (small as f64)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn pick(index: i32, mut __va_args: ...) -> *const i8 {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut chosen: *const i8 = core::ptr::null::<i8>();
 // CHECK-NEXT:     let mut i: i32 = 0;
@@ -129,24 +131,25 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     chosen
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn next_pair(ap: &mut core::ffi::VaList<'static>) -> i32 {
 // CHECK-NEXT:     let left: i32 = unsafe {
-// CHECK-NEXT:         (*core::ptr::addr_of_mut!(* (ap as * mut core::ffi::VaList <'static >)))
+// CHECK-NEXT:         (*core::ptr::addr_of_mut!(*(ap as *mut core::ffi::VaList<'static>)))
 // CHECK-NEXT:             .next_arg::<i32>()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let right: i32 = unsafe {
-// CHECK-NEXT:         (*core::ptr::addr_of_mut!(* (ap as * mut core::ffi::VaList <'static >)))
+// CHECK-NEXT:         (*core::ptr::addr_of_mut!(*(ap as *mut core::ffi::VaList<'static>)))
 // CHECK-NEXT:             .next_arg::<i32>()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     left * right
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn dot(pairs: i32, mut __va_args: ...) -> i32 {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..pairs {
@@ -155,13 +158,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum_longs(mut count: i32, mut __va_args: ...) -> i64 {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     loop {
@@ -175,13 +178,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn chain(seed: i32, mut __va_args: ...) -> i64 {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let extra: i64 = unsafe { ap.next_arg::<i64>() };
 // CHECK-NEXT:     let mask: u64 = unsafe { ap.next_arg::<u64>() };
@@ -189,17 +192,18 @@ int main(void) {
 // CHECK-NEXT:         + ((unsafe { ignore_rest(seed, 1i32, 2.0f64, c"three".as_ptr() as *mut i8) })
 // CHECK-NEXT:             as i64)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn same_pointer(first: *mut (), mut __va_args: ...) -> *mut () {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let second: *mut () = unsafe { ap.next_arg::<*mut ()>() };
 // CHECK-NEXT:     if second == first { first } else { second }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let c: i8 = 65;
 // CHECK-NEXT:     let s: i16 = -12;
@@ -238,11 +242,17 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", unsafe { * (same_pointer(core::ptr::addr_of_mut!(value) as * mut (),
-// CHECK-NEXT:         core::ptr::addr_of_mut!(value)) as * mut i32) }
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *(same_pointer(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(value) as *mut (),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(value),
+// CHECK-NEXT:             ) as *mut i32)
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     (unsafe { dot(1i32, 6i32, 7i32) }) % 40
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

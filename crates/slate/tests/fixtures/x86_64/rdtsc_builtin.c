@@ -20,10 +20,12 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.x86.rdtsc"]
 // CHECK-NEXT:     fn __slate_intrinsic_9e72945d5c6a2d09() -> u64;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn elapsed() -> u64 {
 // CHECK-NEXT:     let start: u64 = unsafe { __slate_intrinsic_9e72945d5c6a2d09() };
 // CHECK-NEXT:     let mut sink: i32 = 0;
@@ -33,11 +35,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { __slate_intrinsic_9e72945d5c6a2d09() }.wrapping_sub(start)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let ticks: u64 = elapsed();
 // CHECK-NEXT:     println!("{}", (ticks > 0 && ticks < 1099511627776u64) as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

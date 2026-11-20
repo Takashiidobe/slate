@@ -61,50 +61,75 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Point {
 // CHECK-NEXT:     x: i32,
 // CHECK-NEXT:     y: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign32<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(64))]
 // CHECK-NEXT: struct __SlateAlign64<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign64<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(128))]
 // CHECK-NEXT: struct __SlateAlign128<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign128<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(256))]
 // CHECK-NEXT: struct __SlateAlign256<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign256<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(4096))]
 // CHECK-NEXT: struct __SlateAlign4096<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign4096<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut counter: __SlateAlign64<i32> = __SlateAlign64(3i32);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut values: __SlateAlign32<[u32; 3]> = __SlateAlign32([4u32, 5u32, 6u32]);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut weights: __SlateAlign128<[f64; 2]> = __SlateAlign128([0.5f64, 1.5f64]);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut origin: __SlateAlign16<Point> = __SlateAlign16(Point { x: 7i32, y: 8i32 });
-// CHECK-NEXT: static mut page: __SlateAlign4096<[i8; 16]> = __SlateAlign4096(unsafe {
-// CHECK-NEXT:     core::mem::zeroed()
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut page: __SlateAlign4096<[i8; 16]> = __SlateAlign4096(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut small: __SlateAlign16<i8> = __SlateAlign16(unsafe { core::mem::zeroed() });
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut values_tail: *mut u32 = unsafe {
-// CHECK-NEXT:     core::ptr::addr_of_mut!(values.0) as *mut u32
-// CHECK-NEXT: }
+// CHECK-NEXT:         core::ptr::addr_of_mut!(values.0) as *mut u32
+// CHECK-NEXT:     }
 // CHECK-NEXT:     .wrapping_offset(2i32 as isize);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut origin_ptr: *mut Point = unsafe { core::ptr::addr_of_mut!(origin.0) };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut counter_ptr: *mut i32 = unsafe { core::ptr::addr_of_mut!(counter.0) };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn aligned(pointer: *const (), alignment: u64) -> i32 {
 // CHECK-NEXT:     ((pointer as u64) % alignment == 0) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn total(items: &[u32]) -> u32 {
 // CHECK-NEXT:     let mut sum: u32 = 0;
 // CHECK-NEXT:     for i in 0..items.len() as i32 {
@@ -112,6 +137,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bump() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls.0 = calls.0 + 1;
@@ -119,7 +145,9 @@ int main(void) {
 // CHECK-NEXT:     (unsafe { calls.0 })
 // CHECK-NEXT:         + aligned((unsafe { core::ptr::addr_of_mut!(calls.0) }) as *const (), 256u64)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: __SlateAlign256<i32> = __SlateAlign256(unsafe { core::mem::zeroed() });
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         counter.0 = counter.0 + 10;
@@ -158,13 +186,22 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bump();
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", aligned((unsafe { core::ptr::addr_of_mut!(counter.0) }) as *
-// CHECK-NEXT:         const (), 64u64), aligned((unsafe { core::ptr::addr_of_mut!(values.0) as * mut
-// CHECK-NEXT:         u32 }) as * const (), 32u64), aligned((unsafe { core::ptr::addr_of_mut!(weights
-// CHECK-NEXT:         .0) as * mut f64 }) as * const (), 128u64), aligned((unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!(origin.0) }) as * const (), 16u64), aligned((unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!(page.0) as * mut i8 }) as * const (), 4096u64),
-// CHECK-NEXT:         aligned((unsafe { core::ptr::addr_of_mut!(small.0) }) as * const (), 16u64)
+// CHECK-NEXT:         "{} {} {} {} {} {}",
+// CHECK-NEXT:         aligned((unsafe { core::ptr::addr_of_mut!(counter.0) }) as *const (), 64u64),
+// CHECK-NEXT:         aligned(
+// CHECK-NEXT:             (unsafe { core::ptr::addr_of_mut!(values.0) as *mut u32 }) as *const (),
+// CHECK-NEXT:             32u64,
+// CHECK-NEXT:         ),
+// CHECK-NEXT:         aligned(
+// CHECK-NEXT:             (unsafe { core::ptr::addr_of_mut!(weights.0) as *mut f64 }) as *const (),
+// CHECK-NEXT:             128u64,
+// CHECK-NEXT:         ),
+// CHECK-NEXT:         aligned((unsafe { core::ptr::addr_of_mut!(origin.0) }) as *const (), 16u64),
+// CHECK-NEXT:         aligned(
+// CHECK-NEXT:             (unsafe { core::ptr::addr_of_mut!(page.0) as *mut i8 }) as *const (),
+// CHECK-NEXT:             4096u64,
+// CHECK-NEXT:         ),
+// CHECK-NEXT:         aligned((unsafe { core::ptr::addr_of_mut!(small.0) }) as *const (), 16u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -208,6 +245,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     (unsafe { counter.0 }) % 9
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

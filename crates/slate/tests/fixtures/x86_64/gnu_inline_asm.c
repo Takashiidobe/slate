@@ -93,22 +93,29 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(asm_goto_with_outputs)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn gnu_basic_asm_function() -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut gnu_basic_asm_value: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // CHECK-NEXT:     ".text\n.globl gnu_basic_asm_function\n.type gnu_basic_asm_function,@function\ngnu_basic_asm_function:\nmovl $37, %eax\nret\n.size gnu_basic_asm_function,.-gnu_basic_asm_function\n",
-// CHECK-NEXT:     options(att_syntax)
+// CHECK-NEXT:     options(att_syntax),
 // CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_function_basic_asm() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movl $23, {0}(%rip)", sym gnu_basic_asm_value, options(att_syntax)
+// CHECK-NEXT:             "movl $23, {0}(%rip)",
+// CHECK-NEXT:             sym gnu_basic_asm_value,
+// CHECK-NEXT:             options(att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { gnu_basic_asm_value }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_extended_asm(mut input: i32) -> i32 {
 // CHECK-NEXT:     let mut output: i32 = 0;
 // CHECK-NEXT:     let mut tied: i32 = 0;
@@ -118,71 +125,88 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leal 3({1:e}), {0:e}", lateout(reg) [[T_0]], in (reg) input as u32,
-// CHECK-NEXT:             options(nostack, att_syntax)
+// CHECK-NEXT:             "leal 3({1:e}), {0:e}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) input as u32,
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         output = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addl $2, {0:e}", inlateout(reg) output as u32 => [[T_1]], options(nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             "addl $2, {0:e}",
+// CHECK-NEXT:             inlateout(reg) output as u32 => [[T_1]],
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         output = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "imull {1:e}, {0:e}", inlateout(reg) output as u32 => [[T_2]], in (reg) (2 as
-// CHECK-NEXT:             i32) as u32, options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "imull {1:e}, {0:e}",
+// CHECK-NEXT:             inlateout(reg) output as u32 => [[T_2]],
+// CHECK-NEXT:             in(reg) (2 as i32) as u32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         tied = unsafe { core::mem::transmute::<u32, i32>([[T_2]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movl {1:e}, {0:e}\n\taddl {2:e}, {0:e}", out(reg) [[T_3]], in (reg) tied as
-// CHECK-NEXT:             u32, in (reg) (1 as i32) as u32, options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "movl {1:e}, {0:e}\n\taddl {2:e}, {0:e}",
+// CHECK-NEXT:             out(reg) [[T_3]],
+// CHECK-NEXT:             in(reg) tied as u32,
+// CHECK-NEXT:             in(reg) (1 as i32) as u32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         early = unsafe { core::mem::transmute::<u32, i32>([[T_3]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addl ${1}, {0:e}", inlateout(reg) early as u32 => [[T_4]], const 4 as i32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "addl ${1}, {0:e}",
+// CHECK-NEXT:             inlateout(reg) early as u32 => [[T_4]],
+// CHECK-NEXT:             const 4 as i32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         early = unsafe { core::mem::transmute::<u32, i32>([[T_4]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "incl ({0:r})", in (reg) core::ptr::addr_of_mut!(memory), options(nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             "incl ({0:r})",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(memory),
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]]: u8;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "testl {1:e}, {1:e}\nsetz {0}", lateout(reg_byte) [[T_5]], in (reg) input as
-// CHECK-NEXT:             u32, options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "testl {1:e}, {1:e}\nsetz {0}",
+// CHECK-NEXT:             lateout(reg_byte) [[T_5]],
+// CHECK-NEXT:             in(reg) input as u32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         zero = unsafe { core::mem::transmute::<u32, i32>([[T_5]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     early + memory + zero
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_numeric_operands(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "subl {1:e}, {0:e}", inlateout(reg) left as u32 => [[T_0]], in (reg) right as
-// CHECK-NEXT:             u32, options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "subl {1:e}, {0:e}",
+// CHECK-NEXT:             inlateout(reg) left as u32 => [[T_0]],
+// CHECK-NEXT:             in(reg) right as u32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_local_label() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!("jmp 1f\n\t1:\n\tnop", options(nostack, att_syntax));
@@ -192,12 +216,17 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     17
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_asm_goto(mut value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "testl {0:e}, {0:e}\n\tjz {1}", in (reg) value as u32, label {
-// CHECK-NEXT:             __slate_asm_target = true; }, options(nostack, att_syntax)
+// CHECK-NEXT:             "testl {0:e}, {0:e}\n\tjz {1}",
+// CHECK-NEXT:             in(reg) value as u32,
+// CHECK-NEXT:             label {
+// CHECK-NEXT:                 __slate_asm_target = true;
+// CHECK-NEXT:             },
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         if __slate_asm_target {
 // CHECK-NEXT:             return 13;
@@ -206,6 +235,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_asm_goto_output(value: i32) -> i32 {
 // CHECK-NEXT:     let mut output: core::mem::MaybeUninit<i32> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut i32 = core::ptr::addr_of_mut!(output) as *mut i32;
@@ -214,8 +244,12 @@ int main(void) {
 // CHECK-NEXT:         let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "testl {0:e}, {0:e}\n\tjz {1}", inlateout(reg) * [[SLATE_SLOT_0]] as u32 =>
-// CHECK-NEXT:             [[T_0]], label { __slate_asm_target = true; }, options(nostack, att_syntax)
+// CHECK-NEXT:             "testl {0:e}, {0:e}\n\tjz {1}",
+// CHECK-NEXT:             inlateout(reg) *[[SLATE_SLOT_0]] as u32 => [[T_0]],
+// CHECK-NEXT:             label {
+// CHECK-NEXT:                 __slate_asm_target = true;
+// CHECK-NEXT:             },
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         *[[SLATE_SLOT_0]] = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:         if __slate_asm_target {
@@ -225,15 +259,22 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {} {}", unsafe { gnu_basic_asm_function() },
-// CHECK-NEXT:         gnu_function_basic_asm(), gnu_extended_asm(7i32), gnu_numeric_operands(19i32,
-// CHECK-NEXT:         4i32), gnu_local_label(), gnu_asm_goto(0i32), gnu_asm_goto_output(5i32),
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {}",
+// CHECK-NEXT:         unsafe { gnu_basic_asm_function() },
+// CHECK-NEXT:         gnu_function_basic_asm(),
+// CHECK-NEXT:         gnu_extended_asm(7i32),
+// CHECK-NEXT:         gnu_numeric_operands(19i32, 4i32),
+// CHECK-NEXT:         gnu_local_label(),
+// CHECK-NEXT:         gnu_asm_goto(0i32),
+// CHECK-NEXT:         gnu_asm_goto_output(5i32),
 // CHECK-NEXT:         gnu_asm_goto_output(0i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

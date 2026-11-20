@@ -42,6 +42,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Tail {
@@ -49,9 +50,11 @@ int main(void) {
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     name: [i8; 0],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut tail: __SlateStorage_tail = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: __SlateStorage_tail = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].count = 3i32;
@@ -61,10 +64,12 @@ int main(void) {
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut name_pointer: *mut i8 = unsafe {
-// CHECK-NEXT:     core::ptr::addr_of_mut!((* (core::ptr::addr_of_mut!(tail) as * mut Tail)).name)
+// CHECK-NEXT:     core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(tail) as *mut Tail)).name)
 // CHECK-NEXT:         as *mut i8
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateStorage_tail {
@@ -72,42 +77,50 @@ int main(void) {
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     name: [i8; 12],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateStorage_bytes {
 // CHECK-NEXT:     value: i16,
 // CHECK-NEXT:     bytes: [i8; 5],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateStorage_packed {
 // CHECK-NEXT:     a: i8,
 // CHECK-NEXT:     values: [i32; 3],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union Bytes {
 // CHECK-NEXT:     value: i16,
 // CHECK-NEXT:     bytes: [i8; 0],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut bytes: __SlateStorage_bytes = {
 // CHECK-NEXT:     let mut [[T_0]]: __SlateStorage_bytes = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].bytes = [1i8, 2i8, 3i8, 4i8, 5i8];
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Packed {
 // CHECK-NEXT:     a: i8,
 // CHECK-NEXT:     values: [i32; 0],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut packed: __SlateStorage_packed = {
 // CHECK-NEXT:     let mut [[T_0]]: __SlateStorage_packed = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].a = 7i8;
 // CHECK-NEXT:     [[T_0]].values = [10i32, 20i32, 30i32];
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::strlen;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu %zu\n".as_ptr(), 8u64, 2u64, 1u64) };
@@ -118,25 +131,30 @@ int main(void) {
 // CHECK-NEXT:             c"%d %c %s %s\n".as_ptr(),
 // CHECK-NEXT:             (*(core::ptr::addr_of_mut!(tail) as *mut Tail)).count,
 // CHECK-NEXT:             (*(core::ptr::addr_of_mut!(tail) as *mut Tail)).tag as i32,
-// CHECK-NEXT:             core::ptr::addr_of_mut!(
-// CHECK-NEXT:                 (* (core::ptr::addr_of_mut!(tail) as * mut Tail)).name
-// CHECK-NEXT:             ) as *mut i8,
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(tail) as *mut Tail)).name)
+// CHECK-NEXT:                 as *mut i8,
 // CHECK-NEXT:             name_pointer,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", ((unsafe { (core::ptr::addr_of_mut!((* (core::ptr::addr_of_mut!(tail) as *
-// CHECK-NEXT:         mut Tail)).name) as * mut i8).offset_from(core::ptr::addr_of_mut!(*
-// CHECK-NEXT:         (core::ptr::addr_of_mut!(tail) as * mut Tail)) as * mut i8) }) as i64) as i32
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         ((unsafe {
+// CHECK-NEXT:             (core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(tail)
+// CHECK-NEXT:                     as *mut Tail)).name) as *mut i8)
+// CHECK-NEXT:                 .offset_from(
+// CHECK-NEXT:                     core::ptr::addr_of_mut!(*(core::ptr::addr_of_mut!(tail)
+// CHECK-NEXT:                         as *mut Tail)) as *mut i8,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:         }) as i64) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let copy: Tail = unsafe { *(core::ptr::addr_of_mut!(tail) as *mut Tail) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d %c\n".as_ptr(), copy.count, copy.tag as i32) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(core::ptr::addr_of_mut!((* (core::ptr::addr_of_mut!(tail) as * mut Tail)).name)
-// CHECK-NEXT:             as *mut i8)
+// CHECK-NEXT:         *(core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(tail) as *mut Tail)).name)
+// CHECK-NEXT:                 as *mut i8)
 // CHECK-NEXT:             .add(0) = 72;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -145,36 +163,53 @@ int main(void) {
 // CHECK-NEXT:             c"%s %zu\n".as_ptr(),
 // CHECK-NEXT:             name_pointer,
 // CHECK-NEXT:             strlen(
-// CHECK-NEXT:                 ((core::ptr::addr_of_mut!(
-// CHECK-NEXT:                     (* (core::ptr::addr_of_mut!(tail) as * mut Tail)).name
-// CHECK-NEXT:                 ) as *mut i8) as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 ((core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(tail)
+// CHECK-NEXT:                     as *mut Tail)).name) as *mut i8) as *const i8)
+// CHECK-NEXT:                     as *const core::ffi::c_char,
 // CHECK-NEXT:             ) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         print!(
-// CHECK-NEXT:             "{} ", (unsafe { * (core::ptr::addr_of_mut!((*
-// CHECK-NEXT:             (core::ptr::addr_of_mut!(bytes) as * mut Bytes)).bytes) as * mut i8).offset(i
-// CHECK-NEXT:             as isize) }) as i32
+// CHECK-NEXT:             "{} ",
+// CHECK-NEXT:             (unsafe {
+// CHECK-NEXT:                 *(core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(bytes)
+// CHECK-NEXT:                         as *mut Bytes)).bytes) as *mut i8)
+// CHECK-NEXT:                     .offset(i as isize)
+// CHECK-NEXT:             }) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", (unsafe { (* (core::ptr::addr_of_mut!(bytes) as * mut Bytes)).value }) as
-// CHECK-NEXT:         i32
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         (unsafe { (*(core::ptr::addr_of_mut!(bytes) as *mut Bytes)).value }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", (unsafe { (* (core::ptr::addr_of_mut!(packed) as * mut Packed)).a
-// CHECK-NEXT:         }) as i32, unsafe { (core::ptr::addr_of_mut!((* (core::ptr::addr_of_mut!(packed)
-// CHECK-NEXT:         as * mut Packed)).values) as * mut i32).add(0).read_unaligned() }, unsafe {
-// CHECK-NEXT:         (core::ptr::addr_of_mut!((* (core::ptr::addr_of_mut!(packed) as * mut Packed))
-// CHECK-NEXT:         .values) as * mut i32).add(1).read_unaligned() }, unsafe {
-// CHECK-NEXT:         (core::ptr::addr_of_mut!((* (core::ptr::addr_of_mut!(packed) as * mut Packed))
-// CHECK-NEXT:         .values) as * mut i32).add(2).read_unaligned() }
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         (unsafe { (*(core::ptr::addr_of_mut!(packed) as *mut Packed)).a }) as i32,
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             (core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(packed)
+// CHECK-NEXT:                     as *mut Packed)).values) as *mut i32)
+// CHECK-NEXT:                 .add(0)
+// CHECK-NEXT:                 .read_unaligned()
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             (core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(packed)
+// CHECK-NEXT:                     as *mut Packed)).values) as *mut i32)
+// CHECK-NEXT:                 .add(1)
+// CHECK-NEXT:                 .read_unaligned()
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             (core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(packed)
+// CHECK-NEXT:                     as *mut Packed)).values) as *mut i32)
+// CHECK-NEXT:                 .add(2)
+// CHECK-NEXT:                 .read_unaligned()
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

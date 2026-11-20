@@ -50,31 +50,32 @@ int main() {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let ops: ops = ops {
 // CHECK-NEXT:         apply: unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>,
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn() -> i32>,
-// CHECK-NEXT:             >(Some(add))
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, Option<unsafe extern "C-unwind" fn() -> i32>>(
+// CHECK-NEXT:                 Some(add),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     };
-// CHECK-NEXT:     println!("{} {}", (-7i32).wrapping_abs(), unsafe {
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         (-7i32).wrapping_abs(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn() -> i32>,
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:             >(absolute)
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:                         absolute,
+// CHECK-NEXT:                     )
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 .unwrap()(-9i32)
 // CHECK-NEXT:         }
-// CHECK-NEXT:         .unwrap()(-9i32)
-// CHECK-NEXT:     });
+// CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %.1f\n".as_ptr(),
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn() -> i32>,
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>,
-// CHECK-NEXT:                 >(ops.apply)
-// CHECK-NEXT:             }
-// CHECK-NEXT:             .unwrap()(3i32, 4i32),
+// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
+// CHECK-NEXT:                         ops.apply,
+// CHECK-NEXT:                     )
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 .unwrap()(3i32, 4i32),
 // CHECK-NEXT:             atof(c"2.5".as_ptr() as *mut i8),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

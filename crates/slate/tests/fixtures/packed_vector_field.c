@@ -31,6 +31,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct T {
@@ -38,34 +39,37 @@ int main(void) {
 // CHECK-NEXT:     v: core::simd::Simd<i64, 2>,
 // CHECK-NEXT:     words: [i32; 3],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::calloc;
 // CHECK-NEXT: use slate_support::free;
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bump(t: *mut T) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = 1;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i64 = unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!((* t).v).read_unaligned()[[[V_0]] as usize]
+// CHECK-NEXT:         core::ptr::addr_of!((*t).v).read_unaligned()[[[V_0]] as usize]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i64 = [[V_1]] + 5;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = [[V_2]];
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::ptr::addr_of_mut!((* t).v);
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::ptr::addr_of_mut!((*t).v);
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]] = [[T_1]].read_unaligned();
 // CHECK-NEXT:         [[T_2]][[[V_0]] as usize] = [[T_0]];
 // CHECK-NEXT:         [[T_1]].write_unaligned([[T_2]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (core::ptr::addr_of_mut!((* t).words) as *mut i32)
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*t).words) as *mut i32)
 // CHECK-NEXT:             .add(1)
 // CHECK-NEXT:             .write_unaligned(
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!((* t).words) as *mut i32)
-// CHECK-NEXT:                     .add(0)
-// CHECK-NEXT:                     .read_unaligned() + 1,
+// CHECK-NEXT:                 (core::ptr::addr_of_mut!((*t).words) as *mut i32).add(0).read_unaligned()
+// CHECK-NEXT:                     + 1,
 // CHECK-NEXT:             );
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let t: *mut T = (unsafe { calloc(2u64 as usize, 29u64 as usize) as *mut () })
 // CHECK-NEXT:         as *mut T;
@@ -74,18 +78,18 @@ int main(void) {
 // CHECK-NEXT:         (*t).v = seed;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (core::ptr::addr_of_mut!((* t).words) as *mut i32).add(0).write_unaligned(9i32);
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*t).words) as *mut i32).add(0).write_unaligned(9i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bump(t);
-// CHECK-NEXT:     let tail: *mut i32 = unsafe { core::ptr::addr_of_mut!((* t).words) as *mut i32 };
+// CHECK-NEXT:     let tail: *mut i32 = unsafe { core::ptr::addr_of_mut!((*t).words) as *mut i32 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld %lld %d %d %d\n".as_ptr(),
-// CHECK-NEXT:             core::ptr::addr_of!((* t).v).read_unaligned()[0],
-// CHECK-NEXT:             core::ptr::addr_of!((* t).v).read_unaligned()[1],
-// CHECK-NEXT:             (core::ptr::addr_of_mut!((* t).words) as *mut i32).add(0).read_unaligned(),
-// CHECK-NEXT:             (core::ptr::addr_of_mut!((* t).words) as *mut i32).add(1).read_unaligned(),
+// CHECK-NEXT:             core::ptr::addr_of!((*t).v).read_unaligned()[0],
+// CHECK-NEXT:             core::ptr::addr_of!((*t).v).read_unaligned()[1],
+// CHECK-NEXT:             (core::ptr::addr_of_mut!((*t).words) as *mut i32).add(0).read_unaligned(),
+// CHECK-NEXT:             (core::ptr::addr_of_mut!((*t).words) as *mut i32).add(1).read_unaligned(),
 // CHECK-NEXT:             *tail,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -93,6 +97,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { free((t as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -30,9 +30,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn scale(n: i32, arr: *mut i32) {
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { arr.offset(i as isize) };
@@ -41,9 +43,11 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn add(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     a + b
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: [i32; 3] = [1, 2, 3];
 // CHECK-NEXT:     scale(3i32, values.as_mut_ptr() as *mut i32);
@@ -59,6 +63,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", add(3i32, 4i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

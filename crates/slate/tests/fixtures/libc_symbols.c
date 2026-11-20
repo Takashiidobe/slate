@@ -44,19 +44,23 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut optind: i32;
 // CHECK-NEXT:     static mut in6addr_any: in6_addr;
 // CHECK-NEXT:     static mut in6addr_loopback: in6_addr;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct in6_addr {
 // CHECK-NEXT:     __in6_u: __SlateRecord_in_h_225,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_in_h_225 {
@@ -64,6 +68,7 @@ int main(void) {
 // CHECK-NEXT:     __u6_addr16: [u16; 8],
 // CHECK-NEXT:     __u6_addr32: [u32; 4],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::qsort;
 // CHECK-NEXT: use slate_support::memcmp;
 // CHECK-NEXT: use slate_support::close;
@@ -71,14 +76,17 @@ int main(void) {
 // CHECK-NEXT: use slate_support::write;
 // CHECK-NEXT: use slate_support::pipe;
 // CHECK-NEXT: use slate_support::getpid;
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn compare(left: *const (), right: *const ()) -> i32 {
 // CHECK-NEXT:     let a: i32 = unsafe { *(left as *const i32) };
 // CHECK-NEXT:     let b: i32 = unsafe { *(right as *const i32) };
 // CHECK-NEXT:     ((a > b) as i32) - ((a < b) as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn limit_value(value: u64) -> u64 {
 // CHECK-NEXT:     value.wrapping_add(1)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: [i32; 3] = [3, 1, 2];
 // CHECK-NEXT:     unsafe {
@@ -87,31 +95,24 @@ int main(void) {
 // CHECK-NEXT:             3u64 as usize,
 // CHECK-NEXT:             (core::mem::size_of::<i32>() as u64) as usize,
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
-// CHECK-NEXT:                     Option<
-// CHECK-NEXT:                         unsafe extern "C" fn(
-// CHECK-NEXT:                             *const core::ffi::c_void,
-// CHECK-NEXT:                             *const core::ffi::c_void,
-// CHECK-NEXT:                         ) -> i32,
-// CHECK-NEXT:                     >,
-// CHECK-NEXT:                 >(Some(compare))
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>, Option<unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void) -> i32>>(
+// CHECK-NEXT:                     Some(compare),
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let process_id: Option<unsafe extern "C-unwind" fn() -> i32> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *const (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn() -> i32>,
-// CHECK-NEXT:         >(getpid as *const ())
+// CHECK-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn() -> i32>>(
+// CHECK-NEXT:             getpid as *const (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         optind = 7;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut byte: i8 = 120;
 // CHECK-NEXT:     let mut descriptors: [i32; 2] = [0i32; 2];
-// CHECK-NEXT:     if (unsafe { pipe((descriptors.as_mut_ptr() as *mut i32) as *mut i32) as i32 }) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     if (unsafe { pipe((descriptors.as_mut_ptr() as *mut i32) as *mut i32) as i32 })
+// CHECK-NEXT:         != 0 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let written: i64 = unsafe {
@@ -149,17 +150,27 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", ((unsafe { memcmp((core::ptr::addr_of!(in6addr_any) as * const ()) as *
-// CHECK-NEXT:         const core::ffi::c_void, (core::ptr::addr_of!(in6addr_loopback) as * const ()) as
-// CHECK-NEXT:         * const core::ffi::c_void, (core::mem::size_of::< in6_addr > () as u64) as usize)
-// CHECK-NEXT:         as i32 }) != 0) as i32
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         ((unsafe {
+// CHECK-NEXT:             memcmp(
+// CHECK-NEXT:                 (core::ptr::addr_of!(in6addr_any) as *const ())
+// CHECK-NEXT:                     as *const core::ffi::c_void,
+// CHECK-NEXT:                 (core::ptr::addr_of!(in6addr_loopback) as *const ())
+// CHECK-NEXT:                     as *const core::ffi::c_void,
+// CHECK-NEXT:                 (core::mem::size_of::<in6_addr>() as u64) as usize,
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         }) != 0) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", slate_support::EOF as i32, - (slate_support::EOF as i32),
-// CHECK-NEXT:         (slate_support::EOF as i32) + 1, ((slate_support::EOF as i32) == - 1) as i32
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         slate_support::EOF as i32,
+// CHECK-NEXT:         -(slate_support::EOF as i32),
+// CHECK-NEXT:         (slate_support::EOF as i32) + 1,
+// CHECK-NEXT:         ((slate_support::EOF as i32) == -1) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

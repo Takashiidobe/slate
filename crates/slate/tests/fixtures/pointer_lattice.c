@@ -30,16 +30,20 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bump(p: &mut i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(p as *mut i32) = *(p as *mut i32) + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn peek(p: &i32) -> i32 {
 // CHECK-NEXT:     (unsafe { *(p as *const i32) }) + 1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn use_and_free(mut y: Box<i32>) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(&mut (*y) as *mut i32) = *(&mut (*y) as *mut i32) + 1;
@@ -47,6 +51,7 @@ int main(void) {
 // CHECK-NEXT:     let v: i32 = unsafe { *(&mut (*y) as *mut i32) };
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: i32 = 1;
 // CHECK-NEXT:     bump(unsafe { &mut (*core::ptr::addr_of_mut!(a)) });
@@ -62,6 +67,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {} {}", a, peeked, v);
 // CHECK-NEXT:     a + peeked + v
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

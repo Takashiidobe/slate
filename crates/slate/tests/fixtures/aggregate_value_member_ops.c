@@ -43,37 +43,45 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Pair {
 // CHECK-NEXT:     left: i32,
 // CHECK-NEXT:     right: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Nested {
 // CHECK-NEXT:     inner: Pair,
 // CHECK-NEXT:     tag: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct WithArray {
 // CHECK-NEXT:     data: [i32; 3],
 // CHECK-NEXT:     marker: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn take_pair(p: Pair) -> i32 {
 // CHECK-NEXT:     p.left * 10 + p.right
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn replace_left(mut p: Pair, v: i32) -> Pair {
 // CHECK-NEXT:     p.left = v;
 // CHECK-NEXT:     return p;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn nested_total(n: Nested) -> i32 {
 // CHECK-NEXT:     n.inner.left + n.inner.right + n.tag
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn array_value(w: WithArray) -> i32 {
 // CHECK-NEXT:     w.data[1] + w.marker
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let p: Pair = Pair { left: 2, right: 3 };
 // CHECK-NEXT:     let q: Pair = replace_left(p, 7i32);
@@ -91,6 +99,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", array_value(w));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -82,7 +82,12 @@ int main(void) {
 // CHECK-NEXT:     let mut v: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!("movq {1}+8(%rip), {0:r}", lateout(reg) [[T_0]], sym ops, options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "movq {1}+8(%rip), {0:r}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             sym ops,
+// CHECK-NEXT:             options(nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
@@ -92,7 +97,12 @@ int main(void) {
 // CHECK-NEXT:     let mut v: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!("movq {1}+32(%rip), {0:r}", lateout(reg) [[T_0]], sym ops, options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "movq {1}+32(%rip), {0:r}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             sym ops,
+// CHECK-NEXT:             options(nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
@@ -100,13 +110,22 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump_local() {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("addq $1, {0}+8(%rip)", sym local_ops, options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "addq $1, {0}+8(%rip)",
+// CHECK-NEXT:             sym local_ops,
+// CHECK-NEXT:             options(nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn store_local(mut v: i64) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("movq {1:r}, {0}+40(%rip)", sym local_ops, in(reg) v as u64, options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "movq {1:r}, {0}+40(%rip)",
+// CHECK-NEXT:             sym local_ops,
+// CHECK-NEXT:             in(reg) v as u64,
+// CHECK-NEXT:             options(nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -114,7 +133,12 @@ int main(void) {
 // CHECK-NEXT:     let mut v: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!("movq ({1:r}), {0:r}", lateout(reg) [[T_0]], in(reg) p, options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "movq ({1:r}), {0:r}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) p,
+// CHECK-NEXT:             options(nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v

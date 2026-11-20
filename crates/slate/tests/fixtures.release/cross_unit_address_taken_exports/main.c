@@ -37,7 +37,11 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn apply(op: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, a: i32, b: i32) -> i32 {
+// CHECK-NEXT: fn apply(
+// CHECK-NEXT:     op: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>,
+// CHECK-NEXT:     a: i32,
+// CHECK-NEXT:     b: i32,
+// CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { op.unwrap()(a, b) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -50,7 +54,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { bump(core::ptr::addr_of_mut!(c), add(2i32, 3i32)) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         unsafe { api.bump }.unwrap()(
+// CHECK-NEXT:         unsafe { api.bump }
+// CHECK-NEXT:             .unwrap()(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(c),
 // CHECK-NEXT:             unsafe { api.sub }.unwrap()(10i32, 4i32),
 // CHECK-NEXT:         )
@@ -60,17 +65,22 @@ int main(void) {
 // CHECK-NEXT:         c.value,
 // CHECK-NEXT:         apply(
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     *const (),
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>,
-// CHECK-NEXT:                 >(sub as *const ())
+// CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
+// CHECK-NEXT:                     sub as *const (),
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:             9i32,
-// CHECK-NEXT:             2i32
+// CHECK-NEXT:             2i32,
 // CHECK-NEXT:         ),
 // CHECK-NEXT:         apply(unsafe { api.add }, 4i32, 5i32)
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%s %s\n".as_ptr(), name(), unsafe { api.name }.unwrap()()) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%s %s\n".as_ptr(),
+// CHECK-NEXT:             name(),
+// CHECK-NEXT:             unsafe { api.name }.unwrap()(),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",

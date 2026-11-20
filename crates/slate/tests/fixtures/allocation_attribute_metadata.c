@@ -33,18 +33,23 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::calloc;
 // CHECK-NEXT: use slate_support::free;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn allocate(size: u64, alignment: u64) -> *mut () {
 // CHECK-NEXT:     unsafe { malloc(size as usize) as *mut () }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn allocate_array(count: u64, size: u64) -> *mut () {
 // CHECK-NEXT:     unsafe { calloc(count as usize, size as usize) as *mut () }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn offset_aligned(pointer: *mut ()) -> *mut () {
 // CHECK-NEXT:     (unsafe { (pointer as *mut i8).add(4) }) as *mut ()
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let values: *mut i32 = allocate(
 // CHECK-NEXT:         3u64.wrapping_mul(core::mem::size_of::<i32>() as u64),
@@ -60,13 +65,16 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let second: *mut i32 = offset_aligned(values as *mut ()) as *mut i32;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", unsafe { * values.add(0) }, unsafe { * second }, unsafe { * zeroed
-// CHECK-NEXT:         .add(1) }
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         unsafe { *values.add(0) },
+// CHECK-NEXT:         unsafe { *second },
+// CHECK-NEXT:         unsafe { *zeroed.add(1) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { free((zeroed as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     unsafe { free((values as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

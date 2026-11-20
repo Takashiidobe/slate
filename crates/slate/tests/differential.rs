@@ -660,13 +660,6 @@ fn fixtures_unsupported_triage_report() {
 
 #[test]
 fn translation_uses_builtin_frontend() {
-    let output = std::process::Command::new("rustc")
-        .args(["--print", "sysroot"])
-        .output()
-        .expect("locate Rust toolchain");
-    assert!(output.status.success());
-    let sysroot = String::from_utf8(output.stdout).unwrap();
-    let rustfmt = Path::new(sysroot.trim()).join("bin/rustfmt");
     let source = fixtures_dir().join("atoi_atol_prelude_dynamic.c");
     let work = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-generated/self-hosted");
     std::fs::create_dir_all(&work).expect("create self-hosted test directory");
@@ -697,7 +690,6 @@ fn translation_uses_builtin_frontend() {
             .args(&args)
             .env("PATH", "")
             .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
-            .env("SLATE_RUSTFMT", &rustfmt)
             .env("SLATE_TARGET", "invalid-default-target")
             .env_remove("SLATE_CLANG_ARGS")
             .output()

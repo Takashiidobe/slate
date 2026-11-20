@@ -39,60 +39,118 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![allow(deref_nullptr)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ASSIGN {
 // CHECK-NEXT:     ($d:expr, $e:expr) => {
-// CHECK-NEXT:         loop { if !$d .is_null() && ! unsafe { (*$d).chan } .is_null() { unsafe { (*$e)
-// CHECK-NEXT:         .band = (* (*$d).chan).band; } unsafe { (*$e).width = (*$d).width; } } else {
-// CHECK-NEXT:         unsafe { (*$e).band = 0; } } if true { break; } }
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             if !$d.is_null() && !unsafe { (*$d).chan }.is_null() {
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     (*$e).band = (*(*$d).chan).band;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     (*$e).width = (*$d).width;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     (*$e).band = 0;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! FIND {
 // CHECK-NEXT:     ($start:expr, $prev_ptr:expr) => {
-// CHECK-NEXT:         { let mut __v : i32; let mut [[V_0:__v[0-9]+]] : i32 = $start; let mut [[V_1:__v[0-9]+]] : i32 = 0; let mut
-// CHECK-NEXT:         [[V_2:__v[0-9]+]] : i32 = 0; while [[V_0]] < 10 { if [[V_0]] == 7 { [[V_2]] = [[V_0]]; if !$prev_ptr
-// CHECK-NEXT:         .is_null() { unsafe { *$prev_ptr = [[V_1]] as u8; } } break; } [[V_1]] = [[V_0]]; [[V_0]] +=
-// CHECK-NEXT:         1; } __v = [[V_2]]; __v }
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut __v: i32;
+// CHECK-NEXT:             let mut [[V_0:__v[0-9]+]]: i32 = $start;
+// CHECK-NEXT:             let mut [[V_1:__v[0-9]+]]: i32 = 0;
+// CHECK-NEXT:             let mut [[V_2:__v[0-9]+]]: i32 = 0;
+// CHECK-NEXT:             while [[V_0]] < 10 {
+// CHECK-NEXT:                 if [[V_0]] == 7 {
+// CHECK-NEXT:                     [[V_2]] = [[V_0]];
+// CHECK-NEXT:                     if !$prev_ptr.is_null() {
+// CHECK-NEXT:                         unsafe {
+// CHECK-NEXT:                             *$prev_ptr = [[V_1]] as u8;
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     break;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 [[V_1]] = [[V_0]];
+// CHECK-NEXT:                 [[V_0]] += 1;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             __v = [[V_2]];
+// CHECK-NEXT:             __v
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
-// CHECK-NEXT: macro_rules! STORE__2 {
-// CHECK-NEXT:     ($p:expr, $i:expr, $v:expr) => {
-// CHECK-NEXT:         loop { if !$p .is_null() { unsafe { *$p .offset(($i) as isize) = $v; } } if true
-// CHECK-NEXT:         { break; } }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! STORE {
 // CHECK-NEXT:     ($p:expr, $i:expr, $v:expr) => {
-// CHECK-NEXT:         loop { if !$p .is_null() { unsafe { *$p .offset(($i) as isize) = $v; } } if true
-// CHECK-NEXT:         { break; } }
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             if !$p.is_null() {
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     *$p.offset(($i) as isize) = $v;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! STORE__2 {
+// CHECK-NEXT:     ($p:expr, $i:expr, $v:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             if !$p.is_null() {
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     *$p.offset(($i) as isize) = $v;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct chan {
 // CHECK-NEXT:     band: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct def {
 // CHECK-NEXT:     chan: *mut chan,
 // CHECK-NEXT:     width: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct entry {
 // CHECK-NEXT:     band: i32,
 // CHECK-NEXT:     width: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn fill(e: *mut entry, d: *mut def) {
 // CHECK-NEXT:     ASSIGN!(d, e);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn fill_null(e: *mut entry) {
-// CHECK-NEXT:     ASSIGN!(core::ptr::null_mut::< def > (), e);
+// CHECK-NEXT:     ASSIGN!(core::ptr::null_mut::<def>(), e);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn store_null(i: i32) {
-// CHECK-NEXT:     STORE!(core::ptr::null_mut::< i32 > (), i, 4i32);
-// CHECK-NEXT:     STORE!(core::ptr::null_mut::< i32 > (), 0i32, 4i32);
+// CHECK-NEXT:     STORE!(core::ptr::null_mut::<i32>(), i, 4i32);
+// CHECK-NEXT:     STORE!(core::ptr::null_mut::<i32>(), 0i32, 4i32);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut c: chan = chan { band: 3 };
 // CHECK-NEXT:     let mut d: def = {
@@ -108,7 +166,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", e.band);
 // CHECK-NEXT:     let mut prev: u8 = 0;
 // CHECK-NEXT:     let a: i32 = FIND!(2i32, core::ptr::addr_of_mut!(prev));
-// CHECK-NEXT:     let b: i32 = FIND!(3i32, core::ptr::null_mut::< u8 > ());
+// CHECK-NEXT:     let b: i32 = FIND!(3i32, core::ptr::null_mut::<u8>());
 // CHECK-NEXT:     let mut slots: [i32; 3] = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [i32; 3] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]][0] = 0i32;
@@ -120,6 +178,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {} {} {}", a, b, prev as i32, slots[1]);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -30,20 +30,26 @@ int main(void) {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: Slice = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut first: Slice = unsafe {
 // CHECK-NEXT:         *make_slice(
-// CHECK-NEXT:             core::ptr::addr_of_mut!(
-// CHECK-NEXT:                 * { [[SLATE_COMPOUND_0]] = { let mut [[T_0:__t[0-9]+]] : Slice = core::mem::zeroed();
-// CHECK-NEXT:                 [[T_0]] }; core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]]) }
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(*{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = {
+// CHECK-NEXT:                     let mut [[T_0:__t[0-9]+]]: Slice = core::mem::zeroed();
+// CHECK-NEXT:                     [[T_0]]
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:             }),
 // CHECK-NEXT:             c"slate".as_ptr(),
 // CHECK-NEXT:             (core::mem::size_of::<[i8; 6]>() as u64).wrapping_sub(1),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut second: Slice = unsafe {
 // CHECK-NEXT:         *make_slice(
-// CHECK-NEXT:             core::ptr::addr_of_mut!(
-// CHECK-NEXT:                 * { [[SLATE_COMPOUND_1]] = { let mut [[T_1:__t[0-9]+]] : Slice = core::mem::zeroed();
-// CHECK-NEXT:                 [[T_1]] }; core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]]) }
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(*{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_1]] = {
+// CHECK-NEXT:                     let mut [[T_1:__t[0-9]+]]: Slice = core::mem::zeroed();
+// CHECK-NEXT:                     [[T_1]]
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:             }),
 // CHECK-NEXT:             c"translation".as_ptr(),
 // CHECK-NEXT:             (core::mem::size_of::<[i8; 12]>() as u64).wrapping_sub(1),
 // CHECK-NEXT:         )

@@ -5,7 +5,8 @@ unsigned long entry_size(struct dirent *entry) { return sizeof(*entry); }
 char *entry_name(struct dirent *entry) { return entry->d_name; }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-freebsd aarch64-unknown-freebsd
-// CHECK: {{^}}#[repr(C)]
+// CHECK: {{^}}
+// CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct dirent {
 // CHECK-NEXT:     d_fileno: u64,

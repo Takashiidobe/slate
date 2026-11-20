@@ -7,23 +7,20 @@ int value(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}exit: 0
 // CHECK-NEXT: file helper.rs
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn helper_value() -> i32 {
 // CHECK-NEXT:     6 * 10
 // CHECK-NEXT: }
 // CHECK-NEXT: file lib.rs
-// CHECK-NEXT: #![allow(
-// CHECK-NEXT:     non_camel_case_types,
-// CHECK-NEXT:     non_snake_case,
-// CHECK-NEXT:     non_upper_case_globals,
-// CHECK-NEXT:     rustdoc::all
-// CHECK-NEXT: )]
+// CHECK-NEXT: #![allow(non_camel_case_types, non_snake_case, non_upper_case_globals, rustdoc::all)]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[path = "helper.rs"]
-// CHECK-NEXT: mod __slate_unit_helper;
 // CHECK-NEXT: #[path = "no_conflict.rs"]
 // CHECK-NEXT: mod __slate_unit_no_conflict;
+// CHECK-NEXT: #[path = "helper.rs"]
+// CHECK-NEXT: mod __slate_unit_helper;
 // CHECK-NEXT: file no_conflict.rs
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn helper_value() -> i32;
 // CHECK-NEXT: }

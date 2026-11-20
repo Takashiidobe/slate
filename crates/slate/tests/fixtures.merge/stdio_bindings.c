@@ -77,11 +77,7 @@ int main(void) {
 // CHECK-NEXT: //! merge-sources: units/stdio_bindings_layout.c
 // CHECK-NEXT: //!
 // CHECK-NEXT: //! merge-extra-targets: android-x86_64 x86_64-linux-android clang
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "android"),
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "android"), all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -105,7 +101,13 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::fprintf(slate_support::stderr(), c"reassigned %d\n".as_ptr(), 5i32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::fprintf(
+// CHECK-NEXT:             slate_support::stderr(),
+// CHECK-NEXT:             c"reassigned %d\n".as_ptr(),
+// CHECK-NEXT:             5i32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -116,8 +118,9 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let file: *mut slate_support::FILE =
-// CHECK-NEXT:         unsafe { slate_support::fopen(c"/nonexistent/slate".as_ptr(), c"r".as_ptr()) };
+// CHECK-NEXT:     let file: *mut slate_support::FILE = unsafe {
+// CHECK-NEXT:         slate_support::fopen(c"/nonexistent/slate".as_ptr(), c"r".as_ptr())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("missing {}", file.is_null() as i32);
@@ -126,7 +129,9 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"missing %d\n".as_ptr(), file.is_null() as i32) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(c"missing %d\n".as_ptr(), file.is_null() as i32)
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
@@ -139,7 +144,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! LOG {
 // CHECK-NEXT:     ($x__0:expr, $x__1:expr $(, $x:expr)*) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::fprintf($x__0, ($x__1) as *const c_char, $($x),*) };
+// CHECK-NEXT:         unsafe { slate_support::fprintf($x__0, ($x__1) as *const c_char, $($x,)*) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -260,32 +265,25 @@ int main(void) {
 // CHECK-NEXT: extern "C-unwind" fn stream_layout() -> i32 {
 // CHECK-NEXT:     #[cfg(target_os = "android")]
 // CHECK-NEXT:     let write: Option<unsafe extern "C-unwind" fn(i32, *mut __sFILE) -> i32> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *const (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32, *mut __sFILE) -> i32>,
-// CHECK-NEXT:         >(fputc as *const ())
+// CHECK-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32, *mut __sFILE) -> i32>>(
+// CHECK-NEXT:             fputc as *const (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     #[cfg(target_os = "android")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             write.unwrap()(
-// CHECK-NEXT:                 119i32,
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(__sF) as *mut __sFILE).add(1),
-// CHECK-NEXT:             )
+// CHECK-NEXT:             write
+// CHECK-NEXT:                 .unwrap()(119i32, (core::ptr::addr_of_mut!(__sF) as *mut __sFILE).add(1))
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             write.unwrap()(
-// CHECK-NEXT:                 10i32,
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(__sF) as *mut __sFILE).add(1),
-// CHECK-NEXT:             )
+// CHECK-NEXT:             write.unwrap()(10i32, (core::ptr::addr_of_mut!(__sF) as *mut __sFILE).add(1))
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let write: Option<unsafe extern "C-unwind" fn(i32, *mut _iobuf) -> i32> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *const (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32, *mut _iobuf) -> i32>,
-// CHECK-NEXT:         >(fputc as *const ())
+// CHECK-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32, *mut _iobuf) -> i32>>(
+// CHECK-NEXT:             fputc as *const (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
@@ -298,16 +296,17 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     let write: Option<unsafe extern "C-unwind" fn(i32, *mut _IO_FILE) -> i32> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *const (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32, *mut _IO_FILE) -> i32>,
-// CHECK-NEXT:         >(fputc as *const ())
+// CHECK-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32, *mut _IO_FILE) -> i32>>(
+// CHECK-NEXT:             fputc as *const (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { write.unwrap()(119i32, stdout) };
 // CHECK-NEXT:         unsafe { write.unwrap()(10i32, stdout) };
-// CHECK-NEXT:         { unsafe { (*stdout)._fileno } }
+// CHECK-NEXT:         {
+// CHECK-NEXT:             unsafe { (*stdout)._fileno }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}

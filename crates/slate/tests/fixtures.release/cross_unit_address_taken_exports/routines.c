@@ -11,7 +11,8 @@ const char *name(void) { return "routines"; }
 const struct api_routines api = {add, sub, bump, name};
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}use crate::__slate_types::api_routines;
+// CHECK: {{^}}
+// CHECK-NEXT: use crate::__slate_types::api_routines;
 // CHECK-NEXT: use crate::__slate_types::counter;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(transparent)]
@@ -44,11 +45,13 @@ const struct api_routines api = {add, sub, bump, name};
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static api: __SlateConst<api_routines> = __SlateConst(api_routines {
-// CHECK-NEXT:     add: Some(add),
-// CHECK-NEXT:     sub: Some(sub),
-// CHECK-NEXT:     bump: Some(bump),
-// CHECK-NEXT:     name: Some(name),
-// CHECK-NEXT: });
+// CHECK-NEXT: static api: __SlateConst<api_routines> = __SlateConst(
+// CHECK-NEXT:     api_routines {
+// CHECK-NEXT:         add: Some(add),
+// CHECK-NEXT:         sub: Some(sub),
+// CHECK-NEXT:         bump: Some(bump),
+// CHECK-NEXT:         name: Some(name),
+// CHECK-NEXT:     },
+// CHECK-NEXT: );
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

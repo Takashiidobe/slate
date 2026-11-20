@@ -49,6 +49,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Mixed {
@@ -57,6 +58,7 @@ int main(void) {
 // CHECK-NEXT:     ratio: f32,
 // CHECK-NEXT:     total: f64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union Scalar {
@@ -65,9 +67,11 @@ int main(void) {
 // CHECK-NEXT:     ratio: f32,
 // CHECK-NEXT:     total: f64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn struct_values() -> i32 {
 // CHECK-NEXT:     let mut m: Mixed = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     m.tag = 65;
@@ -88,6 +92,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     m.code as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn union_double(value: f64) -> f64 {
 // CHECK-NEXT:     let mut s: Scalar = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -95,6 +100,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { s.total }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn union_char(value: i8) -> i32 {
 // CHECK-NEXT:     let mut s: Scalar = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -102,6 +108,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { s.tag }) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", struct_values());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%f\n".as_ptr(), union_double(4.5f64)) };
@@ -109,6 +116,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", union_char(90i8));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

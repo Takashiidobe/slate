@@ -35,20 +35,23 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_libyaml_type_shapes_c_10 {
-// CHECK-NEXT:     read_handler: Option<
-// CHECK-NEXT:         unsafe extern "C-unwind" fn(*mut (), *mut u8, u64, *mut u64) -> i32,
-// CHECK-NEXT:     >,
+// CHECK-NEXT:     read_handler: Option<unsafe extern "C-unwind" fn(*mut (), *mut u8, u64, *mut u64) -> i32>,
 // CHECK-NEXT:     read_handler_data: *mut (),
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn read_bytes(
 // CHECK-NEXT:     data: *mut (),
 // CHECK-NEXT:     buffer: *mut u8,
@@ -66,12 +69,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut input: [u8; 4] = [97, 98, 99, 0];
-// CHECK-NEXT:     let tag: __SlateAlign16<[u8; 22]> = __SlateAlign16([
-// CHECK-NEXT:         116u8, 97u8, 103u8, 58u8, 121u8, 97u8, 109u8, 108u8, 46u8, 111u8, 114u8, 103u8,
-// CHECK-NEXT:         44u8, 50u8, 48u8, 48u8, 50u8, 58u8, 115u8, 116u8, 114u8, 0u8,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let tag: __SlateAlign16<[u8; 22]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             116u8, 97u8, 103u8, 58u8, 121u8, 97u8, 109u8, 108u8, 46u8, 111u8, 114u8,
+// CHECK-NEXT:             103u8, 44u8, 50u8, 48u8, 48u8, 50u8, 58u8, 115u8, 116u8, 114u8, 0u8,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut buffer: [u8; 4] = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0u8;
@@ -84,8 +90,7 @@ int main(void) {
 // CHECK-NEXT:     parser.read_handler = Some(read_bytes);
 // CHECK-NEXT:     parser.read_handler_data = input.as_mut_ptr() as *mut ();
 // CHECK-NEXT:     let ok: i32 = unsafe {
-// CHECK-NEXT:         parser
-// CHECK-NEXT:             .read_handler
+// CHECK-NEXT:         parser.read_handler
 // CHECK-NEXT:             .unwrap()(
 // CHECK-NEXT:             parser.read_handler_data,
 // CHECK-NEXT:             buffer.as_mut_ptr() as *mut u8,
@@ -106,6 +111,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

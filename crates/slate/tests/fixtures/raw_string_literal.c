@@ -34,8 +34,9 @@ second)";
 // CHECK-NEXT:     let delimited: *const i8 = c"a)\"b".as_ptr();
 // CHECK-NEXT:     let multiline: *const i8 = c"first\nsecond".as_ptr();
 // CHECK-NEXT:     let utf8: *const i8 = c"A".as_ptr();
-// CHECK-NEXT:     let wide: *const i32 =
-// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(__slate_str22) as *mut i32 }) as *const i32;
+// CHECK-NEXT:     let wide: *const i32 = (unsafe {
+// CHECK-NEXT:         core::ptr::addr_of_mut!(__slate_str22) as *mut i32
+// CHECK-NEXT:     }) as *const i32;
 // CHECK-NEXT:     let joined: *const i8 = c"left\\A".as_ptr();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

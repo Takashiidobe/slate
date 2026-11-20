@@ -19,32 +19,42 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn legacy_add(mut a: u32, mut b: u32) -> u32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addl %ecx, %eax", inlateout("ax") a as u32 => [[T_0]], in ("cx") b as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "addl %ecx, %eax",
+// CHECK-NEXT:             inlateout("ax") a as u32 => [[T_0]],
+// CHECK-NEXT:             in("cx") b as u32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         a = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn legacy_low_byte(mut x: u32) -> u8 {
 // CHECK-NEXT:     let mut r: u8 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movb %sil, %dl", lateout("dx") [[T_0]], in ("si") x as u32, out("ax") _,
-// CHECK-NEXT:             out("cx") _, options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "movb %sil, %dl",
+// CHECK-NEXT:             lateout("dx") [[T_0]],
+// CHECK-NEXT:             in("si") x as u32,
+// CHECK-NEXT:             out("ax") _,
+// CHECK-NEXT:             out("cx") _,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         r = unsafe { core::mem::transmute::<u8, u8>([[T_0]] as u8) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -57,6 +67,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

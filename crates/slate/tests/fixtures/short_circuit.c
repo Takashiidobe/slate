@@ -43,27 +43,34 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bump(n: &mut i32, x: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(n as *mut i32) = *(n as *mut i32) + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn safe_ratio(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     (b != 0 && a / b > 1) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn either_zero(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     (a == 0 || b == 0 || 100 / a / b > 3) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn mixed(a: i32, b: i32, c: i32) -> i32 {
 // CHECK-NEXT:     ((a != 0 || b != 0) && c != 0) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn grouped(a: i32, b: i32, c: i32) -> i32 {
 // CHECK-NEXT:     (a != 0 && (b != 0 || c != 0)) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn negated(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     (!(a != 0 && b != 0) || a == 0) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut n: i32 = 0;
 // CHECK-NEXT:     let mut b: i32 = 0;
@@ -127,24 +134,34 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("i={} n={}", i, n);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", safe_ratio(9i32, 0i32), safe_ratio(9i32, 2i32), safe_ratio(3i32,
-// CHECK-NEXT:         2i32)
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         safe_ratio(9i32, 0i32),
+// CHECK-NEXT:         safe_ratio(9i32, 2i32),
+// CHECK-NEXT:         safe_ratio(3i32, 2i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", either_zero(0i32, 5i32), either_zero(5i32, 0i32), either_zero(2i32,
-// CHECK-NEXT:         3i32)
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         either_zero(0i32, 5i32),
+// CHECK-NEXT:         either_zero(5i32, 0i32),
+// CHECK-NEXT:         either_zero(2i32, 3i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", mixed(0i32, 0i32, 1i32), mixed(0i32, 1i32, 1i32), mixed(1i32,
-// CHECK-NEXT:         0i32, 0i32), mixed(1i32, 1i32, 1i32)
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         mixed(0i32, 0i32, 1i32),
+// CHECK-NEXT:         mixed(0i32, 1i32, 1i32),
+// CHECK-NEXT:         mixed(1i32, 0i32, 0i32),
+// CHECK-NEXT:         mixed(1i32, 1i32, 1i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", grouped(0i32, 1i32, 1i32), grouped(1i32, 0i32, 1i32), grouped(1i32,
-// CHECK-NEXT:         0i32, 0i32)
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         grouped(0i32, 1i32, 1i32),
+// CHECK-NEXT:         grouped(1i32, 0i32, 1i32),
+// CHECK-NEXT:         grouped(1i32, 0i32, 0i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {} {}", negated(1i32, 1i32), negated(0i32, 1i32), negated(1i32, 0i32));
 // CHECK-NEXT:     safe_ratio(4i32, 1i32) + mixed(1i32, 0i32, 1i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

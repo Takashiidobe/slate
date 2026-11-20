@@ -49,8 +49,10 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN aarch64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_libatomic {
 // CHECK-NEXT:     use core::sync::atomic::Ordering;
+// CHECK-EMPTY:
 // CHECK-NEXT:     #[link(name = "atomic")]
 // CHECK-NEXT:     unsafe extern "C" {
 // CHECK-NEXT:         pub fn __atomic_load_16(pointer: *const u128, order: i32) -> u128;
@@ -64,6 +66,7 @@ int main(void) {
 // CHECK-NEXT:             failure: i32,
 // CHECK-NEXT:         ) -> bool;
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     fn order(order: Ordering) -> i32 {
 // CHECK-NEXT:         match order {
 // CHECK-NEXT:             Ordering::Relaxed => 0,
@@ -73,6 +76,7 @@ int main(void) {
 // CHECK-NEXT:             _ => 5,
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     fn failure(success: Ordering) -> Ordering {
 // CHECK-NEXT:         match success {
 // CHECK-NEXT:             Ordering::Release => Ordering::Relaxed,
@@ -80,44 +84,131 @@ int main(void) {
 // CHECK-NEXT:             other => other,
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     macro_rules! atomic_int {
 // CHECK-NEXT:         ($name:ident, $ty:ty) => {
-// CHECK-NEXT:             pub struct $name (* mut u128); impl $name { pub unsafe fn from_ptr(pointer :
-// CHECK-NEXT:             * mut $ty) -> Self { Self(pointer.cast()) } pub fn load(& self, ordering :
-// CHECK-NEXT:             Ordering) -> $ty { unsafe { __atomic_load_16(self.0, order(ordering)) as $ty
-// CHECK-NEXT:             } } fn exchange(& self, current : $ty, new : $ty, weak : bool, success :
-// CHECK-NEXT:             Ordering, failure : Ordering,) -> Result <$ty, $ty > { let mut expected =
-// CHECK-NEXT:             current as u128; if unsafe { __atomic_compare_exchange_16(self.0, & mut
-// CHECK-NEXT:             expected, new as u128, weak, order(success), order(failure),) } { Ok(current)
-// CHECK-NEXT:             } else { Err(expected as $ty) } } pub fn compare_exchange(& self, current :
-// CHECK-NEXT:             $ty, new : $ty, success : Ordering, failure : Ordering,) -> Result <$ty, $ty
-// CHECK-NEXT:             > { self.exchange(current, new, false, success, failure) } pub fn
-// CHECK-NEXT:             compare_exchange_weak(& self, current : $ty, new : $ty, success : Ordering,
-// CHECK-NEXT:             failure : Ordering,) -> Result <$ty, $ty > { self.exchange(current, new,
-// CHECK-NEXT:             true, success, failure) } pub fn fetch_update(& self, set_order : Ordering,
-// CHECK-NEXT:             fetch_order : Ordering, mut f : impl FnMut($ty) -> Option <$ty >,) -> Result
-// CHECK-NEXT:             <$ty, $ty > { let mut previous = self.load(fetch_order); while let Some(next)
-// CHECK-NEXT:             = f(previous) { match self.exchange(previous, next, true, set_order,
-// CHECK-NEXT:             fetch_order) { Ok(value) => return Ok(value), Err(observed) => previous =
-// CHECK-NEXT:             observed, } } Err(previous) } fn rmw(& self, ordering : Ordering, f : impl
-// CHECK-NEXT:             Fn($ty) -> $ty) -> $ty { let mut previous = self.load(Ordering::Relaxed);
-// CHECK-NEXT:             loop { match self.exchange(previous, f(previous), true, ordering,
-// CHECK-NEXT:             failure(ordering),) { Ok(value) => return value, Err(observed) => previous =
-// CHECK-NEXT:             observed, } } } pub fn swap(& self, value : $ty, ordering : Ordering) -> $ty
-// CHECK-NEXT:             { self.rmw(ordering, | _ | value) } pub fn fetch_add(& self, value : $ty,
-// CHECK-NEXT:             ordering : Ordering) -> $ty { self.rmw(ordering, | old | old
-// CHECK-NEXT:             .wrapping_add(value)) } pub fn fetch_sub(& self, value : $ty, ordering :
-// CHECK-NEXT:             Ordering) -> $ty { self.rmw(ordering, | old | old.wrapping_sub(value)) } pub
-// CHECK-NEXT:             fn fetch_and(& self, value : $ty, ordering : Ordering) -> $ty { self
-// CHECK-NEXT:             .rmw(ordering, | old | old & value) } pub fn fetch_nand(& self, value : $ty,
-// CHECK-NEXT:             ordering : Ordering) -> $ty { self.rmw(ordering, | old | ! (old & value)) }
-// CHECK-NEXT:             pub fn fetch_or(& self, value : $ty, ordering : Ordering) -> $ty { self
-// CHECK-NEXT:             .rmw(ordering, | old | old | value) } pub fn fetch_xor(& self, value : $ty,
-// CHECK-NEXT:             ordering : Ordering) -> $ty { self.rmw(ordering, | old | old ^ value) } }
+// CHECK-NEXT:             pub struct $name(*mut u128);
+// CHECK-EMPTY:
+// CHECK-NEXT:             impl $name {
+// CHECK-NEXT:                 pub unsafe fn from_ptr(pointer: *mut $ty) -> Self {
+// CHECK-NEXT:                     Self(pointer.cast())
+// CHECK-NEXT:                 }
+// CHECK-EMPTY:
+// CHECK-NEXT:                 pub fn load(&self, ordering: Ordering) -> $ty {
+// CHECK-NEXT:                     unsafe { __atomic_load_16(self.0, order(ordering)) as $ty }
+// CHECK-NEXT:                 }
+// CHECK-EMPTY:
+// CHECK-NEXT:                 fn exchange(
+// CHECK-NEXT:                     &self,
+// CHECK-NEXT:                     current: $ty,
+// CHECK-NEXT:                     new: $ty,
+// CHECK-NEXT:                     weak: bool,
+// CHECK-NEXT:                     success: Ordering,
+// CHECK-NEXT:                     failure: Ordering,
+// CHECK-NEXT:                 ) -> Result<$ty, $ty> {
+// CHECK-NEXT:                     let mut expected = current as u128;
+// CHECK-NEXT:                     if unsafe {
+// CHECK-NEXT:                         __atomic_compare_exchange_16(
+// CHECK-NEXT:                             self.0,
+// CHECK-NEXT:                             &mut expected,
+// CHECK-NEXT:                             new as u128,
+// CHECK-NEXT:                             weak,
+// CHECK-NEXT:                             order(success),
+// CHECK-NEXT:                             order(failure),
+// CHECK-NEXT:                         )
+// CHECK-NEXT:                     } {
+// CHECK-NEXT:                         Ok(current)
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         Err(expected as $ty)
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }
+// CHECK-EMPTY:
+// CHECK-NEXT:                 pub fn compare_exchange(
+// CHECK-NEXT:                     &self,
+// CHECK-NEXT:                     current: $ty,
+// CHECK-NEXT:                     new: $ty,
+// CHECK-NEXT:                     success: Ordering,
+// CHECK-NEXT:                     failure: Ordering,
+// CHECK-NEXT:                 ) -> Result<$ty, $ty> {
+// CHECK-NEXT:                     self.exchange(current, new, false, success, failure)
+// CHECK-NEXT:                 }
+// CHECK-EMPTY:
+// CHECK-NEXT:                 pub fn compare_exchange_weak(
+// CHECK-NEXT:                     &self,
+// CHECK-NEXT:                     current: $ty,
+// CHECK-NEXT:                     new: $ty,
+// CHECK-NEXT:                     success: Ordering,
+// CHECK-NEXT:                     failure: Ordering,
+// CHECK-NEXT:                 ) -> Result<$ty, $ty> {
+// CHECK-NEXT:                     self.exchange(current, new, true, success, failure)
+// CHECK-NEXT:                 }
+// CHECK-EMPTY:
+// CHECK-NEXT:                 pub fn fetch_update(
+// CHECK-NEXT:                     &self,
+// CHECK-NEXT:                     set_order: Ordering,
+// CHECK-NEXT:                     fetch_order: Ordering,
+// CHECK-NEXT:                     mut f: impl FnMut($ty) -> Option<$ty>,
+// CHECK-NEXT:                 ) -> Result<$ty, $ty> {
+// CHECK-NEXT:                     let mut previous = self.load(fetch_order);
+// CHECK-NEXT:                     while let Some(next) = f(previous) {
+// CHECK-NEXT:                         match self.exchange(previous, next, true, set_order, fetch_order) {
+// CHECK-NEXT:                             Ok(value) => return Ok(value),
+// CHECK-NEXT:                             Err(observed) => previous = observed,
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     Err(previous)
+// CHECK-NEXT:                 }
+// CHECK-EMPTY:
+// CHECK-NEXT:                 fn rmw(&self, ordering: Ordering, f: impl Fn($ty) -> $ty) -> $ty {
+// CHECK-NEXT:                     let mut previous = self.load(Ordering::Relaxed);
+// CHECK-NEXT:                     loop {
+// CHECK-NEXT:                         match self.exchange(
+// CHECK-NEXT:                             previous,
+// CHECK-NEXT:                             f(previous),
+// CHECK-NEXT:                             true,
+// CHECK-NEXT:                             ordering,
+// CHECK-NEXT:                             failure(ordering),
+// CHECK-NEXT:                         ) {
+// CHECK-NEXT:                             Ok(value) => return value,
+// CHECK-NEXT:                             Err(observed) => previous = observed,
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }
+// CHECK-EMPTY:
+// CHECK-NEXT:                 pub fn swap(&self, value: $ty, ordering: Ordering) -> $ty {
+// CHECK-NEXT:                     self.rmw(ordering, |_| value)
+// CHECK-NEXT:                 }
+// CHECK-EMPTY:
+// CHECK-NEXT:                 pub fn fetch_add(&self, value: $ty, ordering: Ordering) -> $ty {
+// CHECK-NEXT:                     self.rmw(ordering, |old| old.wrapping_add(value))
+// CHECK-NEXT:                 }
+// CHECK-EMPTY:
+// CHECK-NEXT:                 pub fn fetch_sub(&self, value: $ty, ordering: Ordering) -> $ty {
+// CHECK-NEXT:                     self.rmw(ordering, |old| old.wrapping_sub(value))
+// CHECK-NEXT:                 }
+// CHECK-EMPTY:
+// CHECK-NEXT:                 pub fn fetch_and(&self, value: $ty, ordering: Ordering) -> $ty {
+// CHECK-NEXT:                     self.rmw(ordering, |old| old & value)
+// CHECK-NEXT:                 }
+// CHECK-EMPTY:
+// CHECK-NEXT:                 pub fn fetch_nand(&self, value: $ty, ordering: Ordering) -> $ty {
+// CHECK-NEXT:                     self.rmw(ordering, |old| !(old & value))
+// CHECK-NEXT:                 }
+// CHECK-EMPTY:
+// CHECK-NEXT:                 pub fn fetch_or(&self, value: $ty, ordering: Ordering) -> $ty {
+// CHECK-NEXT:                     self.rmw(ordering, |old| old | value)
+// CHECK-NEXT:                 }
+// CHECK-EMPTY:
+// CHECK-NEXT:                 pub fn fetch_xor(&self, value: $ty, ordering: Ordering) -> $ty {
+// CHECK-NEXT:                     self.rmw(ordering, |old| old ^ value)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     atomic_int!(AtomicI128, i128);
 // CHECK-NEXT:     atomic_int!(AtomicU128, u128);
+// CHECK-EMPTY:
 // CHECK-NEXT:     #[link(name = "atomic")]
 // CHECK-NEXT:     unsafe extern "C" {
 // CHECK-NEXT:         #[link_name = "__atomic_load"]
@@ -142,12 +233,16 @@ int main(void) {
 // CHECK-NEXT:             failure: i32,
 // CHECK-NEXT:         ) -> bool;
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     pub struct AtomicGeneric<T>(*mut T);
+// CHECK-EMPTY:
 // CHECK-NEXT:     impl<T: Copy> AtomicGeneric<T> {
 // CHECK-NEXT:         const SIZE: usize = core::mem::size_of::<T>();
+// CHECK-EMPTY:
 // CHECK-NEXT:         pub unsafe fn from_ptr(pointer: *mut T) -> Self {
 // CHECK-NEXT:             Self(pointer)
 // CHECK-NEXT:         }
+// CHECK-EMPTY:
 // CHECK-NEXT:         pub fn load(&self, ordering: Ordering) -> T {
 // CHECK-NEXT:             let mut result = core::mem::MaybeUninit::<T>::uninit();
 // CHECK-NEXT:             unsafe {
@@ -160,6 +255,7 @@ int main(void) {
 // CHECK-NEXT:                 result.assume_init()
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
+// CHECK-EMPTY:
 // CHECK-NEXT:         pub fn store(&self, mut value: T, ordering: Ordering) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 atomic_store(
@@ -170,6 +266,7 @@ int main(void) {
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
+// CHECK-EMPTY:
 // CHECK-NEXT:         pub fn swap(&self, mut value: T, ordering: Ordering) -> T {
 // CHECK-NEXT:             let mut result = core::mem::MaybeUninit::<T>::uninit();
 // CHECK-NEXT:             unsafe {
@@ -183,6 +280,7 @@ int main(void) {
 // CHECK-NEXT:                 result.assume_init()
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
+// CHECK-EMPTY:
 // CHECK-NEXT:         pub fn compare_exchange(
 // CHECK-NEXT:             &self,
 // CHECK-NEXT:             current: T,
@@ -206,6 +304,7 @@ int main(void) {
 // CHECK-NEXT:                 Err(expected)
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
+// CHECK-EMPTY:
 // CHECK-NEXT:         pub fn compare_exchange_weak(
 // CHECK-NEXT:             &self,
 // CHECK-NEXT:             current: T,
@@ -215,6 +314,7 @@ int main(void) {
 // CHECK-NEXT:         ) -> Result<T, T> {
 // CHECK-NEXT:             self.compare_exchange(current, new, success, failure)
 // CHECK-NEXT:         }
+// CHECK-EMPTY:
 // CHECK-NEXT:         pub fn fetch_update(
 // CHECK-NEXT:             &self,
 // CHECK-NEXT:             set_order: Ordering,
@@ -232,16 +332,19 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Small {
 // CHECK-NEXT:     a: [u8; 3],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Large {
 // CHECK-NEXT:     values: [i32; 5],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(4))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Holder {
@@ -251,15 +354,22 @@ int main(void) {
 // CHECK-NEXT:     __slate_pad_3: [u8; 1],
 // CHECK-NEXT:     tail: u8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(4))]
 // CHECK-NEXT: struct __SlateAlign4<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign4<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut small: __SlateAlign4<Small> = __SlateAlign4(unsafe { core::mem::zeroed() });
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut large: Large = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut holder: Holder = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: Small = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: Large = unsafe { core::mem::zeroed() };
@@ -372,6 +482,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -165,10 +165,7 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -407,7 +404,11 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(c"%d %d\n".as_ptr(), gated_local(1i32), different_tail(1i32))
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%d %d\n".as_ptr(),
+// CHECK-NEXT:                 gated_local(1i32),
+// CHECK-NEXT:                 different_tail(1i32),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
@@ -442,7 +443,9 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d %d\n".as_ptr(), gamma_value(), field_use()) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(c"%d %d\n".as_ptr(), gamma_value(), field_use())
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
@@ -454,11 +457,7 @@ int main(void) {
 // CHECK-NEXT:             nested_in_loop(4i32)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         println!("{} {}", gated_local(1i32), different_tail(1i32));
-// CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {}",
-// CHECK-NEXT:             shifted_names(3i32, 5i32),
-// CHECK-NEXT:             shifted_names(99i32, 5i32)
-// CHECK-NEXT:         );
+// CHECK-NEXT:         println!("{} {}", shifted_names(3i32, 5i32), shifted_names(99i32, 5i32));
 // CHECK-NEXT:         println!("{} {} {}", switched(0i32), switched(1i32), switched(2i32));
 // CHECK-NEXT:         println!("{} {}", gamma_value(), field_use());
 // CHECK-NEXT:     }

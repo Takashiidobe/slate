@@ -35,38 +35,49 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(linkage)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut runqueues: rq;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct proto {
 // CHECK-NEXT:     id: i32,
 // CHECK-NEXT:     name: *const i8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct rq {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(transparent)]
 // CHECK-NEXT: struct __SlateConst<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[linkage = "weak"]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static lookup_proto: __SlateConst<proto> = __SlateConst(unsafe { core::mem::zeroed() });
+// CHECK-EMPTY:
 // CHECK-NEXT: #[linkage = "weak"]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static table_proto: __SlateConst<proto> = __SlateConst(unsafe { core::mem::zeroed() });
+// CHECK-EMPTY:
 // CHECK-NEXT: #[linkage = "weak"]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut power_off: Option<unsafe extern "C-unwind" fn()> = unsafe {
 // CHECK-NEXT:     core::mem::zeroed()
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: #[linkage = "weak"]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut counters: {{\[\[}}i32; 1]; 2] = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: #[linkage = "weak"]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut banner_proto: proto = {
@@ -75,22 +86,25 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]].name = (b"banner\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: #[linkage = "weak"]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static banner: [i8; 14] = [
 // CHECK-NEXT:     76, 105, 110, 117, 120, 32, 118, 101, 114, 115, 105, 111, 110, 0,
 // CHECK-NEXT: ];
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         counters[1][0] = 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "lookup {} {}", unsafe { lookup_proto.0.id }, unsafe { lookup_proto.0.name }
-// CHECK-NEXT:         .is_null() as i32
+// CHECK-NEXT:         "lookup {} {}",
+// CHECK-NEXT:         unsafe { lookup_proto.0.id },
+// CHECK-NEXT:         unsafe { lookup_proto.0.name }.is_null() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("table {}", unsafe { table_proto.0.id });
 // CHECK-NEXT:     println!("power {}", ((unsafe { power_off }) == None) as i32);
-// CHECK-NEXT:     println!("counters {} {}", unsafe { counters[0] [0] }, unsafe { counters[1] [0] });
+// CHECK-NEXT:     println!("counters {} {}", unsafe { counters[0][0] }, unsafe { counters[1][0] });
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"banner %d %s %s\n".as_ptr(),
@@ -102,6 +116,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -91,18 +91,22 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_vla_locals_c_7 {
 // CHECK-NEXT:     kind: i32,
 // CHECK-NEXT:     payload: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::snprintf;
 // CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: use slate_support::strlen;
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn wrap_objects(argc: i32) -> i64 {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64 = argc as u64;
 // CHECK-NEXT:     let mut objects: Vec<__SlateRecord_vla_locals_c_7> = {
@@ -127,18 +131,16 @@ int main(void) {
 // CHECK-NEXT:     for j in 0..argc {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (*(objects.as_mut_ptr() as *mut __SlateRecord_vla_locals_c_7)
-// CHECK-NEXT:                 .offset(j as isize))
-// CHECK-NEXT:                 .kind = j;
+// CHECK-NEXT:                 .offset(j as isize)).kind = j;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (*(objects.as_mut_ptr() as *mut __SlateRecord_vla_locals_c_7)
-// CHECK-NEXT:                 .offset(j as isize))
-// CHECK-NEXT:                 .payload = (j as i64) * 100;
+// CHECK-NEXT:                 .offset(j as isize)).payload = (j as i64) * 100;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *(argv.as_mut_ptr() as *mut *mut __SlateRecord_vla_locals_c_7)
 // CHECK-NEXT:                 .offset(j as isize) = (objects.as_mut_ptr()
-// CHECK-NEXT:                 as *mut __SlateRecord_vla_locals_c_7)
+// CHECK-NEXT:                     as *mut __SlateRecord_vla_locals_c_7)
 // CHECK-NEXT:                 .offset(j as isize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -148,17 +150,16 @@ int main(void) {
 // CHECK-NEXT:         total = [[V_2]]
 // CHECK-NEXT:             + (((unsafe {
 // CHECK-NEXT:                 (*(*(argv.as_mut_ptr() as *mut *mut __SlateRecord_vla_locals_c_7)
-// CHECK-NEXT:                     .offset(j as isize)))
-// CHECK-NEXT:                     .kind
+// CHECK-NEXT:                     .offset(j as isize))).kind
 // CHECK-NEXT:             }) as i64)
 // CHECK-NEXT:                 + unsafe {
 // CHECK-NEXT:                     (*(*(argv.as_mut_ptr() as *mut *mut __SlateRecord_vla_locals_c_7)
-// CHECK-NEXT:                         .offset(j as isize)))
-// CHECK-NEXT:                         .payload
+// CHECK-NEXT:                         .offset(j as isize))).payload
 // CHECK-NEXT:                 });
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total + ([[V_0]].wrapping_mul(16) as i64) + ([[V_1]].wrapping_mul(8) as i64)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn format_port(port: i32) -> i32 {
 // CHECK-NEXT:     let length: i32 = unsafe {
 // CHECK-NEXT:         snprintf(
@@ -188,6 +189,7 @@ int main(void) {
 // CHECK-NEXT:         strlen((buf.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as u64
 // CHECK-NEXT:     }) as i32) * 1000 + ((unsafe { *(buf.as_mut_ptr() as *mut i8).add(0) }) as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn const_bound() -> i32 {
 // CHECK-NEXT:     let bufflen: i32 = 16;
 // CHECK-NEXT:     let mut [[V_0]]: u64 = bufflen as u64;
@@ -212,6 +214,7 @@ int main(void) {
 // CHECK-NEXT:         strlen((buf.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as u64
 // CHECK-NEXT:     }) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn matrix(rows: i32, cols: i32) -> i32 {
 // CHECK-NEXT:     let mut [[V_0]]: u64 = rows as u64;
 // CHECK-NEXT:     let mut [[V_1]]: u64 = cols as u64;
@@ -228,10 +231,10 @@ int main(void) {
 // CHECK-NEXT:         for c in 0..cols {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 *((grid.as_mut_ptr() as *mut [i32; 0])
-// CHECK-NEXT:                     .byte_offset(
-// CHECK-NEXT:                         (r as isize)
-// CHECK-NEXT:                             * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize),
-// CHECK-NEXT:                     ) as *mut i32)
+// CHECK-NEXT:                         .byte_offset(
+// CHECK-NEXT:                             (r as isize)
+// CHECK-NEXT:                                 * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                         ) as *mut i32)
 // CHECK-NEXT:                     .offset(c as isize) = r * 10 + c;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -247,33 +250,36 @@ int main(void) {
 // CHECK-NEXT:         sum = [[V_4]]
 // CHECK-NEXT:             + ((unsafe {
 // CHECK-NEXT:                 *(row
-// CHECK-NEXT:                     .byte_offset(
-// CHECK-NEXT:                         0 * ((([[V_3]] as usize) * core::mem::size_of::<i32>()) as isize),
-// CHECK-NEXT:                     ) as *mut i32)
+// CHECK-NEXT:                         .byte_offset(
+// CHECK-NEXT:                             0
+// CHECK-NEXT:                                 * ((([[V_3]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                         ) as *mut i32)
 // CHECK-NEXT:                     .offset(c as isize)
 // CHECK-NEXT:             })
 // CHECK-NEXT:                 + unsafe {
 // CHECK-NEXT:                     *(row
-// CHECK-NEXT:                         .byte_offset(
-// CHECK-NEXT:                             1
-// CHECK-NEXT:                                 * ((([[V_3]] as usize) * core::mem::size_of::<i32>()) as isize),
-// CHECK-NEXT:                         ) as *mut i32)
+// CHECK-NEXT:                             .byte_offset(
+// CHECK-NEXT:                                 1
+// CHECK-NEXT:                                     * ((([[V_3]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                             ) as *mut i32)
 // CHECK-NEXT:                         .offset(c as isize)
 // CHECK-NEXT:                 });
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let distance: i64 = ((unsafe {
 // CHECK-NEXT:         ((grid.as_mut_ptr() as *mut [i32; 0])
-// CHECK-NEXT:             .byte_offset(
-// CHECK-NEXT:                 (rows as isize)
-// CHECK-NEXT:                     * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize),
-// CHECK-NEXT:             )
-// CHECK-NEXT:             .byte_offset(-1 * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize))
-// CHECK-NEXT:             as *const u8)
+// CHECK-NEXT:                 .byte_offset(
+// CHECK-NEXT:                     (rows as isize)
+// CHECK-NEXT:                         * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .byte_offset(
+// CHECK-NEXT:                     -1 * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                 ) as *const u8)
 // CHECK-NEXT:             .offset_from(grid.as_mut_ptr() as *const u8)
 // CHECK-NEXT:     }) / ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize)) as i64;
 // CHECK-NEXT:     sum * 100 + (distance as i32) * 10
 // CHECK-NEXT:         + (([[V_0]].wrapping_mul([[V_1]].wrapping_mul(4)) / [[V_1]].wrapping_mul(4)) as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn per_iteration(rounds: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 1;
@@ -298,6 +304,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sum_row(n: i32, values: *mut [i32; 0]) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
@@ -305,6 +312,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let length: i32 = 5;
 // CHECK-NEXT:     let mut [[V_0]]: u64 = length as u64;
@@ -331,6 +339,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

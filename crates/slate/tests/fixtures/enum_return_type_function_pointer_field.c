@@ -35,12 +35,15 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Dispatcher {
 // CHECK-NEXT:     run: Option<unsafe extern "C-unwind" fn(i32) -> u32>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut lastCode: i32 = -1;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.succeed")]
 // CHECK-NEXT: extern "C-unwind" fn succeed(x: i32) -> u32 {
 // CHECK-NEXT:     unsafe {
@@ -48,6 +51,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.fail")]
 // CHECK-NEXT: extern "C-unwind" fn fail(x: i32) -> u32 {
 // CHECK-NEXT:     unsafe {
@@ -55,6 +59,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut d: Dispatcher = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     d.run = Some(succeed);
@@ -66,6 +71,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {}", a, b);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

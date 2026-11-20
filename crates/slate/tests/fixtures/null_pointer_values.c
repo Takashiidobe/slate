@@ -59,32 +59,44 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Node {
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT:     next: *mut Node,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Entry {
 // CHECK-NEXT:     key: *const i8,
 // CHECK-NEXT:     slot: *mut i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut head: *mut Node = core::ptr::null_mut::<Node>();
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut last_key: *const i8 = core::ptr::null::<i8>();
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut opaque: *mut () = core::ptr::null_mut::<()>();
-// CHECK-NEXT: static mut table: __SlateAlign16<[*mut i32; 3]> = __SlateAlign16([
-// CHECK-NEXT:     core::ptr::null_mut::<i32>(),
-// CHECK-NEXT:     core::ptr::null_mut::<i32>(),
-// CHECK-NEXT:     core::ptr::null_mut::<i32>(),
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut table: __SlateAlign16<[*mut i32; 3]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         core::ptr::null_mut::<i32>(),
+// CHECK-NEXT:         core::ptr::null_mut::<i32>(),
+// CHECK-NEXT:         core::ptr::null_mut::<i32>(),
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn find(mut node: *mut Node, value: i32) -> *mut Node {
 // CHECK-NEXT:     while !node.is_null() {
 // CHECK-NEXT:         if (unsafe { (*node).value }) == value {
@@ -94,6 +106,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     core::ptr::null_mut::<Node>()
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn length(mut list: *const Node) -> i32 {
 // CHECK-NEXT:     let mut count: i32 = 0;
 // CHECK-NEXT:     while !list.is_null() {
@@ -102,9 +115,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     count
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn name_or_default(name: *const i8) -> *const i8 {
 // CHECK-NEXT:     if !name.is_null() { name } else { c"default".as_ptr() }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut c: Node = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Node = unsafe { core::mem::zeroed() };
@@ -125,16 +140,18 @@ int main(void) {
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut stored: i32 = 7;
-// CHECK-NEXT:     let entries: __SlateAlign16<[Entry; 2]> = __SlateAlign16([
-// CHECK-NEXT:         Entry {
-// CHECK-NEXT:             key: c"present".as_ptr(),
-// CHECK-NEXT:             slot: core::ptr::addr_of_mut!(stored),
-// CHECK-NEXT:         },
-// CHECK-NEXT:         Entry {
-// CHECK-NEXT:             key: core::ptr::null::<i8>(),
-// CHECK-NEXT:             slot: core::ptr::null_mut::<i32>(),
-// CHECK-NEXT:         },
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let entries: __SlateAlign16<[Entry; 2]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             Entry {
+// CHECK-NEXT:                 key: c"present".as_ptr(),
+// CHECK-NEXT:                 slot: core::ptr::addr_of_mut!(stored),
+// CHECK-NEXT:             },
+// CHECK-NEXT:             Entry {
+// CHECK-NEXT:                 key: core::ptr::null::<i8>(),
+// CHECK-NEXT:                 slot: core::ptr::null_mut::<i32>(),
+// CHECK-NEXT:             },
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let missing: i32 = find(core::ptr::addr_of_mut!(a), 9i32).is_null() as i32;
 // CHECK-NEXT:     let found: i32 = !find(core::ptr::addr_of_mut!(a), 2i32).is_null() as i32;
 // CHECK-NEXT:     unsafe {
@@ -145,8 +162,11 @@ int main(void) {
 // CHECK-NEXT:         cursor = entries.0[0].slot;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", length((unsafe { head }) as * const Node), missing, found, unsafe
-// CHECK-NEXT:         { * cursor }
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         length((unsafe { head }) as *const Node),
+// CHECK-NEXT:         missing,
+// CHECK-NEXT:         found,
+// CHECK-NEXT:         unsafe { *cursor }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -157,8 +177,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", unsafe { last_key } .is_null() as i32, unsafe { opaque } .is_null()
-// CHECK-NEXT:         as i32, unsafe { table.0[1] } .is_null() as i32
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         unsafe { last_key }.is_null() as i32,
+// CHECK-NEXT:         unsafe { opaque }.is_null() as i32,
+// CHECK-NEXT:         unsafe { table.0[1] }.is_null() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         head = core::ptr::null_mut::<Node>();
@@ -173,6 +195,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     if entries.0[1].slot.is_null() { 0 } else { 1 }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

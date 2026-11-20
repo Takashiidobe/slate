@@ -68,9 +68,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn count_down(mut value: i32) -> i32 {
 // CHECK-NEXT:     let mut steps: i32 = 0;
 // CHECK-NEXT:     unsafe {
@@ -78,26 +80,30 @@ int main(void) {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "3:\n\ttestl {1:e}, {1:e}\n\tjz 2f\n\tdecl {1:e}\n\tincl {0:e}\n\tjmp 3b\n2:",
-// CHECK-NEXT:             inlateout(reg) steps as u32 => [[T_0]], inlateout(reg) value as u32 => [[T_1]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             inlateout(reg) steps as u32 => [[T_0]],
+// CHECK-NEXT:             inlateout(reg) value as u32 => [[T_1]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         steps = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     steps
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn clamp_ten(mut value: u32) -> u32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmpl $10, {0:e}\n\tjbe 2f\n\tmovl $10, {0:e}\n2:", inlateout(reg) value as
-// CHECK-NEXT:             u32 => [[T_0]], options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "cmpl $10, {0:e}\n\tjbe 2f\n\tmovl $10, {0:e}\n2:",
+// CHECK-NEXT:             inlateout(reg) value as u32 => [[T_0]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn clamp_sum(limit: u32) -> u32 {
 // CHECK-NEXT:     let mut sum: u32 = 0;
 // CHECK-NEXT:     for i in 0..limit {
@@ -106,30 +112,34 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn first_char() -> i32 {
 // CHECK-NEXT:     let mut text: *const i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             ".pushsection .rodata\n2: .asciz \"slate\"\n.popsection\n\tleaq 2b(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]], options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         text = unsafe { core::mem::transmute::<u64, *const i8>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ((unsafe { *text.add(0) }) as i32) + ((unsafe { *text.add(4) }) as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn with_own_label(mut value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "testl {0:e}, {0:e}\n\tjns 2f\n\tnegl {0:e}\n2:\n\tcmpl $100, {0:e}\n\tjb 3f\n\tmovl $100, {0:e}\n3:",
-// CHECK-NEXT:             inlateout(reg) value as u32 => [[T_0]], options(pure, nomem, nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             inlateout(reg) value as u32 => [[T_0]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -146,6 +156,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

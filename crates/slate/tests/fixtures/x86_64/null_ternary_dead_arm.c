@@ -18,29 +18,45 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! START_OR_INDEX {
-// CHECK-NEXT:     () => {
-// CHECK-NEXT:         { let mut __v : u64; __v = start(); __v }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-NEXT: macro_rules! START_OR_INDEX__2 {
 // CHECK-NEXT:     ($req:expr) => {
-// CHECK-NEXT:         { let __v : u64 = if $req .is_null() { start() } else { unsafe { (* (($req) as *
-// CHECK-NEXT:         mut arena)).idx } }; __v }
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let __v: u64 = if $req.is_null() {
+// CHECK-NEXT:                 start()
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 unsafe { (*(($req) as *mut arena)).idx }
+// CHECK-NEXT:             };
+// CHECK-NEXT:             __v
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! START_OR_INDEX__2 {
+// CHECK-NEXT:     () => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut __v: u64;
+// CHECK-NEXT:             __v = start();
+// CHECK-NEXT:             __v
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct arena {
 // CHECK-NEXT:     idx: u64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn start() -> u64 {
 // CHECK-NEXT:     7
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut arena: arena = arena { idx: 42 };
 // CHECK-NEXT:     let given: *mut () = core::ptr::addr_of_mut!(arena) as *mut ();
@@ -48,8 +64,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lu %lu\n".as_ptr(),
-// CHECK-NEXT:             START_OR_INDEX!(),
-// CHECK-NEXT:             START_OR_INDEX__2!(given),
+// CHECK-NEXT:             START_OR_INDEX__2!(),
+// CHECK-NEXT:             START_OR_INDEX!(given),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -60,6 +76,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

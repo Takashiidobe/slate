@@ -34,14 +34,17 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct FlexibleArray {
 // CHECK-NEXT:     count: u64,
 // CHECK-NEXT:     values: [i32; 0],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     if 8 != ((const { core::mem::size_of::<u64>() }) as u64) {
 // CHECK-NEXT:         return 1;
@@ -62,7 +65,7 @@ int main(void) {
 // CHECK-NEXT:         let mut index: u64 = 0;
 // CHECK-NEXT:         while index < unsafe { (*flexible).count } {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *(core::ptr::addr_of_mut!((* flexible).values) as *mut i32)
+// CHECK-NEXT:                 *(core::ptr::addr_of_mut!((*flexible).values) as *mut i32)
 // CHECK-NEXT:                     .add(index as usize) = (index as i32) + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             index = index.wrapping_add(1);
@@ -73,7 +76,7 @@ int main(void) {
 // CHECK-NEXT:     while index < unsafe { (*flexible).count } {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = total
 // CHECK-NEXT:             + unsafe {
-// CHECK-NEXT:                 *(core::ptr::addr_of_mut!((* flexible).values) as *mut i32)
+// CHECK-NEXT:                 *(core::ptr::addr_of_mut!((*flexible).values) as *mut i32)
 // CHECK-NEXT:                     .add(index as usize)
 // CHECK-NEXT:             };
 // CHECK-NEXT:         total = [[V_0]];
@@ -82,6 +85,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { free((flexible as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     if total == 6 { 0 } else { 3 }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

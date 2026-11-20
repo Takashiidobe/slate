@@ -58,21 +58,20 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn abort();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn shift_by_promoted_types(seed: i32) -> i32 {
 // CHECK-NEXT:     let i: i32 = 4;
 // CHECK-NEXT:     let u: u32 = 3;
 // CHECK-NEXT:     let l: i64 = 5;
 // CHECK-NEXT:     let ull: u64 = 6;
 // CHECK-NEXT:     let s: i16 = 2;
-// CHECK-NEXT:     let mut a: bitint::BUint<129, 3, 24, bitint::A8> = <bitint::BUint<
-// CHECK-NEXT:         129,
-// CHECK-NEXT:         3,
-// CHECK-NEXT:         24,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_bint(<bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(1 as i128));
+// CHECK-NEXT:     let mut a: bitint::BUint<129, 3, 24, bitint::A8> = <bitint::BUint<129, 3, 24, bitint::A8>>::from_bint(
+// CHECK-NEXT:         <bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(1 as i128),
+// CHECK-NEXT:     );
 // CHECK-NEXT:     a = a.shl_bits(i as usize);
 // CHECK-NEXT:     a = a.shr_bits(u as usize);
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bitint::BUint<129, 3, 24, bitint::A8> = a;
@@ -82,56 +81,43 @@ int main(void) {
 // CHECK-NEXT:     a = a.shl_bits(ull as usize);
 // CHECK-NEXT:     a = a
 // CHECK-NEXT:         .wrapping_add(
-// CHECK-NEXT:             <bitint::BUint<
-// CHECK-NEXT:                 129,
-// CHECK-NEXT:                 3,
-// CHECK-NEXT:                 24,
-// CHECK-NEXT:                 bitint::A8,
-// CHECK-NEXT:             >>::from_bint(
+// CHECK-NEXT:             <bitint::BUint<129, 3, 24, bitint::A8>>::from_bint(
 // CHECK-NEXT:                 <bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(seed as i128),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     (a.to_u128() as u32) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn shift_across_limbs(seed: i32) -> i32 {
-// CHECK-NEXT:     let mut wide: bitint::BUint<129, 3, 24, bitint::A8> = <bitint::BUint<
-// CHECK-NEXT:         129,
-// CHECK-NEXT:         3,
-// CHECK-NEXT:         24,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_bint(<bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(1 as i128));
+// CHECK-NEXT:     let mut wide: bitint::BUint<129, 3, 24, bitint::A8> = <bitint::BUint<129, 3, 24, bitint::A8>>::from_bint(
+// CHECK-NEXT:         <bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(1 as i128),
+// CHECK-NEXT:     );
 // CHECK-NEXT:     wide = wide.shl_bits(128 as usize);
 // CHECK-NEXT:     wide = wide.shr_bits(127 as usize);
 // CHECK-NEXT:     ((wide.to_u128() as u32) as i32) + seed
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn shift_signed_arithmetic(seed: i32) -> i32 {
-// CHECK-NEXT:     let mut n: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         256,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(-1024 as i128);
+// CHECK-NEXT:     let mut n: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:         -1024 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     n = n.shr_bits(3 as usize);
 // CHECK-NEXT:     n = n.shl_bits(2 as usize);
 // CHECK-NEXT:     (n.to_i128() as i32) + seed
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn shift_by_bitint(seed: i32) -> i32 {
-// CHECK-NEXT:     let mut amount: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         256,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(4 as i128);
-// CHECK-NEXT:     let mut v: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         256,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(3 as i128);
+// CHECK-NEXT:     let mut amount: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:         4 as i128,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut v: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:         3 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     v = v.shl_bits(amount.to_i128() as usize);
 // CHECK-NEXT:     v = v.shr_bits(amount.to_i128() as usize);
 // CHECK-NEXT:     (v.to_i128() as i32) + seed
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     if shift_by_promoted_types(0i32) != 1024 {
 // CHECK-NEXT:         unsafe { abort() };
@@ -146,11 +132,15 @@ int main(void) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", shift_by_promoted_types(1i32), shift_across_limbs(2i32),
-// CHECK-NEXT:         shift_signed_arithmetic(3i32), shift_by_bitint(4i32)
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         shift_by_promoted_types(1i32),
+// CHECK-NEXT:         shift_across_limbs(2i32),
+// CHECK-NEXT:         shift_signed_arithmetic(3i32),
+// CHECK-NEXT:         shift_by_bitint(4i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

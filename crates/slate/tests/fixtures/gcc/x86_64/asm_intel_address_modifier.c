@@ -62,7 +62,12 @@ int main(void) {
 // CHECK-NEXT:     let mut v: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!("mov {0:r}, QWORD PTR [rip + {1}]", lateout(reg) [[T_0]], sym word, options(pure, nomem, nostack));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov {0:r}, QWORD PTR [rip + {1}]",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             sym word,
+// CHECK-NEXT:             options(pure, nomem, nostack),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
@@ -72,7 +77,12 @@ int main(void) {
 // CHECK-NEXT:     let mut v: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!("mov {0:r}, QWORD PTR [rip + {1}+16]", lateout(reg) [[T_0]], sym arr, options(pure, nomem, nostack));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov {0:r}, QWORD PTR [rip + {1}+16]",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             sym arr,
+// CHECK-NEXT:             options(pure, nomem, nostack),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
@@ -82,7 +92,12 @@ int main(void) {
 // CHECK-NEXT:     let mut p: *mut i64 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!("lea {0:r}, [rip + {1}+24]", lateout(reg) [[T_0]], sym arr, options(pure, nomem, nostack));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "lea {0:r}, [rip + {1}+24]",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             sym arr,
+// CHECK-NEXT:             options(pure, nomem, nostack),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         p = unsafe { core::mem::transmute::<u64, *mut i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     p
@@ -92,7 +107,12 @@ int main(void) {
 // CHECK-NEXT:     let mut v: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!("lea {0:r}, [{1}]", lateout(reg) [[T_0]], const 8 as i32, options(pure, nomem, nostack));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "lea {0:r}, [{1}]",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             const 8 as i32,
+// CHECK-NEXT:             options(pure, nomem, nostack),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
@@ -102,19 +122,24 @@ int main(void) {
 // CHECK-NEXT:     let mut v: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!("mov {0:r}, [{1:r}]", lateout(reg) [[T_0]], in(reg) q as u64, options(pure, nomem, nostack));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov {0:r}, [{1:r}]",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) q as u64,
+// CHECK-NEXT:             options(pure, nomem, nostack),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i64 =
-// CHECK-NEXT:         through_register(unsafe { (core::ptr::addr_of_mut!(arr.0) as *mut i64).add(1) });
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i64 = through_register(
+// CHECK-NEXT:         unsafe { (core::ptr::addr_of_mut!(arr.0) as *mut i64).add(1) },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i64 = immediate_address();
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = (address_of_last()
-// CHECK-NEXT:         == unsafe { (core::ptr::addr_of_mut!(arr.0) as *mut i64).add(3) })
-// CHECK-NEXT:         as i32;
+// CHECK-NEXT:         == unsafe { (core::ptr::addr_of_mut!(arr.0) as *mut i64).add(3) }) as i32;
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i64 = read_third();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

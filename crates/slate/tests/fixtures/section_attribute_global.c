@@ -24,16 +24,21 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut __start_slate_gnu_section: [i32; 0];
 // CHECK-NEXT:     static mut __stop_slate_gnu_section: [i32; 0];
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = "slate_gnu_section")]
 // CHECK-NEXT: static mut first: i32 = 3;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = "slate_gnu_section")]
 // CHECK-NEXT: static mut second: i32 = 5;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = "slate_gnu_ro")]
 // CHECK-NEXT: static sealed: i32 = 7;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         first = first + 10;
@@ -53,11 +58,16 @@ int main(void) {
 // CHECK-NEXT:         it = unsafe { [[V_0]].add(1) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {}", unsafe { first }, unsafe { second }, unsafe { sealed }, sum,
+// CHECK-NEXT:         "{} {} {} {} {}",
+// CHECK-NEXT:         unsafe { first },
+// CHECK-NEXT:         unsafe { second },
+// CHECK-NEXT:         unsafe { sealed },
+// CHECK-NEXT:         sum,
 // CHECK-NEXT:         count
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

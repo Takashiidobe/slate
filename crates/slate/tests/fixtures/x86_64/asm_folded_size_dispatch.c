@@ -91,19 +91,26 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __bad_size();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn zero_u8(mut p: &u8) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "cmpb $0, {0:l}\n\tje {1}", in (reg) (* (p as * const u8) as u8) as u32,
-// CHECK-NEXT:                 label { __slate_asm_target = true; }, options(nostack, att_syntax)
+// CHECK-NEXT:                 "cmpb $0, {0:l}\n\tje {1}",
+// CHECK-NEXT:                 in(reg) (*(p as *const u8) as u8) as u32,
+// CHECK-NEXT:                 label {
+// CHECK-NEXT:                     __slate_asm_target = true;
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 options(nostack, att_syntax),
 // CHECK-NEXT:             );
 // CHECK-NEXT:             if __slate_asm_target {
 // CHECK-NEXT:                 return 1;
@@ -116,13 +123,18 @@ int main(void) {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn zero_u32(mut p: &u32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "cmpl $0, {0:e}\n\tje {1}", in (reg) * (p as * const u32) as u32, label {
-// CHECK-NEXT:                 __slate_asm_target = true; }, options(nostack, att_syntax)
+// CHECK-NEXT:                 "cmpl $0, {0:e}\n\tje {1}",
+// CHECK-NEXT:                 in(reg) *(p as *const u32) as u32,
+// CHECK-NEXT:                 label {
+// CHECK-NEXT:                     __slate_asm_target = true;
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 options(nostack, att_syntax),
 // CHECK-NEXT:             );
 // CHECK-NEXT:             if __slate_asm_target {
 // CHECK-NEXT:                 return 1;
@@ -135,13 +147,18 @@ int main(void) {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn zero_u64(mut p: &u64) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "cmpq $0, {0:r}\n\tje {1}", in (reg) * (p as * const u64) as u64, label {
-// CHECK-NEXT:                 __slate_asm_target = true; }, options(nostack, att_syntax)
+// CHECK-NEXT:                 "cmpq $0, {0:r}\n\tje {1}",
+// CHECK-NEXT:                 in(reg) *(p as *const u64) as u64,
+// CHECK-NEXT:                 label {
+// CHECK-NEXT:                     __slate_asm_target = true;
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 options(nostack, att_syntax),
 // CHECK-NEXT:             );
 // CHECK-NEXT:             if __slate_asm_target {
 // CHECK-NEXT:                 return 1;
@@ -154,6 +171,7 @@ int main(void) {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn load_u64(mut p: &u64) -> u64 {
 // CHECK-NEXT:     let mut x: u64 = 0;
 // CHECK-NEXT:     loop {
@@ -161,8 +179,10 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:                 core::arch::asm!(
-// CHECK-NEXT:                     "movl ({1:r}), {0:r}", lateout(reg) [[T_0]], in (reg) p as * const u64,
-// CHECK-NEXT:                     options(pure, readonly, nostack, att_syntax)
+// CHECK-NEXT:                     "movl ({1:r}), {0:r}",
+// CHECK-NEXT:                     lateout(reg) [[T_0]],
+// CHECK-NEXT:                     in(reg) p as *const u64,
+// CHECK-NEXT:                     options(pure, readonly, nostack, att_syntax),
 // CHECK-NEXT:                 );
 // CHECK-NEXT:                 x = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:             }
@@ -171,8 +191,10 @@ int main(void) {
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     let [[T_1:__t[0-9]+]]: u64;
 // CHECK-NEXT:                     core::arch::asm!(
-// CHECK-NEXT:                         "movq ({1:r}), {0:r}", lateout(reg) [[T_1]], in (reg) p as * const
-// CHECK-NEXT:                         u64, options(pure, readonly, nostack, att_syntax)
+// CHECK-NEXT:                         "movq ({1:r}), {0:r}",
+// CHECK-NEXT:                         lateout(reg) [[T_1]],
+// CHECK-NEXT:                         in(reg) p as *const u64,
+// CHECK-NEXT:                         options(pure, readonly, nostack, att_syntax),
 // CHECK-NEXT:                     );
 // CHECK-NEXT:                     x = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:                 }
@@ -186,6 +208,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn load_u32(mut p: &u32) -> u32 {
 // CHECK-NEXT:     let mut x: u32 = 0;
 // CHECK-NEXT:     loop {
@@ -193,8 +216,10 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 let [[T_0]]: u32;
 // CHECK-NEXT:                 core::arch::asm!(
-// CHECK-NEXT:                     "movl ({1:r}), {0:e}", lateout(reg) [[T_0]], in (reg) p as * const u32,
-// CHECK-NEXT:                     options(pure, readonly, nostack, att_syntax)
+// CHECK-NEXT:                     "movl ({1:r}), {0:e}",
+// CHECK-NEXT:                     lateout(reg) [[T_0]],
+// CHECK-NEXT:                     in(reg) p as *const u32,
+// CHECK-NEXT:                     options(pure, readonly, nostack, att_syntax),
 // CHECK-NEXT:                 );
 // CHECK-NEXT:                 x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:             }
@@ -203,8 +228,10 @@ int main(void) {
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     let [[T_1]]: u32;
 // CHECK-NEXT:                     core::arch::asm!(
-// CHECK-NEXT:                         "movq ({1:r}), {0:e}", lateout(reg) [[T_1]], in (reg) p as * const
-// CHECK-NEXT:                         u32, options(pure, readonly, nostack, att_syntax)
+// CHECK-NEXT:                         "movq ({1:r}), {0:e}",
+// CHECK-NEXT:                         lateout(reg) [[T_1]],
+// CHECK-NEXT:                         in(reg) p as *const u32,
+// CHECK-NEXT:                         options(pure, readonly, nostack, att_syntax),
 // CHECK-NEXT:                     );
 // CHECK-NEXT:                     x = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:                 }
@@ -218,6 +245,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pick(mut p: &u64) -> i32 {
 // CHECK-NEXT:     let mut r: i32 = 0;
 // CHECK-NEXT:     match (const { core::mem::size_of::<u64>() }) as u64 {
@@ -225,8 +253,10 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 let [[T_0]]: u32;
 // CHECK-NEXT:                 core::arch::asm!(
-// CHECK-NEXT:                     "movl {1:r}, {0:e}", lateout(reg) [[T_0]], in (reg) * (p as * const u64)
-// CHECK-NEXT:                     as u64, options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:                     "movl {1:r}, {0:e}",
+// CHECK-NEXT:                     lateout(reg) [[T_0]],
+// CHECK-NEXT:                     in(reg) *(p as *const u64) as u64,
+// CHECK-NEXT:                     options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:                 );
 // CHECK-NEXT:                 r = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:             }
@@ -238,6 +268,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: u8 = 0;
 // CHECK-NEXT:     let mut b: u8 = 3;
@@ -246,12 +277,13 @@ int main(void) {
 // CHECK-NEXT:     let mut e: u64 = 0;
 // CHECK-NEXT:     let mut f: u64 = 7;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", zero_u8(unsafe { & (* core::ptr::addr_of_mut!(a)) }),
-// CHECK-NEXT:         zero_u8(unsafe { & (* core::ptr::addr_of_mut!(b)) }), zero_u32(unsafe { & (*
-// CHECK-NEXT:         core::ptr::addr_of_mut!(c)) }), zero_u32(unsafe { & (*
-// CHECK-NEXT:         core::ptr::addr_of_mut!(d)) }), zero_u64(unsafe { & (*
-// CHECK-NEXT:         core::ptr::addr_of_mut!(e)) }), zero_u64(unsafe { & (*
-// CHECK-NEXT:         core::ptr::addr_of_mut!(f)) })
+// CHECK-NEXT:         "{} {} {} {} {} {}",
+// CHECK-NEXT:         zero_u8(unsafe { &(*core::ptr::addr_of_mut!(a)) }),
+// CHECK-NEXT:         zero_u8(unsafe { &(*core::ptr::addr_of_mut!(b)) }),
+// CHECK-NEXT:         zero_u32(unsafe { &(*core::ptr::addr_of_mut!(c)) }),
+// CHECK-NEXT:         zero_u32(unsafe { &(*core::ptr::addr_of_mut!(d)) }),
+// CHECK-NEXT:         zero_u64(unsafe { &(*core::ptr::addr_of_mut!(e)) }),
+// CHECK-NEXT:         zero_u64(unsafe { &(*core::ptr::addr_of_mut!(f)) })
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -264,6 +296,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

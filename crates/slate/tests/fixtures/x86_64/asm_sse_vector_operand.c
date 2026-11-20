@@ -26,16 +26,23 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: core::arch::x86_64::__m128i;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addps {0}, {0}\n# {1}", inlateout(xmm_reg) unsafe { core::mem::transmute::<
-// CHECK-NEXT:             core::simd::Simd < f32, 4 >, core::arch::x86_64::__m128i > (lhs) } => [[T_0]],
-// CHECK-NEXT:             in (xmm_reg) unsafe { core::mem::transmute::< core::simd::Simd < f32, 4 >,
-// CHECK-NEXT:             core::arch::x86_64::__m128i > (rhs) }, options(nostack, att_syntax)
+// CHECK-NEXT:             "addps {0}, {0}\n# {1}",
+// CHECK-NEXT:             inlateout(xmm_reg) unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<f32, 4>, core::arch::x86_64::__m128i>(
+// CHECK-NEXT:                     lhs,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             } => [[T_0]],
+// CHECK-NEXT:             in(xmm_reg) unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<f32, 4>, core::arch::x86_64::__m128i>(
+// CHECK-NEXT:                     rhs,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 core::arch::x86_64::__m128i,
-// CHECK-NEXT:                 core::simd::Simd<f32, 4>,
-// CHECK-NEXT:             >([[T_0]])
+// CHECK-NEXT:             core::mem::transmute::<core::arch::x86_64::__m128i, core::simd::Simd<f32, 4>>(
+// CHECK-NEXT:                 [[T_0]],
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     return result;

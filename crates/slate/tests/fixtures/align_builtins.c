@@ -31,10 +31,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn next() -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { calls }) + 1;
 // CHECK-NEXT:     unsafe {
@@ -42,6 +46,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]] * 8
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     let base: *mut i8 = unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(3) };
@@ -69,29 +74,35 @@ int main(void) {
 // CHECK-NEXT:         up.offset_from(buffer.0.as_mut_ptr() as *mut i8)
 // CHECK-NEXT:     }) as i64) as i32)
 // CHECK-NEXT:         - ((((buffer.0.as_mut_ptr() as *mut i8) as u64).wrapping_add(3).wrapping_add(15)
-// CHECK-NEXT:             / 16)
+// CHECK-NEXT:                 / 16)
 // CHECK-NEXT:             .wrapping_mul(16)
 // CHECK-NEXT:             .wrapping_sub((buffer.0.as_mut_ptr() as *mut i8) as u64) as i32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", __slate_printf_arg0, ((((unsafe { base.offset_from(down as * mut i8)
-// CHECK-NEXT:         }) as i64) as i32) == (((base as u64) % 16) as i32)) as i32, ((cup as u64) % 8 ==
-// CHECK-NEXT:         0) as i32
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         __slate_printf_arg0,
+// CHECK-NEXT:         ((((unsafe { base.offset_from(down as *mut i8) }) as i64) as i32)
+// CHECK-NEXT:             == (((base as u64) % 16) as i32)) as i32,
+// CHECK-NEXT:         ((cup as u64) % 8 == 0) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_6:__v[0-9]+]]: u64 = 15u64;
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: *mut i8 = up;
 // CHECK-NEXT:     let [[V_8:__v[0-9]+]]: u64 = 0u64;
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: *mut i8 = unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(1) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", (([[V_7]] as u64) & [[V_6]] == 0) as i32, (([[V_9]] as u64) & [[V_8]] == 0) as i32
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         (([[V_7]] as u64) & [[V_6]] == 0) as i32,
+// CHECK-NEXT:         (([[V_9]] as u64) & [[V_8]] == 0) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_10:__v[0-9]+]]: u8 = 3u8;
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: u8 = 3u8;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", (small.wrapping_add([[V_10]]) & ! [[V_10]]) as i32, (small & ! [[V_11]]) as
-// CHECK-NEXT:         i32, core::mem::size_of::< u8 > () as i32
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         (small.wrapping_add([[V_10]]) & ![[V_10]]) as i32,
+// CHECK-NEXT:         (small & ![[V_11]]) as i32,
+// CHECK-NEXT:         core::mem::size_of::<u8>() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = next().wrapping_sub(1);
-// CHECK-NEXT:     println!("{} {}", 100i32.wrapping_add([[V_12]]) & ! [[V_12]], unsafe { calls });
+// CHECK-NEXT:     println!("{} {}", 100i32.wrapping_add([[V_12]]) & ![[V_12]], unsafe { calls });
 // CHECK-NEXT:     let mut p: *mut i8 = unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(1) };
 // CHECK-NEXT:     let [[V_13:__v[0-9]+]]: u64 = 3u64;
 // CHECK-NEXT:     let [[V_14:__v[0-9]+]]: *mut i8 = p;
@@ -110,13 +121,14 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, (([[V_17]] as u64) & [[V_16]] == 0) as i32);
 // CHECK-NEXT:     let [[V_18:__v[0-9]+]]: i32 = 3i32;
 // CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = 3i32;
-// CHECK-NEXT:     println!("{} {}", - 7 & ! [[V_18]], (- 7i32).wrapping_add([[V_19]]) & ! [[V_19]]);
+// CHECK-NEXT:     println!("{} {}", -7 & ![[V_18]], (-7i32).wrapping_add([[V_19]]) & ![[V_19]]);
 // CHECK-NEXT:     let [[V_20:__v[0-9]+]]: i32 = 1i32;
 // CHECK-NEXT:     let [[V_21:__v[0-9]+]]: i32 = i;
 // CHECK-NEXT:     i = [[V_21]] + 1;
 // CHECK-NEXT:     println!("{}", (([[V_21]] & [[V_20]] == 0) as i32) + i);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

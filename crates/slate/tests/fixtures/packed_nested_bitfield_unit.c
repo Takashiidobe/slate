@@ -37,6 +37,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct alt {
@@ -45,35 +46,31 @@ int main(void) {
 // CHECK-NEXT:     [[SLATE_ANON_0:__slate_anon_[0-9]+]]: __SlateRecord_packed_nested_bitfield_unit_c_7,
 // CHECK-NEXT:     len: u8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_packed_nested_bitfield_unit_c_7 {
 // CHECK-NEXT:     [[SLATE_ANON_1:__slate_anon_[0-9]+]]: __SlateRecord_packed_nested_bitfield_unit_c_8,
 // CHECK-NEXT:     ft: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_packed_nested_bitfield_unit_c_8 {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits3U0,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u32,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u32, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits3U0 {
 // CHECK-NEXT:         #[bits(16)]
 // CHECK-NEXT:         pub cpuid: u32,
@@ -81,83 +78,89 @@ int main(void) {
 // CHECK-NEXT:         pub flags: u32,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut table: __SlateAlign16<[alt; 2]> = __SlateAlign16([
-// CHECK-NEXT:     alt {
-// CHECK-NEXT:         tag: 1i8,
-// CHECK-NEXT:         off: 2i32,
-// CHECK-NEXT:         [[SLATE_ANON_0]]: {
-// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: __SlateRecord_packed_nested_bitfield_unit_c_7 = unsafe {
-// CHECK-NEXT:                 core::mem::zeroed()
-// CHECK-NEXT:             };
-// CHECK-NEXT:             [[T_0]].[[SLATE_ANON_1]] = {
-// CHECK-NEXT:                 let mut [[T_1:__t[0-9]+]]: __SlateRecord_packed_nested_bitfield_unit_c_8 = unsafe {
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut table: __SlateAlign16<[alt; 2]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         alt {
+// CHECK-NEXT:             tag: 1i8,
+// CHECK-NEXT:             off: 2i32,
+// CHECK-NEXT:             [[SLATE_ANON_0]]: {
+// CHECK-NEXT:                 let mut [[T_0:__t[0-9]+]]: __SlateRecord_packed_nested_bitfield_unit_c_7 = unsafe {
 // CHECK-NEXT:                     core::mem::zeroed()
 // CHECK-NEXT:                 };
-// CHECK-NEXT:                 [[T_1]].__slate_bits_0.__set_cpuid(7u32);
-// CHECK-NEXT:                 [[T_1]].__slate_bits_0.__set_flags(9u32);
-// CHECK-NEXT:                 [[T_1]]
-// CHECK-NEXT:             };
-// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:                 [[T_0]].[[SLATE_ANON_1]] = {
+// CHECK-NEXT:                     let mut [[T_1:__t[0-9]+]]: __SlateRecord_packed_nested_bitfield_unit_c_8 = unsafe {
+// CHECK-NEXT:                         core::mem::zeroed()
+// CHECK-NEXT:                     };
+// CHECK-NEXT:                     [[T_1]].__slate_bits_0.__set_cpuid(7u32);
+// CHECK-NEXT:                     [[T_1]].__slate_bits_0.__set_flags(9u32);
+// CHECK-NEXT:                     [[T_1]]
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 [[T_0]]
+// CHECK-NEXT:             },
+// CHECK-NEXT:             len: 3u8,
 // CHECK-NEXT:         },
-// CHECK-NEXT:         len: 3u8,
-// CHECK-NEXT:     },
-// CHECK-NEXT:     alt {
-// CHECK-NEXT:         tag: 4i8,
-// CHECK-NEXT:         off: 5i32,
-// CHECK-NEXT:         [[SLATE_ANON_0]]: {
-// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: __SlateRecord_packed_nested_bitfield_unit_c_7 = unsafe {
-// CHECK-NEXT:                 core::mem::zeroed()
-// CHECK-NEXT:             };
-// CHECK-NEXT:             [[T_2]].[[SLATE_ANON_1]] = {
-// CHECK-NEXT:                 let mut [[T_3:__t[0-9]+]]: __SlateRecord_packed_nested_bitfield_unit_c_8 = unsafe {
+// CHECK-NEXT:         alt {
+// CHECK-NEXT:             tag: 4i8,
+// CHECK-NEXT:             off: 5i32,
+// CHECK-NEXT:             [[SLATE_ANON_0]]: {
+// CHECK-NEXT:                 let mut [[T_2:__t[0-9]+]]: __SlateRecord_packed_nested_bitfield_unit_c_7 = unsafe {
 // CHECK-NEXT:                     core::mem::zeroed()
 // CHECK-NEXT:                 };
-// CHECK-NEXT:                 [[T_3]].__slate_bits_0.__set_cpuid(11u32);
-// CHECK-NEXT:                 [[T_3]].__slate_bits_0.__set_flags(13u32);
-// CHECK-NEXT:                 [[T_3]]
-// CHECK-NEXT:             };
-// CHECK-NEXT:             [[T_2]]
+// CHECK-NEXT:                 [[T_2]].[[SLATE_ANON_1]] = {
+// CHECK-NEXT:                     let mut [[T_3:__t[0-9]+]]: __SlateRecord_packed_nested_bitfield_unit_c_8 = unsafe {
+// CHECK-NEXT:                         core::mem::zeroed()
+// CHECK-NEXT:                     };
+// CHECK-NEXT:                     [[T_3]].__slate_bits_0.__set_cpuid(11u32);
+// CHECK-NEXT:                     [[T_3]].__slate_bits_0.__set_flags(13u32);
+// CHECK-NEXT:                     [[T_3]]
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 [[T_2]]
+// CHECK-NEXT:             },
+// CHECK-NEXT:             len: 6u8,
 // CHECK-NEXT:         },
-// CHECK-NEXT:         len: 6u8,
-// CHECK-NEXT:     },
-// CHECK-NEXT: ]);
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::calloc;
 // CHECK-NEXT: use slate_support::free;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn mark(a: *mut alt, bit: u32) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u32 = unsafe {
 // CHECK-NEXT:         core::ptr::read_unaligned(
-// CHECK-NEXT:                 core::ptr::addr_of!((* a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
+// CHECK-NEXT:                 core::ptr::addr_of!((*a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .__get_flags()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[T_0]] = (([[V_0]] as i32) as u32) | bit;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut [[T_1]] = core::ptr::read_unaligned(
-// CHECK-NEXT:             core::ptr::addr_of_mut!((* a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         [[T_1]].__set_flags([[T_0]]);
 // CHECK-NEXT:         core::ptr::write_unaligned(
-// CHECK-NEXT:             core::ptr::addr_of_mut!((* a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
 // CHECK-NEXT:             [[T_1]],
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[T_2]] = (((unsafe {
 // CHECK-NEXT:         core::ptr::read_unaligned(
-// CHECK-NEXT:                 core::ptr::addr_of!((* a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
+// CHECK-NEXT:                 core::ptr::addr_of!((*a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .__get_cpuid()
 // CHECK-NEXT:     }) as i32) + 1) as u32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut [[T_3]] = core::ptr::read_unaligned(
-// CHECK-NEXT:             core::ptr::addr_of_mut!((* a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         [[T_3]].__set_cpuid([[T_2]]);
 // CHECK-NEXT:         core::ptr::write_unaligned(
-// CHECK-NEXT:             core::ptr::addr_of_mut!((* a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
 // CHECK-NEXT:             [[T_3]],
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let heap: *mut alt = (unsafe {
 // CHECK-NEXT:         calloc(3u64 as usize, (core::mem::size_of::<alt>() as u64) as usize) as *mut ()
@@ -185,41 +188,29 @@ int main(void) {
 // CHECK-NEXT:             c"%zu %u %u %u %u %u %u %u\n".as_ptr(),
 // CHECK-NEXT:             core::mem::size_of::<alt>() as u64,
 // CHECK-NEXT:             core::ptr::read_unaligned(
-// CHECK-NEXT:                     core::ptr::addr_of!(
-// CHECK-NEXT:                         (* heap.add(1)).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0
-// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::ptr::addr_of!((*heap
+// CHECK-NEXT:                         .add(1)).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .__get_cpuid() as i32,
 // CHECK-NEXT:             core::ptr::read_unaligned(
-// CHECK-NEXT:                     core::ptr::addr_of!(
-// CHECK-NEXT:                         (* heap.add(1)).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0
-// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::ptr::addr_of!((*heap
+// CHECK-NEXT:                         .add(1)).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .__get_flags() as i32,
 // CHECK-NEXT:             core::ptr::read_unaligned(
-// CHECK-NEXT:                     core::ptr::addr_of!(
-// CHECK-NEXT:                         * core::ptr::addr_of!(table.0[0].[[SLATE_ANON_0]].[[SLATE_ANON_1]]
-// CHECK-NEXT:                         .__slate_bits_0)
-// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::ptr::addr_of!(*core::ptr::addr_of!(table.0[0].[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0)),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .__get_cpuid() as i32,
 // CHECK-NEXT:             core::ptr::read_unaligned(
-// CHECK-NEXT:                     core::ptr::addr_of!(
-// CHECK-NEXT:                         * core::ptr::addr_of!(table.0[0].[[SLATE_ANON_0]].[[SLATE_ANON_1]]
-// CHECK-NEXT:                         .__slate_bits_0)
-// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::ptr::addr_of!(*core::ptr::addr_of!(table.0[0].[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0)),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .__get_flags() as i32,
 // CHECK-NEXT:             core::ptr::read_unaligned(
-// CHECK-NEXT:                     core::ptr::addr_of!(
-// CHECK-NEXT:                         local.[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0
-// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::ptr::addr_of!(local.[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .__get_cpuid() as i32,
 // CHECK-NEXT:             core::ptr::read_unaligned(
-// CHECK-NEXT:                     core::ptr::addr_of!(
-// CHECK-NEXT:                         local.[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0
-// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::ptr::addr_of!(local.[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .__get_flags() as i32,
 // CHECK-NEXT:             (*heap.add(1)).[[SLATE_ANON_0]].ft,
@@ -229,6 +220,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { free((heap as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -42,6 +42,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_sysv_va {
 // CHECK-NEXT:     #[repr(C)]
 // CHECK-NEXT:     struct Tag {
@@ -50,8 +51,10 @@ int main(void) {
 // CHECK-NEXT:         overflow: *const u8,
 // CHECK-NEXT:         registers: *const u8,
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     const GP_END: u32 = 48;
 // CHECK-NEXT:     const FP_END: u32 = 176;
+// CHECK-EMPTY:
 // CHECK-NEXT:     pub unsafe fn arg<L, T>(list: *mut L, classes: u32) -> T {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             let tag = &mut *(list as *mut Tag);
@@ -67,9 +70,7 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 rest >>= 2;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             if classes != 0 && tag.gp_offset + gp <= GP_END
-// CHECK-NEXT:                 && tag.fp_offset + sse <= FP_END
-// CHECK-NEXT:             {
+// CHECK-NEXT:             if classes != 0 && tag.gp_offset + gp <= GP_END && tag.fp_offset + sse <= FP_END {
 // CHECK-NEXT:                 let mut copied = 0;
 // CHECK-NEXT:                 let mut rest = classes;
 // CHECK-NEXT:                 while rest != 0 {
@@ -91,8 +92,7 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 let align = core::mem::align_of::<T>().max(8);
-// CHECK-NEXT:                 let slot = ((tag.overflow as usize + align - 1) & !(align - 1))
-// CHECK-NEXT:                     as *const u8;
+// CHECK-NEXT:                 let slot = ((tag.overflow as usize + align - 1) & !(align - 1)) as *const u8;
 // CHECK-NEXT:                 core::ptr::copy_nonoverlapping(slot, dst, size);
 // CHECK-NEXT:                 tag.overflow = slot.add((size + 7) & !7);
 // CHECK-NEXT:             }
@@ -100,93 +100,84 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn vsum(n: i32, mut __va_args: ...) -> i64 {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         match i % 3 {
 // CHECK-NEXT:             0 => {
-// CHECK-NEXT:                 total
-// CHECK-NEXT:                     += unsafe {
-// CHECK-NEXT:                         __slate_sysv_va::arg::<
-// CHECK-NEXT:                             _,
-// CHECK-NEXT:                             bitint::BInt<100, 2, 16, bitint::A8>,
-// CHECK-NEXT:                         >(core::ptr::addr_of_mut!(ap), 5u32)
+// CHECK-NEXT:                 total += unsafe {
+// CHECK-NEXT:                         __slate_sysv_va::arg::<_, bitint::BInt<100, 2, 16, bitint::A8>>(
+// CHECK-NEXT:                             core::ptr::addr_of_mut!(ap),
+// CHECK-NEXT:                             5u32,
+// CHECK-NEXT:                         )
 // CHECK-NEXT:                     }
-// CHECK-NEXT:                         .to_i128() as i64;
+// CHECK-NEXT:                     .to_i128() as i64;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             1 => {
-// CHECK-NEXT:                 total
-// CHECK-NEXT:                     += unsafe {
-// CHECK-NEXT:                         __slate_sysv_va::arg::<
-// CHECK-NEXT:                             _,
-// CHECK-NEXT:                             bitint::BInt<128, 2, 16, bitint::A8>,
-// CHECK-NEXT:                         >(core::ptr::addr_of_mut!(ap), 5u32)
+// CHECK-NEXT:                 total += unsafe {
+// CHECK-NEXT:                         __slate_sysv_va::arg::<_, bitint::BInt<128, 2, 16, bitint::A8>>(
+// CHECK-NEXT:                             core::ptr::addr_of_mut!(ap),
+// CHECK-NEXT:                             5u32,
+// CHECK-NEXT:                         )
 // CHECK-NEXT:                     }
-// CHECK-NEXT:                         .to_i128() as i64;
+// CHECK-NEXT:                     .to_i128() as i64;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             _ => {
-// CHECK-NEXT:                 total
-// CHECK-NEXT:                     += unsafe {
-// CHECK-NEXT:                         __slate_sysv_va::arg::<
-// CHECK-NEXT:                             _,
-// CHECK-NEXT:                             bitint::BInt<200, 4, 32, bitint::A8>,
-// CHECK-NEXT:                         >(core::ptr::addr_of_mut!(ap), 0u32)
+// CHECK-NEXT:                 total += unsafe {
+// CHECK-NEXT:                         __slate_sysv_va::arg::<_, bitint::BInt<200, 4, 32, bitint::A8>>(
+// CHECK-NEXT:                             core::ptr::addr_of_mut!(ap),
+// CHECK-NEXT:                             0u32,
+// CHECK-NEXT:                         )
 // CHECK-NEXT:                     }
-// CHECK-NEXT:                         .to_i128() as i64;
+// CHECK-NEXT:                     .to_i128() as i64;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn vwide(n: i32, mut __va_args: ...) -> i64 {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         let mut v: bitint::BUint<300, 5, 40, bitint::A8> = unsafe {
-// CHECK-NEXT:             __slate_sysv_va::arg::<
-// CHECK-NEXT:                 _,
-// CHECK-NEXT:                 bitint::BUint<300, 5, 40, bitint::A8>,
-// CHECK-NEXT:             >(core::ptr::addr_of_mut!(ap), 0u32)
+// CHECK-NEXT:             __slate_sysv_va::arg::<_, bitint::BUint<300, 5, 40, bitint::A8>>(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(ap),
+// CHECK-NEXT:                 0u32,
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i64 = total;
 // CHECK-NEXT:         total = [[V_0]]
 // CHECK-NEXT:             + (((v.shr_bits(250 as usize).to_u128() as u64) as i64)
 // CHECK-NEXT:                 + ((v
 // CHECK-NEXT:                     .bitand_bits(
-// CHECK-NEXT:                         <bitint::BUint<
-// CHECK-NEXT:                             300,
-// CHECK-NEXT:                             5,
-// CHECK-NEXT:                             40,
-// CHECK-NEXT:                             bitint::A8,
-// CHECK-NEXT:                         >>::from_bint(
-// CHECK-NEXT:                             <bitint::BInt<
-// CHECK-NEXT:                                 300,
-// CHECK-NEXT:                                 5,
-// CHECK-NEXT:                                 40,
-// CHECK-NEXT:                                 bitint::A8,
-// CHECK-NEXT:                             >>::from_i128(65535 as i128),
+// CHECK-NEXT:                         <bitint::BUint<300, 5, 40, bitint::A8>>::from_bint(
+// CHECK-NEXT:                             <bitint::BInt<300, 5, 40, bitint::A8>>::from_i128(
+// CHECK-NEXT:                                 65535 as i128,
+// CHECK-NEXT:                             ),
 // CHECK-NEXT:                         ),
 // CHECK-NEXT:                     )
 // CHECK-NEXT:                     .to_u128() as u64) as i64));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -194,12 +185,9 @@ int main(void) {
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
 // CHECK-NEXT:             vsum(
 // CHECK-NEXT:                 5i32,
-// CHECK-NEXT:                 <bitint::BInt<
-// CHECK-NEXT:                     100,
-// CHECK-NEXT:                     2,
-// CHECK-NEXT:                     16,
-// CHECK-NEXT:                     bitint::A8,
-// CHECK-NEXT:                 >>::from_i128(123456789012345 as i128),
+// CHECK-NEXT:                 <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(
+// CHECK-NEXT:                     123456789012345 as i128,
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(-77 as i128),
 // CHECK-NEXT:                 <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128)
 // CHECK-NEXT:                     .shl_bits(130 as usize)
@@ -219,36 +207,18 @@ int main(void) {
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
 // CHECK-NEXT:             vwide(
 // CHECK-NEXT:                 2i32,
-// CHECK-NEXT:                 <bitint::BUint<
-// CHECK-NEXT:                     300,
-// CHECK-NEXT:                     5,
-// CHECK-NEXT:                     40,
-// CHECK-NEXT:                     bitint::A8,
-// CHECK-NEXT:                 >>::from_bint(
+// CHECK-NEXT:                 <bitint::BUint<300, 5, 40, bitint::A8>>::from_bint(
 // CHECK-NEXT:                         <bitint::BInt<300, 5, 40, bitint::A8>>::from_i128(3 as i128),
 // CHECK-NEXT:                     )
 // CHECK-NEXT:                     .shl_bits(255 as usize)
 // CHECK-NEXT:                     .bitor_bits(
-// CHECK-NEXT:                         <bitint::BUint<
-// CHECK-NEXT:                             300,
-// CHECK-NEXT:                             5,
-// CHECK-NEXT:                             40,
-// CHECK-NEXT:                             bitint::A8,
-// CHECK-NEXT:                         >>::from_bint(
-// CHECK-NEXT:                             <bitint::BInt<
-// CHECK-NEXT:                                 300,
-// CHECK-NEXT:                                 5,
-// CHECK-NEXT:                                 40,
-// CHECK-NEXT:                                 bitint::A8,
-// CHECK-NEXT:                             >>::from_i128(4660 as i128),
+// CHECK-NEXT:                         <bitint::BUint<300, 5, 40, bitint::A8>>::from_bint(
+// CHECK-NEXT:                             <bitint::BInt<300, 5, 40, bitint::A8>>::from_i128(
+// CHECK-NEXT:                                 4660 as i128,
+// CHECK-NEXT:                             ),
 // CHECK-NEXT:                         ),
 // CHECK-NEXT:                     ),
-// CHECK-NEXT:                 <bitint::BUint<
-// CHECK-NEXT:                     300,
-// CHECK-NEXT:                     5,
-// CHECK-NEXT:                     40,
-// CHECK-NEXT:                     bitint::A8,
-// CHECK-NEXT:                 >>::from_bint(
+// CHECK-NEXT:                 <bitint::BUint<300, 5, 40, bitint::A8>>::from_bint(
 // CHECK-NEXT:                     <bitint::BInt<300, 5, 40, bitint::A8>>::from_i128(9 as i128),
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             ),
@@ -257,6 +227,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

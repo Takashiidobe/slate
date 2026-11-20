@@ -21,33 +21,41 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN armv7-unknown-linux-gnueabihf
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn immediate() -> i32 {
 // CHECK-NEXT:     let mut v: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov {0}, #{1}", lateout(reg) [[T_0]], const 8 as i32, options(pure, nomem,
-// CHECK-NEXT:             nostack, preserves_flags)
+// CHECK-NEXT:             "mov {0}, #{1}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             const 8 as i32,
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn through_register(mut q: *mut i32) -> i32 {
 // CHECK-NEXT:     let mut v: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "ldr {0}, [{1}]", lateout(reg) [[T_0]], in (reg) q as u32, options(pure, nomem,
-// CHECK-NEXT:             nostack, preserves_flags)
+// CHECK-NEXT:             "ldr {0}, [{1}]",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) q as u32,
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: [i32; 2] = [5, 9];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -61,6 +69,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

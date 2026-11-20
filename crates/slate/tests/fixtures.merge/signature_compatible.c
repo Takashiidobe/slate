@@ -91,10 +91,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: //! merge-sources: units/signature_compatible_helper.c
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -112,7 +109,9 @@ int main(void) {
 // CHECK-NEXT:                 big_sized[3],
 // CHECK-NEXT:                 label(),
 // CHECK-NEXT:                 read_opaque(make_opaque()),
-// CHECK-NEXT:                 read_handle(core::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>()),
+// CHECK-NEXT:                 read_handle(
+// CHECK-NEXT:                     core::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>(),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
@@ -129,7 +128,9 @@ int main(void) {
 // CHECK-NEXT:                 big_sized[3],
 // CHECK-NEXT:                 label(),
 // CHECK-NEXT:                 read_opaque(make_opaque()),
-// CHECK-NEXT:                 read_handle(core::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>()),
+// CHECK-NEXT:                 read_handle(
+// CHECK-NEXT:                     core::ptr::null_mut::<__SlateRecord_signature_compatible_c_13>(),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
@@ -219,7 +220,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn read_handle(h: *mut __SlateRecord_signature_compatible_helper_c_17) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn read_handle(
+// CHECK-NEXT:     h: *mut __SlateRecord_signature_compatible_helper_c_17,
+// CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     if !h.is_null() { unsafe { (*h).q } } else { 9 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -239,23 +242,27 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut big_sized: __SlateAlignLargeArray<[i32; 32]> = __SlateAlignLargeArray({
-// CHECK-NEXT:     let mut [[T_0]]: [i32; 32] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]][0] = 1i32;
-// CHECK-NEXT:     [[T_0]][1] = 2i32;
-// CHECK-NEXT:     [[T_0]][2] = 3i32;
-// CHECK-NEXT:     [[T_0]][3] = 4i32;
-// CHECK-NEXT:     [[T_0]]
-// CHECK-NEXT: });
+// CHECK-NEXT: static mut big_sized: __SlateAlignLargeArray<[i32; 32]> = __SlateAlignLargeArray(
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut [[T_0]]: [i32; 32] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]][0] = 1i32;
+// CHECK-NEXT:         [[T_0]][1] = 2i32;
+// CHECK-NEXT:         [[T_0]][2] = 3i32;
+// CHECK-NEXT:         [[T_0]][3] = 4i32;
+// CHECK-NEXT:         [[T_0]]
+// CHECK-NEXT:     },
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: static mut big_unsized: __SlateAlignLargeArray<[i32; 32]> = __SlateAlignLargeArray({
-// CHECK-NEXT:     let mut [[T_0]]: [i32; 32] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]][0] = 1i32;
-// CHECK-NEXT:     [[T_0]][1] = 2i32;
-// CHECK-NEXT:     [[T_0]][2] = 3i32;
-// CHECK-NEXT:     [[T_0]]
-// CHECK-NEXT: });
+// CHECK-NEXT: static mut big_unsized: __SlateAlignLargeArray<[i32; 32]> = __SlateAlignLargeArray(
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut [[T_0]]: [i32; 32] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]][0] = 1i32;
+// CHECK-NEXT:         [[T_0]][1] = 2i32;
+// CHECK-NEXT:         [[T_0]][2] = 3i32;
+// CHECK-NEXT:         [[T_0]]
+// CHECK-NEXT:     },
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: static mut table: [i32; 3] = [1, 2, 3];

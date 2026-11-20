@@ -14,24 +14,32 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
-// CHECK-NEXT: static mut table: __SlateAlign16<[u64; 64]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     core::mem::zeroed()
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut table: __SlateAlign16<[u64; 64]> = __SlateAlign16(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut table_ptr: *mut u64 = unsafe { core::ptr::addr_of_mut!(table.0) as *mut u64 };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn d_hash(mut [[RET_0:__ret_[0-9]+]]: u64) -> *mut u64 {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: *mut u64;
 // CHECK-NEXT:     let mut __ret: *mut u64 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov {1:r},{0:r}", lateout(reg) [[T_0]], in (reg) table_ptr as u64,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "mov {1:r},{0:r}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) table_ptr as u64,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         __ret = unsafe { core::mem::transmute::<u64, *mut u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
@@ -40,14 +48,16 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "shrl $12,{0:e}", inlateout(reg) [[RET_0]] as u64 => [[T_1]], options(pure, nomem,
-// CHECK-NEXT:             nostack, att_syntax)
+// CHECK-NEXT:             "shrl $12,{0:e}",
+// CHECK-NEXT:             inlateout(reg) [[RET_0]] as u64 => [[T_1]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         [[RET_0]] = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_1]] = [[RET_0]];
 // CHECK-NEXT:     unsafe { [[V_0]].add([[V_1]] as usize) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
@@ -59,6 +69,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

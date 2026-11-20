@@ -43,6 +43,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -128,33 +129,39 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
 // CHECK-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct LongDouble([u8; 10]);
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Add for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_add(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Sub for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_sub(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Mul for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_mul(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Div for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_div(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::AddAssign for LongDouble {
 // CHECK-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -162,6 +169,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::SubAssign for LongDouble {
 // CHECK-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -169,6 +177,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::MulAssign for LongDouble {
 // CHECK-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -176,6 +185,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::DivAssign for LongDouble {
 // CHECK-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -183,46 +193,48 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Neg for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn neg(self) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_neg(self)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialEq for LongDouble {
 // CHECK-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
 // CHECK-NEXT:         __slate_f80_eq(*self, *__other)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Entry {
 // CHECK-NEXT:     value: i64,
 // CHECK-NEXT:     tag: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct List {
 // CHECK-NEXT:     count: i32,
 // CHECK-NEXT:     entries: [Entry; 0],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Bytes {
@@ -230,14 +242,17 @@ int main(void) {
 // CHECK-NEXT:     tag: i32,
 // CHECK-NEXT:     bytes: [u8; 0],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Wide {
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     values: [LongDouble; 0],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let header: List = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: List = unsafe { core::mem::zeroed() };
@@ -267,34 +282,29 @@ int main(void) {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (((unsafe {
-// CHECK-NEXT:         ((core::ptr::addr_of_mut!((* list).entries) as *mut Entry) as *mut i8)
+// CHECK-NEXT:         ((core::ptr::addr_of_mut!((*list).entries) as *mut Entry) as *mut i8)
 // CHECK-NEXT:             .offset_from(list as *mut i8)
-// CHECK-NEXT:     }) as i64) as u64) != 8
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) as i64) as u64) != 8 {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (((unsafe {
-// CHECK-NEXT:         ((core::ptr::addr_of_mut!((* bytes).bytes) as *mut u8) as *mut i8)
+// CHECK-NEXT:         ((core::ptr::addr_of_mut!((*bytes).bytes) as *mut u8) as *mut i8)
 // CHECK-NEXT:             .offset_from(bytes as *mut i8)
-// CHECK-NEXT:     }) as i64) as u64) != 12
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) as i64) as u64) != 12 {
 // CHECK-NEXT:         return 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (((unsafe {
-// CHECK-NEXT:         ((core::ptr::addr_of_mut!((* wide).values) as *mut LongDouble) as *mut i8)
+// CHECK-NEXT:         ((core::ptr::addr_of_mut!((*wide).values) as *mut LongDouble) as *mut i8)
 // CHECK-NEXT:             .offset_from(wide as *mut i8)
-// CHECK-NEXT:     }) as i64) as u64) != 16
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) as i64) as u64) != 16 {
 // CHECK-NEXT:         return 4;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (((unsafe { (bytes.add(1) as *mut i8).offset_from(bytes as *mut i8) }) as i64)
-// CHECK-NEXT:         as u64) != 16
-// CHECK-NEXT:     {
+// CHECK-NEXT:         as u64) != 16 {
 // CHECK-NEXT:         return 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (((unsafe { (wide.add(1) as *mut i8).offset_from(wide as *mut i8) }) as i64)
-// CHECK-NEXT:         as u64) != 16
-// CHECK-NEXT:     {
+// CHECK-NEXT:         as u64) != 16 {
 // CHECK-NEXT:         return 6;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
@@ -313,47 +323,43 @@ int main(void) {
 // CHECK-NEXT:         let mut i: i32 = 0;
 // CHECK-NEXT:         while i < unsafe { (*list).count } {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*(core::ptr::addr_of_mut!((* list).entries) as *mut Entry)
-// CHECK-NEXT:                     .offset(i as isize))
-// CHECK-NEXT:                     .value = (i * 13) as i64;
+// CHECK-NEXT:                 (*(core::ptr::addr_of_mut!((*list).entries) as *mut Entry)
+// CHECK-NEXT:                     .offset(i as isize)).value = (i * 13) as i64;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*(core::ptr::addr_of_mut!((* list).entries) as *mut Entry)
-// CHECK-NEXT:                     .offset(i as isize))
-// CHECK-NEXT:                     .tag = i + 7;
+// CHECK-NEXT:                 (*(core::ptr::addr_of_mut!((*list).entries) as *mut Entry)
+// CHECK-NEXT:                     .offset(i as isize)).tag = i + 7;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let array: *mut [u8; 0] = unsafe { core::ptr::addr_of_mut!((* bytes).bytes) };
+// CHECK-NEXT:     let array: *mut [u8; 0] = unsafe { core::ptr::addr_of_mut!((*bytes).bytes) };
 // CHECK-NEXT:     for i in 0i32..9i32 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *(core::ptr::addr_of_mut!(* array) as *mut u8).offset(i as isize) = (i * 3)
+// CHECK-NEXT:             *(core::ptr::addr_of_mut!(*array) as *mut u8).offset(i as isize) = (i * 3)
 // CHECK-NEXT:                 as u8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *(core::ptr::addr_of_mut!((* wide).values) as *mut LongDouble)
+// CHECK-NEXT:             *(core::ptr::addr_of_mut!((*wide).values) as *mut LongDouble)
 // CHECK-NEXT:                 .offset(i as isize) = __slate_f80_from_i32(i)
 // CHECK-NEXT:                 + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let result: i32 = ((unsafe {
-// CHECK-NEXT:         (*(core::ptr::addr_of!((* (list as * const List)).entries) as *const Entry)
-// CHECK-NEXT:             .add(4))
-// CHECK-NEXT:             .value
+// CHECK-NEXT:         (*(core::ptr::addr_of!((*(list as *const List)).entries) as *const Entry)
+// CHECK-NEXT:             .add(4)).value
 // CHECK-NEXT:     }) != 52
 // CHECK-NEXT:         || (unsafe {
-// CHECK-NEXT:             (*(core::ptr::addr_of!((* (list as * const List)).entries) as *const Entry)
-// CHECK-NEXT:                 .add(3))
-// CHECK-NEXT:                 .tag
+// CHECK-NEXT:             (*(core::ptr::addr_of!((*(list as *const List)).entries) as *const Entry)
+// CHECK-NEXT:                 .add(3)).tag
 // CHECK-NEXT:         }) != 10
-// CHECK-NEXT:         || ((unsafe { *(core::ptr::addr_of_mut!((* bytes).bytes) as *mut u8).add(8) })
+// CHECK-NEXT:         || ((unsafe { *(core::ptr::addr_of_mut!((*bytes).bytes) as *mut u8).add(8) })
 // CHECK-NEXT:             as i32) != 24 || (unsafe { (*bytes).head }) != 2.5f64
 // CHECK-NEXT:         || (unsafe { (*bytes).tag }) != 17
 // CHECK-NEXT:         || (unsafe {
-// CHECK-NEXT:             *(core::ptr::addr_of_mut!((* wide).values) as *mut LongDouble).add(2)
+// CHECK-NEXT:             *(core::ptr::addr_of_mut!((*wide).values) as *mut LongDouble).add(2)
 // CHECK-NEXT:         }) != LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64])
 // CHECK-NEXT:         || ((unsafe { (*wide).tag }) as i32) != 4) as i32;
 // CHECK-NEXT:     unsafe { free((wide as *mut ()) as *mut core::ffi::c_void) };
@@ -361,6 +367,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { free((list as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

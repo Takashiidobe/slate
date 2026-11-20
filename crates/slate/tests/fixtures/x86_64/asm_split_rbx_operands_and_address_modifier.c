@@ -46,16 +46,21 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut slate_abs_ref: Option<unsafe extern "C-unwind" fn(i32) -> i32>;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // CHECK-NEXT:     ".section .data.slate_exports,\"aw\"\n.balign 8\nslate_abs_ref:\n.quad {0}\n.previous\n",
-// CHECK-NEXT:     sym abs, options(att_syntax)
+// CHECK-NEXT:     sym abs,
+// CHECK-NEXT:     options(att_syntax),
 // CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn swap_through_rbx(mut r#in: u64, out_rcx: &mut u64) -> u64 {
 // CHECK-NEXT:     let mut rbx: u64 = 0;
 // CHECK-NEXT:     let mut rcx: u64 = 0;
@@ -63,9 +68,11 @@ int main(void) {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xchg %rbx, {0:r}\nxchgq %rbx, %rcx\nxchg %rbx, {0:r}", inout(reg) r#in as
-// CHECK-NEXT:             u64 => [[T_0]], lateout("cx") [[T_1]], in ("cx") r#in.wrapping_add((1 as i32) as
-// CHECK-NEXT:             u64) as u64, options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "xchg %rbx, {0:r}\nxchgq %rbx, %rcx\nxchg %rbx, {0:r}",
+// CHECK-NEXT:             inout(reg) r#in as u64 => [[T_0]],
+// CHECK-NEXT:             lateout("cx") [[T_1]],
+// CHECK-NEXT:             in("cx") r#in.wrapping_add((1 as i32) as u64) as u64,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         rbx = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:         rcx = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
@@ -75,21 +82,27 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     rbx
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn try_store(mut lock: &mut u32, mut tid: u32, mut pop: &mut u64) -> u32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "lock cmpxchgl {0:e}, (%rdi)\n\tjnz 1f\n\tmovq {0:r}, (%rdx)\n1:", in (reg) 0
-// CHECK-NEXT:             as u64, inout("ax") tid as u32 => [[T_0]], in ("di") (lock as * mut u32) as u64,
-// CHECK-NEXT:             in ("dx") (pop as * mut u64) as u64, options(nostack, att_syntax)
+// CHECK-NEXT:             "lock cmpxchgl {0:e}, (%rdi)\n\tjnz 1f\n\tmovq {0:r}, (%rdx)\n1:",
+// CHECK-NEXT:             in(reg) 0 as u64,
+// CHECK-NEXT:             inout("ax") tid as u32 => [[T_0]],
+// CHECK-NEXT:             in("di") (lock as *mut u32) as u64,
+// CHECK-NEXT:             in("dx") (pop as *mut u64) as u64,
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         tid = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     tid
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn abs(x: i32) -> i32 {
 // CHECK-NEXT:     if x < 0 { -x } else { x }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut rcx: u64 = 0;
 // CHECK-NEXT:     let rbx: u64 = swap_through_rbx(
@@ -124,6 +137,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

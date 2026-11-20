@@ -35,75 +35,49 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn classify(seed: i32) -> i32 {
-// CHECK-NEXT:     let s: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         256,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<
-// CHECK-NEXT:                 128,
-// CHECK-NEXT:                 2,
-// CHECK-NEXT:                 16,
-// CHECK-NEXT:                 bitint::A8,
-// CHECK-NEXT:             >>::from_u128(170141183460469231731687303715884105727),
+// CHECK-NEXT:     let s: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:             <bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(
+// CHECK-NEXT:                 170141183460469231731687303715884105727,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .wrapping_add(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(seed as i128));
 // CHECK-NEXT:     let [[T_0:__t[0-9]+]]: bitint::BInt<256, 4, 32, bitint::A8> = s;
 // CHECK-NEXT:     let [[T_1:__t[0-9]+]]: i64 = if [[T_0]]
 // CHECK-NEXT:         .compare(
-// CHECK-NEXT:             <bitint::BInt<
-// CHECK-NEXT:                 256,
-// CHECK-NEXT:                 4,
-// CHECK-NEXT:                 32,
-// CHECK-NEXT:                 bitint::A8,
-// CHECK-NEXT:             >>::from_u128(170141183460469231731687303715884105727),
+// CHECK-NEXT:             <bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(
+// CHECK-NEXT:                 170141183460469231731687303715884105727,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         ) >= 0
 // CHECK-NEXT:         && [[T_0]]
 // CHECK-NEXT:             .compare(
-// CHECK-NEXT:                 <bitint::BInt<
-// CHECK-NEXT:                     256,
-// CHECK-NEXT:                     4,
-// CHECK-NEXT:                     32,
-// CHECK-NEXT:                     bitint::A8,
-// CHECK-NEXT:                 >>::from_u128(170141183460469231731687303715884105730),
-// CHECK-NEXT:             ) <= 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:                 <bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(
+// CHECK-NEXT:                     170141183460469231731687303715884105730,
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ) <= 0 {
 // CHECK-NEXT:         0
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         if [[T_0]]
+// CHECK-NEXT:     } else if [[T_0]]
+// CHECK-NEXT:         .compare(
+// CHECK-NEXT:             <bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(
+// CHECK-NEXT:                 170141183460469231731687303715884105740,
+// CHECK-NEXT:             ),
+// CHECK-NEXT:         ) == 0
+// CHECK-NEXT:         || [[T_0]]
 // CHECK-NEXT:             .compare(
-// CHECK-NEXT:                 <bitint::BInt<
-// CHECK-NEXT:                     256,
-// CHECK-NEXT:                     4,
-// CHECK-NEXT:                     32,
-// CHECK-NEXT:                     bitint::A8,
-// CHECK-NEXT:                 >>::from_u128(170141183460469231731687303715884105740),
-// CHECK-NEXT:             ) == 0
-// CHECK-NEXT:             || [[T_0]]
+// CHECK-NEXT:                 <bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(
+// CHECK-NEXT:                     170141183460469231731687303715884105745,
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ) >= 0
+// CHECK-NEXT:             && [[T_0]]
 // CHECK-NEXT:                 .compare(
-// CHECK-NEXT:                     <bitint::BInt<
-// CHECK-NEXT:                         256,
-// CHECK-NEXT:                         4,
-// CHECK-NEXT:                         32,
-// CHECK-NEXT:                         bitint::A8,
-// CHECK-NEXT:                     >>::from_u128(170141183460469231731687303715884105745),
-// CHECK-NEXT:                 ) >= 0
-// CHECK-NEXT:                 && [[T_0]]
-// CHECK-NEXT:                     .compare(
-// CHECK-NEXT:                         <bitint::BInt<
-// CHECK-NEXT:                             256,
-// CHECK-NEXT:                             4,
-// CHECK-NEXT:                             32,
-// CHECK-NEXT:                             bitint::A8,
-// CHECK-NEXT:                         >>::from_u128(170141183460469231731687303715884105747),
-// CHECK-NEXT:                     ) <= 0
-// CHECK-NEXT:         {
-// CHECK-NEXT:             1
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             2
-// CHECK-NEXT:         }
+// CHECK-NEXT:                     <bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(
+// CHECK-NEXT:                         170141183460469231731687303715884105747,
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                 ) <= 0 {
+// CHECK-NEXT:         1
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         2
 // CHECK-NEXT:     };
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         match [[T_1]] {
@@ -123,42 +97,28 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn probe(seed: i32) -> i32 {
-// CHECK-NEXT:     let s: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         256,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<
-// CHECK-NEXT:                 128,
-// CHECK-NEXT:                 2,
-// CHECK-NEXT:                 16,
-// CHECK-NEXT:                 bitint::A8,
-// CHECK-NEXT:             >>::from_u128(170141183460469231731687303715884105727),
+// CHECK-NEXT:     let s: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:             <bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(
+// CHECK-NEXT:                 170141183460469231731687303715884105727,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .wrapping_add(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(seed as i128));
 // CHECK-NEXT:     let v: i32 = 42;
 // CHECK-NEXT:     let [[T_0]]: bitint::BInt<256, 4, 32, bitint::A8> = s;
 // CHECK-NEXT:     let [[T_1]]: i64 = if [[T_0]]
 // CHECK-NEXT:         .compare(
-// CHECK-NEXT:             <bitint::BInt<
-// CHECK-NEXT:                 256,
-// CHECK-NEXT:                 4,
-// CHECK-NEXT:                 32,
-// CHECK-NEXT:                 bitint::A8,
-// CHECK-NEXT:             >>::from_u128(170141183460469231731687303715884105727),
+// CHECK-NEXT:             <bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(
+// CHECK-NEXT:                 170141183460469231731687303715884105727,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         ) >= 0
 // CHECK-NEXT:         && [[T_0]]
 // CHECK-NEXT:             .compare(
-// CHECK-NEXT:                 <bitint::BInt<
-// CHECK-NEXT:                     256,
-// CHECK-NEXT:                     4,
-// CHECK-NEXT:                     32,
-// CHECK-NEXT:                     bitint::A8,
-// CHECK-NEXT:                 >>::from_u128(170141183460469231731687303715884105730),
-// CHECK-NEXT:             ) <= 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:                 <bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(
+// CHECK-NEXT:                     170141183460469231731687303715884105730,
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ) <= 0 {
 // CHECK-NEXT:         0
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         1
@@ -178,13 +138,20 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", classify(0i32), classify(13i32), classify(19i32),
-// CHECK-NEXT:         classify(5i32), probe(2i32), probe(9i32)
+// CHECK-NEXT:         "{} {} {} {} {} {}",
+// CHECK-NEXT:         classify(0i32),
+// CHECK-NEXT:         classify(13i32),
+// CHECK-NEXT:         classify(19i32),
+// CHECK-NEXT:         classify(5i32),
+// CHECK-NEXT:         probe(2i32),
+// CHECK-NEXT:         probe(9i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -61,7 +61,9 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut observed: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn forwarding_cycle(stop: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         if stop != 0 {
@@ -72,6 +74,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn run(mode: i32) -> i32 {
 // CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut steps: i32 = unsafe { core::mem::zeroed() };
@@ -140,18 +143,24 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {} {} {} {}", sum, visits, checks, steps,
+// CHECK-NEXT:             "{} {} {} {} {}",
+// CHECK-NEXT:             sum,
+// CHECK-NEXT:             visits,
+// CHECK-NEXT:             checks,
+// CHECK-NEXT:             steps,
 // CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(observed))
 // CHECK-NEXT:         );
 // CHECK-NEXT:         return sum;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     run(0i32);
 // CHECK-NEXT:     run(1i32);
 // CHECK-NEXT:     println!("{}", forwarding_cycle(1i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

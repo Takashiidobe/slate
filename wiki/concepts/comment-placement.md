@@ -64,7 +64,7 @@ are placed by position, and they anchor to a node id, never to an offset search.
 | Leading        | group directly above the node, no blank line                                                 | function, prototype, record, enum, typedef, global, field, enumerator, statement | above the node                                                                                     |
 | Trailing       | same line, after the node's last token; includes multi-line continuations at the same column | field, enumerator, parameter, global, local, statement, `#define`                | statement/local: trailing `//` on the same line; others: see [doc rules](#doc-vs-regular-comments) |
 | Inner trailing | last comment in a block before `}`, no following statement                                   | block                                                                            | at the end of the Rust block                                                                       |
-| Interior       | inside an expression, condition, or argument list                                            | enclosing statement                                                              | hoisted to the statement as leading (rustfmt cannot hold them in place)                            |
+| Interior       | inside an expression, condition, or argument list                                            | enclosing statement                                                              | hoisted to the statement as leading (codegen prints comments only between statements)            |
 
 ### Detached
 

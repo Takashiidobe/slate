@@ -215,62 +215,84 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(thread_local)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[deprecated(note = "C23 warning directive probe")]
 // CHECK-NEXT: const __SLATE_WARNING_0: () = {};
+// CHECK-EMPTY:
 // CHECK-NEXT: const _: () = __SLATE_WARNING_0;
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! C23_TYPE_KIND {
 // CHECK-NEXT:     () => {
 // CHECK-NEXT:         3i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! C23_TYPE_KIND__2 {
 // CHECK-NEXT:     () => {
 // CHECK-NEXT:         2i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! C23_TYPE_KIND__3 {
 // CHECK-NEXT:     () => {
 // CHECK-NEXT:         1i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! C23_TYPE_KIND__4 {
 // CHECK-NEXT:     () => {
 // CHECK-NEXT:         4i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static c23_embedded: [u8; 3] = [67, 50, 51];
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: struct __SlateAlign32<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign32<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct C23Empty {
 // CHECK-NEXT:     first: i32,
 // CHECK-NEXT:     second: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut c23_deprecated_value: i32 = 41;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut c23_maybe_unused_value: i32 = 43;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c23_nodiscard_value() -> i32 {
 // CHECK-NEXT:     47
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c23_never_return() {
 // CHECK-NEXT:     unsafe { std::process::exit(99i32 as i32) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut c23_thread_value: i32 = 53;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut c23_never_flag: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::exit;
+// CHECK-EMPTY:
 // CHECK-NEXT: static c23_file_constant: i32 = 59;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c23_unnamed_parameter([[V_0:__v[0-9]+]]: i32, value: i32) -> i32 {
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c23_label_declaration(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let result: i32 = value + 1;
 // CHECK-NEXT:         return result;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c23_label_before_brace() {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c23_switch_fallthrough(value: i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     match value {
@@ -287,20 +309,21 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn c23_relaxed_variadic(mut __va_args: ...) -> i32 {
 // CHECK-NEXT:     let mut arguments: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut first: i32 = 0;
 // CHECK-NEXT:     let mut second: i32 = 0;
 // CHECK-NEXT:     arguments = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     first = unsafe { arguments.next_arg::<i32>() };
 // CHECK-NEXT:     second = unsafe { arguments.next_arg::<i32>() };
 // CHECK-NEXT:     first + second
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let local_constant: i32 = 61;
 // CHECK-NEXT:     let aligned_value: __SlateAlign32<i32> = __SlateAlign32(3i32);
@@ -329,8 +352,9 @@ int main(void) {
 // CHECK-NEXT:     let false_value: bool = false;
 // CHECK-NEXT:     let static_compound_value: i32 = 83;
 // CHECK-NEXT:     let language_total: i32 = (((unsafe { c23_file_constant }) + local_constant
-// CHECK-NEXT:         + inferred_value + same_type_value + unqualified_value + (signed_precise as i32)
-// CHECK-NEXT:         + ((unsigned_precise as u32) as i32) + binary_value + aligned_value.0) as u64)
+// CHECK-NEXT:             + inferred_value + same_type_value + unqualified_value
+// CHECK-NEXT:             + (signed_precise as i32) + ((unsigned_precise as u32) as i32) + binary_value
+// CHECK-NEXT:             + aligned_value.0) as u64)
 // CHECK-NEXT:         .wrapping_add(core::mem::align_of::<i32>() as u64)
 // CHECK-NEXT:         .wrapping_add(α as u64)
 // CHECK-NEXT:         .wrapping_add((utf8_character as i32) as u64)
@@ -365,12 +389,19 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     c23_label_before_brace();
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", language_total, attribute_total, preprocessor_total,
-// CHECK-NEXT:         type_total, control_total, removal_total
+// CHECK-NEXT:         "{} {} {} {} {} {}",
+// CHECK-NEXT:         language_total,
+// CHECK-NEXT:         attribute_total,
+// CHECK-NEXT:         preprocessor_total,
+// CHECK-NEXT:         type_total,
+// CHECK-NEXT:         control_total,
+// CHECK-NEXT:         removal_total
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static utf8_text: [u8; 3] = [206, 169, 0];
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

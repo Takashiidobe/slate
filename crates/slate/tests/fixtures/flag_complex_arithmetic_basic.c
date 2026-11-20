@@ -23,27 +23,28 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let big: f64 = 1e300f64;
-// CHECK-NEXT:     let mut z: num_complex::Complex<f64> =
-// CHECK-NEXT:         (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
-// CHECK-NEXT:             + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
-// CHECK-NEXT:                 * num_complex::Complex {
-// CHECK-NEXT:                     re: 0.0f64,
-// CHECK-NEXT:                     im: 1.0f64,
-// CHECK-NEXT:                 };
+// CHECK-NEXT:     let mut z: num_complex::Complex<f64> = (unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(big))
+// CHECK-NEXT:     })
+// CHECK-NEXT:         + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
+// CHECK-NEXT:             * num_complex::Complex {
+// CHECK-NEXT:                 re: 0.0f64,
+// CHECK-NEXT:                 im: 1.0f64,
+// CHECK-NEXT:             };
 // CHECK-NEXT:     let mut q: num_complex::Complex<f64> = z.c_div(z, true);
 // CHECK-NEXT:     let small: num_complex::Complex<f64> = (1.0f64
-// CHECK-NEXT:         + num_complex::Complex {
-// CHECK-NEXT:             re: 0.0f64,
-// CHECK-NEXT:             im: 2.0f64,
-// CHECK-NEXT:         })
-// CHECK-NEXT:     .c_div(
-// CHECK-NEXT:         3.0f64
 // CHECK-NEXT:             + num_complex::Complex {
 // CHECK-NEXT:                 re: 0.0f64,
-// CHECK-NEXT:                 im: 4.0f64,
-// CHECK-NEXT:             },
-// CHECK-NEXT:         true,
-// CHECK-NEXT:     );
+// CHECK-NEXT:                 im: 2.0f64,
+// CHECK-NEXT:             })
+// CHECK-NEXT:         .c_div(
+// CHECK-NEXT:             3.0f64
+// CHECK-NEXT:                 + num_complex::Complex {
+// CHECK-NEXT:                     re: 0.0f64,
+// CHECK-NEXT:                     im: 4.0f64,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             true,
+// CHECK-NEXT:         );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

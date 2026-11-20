@@ -12,8 +12,10 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: *mut i32 = (unsafe {
 // CHECK-NEXT:         malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ()
@@ -22,9 +24,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *x = 4;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{} {}", unsafe { * x }, unsafe { * x });
+// CHECK-NEXT:     println!("{} {}", unsafe { *x }, unsafe { *x });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

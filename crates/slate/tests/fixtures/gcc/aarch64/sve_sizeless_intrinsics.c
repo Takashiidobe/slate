@@ -48,7 +48,11 @@ int main(void) {
 // CHECK-NEXT:     b: core::arch::aarch64::svint32_t,
 // CHECK-NEXT: ) -> core::arch::aarch64::svint32_t {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::arch::aarch64::svmul_n_s32_x(pg, core::arch::aarch64::svadd_s32_x(pg, a, b), 3i32)
+// CHECK-NEXT:         core::arch::aarch64::svmul_n_s32_x(
+// CHECK-NEXT:             pg,
+// CHECK-NEXT:             core::arch::aarch64::svadd_s32_x(pg, a, b),
+// CHECK-NEXT:             3i32,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -57,11 +61,16 @@ int main(void) {
 // CHECK-NEXT:     a: core::arch::aarch64::svint32_t,
 // CHECK-NEXT:     b: core::arch::aarch64::svint32_t,
 // CHECK-NEXT: ) -> core::arch::aarch64::svint32_t {
-// CHECK-NEXT:     return unsafe { core::arch::aarch64::svext_s32::<{ ((1 as i32) as u64) as i32 }>(a, b) };
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         core::arch::aarch64::svext_s32::<{ ((1 as i32) as u64) as i32 }>(a, b)
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,crc,lse,sve,fcma")]
-// CHECK-NEXT: unsafe fn bump(slot: &mut core::arch::aarch64::svint32_t, by: core::arch::aarch64::svint32_t) {
+// CHECK-NEXT: unsafe fn bump(
+// CHECK-NEXT:     slot: &mut core::arch::aarch64::svint32_t,
+// CHECK-NEXT:     by: core::arch::aarch64::svint32_t,
+// CHECK-NEXT: ) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(slot as *mut core::arch::aarch64::svint32_t) = core::arch::aarch64::svadd_s32_x(
 // CHECK-NEXT:             core::arch::aarch64::svptrue_b32(),
@@ -82,19 +91,11 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 0;
 // CHECK-NEXT:         while i < 64 {
-// CHECK-NEXT:             let pg: core::arch::aarch64::svbool_t =
-// CHECK-NEXT:                 unsafe { core::arch::aarch64::svwhilelt_b32_s32(i, 64i32) };
+// CHECK-NEXT:             let pg: core::arch::aarch64::svbool_t = unsafe {
+// CHECK-NEXT:                 core::arch::aarch64::svwhilelt_b32_s32(i, 64i32)
+// CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::arch::aarch64::svprfb::<
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         unsafe {
-// CHECK-NEXT:                             core::mem::transmute::<i32, core::arch::aarch64::svprfop>(
-// CHECK-NEXT:                                 ((0 as i32) as u32) as i32,
-// CHECK-NEXT:                             )
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     _,
-// CHECK-NEXT:                 >(
+// CHECK-NEXT:                 core::arch::aarch64::svprfb::<{ unsafe { core::mem::transmute::<i32, core::arch::aarch64::svprfop>(((0 as i32) as u32) as i32) } }, _>(
 // CHECK-NEXT:                     pg,
 // CHECK-NEXT:                     (r#in.as_mut_ptr() as *mut i32).offset(i as isize) as *const (),
 // CHECK-NEXT:                 )
@@ -119,7 +120,9 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..64i32 {
 // CHECK-NEXT:         total += out[i as usize] as i64;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut acc: core::arch::aarch64::svint32_t = unsafe { core::arch::aarch64::svdup_n_s32(0i32) };
+// CHECK-NEXT:     let mut acc: core::arch::aarch64::svint32_t = unsafe {
+// CHECK-NEXT:         core::arch::aarch64::svdup_n_s32(0i32)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     acc = unsafe { core::arch::aarch64::svindex_s32(0i32, 2i32) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         bump(
@@ -127,26 +130,23 @@ int main(void) {
 // CHECK-NEXT:             core::arch::aarch64::svdup_n_s32(5i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let rotated: core::arch::aarch64::svint32_t =
-// CHECK-NEXT:         unsafe { rotate_one(acc, core::arch::aarch64::svdup_n_s32(-1i32)) };
+// CHECK-NEXT:     let rotated: core::arch::aarch64::svint32_t = unsafe {
+// CHECK-NEXT:         rotate_one(acc, core::arch::aarch64::svdup_n_s32(-1i32))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let first4: i64 = unsafe {
 // CHECK-NEXT:         core::arch::aarch64::svaddv_s32(
-// CHECK-NEXT:             core::arch::aarch64::svptrue_pat_b32::<
-// CHECK-NEXT:                 {
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<i32, core::arch::aarch64::svpattern>(
-// CHECK-NEXT:                             ((4 as i32) as u32) as i32,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 },
-// CHECK-NEXT:             >(),
+// CHECK-NEXT:             core::arch::aarch64::svptrue_pat_b32::<{ unsafe { core::mem::transmute::<i32, core::arch::aarch64::svpattern>(((4 as i32) as u32) as i32) } }>(),
 // CHECK-NEXT:             rotated,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let any: i32 = (unsafe {
 // CHECK-NEXT:         core::arch::aarch64::svptest_any(
 // CHECK-NEXT:             core::arch::aarch64::svptrue_b32(),
-// CHECK-NEXT:             core::arch::aarch64::svcmpgt_n_s32(core::arch::aarch64::svptrue_b32(), acc, 20i32),
+// CHECK-NEXT:             core::arch::aarch64::svcmpgt_n_s32(
+// CHECK-NEXT:                 core::arch::aarch64::svptrue_b32(),
+// CHECK-NEXT:                 acc,
+// CHECK-NEXT:                 20i32,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

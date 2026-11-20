@@ -35,8 +35,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "/Zc:preprocessor" }
 // CHECK-NEXT: mod __slate_alloca {
-// CHECK-NEXT:     use core::cell::UnsafeCell;
 // CHECK-NEXT:     use std::alloc::{Layout, alloc, dealloc, handle_alloc_error};
+// CHECK-NEXT:     use core::cell::UnsafeCell;
 // CHECK-EMPTY:
 // CHECK-NEXT:     const ALIGN: usize = 16;
 // CHECK-NEXT:     const BLOCK: usize = 1 << 20;
@@ -59,12 +59,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT:     impl Drop for Block {
 // CHECK-NEXT:         fn drop(&mut self) {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 dealloc(
-// CHECK-NEXT:                     self.base,
-// CHECK-NEXT:                     Layout::from_size_align_unchecked(self.size, ALIGN),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
+// CHECK-NEXT:             unsafe { dealloc(self.base, Layout::from_size_align_unchecked(self.size, ALIGN)) }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-EMPTY:
@@ -98,8 +93,7 @@ int main(void) {
 // CHECK-NEXT:                 self.used = 0;
 // CHECK-NEXT:                 if self.block == self.blocks.len() || self.blocks[self.block].size < needed {
 // CHECK-NEXT:                     self.blocks.truncate(self.block);
-// CHECK-NEXT:                     self.blocks
-// CHECK-NEXT:                         .push(Block::new(needed.next_multiple_of(ALIGN).max(BLOCK)));
+// CHECK-NEXT:                     self.blocks.push(Block::new(needed.next_multiple_of(ALIGN).max(BLOCK)));
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -121,10 +115,7 @@ int main(void) {
 // CHECK-NEXT:         pub fn new() -> Self {
 // CHECK-NEXT:             STACK.with(|stack| {
 // CHECK-NEXT:                 let stack = unsafe { &*stack.get() };
-// CHECK-NEXT:                 Mark {
-// CHECK-NEXT:                     block: stack.block,
-// CHECK-NEXT:                     used: stack.used,
-// CHECK-NEXT:                 }
+// CHECK-NEXT:                 Mark { block: stack.block, used: stack.used }
 // CHECK-NEXT:             })
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -142,11 +133,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT:     #[inline]
 // CHECK-NEXT:     pub fn alloca(size: usize, align: usize) -> *mut core::ffi::c_void {
-// CHECK-NEXT:         STACK
-// CHECK-NEXT:             .with(|stack| unsafe {
-// CHECK-NEXT:                 (*stack.get()).allocate(size, align.max(1).next_power_of_two())
-// CHECK-NEXT:             })
-// CHECK-NEXT:             .cast()
+// CHECK-NEXT:         STACK.with(|stack| unsafe { (*stack.get()).allocate(size, align.max(1).next_power_of_two()) }).cast()
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -168,14 +155,16 @@ int main(void) {
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn probe(n: i32) {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
-// CHECK-NEXT:     let a: *mut i8 = (__slate_alloca::alloca((n as u64) as usize, 16usize) as *mut ()) as *mut i8;
-// CHECK-NEXT:     let b: *mut i8 = (__slate_alloca::alloca((n as u64) as usize, 16usize) as *mut ()) as *mut i8;
-// CHECK-NEXT:     let c: *mut i8 = (__slate_alloca::alloca((n as u64) as usize, 16usize) as *mut ()) as *mut i8;
+// CHECK-NEXT:     let a: *mut i8 = (__slate_alloca::alloca((n as u64) as usize, 16usize) as *mut ())
+// CHECK-NEXT:         as *mut i8;
+// CHECK-NEXT:     let b: *mut i8 = (__slate_alloca::alloca((n as u64) as usize, 16usize) as *mut ())
+// CHECK-NEXT:         as *mut i8;
+// CHECK-NEXT:     let c: *mut i8 = (__slate_alloca::alloca((n as u64) as usize, 16usize) as *mut ())
+// CHECK-NEXT:         as *mut i8;
 // CHECK-NEXT:     let step: i32 = n + 16 - 1 & -16;
 // CHECK-NEXT:     if ((unsafe { a.offset_from(b as *mut i8) }) as i64) != (step as i64)
 // CHECK-NEXT:         || ((unsafe { b.offset_from(c as *mut i8) }) as i64) != (step as i64)
-// CHECK-NEXT:         || (c as u64) % 16 != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:         || (c as u64) % 16 != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -183,17 +172,17 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (core::mem::size_of::<[i32; 10]>() as u64) / (core::mem::size_of::<i32>() as u64)
-// CHECK-NEXT:     {
+// CHECK-NEXT:         < (core::mem::size_of::<[i32; 10]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
 // CHECK-NEXT:         probe(unsafe { sizes.0[i as usize] });
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static sizes: __SlateAlign16<[i32; 10]> = __SlateAlign16([
-// CHECK-NEXT:     1i32, 8i32, 15i32, 16i32, 17i32, 24i32, 32i32, 33i32, 64i32, 100i32,
-// CHECK-NEXT: ]);
+// CHECK-NEXT: static sizes: __SlateAlign16<[i32; 10]> = __SlateAlign16(
+// CHECK-NEXT:     [1i32, 8i32, 15i32, 16i32, 17i32, 24i32, 32i32, 33i32, 64i32, 100i32],
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

@@ -66,58 +66,84 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Pair {
 // CHECK-NEXT:     left: i32,
 // CHECK-NEXT:     right: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut counter: i32 = 5;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(transparent)]
 // CHECK-NEXT: struct __SlateConst<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut table: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
-// CHECK-NEXT: static mut grid: __SlateAlign16<{{\[\[}}i32; 3]; 2]> = __SlateAlign16([
-// CHECK-NEXT:     [1i32, 2i32, 3i32],
-// CHECK-NEXT:     [4i32, 5i32, 6i32],
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut grid: __SlateAlign16<{{\[\[}}i32; 3]; 2]> = __SlateAlign16(
+// CHECK-NEXT:     {{\[\[}}1i32, 2i32, 3i32], [4i32, 5i32, 6i32]],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut pair: Pair = Pair { left: 8i32, right: 9i32 };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut name: [i8; 6] = [115, 108, 97, 116, 101, 0];
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut counter_ptr: *mut i32 = unsafe { core::ptr::addr_of_mut!(counter) };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut table_ptr: *mut i32 = unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut table_third: *mut i32 = unsafe {
-// CHECK-NEXT:     core::ptr::addr_of_mut!(table.0) as *mut i32
-// CHECK-NEXT: }
+// CHECK-NEXT:         core::ptr::addr_of_mut!(table.0) as *mut i32
+// CHECK-NEXT:     }
 // CHECK-NEXT:     .wrapping_offset(2i32 as isize);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut table_end: *mut i32 = unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 }
 // CHECK-NEXT:     .wrapping_offset(4i32 as isize);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut table_whole: *mut [i32; 4] = unsafe { core::ptr::addr_of_mut!(table.0) };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut grid_row: *mut i32 = unsafe {
 // CHECK-NEXT:     core::ptr::addr_of_mut!(grid.0[1i32 as usize]) as *mut i32
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut pair_right: *mut i32 = unsafe { core::ptr::addr_of_mut!(pair.right) };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut pair_ptr: *mut Pair = unsafe { core::ptr::addr_of_mut!(pair) };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut name_ptr: *mut i8 = unsafe { core::ptr::addr_of_mut!(name) as *mut i8 };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut name_tail: *const i8 = unsafe { core::ptr::addr_of_mut!(name) as *mut i8 }
 // CHECK-NEXT:     .wrapping_offset(2i32 as isize) as *const i8;
-// CHECK-NEXT: static fixed_counter: __SlateConst<*mut i32> = __SlateConst(unsafe {
-// CHECK-NEXT:     core::ptr::addr_of_mut!(counter)
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static fixed_counter: __SlateConst<*mut i32> = __SlateConst(
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(counter) },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut counter_ptr_ptr: *mut *mut i32 = unsafe {
 // CHECK-NEXT:     core::ptr::addr_of_mut!(counter_ptr)
 // CHECK-NEXT: };
-// CHECK-NEXT: static mut slots: __SlateAlign16<[*mut i32; 3]> = __SlateAlign16([
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(counter) },
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 }
-// CHECK-NEXT:         .wrapping_offset(1i32 as isize),
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(pair.left) },
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut slots: __SlateAlign16<[*mut i32; 3]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(counter) },
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 }
+// CHECK-NEXT:             .wrapping_offset(1i32 as isize),
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(pair.left) },
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Cursor {
@@ -125,19 +151,23 @@ int main(void) {
 // CHECK-NEXT:     value: *mut i32,
 // CHECK-NEXT:     pair: *mut Pair,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut cursors: __SlateAlign16<[Cursor; 2]> = __SlateAlign16([
-// CHECK-NEXT:     Cursor {
-// CHECK-NEXT:         label: (b"counter\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         value: unsafe { core::ptr::addr_of_mut!(counter) },
-// CHECK-NEXT:         pair: unsafe { core::ptr::addr_of_mut!(pair) },
-// CHECK-NEXT:     },
-// CHECK-NEXT:     Cursor {
-// CHECK-NEXT:         label: (b"table\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         value: unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 }
-// CHECK-NEXT:             .wrapping_offset(3i32 as isize),
-// CHECK-NEXT:         pair: core::ptr::null_mut::<Pair>(),
-// CHECK-NEXT:     },
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut cursors: __SlateAlign16<[Cursor; 2]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         Cursor {
+// CHECK-NEXT:             label: (b"counter\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:             value: unsafe { core::ptr::addr_of_mut!(counter) },
+// CHECK-NEXT:             pair: unsafe { core::ptr::addr_of_mut!(pair) },
+// CHECK-NEXT:         },
+// CHECK-NEXT:         Cursor {
+// CHECK-NEXT:             label: (b"table\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:             value: unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 }
+// CHECK-NEXT:                 .wrapping_offset(3i32 as isize),
+// CHECK-NEXT:             pair: core::ptr::null_mut::<Pair>(),
+// CHECK-NEXT:         },
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { counter_ptr };
 // CHECK-NEXT:     unsafe {
@@ -188,12 +218,19 @@ int main(void) {
 // CHECK-NEXT:         it = unsafe { [[V_5]].add(1) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {}", unsafe { counter }, unsafe { * fixed_counter.0 }, unsafe {
-// CHECK-NEXT:         table.0[0] }, unsafe { table.0[1] }, unsafe { table.0[2] }
+// CHECK-NEXT:         "{} {} {} {} {}",
+// CHECK-NEXT:         unsafe { counter },
+// CHECK-NEXT:         unsafe { *fixed_counter.0 },
+// CHECK-NEXT:         unsafe { table.0[0] },
+// CHECK-NEXT:         unsafe { table.0[1] },
+// CHECK-NEXT:         unsafe { table.0[2] }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { table.0[3] }, unsafe { grid.0[1] [2] }, unsafe { pair
-// CHECK-NEXT:         .left }, unsafe { pair.right }
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         unsafe { table.0[3] },
+// CHECK-NEXT:         unsafe { grid.0[1][2] },
+// CHECK-NEXT:         unsafe { pair.left },
+// CHECK-NEXT:         unsafe { pair.right }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -218,6 +255,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     sum % 50
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

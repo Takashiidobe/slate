@@ -139,14 +139,16 @@ int main(void) {
 // CHECK-NEXT:     let mut pbytes: [u8; 8] = [0u8; 8];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(u) as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(u) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             ((bytes.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             ((core::mem::size_of::<small_first>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(p) as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(p) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             ((pbytes.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             ((core::mem::size_of::<padded>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
@@ -166,7 +168,9 @@ int main(void) {
 // CHECK-NEXT:         let mut i: u32 = 0;
 // CHECK-NEXT:         while (i as u64) < (core::mem::size_of::<padded>() as u64) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(c"%02x".as_ptr(), pbytes[i as usize] as i32) };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::printf(c"%02x".as_ptr(), pbytes[i as usize] as i32)
+// CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
@@ -184,7 +188,8 @@ int main(void) {
 // CHECK-NEXT:     let mut abytes: [u8; 8] = [0u8; 8];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(ap.0) as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(ap.0) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             ((abytes.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             ((core::mem::size_of::<padded>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
@@ -193,7 +198,9 @@ int main(void) {
 // CHECK-NEXT:         let mut i: u32 = 0;
 // CHECK-NEXT:         while (i as u64) < (core::mem::size_of::<padded>() as u64) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(c"%02x".as_ptr(), abytes[i as usize] as i32) };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::printf(c"%02x".as_ptr(), abytes[i as usize] as i32)
+// CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
@@ -208,8 +215,8 @@ int main(void) {
 // CHECK-NEXT:             [[SLATE_COMPOUND_0]].rows[1].c = 7i8;
 // CHECK-NEXT:             [[SLATE_COMPOUND_0]].rows[1].i = 8i32;
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let [[T_3:__t[0-9]+]]: *mut u8 =
-// CHECK-NEXT:                     (core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]]) as *mut _) as *mut u8;
+// CHECK-NEXT:                 let [[T_3:__t[0-9]+]]: *mut u8 = (core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                     as *mut _) as *mut u8;
 // CHECK-NEXT:                 [[T_3]].add(1usize).write_bytes(0u8, 7usize);
 // CHECK-NEXT:                 [[T_3]].add(17usize).write_bytes(0u8, 3usize);
 // CHECK-NEXT:                 [[T_3]].add(25usize).write_bytes(0u8, 3usize);
@@ -229,7 +236,9 @@ int main(void) {
 // CHECK-NEXT:         let mut i: u32 = 0;
 // CHECK-NEXT:         while (i as u64) < (core::mem::size_of::<nested>() as u64) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(c"%02x".as_ptr(), lbytes.0[i as usize] as i32) };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 slate_support::printf(c"%02x".as_ptr(), lbytes.0[i as usize] as i32)
+// CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             i = i.wrapping_add(1);
 // CHECK-NEXT:         }
@@ -253,7 +262,8 @@ int main(void) {
 // CHECK-NEXT:     let mut nbytes: __SlateAlign16<[u8; 32]> = __SlateAlign16([0u8; 32]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((core::ptr::addr_of_mut!(n) as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(n) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             ((nbytes.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             ((core::mem::size_of::<nested>() as u64) as usize) as usize,
 // CHECK-NEXT:         )

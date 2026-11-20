@@ -28,17 +28,21 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Guard {
 // CHECK-NEXT:     depth: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut slate_support: i32 = 7;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn release(guard: *mut Guard) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support = slate_support + (*guard).depth;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn scope(depth: i32) -> i32 {
 // CHECK-NEXT:     let mut outer: Guard = Guard { depth: depth };
 // CHECK-NEXT:     let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(outer) as *mut _;
@@ -57,11 +61,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { slate_support }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let during: i32 = scope(3i32);
 // CHECK-NEXT:     println!("{} {}", during, unsafe { slate_support });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

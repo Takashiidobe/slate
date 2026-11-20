@@ -99,10 +99,10 @@ int main(void) {
 // CHECK-NEXT: #![allow(suspicious_runtime_symbol_definitions)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! CHECK__2 {
+// CHECK-NEXT: macro_rules! CHECK {
 // CHECK-NEXT:     ($c:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             if ($c) == 0 {
+// CHECK-NEXT:             if !$c {
 // CHECK-NEXT:                 unsafe { abort() };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
@@ -112,10 +112,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! CHECK {
+// CHECK-NEXT: macro_rules! CHECK__2 {
 // CHECK-NEXT:     ($c:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             if !$c {
+// CHECK-NEXT:             if ($c) == 0 {
 // CHECK-NEXT:                 unsafe { abort() };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
@@ -158,138 +158,142 @@ int main(void) {
 // CHECK-NEXT:     r#type: u32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static operators: __SlateAlign16<[op; 5]> = __SlateAlign16([
-// X86_64-PC-WINDOWS-MSVC-NEXT:     {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_0:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_0]].text = ptrlen {
-// I686-PC-WINDOWS-MSVC-NEXT: static operators: __SlateConst<[op; 5]> = __SlateConst([
-// I686-PC-WINDOWS-MSVC-NEXT:     op {
-// I686-PC-WINDOWS-MSVC-NEXT:         text: ptrlen {
-// AARCH64-PC-WINDOWS-MSVC-NEXT: static operators: __SlateConst<[op; 5]> = __SlateConst([
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_0:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_0]].text = ptrlen {
-// CHECK-NEXT:             ptr: (b"(\0".as_ptr() as *mut i8) as *const (),
-// X86_64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
-// X86_64-PC-WINDOWS-MSVC-NEXT:         };
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_0]].r#type = 0u32;
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_0]]
-// I686-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 2]>() as u32).wrapping_sub(1u32),
-// I686-PC-WINDOWS-MSVC-NEXT:         },
-// I686-PC-WINDOWS-MSVC-NEXT:         r#type: 0u32,
-// AARCH64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         };
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_0]].r#type = 0u32;
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_0]]
-// CHECK-NEXT:     },
-// X86_64-PC-WINDOWS-MSVC-NEXT:     {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_1:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_1]].text = ptrlen {
-// I686-PC-WINDOWS-MSVC-NEXT:     op {
-// I686-PC-WINDOWS-MSVC-NEXT:         text: ptrlen {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_1:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_1]].text = ptrlen {
-// CHECK-NEXT:             ptr: (b")\0".as_ptr() as *mut i8) as *const (),
-// X86_64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
-// X86_64-PC-WINDOWS-MSVC-NEXT:         };
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_1]].r#type = 1u32;
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_1]]
-// I686-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 2]>() as u32).wrapping_sub(1u32),
-// I686-PC-WINDOWS-MSVC-NEXT:         },
-// I686-PC-WINDOWS-MSVC-NEXT:         r#type: 1u32,
-// AARCH64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         };
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_1]].r#type = 1u32;
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_1]]
-// CHECK-NEXT:     },
-// X86_64-PC-WINDOWS-MSVC-NEXT:     {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_2:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_2]].text = ptrlen {
-// I686-PC-WINDOWS-MSVC-NEXT:     op {
-// I686-PC-WINDOWS-MSVC-NEXT:         text: ptrlen {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_2:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_2]].text = ptrlen {
-// CHECK-NEXT:             ptr: (b"&&\0".as_ptr() as *mut i8) as *const (),
-// X86_64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 3]>() as u64).wrapping_sub(1u64),
-// X86_64-PC-WINDOWS-MSVC-NEXT:         };
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_2]].r#type = 2u32;
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_2]]
-// I686-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 3]>() as u32).wrapping_sub(1u32),
-// I686-PC-WINDOWS-MSVC-NEXT:         },
-// I686-PC-WINDOWS-MSVC-NEXT:         r#type: 2u32,
-// AARCH64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 3]>() as u64).wrapping_sub(1u64),
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         };
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_2]].r#type = 2u32;
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_2]]
-// CHECK-NEXT:     },
-// X86_64-PC-WINDOWS-MSVC-NEXT:     {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_3:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_3]].text = ptrlen {
-// I686-PC-WINDOWS-MSVC-NEXT:     op {
-// I686-PC-WINDOWS-MSVC-NEXT:         text: ptrlen {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_3:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_3]].text = ptrlen {
-// CHECK-NEXT:             ptr: (b"||\0".as_ptr() as *mut i8) as *const (),
-// X86_64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 3]>() as u64).wrapping_sub(1u64),
-// X86_64-PC-WINDOWS-MSVC-NEXT:         };
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_3]].r#type = 3u32;
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_3]]
-// I686-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 3]>() as u32).wrapping_sub(1u32),
-// I686-PC-WINDOWS-MSVC-NEXT:         },
-// I686-PC-WINDOWS-MSVC-NEXT:         r#type: 3u32,
-// AARCH64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 3]>() as u64).wrapping_sub(1u64),
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         };
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_3]].r#type = 3u32;
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_3]]
-// CHECK-NEXT:     },
-// X86_64-PC-WINDOWS-MSVC-NEXT:     {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_4:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_4]].text = ptrlen {
-// I686-PC-WINDOWS-MSVC-NEXT:     op {
-// I686-PC-WINDOWS-MSVC-NEXT:         text: ptrlen {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         let mut [[T_4:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_4]].text = ptrlen {
-// CHECK-NEXT:             ptr: (b"!\0".as_ptr() as *mut i8) as *const (),
-// X86_64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
-// X86_64-PC-WINDOWS-MSVC-NEXT:         };
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_4]].r#type = 4u32;
-// X86_64-PC-WINDOWS-MSVC-NEXT:         [[T_4]]
-// I686-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 2]>() as u32).wrapping_sub(1u32),
-// I686-PC-WINDOWS-MSVC-NEXT:         },
-// I686-PC-WINDOWS-MSVC-NEXT:         r#type: 4u32,
-// AARCH64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         };
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_4]].r#type = 4u32;
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_4]]
-// CHECK-NEXT:     },
-// CHECK-NEXT: ]);
+// X86_64-PC-WINDOWS-MSVC-NEXT: static operators: __SlateAlign16<[op; 5]> = __SlateAlign16(
+// I686-PC-WINDOWS-MSVC-NEXT: static operators: __SlateConst<[op; 5]> = __SlateConst(
+// AARCH64-PC-WINDOWS-MSVC-NEXT: static operators: __SlateConst<[op; 5]> = __SlateConst(
+// CHECK-NEXT:     [
+// X86_64-PC-WINDOWS-MSVC-NEXT:         {
+// X86_64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_0:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_0]].text = ptrlen {
+// I686-PC-WINDOWS-MSVC-NEXT:         op {
+// I686-PC-WINDOWS-MSVC-NEXT:             text: ptrlen {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_0:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_0]].text = ptrlen {
+// CHECK-NEXT:                 ptr: (b"(\0".as_ptr() as *mut i8) as *const (),
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
+// X86_64-PC-WINDOWS-MSVC-NEXT:             };
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_0]].r#type = 0u32;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_0]]
+// I686-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 2]>() as u32).wrapping_sub(1u32),
+// I686-PC-WINDOWS-MSVC-NEXT:             },
+// I686-PC-WINDOWS-MSVC-NEXT:             r#type: 0u32,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             };
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_0]].r#type = 0u32;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// X86_64-PC-WINDOWS-MSVC-NEXT:         {
+// X86_64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_1:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_1]].text = ptrlen {
+// I686-PC-WINDOWS-MSVC-NEXT:         op {
+// I686-PC-WINDOWS-MSVC-NEXT:             text: ptrlen {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_1:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_1]].text = ptrlen {
+// CHECK-NEXT:                 ptr: (b")\0".as_ptr() as *mut i8) as *const (),
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
+// X86_64-PC-WINDOWS-MSVC-NEXT:             };
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_1]].r#type = 1u32;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_1]]
+// I686-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 2]>() as u32).wrapping_sub(1u32),
+// I686-PC-WINDOWS-MSVC-NEXT:             },
+// I686-PC-WINDOWS-MSVC-NEXT:             r#type: 1u32,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             };
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_1]].r#type = 1u32;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_1]]
+// CHECK-NEXT:         },
+// X86_64-PC-WINDOWS-MSVC-NEXT:         {
+// X86_64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_2:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_2]].text = ptrlen {
+// I686-PC-WINDOWS-MSVC-NEXT:         op {
+// I686-PC-WINDOWS-MSVC-NEXT:             text: ptrlen {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_2:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_2]].text = ptrlen {
+// CHECK-NEXT:                 ptr: (b"&&\0".as_ptr() as *mut i8) as *const (),
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 3]>() as u64).wrapping_sub(1u64),
+// X86_64-PC-WINDOWS-MSVC-NEXT:             };
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_2]].r#type = 2u32;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_2]]
+// I686-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 3]>() as u32).wrapping_sub(1u32),
+// I686-PC-WINDOWS-MSVC-NEXT:             },
+// I686-PC-WINDOWS-MSVC-NEXT:             r#type: 2u32,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 3]>() as u64).wrapping_sub(1u64),
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             };
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_2]].r#type = 2u32;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_2]]
+// CHECK-NEXT:         },
+// X86_64-PC-WINDOWS-MSVC-NEXT:         {
+// X86_64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_3:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_3]].text = ptrlen {
+// I686-PC-WINDOWS-MSVC-NEXT:         op {
+// I686-PC-WINDOWS-MSVC-NEXT:             text: ptrlen {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_3:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_3]].text = ptrlen {
+// CHECK-NEXT:                 ptr: (b"||\0".as_ptr() as *mut i8) as *const (),
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 3]>() as u64).wrapping_sub(1u64),
+// X86_64-PC-WINDOWS-MSVC-NEXT:             };
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_3]].r#type = 3u32;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_3]]
+// I686-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 3]>() as u32).wrapping_sub(1u32),
+// I686-PC-WINDOWS-MSVC-NEXT:             },
+// I686-PC-WINDOWS-MSVC-NEXT:             r#type: 3u32,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 3]>() as u64).wrapping_sub(1u64),
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             };
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_3]].r#type = 3u32;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_3]]
+// CHECK-NEXT:         },
+// X86_64-PC-WINDOWS-MSVC-NEXT:         {
+// X86_64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_4:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_4]].text = ptrlen {
+// I686-PC-WINDOWS-MSVC-NEXT:         op {
+// I686-PC-WINDOWS-MSVC-NEXT:             text: ptrlen {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_4:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_4]].text = ptrlen {
+// CHECK-NEXT:                 ptr: (b"!\0".as_ptr() as *mut i8) as *const (),
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
+// X86_64-PC-WINDOWS-MSVC-NEXT:             };
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_4]].r#type = 4u32;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_4]]
+// I686-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 2]>() as u32).wrapping_sub(1u32),
+// I686-PC-WINDOWS-MSVC-NEXT:             },
+// I686-PC-WINDOWS-MSVC-NEXT:             r#type: 4u32,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             };
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_4]].r#type = 4u32;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_4]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
 // CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static names: __SlateAlign16<[ptrlen; 3]> = __SlateAlign16([
-// I686-PC-WINDOWS-MSVC-NEXT: static names: __SlateConst<[ptrlen; 3]> = __SlateConst([
-// AARCH64-PC-WINDOWS-MSVC-NEXT: static names: __SlateConst<[ptrlen; 3]> = __SlateConst([
-// CHECK-NEXT:     ptrlen {
-// CHECK-NEXT:         ptr: (b"ping\0".as_ptr() as *mut i8) as *const (),
-// X86_64-PC-WINDOWS-MSVC-NEXT:         len: (core::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
-// I686-PC-WINDOWS-MSVC-NEXT:         len: (core::mem::size_of::<[i8; 5]>() as u32).wrapping_sub(1u32),
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         len: (core::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
-// CHECK-NEXT:     },
-// CHECK-NEXT:     ptrlen {
-// CHECK-NEXT:         ptr: (b"query\0".as_ptr() as *mut i8) as *const (),
-// X86_64-PC-WINDOWS-MSVC-NEXT:         len: (core::mem::size_of::<[i8; 6]>() as u64).wrapping_sub(1u64),
-// I686-PC-WINDOWS-MSVC-NEXT:         len: (core::mem::size_of::<[i8; 6]>() as u32).wrapping_sub(1u32),
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         len: (core::mem::size_of::<[i8; 6]>() as u64).wrapping_sub(1u64),
-// CHECK-NEXT:     },
-// CHECK-NEXT:     ptrlen {
-// CHECK-NEXT:         ptr: (b"session-bind@openssh.com\0".as_ptr() as *mut i8) as *const (),
-// X86_64-PC-WINDOWS-MSVC-NEXT:         len: (core::mem::size_of::<[i8; 25]>() as u64).wrapping_sub(1u64),
-// I686-PC-WINDOWS-MSVC-NEXT:         len: (core::mem::size_of::<[i8; 25]>() as u32).wrapping_sub(1u32),
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         len: (core::mem::size_of::<[i8; 25]>() as u64).wrapping_sub(1u64),
-// CHECK-NEXT:     },
-// CHECK-NEXT: ]);
+// X86_64-PC-WINDOWS-MSVC-NEXT: static names: __SlateAlign16<[ptrlen; 3]> = __SlateAlign16(
+// I686-PC-WINDOWS-MSVC-NEXT: static names: __SlateConst<[ptrlen; 3]> = __SlateConst(
+// AARCH64-PC-WINDOWS-MSVC-NEXT: static names: __SlateConst<[ptrlen; 3]> = __SlateConst(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         ptrlen {
+// CHECK-NEXT:             ptr: (b"ping\0".as_ptr() as *mut i8) as *const (),
+// X86_64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
+// I686-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 5]>() as u32).wrapping_sub(1u32),
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
+// CHECK-NEXT:         },
+// CHECK-NEXT:         ptrlen {
+// CHECK-NEXT:             ptr: (b"query\0".as_ptr() as *mut i8) as *const (),
+// X86_64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 6]>() as u64).wrapping_sub(1u64),
+// I686-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 6]>() as u32).wrapping_sub(1u32),
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 6]>() as u64).wrapping_sub(1u64),
+// CHECK-NEXT:         },
+// CHECK-NEXT:         ptrlen {
+// CHECK-NEXT:             ptr: (b"session-bind@openssh.com\0".as_ptr() as *mut i8) as *const (),
+// X86_64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 25]>() as u64).wrapping_sub(1u64),
+// I686-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 25]>() as u32).wrapping_sub(1u32),
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 25]>() as u64).wrapping_sub(1u64),
+// CHECK-NEXT:         },
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: #[repr(C, align(16))]
 // X86_64-PC-WINDOWS-MSVC-NEXT: struct __SlateAlign16<T>(T);
@@ -316,15 +320,19 @@ int main(void) {
 // CHECK-NEXT:     desc: *const i8,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static vt_a: __SlateConst<hash_vt> = __SlateConst(hash_vt {
-// CHECK-NEXT:     r#fn: Some(hash_a),
-// CHECK-NEXT:     desc: (b"a\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT: });
+// CHECK-NEXT: static vt_a: __SlateConst<hash_vt> = __SlateConst(
+// CHECK-NEXT:     hash_vt {
+// CHECK-NEXT:         r#fn: Some(hash_a),
+// CHECK-NEXT:         desc: (b"a\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:     },
+// CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: static vt_b: __SlateConst<hash_vt> = __SlateConst(hash_vt {
-// CHECK-NEXT:     r#fn: Some(hash_b),
-// CHECK-NEXT:     desc: (b"b\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT: });
+// CHECK-NEXT: static vt_b: __SlateConst<hash_vt> = __SlateConst(
+// CHECK-NEXT:     hash_vt {
+// CHECK-NEXT:         r#fn: Some(hash_b),
+// CHECK-NEXT:         desc: (b"b\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:     },
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -335,79 +343,81 @@ int main(void) {
 // CHECK-NEXT:     prefix: ptrlen,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static extra: __SlateConst<sign_extra> = __SlateConst(sign_extra {
-// CHECK-NEXT:     hash: unsafe { core::ptr::addr_of!(vt_a.0) },
-// CHECK-NEXT:     fallback: Some(hash_b),
-// CHECK-NEXT:     alg: (b"Ed25519\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:     prefix: ptrlen {
-// CHECK-NEXT:         ptr: (b"\0".as_ptr() as *mut i8) as *const (),
-// X86_64-PC-WINDOWS-MSVC-NEXT:         len: (core::mem::size_of::<[i8; 1]>() as u64).wrapping_sub(1u64),
-// I686-PC-WINDOWS-MSVC-NEXT:         len: (core::mem::size_of::<[i8; 1]>() as u32).wrapping_sub(1u32),
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         len: (core::mem::size_of::<[i8; 1]>() as u64).wrapping_sub(1u64),
+// CHECK-NEXT: static extra: __SlateConst<sign_extra> = __SlateConst(
+// CHECK-NEXT:     sign_extra {
+// CHECK-NEXT:         hash: unsafe { core::ptr::addr_of!(vt_a.0) },
+// CHECK-NEXT:         fallback: Some(hash_b),
+// CHECK-NEXT:         alg: (b"Ed25519\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         prefix: ptrlen {
+// CHECK-NEXT:             ptr: (b"\0".as_ptr() as *mut i8) as *const (),
+// X86_64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 1]>() as u64).wrapping_sub(1u64),
+// I686-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 1]>() as u32).wrapping_sub(1u32),
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 1]>() as u64).wrapping_sub(1u64),
+// CHECK-NEXT:         },
 // CHECK-NEXT:     },
-// CHECK-NEXT: });
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut buffer_a: [i8; 8] = [102, 105, 114, 115, 116, 0, 0, 0];
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut buffer_b: [i8; 8] = [115, 101, 99, 111, 110, 100, 0, 0];
 // CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static pick: __SlateConst<*mut i8> =
-// X86_64-PC-WINDOWS-MSVC-NEXT:     __SlateConst(unsafe { core::ptr::addr_of_mut!(buffer_a) as *mut i8 });
-// I686-PC-WINDOWS-MSVC-NEXT: static pick: __SlateConst<*mut i8> = __SlateConst(
-// I686-PC-WINDOWS-MSVC-NEXT:     unsafe { core::ptr::addr_of_mut!(buffer_b) as *mut i8 }.wrapping_offset(1i32 as isize),
-// I686-PC-WINDOWS-MSVC-NEXT: );
-// AARCH64-PC-WINDOWS-MSVC-NEXT: static pick: __SlateConst<*mut i8> =
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     __SlateConst(unsafe { core::ptr::addr_of_mut!(buffer_a) as *mut i8 });
+// CHECK-NEXT: static pick: __SlateConst<*mut i8> = __SlateConst(
+// X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe { core::ptr::addr_of_mut!(buffer_a) as *mut i8 },
+// I686-PC-WINDOWS-MSVC-NEXT:     unsafe { core::ptr::addr_of_mut!(buffer_b) as *mut i8 }
+// I686-PC-WINDOWS-MSVC-NEXT:         .wrapping_offset(1i32 as isize),
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     unsafe { core::ptr::addr_of_mut!(buffer_a) as *mut i8 },
+// CHECK-NEXT: );
 // CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static picks: __SlateAlign16<[*const u32; 2]> = __SlateAlign16([
-// I686-PC-WINDOWS-MSVC-NEXT: static picks: __SlateConst<[*const u32; 2]> = __SlateConst([
-// AARCH64-PC-WINDOWS-MSVC-NEXT: static picks: __SlateConst<[*const u32; 2]> = __SlateConst([
-// CHECK-NEXT:     unsafe { core::ptr::addr_of!(operators.0[3i32 as usize].r#type) },
-// CHECK-NEXT:     unsafe { core::ptr::addr_of!(operators.0[1i32 as usize].r#type) },
-// CHECK-NEXT: ]);
+// X86_64-PC-WINDOWS-MSVC-NEXT: static picks: __SlateAlign16<[*const u32; 2]> = __SlateAlign16(
+// I686-PC-WINDOWS-MSVC-NEXT: static picks: __SlateConst<[*const u32; 2]> = __SlateConst(
+// AARCH64-PC-WINDOWS-MSVC-NEXT: static picks: __SlateConst<[*const u32; 2]> = __SlateConst(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         unsafe { core::ptr::addr_of!(operators.0[3i32 as usize].r#type) },
+// CHECK-NEXT:         unsafe { core::ptr::addr_of!(operators.0[1i32 as usize].r#type) },
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
 // CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static valid_bitmap: __SlateAlign16<[u32; 8]> = __SlateAlign16([
-// X86_64-PC-WINDOWS-MSVC-NEXT:     2148532230u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:     262145u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:     1073741824u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:     16u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:     0u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:     0u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:     0u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:     2147483648u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT: ]);
-// I686-PC-WINDOWS-MSVC-NEXT: static valid_bitmap: [u32; 8] = [2148532230, 262145, 1073741824, 16, 0, 0, 0, 2147483648];
-// AARCH64-PC-WINDOWS-MSVC-NEXT: static valid_bitmap: [u32; 8] = [2148532230, 262145, 1073741824, 16, 0, 0, 0, 2147483648];
+// X86_64-PC-WINDOWS-MSVC-NEXT: static valid_bitmap: __SlateAlign16<[u32; 8]> = __SlateAlign16(
+// X86_64-PC-WINDOWS-MSVC-NEXT:     [2148532230u32, 262145u32, 1073741824u32, 16u32, 0u32, 0u32, 0u32, 2147483648u32],
+// X86_64-PC-WINDOWS-MSVC-NEXT: );
+// I686-PC-WINDOWS-MSVC-NEXT: static valid_bitmap: [u32; 8] = [
+// I686-PC-WINDOWS-MSVC-NEXT:     2148532230, 262145, 1073741824, 16, 0, 0, 0, 2147483648,
+// I686-PC-WINDOWS-MSVC-NEXT: ];
+// AARCH64-PC-WINDOWS-MSVC-NEXT: static valid_bitmap: [u32; 8] = [
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     2148532230, 262145, 1073741824, 16, 0, 0, 0, 2147483648,
+// AARCH64-PC-WINDOWS-MSVC-NEXT: ];
 // CHECK-EMPTY:
 // CHECK-NEXT: fn same(p: ptrlen, s: *const i8) -> i32 {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool =
-// CHECK-NEXT:         p.len == unsafe { strlen(s) } && (unsafe { memcmp(p.ptr, s as *const (), p.len) }) == 0;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = p.len == unsafe { strlen(s) }
+// CHECK-NEXT:         && (unsafe { memcmp(p.ptr, s as *const (), p.len) }) == 0;
 // CHECK-NEXT:     [[V_0]] as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[op; 5]>() as u64) / (core::mem::size_of::<op>() as u64)) {
-// I686-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[op; 5]>() as u32) / (core::mem::size_of::<op>() as u32)) {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[op; 5]>() as u64) / (core::mem::size_of::<op>() as u64)) {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[op; 5]>() as u64)
+// X86_64-PC-WINDOWS-MSVC-NEXT:         / (core::mem::size_of::<op>() as u64)) {
+// I686-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[op; 5]>() as u32)
+// I686-PC-WINDOWS-MSVC-NEXT:         / (core::mem::size_of::<op>() as u32)) {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[op; 5]>() as u64)
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         / (core::mem::size_of::<op>() as u64)) {
 // CHECK-NEXT:         CHECK!(((unsafe { operators.0[i as usize].r#type }) as u32) == (i as u32));
-// CHECK-NEXT:         CHECK__2!(same(unsafe { operators.0[i as usize].text }, unsafe {
-// CHECK-NEXT:             texts.0[i as usize]
-// CHECK-NEXT:         }));
+// CHECK-NEXT:         CHECK__2!(
+// CHECK-NEXT:             same(unsafe { operators.0[i as usize].text }, unsafe { texts.0[i as usize] })
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     CHECK!(
 // X86_64-PC-WINDOWS-MSVC-NEXT:         ((const { core::mem::size_of::<[ptrlen; 3]>() }) as u64)
-// X86_64-PC-WINDOWS-MSVC-NEXT:             / ((const { core::mem::size_of::<ptrlen>() }) as u64)
+// X86_64-PC-WINDOWS-MSVC-NEXT:             / ((const { core::mem::size_of::<ptrlen>() }) as u64) == 3
 // I686-PC-WINDOWS-MSVC-NEXT:         ((const { core::mem::size_of::<[ptrlen; 3]>() }) as u32)
-// I686-PC-WINDOWS-MSVC-NEXT:             / ((const { core::mem::size_of::<ptrlen>() }) as u32)
+// I686-PC-WINDOWS-MSVC-NEXT:             / ((const { core::mem::size_of::<ptrlen>() }) as u32) == 3
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         ((const { core::mem::size_of::<[ptrlen; 3]>() }) as u64)
-// AARCH64-PC-WINDOWS-MSVC-NEXT:             / ((const { core::mem::size_of::<ptrlen>() }) as u64)
-// CHECK-NEXT:             == 3
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             / ((const { core::mem::size_of::<ptrlen>() }) as u64) == 3
 // CHECK-NEXT:     );
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: bool = same(unsafe { names.0[0] }, c"ping".as_ptr()) != 0
 // CHECK-NEXT:             && same(unsafe { names.0[1] }, c"query".as_ptr()) != 0;
-// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: bool =
-// CHECK-NEXT:             [[V_1]] && same(unsafe { names.0[2] }, c"session-bind@openssh.com".as_ptr()) != 0;
+// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: bool = [[V_1]]
+// CHECK-NEXT:             && same(unsafe { names.0[2] }, c"session-bind@openssh.com".as_ptr()) != 0;
 // CHECK-NEXT:         if ![[V_2]] {
 // CHECK-NEXT:             unsafe { abort() };
 // CHECK-NEXT:         }
@@ -416,9 +426,11 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: bool = (unsafe { extra.0.hash }) == unsafe { core::ptr::addr_of!(vt_a.0) }
+// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: bool = (unsafe { extra.0.hash })
+// CHECK-NEXT:             == unsafe { core::ptr::addr_of!(vt_a.0) }
 // CHECK-NEXT:             && (unsafe { unsafe { (*extra.0.hash).r#fn }.unwrap()(5i32) }) == 15;
-// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: bool = [[V_3]] && (unsafe { unsafe { extra.0.fallback }.unwrap()(5i32) }) == 12;
+// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: bool = [[V_3]]
+// CHECK-NEXT:             && (unsafe { unsafe { extra.0.fallback }.unwrap()(5i32) }) == 12;
 // CHECK-NEXT:         if ![[V_4]] {
 // CHECK-NEXT:             unsafe { abort() };
 // CHECK-NEXT:         }
@@ -477,37 +489,39 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) == 0
 // CHECK-NEXT:     );
-// CHECK-NEXT:     CHECK!(((unsafe { *picks.0[0] }) as u32) == 3 && ((unsafe { *picks.0[1] }) as u32) == 1);
-// X86_64-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[u32; 8]>() as u64) / (core::mem::size_of::<u32>() as u64)) {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         CHECK!((unsafe { valid_bitmap.0[i as usize] }) == unsafe { expected.0[i as usize] });
-// I686-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[u32; 8]>() as u32) / (core::mem::size_of::<u32>() as u32)) {
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         ((unsafe { *picks.0[0] }) as u32) == 3 && ((unsafe { *picks.0[1] }) as u32) == 1
+// CHECK-NEXT:     );
+// X86_64-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[u32; 8]>() as u64)
+// X86_64-PC-WINDOWS-MSVC-NEXT:         / (core::mem::size_of::<u32>() as u64)) {
+// X86_64-PC-WINDOWS-MSVC-NEXT:         CHECK!(
+// X86_64-PC-WINDOWS-MSVC-NEXT:             (unsafe { valid_bitmap.0[i as usize] }) == unsafe { expected.0[i as usize] }
+// X86_64-PC-WINDOWS-MSVC-NEXT:         );
+// I686-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[u32; 8]>() as u32)
+// I686-PC-WINDOWS-MSVC-NEXT:         / (core::mem::size_of::<u32>() as u32)) {
 // I686-PC-WINDOWS-MSVC-NEXT:         CHECK!((unsafe { valid_bitmap[i as usize] }) == unsafe { expected[i as usize] });
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[u32; 8]>() as u64) / (core::mem::size_of::<u32>() as u64)) {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[u32; 8]>() as u64)
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         / (core::mem::size_of::<u32>() as u64)) {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         CHECK!((unsafe { valid_bitmap[i as usize] }) == unsafe { expected[i as usize] });
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static texts: __SlateAlign16<[*const i8; 5]> = __SlateAlign16([
-// I686-PC-WINDOWS-MSVC-NEXT: static texts: __SlateConst<[*const i8; 5]> = __SlateConst([
-// AARCH64-PC-WINDOWS-MSVC-NEXT: static texts: __SlateConst<[*const i8; 5]> = __SlateConst([
-// CHECK-NEXT:     (b"(\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:     (b")\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:     (b"&&\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:     (b"||\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:     (b"!\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT: ]);
+// X86_64-PC-WINDOWS-MSVC-NEXT: static texts: __SlateAlign16<[*const i8; 5]> = __SlateAlign16(
+// I686-PC-WINDOWS-MSVC-NEXT: static texts: __SlateConst<[*const i8; 5]> = __SlateConst(
+// AARCH64-PC-WINDOWS-MSVC-NEXT: static texts: __SlateConst<[*const i8; 5]> = __SlateConst(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         (b"(\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         (b")\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         (b"&&\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         (b"||\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         (b"!\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
 // CHECK-EMPTY:
-// X86_64-PC-WINDOWS-MSVC-NEXT: static expected: __SlateAlign16<[u32; 8]> = __SlateAlign16([
-// X86_64-PC-WINDOWS-MSVC-NEXT:     2148532230u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:     262145u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:     1073741824u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:     16u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:     0u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:     0u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:     0u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:     2147483648u32,
-// X86_64-PC-WINDOWS-MSVC-NEXT: ]);
+// X86_64-PC-WINDOWS-MSVC-NEXT: static expected: __SlateAlign16<[u32; 8]> = __SlateAlign16(
+// X86_64-PC-WINDOWS-MSVC-NEXT:     [2148532230u32, 262145u32, 1073741824u32, 16u32, 0u32, 0u32, 0u32, 2147483648u32],
+// X86_64-PC-WINDOWS-MSVC-NEXT: );
 // I686-PC-WINDOWS-MSVC-NEXT: static expected: [u32; 8] = [2148532230, 262145, 1073741824, 16, 0, 0, 0, 2147483648];
 // AARCH64-PC-WINDOWS-MSVC-NEXT: static expected: [u32; 8] = [2148532230, 262145, 1073741824, 16, 0, 0, 0, 2147483648];
 // CHECK-EMPTY:

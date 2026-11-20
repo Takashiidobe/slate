@@ -14,7 +14,7 @@ int main(void) { return 0; }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
-// CHECK-NEXT:     ".section .drectve,\"yni\"\n.ascii \" /manifestdependency:\\\"type='win32' name='Slate.Test.Dep' version='1.0.0.0' processorArchitecture='*' publicKeyToken='0000000000000000'\\\"\""
+// CHECK-NEXT:     ".section .drectve,\"yni\"\n.ascii \" /manifestdependency:\\\"type='win32' name='Slate.Test.Dep' version='1.0.0.0' processorArchitecture='*' publicKeyToken='0000000000000000'\\\"\"",
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

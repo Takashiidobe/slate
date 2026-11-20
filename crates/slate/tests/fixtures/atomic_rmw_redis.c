@@ -140,6 +140,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn pthread_create(
 // CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: *mut u64,
@@ -148,9 +149,11 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut (),
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct vset {
@@ -159,31 +162,42 @@ int main(void) {
 // CHECK-NEXT:     bytes: u64,
 // CHECK-NEXT:     epoch: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut used_memory: u64 = 0;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut stat_net_input_bytes: i64 = 0;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut plain_mask: u32 = 90;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut plain_counter: u64 = 10;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut threads_done: i32 = 0;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct used_memory_entry {
 // CHECK-NEXT:     used_memory: i64,
 // CHECK-NEXT:     padding: [i8; 56],
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut entries: __SlateAlign16<[used_memory_entry; 4]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     core::mem::zeroed()
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut entries: __SlateAlign16<[used_memory_entry; 4]> = __SlateAlign16(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::pthread_join;
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn worker(arg: *mut ()) -> *mut () {
 // CHECK-NEXT:     let set: *mut vset = arg as *mut vset;
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..10000i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]] = 1i32;
 // CHECK-NEXT:             let [[T_1:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                     core::ptr::addr_of_mut!((* set).in_use) as *mut i32,
+// CHECK-NEXT:                     core::ptr::addr_of_mut!((*set).in_use) as *mut i32,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .fetch_add([[T_0]], core::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:             [[T_1]]
@@ -224,6 +238,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     core::ptr::null_mut::<()>()
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn try_claim(slot: *mut u64, want: u64) -> i32 {
 // CHECK-NEXT:     let mut expected: u64 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: loop {
@@ -242,7 +257,7 @@ int main(void) {
 // CHECK-NEXT:                 Err([[T_2]]) => {
 // CHECK-NEXT:                     *[[T_1]] = [[T_2]];
 // CHECK-NEXT:                     false
-// CHECK-NEXT:                 }
+// CHECK-NEXT:                 },
 // CHECK-NEXT:             }
 // CHECK-NEXT:         };
 // CHECK-NEXT:         if [[V_0]] {
@@ -254,6 +269,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut set: vset = {
 // CHECK-NEXT:         let mut [[T_1]]: vset = unsafe { core::mem::zeroed() };
@@ -534,9 +550,15 @@ int main(void) {
 // CHECK-NEXT:         [[T_36]].wrapping_sub([[T_35]])
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", unsafe {
-// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of!(scaled) as * mut i32)
-// CHECK-NEXT:         .load(core::sync::atomic::Ordering::SeqCst) }, post, pre
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                     core::ptr::addr_of!(scaled) as *mut i32,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .load(core::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:         },
+// CHECK-NEXT:         post,
+// CHECK-NEXT:         pre
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut ratio: f64 = 1.5f64;
 // CHECK-NEXT:     unsafe {
@@ -597,9 +619,9 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         10i32, 20i32, 30i32, 40i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16(
+// CHECK-NEXT:         [10i32, 20i32, 30i32, 40i32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut cursor: *mut i32 = values.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_43:__t[0-9]+]] = core::sync::atomic::AtomicPtr::from_ptr(
@@ -650,10 +672,14 @@ int main(void) {
 // CHECK-NEXT:         [[T_49]] as *mut i32
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", unsafe { *
-// CHECK-NEXT:         (core::sync::atomic::AtomicPtr::from_ptr(core::ptr::addr_of!(cursor) as * mut *
-// CHECK-NEXT:         mut i32).load(core::sync::atomic::Ordering::SeqCst) as * mut i32) }, unsafe { *
-// CHECK-NEXT:         [[V_1]] }
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *(core::sync::atomic::AtomicPtr::from_ptr(
+// CHECK-NEXT:                     core::ptr::addr_of!(cursor) as *mut *mut i32,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .load(core::sync::atomic::Ordering::SeqCst) as *mut i32)
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe { *[[V_1]] }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut slot: u64 = 0;
 // CHECK-NEXT:     let first: i32 = try_claim(core::ptr::addr_of_mut!(slot), 42u64);
@@ -677,7 +703,7 @@ int main(void) {
 // CHECK-NEXT:             Err([[T_54:__t[0-9]+]]) => {
 // CHECK-NEXT:                 *[[T_51]] = [[T_54]];
 // CHECK-NEXT:                 false
-// CHECK-NEXT:             }
+// CHECK-NEXT:             },
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -774,6 +800,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {} {}", was as i32, now as i32, set.pending);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

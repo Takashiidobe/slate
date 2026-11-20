@@ -28,8 +28,10 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn consume_values(mut values: Vec<i32>) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..values.len() as i32 {
@@ -44,9 +46,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn forward_consume(values: Vec<i32>) -> i32 {
 // CHECK-NEXT:     consume_values(values)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let len: i32 = 4;
 // CHECK-NEXT:     let values: *mut i32 = (unsafe {
@@ -58,12 +62,13 @@ int main(void) {
 // CHECK-NEXT:             *values.offset(i as isize) = i * 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let sum: i32 = forward_consume(unsafe {
-// CHECK-NEXT:         Vec::from_raw_parts(values as *mut i32, len as usize, len as usize)
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let sum: i32 = forward_consume(
+// CHECK-NEXT:         unsafe { Vec::from_raw_parts(values as *mut i32, len as usize, len as usize) },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", sum);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

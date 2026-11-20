@@ -27,12 +27,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union Pair {
 // CHECK-NEXT:     left: i32,
 // CHECK-NEXT:     right: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pick_left(value: i32) -> i32 {
 // CHECK-NEXT:     let mut p: Pair = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -40,6 +42,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { p.left }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn overwrite(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let mut p: Pair = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -50,11 +53,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { p.left }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", pick_left(7i32));
 // CHECK-NEXT:     println!("{}", overwrite(3i32, 9i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

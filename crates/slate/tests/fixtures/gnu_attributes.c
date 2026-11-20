@@ -171,122 +171,157 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn gnu_attribute_allocate([[ARG_0:arg[0-9]+]]: u64, [[ARG_1:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct GNUAttributePacked {
 // CHECK-NEXT:     tag: u8,
 // CHECK-NEXT:     value: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct GNUAttributeAligned {
 // CHECK-NEXT:     value: u8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_gnu_attributes_c_22 {
 // CHECK-NEXT:     integer: i32,
 // CHECK-NEXT:     unsigned_integer: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut gnu_cleanup_total: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut gnu_constructor_total: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut gnu_common_value: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut gnu_nocommon_value: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: #[used(linker)]
 // CHECK-NEXT: #[unsafe(link_section = ".data.gnu_attribute")]
 // CHECK-NEXT: static mut gnu_section_value: i32 = 3;
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::exit;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_cleanup(value: *mut i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         gnu_cleanup_total = gnu_cleanup_total + *value;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_constructor() {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         gnu_constructor_total = 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn __slate_init_gnu_attribute_constructor() {
 // CHECK-NEXT:     gnu_attribute_constructor();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
 // CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".init_array")]
 // CHECK-NEXT: static __SLATE_INIT_gnu_attribute_constructor: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_init_gnu_attribute_constructor,
 // CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_destructor() {
 // CHECK-NEXT:     println!("destructor {}", unsafe { gnu_cleanup_total });
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn __slate_fini_gnu_attribute_destructor() {
 // CHECK-NEXT:     gnu_attribute_destructor();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
 // CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".fini_array")]
 // CHECK-NEXT: static __SLATE_FINI_gnu_attribute_destructor: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_fini_gnu_attribute_destructor,
 // CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_target(value: i32) -> i32 {
 // CHECK-NEXT:     value + 7
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_weak() -> i32 {
 // CHECK-NEXT:     11
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: #[unsafe(link_section = ".text.gnu_attribute")]
 // CHECK-NEXT: fn gnu_attribute_decorated(value: i32) -> i32 {
 // CHECK-NEXT:     value + 13
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn gnu_attribute_inline(value: i32) -> i32 {
 // CHECK-NEXT:     value + 17
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_flatten(value: i32) -> i32 {
 // CHECK-NEXT:     gnu_attribute_inline(value)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_const(value: i32) -> i32 {
 // CHECK-NEXT:     value * 2
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_pure(value: &i32) -> i32 {
 // CHECK-NEXT:     (unsafe { *(value as *const i32) }) + 19
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_nonnull(value: &i32) -> i32 {
 // CHECK-NEXT:     (unsafe { *(value as *const i32) }) + 23
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_result(value: i32) -> i32 {
 // CHECK-NEXT:     value + 29
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_deprecated(value: i32) -> i32 {
 // CHECK-NEXT:     value + 31
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn gnu_attribute_format(
 // CHECK-NEXT:     format: *const i8,
-// CHECK-NEXT:     __va_args: ...
+// CHECK-NEXT:     __va_args: ...,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     (((unsafe { *format.add(0) }) as i32) == 102) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_format_arg(format: *const i8) -> *const i8 {
 // CHECK-NEXT:     format
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn gnu_attribute_sentinel(value: i32, __va_args: ...) -> i32 {
 // CHECK-NEXT:     value + 37
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_noreturn() {
 // CHECK-NEXT:     unsafe { std::process::exit(99i32 as i32) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_returns_twice() -> i32 {
 // CHECK-NEXT:     41
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_leaf(value: i32) -> i32 {
 // CHECK-NEXT:     value + 43
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_transparent(value: __SlateRecord_gnu_attributes_c_22) -> i32 {
 // CHECK-NEXT:     (unsafe { value.integer }) + 47
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_cleanup_scope() -> i32 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut value: i32 = 53;
@@ -300,6 +335,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { gnu_cleanup_total }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_layout() -> i32 {
 // CHECK-NEXT:     let packed: GNUAttributePacked = GNUAttributePacked {
 // CHECK-NEXT:         tag: 1,
@@ -312,9 +348,9 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let alias_value: i32 = 67;
 // CHECK-NEXT:     let byte_value: u8 = 255;
-// CHECK-NEXT:     let vector_value: core::simd::Simd<u32, 4> = core::simd::Simd::from_array([
-// CHECK-NEXT:         2u32, 3u32, 5u32, 7u32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let vector_value: core::simd::Simd<u32, 4> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [2u32, 3u32, 5u32, 7u32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     (core::mem::size_of::<GNUAttributePacked>() as i32)
 // CHECK-NEXT:         + (core::mem::offset_of!(GNUAttributePacked, value) as i32)
 // CHECK-NEXT:         + (core::mem::align_of::<GNUAttributeAligned>() as i32) + (packed.tag as i32)
@@ -322,6 +358,7 @@ int main(void) {
 // CHECK-NEXT:         + (core::mem::size_of::<u8>() as i32) + (byte_value as i32) + 16
 // CHECK-NEXT:         + (vector_value[0] as i32) + (vector_value[3] as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut value: i32 = 71;
 // CHECK-NEXT:     let never: i32 = 0;
@@ -336,26 +373,41 @@ int main(void) {
 // CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {}", gnu_attribute_layout(),
-// CHECK-NEXT:         gnu_attribute_cleanup_scope(), unsafe { gnu_constructor_total },
-// CHECK-NEXT:         gnu_attribute_target(83i32), gnu_attribute_target(89i32), gnu_attribute_weak(),
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {}",
+// CHECK-NEXT:         gnu_attribute_layout(),
+// CHECK-NEXT:         gnu_attribute_cleanup_scope(),
+// CHECK-NEXT:         unsafe { gnu_constructor_total },
+// CHECK-NEXT:         gnu_attribute_target(83i32),
+// CHECK-NEXT:         gnu_attribute_target(89i32),
+// CHECK-NEXT:         gnu_attribute_weak(),
 // CHECK-NEXT:         gnu_attribute_decorated(97i32) + gnu_attribute_flatten(101i32),
-// CHECK-NEXT:         gnu_attribute_const(103i32) + gnu_attribute_pure(unsafe { & (*
-// CHECK-NEXT:         (core::ptr::addr_of_mut!(value) as * const i32)) }) +
-// CHECK-NEXT:         gnu_attribute_nonnull(unsafe { & (* (core::ptr::addr_of_mut!(value) as * const
-// CHECK-NEXT:         i32)) }), gnu_attribute_result(107i32) + gnu_attribute_deprecated(109i32),
-// CHECK-NEXT:         (unsafe { gnu_attribute_sentinel(113i32, core::ptr::null_mut::< () > ()) }) +
-// CHECK-NEXT:         gnu_attribute_returns_twice() + gnu_attribute_leaf(127i32) +
-// CHECK-NEXT:         gnu_attribute_transparent(__SlateRecord_gnu_attributes_c_22 { integer : 131 }) +
-// CHECK-NEXT:         unsafe { gnu_common_value } + unsafe { gnu_nocommon_value } + unsafe {
-// CHECK-NEXT:         gnu_section_value }
+// CHECK-NEXT:         gnu_attribute_const(103i32)
+// CHECK-NEXT:             + gnu_attribute_pure(
+// CHECK-NEXT:                 unsafe { &(*(core::ptr::addr_of_mut!(value) as *const i32)) },
+// CHECK-NEXT:             )
+// CHECK-NEXT:             + gnu_attribute_nonnull(
+// CHECK-NEXT:                 unsafe { &(*(core::ptr::addr_of_mut!(value) as *const i32)) },
+// CHECK-NEXT:             ),
+// CHECK-NEXT:         gnu_attribute_result(107i32) + gnu_attribute_deprecated(109i32),
+// CHECK-NEXT:         (unsafe { gnu_attribute_sentinel(113i32, core::ptr::null_mut::<()>()) })
+// CHECK-NEXT:             + gnu_attribute_returns_twice() + gnu_attribute_leaf(127i32)
+// CHECK-NEXT:             + gnu_attribute_transparent(
+// CHECK-NEXT:                 __SlateRecord_gnu_attributes_c_22 {
+// CHECK-NEXT:                     integer: 131,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             ) + unsafe { gnu_common_value } + unsafe { gnu_nocommon_value }
+// CHECK-NEXT:             + unsafe { gnu_section_value }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "format {} {}", 137i32, unsafe {
-// CHECK-NEXT:         gnu_attribute_format(gnu_attribute_format_arg(c"format %d".as_ptr()), 137i32) }
+// CHECK-NEXT:         "format {} {}",
+// CHECK-NEXT:         137i32,
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             gnu_attribute_format(gnu_attribute_format_arg(c"format %d".as_ptr()), 137i32)
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

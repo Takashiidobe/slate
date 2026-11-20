@@ -105,10 +105,7 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -155,8 +152,9 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let n: i32 = 5;
 // CHECK-NEXT:     let r#type: i32 = 3;
-// CHECK-NEXT:     let mut table: __SlateAlignLargeArray<[i32; 4]> =
-// CHECK-NEXT:         __SlateAlignLargeArray([1i32, 2i32, 3i32, 4i32]);
+// CHECK-NEXT:     let mut table: __SlateAlignLargeArray<[i32; 4]> = __SlateAlignLargeArray(
+// CHECK-NEXT:         [1i32, 2i32, 3i32, 4i32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut cursor: *mut i32 = unsafe { (table.0.as_mut_ptr() as *mut i32).add(1) };
 // CHECK-NEXT:     let mut pair: pair = pair { left: 1, right: 2 };
 // CHECK-NEXT:     let scale: i32 = 2;
@@ -195,10 +193,7 @@ int main(void) {
 // CHECK-NEXT:     let first: u32 = hold.wrapping_add(1);
 // CHECK-NEXT:     let second: u32 = BITS!(3i32, hold);
 // CHECK-NEXT:     DROP!(2i32, hold, bits);
-// CHECK-NEXT:     first
-// CHECK-NEXT:         .wrapping_add(second)
-// CHECK-NEXT:         .wrapping_add(hold)
-// CHECK-NEXT:         .wrapping_add(bits)
+// CHECK-NEXT:     first.wrapping_add(second).wrapping_add(hold).wrapping_add(bits)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn read_double() -> f64 {

@@ -39,56 +39,69 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct S {
 // CHECK-NEXT:     x: i64,
 // CHECK-NEXT:     y: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct W {
 // CHECK-NEXT:     v: core::simd::Simd<i64, 2>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memset;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn load(a: *mut i32) -> i32 {
 // CHECK-NEXT:     unsafe { a.read_unaligned() }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn store(a: *mut i32, v: i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         a.write_unaligned(v);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sum(p: *mut S) -> i64 {
-// CHECK-NEXT:     (unsafe { core::ptr::addr_of!((* p).x).read_unaligned() })
-// CHECK-NEXT:         + ((unsafe { core::ptr::addr_of!((* p).y).read_unaligned() }) as i64)
+// CHECK-NEXT:     (unsafe { core::ptr::addr_of!((*p).x).read_unaligned() })
+// CHECK-NEXT:         + ((unsafe { core::ptr::addr_of!((*p).y).read_unaligned() }) as i64)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn set(p: *mut S) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((* p).x).write_unaligned(7i64);
+// CHECK-NEXT:         core::ptr::addr_of_mut!((*p).x).write_unaligned(7i64);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((* p).y).write_unaligned(9i32);
+// CHECK-NEXT:         core::ptr::addr_of_mut!((*p).y).write_unaligned(9i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn lane(q: *mut W, i: i32) -> i64 {
-// CHECK-NEXT:     unsafe { core::ptr::addr_of!((* q).v).read_unaligned()[i as usize] }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of!((*q).v).read_unaligned()[i as usize] }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn put(q: *mut W, i: i32, v: i64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = v;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::ptr::addr_of_mut!((* q).v);
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::ptr::addr_of_mut!((*q).v);
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]] = [[T_1]].read_unaligned();
 // CHECK-NEXT:         [[T_2]][i as usize] = [[T_0]];
 // CHECK-NEXT:         [[T_1]].write_unaligned([[T_2]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     unsafe {
@@ -125,6 +138,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

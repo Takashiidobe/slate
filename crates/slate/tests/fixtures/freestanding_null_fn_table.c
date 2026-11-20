@@ -37,8 +37,9 @@ int main(void) {
 // CHECK-NEXT:     (unsafe { *value }) + unsafe { *(data as *mut i32) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static table: __SlateConst<[Option<unsafe extern "C" fn(*mut i32, *mut ()) -> i32>; 1]> =
-// CHECK-NEXT:     __SlateConst([Some(add_one)]);
+// CHECK-NEXT: static table: __SlateConst<[Option<unsafe extern "C" fn(*mut i32, *mut ()) -> i32>; 1]> = __SlateConst(
+// CHECK-NEXT:     [Some(add_one)],
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn run_extensions(

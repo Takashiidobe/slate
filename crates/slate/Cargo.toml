@@ -50,8 +50,6 @@ miette.workspace = true
 rayon.workspace = true
 slate-parser.workspace = true
 slate-sysroots = { workspace = true, optional = true }
-prettyplease.workspace = true
-syn = { workspace = true, features = ["full", "parsing"] }
 stacker = "0.1.25"
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]

@@ -58,6 +58,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_sysv_va {
 // CHECK-NEXT:     #[repr(C)]
 // CHECK-NEXT:     struct Tag {
@@ -66,8 +67,10 @@ int main(void) {
 // CHECK-NEXT:         overflow: *const u8,
 // CHECK-NEXT:         registers: *const u8,
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     const GP_END: u32 = 48;
 // CHECK-NEXT:     const FP_END: u32 = 176;
+// CHECK-EMPTY:
 // CHECK-NEXT:     pub unsafe fn arg<L, T>(list: *mut L, classes: u32) -> T {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             let tag = &mut *(list as *mut Tag);
@@ -83,9 +86,7 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 rest >>= 2;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             if classes != 0 && tag.gp_offset + gp <= GP_END
-// CHECK-NEXT:                 && tag.fp_offset + sse <= FP_END
-// CHECK-NEXT:             {
+// CHECK-NEXT:             if classes != 0 && tag.gp_offset + gp <= GP_END && tag.fp_offset + sse <= FP_END {
 // CHECK-NEXT:                 let mut copied = 0;
 // CHECK-NEXT:                 let mut rest = classes;
 // CHECK-NEXT:                 while rest != 0 {
@@ -107,8 +108,7 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 let align = core::mem::align_of::<T>().max(8);
-// CHECK-NEXT:                 let slot = ((tag.overflow as usize + align - 1) & !(align - 1))
-// CHECK-NEXT:                     as *const u8;
+// CHECK-NEXT:                 let slot = ((tag.overflow as usize + align - 1) & !(align - 1)) as *const u8;
 // CHECK-NEXT:                 core::ptr::copy_nonoverlapping(slot, dst, size);
 // CHECK-NEXT:                 tag.overflow = slot.add((size + 7) & !7);
 // CHECK-NEXT:             }
@@ -116,28 +116,33 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct tiny {
 // CHECK-NEXT:     c: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct pair {
 // CHECK-NEXT:     a: i64,
 // CHECK-NEXT:     b: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct mixed {
 // CHECK-NEXT:     d: f64,
 // CHECK-NEXT:     l: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct floats {
 // CHECK-NEXT:     f: [f32; 4],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct big {
@@ -145,28 +150,32 @@ int main(void) {
 // CHECK-NEXT:     b: i64,
 // CHECK-NEXT:     c: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct odd {
 // CHECK-NEXT:     c: [i8; 3],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union number {
 // CHECK-NEXT:     d: f64,
 // CHECK-NEXT:     i: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut saved: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum(n: i32, mut __va_args: ...) {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0..n {
@@ -192,24 +201,22 @@ int main(void) {
 // CHECK-NEXT:             __slate_sysv_va::arg::<_, number>(core::ptr::addr_of_mut!(ap), 1u32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let tail: i64 = unsafe { ap.next_arg::<i64>() };
-// CHECK-NEXT:         total
-// CHECK-NEXT:             += (t.c as i64) + p.a + p.b + (m.d as i64) + m.l
-// CHECK-NEXT:                 + ((f.f[0] + f.f[1] + f.f[2] + f.f[3]) as i64);
-// CHECK-NEXT:         total
-// CHECK-NEXT:             += b.a + b.b + b.c + ((o.c[0] as i32) as i64) + ((o.c[1] as i32) as i64)
-// CHECK-NEXT:                 + ((o.c[2] as i32) as i64) + ((unsafe { u.d }) as i64) + tail;
+// CHECK-NEXT:         total += (t.c as i64) + p.a + p.b + (m.d as i64) + m.l
+// CHECK-NEXT:             + ((f.f[0] + f.f[1] + f.f[2] + f.f[3]) as i64);
+// CHECK-NEXT:         total += b.a + b.b + b.c + ((o.c[0] as i32) as i64) + ((o.c[1] as i32) as i64)
+// CHECK-NEXT:             + ((o.c[2] as i32) as i64) + ((unsafe { u.d }) as i64) + tail;
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"round %d: %ld\n".as_ptr(), i, total) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn copied(n: i32, mut __va_args: ...) {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         saved = ap.clone();
@@ -232,6 +239,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let t: tiny = tiny { c: 1 };
 // CHECK-NEXT:     let p: pair = pair { a: 2, b: 3 };
@@ -246,6 +254,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { copied(1i32, p) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

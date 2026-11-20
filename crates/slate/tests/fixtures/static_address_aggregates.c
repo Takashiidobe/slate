@@ -36,22 +36,30 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:     11i32, 22i32, 33i32, 44i32, 55i32,
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16(
+// CHECK-NEXT:     [11i32, 22i32, 33i32, 44i32, 55i32],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut middle: *const i32 = unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
 // CHECK-NEXT:     .wrapping_offset(2i32 as isize) as *const i32;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut end: *const i32 = unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
 // CHECK-NEXT:     .wrapping_offset(5i32 as isize) as *const i32;
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn twice(x: i32) -> i32 {
 // CHECK-NEXT:     x * 2
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Entry {
@@ -60,48 +68,49 @@ int main(void) {
 // CHECK-NEXT:     opaque: *mut (),
 // CHECK-NEXT:     name: *const i8,
 // CHECK-NEXT: }
-// CHECK-NEXT: static mut entries: __SlateAlign16<[Entry; 2]> = __SlateAlign16([
-// CHECK-NEXT:     Entry {
-// CHECK-NEXT:         value: unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:             .wrapping_offset(1i32 as isize) as *const i32,
-// CHECK-NEXT:         callback: Some(twice),
-// CHECK-NEXT:         opaque: unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:                 *mut (),
-// CHECK-NEXT:             >(Some(twice))
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut entries: __SlateAlign16<[Entry; 2]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         Entry {
+// CHECK-NEXT:             value: unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
+// CHECK-NEXT:                 .wrapping_offset(1i32 as isize) as *const i32,
+// CHECK-NEXT:             callback: Some(twice),
+// CHECK-NEXT:             opaque: unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *mut ()>(
+// CHECK-NEXT:                     Some(twice),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:             name: (b"twice\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:         },
-// CHECK-NEXT:         name: (b"twice\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:     },
-// CHECK-NEXT:     Entry {
-// CHECK-NEXT:         value: unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:             .wrapping_offset(3i32 as isize) as *const i32,
-// CHECK-NEXT:         callback: unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 *const (),
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:             >(abs as *const ())
+// CHECK-NEXT:         Entry {
+// CHECK-NEXT:             value: unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
+// CHECK-NEXT:                 .wrapping_offset(3i32 as isize) as *const i32,
+// CHECK-NEXT:             callback: unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:                     abs as *const (),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:             opaque: unsafe {
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *mut ()>(
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:                             abs as *const (),
+// CHECK-NEXT:                         )
+// CHECK-NEXT:                     },
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             },
+// CHECK-NEXT:             name: (b"abs\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:         },
-// CHECK-NEXT:         opaque: unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:                 *mut (),
-// CHECK-NEXT:             >(unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     *const (),
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:                 >(abs as *const ())
-// CHECK-NEXT:             })
-// CHECK-NEXT:         },
-// CHECK-NEXT:         name: (b"abs\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:     },
-// CHECK-NEXT: ]);
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_static_address_aggregates_c_21 {
 // CHECK-NEXT:     nested: [Entry; 2],
 // CHECK-NEXT:     tail: *const i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut group: __SlateRecord_static_address_aggregates_c_21 = __SlateRecord_static_address_aggregates_c_21 {
 // CHECK-NEXT:     nested: {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [Entry; 2] = unsafe { core::mem::zeroed() };
@@ -110,10 +119,9 @@ int main(void) {
 // CHECK-NEXT:                 .wrapping_offset(3i32 as isize) as *const i32,
 // CHECK-NEXT:             callback: Some(twice),
 // CHECK-NEXT:             opaque: unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:                     *mut (),
-// CHECK-NEXT:                 >(Some(twice))
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *mut ()>(
+// CHECK-NEXT:                     Some(twice),
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:             name: (b"group\0".as_ptr() as *mut i8) as *const i8,
 // CHECK-NEXT:         };
@@ -122,24 +130,22 @@ int main(void) {
 // CHECK-NEXT:     tail: unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
 // CHECK-NEXT:         .wrapping_offset(4i32 as isize) as *const i32,
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let callback: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *mut (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:         >(unsafe { entries.0[0].opaque })
+// CHECK-NEXT:         core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:             unsafe { entries.0[0].opaque },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let external: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *mut (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:         >(unsafe { entries.0[1].opaque })
+// CHECK-NEXT:         core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:             unsafe { entries.0[1].opaque },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let local: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *mut (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:         >(unsafe { addresses.0[1] })
+// CHECK-NEXT:         core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:             unsafe { addresses.0[1] },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -164,17 +170,22 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     !unsafe { group.nested[1].value }.is_null() as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::abs;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut flag: i32 = 7;
-// CHECK-NEXT: static mut addresses: __SlateAlign16<[*mut (); 2]> = __SlateAlign16([
-// CHECK-NEXT:     (unsafe { core::ptr::addr_of_mut!(flag) }) as *mut (),
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:             *mut (),
-// CHECK-NEXT:         >(Some(twice))
-// CHECK-NEXT:     },
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut addresses: __SlateAlign16<[*mut (); 2]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(flag) }) as *mut (),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *mut ()>(
+// CHECK-NEXT:                 Some(twice),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -22,15 +22,19 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn old_api(x: i32) -> i32 {
 // CHECK-NEXT:     x + 1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn old_api_msg(x: i32) -> i32 {
 // CHECK-NEXT:     x + 2
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn must_check(x: i32) -> i32 {
 // CHECK-NEXT:     x + 3
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: i32 = old_api(1i32);
 // CHECK-NEXT:     let b: i32 = old_api_msg(2i32);
@@ -38,6 +42,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {} {}", a, b, c);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

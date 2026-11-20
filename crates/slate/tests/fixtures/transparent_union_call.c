@@ -31,10 +31,17 @@ int main(void) {
 // CHECK-NEXT:     let mut first: First = First { value: 17 };
 // CHECK-NEXT:     let mut second: Second = Second { value: 29 };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", read_value(__SlateRecord_transparent_union_call_c_14 { first :
-// CHECK-NEXT:         core::ptr::addr_of_mut!(first) }),
-// CHECK-NEXT:         read_value(__SlateRecord_transparent_union_call_c_14 { second :
-// CHECK-NEXT:         core::ptr::addr_of_mut!(second) })
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         read_value(
+// CHECK-NEXT:             __SlateRecord_transparent_union_call_c_14 {
+// CHECK-NEXT:                 first: core::ptr::addr_of_mut!(first),
+// CHECK-NEXT:             },
+// CHECK-NEXT:         ),
+// CHECK-NEXT:         read_value(
+// CHECK-NEXT:             __SlateRecord_transparent_union_call_c_14 {
+// CHECK-NEXT:                 second: core::ptr::addr_of_mut!(second),
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

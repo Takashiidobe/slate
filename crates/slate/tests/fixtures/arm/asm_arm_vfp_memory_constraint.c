@@ -20,8 +20,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "ldr {0}, [{1}]", lateout(reg) [[T_0]], in (reg) address as * const i32,
-// CHECK-NEXT:             options(pure, readonly, nostack, preserves_flags)
+// CHECK-NEXT:             "ldr {0}, [{1}]",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) address as *const i32,
+// CHECK-NEXT:             options(pure, readonly, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }

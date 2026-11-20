@@ -39,6 +39,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn classify(n: i32) -> i32 {
 // CHECK-NEXT:     if n < 0 {
 // CHECK-NEXT:         return -1;
@@ -50,6 +51,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn clamp_low(n: i32) -> i32 {
 // CHECK-NEXT:     let mut r: i32 = n;
 // CHECK-NEXT:     if n < 10 {
@@ -57,17 +59,23 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", classify(- 5i32));
+// CHECK-NEXT:     println!("{}", classify(-5i32));
 // CHECK-NEXT:     println!("{}", classify(0i32));
 // CHECK-NEXT:     println!("{}", classify(42i32));
 // CHECK-NEXT:     println!("{}", clamp_low(3i32));
 // CHECK-NEXT:     println!("{}", clamp_low(20i32));
 // CHECK-NEXT:     let x: i32 = 7;
-// CHECK-NEXT:     let label: i32 = if x % 2 == 0 { 100 } else { 200 };
+// CHECK-NEXT:     let label: i32 = if x % 2 == 0 {
+// CHECK-NEXT:         100
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         200
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{}", label);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

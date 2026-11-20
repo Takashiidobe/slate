@@ -39,23 +39,31 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __builtin_prefetch([[ARG_0:arg[0-9]+]]: *const (), ...);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct node {
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT:     next: *mut node,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut flags: [u32; 1] = [2];
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = 0;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn mark() -> u32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u32 = unsafe { (core::ptr::addr_of_mut!(flags) as *mut u32).add(0) };
 // CHECK-NEXT:     unsafe {
@@ -63,12 +71,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn advance(p: *mut i32) -> *mut i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { p.add(1) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut self_: node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     self_ = {
@@ -77,9 +87,9 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].next = core::ptr::addr_of_mut!(self_);
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut ring: __SlateAlign16<[node; 2]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:         core::mem::zeroed()
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut ring: __SlateAlign16<[node; 2]> = __SlateAlign16(
+// CHECK-NEXT:         unsafe { core::mem::zeroed() },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     ring.0 = [
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: node = unsafe { core::mem::zeroed() };
@@ -95,8 +105,10 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", (self_.next == core::ptr::addr_of_mut!(self_)) as i32, unsafe { (*
-// CHECK-NEXT:         ring.0[0].next).value }, unsafe { (* ring.0[1].next).value }
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         (self_.next == core::ptr::addr_of_mut!(self_)) as i32,
+// CHECK-NEXT:         unsafe { (*ring.0[0].next).value },
+// CHECK-NEXT:         unsafe { (*ring.0[1].next).value }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_0]]: u32 = mark();
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut u32 = unsafe { (core::ptr::addr_of_mut!(flags) as *mut u32).add(0) };
@@ -115,9 +127,10 @@ int main(void) {
 // CHECK-NEXT:     i += 1;
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i32 = p;
 // CHECK-NEXT:     p = unsafe { [[V_2]].add(1) };
-// CHECK-NEXT:     println!("{} {} {}", unsafe { calls }, i, unsafe { * p });
+// CHECK-NEXT:     println!("{} {} {}", unsafe { calls }, i, unsafe { *p });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

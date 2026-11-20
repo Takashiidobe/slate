@@ -33,31 +33,41 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct node {
 // CHECK-NEXT:     next: u32,
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
-// CHECK-NEXT: static mut nodes: __SlateAlign16<[node; 4]> = __SlateAlign16([
-// CHECK-NEXT:     node { next: 1u32, value: 10i32 },
-// CHECK-NEXT:     node { next: 2u32, value: 20i32 },
-// CHECK-NEXT:     node { next: 3u32, value: 30i32 },
-// CHECK-NEXT:     node { next: 0u32, value: 40i32 },
-// CHECK-NEXT: ]);
-// CHECK-NEXT: static mut table: __SlateAlign16<[*mut node; 4]> = __SlateAlign16([
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(nodes.0) as *mut node }
-// CHECK-NEXT:         .wrapping_offset(0i32 as isize),
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(nodes.0) as *mut node }
-// CHECK-NEXT:         .wrapping_offset(1i32 as isize),
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(nodes.0) as *mut node }
-// CHECK-NEXT:         .wrapping_offset(2i32 as isize),
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(nodes.0) as *mut node }
-// CHECK-NEXT:         .wrapping_offset(3i32 as isize),
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut nodes: __SlateAlign16<[node; 4]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         node { next: 1u32, value: 10i32 },
+// CHECK-NEXT:         node { next: 2u32, value: 20i32 },
+// CHECK-NEXT:         node { next: 3u32, value: 30i32 },
+// CHECK-NEXT:         node { next: 0u32, value: 40i32 },
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut table: __SlateAlign16<[*mut node; 4]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(nodes.0) as *mut node }
+// CHECK-NEXT:             .wrapping_offset(0i32 as isize),
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(nodes.0) as *mut node }
+// CHECK-NEXT:             .wrapping_offset(1i32 as isize),
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(nodes.0) as *mut node }
+// CHECK-NEXT:             .wrapping_offset(2i32 as isize),
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(nodes.0) as *mut node }
+// CHECK-NEXT:             .wrapping_offset(3i32 as isize),
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn unlink_after(target: *mut node) {
 // CHECK-NEXT:     let mut cur: *mut node = unsafe { table.0[0] };
 // CHECK-NEXT:     let mut i: u32 = 0;
@@ -76,14 +86,19 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unlink_after(unsafe { (core::ptr::addr_of_mut!(nodes.0) as *mut node).add(2) });
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { nodes.0[0].value }, unsafe { nodes.0[1].value }, unsafe {
-// CHECK-NEXT:         nodes.0[2].value }, unsafe { nodes.0[3].value }
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         unsafe { nodes.0[0].value },
+// CHECK-NEXT:         unsafe { nodes.0[1].value },
+// CHECK-NEXT:         unsafe { nodes.0[2].value },
+// CHECK-NEXT:         unsafe { nodes.0[3].value }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

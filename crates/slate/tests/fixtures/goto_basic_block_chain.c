@@ -52,14 +52,18 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut trace: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut saved: *mut i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn mark(digit: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         trace = trace * 10 + digit;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     digit
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn run(skip: i32) -> i32 {
 // CHECK-NEXT:     let mut value: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
@@ -79,6 +83,7 @@ int main(void) {
 // CHECK-NEXT:         return result;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn straight_line() -> i32 {
 // CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -88,6 +93,7 @@ int main(void) {
 // CHECK-NEXT:         return result;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     run(0i32);
 // CHECK-NEXT:     unsafe {
@@ -101,6 +107,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", unsafe { trace });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

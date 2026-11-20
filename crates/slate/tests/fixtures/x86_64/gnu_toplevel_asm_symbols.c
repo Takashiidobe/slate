@@ -35,29 +35,41 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn toplevel_bump() -> i32;
 // CHECK-NEXT:     fn toplevel_twice([[ARG_0:arg[0-9]+]]: i32) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut counter: i32 = 40;
+// CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // CHECK-NEXT:     ".text\n.globl toplevel_bump\n.type toplevel_bump,@function\ntoplevel_bump:\n  incl {0}(%rip) # {{[{][{]}}braces}}\n  movl {0}(%rip), %eax\n  add $1, %eax\n  ret\n.size toplevel_bump,.-toplevel_bump\n\n.text\n.globl toplevel_twice\n.type toplevel_twice,@function\ntoplevel_twice:\n  jmp {1}\n.size toplevel_twice,.-toplevel_twice\n",
-// CHECK-NEXT:     sym counter, sym twice, options(att_syntax)
+// CHECK-NEXT:     sym counter,
+// CHECK-NEXT:     sym twice,
+// CHECK-NEXT:     options(att_syntax),
 // CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn twice(value: i32) -> i32 {
 // CHECK-NEXT:     value * 2
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn add(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     left + right
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let bumped: i32 = unsafe { toplevel_bump() };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", bumped, unsafe { counter }, unsafe { toplevel_twice(21i32) },
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         bumped,
+// CHECK-NEXT:         unsafe { counter },
+// CHECK-NEXT:         unsafe { toplevel_twice(21i32) },
 // CHECK-NEXT:         add(2i32, 3i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

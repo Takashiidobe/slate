@@ -18,18 +18,20 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct atomic_flag {
 // CHECK-NEXT:     _Value: bool,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut flag: atomic_flag = atomic_flag { _Value: false };
 // CHECK-NEXT:     let mut first: i32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = true;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::sync::atomic::AtomicBool::from_ptr(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!((* core::ptr::addr_of_mut!(flag))._Value)
+// CHECK-NEXT:                 core::ptr::addr_of_mut!((*core::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .swap([[T_0]], core::sync::atomic::Ordering::SeqCst);
@@ -38,7 +40,7 @@ int main(void) {
 // CHECK-NEXT:     first = [[V_0]] as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicBool::from_ptr(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!((* core::ptr::addr_of_mut!(flag))._Value)
+// CHECK-NEXT:                 core::ptr::addr_of_mut!((*core::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .store(false, core::sync::atomic::Ordering::Release)
@@ -47,7 +49,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = unsafe {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]] = true;
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]] = core::sync::atomic::AtomicBool::from_ptr(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!((* core::ptr::addr_of_mut!(flag))._Value)
+// CHECK-NEXT:                 core::ptr::addr_of_mut!((*core::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .swap([[T_2]], core::sync::atomic::Ordering::Acquire);
@@ -58,7 +60,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = unsafe {
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]] = true;
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]] = core::sync::atomic::AtomicBool::from_ptr(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!((* core::ptr::addr_of_mut!(flag))._Value)
+// CHECK-NEXT:                 core::ptr::addr_of_mut!((*core::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .swap([[T_4]], core::sync::atomic::Ordering::Relaxed);
@@ -67,7 +69,7 @@ int main(void) {
 // CHECK-NEXT:     third = [[V_2]] as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicBool::from_ptr(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!((* core::ptr::addr_of_mut!(flag))._Value)
+// CHECK-NEXT:                 core::ptr::addr_of_mut!((*core::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .store(false, core::sync::atomic::Ordering::SeqCst)
@@ -76,7 +78,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: bool = unsafe {
 // CHECK-NEXT:         let [[T_6:__t[0-9]+]] = true;
 // CHECK-NEXT:         let [[T_7:__t[0-9]+]] = core::sync::atomic::AtomicBool::from_ptr(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!((* core::ptr::addr_of_mut!(flag))._Value)
+// CHECK-NEXT:                 core::ptr::addr_of_mut!((*core::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .swap([[T_6]], core::sync::atomic::Ordering::SeqCst);
@@ -86,6 +88,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {} {} {}", first, second, third, fourth);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

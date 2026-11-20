@@ -13,23 +13,29 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.thread.pointer.p0"]
 // CHECK-NEXT:     fn __slate_intrinsic_3b4650fdfadac1ac() -> *mut ();
 // CHECK-NEXT:     #[link_name = "llvm.clear_cache"]
 // CHECK-NEXT:     fn __slate_intrinsic_7eb885185d29c159([[ARG_0:arg[0-9]+]]: *mut (), [[ARG_1:arg[0-9]+]]: *mut ());
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let first: *mut () = unsafe { __slate_intrinsic_3b4650fdfadac1ac() };
 // CHECK-NEXT:     let second: *mut () = unsafe { __slate_intrinsic_3b4650fdfadac1ac() };
-// CHECK-NEXT:     let mut buffer: __SlateAlign16<[u8; 16]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [u8; 16] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0u8;
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut buffer: __SlateAlign16<[u8; 16]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: [u8; 16] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]][0] = 0u8;
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_intrinsic_7eb885185d29c159(
 // CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut (),
@@ -37,9 +43,10 @@ int main(void) {
 // CHECK-NEXT:                 .offset(core::mem::size_of::<[u8; 16]>() as isize) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     println!("{} {}", ! first.is_null() as i32, (first == second) as i32);
+// CHECK-NEXT:     println!("{} {}", !first.is_null() as i32, (first == second) as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

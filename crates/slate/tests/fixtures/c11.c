@@ -298,21 +298,25 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(thread_local)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! C11_TYPE_KIND {
 // CHECK-NEXT:     () => {
 // CHECK-NEXT:         11i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! C11_TYPE_KIND__2 {
 // CHECK-NEXT:     () => {
 // CHECK-NEXT:         22i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! C11_TYPE_KIND__3 {
 // CHECK-NEXT:     () => {
 // CHECK-NEXT:         33i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn cimag([[ARG_0:arg[0-9]+]]: num_complex::Complex<f64>) -> f64;
 // CHECK-NEXT:     fn creal([[ARG_0]]: num_complex::Complex<f64>) -> f64;
@@ -448,36 +452,43 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
 // CHECK-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct LongDouble([u8; 10]);
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Add for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_add(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Sub for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_sub(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Mul for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_mul(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Div for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_div(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::AddAssign for LongDouble {
 // CHECK-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -485,6 +496,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::SubAssign for LongDouble {
 // CHECK-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -492,6 +504,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::MulAssign for LongDouble {
 // CHECK-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -499,6 +512,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::DivAssign for LongDouble {
 // CHECK-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -506,118 +520,140 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Neg for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn neg(self) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_neg(self)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialEq for LongDouble {
 // CHECK-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
 // CHECK-NEXT:         __slate_f80_eq(*self, *__other)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord___mbstate_t_h_21 {
 // CHECK-NEXT:     __count: i32,
 // CHECK-NEXT:     __value: __SlateRecord___mbstate_t_h_21_2,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord___mbstate_t_h_21_2 {
 // CHECK-NEXT:     __wch: u32,
 // CHECK-NEXT:     __wchb: [i8; 4],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_thread_shared_types_h_112 {
 // CHECK-NEXT:     __data: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_threads_h_66 {
 // CHECK-NEXT:     __size: [i8; 40],
 // CHECK-NEXT:     __align: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_threads_h_72 {
 // CHECK-NEXT:     __size: [i8; 48],
 // CHECK-NEXT:     __align: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct C11Anonymous {
 // CHECK-NEXT:     [[SLATE_ANON_0:__slate_anon_[0-9]+]]: __SlateRecord_c11_c_56,
 // CHECK-NEXT:     [[SLATE_ANON_1:__slate_anon_[0-9]+]]: __SlateRecord_c11_c_60,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_c11_c_56 {
 // CHECK-NEXT:     integer: i32,
 // CHECK-NEXT:     real: f64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_c11_c_60 {
 // CHECK-NEXT:     x: i32,
 // CHECK-NEXT:     y: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(32))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct C11OverAligned {
 // CHECK-NEXT:     value: u8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct C11Temporary {
 // CHECK-NEXT:     values: [i32; 3],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(64))]
 // CHECK-NEXT: struct __SlateAlign64<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign64<T> {}
-// CHECK-NEXT: static mut c11_aligned_buffer: __SlateAlign64<[u8; 64]> = __SlateAlign64(unsafe {
-// CHECK-NEXT:     core::mem::zeroed()
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut c11_aligned_buffer: __SlateAlign64<[u8; 64]> = __SlateAlign64(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut c11_atomic_total: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: #[thread_local]
 // CHECK-NEXT: static mut c11_thread_local_value: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut c11_evaluation_total: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut c11_never_flag: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut c11_once_total: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c11_make_temporary(base: i32) -> C11Temporary {
 // CHECK-NEXT:     let result: C11Temporary = C11Temporary {
 // CHECK-NEXT:         values: [base, base + 1, base + 2],
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return result;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c11_evaluation_step(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         c11_evaluation_total = c11_evaluation_total + value;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value * 2
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.c11_thread_worker")]
 // CHECK-NEXT: extern "C-unwind" fn c11_thread_worker(argument: *mut ()) -> i32 {
 // CHECK-NEXT:     let increment: i32 = unsafe { *(argument as *mut i32) };
@@ -639,9 +675,11 @@ int main(void) {
 // CHECK-NEXT:         + (((unsafe { *slate_support::errno_location() })
 // CHECK-NEXT:             == (slate_support::ERANGE as i32)) as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::remove;
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::aligned_alloc;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.c11_quick_handler")]
 // CHECK-NEXT: extern "C-unwind" fn c11_quick_handler() {
 // CHECK-NEXT:     unsafe {
@@ -653,19 +691,23 @@ int main(void) {
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.c11_once_handler")]
 // CHECK-NEXT: extern "C-unwind" fn c11_once_handler() {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         c11_once_total = c11_once_total + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c11_never_return(status: i32) {
 // CHECK-NEXT:     unsafe { quick_exit(status) };
 // CHECK-NEXT:     unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c11_open_exclusive(path: *const i8) -> *mut slate_support::FILE {
 // CHECK-NEXT:     unsafe { slate_support::fopen(path, c"wx".as_ptr()) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: C11Temporary = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let utf16_character: u16 = 937;
@@ -752,11 +794,10 @@ int main(void) {
 // CHECK-NEXT:         + unsafe { c11_evaluation_total };
 // CHECK-NEXT:     temporary_total = unsafe {
 // CHECK-NEXT:         *((*{
-// CHECK-NEXT:             [[SLATE_COMPOUND_0]] = c11_make_temporary(43i32);
-// CHECK-NEXT:             core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:         })
-// CHECK-NEXT:             .values
-// CHECK-NEXT:             .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = c11_make_temporary(43i32);
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                 }).values
+// CHECK-NEXT:                 .as_mut_ptr() as *mut i32)
 // CHECK-NEXT:             .add(1)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -900,20 +941,38 @@ int main(void) {
 // CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     print!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}", alignment_total,
-// CHECK-NEXT:         unicode_total, generic_total, anonymous_total, evaluation_total, temporary_total,
-// CHECK-NEXT:         static_assert_total, optional_total, atomic_total, thread_total,
-// CHECK-NEXT:         concurrency_total, conversion_total, quick_total, exclusive_total,
-// CHECK-NEXT:         timespec_total, complex_total, limits_total, 0i32
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
+// CHECK-NEXT:         alignment_total,
+// CHECK-NEXT:         unicode_total,
+// CHECK-NEXT:         generic_total,
+// CHECK-NEXT:         anonymous_total,
+// CHECK-NEXT:         evaluation_total,
+// CHECK-NEXT:         temporary_total,
+// CHECK-NEXT:         static_assert_total,
+// CHECK-NEXT:         optional_total,
+// CHECK-NEXT:         atomic_total,
+// CHECK-NEXT:         thread_total,
+// CHECK-NEXT:         concurrency_total,
+// CHECK-NEXT:         conversion_total,
+// CHECK-NEXT:         quick_total,
+// CHECK-NEXT:         exclusive_total,
+// CHECK-NEXT:         timespec_total,
+// CHECK-NEXT:         complex_total,
+// CHECK-NEXT:         limits_total,
+// CHECK-NEXT:         0i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::putchar(10i32) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static utf8_text: [i8; 3] = [-50, -87, 0];
+// CHECK-EMPTY:
 // CHECK-NEXT: static utf16_text: [u16; 2] = [937, 0];
+// CHECK-EMPTY:
 // CHECK-NEXT: static utf32_text: [u32; 2] = [128578, 0];
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

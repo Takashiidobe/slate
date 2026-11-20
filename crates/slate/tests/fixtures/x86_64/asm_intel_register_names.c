@@ -46,48 +46,61 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut ds: u16 = 4660;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut eax: u32 = 100;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut counter: u32 = 40;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn read_ds() -> u64 {
 // CHECK-NEXT:     let mut r: u64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             ".intel_syntax noprefix\n\tmov ax, ds\n\tmovzx rcx, ax\n\t.att_syntax prefix",
-// CHECK-NEXT:             lateout("cx") [[T_0]], out("ax") _, options(nostack, att_syntax)
+// CHECK-NEXT:             lateout("cx") [[T_0]],
+// CHECK-NEXT:             out("ax") _,
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         r = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn add_three(mut value: u64) -> u64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             ".intel_syntax noprefix\n\tmov eax, 3\n\tadd rcx, rax\n\t.att_syntax prefix",
-// CHECK-NEXT:             inlateout("cx") value as u64 => [[T_0]], out("ax") _, options(pure, nomem,
-// CHECK-NEXT:             nostack, att_syntax)
+// CHECK-NEXT:             inlateout("cx") value as u64 => [[T_0]],
+// CHECK-NEXT:             out("ax") _,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn add_counter(mut value: u64) -> u64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             ".intel_syntax noprefix\n\tmov eax, DWORD PTR {0}[rip]\n\tadd rcx, rax\n\t.att_syntax prefix",
-// CHECK-NEXT:             sym counter, inlateout("cx") value as u64 => [[T_0]], out("ax") _,
-// CHECK-NEXT:             options(nostack, att_syntax)
+// CHECK-NEXT:             sym counter,
+// CHECK-NEXT:             inlateout("cx") value as u64 => [[T_0]],
+// CHECK-NEXT:             out("ax") _,
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -103,6 +116,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

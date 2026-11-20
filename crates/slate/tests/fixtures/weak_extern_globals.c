@@ -24,6 +24,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(linkage)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     #[linkage = "extern_weak"]
 // CHECK-NEXT:     static __ehdr_start: *mut [i8; 0];
@@ -36,33 +37,44 @@ int main(void) {
 // CHECK-NEXT:     #[linkage = "extern_weak"]
 // CHECK-NEXT:     static missing_table: *mut [u64; 0];
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memcmp;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn read_counter() -> i32 {
-// CHECK-NEXT:     if !unsafe { core::ptr::addr_of_mut!(* missing_counter) }.is_null() {
+// CHECK-NEXT:     if !unsafe { core::ptr::addr_of_mut!(*missing_counter) }.is_null() {
 // CHECK-NEXT:         unsafe { *missing_counter }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         -1
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "ehdr {}", (! unsafe { core::ptr::addr_of_mut!(* __ehdr_start) as * mut i8 }
-// CHECK-NEXT:         .is_null() && (unsafe { memcmp(((core::ptr::addr_of_mut!(* __ehdr_start) as * mut
-// CHECK-NEXT:         i8) as * const ()) as * const core::ffi::c_void, (b"\x7fELF\0".as_ptr() as *
-// CHECK-NEXT:         const ()) as * const core::ffi::c_void, 4u64 as usize) as i32 }) == 0) as i32
+// CHECK-NEXT:         "ehdr {}",
+// CHECK-NEXT:         (!unsafe { core::ptr::addr_of_mut!(*__ehdr_start) as *mut i8 }.is_null()
+// CHECK-NEXT:             && (unsafe {
+// CHECK-NEXT:                 memcmp(
+// CHECK-NEXT:                     ((core::ptr::addr_of_mut!(*__ehdr_start) as *mut i8) as *const ())
+// CHECK-NEXT:                         as *const core::ffi::c_void,
+// CHECK-NEXT:                     (b"\x7fELF\0".as_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:                     4u64 as usize,
+// CHECK-NEXT:                 ) as i32
+// CHECK-NEXT:             }) == 0) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "init {}", ((unsafe { core::ptr::addr_of!(* __init_array_start) }) <= unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!(* __init_array_end) }) as i32
+// CHECK-NEXT:         "init {}",
+// CHECK-NEXT:         ((unsafe { core::ptr::addr_of!(*__init_array_start) })
+// CHECK-NEXT:             <= unsafe { core::ptr::addr_of!(*__init_array_end) }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "missing {} {}", unsafe { core::ptr::addr_of_mut!(* missing_counter) } .is_null()
-// CHECK-NEXT:         as i32, unsafe { core::ptr::addr_of!(* missing_table) as * const u64 } .is_null()
-// CHECK-NEXT:         as i32
+// CHECK-NEXT:         "missing {} {}",
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(*missing_counter) }.is_null() as i32,
+// CHECK-NEXT:         unsafe { core::ptr::addr_of!(*missing_table) as *const u64 }.is_null() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("counter {}", read_counter());
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

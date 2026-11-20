@@ -11,16 +11,19 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: fn is_negative(c: i8) -> i32 {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT: fn is_negative(c: u8) -> i32 {
 // CHECK-NEXT:     ((c as i32) < 0) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     let c: i8 = -56i8;
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     let c: u8 = 200;
 // CHECK-NEXT:     println!("{} {}", is_negative(c), c as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

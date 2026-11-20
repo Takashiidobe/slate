@@ -23,7 +23,9 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::strlen;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn score_text(bytes: &str) -> i32 {
 // CHECK-NEXT:     unsafe { bytes.len() };
 // CHECK-NEXT:     let mut score: i32 = 0;
@@ -34,19 +36,24 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     score
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn forward_text(bytes: &str) -> i32 {
 // CHECK-NEXT:     score_text(bytes)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut bytes: [u8; 4] = [97, 98, 99, 0];
-// CHECK-NEXT:     let score: i32 = forward_text(unsafe {
-// CHECK-NEXT:         core::str::from_utf8_unchecked(
-// CHECK-NEXT:             core::slice::from_raw_parts(bytes.as_ptr() as *const u8, 3 as usize),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let score: i32 = forward_text(
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::str::from_utf8_unchecked(
+// CHECK-NEXT:                 core::slice::from_raw_parts(bytes.as_ptr() as *const u8, 3 as usize),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", score);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

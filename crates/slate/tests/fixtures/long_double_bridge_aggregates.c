@@ -53,6 +53,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __slate_ldfp_long_double_bridge_aggregates_halve();
 // CHECK-NEXT:     fn __slate_ldfp_long_double_bridge_aggregates_make();
@@ -152,36 +153,43 @@ int main(void) {
 // CHECK-NEXT:     fn __slate_printf__ri32_pi8_f80(_0: *const i8, _1: LongDouble) -> i32;
 // CHECK-NEXT:     fn __slate_printf__ri32_pi8_f80_i32(_0: *const i8, _1: LongDouble, _2: i32) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct LongDouble([u8; 10]);
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Add for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_add(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Sub for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_sub(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Mul for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_mul(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Div for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_div(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::AddAssign for LongDouble {
 // CHECK-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -189,6 +197,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::SubAssign for LongDouble {
 // CHECK-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -196,6 +205,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::MulAssign for LongDouble {
 // CHECK-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -203,6 +213,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::DivAssign for LongDouble {
 // CHECK-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -210,61 +221,61 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Neg for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn neg(self) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_neg(self)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialEq for LongDouble {
 // CHECK-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
 // CHECK-NEXT:         __slate_f80_eq(*self, *__other)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct tagged {
 // CHECK-NEXT:     value: LongDouble,
 // CHECK-NEXT:     tag: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct big {
 // CHECK-NEXT:     d: [f64; 3],
 // CHECK-NEXT:     k: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct one {
 // CHECK-NEXT:     value: LongDouble,
 // CHECK-NEXT: }
-// CHECK-NEXT: #[unsafe(
-// CHECK-NEXT:     export_name = "__slate_ld____slate_ldfp_long_double_bridge_aggregates_weigh__rf80_m32a8_f80"
-// CHECK-NEXT: )]
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(export_name = "__slate_ld____slate_ldfp_long_double_bridge_aggregates_weigh__rf80_m32a8_f80")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.weigh")]
 // CHECK-NEXT: extern "C-unwind" fn weigh(b: big, scale: LongDouble) -> LongDouble {
 // CHECK-NEXT:     __slate_f80_from_f64(b.d[0] + b.d[1] + b.d[2] + (b.k as f64)) * scale
 // CHECK-NEXT: }
-// CHECK-NEXT: #[unsafe(
-// CHECK-NEXT:     export_name = "__slate_ld____slate_ldfp_long_double_bridge_aggregates_make__rm32_f80_i32"
-// CHECK-NEXT: )]
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(export_name = "__slate_ld____slate_ldfp_long_double_bridge_aggregates_make__rm32_f80_i32")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.make")]
 // CHECK-NEXT: extern "C-unwind" fn make(value: LongDouble, tag: i32) -> tagged {
 // CHECK-NEXT:     let t: tagged = {
@@ -275,9 +286,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return t;
 // CHECK-NEXT: }
-// CHECK-NEXT: #[unsafe(
-// CHECK-NEXT:     export_name = "__slate_ld____slate_ldfp_long_double_bridge_aggregates_spread__rm32a8_f80_m32a8"
-// CHECK-NEXT: )]
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(export_name = "__slate_ld____slate_ldfp_long_double_bridge_aggregates_spread__rm32a8_f80_m32a8")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.spread")]
 // CHECK-NEXT: extern "C-unwind" fn spread(base: LongDouble, b: big) -> big {
 // CHECK-NEXT:     let r: big = {
@@ -292,9 +302,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return r;
 // CHECK-NEXT: }
-// CHECK-NEXT: #[unsafe(
-// CHECK-NEXT:     export_name = "__slate_ld____slate_ldfp_long_double_bridge_aggregates_halve__rs80_s80_m32"
-// CHECK-NEXT: )]
+// CHECK-EMPTY:
+// CHECK-NEXT: #[unsafe(export_name = "__slate_ld____slate_ldfp_long_double_bridge_aggregates_halve__rs80_s80_m32")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.halve")]
 // CHECK-NEXT: extern "C-unwind" fn halve(o: one, t: tagged) -> one {
 // CHECK-NEXT:     let r: one = one {
@@ -303,33 +312,30 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return r;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: one = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: tagged = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: one = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let weigh_ptr: Option<unsafe extern "C-unwind" fn(big, LongDouble) -> LongDouble> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *const (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(big, LongDouble) -> LongDouble>,
-// CHECK-NEXT:         >(__slate_ldfp_long_double_bridge_aggregates_weigh as *const ())
+// CHECK-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(big, LongDouble) -> LongDouble>>(
+// CHECK-NEXT:             __slate_ldfp_long_double_bridge_aggregates_weigh as *const (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let make_ptr: Option<unsafe extern "C-unwind" fn(LongDouble, i32) -> tagged> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *const (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(LongDouble, i32) -> tagged>,
-// CHECK-NEXT:         >(__slate_ldfp_long_double_bridge_aggregates_make as *const ())
+// CHECK-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble, i32) -> tagged>>(
+// CHECK-NEXT:             __slate_ldfp_long_double_bridge_aggregates_make as *const (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let spread_ptr: Option<unsafe extern "C-unwind" fn(LongDouble, big) -> big> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *const (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(LongDouble, big) -> big>,
-// CHECK-NEXT:         >(__slate_ldfp_long_double_bridge_aggregates_spread as *const ())
+// CHECK-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble, big) -> big>>(
+// CHECK-NEXT:             __slate_ldfp_long_double_bridge_aggregates_spread as *const (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let halve_ptr: Option<unsafe extern "C-unwind" fn(one, tagged) -> one> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *const (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(one, tagged) -> one>,
-// CHECK-NEXT:         >(__slate_ldfp_long_double_bridge_aggregates_halve as *const ())
+// CHECK-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(one, tagged) -> one>>(
+// CHECK-NEXT:             __slate_ldfp_long_double_bridge_aggregates_halve as *const (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let b: big = {
 // CHECK-NEXT:         let mut [[T_0]]: big = unsafe { core::mem::zeroed() };
@@ -340,10 +346,9 @@ int main(void) {
 // CHECK-NEXT:     let t: tagged = unsafe {
 // CHECK-NEXT:         __slate_icall__rm32_f80_i32(
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(LongDouble, i32) -> tagged>,
-// CHECK-NEXT:                     *const (),
-// CHECK-NEXT:                 >(core::ptr::read_volatile(core::ptr::addr_of!(make_ptr)))
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32) -> tagged>, *const ()>(
+// CHECK-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(make_ptr)),
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]),
 // CHECK-NEXT:             2i32,
@@ -352,10 +357,9 @@ int main(void) {
 // CHECK-NEXT:     let s: big = unsafe {
 // CHECK-NEXT:         __slate_icall__rm32a8_f80_m32a8(
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(LongDouble, big) -> big>,
-// CHECK-NEXT:                     *const (),
-// CHECK-NEXT:                 >(core::ptr::read_volatile(core::ptr::addr_of!(spread_ptr)))
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, big) -> big>, *const ()>(
+// CHECK-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(spread_ptr)),
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]),
 // CHECK-NEXT:             b,
@@ -364,10 +368,9 @@ int main(void) {
 // CHECK-NEXT:     let o: one = unsafe {
 // CHECK-NEXT:         __slate_icall__rs80_s80_m32(
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(one, tagged) -> one>,
-// CHECK-NEXT:                     *const (),
-// CHECK-NEXT:                 >(core::ptr::read_volatile(core::ptr::addr_of!(halve_ptr)))
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(one, tagged) -> one>, *const ()>(
+// CHECK-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(halve_ptr)),
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:             *{
 // CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = one {
@@ -384,12 +387,9 @@ int main(void) {
 // CHECK-NEXT:             c"%.6Lf\n".as_ptr(),
 // CHECK-NEXT:             __slate_icall__rf80_m32a8_f80(
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<
-// CHECK-NEXT:                         Option<
-// CHECK-NEXT:                             unsafe extern "C-unwind" fn(big, LongDouble) -> LongDouble,
-// CHECK-NEXT:                         >,
-// CHECK-NEXT:                         *const (),
-// CHECK-NEXT:                     >(core::ptr::read_volatile(core::ptr::addr_of!(weigh_ptr)))
+// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(big, LongDouble) -> LongDouble>, *const ()>(
+// CHECK-NEXT:                         core::ptr::read_volatile(core::ptr::addr_of!(weigh_ptr)),
+// CHECK-NEXT:                     )
 // CHECK-NEXT:                 },
 // CHECK-NEXT:                 b,
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]),
@@ -425,18 +425,17 @@ int main(void) {
 // CHECK-NEXT:                         0i32,
 // CHECK-NEXT:                     );
 // CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
-// CHECK-NEXT:                 })
-// CHECK-NEXT:                     .value
+// CHECK-NEXT:                 }).value
 // CHECK-NEXT:                 + (*{
 // CHECK-NEXT:                     [[SLATE_COMPOUND_2]] = halve(o, t);
 // CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
-// CHECK-NEXT:                 })
-// CHECK-NEXT:                     .value,
+// CHECK-NEXT:                 }).value,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

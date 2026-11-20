@@ -26,17 +26,21 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![allow(suspicious_runtime_symbol_definitions)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn open([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: i32, ...) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::lseek;
 // CHECK-NEXT: use slate_support::close;
 // CHECK-NEXT: use slate_support::read;
 // CHECK-NEXT: use slate_support::write;
 // CHECK-NEXT: use slate_support::unlink;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let path: *const i8 = c"/tmp/slate_off_t_lseek.tmp".as_ptr();
 // CHECK-NEXT:     let fd: i32 = unsafe {
@@ -57,8 +61,7 @@ int main(void) {
 // CHECK-NEXT:             (b"0123456789\0".as_ptr() as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:             10u32 as usize,
 // CHECK-NEXT:         ) as i32
-// CHECK-NEXT:     }) != 10
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) != 10 {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let end: i32 = unsafe {
@@ -74,8 +77,7 @@ int main(void) {
 // CHECK-NEXT:             (core::ptr::addr_of_mut!(c) as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             1u32 as usize,
 // CHECK-NEXT:         ) as i32
-// CHECK-NEXT:     }) != 1
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) != 1 {
 // CHECK-NEXT:         return 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -92,6 +94,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { close(fd as i32) as i32 };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

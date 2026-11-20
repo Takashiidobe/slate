@@ -80,8 +80,10 @@ prints `internal error: …`. Full policy:
   owned comments whose node is not emitted, to the next emitted item by node id.
   Comments in unreachable dispatcher blocks are retained at the end of the
   generated function.
-- `translate-project` always formats with rustfmt. Single-file output uses
-  rustfmt when it contains comments, since syn/prettyplease discard them.
+- Codegen formats its own output: `backend::codegen` drives the Oppen printer
+  vendored from prettyplease (`backend/printer/`), with comments as ordinary
+  tokens. No rustfmt or syn round trip; run rustfmt on the output for its
+  style.
 
 ### C type metadata
 

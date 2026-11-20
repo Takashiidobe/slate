@@ -46,6 +46,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_asm_pair_and_any_operands_c_3 {
@@ -53,83 +54,101 @@ int main(void) {
 // CHECK-NEXT:     b: i64,
 // CHECK-NEXT:     c: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pair_out() -> u128 {
 // CHECK-NEXT:     let mut r: u128 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movq $7, %rax\n\tmovq $9, %rdx # %rax", lateout("ax") [[T_0]], lateout("dx")
-// CHECK-NEXT:             [[T_1]], options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "movq $7, %rax\n\tmovq $9, %rdx # %rax",
+// CHECK-NEXT:             lateout("ax") [[T_0]],
+// CHECK-NEXT:             lateout("dx") [[T_1]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         r = (([[T_1]] as u128) << 64 | ([[T_0]] as u128)) as u128;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pair_inout(mut x: u128) -> u128 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u128 = x as u128;
 // CHECK-NEXT:         let [[T_1]]: u64;
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addq $1, %rax\n\tadcq $0, %rdx", inlateout("ax") [[T_0]] as u64 => [[T_1]],
-// CHECK-NEXT:             inlateout("dx") ([[T_0]] >> 64) as u64 => [[T_2]], options(pure, nomem, nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             "addq $1, %rax\n\tadcq $0, %rdx",
+// CHECK-NEXT:             inlateout("ax") [[T_0]] as u64 => [[T_1]],
+// CHECK-NEXT:             inlateout("dx") ([[T_0]] >> 64) as u64 => [[T_2]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         x = (([[T_2]] as u128) << 64 | ([[T_1]] as u128)) as u128;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pair_in_high(x: u128) -> u64 {
 // CHECK-NEXT:     let mut hi: u64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         let [[T_1]]: u128 = x as u128;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movq %rdx, {0:r}", lateout(reg) [[T_0]], in ("ax") [[T_1]] as u64, in ("dx") ([[T_1]]
-// CHECK-NEXT:             >> 64) as u64, options(pure, nomem, nostack, att_syntax)
+// CHECK-NEXT:             "movq %rdx, {0:r}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             in("ax") [[T_1]] as u64,
+// CHECK-NEXT:             in("dx") ([[T_1]] >> 64) as u64,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         hi = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     hi
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn single_a(mut x: u64) -> u64 {
 // CHECK-NEXT:     let mut r: u64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq 3({0:r}), %rax", in (reg) x as u64, lateout("ax") [[T_0]], options(pure,
-// CHECK-NEXT:             nomem, nostack, att_syntax)
+// CHECK-NEXT:             "leaq 3({0:r}), %rax",
+// CHECK-NEXT:             in(reg) x as u64,
+// CHECK-NEXT:             lateout("ax") [[T_0]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         r = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn any_operands(
 // CHECK-NEXT:     mut x: i32,
 // CHECK-NEXT:     mut big: &mut __SlateRecord_asm_pair_and_any_operands_c_3,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "\n# {0:e}\n# {1}\n# {2}", in (reg) x as u32, const 5 as i32, in (reg) big as
-// CHECK-NEXT:             * mut __SlateRecord_asm_pair_and_any_operands_c_3, options(nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             "\n# {0:e}\n# {1}\n# {2}",
+// CHECK-NEXT:             in(reg) x as u32,
+// CHECK-NEXT:             const 5 as i32,
+// CHECK-NEXT:             in(reg) big as *mut __SlateRecord_asm_pair_and_any_operands_c_3,
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut r: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movl $42, {0:e}", lateout(reg) [[T_0]], options(pure, nomem, nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             "movl $42, {0:e}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         r = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r + x - 40
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: u128 = pair_out();
 // CHECK-NEXT:     let b: u128 = pair_inout((4 as u128) << 64i32 | (18446744073709551615u64 as u128));
@@ -160,6 +179,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -60,26 +60,33 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(atomic_volatile)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Counters {
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT:     small: u16,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut shared: i32 = 7;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn callback(x: i32) -> i32 {
 // CHECK-NEXT:     x + 5
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn once(p: &i32) -> *mut i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (p as *const i32) as *mut i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: u8 = 231;
 // CHECK-NEXT:     let mut b: i16 = -1234;
@@ -132,20 +139,16 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .store(
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<
-// CHECK-NEXT:                         Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:                         *mut u8,
-// CHECK-NEXT:                     >(Some(callback))
+// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *mut u8>(
+// CHECK-NEXT:                         Some(callback),
+// CHECK-NEXT:                     )
 // CHECK-NEXT:                 },
 // CHECK-NEXT:                 core::sync::atomic::Ordering::Relaxed,
 // CHECK-NEXT:             )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let fnv: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 *mut u8,
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:             >(
+// CHECK-NEXT:             core::mem::transmute::<*mut u8, Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // CHECK-NEXT:                 core::sync::atomic::AtomicPtr::from_ptr(
 // CHECK-NEXT:                         core::ptr::addr_of_mut!(r#fn) as *mut *mut u8,
 // CHECK-NEXT:                     )
@@ -162,8 +165,7 @@ int main(void) {
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:                 core::sync::atomic::Ordering::Relaxed,
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     {
+// CHECK-NEXT:         } {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let vv: i32 = unsafe {
@@ -262,6 +264,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

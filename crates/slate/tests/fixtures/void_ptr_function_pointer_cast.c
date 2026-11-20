@@ -22,15 +22,18 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn add_one(x: i32) -> i32 {
 // CHECK-NEXT:     x + 1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union FnBox {
 // CHECK-NEXT:     r#fn: Option<unsafe extern "C-unwind" fn(i32) -> i32>,
 // CHECK-NEXT:     ptr: *mut (),
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut r#box: FnBox = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -38,15 +41,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let slot: *mut () = unsafe { r#box.ptr };
 // CHECK-NEXT:     let cb: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *mut (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(i32) -> i32>,
-// CHECK-NEXT:         >(slot)
+// CHECK-NEXT:         core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:             slot,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let none: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
-// CHECK-NEXT:     println!("{} {}", unsafe { cb.unwrap() (41i32) }, (none != None) as i32);
+// CHECK-NEXT:     println!("{} {}", unsafe { cb.unwrap()(41i32) }, (none != None) as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

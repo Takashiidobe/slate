@@ -28,6 +28,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn near(sp: u64, local: *const ()) -> i32 {
 // CHECK-NEXT:     let here: u64 = local as u64;
 // CHECK-NEXT:     let distance: u64 = if here > sp {
@@ -37,6 +38,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (sp != 0 && sp % 8 == 0 && distance < 65536) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn read_integer() -> i32 {
 // CHECK-NEXT:     let mut local: i32 = 1;
 // CHECK-NEXT:     near(
@@ -48,6 +50,7 @@ int main(void) {
 // CHECK-NEXT:         core::ptr::addr_of_mut!(local) as *const (),
 // CHECK-NEXT:     )
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn read_pointer() -> i32 {
 // CHECK-NEXT:     let mut local: i32 = 2;
 // CHECK-NEXT:     near(
@@ -59,10 +62,12 @@ int main(void) {
 // CHECK-NEXT:         core::ptr::addr_of_mut!(local) as *const (),
 // CHECK-NEXT:     )
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{} {}", read_integer(), read_pointer());
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

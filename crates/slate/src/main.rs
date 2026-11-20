@@ -1953,7 +1953,7 @@ fn write_project_crate(
         outputs
             .into_par_iter()
             .map(|(output, program)| {
-                backend::write_rust(&output, &program.emit())?;
+                backend::write_if_changed(&output, &program.emit())?;
                 Ok(output)
             })
             .collect()
@@ -2003,7 +2003,7 @@ fn write_project_crate(
                 .map_err(|e| format!("remove {}: {e}", build_script.display()))?;
         }
     } else {
-        write_file(&build_script, &script.render()?)?;
+        write_file(&build_script, &script.render())?;
     }
     if uses_blocks {
         write_blocks_support(crate_dir)?;

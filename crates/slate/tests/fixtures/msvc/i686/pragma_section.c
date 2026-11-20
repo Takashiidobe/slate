@@ -151,16 +151,17 @@ int main(void) {
 // CHECK-NEXT:     unused: i32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::abort;
 // CHECK-NEXT: use slate_support::strncmp;
+// CHECK-NEXT: use slate_support::abort;
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(".section .drectve,\"yni\"\n.ascii \" /section:.rdata,W\"");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn characteristics(name: *const i8) -> u32 {
-// CHECK-NEXT:     let base: *mut i8 = (unsafe { GetModuleHandleA(core::ptr::null::<i8>()) }) as *mut i8;
-// CHECK-NEXT:     let nt: *mut _IMAGE_NT_HEADERS =
-// CHECK-NEXT:         (unsafe { base.offset((*(base as *mut _IMAGE_DOS_HEADER)).e_lfanew as isize) })
-// CHECK-NEXT:             as *mut _IMAGE_NT_HEADERS;
+// CHECK-NEXT:     let base: *mut i8 = (unsafe { GetModuleHandleA(core::ptr::null::<i8>()) })
+// CHECK-NEXT:         as *mut i8;
+// CHECK-NEXT:     let nt: *mut _IMAGE_NT_HEADERS = (unsafe {
+// CHECK-NEXT:         base.offset((*(base as *mut _IMAGE_DOS_HEADER)).e_lfanew as isize)
+// CHECK-NEXT:     }) as *mut _IMAGE_NT_HEADERS;
 // CHECK-NEXT:     let section: *mut _IMAGE_SECTION_HEADER = (nt as u32)
 // CHECK-NEXT:         .wrapping_add(24)
 // CHECK-NEXT:         .wrapping_add(((unsafe { (*nt).FileHeader.SizeOfOptionalHeader }) as i32) as u32)
@@ -169,13 +170,12 @@ int main(void) {
 // CHECK-NEXT:     while i < ((unsafe { (*nt).FileHeader.NumberOfSections }) as i32) {
 // CHECK-NEXT:         if (unsafe {
 // CHECK-NEXT:             strncmp(
-// CHECK-NEXT:                 (((*section.offset(i as isize)).Name.as_mut_ptr() as *mut u8) as *const i8)
-// CHECK-NEXT:                     as *const core::ffi::c_char,
+// CHECK-NEXT:                 (((*section.offset(i as isize)).Name.as_mut_ptr() as *mut u8)
+// CHECK-NEXT:                     as *const i8) as *const core::ffi::c_char,
 // CHECK-NEXT:                 name as *const core::ffi::c_char,
 // CHECK-NEXT:                 8u32 as usize,
 // CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0
-// CHECK-NEXT:         {
+// CHECK-NEXT:         }) == 0 {
 // CHECK-NEXT:             return unsafe { (*section.offset(i as isize)).Characteristics };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i += 1;

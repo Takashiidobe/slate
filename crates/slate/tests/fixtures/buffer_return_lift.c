@@ -35,7 +35,7 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let q: *mut i32 = make(4i32);
-// CHECK-NEXT:     println!("{} {}", unsafe { * q.add(0) }, unsafe { * q.add(3) });
+// CHECK-NEXT:     println!("{} {}", unsafe { *q.add(0) }, unsafe { *q.add(3) });
 // CHECK-NEXT:     unsafe { free((q as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

@@ -30,8 +30,12 @@ int main(void) {
 // CHECK-NEXT:             [[RESULT_0]] = 0;
 // CHECK-NEXT:             let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "testl {0:e}, {0:e}\n\tjz {1}", in (reg) (0 as i32) as u32, label {
-// CHECK-NEXT:                 __slate_asm_target = true; }, options(nostack, att_syntax)
+// CHECK-NEXT:                 "testl {0:e}, {0:e}\n\tjz {1}",
+// CHECK-NEXT:                 in(reg) (0 as i32) as u32,
+// CHECK-NEXT:                 label {
+// CHECK-NEXT:                     __slate_asm_target = true;
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 options(nostack, att_syntax),
 // CHECK-NEXT:             );
 // CHECK-NEXT:             if __slate_asm_target {
 // CHECK-NEXT:                 [[RESULT_0]] = 13;
@@ -43,8 +47,12 @@ int main(void) {
 // CHECK-NEXT:         result = 0;
 // CHECK-NEXT:         let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "testl {0:e}, {0:e}\n\tjz {1}", in (reg) (9 as i32) as u32, label {
-// CHECK-NEXT:             __slate_asm_target = true; }, options(nostack, att_syntax)
+// CHECK-NEXT:             "testl {0:e}, {0:e}\n\tjz {1}",
+// CHECK-NEXT:             in(reg) (9 as i32) as u32,
+// CHECK-NEXT:             label {
+// CHECK-NEXT:                 __slate_asm_target = true;
+// CHECK-NEXT:             },
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         if __slate_asm_target {
 // CHECK-NEXT:             result = 13;

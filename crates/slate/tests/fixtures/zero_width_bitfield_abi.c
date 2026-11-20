@@ -43,17 +43,20 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_zero_width_bitfield_abi_c_6 {
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_zero_width_bitfield_abi_c_12 {
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_zero_width_bitfield_abi_c_18 {
@@ -61,14 +64,17 @@ int main(void) {
 // CHECK-NEXT:     __slate_pad_1: [u8; 3],
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn take_aligned(value: __SlateRecord_zero_width_bitfield_abi_c_6) -> i32 {
 // CHECK-NEXT:     value.value
 // CHECK-NEXT:         + (core::mem::size_of::<__SlateRecord_zero_width_bitfield_abi_c_6>() as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn round_trip(
 // CHECK-NEXT:     mut value: __SlateRecord_zero_width_bitfield_abi_c_12,
@@ -76,11 +82,13 @@ int main(void) {
 // CHECK-NEXT:     value.value += value.tag as i32;
 // CHECK-NEXT:     return value;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn take_packed(value: __SlateRecord_zero_width_bitfield_abi_c_18) -> i32 {
 // CHECK-NEXT:     (value.tag as i32) + value.value
 // CHECK-NEXT:         + (core::mem::size_of::<__SlateRecord_zero_width_bitfield_abi_c_18>() as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let aligned: __SlateRecord_zero_width_bitfield_abi_c_6 = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: __SlateRecord_zero_width_bitfield_abi_c_6 = unsafe {
@@ -121,6 +129,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

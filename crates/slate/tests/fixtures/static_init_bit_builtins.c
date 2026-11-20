@@ -39,36 +39,46 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn printf([[ARG_0:arg[0-9]+]]: *const i8, ...) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct packet_type {
 // CHECK-NEXT:     r#type: u16,
 // CHECK-NEXT:     priority: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct pll_state {
 // CHECK-NEXT:     ctrl: [u32; 2],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut ic_myaddr: u32 = 16820416;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut ip_packet: packet_type = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: packet_type = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].r#type = 8u16;
 // CHECK-NEXT:     [[T_0]].priority = 1i32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static pll: pll_state = pll_state {
 // CHECK-NEXT:     ctrl: [4611u32, 1342177280u32],
 // CHECK-NEXT: };
-// CHECK-NEXT: static widths: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:     31i32, 40i32, 8i32, 1i32, 31i32,
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static widths: __SlateAlign16<[i32; 5]> = __SlateAlign16(
+// CHECK-NEXT:     [31i32, 40i32, 8i32, 1i32, 31i32],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn counter() -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe { base };
 // CHECK-NEXT:     unsafe {
@@ -76,7 +86,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut base: i32 = 9;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
@@ -94,6 +106,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"\n%d %d\n".as_ptr(), first, counter()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

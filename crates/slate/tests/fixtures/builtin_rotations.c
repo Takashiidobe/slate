@@ -26,6 +26,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __builtin_rotateleft8([[ARG_0:arg[0-9]+]]: u8, [[ARG_1:arg[0-9]+]]: u8) -> u8;
 // CHECK-NEXT:     fn __builtin_rotateright8([[ARG_0]]: u8, [[ARG_1]]: u8) -> u8;
@@ -36,18 +37,22 @@ int main(void) {
 // CHECK-NEXT:     fn __builtin_rotateleft64([[ARG_0]]: u64, [[ARG_1]]: u64) -> u64;
 // CHECK-NEXT:     fn __builtin_rotateright64([[ARG_0]]: u64, [[ARG_1]]: u64) -> u64;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let x: u8 = 147;
-// CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16([
-// CHECK-NEXT:             0u32, 1u32, 7u32, 8u32, 9u32, 255u32,
-// CHECK-NEXT:         ]);
+// CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16(
+// CHECK-NEXT:             [0u32, 1u32, 7u32, 8u32, 9u32, 255u32],
+// CHECK-NEXT:         );
 // CHECK-NEXT:         for i in counts.0.iter().copied() {
 // CHECK-NEXT:             let n: u32 = i;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -68,9 +73,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let x: u16 = 37175;
-// CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16([
-// CHECK-NEXT:             0u32, 1u32, 15u32, 16u32, 17u32, 255u32,
-// CHECK-NEXT:         ]);
+// CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16(
+// CHECK-NEXT:             [0u32, 1u32, 15u32, 16u32, 17u32, 255u32],
+// CHECK-NEXT:         );
 // CHECK-NEXT:         for i in counts.0.iter().copied() {
 // CHECK-NEXT:             let n: u32 = i;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -91,9 +96,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let x: u32 = 2436344781;
-// CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16([
-// CHECK-NEXT:             0u32, 1u32, 31u32, 32u32, 33u32, 255u32,
-// CHECK-NEXT:         ]);
+// CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16(
+// CHECK-NEXT:             [0u32, 1u32, 31u32, 32u32, 33u32, 255u32],
+// CHECK-NEXT:         );
 // CHECK-NEXT:         for i in counts.0.iter().copied() {
 // CHECK-NEXT:             let n: u32 = i;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -114,9 +119,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let x: u64 = 10464021160185111365;
-// CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16([
-// CHECK-NEXT:             0u32, 1u32, 63u32, 64u32, 65u32, 255u32,
-// CHECK-NEXT:         ]);
+// CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16(
+// CHECK-NEXT:             [0u32, 1u32, 63u32, 64u32, 65u32, 255u32],
+// CHECK-NEXT:         );
 // CHECK-NEXT:         for i in counts.0.iter().copied() {
 // CHECK-NEXT:             let n: u32 = i;
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -148,6 +153,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

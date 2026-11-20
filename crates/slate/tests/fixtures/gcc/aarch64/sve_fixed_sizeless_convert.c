@@ -35,14 +35,20 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut table: core::simd::Simd<i32, 16> = core::simd::Simd::from_array([
-// CHECK-NEXT:     3i32, 1i32, 4i32, 1i32, 5i32, 9i32, 2i32, 6i32, 5i32, 3i32, 5i32, 8i32, 9i32, 7i32, 9i32, 3i32,
-// CHECK-NEXT: ]);
+// CHECK-NEXT: static mut table: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         3i32, 1i32, 4i32, 1i32, 5i32, 9i32, 2i32, 6i32, 5i32, 3i32, 5i32, 8i32, 9i32,
+// CHECK-NEXT:         7i32, 9i32, 3i32,
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,crc,lse,sve,fcma")]
 // CHECK-NEXT: unsafe fn widen(mut v: core::simd::Simd<i32, 16>) -> core::arch::aarch64::svint32_t {
 // CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::arch::aarch64::svld1_s32(core::arch::aarch64::svptrue_b32(), v.as_array().as_ptr())
+// CHECK-NEXT:         core::arch::aarch64::svld1_s32(
+// CHECK-NEXT:             core::arch::aarch64::svptrue_b32(),
+// CHECK-NEXT:             v.as_array().as_ptr(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -62,7 +68,11 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,crc,lse,sve,fcma")]
 // CHECK-NEXT: unsafe fn __slate_main() -> i32 {
 // CHECK-NEXT:     let live: core::arch::aarch64::svint32_t = unsafe {
-// CHECK-NEXT:         core::arch::aarch64::svadd_n_s32_x(core::arch::aarch64::svptrue_b32(), widen(table), 10i32)
+// CHECK-NEXT:         core::arch::aarch64::svadd_n_s32_x(
+// CHECK-NEXT:             core::arch::aarch64::svptrue_b32(),
+// CHECK-NEXT:             widen(table),
+// CHECK-NEXT:             10i32,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let back: core::simd::Simd<i32, 16> = unsafe { narrow(live) };
 // CHECK-NEXT:     let halves: core::simd::Simd<f64, 8> = unsafe {

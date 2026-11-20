@@ -72,6 +72,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(8))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Flags {
@@ -83,6 +84,7 @@ int main(void) {
 // CHECK-NEXT:     __slate_pad_5: [u8; 2],
 // CHECK-NEXT:     after: i16,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union Overlay {
@@ -90,23 +92,15 @@ int main(void) {
 // CHECK-NEXT:     parts: __SlateRecord_bitfield_records_c_21,
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits10U0,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_bitfield_records_c_21 {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits11U0,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         [u8;3],
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield([u8; 3], c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits9U0 {
 // CHECK-NEXT:         #[bits(3)]
 // CHECK-NEXT:         pub x: u32,
@@ -123,32 +117,12 @@ int main(void) {
 // CHECK-NEXT:         #[bits(1)]
 // CHECK-NEXT:         pub ready: bool,
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         [u8;3],
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield([u8; 3], c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits9U1 {
 // CHECK-NEXT:         #[bits(24)]
 // CHECK-NEXT:         pub _flags2: i32,
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         [u8;6],
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield([u8; 6], c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits9U2 {
 // CHECK-NEXT:         #[bits(40)]
 // CHECK-NEXT:         pub wide: i64,
@@ -157,34 +131,14 @@ int main(void) {
 // CHECK-NEXT:         #[bits(7, access = na)]
 // CHECK-NEXT:         pub __slate_pad_2: u8,
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u32,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u32, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits11U0 {
 // CHECK-NEXT:         #[bits(12)]
 // CHECK-NEXT:         pub low: u32,
 // CHECK-NEXT:         #[bits(20)]
 // CHECK-NEXT:         pub high: u32,
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u8,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u8, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits10U0 {
 // CHECK-NEXT:         #[bits(7)]
 // CHECK-NEXT:         pub signed_bits: i32,
@@ -192,9 +146,11 @@ int main(void) {
 // CHECK-NEXT:         pub __slate_pad_1: u8,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut global: Flags = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Flags = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_x(5u32);
@@ -210,6 +166,7 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]].after = 77i16;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bump(flags: *mut Flags) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe { (*flags).__slate_bits_0.__get_a() };
 // CHECK-NEXT:     unsafe {
@@ -228,6 +185,7 @@ int main(void) {
 // CHECK-NEXT:         (*flags).__slate_bits_0.__set_ready([[T_1]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut local: Flags = {
 // CHECK-NEXT:         let mut [[T_0]]: Flags = unsafe { core::mem::zeroed() };
@@ -340,6 +298,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -45,10 +45,7 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -77,34 +74,11 @@ int main(void) {
 // CHECK-NEXT:     Tracev!(c"%d\n".as_ptr() as *mut c_char, i);
 // CHECK-NEXT:     Tracev!(c"%d %d\n".as_ptr() as *mut c_char, i, j);
 // CHECK-NEXT:     Tracev!(c"%d %d %ld %s\n".as_ptr() as *mut c_char, i, j, m, s);
-// CHECK-NEXT:     Tracev!(
-// CHECK-NEXT:         c"%d %d %d %d %d %d %d\n".as_ptr() as *mut c_char,
-// CHECK-NEXT:         i,
-// CHECK-NEXT:         j,
-// CHECK-NEXT:         i,
-// CHECK-NEXT:         j,
-// CHECK-NEXT:         i,
-// CHECK-NEXT:         j,
-// CHECK-NEXT:         i
-// CHECK-NEXT:     );
+// CHECK-NEXT:     Tracev!(c"%d %d %d %d %d %d %d\n".as_ptr() as *mut c_char, i, j, i, j, i, j, i);
 // CHECK-NEXT:     Tracev!(c"%d\n".as_ptr() as *mut c_char, narrow as i32);
-// CHECK-NEXT:     Tracev!(
-// CHECK-NEXT:         c"%d %.1f %d\n".as_ptr() as *mut c_char,
-// CHECK-NEXT:         narrow as i32,
-// CHECK-NEXT:         f as f64,
-// CHECK-NEXT:         i
-// CHECK-NEXT:     );
-// CHECK-NEXT:     REPORT!(
-// CHECK-NEXT:         c"one".as_ptr() as *mut c_char,
-// CHECK-NEXT:         c"%d\n".as_ptr() as *mut c_char,
-// CHECK-NEXT:         i
-// CHECK-NEXT:     );
-// CHECK-NEXT:     REPORT!(
-// CHECK-NEXT:         c"two".as_ptr() as *mut c_char,
-// CHECK-NEXT:         c"%d %ld\n".as_ptr() as *mut c_char,
-// CHECK-NEXT:         j,
-// CHECK-NEXT:         m
-// CHECK-NEXT:     );
+// CHECK-NEXT:     Tracev!(c"%d %.1f %d\n".as_ptr() as *mut c_char, narrow as i32, f as f64, i);
+// CHECK-NEXT:     REPORT!(c"one".as_ptr() as *mut c_char, c"%d\n".as_ptr() as *mut c_char, i);
+// CHECK-NEXT:     REPORT!(c"two".as_ptr() as *mut c_char, c"%d %ld\n".as_ptr() as *mut c_char, j, m);
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -130,7 +104,7 @@ int main(void) {
 // CHECK-NEXT:             unsafe { slate_support::printf(c"%s: ".as_ptr(), $tag) };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $($x),*) };
+// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $($x,)*) };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
@@ -141,7 +115,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SUM_OF {
 // CHECK-NEXT:     ($($args:expr),*) => {
-// CHECK-NEXT:         sum3($($args),*)
+// CHECK-NEXT:         sum3($($args,)*)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -150,7 +124,7 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             if (unsafe { verbose }) > 1 {
 // CHECK-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:                 unsafe { slate_support::printf(($x__0) as *const c_char, $($x),*) };
+// CHECK-NEXT:                 unsafe { slate_support::printf(($x__0) as *const c_char, $($x,)*) };
 // CHECK-NEXT:                 unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {

@@ -63,11 +63,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let holder: Holder = Holder { mode: 1 };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = (holder.mode as u32) == 1 && increment(1i32) == 2;
-// CHECK-NEXT:     if [[V_0]] && (unsafe { completed_count }) == 2 {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         1
-// CHECK-NEXT:     }
+// CHECK-NEXT:     if [[V_0]] && (unsafe { completed_count }) == 2 { 0 } else { 1 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

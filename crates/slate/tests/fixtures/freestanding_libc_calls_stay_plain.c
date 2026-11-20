@@ -21,9 +21,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-ffreestanding" }
 // CHECK-NEXT: use slate_support::atoi;
-// CHECK-NEXT: use slate_support::memcmp;
 // CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: use slate_support::memset;
+// CHECK-NEXT: use slate_support::memcmp;
 // CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-EMPTY:
@@ -66,8 +66,8 @@ int main(void) {
 // CHECK-NEXT:                 c"1234567".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         }) == 0) as i32;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool =
-// CHECK-NEXT:         same != 0 && (src[0] as i32) == 0 && text_len(dst.as_mut_ptr() as *const i8) == 7;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = same != 0 && (src[0] as i32) == 0
+// CHECK-NEXT:         && text_len(dst.as_mut_ptr() as *const i8) == 7;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = [[V_0]] && parse_num(dst.as_mut_ptr() as *mut i8) == 1234567;
 // CHECK-NEXT:     if [[V_1]] { 0 } else { 1 }
 // CHECK-NEXT: }

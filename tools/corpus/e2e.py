@@ -1818,8 +1818,7 @@ def sharded_stages(units, project_dir, out, recipe, args, finish):
         crate_type = ["--crate-type", recipe.crate_type]
         while True:
             code, seconds = run([SLATE, "translate-project", *crate_type, "--compile-commands", commands,
-                                 project_dir, staging / "crate"], directory / "translate.log",
-                                env=dict(os.environ, SLATE_NO_FORMAT="1"))
+                                 project_dir, staging / "crate"], directory / "translate.log")
             total += seconds
             if not (code and crate_type and "defines main" in (directory / "translate.log").read_text(errors="replace")):
                 break
@@ -1983,7 +1982,7 @@ def main():
     export_dynamic = ["--export-dynamic"] if isinstance(recipe, Recipe) and exports_dynamic(recipe.ldflags) else []
     code, seconds = run([SLATE, "translate-project", *crate_type, *export_dynamic, "--compile-commands", commands,
                          project_dir,
-                         crate], out / "translate.log", env=dict(os.environ, SLATE_NO_FORMAT="1"))
+                         crate], out / "translate.log")
     format_seconds, format_failures = format_crate(crate, args.jobs) if not code else (0, [])
     native_seconds, native_failures = native_compile_seconds(units, out, args.jobs)
     timing = {"translate_seconds": seconds, "native_compile_seconds": native_seconds,

@@ -148,9 +148,7 @@ int main(void) {
 // CHECK-NEXT:     impl<T> Drop for ByrefSlot<T> {
 // CHECK-NEXT:         fn drop(&mut self) {
 // CHECK-NEXT:             if self.live {
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     _Block_object_dispose(self.byref.as_ptr() as *const c_void, FIELD_IS_BYREF)
-// CHECK-NEXT:                 }
+// CHECK-NEXT:                 unsafe { _Block_object_dispose(self.byref.as_ptr() as *const c_void, FIELD_IS_BYREF) }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -287,50 +285,50 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = f;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 *const core::ffi::c_void,
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32, ...) -> i32>,
-// CHECK-NEXT:             >(__slate_blocks::invoke([[T_0]]))
-// CHECK-NEXT:         }
-// CHECK-NEXT:         .unwrap()([[T_0]], 3i32, 1i32, 2i32, 3i32)
+// CHECK-NEXT:                 core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32, ...) -> i32>>(
+// CHECK-NEXT:                     __slate_blocks::invoke([[T_0]]),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .unwrap()([[T_0]], 3i32, 1i32, 2i32, 3i32)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let base: i32 = 100;
-// CHECK-NEXT:     let mut __slate_block_0_slot: core::mem::MaybeUninit<
-// CHECK-NEXT:         __slate_blocks::Block<__slate_block_0_captures>,
-// CHECK-NEXT:     > = core::mem::MaybeUninit::uninit();
+// CHECK-NEXT:     let mut __slate_block_0_slot: core::mem::MaybeUninit<__slate_blocks::Block<__slate_block_0_captures>> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let sum: *mut core::ffi::c_void = unsafe {
 // CHECK-NEXT:         __slate_blocks::stack(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(__slate_block_0_slot),
 // CHECK-NEXT:             __slate_block_0 as *const core::ffi::c_void,
 // CHECK-NEXT:             &__slate_block_0_descriptor,
-// CHECK-NEXT:             __slate_block_0_captures { c0: base },
+// CHECK-NEXT:             __slate_block_0_captures {
+// CHECK-NEXT:                 c0: base,
+// CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     println!("{}", unsafe {
-// CHECK-NEXT:         let [[T_0]] = sum;
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{}",
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 *const core::ffi::c_void,
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32, ...) -> i32>,
-// CHECK-NEXT:             >(__slate_blocks::invoke([[T_0]]))
+// CHECK-NEXT:             let [[T_0]] = sum;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                     core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32, ...) -> i32>>(
+// CHECK-NEXT:                         __slate_blocks::invoke([[T_0]]),
+// CHECK-NEXT:                     )
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 .unwrap()([[T_0]], 2i32, 5i32, 6i32)
 // CHECK-NEXT:         }
-// CHECK-NEXT:         .unwrap()([[T_0]], 2i32, 5i32, 6i32)
-// CHECK-NEXT:     });
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", call_it(sum));
 // CHECK-NEXT:     let pr: *mut core::ffi::c_void = (core::ptr::addr_of!(__slate_block_1_literal)
 // CHECK-NEXT:         as *const core::ffi::c_void) as *mut core::ffi::c_void;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = pr;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 *const core::ffi::c_void,
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *const i8, ...)>,
-// CHECK-NEXT:             >(__slate_blocks::invoke([[T_1]]))
-// CHECK-NEXT:         }
-// CHECK-NEXT:         .unwrap()(
+// CHECK-NEXT:                 core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, *const i8, ...)>>(
+// CHECK-NEXT:                     __slate_blocks::invoke([[T_1]]),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .unwrap()(
 // CHECK-NEXT:             [[T_1]],
 // CHECK-NEXT:             c"%d %s %f\n".as_ptr(),
 // CHECK-NEXT:             7i32,
@@ -338,47 +336,50 @@ int main(void) {
 // CHECK-NEXT:             1.5f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let h: *mut core::ffi::c_void =
-// CHECK-NEXT:         (unsafe { _Block_copy(sum as *const ()) }) as *mut core::ffi::c_void;
-// CHECK-NEXT:     println!("{}", unsafe {
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = h;
+// CHECK-NEXT:     let h: *mut core::ffi::c_void = (unsafe { _Block_copy(sum as *const ()) })
+// CHECK-NEXT:         as *mut core::ffi::c_void;
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{}",
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 *const core::ffi::c_void,
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32, ...) -> i32>,
-// CHECK-NEXT:             >(__slate_blocks::invoke([[T_2]]))
+// CHECK-NEXT:             let [[T_2:__t[0-9]+]] = h;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                     core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32, ...) -> i32>>(
+// CHECK-NEXT:                         __slate_blocks::invoke([[T_2]]),
+// CHECK-NEXT:                     )
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 .unwrap()([[T_2]], 1i32, 9i32)
 // CHECK-NEXT:         }
-// CHECK-NEXT:         .unwrap()([[T_2]], 1i32, 9i32)
-// CHECK-NEXT:     });
+// CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { _Block_release(h as *const ()) };
 // CHECK-NEXT:     let nocap: *mut core::ffi::c_void = (core::ptr::addr_of!(__slate_block_2_literal)
-// CHECK-NEXT:         as *const core::ffi::c_void)
-// CHECK-NEXT:         as *mut core::ffi::c_void;
-// CHECK-NEXT:     println!("{}", unsafe {
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = nocap;
+// CHECK-NEXT:         as *const core::ffi::c_void) as *mut core::ffi::c_void;
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{}",
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 *const core::ffi::c_void,
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32, ...) -> i32>,
-// CHECK-NEXT:             >(__slate_blocks::invoke([[T_3]]))
+// CHECK-NEXT:             let [[T_3:__t[0-9]+]] = nocap;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                     core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32, ...) -> i32>>(
+// CHECK-NEXT:                         __slate_blocks::invoke([[T_3]]),
+// CHECK-NEXT:                     )
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 .unwrap()([[T_3]], 4i32, 5i32)
 // CHECK-NEXT:         }
-// CHECK-NEXT:         .unwrap()([[T_3]], 4i32, 5i32)
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let mut total_byref: core::mem::MaybeUninit<__slate_blocks::Byref<f64>> =
-// CHECK-NEXT:         core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let total: *mut __slate_blocks::Byref<f64> =
-// CHECK-NEXT:         unsafe { __slate_blocks::byref(core::ptr::addr_of_mut!(total_byref)) };
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut total_byref: core::mem::MaybeUninit<__slate_blocks::Byref<f64>> = core::mem::MaybeUninit::uninit();
+// CHECK-NEXT:     let total: *mut __slate_blocks::Byref<f64> = unsafe {
+// CHECK-NEXT:         __slate_blocks::byref(core::ptr::addr_of_mut!(total_byref))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { __slate_blocks::store(total, 0i32 as f64) };
 // CHECK-NEXT:     let total_scope = __slate_blocks::scope(total);
-// CHECK-NEXT:     let mut __slate_block_3_slot: core::mem::MaybeUninit<
-// CHECK-NEXT:         __slate_blocks::Block<__slate_block_3_captures>,
-// CHECK-NEXT:     > = core::mem::MaybeUninit::uninit();
+// CHECK-NEXT:     let mut __slate_block_3_slot: core::mem::MaybeUninit<__slate_blocks::Block<__slate_block_3_captures>> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let acc: *mut core::ffi::c_void = unsafe {
 // CHECK-NEXT:         __slate_blocks::stack(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(__slate_block_3_slot),
 // CHECK-NEXT:             __slate_block_3 as *const core::ffi::c_void,
 // CHECK-NEXT:             &__slate_block_3_descriptor,
-// CHECK-NEXT:             __slate_block_3_captures { c0: total },
+// CHECK-NEXT:             __slate_block_3_captures {
+// CHECK-NEXT:                 c0: total,
+// CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let c: i8 = 65;
@@ -387,29 +388,29 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]] = acc;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 *const core::ffi::c_void,
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32, ...)>,
-// CHECK-NEXT:             >(__slate_blocks::invoke([[T_4]]))
-// CHECK-NEXT:         }
-// CHECK-NEXT:         .unwrap()([[T_4]], 3i32, 1.5f64, f as f64, s as f64)
+// CHECK-NEXT:                 core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32, ...)>>(
+// CHECK-NEXT:                     __slate_blocks::invoke([[T_4]]),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .unwrap()([[T_4]], 3i32, 1.5f64, f as f64, s as f64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.2f\n".as_ptr(), *__slate_blocks::value(total)) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let chars: *mut core::ffi::c_void = (core::ptr::addr_of!(__slate_block_4_literal)
-// CHECK-NEXT:         as *const core::ffi::c_void)
-// CHECK-NEXT:         as *mut core::ffi::c_void;
-// CHECK-NEXT:     println!("{}", unsafe {
-// CHECK-NEXT:         let [[T_5:__t[0-9]+]] = chars;
+// CHECK-NEXT:         as *const core::ffi::c_void) as *mut core::ffi::c_void;
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{}",
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 *const core::ffi::c_void,
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32, ...) -> i32>,
-// CHECK-NEXT:             >(__slate_blocks::invoke([[T_5]]))
+// CHECK-NEXT:             let [[T_5:__t[0-9]+]] = chars;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                     core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32, ...) -> i32>>(
+// CHECK-NEXT:                         __slate_blocks::invoke([[T_5]]),
+// CHECK-NEXT:                     )
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 .unwrap()([[T_5]], 2i32, c as i32, s as i32)
 // CHECK-NEXT:         }
-// CHECK-NEXT:         .unwrap()([[T_5]], 2i32, c as i32, s as i32)
-// CHECK-NEXT:     });
+// CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -422,14 +423,17 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C-unwind" fn __slate_block_0(
 // CHECK-NEXT:     __block: *mut core::ffi::c_void,
 // CHECK-NEXT:     [[V_0:__v[0-9]+]]: i32,
-// CHECK-NEXT:     mut __va_args: ...
+// CHECK-NEXT:     mut __va_args: ...,
 // CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     let __captures: __slate_block_0_captures =
-// CHECK-NEXT:         unsafe { __slate_blocks::captures::<__slate_block_0_captures>(__block) };
+// CHECK-NEXT:     let __captures: __slate_block_0_captures = unsafe {
+// CHECK-NEXT:         __slate_blocks::captures::<__slate_block_0_captures>(__block)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let base: i32 = __captures.c0;
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[V_1]] = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: i32 = base;
 // CHECK-NEXT:     for [[V_3:__v[0-9]+]] in 0..[[V_0]] {
@@ -439,43 +443,50 @@ int main(void) {
 // CHECK-NEXT:     [[V_2]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static __slate_block_0_descriptor: __slate_blocks::Descriptor =
-// CHECK-NEXT:     __slate_blocks::descriptor::<__slate_block_0_captures>(&[]);
+// CHECK-NEXT: static __slate_block_0_descriptor: __slate_blocks::Descriptor = __slate_blocks::descriptor::<__slate_block_0_captures>(
+// CHECK-NEXT:     &[],
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn __slate_block_1(
 // CHECK-NEXT:     __block: *mut core::ffi::c_void,
 // CHECK-NEXT:     [[V_0]]: *const i8,
-// CHECK-NEXT:     mut __va_args: ...
+// CHECK-NEXT:     mut __va_args: ...,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     unsafe { __slate_blocks::captures::<()>(__block) };
 // CHECK-NEXT:     let mut [[V_1]]: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[V_1]] = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { vprintf([[V_0]], [[V_1]].clone()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static __slate_block_1_literal: __slate_blocks::Block<()> =
-// CHECK-NEXT:     __slate_blocks::global(__slate_block_1 as *const core::ffi::c_void);
+// CHECK-NEXT: static __slate_block_1_literal: __slate_blocks::Block<()> = __slate_blocks::global(
+// CHECK-NEXT:     __slate_block_1 as *const core::ffi::c_void,
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn __slate_block_2(
 // CHECK-NEXT:     __block: *mut core::ffi::c_void,
 // CHECK-NEXT:     [[V_0]]: i32,
-// CHECK-NEXT:     mut __va_args: ...
+// CHECK-NEXT:     mut __va_args: ...,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_blocks::captures::<()>(__block) };
 // CHECK-NEXT:     let mut [[V_1]]: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[V_1]] = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_2]]: i32 = (unsafe { [[V_1]].next_arg::<i32>() }) * [[V_0]];
 // CHECK-NEXT:     [[V_2]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static __slate_block_2_literal: __slate_blocks::Block<()> =
-// CHECK-NEXT:     __slate_blocks::global(__slate_block_2 as *const core::ffi::c_void);
+// CHECK-NEXT: static __slate_block_2_literal: __slate_blocks::Block<()> = __slate_blocks::global(
+// CHECK-NEXT:     __slate_block_2 as *const core::ffi::c_void,
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
@@ -486,14 +497,17 @@ int main(void) {
 // CHECK-NEXT: unsafe extern "C-unwind" fn __slate_block_3(
 // CHECK-NEXT:     __block: *mut core::ffi::c_void,
 // CHECK-NEXT:     [[V_0]]: i32,
-// CHECK-NEXT:     mut __va_args: ...
+// CHECK-NEXT:     mut __va_args: ...,
 // CHECK-NEXT: ) {
-// CHECK-NEXT:     let __captures: __slate_block_3_captures =
-// CHECK-NEXT:         unsafe { __slate_blocks::captures::<__slate_block_3_captures>(__block) };
+// CHECK-NEXT:     let __captures: __slate_block_3_captures = unsafe {
+// CHECK-NEXT:         __slate_blocks::captures::<__slate_block_3_captures>(__block)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let total: *mut __slate_blocks::Byref<f64> = __captures.c0;
 // CHECK-NEXT:     let mut [[V_1]]: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[V_1]] = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for [[V_2]] in 0..[[V_0]] {
 // CHECK-NEXT:         let [[V_3]]: f64 = unsafe { [[V_1]].next_arg::<f64>() };
@@ -505,20 +519,21 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static __slate_block_3_descriptor: __slate_blocks::Descriptor =
-// CHECK-NEXT:     __slate_blocks::descriptor::<__slate_block_3_captures>(&[__slate_blocks::byref_field(
-// CHECK-NEXT:         core::mem::offset_of!(__slate_block_3_captures, c0),
-// CHECK-NEXT:     )]);
+// CHECK-NEXT: static __slate_block_3_descriptor: __slate_blocks::Descriptor = __slate_blocks::descriptor::<__slate_block_3_captures>(
+// CHECK-NEXT:     &[__slate_blocks::byref_field(core::mem::offset_of!(__slate_block_3_captures, c0))],
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn __slate_block_4(
 // CHECK-NEXT:     __block: *mut core::ffi::c_void,
 // CHECK-NEXT:     [[V_0]]: i32,
-// CHECK-NEXT:     mut __va_args: ...
+// CHECK-NEXT:     mut __va_args: ...,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_blocks::captures::<()>(__block) };
 // CHECK-NEXT:     let mut [[V_1]]: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[V_1]] = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut [[V_2]]: i32 = 0;
 // CHECK-NEXT:     for [[V_3]] in 0..[[V_0]] {
@@ -527,8 +542,9 @@ int main(void) {
 // CHECK-NEXT:     [[V_2]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static __slate_block_4_literal: __slate_blocks::Block<()> =
-// CHECK-NEXT:     __slate_blocks::global(__slate_block_4 as *const core::ffi::c_void);
+// CHECK-NEXT: static __slate_block_4_literal: __slate_blocks::Block<()> = __slate_blocks::global(
+// CHECK-NEXT:     __slate_block_4 as *const core::ffi::c_void,
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(

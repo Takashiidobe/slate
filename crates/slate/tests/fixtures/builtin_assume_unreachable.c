@@ -44,13 +44,16 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __builtin_unreachable();
 // CHECK-NEXT:     fn __builtin_assume([[ARG_0:arg[0-9]+]]: bool);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn classify(x: i32) -> i32 {
 // CHECK-NEXT:     match x & 3 {
 // CHECK-NEXT:         0 => {
@@ -70,10 +73,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn positive_half(x: i32) -> i32 {
 // CHECK-NEXT:     unsafe { core::hint::assert_unchecked(x > 0) };
 // CHECK-NEXT:     x / 2
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bump(counter: &mut i32) -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { *counter }) + 1;
 // CHECK-NEXT:     unsafe {
@@ -81,6 +86,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn checked(x: u32) -> u32 {
 // CHECK-NEXT:     if x < 100 {
 // CHECK-NEXT:         return x.wrapping_mul(3);
@@ -88,6 +94,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let counter: i32 = 0;
 // CHECK-NEXT:     let x: i32 = 5;
@@ -103,6 +110,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -45,10 +45,7 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -124,7 +121,11 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(c"%d %d\n".as_ptr(), UNLESS!(m) as i32, UNLESS__2!(p) as i32)
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%d %d\n".as_ptr(),
+// CHECK-NEXT:                 UNLESS!(m) as i32,
+// CHECK-NEXT:                 UNLESS__2!(p) as i32,
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
@@ -164,7 +165,7 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             if (unsafe { verbose }) > 1 && $c {
 // CHECK-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:                 unsafe { slate_support::printf(($x__0) as *const c_char, $($x),*) };
+// CHECK-NEXT:                 unsafe { slate_support::printf(($x__0) as *const c_char, $($x,)*) };
 // CHECK-NEXT:                 unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {

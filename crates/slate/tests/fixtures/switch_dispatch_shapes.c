@@ -117,16 +117,21 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = 0;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn next_value(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn stacked(x: i32) -> i32 {
 // CHECK-NEXT:     match x {
 // CHECK-NEXT:         1..=3 => {
@@ -142,6 +147,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn no_default(c: i8) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 0;
 // CHECK-NEXT:     match c as i32 {
@@ -155,6 +161,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn nested(outer: i32, inner: i32) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 0;
 // CHECK-NEXT:     match outer {
@@ -175,6 +182,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn run(ops: *const u32) -> i32 {
 // CHECK-NEXT:     let mut acc: i32 = 1;
 // CHECK-NEXT:     let mut i: i32 = 0;
@@ -203,6 +211,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn first_over(values: &[i32], limit: i32) -> i32 {
 // CHECK-NEXT:     let mut found: i32 = -1;
 // CHECK-NEXT:     for i in 0..values.len() as i32 {
@@ -213,13 +222,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     found
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut ops: __SlateAlign16<[u32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         0u32, 1u32, 2u32, 0u32, 3u32,
-// CHECK-NEXT:     ]);
-// CHECK-NEXT:     let values: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         3i32, 8i32, 1i32, 12i32, 7i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut ops: __SlateAlign16<[u32; 5]> = __SlateAlign16(
+// CHECK-NEXT:         [0u32, 1u32, 2u32, 0u32, 3u32],
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let values: __SlateAlign16<[i32; 5]> = __SlateAlign16(
+// CHECK-NEXT:         [3i32, 8i32, 1i32, 12i32, 7i32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut picked: i32 = 0;
 // CHECK-NEXT:     match next_value(2i32) {
 // CHECK-NEXT:         1 => {
@@ -231,19 +241,26 @@ int main(void) {
 // CHECK-NEXT:         _ => {}
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {}", stacked(2i32), stacked(9i32), stacked(4i32), stacked(42i32),
+// CHECK-NEXT:         "{} {} {} {} {}",
+// CHECK-NEXT:         stacked(2i32),
+// CHECK-NEXT:         stacked(9i32),
+// CHECK-NEXT:         stacked(4i32),
+// CHECK-NEXT:         stacked(42i32),
 // CHECK-NEXT:         stacked(0i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {} {}", no_default(97i8), no_default(122i8), no_default(113i8));
 // CHECK-NEXT:     println!("{} {} {}", nested(0i32, 0i32), nested(0i32, 5i32), nested(1i32, 0i32));
 // CHECK-NEXT:     let __slate_printf_arg0 = run(ops.0.as_mut_ptr() as *const u32);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", __slate_printf_arg0, first_over(& values.0, 10i32), first_over(&
-// CHECK-NEXT:         values.0, 50i32)
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         __slate_printf_arg0,
+// CHECK-NEXT:         first_over(&values.0, 10i32),
+// CHECK-NEXT:         first_over(&values.0, 50i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {}", picked, unsafe { calls });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

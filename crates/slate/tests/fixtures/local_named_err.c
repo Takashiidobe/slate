@@ -25,9 +25,11 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn describe(code: i32) -> *const i8 {
 // CHECK-NEXT:     let mut Err__0: *const i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     if code == 0 {
@@ -37,10 +39,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     Err__0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pick(Ok__0: i32, None__1: i32) -> i32 {
 // CHECK-NEXT:     let Some__2: i32 = Ok__0 + None__1;
 // CHECK-NEXT:     Some__2 * 2
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s\n".as_ptr(), describe(0i32)) };
@@ -51,6 +55,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", pick(3i32, 4i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

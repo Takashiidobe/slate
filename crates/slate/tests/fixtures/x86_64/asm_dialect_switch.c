@@ -49,8 +49,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             ".intel_syntax noprefix\n\tadd eax, 7\n\t.att_syntax prefix", inlateout("ax")
-// CHECK-NEXT:             value as u32 => [[T_0]], options(nostack, att_syntax)
+// CHECK-NEXT:             ".intel_syntax noprefix\n\tadd eax, 7\n\t.att_syntax prefix",
+// CHECK-NEXT:             inlateout("ax") value as u32 => [[T_0]],
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
@@ -60,8 +61,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "subl $2, {0:e}", inlateout(reg) value as u32 => [[T_0]], options(nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             "subl $2, {0:e}",
+// CHECK-NEXT:             inlateout(reg) value as u32 => [[T_0]],
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }

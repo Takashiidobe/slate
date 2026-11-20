@@ -36,51 +36,60 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct port {
 // CHECK-NEXT:     locked: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pause_rx(p: *mut port) {
 // CHECK-NEXT:     println!("lock");
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*p).locked = 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn continue_rx(p: *mut port) {
 // CHECK-NEXT:     println!("unlock");
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*p).locked = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn class_pause_destructor(p: *mut *mut port) {
 // CHECK-NEXT:     if !unsafe { *p }.is_null() {
 // CHECK-NEXT:         continue_rx(unsafe { *p });
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn class_pause_constructor(p: *mut port) -> *mut port {
 // CHECK-NEXT:     pause_rx(p);
 // CHECK-NEXT:     p
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct dev {
 // CHECK-NEXT:     port: *mut port,
 // CHECK-NEXT:     nak: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn do_send(d: &dev, byte: u8) -> i32 {
-// CHECK-NEXT:     println!("do_send locked={}", unsafe { (* (* (d as * const dev)).port).locked });
+// CHECK-NEXT:     println!("do_send locked={}", unsafe { (*(*(d as *const dev)).port).locked });
 // CHECK-NEXT:     (byte as i32) + unsafe { (*(*(d as *const dev)).port).locked }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn send(d: &dev, byte: u8) -> i32 {
 // CHECK-NEXT:     let mut retval: i32 = 0;
-// CHECK-NEXT:     let mut guard: *mut port = class_pause_constructor(unsafe {
-// CHECK-NEXT:         (*(d as *const dev)).port
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut guard: *mut port = class_pause_constructor(
+// CHECK-NEXT:         unsafe { (*(d as *const dev)).port },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(guard) as *mut _;
 // CHECK-NEXT:     let __slate_cleanup_0 = ::slate_support::Guard(
 // CHECK-NEXT:         &mut || class_pause_destructor(__slate_cleanup_ptr_0 as *mut _),
@@ -99,6 +108,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     retval
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut p: port = port { locked: 0 };
 // CHECK-NEXT:     let mut d: dev = {
@@ -107,9 +117,10 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].nak = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     println!("{}", send(unsafe { & (* core::ptr::addr_of_mut!(d)) }, 41u8));
+// CHECK-NEXT:     println!("{}", send(unsafe { &(*core::ptr::addr_of_mut!(d)) }, 41u8));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -47,50 +47,61 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct NaturalBefore {
 // CHECK-NEXT:     tag: u8,
 // CHECK-NEXT:     value: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed(2))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct PackedTwo {
 // CHECK-NEXT:     tag: u8,
 // CHECK-NEXT:     value: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct PackedOne {
 // CHECK-NEXT:     tag: u8,
 // CHECK-NEXT:     value: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed(2))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct PackedTwoAgain {
 // CHECK-NEXT:     tag: u8,
 // CHECK-NEXT:     value: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct NaturalAfter {
 // CHECK-NEXT:     tag: u8,
 // CHECK-NEXT:     value: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let packed: PackedOne = PackedOne { tag: 29, value: 31 };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {}", core::mem::size_of::< NaturalBefore > () as
-// CHECK-NEXT:         i32, core::mem::offset_of!(NaturalBefore, value) as i32, core::mem::size_of::<
-// CHECK-NEXT:         PackedTwo > () as i32, core::mem::align_of::< PackedTwo > () as i32,
-// CHECK-NEXT:         core::mem::offset_of!(PackedTwo, value) as i32, core::mem::size_of::< PackedOne >
-// CHECK-NEXT:         () as i32, core::mem::align_of::< PackedOne > () as i32,
-// CHECK-NEXT:         core::mem::offset_of!(PackedOne, value) as i32, core::mem::size_of::<
-// CHECK-NEXT:         PackedTwoAgain > () as i32, core::mem::offset_of!(PackedTwoAgain, value) as i32,
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {}",
+// CHECK-NEXT:         core::mem::size_of::<NaturalBefore>() as i32,
+// CHECK-NEXT:         core::mem::offset_of!(NaturalBefore, value) as i32,
+// CHECK-NEXT:         core::mem::size_of::<PackedTwo>() as i32,
+// CHECK-NEXT:         core::mem::align_of::<PackedTwo>() as i32,
+// CHECK-NEXT:         core::mem::offset_of!(PackedTwo, value) as i32,
+// CHECK-NEXT:         core::mem::size_of::<PackedOne>() as i32,
+// CHECK-NEXT:         core::mem::align_of::<PackedOne>() as i32,
+// CHECK-NEXT:         core::mem::offset_of!(PackedOne, value) as i32,
+// CHECK-NEXT:         core::mem::size_of::<PackedTwoAgain>() as i32,
+// CHECK-NEXT:         core::mem::offset_of!(PackedTwoAgain, value) as i32,
 // CHECK-NEXT:         core::mem::offset_of!(NaturalAfter, value) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if (packed.tag as i32) == 29 && packed.value == 31 { 0 } else { 1 }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

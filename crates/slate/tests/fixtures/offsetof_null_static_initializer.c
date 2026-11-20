@@ -47,16 +47,19 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! NULL_OFFSETOF {
 // CHECK-NEXT:     () => {
 // CHECK-NEXT:         16usize as u64
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! NULL_OFFSETOF__2 {
 // CHECK-NEXT:     () => {
 // CHECK-NEXT:         4usize as u64
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct State {
@@ -66,12 +69,14 @@ int main(void) {
 // CHECK-NEXT:     nested: __SlateRecord_offsetof_null_static_initializer_c_15,
 // CHECK-NEXT:     tail: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_offsetof_null_static_initializer_c_15 {
 // CHECK-NEXT:     depth: i16,
 // CHECK-NEXT:     flags: [i8; 3],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct FlagDef {
@@ -79,44 +84,53 @@ int main(void) {
 // CHECK-NEXT:     flags: u16,
 // CHECK-NEXT:     name: *const i8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
-// CHECK-NEXT: static options: __SlateAlign16<[FlagDef; 4]> = __SlateAlign16([
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].offset = (4usize as u64) as u16;
-// CHECK-NEXT:         [[T_0]].flags = 1u16;
-// CHECK-NEXT:         [[T_0]].name = (b"all\0".as_ptr() as *mut i8) as *const i8;
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     },
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]].offset = (5usize as u64) as u16;
-// CHECK-NEXT:         [[T_1]].flags = 0u16;
-// CHECK-NEXT:         [[T_1]].name = (b"error\0".as_ptr() as *mut i8) as *const i8;
-// CHECK-NEXT:         [[T_1]]
-// CHECK-NEXT:     },
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_2]].offset = (10usize as u64) as u16;
-// CHECK-NEXT:         [[T_2]].flags = 0u16;
-// CHECK-NEXT:         [[T_2]].name = (b"nested\0".as_ptr() as *mut i8) as *const i8;
-// CHECK-NEXT:         [[T_2]]
-// CHECK-NEXT:     },
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_3]].offset = (16usize as u64) as u16;
-// CHECK-NEXT:         [[T_3]].flags = 2u16;
-// CHECK-NEXT:         [[T_3]].name = (b"tail\0".as_ptr() as *mut i8) as *const i8;
-// CHECK-NEXT:         [[T_3]]
-// CHECK-NEXT:     },
-// CHECK-NEXT: ]);
+// CHECK-EMPTY:
+// CHECK-NEXT: static options: __SlateAlign16<[FlagDef; 4]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]].offset = (4usize as u64) as u16;
+// CHECK-NEXT:             [[T_0]].flags = 1u16;
+// CHECK-NEXT:             [[T_0]].name = (b"all\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]].offset = (5usize as u64) as u16;
+// CHECK-NEXT:             [[T_1]].flags = 0u16;
+// CHECK-NEXT:             [[T_1]].name = (b"error\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:             [[T_1]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_2]].offset = (10usize as u64) as u16;
+// CHECK-NEXT:             [[T_2]].flags = 0u16;
+// CHECK-NEXT:             [[T_2]].name = (b"nested\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:             [[T_2]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_3:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_3]].offset = (16usize as u64) as u16;
+// CHECK-NEXT:             [[T_3]].flags = 2u16;
+// CHECK-NEXT:             [[T_3]].name = (b"tail\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:             [[T_3]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static tail_offset: u64 = 16usize as u64;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut narrow_offset: u32 = (6usize as u64) as u32;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut state: State = {
 // CHECK-NEXT:         let mut [[T_0]]: State = unsafe { core::mem::zeroed() };
@@ -124,8 +138,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0..((core::mem::size_of::<[FlagDef; 4]>() as u64)
-// CHECK-NEXT:         / (core::mem::size_of::<FlagDef>() as u64))
-// CHECK-NEXT:     {
+// CHECK-NEXT:         / (core::mem::size_of::<FlagDef>() as u64)) {
 // CHECK-NEXT:         let field: *mut u8 = unsafe {
 // CHECK-NEXT:             (core::ptr::addr_of_mut!(state) as *mut u8)
 // CHECK-NEXT:                 .offset((options.0[i as usize].offset as i32) as isize)
@@ -168,6 +181,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

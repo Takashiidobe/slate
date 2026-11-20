@@ -71,8 +71,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut targets: __SlateAlign16<[*mut (); 3]> =
-// CHECK-NEXT:     __SlateAlign16([4usize as *mut (), 5usize as *mut (), 6usize as *mut ()]);
+// CHECK-NEXT: static mut targets: __SlateAlign16<[*mut (); 3]> = __SlateAlign16(
+// CHECK-NEXT:     [4usize as *mut (), 5usize as *mut (), 6usize as *mut ()],
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: fn retry(slot: *mut i32, n: i32) -> i32 {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool = unsafe { core::mem::zeroed() };

@@ -40,15 +40,18 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct dev {
 // CHECK-NEXT:     flags: u32,
 // CHECK-NEXT:     gflags: u16,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn change_flags(d: &mut dev, flags: u32) -> i32 {
 // CHECK-NEXT:     unsafe {
@@ -59,6 +62,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn notify_flags(d: &mut dev, old_flags: u32, changes: u32) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -86,6 +90,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn set_flags(dev: &mut dev, flags: u32) -> i32 {
 // CHECK-NEXT:     let mut ret: i32 = 0;
 // CHECK-NEXT:     let mut changes: u32 = 0;
@@ -100,6 +105,7 @@ int main(void) {
 // CHECK-NEXT:     notify_flags(dev, old_flags, changes);
 // CHECK-NEXT:     ret
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut d: dev = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: dev = unsafe { core::mem::zeroed() };
@@ -111,6 +117,7 @@ int main(void) {
 // CHECK-NEXT:     set_flags(unsafe { &mut (*core::ptr::addr_of_mut!(d)) }, 8u32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

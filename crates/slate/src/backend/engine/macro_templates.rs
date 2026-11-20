@@ -3,8 +3,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use super::rules::walk::{child_exprs, child_exprs_mut, stmt_exprs, stmt_exprs_mut};
 use super::shadow::visit_names;
+use crate::backend::codegen::MACRO_LIST_HOLE;
 use crate::backend::codegen::is_rust_keyword;
-use crate::backend::format::MACRO_LIST_HOLE;
 use crate::backend::rust_ast::{
     Block, Expr, Ident, ImplItem, Item, Label, LayoutQuery, MacroParam, Program, Stmt, Type,
     UnaryOp, macro_template_base,

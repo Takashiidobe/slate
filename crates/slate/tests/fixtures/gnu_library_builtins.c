@@ -23,6 +23,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     #[link_name = "malloc"]
 // CHECK-NEXT:     fn __builtin_malloc([[ARG_0:arg[0-9]+]]: u64) -> *mut ();
@@ -49,12 +50,16 @@ int main(void) {
 // CHECK-NEXT:     #[link_name = "free"]
 // CHECK-NEXT:     fn __builtin_free([[ARG_0]]: *mut ());
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let buffer: *mut i8 = (unsafe { __builtin_malloc(32u64) }) as *mut i8;
 // CHECK-NEXT:     unsafe { __builtin_strcpy(buffer, c"slate".as_ptr()) };
@@ -104,14 +109,31 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", { let [[T_0:__t[0-9]+]] = 0i32; if [[T_0]] == 0 { 0i32 } else { ([[T_0]]
-// CHECK-NEXT:         .trailing_zeros() as i32) + 1 } }, { let [[T_1:__t[0-9]+]] = 12i32; if [[T_1]] == 0 { 0i32 } else
-// CHECK-NEXT:         { ([[T_1]].trailing_zeros() as i32) + 1 } }, { let [[T_2:__t[0-9]+]] = - 2147483648i32; if [[T_2]]
-// CHECK-NEXT:         == 0 { 0i32 } else { ([[T_2]].trailing_zeros() as i32) + 1 } }, { let [[T_3:__t[0-9]+]] =
-// CHECK-NEXT:         1048576i64; if [[T_3]] == 0 { 0i32 } else { ([[T_3]].trailing_zeros() as i32) + 1 } },
-// CHECK-NEXT:         { let [[T_4:__t[0-9]+]] = 1099511627776i64; if [[T_4]] == 0 { 0i32 } else { ([[T_4]]
-// CHECK-NEXT:         .trailing_zeros() as i32) + 1 } }, { let [[T_5:__t[0-9]+]] = 0i64; if [[T_5]] == 0 { 0i32 } else
-// CHECK-NEXT:         { ([[T_5]].trailing_zeros() as i32) + 1 } }
+// CHECK-NEXT:         "{} {} {} {} {} {}",
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let [[T_0:__t[0-9]+]] = 0i32;
+// CHECK-NEXT:             if [[T_0]] == 0 { 0i32 } else { ([[T_0]].trailing_zeros() as i32) + 1 }
+// CHECK-NEXT:         },
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = 12i32;
+// CHECK-NEXT:             if [[T_1]] == 0 { 0i32 } else { ([[T_1]].trailing_zeros() as i32) + 1 }
+// CHECK-NEXT:         },
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let [[T_2:__t[0-9]+]] = -2147483648i32;
+// CHECK-NEXT:             if [[T_2]] == 0 { 0i32 } else { ([[T_2]].trailing_zeros() as i32) + 1 }
+// CHECK-NEXT:         },
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let [[T_3:__t[0-9]+]] = 1048576i64;
+// CHECK-NEXT:             if [[T_3]] == 0 { 0i32 } else { ([[T_3]].trailing_zeros() as i32) + 1 }
+// CHECK-NEXT:         },
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let [[T_4:__t[0-9]+]] = 1099511627776i64;
+// CHECK-NEXT:             if [[T_4]] == 0 { 0i32 } else { ([[T_4]].trailing_zeros() as i32) + 1 }
+// CHECK-NEXT:         },
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let [[T_5:__t[0-9]+]] = 0i64;
+// CHECK-NEXT:             if [[T_5]] == 0 { 0i32 } else { ([[T_5]].trailing_zeros() as i32) + 1 }
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin_printf(
@@ -124,6 +146,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { __builtin_free(buffer as *mut ()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -21,31 +21,35 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Point {
 // CHECK-NEXT:     x: i32,
 // CHECK-NEXT:     y: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut ps: __SlateAlign16<[Point; 2]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:         core::mem::zeroed()
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut ps: __SlateAlign16<[Point; 2]> = __SlateAlign16(
+// CHECK-NEXT:         unsafe { core::mem::zeroed() },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     ps.0[0].x = 1;
 // CHECK-NEXT:     ps.0[0].y = 2;
 // CHECK-NEXT:     ps.0[1].x = 3;
 // CHECK-NEXT:     ps.0[1].y = 4;
 // CHECK-NEXT:     println!("{}", ps.0[0].x + ps.0[1].y);
-// CHECK-NEXT:     let init: __SlateAlign16<[Point; 2]> = __SlateAlign16([
-// CHECK-NEXT:         Point { x: 10, y: 20 },
-// CHECK-NEXT:         Point { x: 30, y: 40 },
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let init: __SlateAlign16<[Point; 2]> = __SlateAlign16(
+// CHECK-NEXT:         [Point { x: 10, y: 20 }, Point { x: 30, y: 40 }],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", init.0[0].y + init.0[1].x);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

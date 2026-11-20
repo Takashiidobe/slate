@@ -1,0 +1,2 @@
+Vendored from prettyplease 0.3.0 (src/algorithm.rs, src/ring.rs, src/convenience.rs),
+which adapts rustc_ast_pretty::pp. Licensed MIT OR Apache-2.0; see LICENSE-MIT and LICENSE-APACHE.

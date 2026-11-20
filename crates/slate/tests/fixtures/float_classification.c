@@ -25,31 +25,39 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn nan([[ARG_0:arg[0-9]+]]: *const i8) -> f64;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_float_classification_c_8 {
 // CHECK-NEXT:     bits: u64,
 // CHECK-NEXT:     value: f64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_float_classification_c_9 {
 // CHECK-NEXT:     bits: u32,
 // CHECK-NEXT:     value: f32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn once(x: f64) -> f64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let inf: __SlateRecord_float_classification_c_8 = __SlateRecord_float_classification_c_8 {
 // CHECK-NEXT:         bits: 9218868437227405312,
@@ -63,17 +71,19 @@ int main(void) {
 // CHECK-NEXT:     let fnan: __SlateRecord_float_classification_c_9 = __SlateRecord_float_classification_c_9 {
 // CHECK-NEXT:         bits: 2143289345,
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut values: __SlateAlign16<[f64; 9]> = __SlateAlign16([
-// CHECK-NEXT:         0.0f64,
-// CHECK-NEXT:         -0.0f64,
-// CHECK-NEXT:         1.0f64,
-// CHECK-NEXT:         -2.0f64,
-// CHECK-NEXT:         2.2250738585072014e-308f64 / (2i32 as f64),
-// CHECK-NEXT:         unsafe { inf.value },
-// CHECK-NEXT:         -unsafe { inf.value },
-// CHECK-NEXT:         unsafe { nan.value },
-// CHECK-NEXT:         -unsafe { nan.value },
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut values: __SlateAlign16<[f64; 9]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             0.0f64,
+// CHECK-NEXT:             -0.0f64,
+// CHECK-NEXT:             1.0f64,
+// CHECK-NEXT:             -2.0f64,
+// CHECK-NEXT:             2.2250738585072014e-308f64 / (2i32 as f64),
+// CHECK-NEXT:             unsafe { inf.value },
+// CHECK-NEXT:             -unsafe { inf.value },
+// CHECK-NEXT:             unsafe { nan.value },
+// CHECK-NEXT:             -unsafe { nan.value },
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..9i32 {
 // CHECK-NEXT:         let x: f64 = unsafe {
 // CHECK-NEXT:             core::ptr::read_volatile(
@@ -81,22 +91,39 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{}{}{}{}{} {}", ! (! x.is_nan()) as i32, ((if x.is_infinite() { if x
-// CHECK-NEXT:             .is_sign_negative() { - 1i32 } else { 1i32 } } else { 0i32 }) != 0) as i32, !
-// CHECK-NEXT:             (! x.is_finite()) as i32, ! (! x.is_normal()) as i32, ! (! x
-// CHECK-NEXT:             .is_sign_negative()) as i32, if x.is_nan() { 0i32 } else { if x.is_infinite()
-// CHECK-NEXT:             { 1i32 } else { if x.is_normal() { 4i32 } else { if x.is_subnormal() { 3i32 }
-// CHECK-NEXT:             else { 2i32 } } } }
+// CHECK-NEXT:             "{}{}{}{}{} {}",
+// CHECK-NEXT:             !(!x.is_nan()) as i32,
+// CHECK-NEXT:             ((if x.is_infinite() {
+// CHECK-NEXT:                 if x.is_sign_negative() { -1i32 } else { 1i32 }
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 0i32
+// CHECK-NEXT:             }) != 0) as i32,
+// CHECK-NEXT:             !(!x.is_finite()) as i32,
+// CHECK-NEXT:             !(!x.is_normal()) as i32,
+// CHECK-NEXT:             !(!x.is_sign_negative()) as i32,
+// CHECK-NEXT:             if x.is_nan() {
+// CHECK-NEXT:                 0i32
+// CHECK-NEXT:             } else if x.is_infinite() {
+// CHECK-NEXT:                 1i32
+// CHECK-NEXT:             } else if x.is_normal() {
+// CHECK-NEXT:                 4i32
+// CHECK-NEXT:             } else if x.is_subnormal() {
+// CHECK-NEXT:                 3i32
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 2i32
+// CHECK-NEXT:             }
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut small: __SlateAlign16<[f32; 6]> = __SlateAlign16([
-// CHECK-NEXT:         0.0f32,
-// CHECK-NEXT:         -0.0f32,
-// CHECK-NEXT:         1.0f32,
-// CHECK-NEXT:         1.1754944e-38f32 / (2i32 as f32),
-// CHECK-NEXT:         unsafe { finf.value },
-// CHECK-NEXT:         unsafe { fnan.value },
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut small: __SlateAlign16<[f32; 6]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             0.0f32,
+// CHECK-NEXT:             -0.0f32,
+// CHECK-NEXT:             1.0f32,
+// CHECK-NEXT:             1.1754944e-38f32 / (2i32 as f32),
+// CHECK-NEXT:             unsafe { finf.value },
+// CHECK-NEXT:             unsafe { fnan.value },
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..6i32 {
 // CHECK-NEXT:         let x: f32 = unsafe {
 // CHECK-NEXT:             core::ptr::read_volatile(
@@ -104,18 +131,34 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{}{}{}{}{} {}", ! (! x.is_nan()) as i32, ((if x.is_infinite() { if x
-// CHECK-NEXT:             .is_sign_negative() { - 1i32 } else { 1i32 } } else { 0i32 }) != 0) as i32, !
-// CHECK-NEXT:             (! x.is_finite()) as i32, ! (! x.is_normal()) as i32, ! (! x
-// CHECK-NEXT:             .is_sign_negative()) as i32, if x.is_nan() { 0i32 } else { if x.is_infinite()
-// CHECK-NEXT:             { 1i32 } else { if x.is_normal() { 4i32 } else { if x.is_subnormal() { 3i32 }
-// CHECK-NEXT:             else { 2i32 } } } }
+// CHECK-NEXT:             "{}{}{}{}{} {}",
+// CHECK-NEXT:             !(!x.is_nan()) as i32,
+// CHECK-NEXT:             ((if x.is_infinite() {
+// CHECK-NEXT:                 if x.is_sign_negative() { -1i32 } else { 1i32 }
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 0i32
+// CHECK-NEXT:             }) != 0) as i32,
+// CHECK-NEXT:             !(!x.is_finite()) as i32,
+// CHECK-NEXT:             !(!x.is_normal()) as i32,
+// CHECK-NEXT:             !(!x.is_sign_negative()) as i32,
+// CHECK-NEXT:             if x.is_nan() {
+// CHECK-NEXT:                 0i32
+// CHECK-NEXT:             } else if x.is_infinite() {
+// CHECK-NEXT:                 1i32
+// CHECK-NEXT:             } else if x.is_normal() {
+// CHECK-NEXT:                 4i32
+// CHECK-NEXT:             } else if x.is_subnormal() {
+// CHECK-NEXT:                 3i32
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 2i32
+// CHECK-NEXT:             }
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let result: i32 = once(unsafe { nan.value }).is_nan() as i32;
 // CHECK-NEXT:     println!("{} {}", (result != 0) as i32, unsafe { calls });
 // CHECK-NEXT:     ((unsafe { calls }) != 1) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

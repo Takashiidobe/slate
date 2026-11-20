@@ -33,27 +33,33 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! gen_macro {
 // CHECK-NEXT:     ($gen:expr) => {
 // CHECK-NEXT:         ($gen) + 1
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct r#gen {
 // CHECK-NEXT:     r#gen: i32,
 // CHECK-NEXT:     r#try: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut gen_global: i32 = 3;
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn r#gen(r#gen: i32) -> i32 {
 // CHECK-NEXT:     r#gen * 2 + unsafe { gen_global }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn advance(r#gen: &mut r#gen, send: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*r#gen).r#gen = (*r#gen).r#gen + send;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { (*(r#gen as *mut r#gen)).r#gen }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut state: r#gen = r#gen { r#gen: 1, r#try: 2 };
 // CHECK-NEXT:     let gen_local: i32 = r#gen(4i32);
@@ -62,13 +68,14 @@ int main(void) {
 // CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(state)) },
 // CHECK-NEXT:         5i32,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!("{} {} {}", __slate_printf_arg0, gen_local, unsafe { fp.unwrap() (1i32) });
+// CHECK-NEXT:     println!("{} {} {}", __slate_printf_arg0, gen_local, unsafe { fp.unwrap()(1i32) });
 // CHECK-NEXT:     let mut r#gen: i32 = 7;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = r#gen;
 // CHECK-NEXT:     r#gen = [[V_0]] + gen_macro!(r#gen);
 // CHECK-NEXT:     println!("{} {}", r#gen, state.r#try);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

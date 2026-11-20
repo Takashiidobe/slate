@@ -77,68 +77,70 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9 {
 // CHECK-NEXT:     b: [u8; 16],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct msi_data {
 // CHECK-NEXT:     [[SLATE_ANON_0:__slate_anon_[0-9]+]]: core::mem::MaybeUninit<[u8; 4]>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25 {
 // CHECK-NEXT:     [[SLATE_ANON_0]]: __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25_2,
 // CHECK-NEXT:     subhandle: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(4))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25_2 {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits8U0,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct msi_msg {
 // CHECK-NEXT:     [[SLATE_ANON_0]]: __SlateRecord_packed_union_bitfield_and_aligned_literal_c_28,
 // CHECK-NEXT:     [[SLATE_ANON_1:__slate_anon_[0-9]+]]: __SlateRecord_packed_union_bitfield_and_aligned_literal_c_31,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_packed_union_bitfield_and_aligned_literal_c_28 {
 // CHECK-NEXT:     address_lo: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_packed_union_bitfield_and_aligned_literal_c_31 {
 // CHECK-NEXT:     data: u32,
 // CHECK-NEXT:     arch_data: msi_data,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct unaligned_msg {
 // CHECK-NEXT:     tag: u8,
 // CHECK-NEXT:     data: msi_data,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(4))]
 // CHECK-NEXT: struct __SlateAlign4<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign4<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u16,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u16, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits8U0 {
 // CHECK-NEXT:         #[bits(8)]
 // CHECK-NEXT:         pub vector: u32,
@@ -154,8 +156,10 @@ int main(void) {
 // CHECK-NEXT:         pub is_level: u32,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: use slate_support::memcmp;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn guid_equal(
 // CHECK-NEXT:     mut a: __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9,
 // CHECK-NEXT:     mut b: __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9,
@@ -168,68 +172,99 @@ int main(void) {
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }) == 0) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn compose(msg: &mut msi_msg, vector: u32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = vector;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::ptr::addr_of_mut!(
-// CHECK-NEXT:             (* (msg as * mut msi_msg)).[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]]
-// CHECK-NEXT:         ) as *mut __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25;
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::ptr::addr_of_mut!((*(msg
+// CHECK-NEXT:             as *mut msi_msg)).[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]])
+// CHECK-NEXT:             as *mut __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25;
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]] = [[T_1]].read_unaligned();
 // CHECK-NEXT:         [[T_2]].[[SLATE_ANON_0]].__slate_bits_0.__set_vector([[T_0]]);
 // CHECK-NEXT:         [[T_1]].write_unaligned([[T_2]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]] = 5u32;
-// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = core::ptr::addr_of_mut!(
-// CHECK-NEXT:             (* (msg as * mut msi_msg)).[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]]
-// CHECK-NEXT:         ) as *mut __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25;
+// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = core::ptr::addr_of_mut!((*(msg
+// CHECK-NEXT:             as *mut msi_msg)).[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]])
+// CHECK-NEXT:             as *mut __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25;
 // CHECK-NEXT:         let mut [[T_5:__t[0-9]+]] = [[T_4]].read_unaligned();
 // CHECK-NEXT:         [[T_5]].[[SLATE_ANON_0]].__slate_bits_0.__set_delivery_mode([[T_3]]);
 // CHECK-NEXT:         [[T_4]].write_unaligned([[T_5]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_6:__t[0-9]+]] = 1u32;
-// CHECK-NEXT:         let [[T_7:__t[0-9]+]] = core::ptr::addr_of_mut!(
-// CHECK-NEXT:             (* (msg as * mut msi_msg)).[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]]
-// CHECK-NEXT:         ) as *mut __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25;
+// CHECK-NEXT:         let [[T_7:__t[0-9]+]] = core::ptr::addr_of_mut!((*(msg
+// CHECK-NEXT:             as *mut msi_msg)).[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]])
+// CHECK-NEXT:             as *mut __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25;
 // CHECK-NEXT:         let mut [[T_8:__t[0-9]+]] = [[T_7]].read_unaligned();
 // CHECK-NEXT:         [[T_8]].[[SLATE_ANON_0]].__slate_bits_0.__set_is_level([[T_6]]);
 // CHECK-NEXT:         [[T_7]].write_unaligned([[T_8]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: __SlateAlign4<
-// CHECK-NEXT:         __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9,
-// CHECK-NEXT:     > = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: __SlateAlign4<
-// CHECK-NEXT:         __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9,
-// CHECK-NEXT:     > = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: __SlateAlign4<
-// CHECK-NEXT:         __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9,
-// CHECK-NEXT:     > = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let guid: __SlateAlign4<
-// CHECK-NEXT:         __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9,
-// CHECK-NEXT:     > = __SlateAlign4(unsafe {
-// CHECK-NEXT:         *{
-// CHECK-NEXT:             [[SLATE_COMPOUND_0]].0 = __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9 {
-// CHECK-NEXT:                 b: [
-// CHECK-NEXT:                     120u8, 86u8, 52u8, 18u8, 188u8, 154u8, 240u8, 222u8, 1, 2, 3, 4, 5,
-// CHECK-NEXT:                     6, 7, 8,
-// CHECK-NEXT:                 ],
-// CHECK-NEXT:             };
-// CHECK-NEXT:             core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]].0)
-// CHECK-NEXT:         }
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: __SlateAlign4<__SlateRecord_packed_union_bitfield_and_aligned_literal_c_9> = unsafe {
+// CHECK-NEXT:         core::mem::zeroed()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: __SlateAlign4<__SlateRecord_packed_union_bitfield_and_aligned_literal_c_9> = unsafe {
+// CHECK-NEXT:         core::mem::zeroed()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: __SlateAlign4<__SlateRecord_packed_union_bitfield_and_aligned_literal_c_9> = unsafe {
+// CHECK-NEXT:         core::mem::zeroed()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let guid: __SlateAlign4<__SlateRecord_packed_union_bitfield_and_aligned_literal_c_9> = __SlateAlign4(
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]].0 = __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9 {
+// CHECK-NEXT:                     b: [
+// CHECK-NEXT:                         120u8, 86u8, 52u8, 18u8, 188u8, 154u8, 240u8, 222u8, 1, 2, 3, 4,
+// CHECK-NEXT:                         5, 6, 7, 8,
+// CHECK-NEXT:                     ],
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]].0)
+// CHECK-NEXT:             }
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "guid {} {}", guid_equal(guid.0, unsafe { * { [[SLATE_COMPOUND_1]].0 =
-// CHECK-NEXT:         __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9 { b : [120u8, 86u8,
-// CHECK-NEXT:         52u8, 18u8, 188u8, 154u8, 240u8, 222u8, 1, 2, 3, 4, 5, 6, 7, 8] };
-// CHECK-NEXT:         core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]].0) } }), guid_equal(guid.0, unsafe { *
-// CHECK-NEXT:         { [[SLATE_COMPOUND_2]].0 =
-// CHECK-NEXT:         __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9 { b : { let mut [[T_0]]
-// CHECK-NEXT:         : [u8; 16] = core::mem::zeroed(); [[T_0]][0] = 120u8; [[T_0]][1] = 86u8; [[T_0]][2] =
-// CHECK-NEXT:         52u8; [[T_0]][3] = 18u8; [[T_0]][4] = 0u8; [[T_0]][5] = 0u8; [[T_0]][6] = 0u8; [[T_0]][7] = 0u8;
-// CHECK-NEXT:         [[T_0]][8] = 0u8; [[T_0]] } }; core::ptr::addr_of_mut!([[SLATE_COMPOUND_2]].0) } })
+// CHECK-NEXT:         "guid {} {}",
+// CHECK-NEXT:         guid_equal(
+// CHECK-NEXT:             guid.0,
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_1]].0 = __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9 {
+// CHECK-NEXT:                         b: [
+// CHECK-NEXT:                             120u8, 86u8, 52u8, 18u8, 188u8, 154u8, 240u8, 222u8, 1, 2, 3,
+// CHECK-NEXT:                             4, 5, 6, 7, 8,
+// CHECK-NEXT:                         ],
+// CHECK-NEXT:                     };
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]].0)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             },
+// CHECK-NEXT:         ),
+// CHECK-NEXT:         guid_equal(
+// CHECK-NEXT:             guid.0,
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_2]].0 = __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9 {
+// CHECK-NEXT:                         b: {
+// CHECK-NEXT:                             let mut [[T_0]]: [u8; 16] = core::mem::zeroed();
+// CHECK-NEXT:                             [[T_0]][0] = 120u8;
+// CHECK-NEXT:                             [[T_0]][1] = 86u8;
+// CHECK-NEXT:                             [[T_0]][2] = 52u8;
+// CHECK-NEXT:                             [[T_0]][3] = 18u8;
+// CHECK-NEXT:                             [[T_0]][4] = 0u8;
+// CHECK-NEXT:                             [[T_0]][5] = 0u8;
+// CHECK-NEXT:                             [[T_0]][6] = 0u8;
+// CHECK-NEXT:                             [[T_0]][7] = 0u8;
+// CHECK-NEXT:                             [[T_0]][8] = 0u8;
+// CHECK-NEXT:                             [[T_0]]
+// CHECK-NEXT:                         },
+// CHECK-NEXT:                     };
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_2]].0)
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -255,23 +290,20 @@ int main(void) {
 // CHECK-NEXT:             c"msg %x %u %u %u\n".as_ptr(),
 // CHECK-NEXT:             msg.[[SLATE_ANON_1]].data,
 // CHECK-NEXT:             ({
-// CHECK-NEXT:                 let [[T_2]] = (core::ptr::addr_of!(
-// CHECK-NEXT:                     copy.[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]]
-// CHECK-NEXT:                 ) as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
+// CHECK-NEXT:                 let [[T_2]] = (core::ptr::addr_of!(copy.[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]])
+// CHECK-NEXT:                         as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
 // CHECK-NEXT:                     .read_unaligned();
 // CHECK-NEXT:                 [[T_2]].[[SLATE_ANON_0]].__slate_bits_0.__get_vector()
 // CHECK-NEXT:             }) as i32,
 // CHECK-NEXT:             ({
-// CHECK-NEXT:                 let [[T_3]] = (core::ptr::addr_of!(
-// CHECK-NEXT:                     copy.[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]]
-// CHECK-NEXT:                 ) as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
+// CHECK-NEXT:                 let [[T_3]] = (core::ptr::addr_of!(copy.[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]])
+// CHECK-NEXT:                         as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
 // CHECK-NEXT:                     .read_unaligned();
 // CHECK-NEXT:                 [[T_3]].[[SLATE_ANON_0]].__slate_bits_0.__get_delivery_mode()
 // CHECK-NEXT:             }) as i32,
 // CHECK-NEXT:             ({
-// CHECK-NEXT:                 let [[T_4]] = (core::ptr::addr_of!(
-// CHECK-NEXT:                     copy.[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]]
-// CHECK-NEXT:                 ) as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
+// CHECK-NEXT:                 let [[T_4]] = (core::ptr::addr_of!(copy.[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]])
+// CHECK-NEXT:                         as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
 // CHECK-NEXT:                     .read_unaligned();
 // CHECK-NEXT:                 [[T_4]].[[SLATE_ANON_0]].__slate_bits_0.__get_is_level()
 // CHECK-NEXT:             }) as i32,
@@ -292,9 +324,8 @@ int main(void) {
 // CHECK-NEXT:             c"subhandle %x %u\n".as_ptr(),
 // CHECK-NEXT:             copy.[[SLATE_ANON_1]].data,
 // CHECK-NEXT:             ({
-// CHECK-NEXT:                 let [[T_8]] = (core::ptr::addr_of!(
-// CHECK-NEXT:                     copy.[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]]
-// CHECK-NEXT:                 ) as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
+// CHECK-NEXT:                 let [[T_8]] = (core::ptr::addr_of!(copy.[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]])
+// CHECK-NEXT:                         as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
 // CHECK-NEXT:                     .read_unaligned();
 // CHECK-NEXT:                 [[T_8]].[[SLATE_ANON_0]].__slate_bits_0.__get_vector()
 // CHECK-NEXT:             }) as i32,
@@ -329,15 +360,15 @@ int main(void) {
 // CHECK-NEXT:         (packed.as_mut_ptr() as *mut unaligned_msg).add(1)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u32 = unsafe {
-// CHECK-NEXT:         let [[T_15:__t[0-9]+]] = (core::ptr::addr_of!((* [[V_0]]).data.[[SLATE_ANON_0]])
-// CHECK-NEXT:             as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
+// CHECK-NEXT:         let [[T_15:__t[0-9]+]] = (core::ptr::addr_of!((*[[V_0]]).data.[[SLATE_ANON_0]])
+// CHECK-NEXT:                 as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
 // CHECK-NEXT:             .read_unaligned();
 // CHECK-NEXT:         [[T_15]].[[SLATE_ANON_0]].__slate_bits_0.__get_vector()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u32 = (([[V_1]] as i32) + 1) as u32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_16:__t[0-9]+]] = [[V_2]];
-// CHECK-NEXT:         let [[T_17:__t[0-9]+]] = core::ptr::addr_of_mut!((* [[V_0]]).data.[[SLATE_ANON_0]])
+// CHECK-NEXT:         let [[T_17:__t[0-9]+]] = core::ptr::addr_of_mut!((*[[V_0]]).data.[[SLATE_ANON_0]])
 // CHECK-NEXT:             as *mut __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25;
 // CHECK-NEXT:         let mut [[T_18:__t[0-9]+]] = [[T_17]].read_unaligned();
 // CHECK-NEXT:         [[T_18]].[[SLATE_ANON_0]].__slate_bits_0.__set_vector([[T_16]]);
@@ -349,19 +380,19 @@ int main(void) {
 // CHECK-NEXT:             c"packed %x %u %u\n".as_ptr(),
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 let [[T_19:__t[0-9]+]] = (core::ptr::addr_of!(packed[1].data.[[SLATE_ANON_0]])
-// CHECK-NEXT:                     as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
+// CHECK-NEXT:                         as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
 // CHECK-NEXT:                     .read_unaligned();
 // CHECK-NEXT:                 [[T_19]].subhandle
 // CHECK-NEXT:             },
 // CHECK-NEXT:             ({
 // CHECK-NEXT:                 let [[T_20:__t[0-9]+]] = (core::ptr::addr_of!(packed[1].data.[[SLATE_ANON_0]])
-// CHECK-NEXT:                     as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
+// CHECK-NEXT:                         as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
 // CHECK-NEXT:                     .read_unaligned();
 // CHECK-NEXT:                 [[T_20]].[[SLATE_ANON_0]].__slate_bits_0.__get_vector()
 // CHECK-NEXT:             }) as i32,
 // CHECK-NEXT:             ({
 // CHECK-NEXT:                 let [[T_21:__t[0-9]+]] = (core::ptr::addr_of!(packed[1].data.[[SLATE_ANON_0]])
-// CHECK-NEXT:                     as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
+// CHECK-NEXT:                         as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
 // CHECK-NEXT:                     .read_unaligned();
 // CHECK-NEXT:                 [[T_21]].[[SLATE_ANON_0]].__slate_bits_0.__get_active_low()
 // CHECK-NEXT:             }) as i32,
@@ -370,6 +401,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

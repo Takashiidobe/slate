@@ -206,6 +206,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct sdshdr8 {
@@ -214,6 +215,7 @@ int main(void) {
 // CHECK-NEXT:     flags: u8,
 // CHECK-NEXT:     buf: [i8; 0],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct sdshdr16 {
@@ -222,6 +224,7 @@ int main(void) {
 // CHECK-NEXT:     flags: u8,
 // CHECK-NEXT:     buf: [i8; 0],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct sdshdr64 {
@@ -230,9 +233,11 @@ int main(void) {
 // CHECK-NEXT:     flags: u8,
 // CHECK-NEXT:     buf: [i8; 0],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sdslen(s: *mut i8) -> u64 {
 // CHECK-NEXT:     match ((unsafe { *s.offset(-1 as isize) }) as i32) & 7 {
 // CHECK-NEXT:         1 => {
@@ -248,6 +253,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sdsavail(s: *mut i8) -> u64 {
 // CHECK-NEXT:     match ((unsafe { *s.offset(-1 as isize) }) as i32) & 7 {
 // CHECK-NEXT:         1 => {
@@ -268,9 +274,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sdsnew(init: *const i8, r#type: i32) -> *mut i8 {
 // CHECK-NEXT:     let len: u64 = unsafe { strlen(init as *const core::ffi::c_char) as u64 };
-// CHECK-NEXT:     let header: u64 = if r#type == 1 { 3 } else { if r#type == 2 { 5 } else { 17 } };
+// CHECK-NEXT:     let header: u64 = if r#type == 1 { 3 } else if r#type == 2 { 5 } else { 17 };
 // CHECK-NEXT:     let memory: *mut i8 = (unsafe {
 // CHECK-NEXT:         malloc(header.wrapping_add(len).wrapping_add(16) as usize) as *mut ()
 // CHECK-NEXT:     }) as *mut i8;
@@ -317,6 +324,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     s
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sdsinclen(s: *mut i8, inc: u64) {
 // CHECK-NEXT:     match ((unsafe { *s.offset(-1 as isize) }) as i32) & 7 {
 // CHECK-NEXT:         1 => {
@@ -341,20 +349,25 @@ int main(void) {
 // CHECK-NEXT:         _ => {}
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct payloadHeader {
 // CHECK-NEXT:     payload_len: u64,
 // CHECK-NEXT:     payload_type: u8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: use slate_support::strlen;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union epoll_data {
@@ -362,12 +375,14 @@ int main(void) {
 // CHECK-NEXT:     fd: i32,
 // CHECK-NEXT:     u64: u64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct event {
 // CHECK-NEXT:     events: u32,
 // CHECK-NEXT:     data: epoll_data,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct holder {
@@ -376,6 +391,7 @@ int main(void) {
 // CHECK-NEXT:     events: [event; 3],
 // CHECK-NEXT:     tail: i16,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, packed(2))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct pack_two {
@@ -383,6 +399,7 @@ int main(void) {
 // CHECK-NEXT:     value: u32,
 // CHECK-NEXT:     wide: u64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %zu %zu\n".as_ptr(), 3u64, 5u64, 17u64) };
@@ -444,8 +461,10 @@ int main(void) {
 // CHECK-NEXT:                     .offset(
 // CHECK-NEXT:                         -((if types[i as usize] == 1 {
 // CHECK-NEXT:                             3u64
+// CHECK-NEXT:                         } else if types[i as usize] == 2 {
+// CHECK-NEXT:                             5u64
 // CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             if types[i as usize] == 2 { 5u64 } else { 17u64 }
+// CHECK-NEXT:                             17u64
 // CHECK-NEXT:                         }) as isize),
 // CHECK-NEXT:                     ) as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             )
@@ -573,6 +592,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

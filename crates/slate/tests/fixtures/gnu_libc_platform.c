@@ -110,15 +110,19 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_alloca {
 // CHECK-NEXT:     use std::alloc::{Layout, alloc, dealloc, handle_alloc_error};
 // CHECK-NEXT:     use core::cell::UnsafeCell;
+// CHECK-EMPTY:
 // CHECK-NEXT:     const ALIGN: usize = 16;
 // CHECK-NEXT:     const BLOCK: usize = 1 << 20;
+// CHECK-EMPTY:
 // CHECK-NEXT:     struct Block {
 // CHECK-NEXT:         base: *mut u8,
 // CHECK-NEXT:         size: usize,
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     impl Block {
 // CHECK-NEXT:         fn new(size: usize) -> Self {
 // CHECK-NEXT:             let layout = Layout::from_size_align(size, ALIGN).unwrap();
@@ -129,18 +133,19 @@ int main(void) {
 // CHECK-NEXT:             Block { base, size }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     impl Drop for Block {
 // CHECK-NEXT:         fn drop(&mut self) {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 dealloc(self.base, Layout::from_size_align_unchecked(self.size, ALIGN))
-// CHECK-NEXT:             }
+// CHECK-NEXT:             unsafe { dealloc(self.base, Layout::from_size_align_unchecked(self.size, ALIGN)) }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     struct Stack {
 // CHECK-NEXT:         blocks: Vec<Block>,
 // CHECK-NEXT:         block: usize,
 // CHECK-NEXT:         used: usize,
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     impl Stack {
 // CHECK-NEXT:         fn allocate(&mut self, size: usize, align: usize) -> *mut u8 {
 // CHECK-NEXT:             if self.blocks.is_empty() {
@@ -151,9 +156,8 @@ int main(void) {
 // CHECK-NEXT:                 let block = &self.blocks[self.block];
 // CHECK-NEXT:                 let base = block.base as usize;
 // CHECK-NEXT:                 let top = base + block.size - self.used;
-// CHECK-NEXT:                 if let Some(start) = top
-// CHECK-NEXT:                     .checked_sub(size)
-// CHECK-NEXT:                     .map(|start| start & !(align - 1)) && start >= base
+// CHECK-NEXT:                 if let Some(start) = top.checked_sub(size).map(|start| start & !(align - 1))
+// CHECK-NEXT:                     && start >= base
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     self.used = base + block.size - start;
 // CHECK-NEXT:                     unsafe {
@@ -164,57 +168,52 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 self.block += 1;
 // CHECK-NEXT:                 self.used = 0;
-// CHECK-NEXT:                 if self.block == self.blocks.len()
-// CHECK-NEXT:                     || self.blocks[self.block].size < needed
-// CHECK-NEXT:                 {
+// CHECK-NEXT:                 if self.block == self.blocks.len() || self.blocks[self.block].size < needed {
 // CHECK-NEXT:                     self.blocks.truncate(self.block);
-// CHECK-NEXT:                     self.blocks
-// CHECK-NEXT:                         .push(Block::new(needed.next_multiple_of(ALIGN).max(BLOCK)));
+// CHECK-NEXT:                     self.blocks.push(Block::new(needed.next_multiple_of(ALIGN).max(BLOCK)));
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     thread_local! {
-// CHECK-NEXT:         static STACK : UnsafeCell < Stack > = const { UnsafeCell::new(Stack { blocks :
-// CHECK-NEXT:         Vec::new(), block : 0, used : 0 }) };
+// CHECK-NEXT:         static STACK: UnsafeCell<Stack> = const {
+// CHECK-NEXT:             UnsafeCell::new(Stack { blocks: Vec::new(), block: 0, used: 0 })
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     pub struct Mark {
 // CHECK-NEXT:         block: usize,
 // CHECK-NEXT:         used: usize,
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     impl Mark {
 // CHECK-NEXT:         #[inline]
 // CHECK-NEXT:         pub fn new() -> Self {
-// CHECK-NEXT:             STACK
-// CHECK-NEXT:                 .with(|stack| {
-// CHECK-NEXT:                     let stack = unsafe { &*stack.get() };
-// CHECK-NEXT:                     Mark {
-// CHECK-NEXT:                         block: stack.block,
-// CHECK-NEXT:                         used: stack.used,
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 })
+// CHECK-NEXT:             STACK.with(|stack| {
+// CHECK-NEXT:                 let stack = unsafe { &*stack.get() };
+// CHECK-NEXT:                 Mark { block: stack.block, used: stack.used }
+// CHECK-NEXT:             })
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     impl Drop for Mark {
 // CHECK-NEXT:         #[inline]
 // CHECK-NEXT:         fn drop(&mut self) {
-// CHECK-NEXT:             STACK
-// CHECK-NEXT:                 .with(|stack| {
-// CHECK-NEXT:                     let stack = unsafe { &mut *stack.get() };
-// CHECK-NEXT:                     stack.block = self.block;
-// CHECK-NEXT:                     stack.used = self.used;
-// CHECK-NEXT:                 })
+// CHECK-NEXT:             STACK.with(|stack| {
+// CHECK-NEXT:                 let stack = unsafe { &mut *stack.get() };
+// CHECK-NEXT:                 stack.block = self.block;
+// CHECK-NEXT:                 stack.used = self.used;
+// CHECK-NEXT:             })
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-EMPTY:
 // CHECK-NEXT:     #[inline]
 // CHECK-NEXT:     pub fn alloca(size: usize, align: usize) -> *mut core::ffi::c_void {
-// CHECK-NEXT:         STACK
-// CHECK-NEXT:             .with(|stack| unsafe {
-// CHECK-NEXT:                 (*stack.get()).allocate(size, align.max(1).next_power_of_two())
-// CHECK-NEXT:             })
-// CHECK-NEXT:             .cast()
+// CHECK-NEXT:         STACK.with(|stack| unsafe { (*stack.get()).allocate(size, align.max(1).next_power_of_two()) }).cast()
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut program_invocation_name: *mut i8;
 // CHECK-NEXT:     static mut program_invocation_short_name: *mut i8;
@@ -254,6 +253,7 @@ int main(void) {
 // CHECK-NEXT:     #[link_name = "alloca"]
 // CHECK-NEXT:     fn __builtin_alloca([[ARG_0]]: u64) -> *mut ();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_dlfcn_h_94 {
@@ -262,9 +262,11 @@ int main(void) {
 // CHECK-NEXT:     dli_sname: *const i8,
 // CHECK-NEXT:     dli_saddr: *mut (),
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct stat {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_glob_h_105 {
@@ -273,13 +275,12 @@ int main(void) {
 // CHECK-NEXT:     gl_offs: u64,
 // CHECK-NEXT:     gl_flags: i32,
 // CHECK-NEXT:     gl_closedir: Option<unsafe extern "C-unwind" fn(*mut ())>,
-// CHECK-NEXT:     gl_readdir: Option<
-// CHECK-NEXT:         unsafe extern "C-unwind" fn(*mut ()) -> *mut slate_support::dirent,
-// CHECK-NEXT:     >,
+// CHECK-NEXT:     gl_readdir: Option<unsafe extern "C-unwind" fn(*mut ()) -> *mut slate_support::dirent>,
 // CHECK-NEXT:     gl_opendir: Option<unsafe extern "C-unwind" fn(*const i8) -> *mut ()>,
 // CHECK-NEXT:     gl_lstat: Option<unsafe extern "C-unwind" fn(*const i8, *mut stat) -> i32>,
 // CHECK-NEXT:     gl_stat: Option<unsafe extern "C-unwind" fn(*const i8, *mut stat) -> i32>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct re_pattern_buffer {
@@ -292,9 +293,11 @@ int main(void) {
 // CHECK-NEXT:     re_nsub: u64,
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits17U0,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct re_dfa_t {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct re_registers {
@@ -302,21 +305,14 @@ int main(void) {
 // CHECK-NEXT:     start: *mut i32,
 // CHECK-NEXT:     end: *mut i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u8,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u8, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits17U0 {
 // CHECK-NEXT:         #[bits(1)]
 // CHECK-NEXT:         pub can_be_null: u32,
@@ -334,6 +330,7 @@ int main(void) {
 // CHECK-NEXT:         pub newline_anchor: u32,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::fnmatch;
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::setenv;
@@ -347,40 +344,37 @@ int main(void) {
 // CHECK-NEXT: use slate_support::getcwd;
 // CHECK-NEXT: use slate_support::sysconf;
 // CHECK-NEXT: use slate_support::syscall;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_environment_extensions() -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
 // CHECK-NEXT:     let mut current: __SlateAlign16<[i8; 4096]> = __SlateAlign16([0i8; 4096]);
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     total
-// CHECK-NEXT:         += ((unsafe {
-// CHECK-NEXT:             setenv(
-// CHECK-NEXT:                 c"SLATE_GNU_LIBC_VALUE".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"ready".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:                 1i32 as i32,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32;
-// CHECK-NEXT:     total
-// CHECK-NEXT:         += ((unsafe {
-// CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (secure_getenv(c"SLATE_GNU_LIBC_VALUE".as_ptr()) as *const i8)
-// CHECK-NEXT:                     as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"ready".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32;
-// CHECK-NEXT:     total
-// CHECK-NEXT:         += ((unsafe {
-// CHECK-NEXT:             unsetenv(c"SLATE_GNU_LIBC_VALUE".as_ptr() as *const core::ffi::c_char) as i32
-// CHECK-NEXT:         }) == 0) as i32;
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         setenv(
+// CHECK-NEXT:             c"SLATE_GNU_LIBC_VALUE".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             c"ready".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             1i32 as i32,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0) as i32;
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         strcmp(
+// CHECK-NEXT:             (secure_getenv(c"SLATE_GNU_LIBC_VALUE".as_ptr()) as *const i8)
+// CHECK-NEXT:                 as *const core::ffi::c_char,
+// CHECK-NEXT:             c"ready".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0) as i32;
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         unsetenv(c"SLATE_GNU_LIBC_VALUE".as_ptr() as *const core::ffi::c_char) as i32
+// CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     let directory: *mut i8 = unsafe { get_current_dir_name() };
 // CHECK-NEXT:     let canonical: *mut i8 = unsafe { canonicalize_file_name(c".".as_ptr()) };
-// CHECK-NEXT:     total
-// CHECK-NEXT:         += !unsafe {
+// CHECK-NEXT:     total += !unsafe {
 // CHECK-NEXT:             getcwd(
 // CHECK-NEXT:                 (current.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
 // CHECK-NEXT:                 (core::mem::size_of::<[i8; 4096]>() as u64) as usize,
 // CHECK-NEXT:             ) as *mut i8
 // CHECK-NEXT:         }
-// CHECK-NEXT:             .is_null() as i32;
+// CHECK-NEXT:         .is_null() as i32;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:     total = [[V_0]]
 // CHECK-NEXT:         + ((!directory.is_null()
@@ -418,13 +412,12 @@ int main(void) {
 // CHECK-NEXT:             }) as *mut ()
 // CHECK-NEXT:         }) as *mut i8;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     total
-// CHECK-NEXT:         += ((unsafe {
-// CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 ([[V_2]] as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"slate".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32;
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         strcmp(
+// CHECK-NEXT:             ([[V_2]] as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:             c"slate".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: *mut i8;
 // CHECK-NEXT:     let __old: *const i8 = c"slate-truncated".as_ptr();
 // CHECK-NEXT:     let __len: u64 = unsafe { 5 };
@@ -452,6 +445,7 @@ int main(void) {
 // CHECK-NEXT:     total += [[V_4]];
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_time_extensions() -> i32 {
 // CHECK-NEXT:     let mut epoch: slate_support::tm = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: slate_support::tm = unsafe { core::mem::zeroed() };
@@ -478,6 +472,7 @@ int main(void) {
 // CHECK-NEXT:     total += [[V_5]];
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_pattern_extensions() -> i32 {
 // CHECK-NEXT:     let mut expression: re_pattern_buffer = {
 // CHECK-NEXT:         let mut [[T_0]]: re_pattern_buffer = unsafe { core::mem::zeroed() };
@@ -546,6 +541,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { globfree(core::ptr::addr_of_mut!(paths)) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.gnu_runtime_extensions")]
 // CHECK-NEXT: extern "C-unwind" fn gnu_runtime_extensions() -> i32 {
 // CHECK-NEXT:     let mut random_bytes: [u8; 8] = [0u8; 8];
@@ -582,10 +578,9 @@ int main(void) {
 // CHECK-NEXT:     let [[V_4]]: i32 = ((unsafe {
 // CHECK-NEXT:         dladdr(
 // CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn() -> i32>,
-// CHECK-NEXT:                     *mut (),
-// CHECK-NEXT:                 >(Some(gnu_runtime_extensions))
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *mut ()>(
+// CHECK-NEXT:                     Some(gnu_runtime_extensions),
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             }) as *const (),
 // CHECK-NEXT:             core::ptr::addr_of_mut!(information),
 // CHECK-NEXT:         )
@@ -601,13 +596,17 @@ int main(void) {
 // CHECK-NEXT:     total = [[V_18]] + (!unsafe { program_invocation_short_name }.is_null() as i32);
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", gnu_environment_extensions(), gnu_time_extensions(),
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         gnu_environment_extensions(),
+// CHECK-NEXT:         gnu_time_extensions(),
 // CHECK-NEXT:         gnu_pattern_extensions() + gnu_runtime_extensions()
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -22,21 +22,27 @@ int main(int argc, char **argv, char **envp) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut environ: *mut *mut i8;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::open;
 // CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: use slate_support::close;
 // CHECK-NEXT: use slate_support::read;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8, envp: *mut *mut i8) -> i32 {
 // CHECK-NEXT:     println!("envp {} argc {}", (envp == unsafe { environ }) as i32, argc);
 // CHECK-NEXT:     let len: u64 = unsafe {
@@ -57,11 +63,13 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:             ((if len < 7 { len } else { 7u64 }) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 64] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = 0i8;
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: [i8; 64] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]][0] = 0i8;
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let fd: i32 = unsafe {
 // CHECK-NEXT:         open(
 // CHECK-NEXT:             c"/proc/self/cmdline".as_ptr() as *const core::ffi::c_char,
@@ -86,12 +94,14 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "environ after argv {}", (unsafe { * unsafe { environ } .add(0) } .is_null() ||
-// CHECK-NEXT:         (unsafe { * unsafe { environ } .add(0) }) > unsafe { * argv.offset((argc - 1) as
-// CHECK-NEXT:         isize) }) as i32
+// CHECK-NEXT:         "environ after argv {}",
+// CHECK-NEXT:         (unsafe { *unsafe { environ }.add(0) }.is_null()
+// CHECK-NEXT:             || (unsafe { *unsafe { environ }.add(0) })
+// CHECK-NEXT:                 > unsafe { *argv.offset((argc - 1) as isize) }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -28,27 +28,33 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn control_word() -> u16 {
 // CHECK-NEXT:     let mut cw: u16 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fstcw ({0:r})", in (reg) core::ptr::addr_of_mut!(cw), options(nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             "fstcw ({0:r})",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(cw),
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     cw
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn set_control_word(mut cw: u16) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fldcw ({0:r})", in (reg) core::ptr::addr_of!(cw), options(nostack,
-// CHECK-NEXT:             att_syntax)
+// CHECK-NEXT:             "fldcw ({0:r})",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!(cw),
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let saved: u16 = control_word();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -71,10 +77,12 @@ int main(void) {
 // CHECK-NEXT:     let mut half: u16 = 3855;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "notb ({0:r})\n\tnotl ({1:r})\n\tnegq ({2:r})\n\tincw ({3:r})", in (reg)
-// CHECK-NEXT:             core::ptr::addr_of_mut!(byte), in (reg) core::ptr::addr_of_mut!(word), in
-// CHECK-NEXT:             (reg) core::ptr::addr_of_mut!(quad), in (reg) core::ptr::addr_of_mut!(half),
-// CHECK-NEXT:             options(nostack, att_syntax)
+// CHECK-NEXT:             "notb ({0:r})\n\tnotl ({1:r})\n\tnegq ({2:r})\n\tincw ({3:r})",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(byte),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(word),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(quad),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(half),
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -90,6 +98,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

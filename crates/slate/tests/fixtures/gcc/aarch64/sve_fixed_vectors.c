@@ -66,10 +66,12 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut counters: core::simd::Simd<i32, 16> = core::simd::Simd::from_array([
-// CHECK-NEXT:     1i32, 2i32, 3i32, 4i32, 5i32, 6i32, 7i32, 8i32, 9i32, 10i32, 11i32, 12i32, 13i32, 14i32, 15i32,
-// CHECK-NEXT:     16i32,
-// CHECK-NEXT: ]);
+// CHECK-NEXT: static mut counters: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         1i32, 2i32, 3i32, 4i32, 5i32, 6i32, 7i32, 8i32, 9i32, 10i32, 11i32, 12i32, 13i32,
+// CHECK-NEXT:         14i32, 15i32, 16i32,
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,crc,lse,sve,fcma")]
 // CHECK-NEXT: unsafe fn scale(a: core::simd::Simd<i32, 16>, factor: i32) -> core::simd::Simd<i32, 16> {
@@ -103,12 +105,14 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: holder = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].vector = unsafe { counters };
 // CHECK-NEXT:         [[T_0]].predicate = unsafe {
-// CHECK-NEXT:             predicate_of(*{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array([
-// CHECK-NEXT:                     255u8, 15u8, 240u8, 85u8, 170u8, 1u8, 128u8, 60u8,
-// CHECK-NEXT:                 ]);
-// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:             })
+// CHECK-NEXT:             predicate_of(
+// CHECK-NEXT:                 *{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
+// CHECK-NEXT:                         [255u8, 15u8, 240u8, 85u8, 170u8, 1u8, 128u8, 60u8],
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]].tail = 42i32;
 // CHECK-NEXT:         [[T_0]]
@@ -118,33 +122,38 @@ int main(void) {
 // CHECK-NEXT:     let mask: core::simd::Simd<i32, 16> = {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: core::simd::Simd<i32, 16> = scaled;
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]] = [[T_1]].to_array();
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]]: core::simd::Simd<i32, 16> = (unsafe { counters }) * core::simd::Simd::splat(3i32);
+// CHECK-NEXT:         let [[T_3:__t[0-9]+]]: core::simd::Simd<i32, 16> = (unsafe { counters })
+// CHECK-NEXT:             * core::simd::Simd::splat(3i32);
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]] = [[T_3]].to_array();
-// CHECK-NEXT:         let [[T_5:__t[0-9]+]]: core::simd::Simd<i32, 16> =
-// CHECK-NEXT:             core::simd::Simd::from_array(core::array::from_fn(|__lane| {
-// CHECK-NEXT:                 -(([[T_2]][__lane] > [[T_4]][__lane]) as i32)
-// CHECK-NEXT:             }));
+// CHECK-NEXT:         let [[T_5:__t[0-9]+]]: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:             core::array::from_fn(|__lane| -(([[T_2]][__lane] > [[T_4]][__lane]) as i32)),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         [[T_5]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let doubles: core::simd::Simd<f64, 8> = core::simd::Simd::from_array([
-// CHECK-NEXT:         1.0f64, 3.0f64, 5.0f64, 7.0f64, 9.0f64, 11.0f64, 13.0f64, 15.0f64,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let doubles: core::simd::Simd<f64, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [1.0f64, 3.0f64, 5.0f64, 7.0f64, 9.0f64, 11.0f64, 13.0f64, 15.0f64],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let halves: core::simd::Simd<f64, 8> = unsafe { halve(doubles) };
 // CHECK-NEXT:     let bytes: core::simd::Simd<u8, 64> = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 16>, core::simd::Simd<u8, 64>>(scaled)
+// CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 16>, core::simd::Simd<u8, 64>>(
+// CHECK-NEXT:             scaled,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let high: core::simd::Simd<i8, 8> = unsafe {
-// CHECK-NEXT:         predicate_of(*{
-// CHECK-NEXT:             [[SLATE_COMPOUND_1]] = core::simd::Simd::from_array([
-// CHECK-NEXT:                 240u8, 240u8, 240u8, 240u8, 240u8, 240u8, 240u8, 240u8,
-// CHECK-NEXT:             ]);
-// CHECK-NEXT:             core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
-// CHECK-NEXT:         })
+// CHECK-NEXT:         predicate_of(
+// CHECK-NEXT:             *{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_1]] = core::simd::Simd::from_array(
+// CHECK-NEXT:                     [240u8, 240u8, 240u8, 240u8, 240u8, 240u8, 240u8, 240u8],
+// CHECK-NEXT:                 );
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let predicates: core::simd::Simd<i8, 8> = h.predicate & high | !h.predicate;
 // CHECK-NEXT:     let mut sum: i64 = 0;
 // CHECK-NEXT:     for i in 0i32..16i32 {
-// CHECK-NEXT:         sum += (scaled[i as usize] * (i + 1) + plain[i as usize] - mask[i as usize]) as i64;
+// CHECK-NEXT:         sum += (scaled[i as usize] * (i + 1) + plain[i as usize] - mask[i as usize])
+// CHECK-NEXT:             as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

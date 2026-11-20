@@ -35,6 +35,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct proto {
@@ -42,68 +43,80 @@ int main(void) {
 // CHECK-NEXT:     gpl_only: i32,
 // CHECK-NEXT:     name: *const i8,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: type __SlateImage_tail_proto = proto;
+// CHECK-EMPTY:
 // CHECK-NEXT: type __SlateImage_poisoned_hook = Option<unsafe extern "C-unwind" fn(u64, u64) -> u64>;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(transparent)]
 // CHECK-NEXT: struct __SlateConst<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn add(a: u64, b: u64) -> u64 {
 // CHECK-NEXT:     a.wrapping_add(b)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut tail_proto: core::mem::MaybeUninit<__SlateImage_tail_proto> = unsafe {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: core::mem::MaybeUninit<__SlateImage_tail_proto> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1:__t[0-9]+]] = [[T_0]].as_mut_ptr();
 // CHECK-NEXT:     (*[[T_1]]).func = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *mut (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(u64, u64) -> u64>,
-// CHECK-NEXT:         >(16045481047391005599u64 as *mut ())
+// CHECK-NEXT:         core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn(u64, u64) -> u64>>(
+// CHECK-NEXT:             16045481047391005599u64 as *mut (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (*[[T_1]]).gpl_only = 1i32;
 // CHECK-NEXT:     (*[[T_1]]).name = (b"tail\0".as_ptr() as *mut i8) as *const i8;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
-// CHECK-NEXT: static add_proto: __SlateConst<proto> = __SlateConst({
-// CHECK-NEXT:     let mut [[T_0]]: proto = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].func = Some(add);
-// CHECK-NEXT:     [[T_0]].name = (b"add\0".as_ptr() as *mut i8) as *const i8;
-// CHECK-NEXT:     [[T_0]]
-// CHECK-NEXT: });
-// CHECK-NEXT: static mut protos: __SlateAlign16<[*const proto; 2]> = __SlateAlign16([
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!(
-// CHECK-NEXT:             * (core::ptr::addr_of_mut!(tail_proto) as * mut __SlateImage_tail_proto)
-// CHECK-NEXT:         )
+// CHECK-EMPTY:
+// CHECK-NEXT: static add_proto: __SlateConst<proto> = __SlateConst(
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut [[T_0]]: proto = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].func = Some(add);
+// CHECK-NEXT:         [[T_0]].name = (b"add\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
-// CHECK-NEXT:     unsafe { core::ptr::addr_of!(add_proto.0) },
-// CHECK-NEXT: ]);
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut protos: __SlateAlign16<[*const proto; 2]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::addr_of!(*(core::ptr::addr_of_mut!(tail_proto)
+// CHECK-NEXT:                 as *mut __SlateImage_tail_proto))
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe { core::ptr::addr_of!(add_proto.0) },
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut poisoned_hook: core::mem::MaybeUninit<__SlateImage_poisoned_hook> = unsafe {
 // CHECK-NEXT:     let mut [[T_0]]: core::mem::MaybeUninit<__SlateImage_poisoned_hook> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
 // CHECK-NEXT:     *[[T_1]] = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *mut (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(u64, u64) -> u64>,
-// CHECK-NEXT:         >(16045481047391005599u64 as *mut ())
+// CHECK-NEXT:         core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn(u64, u64) -> u64>>(
+// CHECK-NEXT:             16045481047391005599u64 as *mut (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0i32..2i32 {
 // CHECK-NEXT:         let p: *const proto = unsafe { protos.0[i as usize] };
 // CHECK-NEXT:         if (unsafe {
-// CHECK-NEXT:             core::mem::transmute::<
-// CHECK-NEXT:                 Option<unsafe extern "C-unwind" fn(u64, u64) -> u64>,
-// CHECK-NEXT:                 *mut (),
-// CHECK-NEXT:             >(unsafe { (*p).func })
-// CHECK-NEXT:         }) == (16045481047391005599u64 as *mut ())
-// CHECK-NEXT:         {
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(u64, u64) -> u64>, *mut ()>(
+// CHECK-NEXT:                 unsafe { (*p).func },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }) == (16045481047391005599u64 as *mut ()) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 slate_support::printf(
@@ -126,11 +139,19 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", unsafe { (* (core::ptr::addr_of_mut!(tail_proto) as * mut
-// CHECK-NEXT:         __SlateImage_tail_proto)).gpl_only }, ((unsafe { core::mem::transmute::< Option <
-// CHECK-NEXT:         unsafe extern "C-unwind" fn (u64, u64) -> u64 >, * mut () > (unsafe { *
-// CHECK-NEXT:         (core::ptr::addr_of_mut!(poisoned_hook) as * mut __SlateImage_poisoned_hook) })
-// CHECK-NEXT:         }) == (16045481047391005599u64 as * mut ())) as i32
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             (*(core::ptr::addr_of_mut!(tail_proto)
+// CHECK-NEXT:                 as *mut __SlateImage_tail_proto)).gpl_only
+// CHECK-NEXT:         },
+// CHECK-NEXT:         ((unsafe {
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(u64, u64) -> u64>, *mut ()>(
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     *(core::ptr::addr_of_mut!(poisoned_hook)
+// CHECK-NEXT:                         as *mut __SlateImage_poisoned_hook)
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }) == (16045481047391005599u64 as *mut ())) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(core::ptr::addr_of_mut!(poisoned_hook) as *mut __SlateImage_poisoned_hook) = Some(
@@ -142,15 +163,16 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lu\n".as_ptr(),
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *(core::ptr::addr_of_mut!(poisoned_hook)
-// CHECK-NEXT:                     as *mut __SlateImage_poisoned_hook)
-// CHECK-NEXT:             }
+// CHECK-NEXT:                     *(core::ptr::addr_of_mut!(poisoned_hook)
+// CHECK-NEXT:                         as *mut __SlateImage_poisoned_hook)
+// CHECK-NEXT:                 }
 // CHECK-NEXT:                 .unwrap()(4u64, 5u64),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

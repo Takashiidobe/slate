@@ -60,15 +60,18 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Opaque {}
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Point {
 // CHECK-NEXT:     x: i32,
 // CHECK-NEXT:     y: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Segment {
@@ -78,21 +81,25 @@ int main(void) {
 // CHECK-NEXT:     weight: f64,
 // CHECK-NEXT:     extra: *mut Opaque,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Node {
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT:     next: *mut Node,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn segment_length(s: &Segment) -> i64 {
 // CHECK-NEXT:     (((unsafe { (*(s as *const Segment)).to.x })
 // CHECK-NEXT:         - unsafe { (*(s as *const Segment)).from.x }) as i64)
 // CHECK-NEXT:         + ((unsafe { (*(s as *const Segment)).to.y })
 // CHECK-NEXT:             - unsafe { (*(s as *const Segment)).from.y })
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sum_list(mut node: *mut Node, mut count: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     loop {
@@ -106,6 +113,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut s: Segment = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     s.from.x = 1;
@@ -140,6 +148,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", sum_list(core::ptr::addr_of_mut!(first), 3i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

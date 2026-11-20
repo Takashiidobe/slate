@@ -58,18 +58,23 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: use slate_support::socketpair;
 // CHECK-NEXT: use slate_support::sendmsg;
 // CHECK-NEXT: use slate_support::recvmsg;
 // CHECK-NEXT: use slate_support::close;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn total_length(vec: &[slate_support::iovec]) -> u64 {
 // CHECK-NEXT:     let mut total: u64 = 0;
 // CHECK-NEXT:     for i in 0..vec.len() as i32 {
@@ -77,15 +82,16 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut first: [i8; 7] = [104, 101, 108, 108, 111, 32, 0];
 // CHECK-NEXT:     let mut second: [i8; 6] = [119, 111, 114, 108, 100, 0];
-// CHECK-NEXT:     let mut out: __SlateAlign16<[slate_support::iovec; 2]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:         core::mem::zeroed()
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let mut r#in: __SlateAlign16<[slate_support::iovec; 2]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:         core::mem::zeroed()
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut out: __SlateAlign16<[slate_support::iovec; 2]> = __SlateAlign16(
+// CHECK-NEXT:         unsafe { core::mem::zeroed() },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut r#in: __SlateAlign16<[slate_support::iovec; 2]> = __SlateAlign16(
+// CHECK-NEXT:         unsafe { core::mem::zeroed() },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut a: [i8; 8] = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0i8;
@@ -118,8 +124,7 @@ int main(void) {
 // CHECK-NEXT:             0i32 as i32,
 // CHECK-NEXT:             (pair.as_mut_ptr() as *mut i32) as *mut i32,
 // CHECK-NEXT:         ) as i32
-// CHECK-NEXT:     }) != 0
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) != 0 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
@@ -139,8 +144,7 @@ int main(void) {
 // CHECK-NEXT:                 as *const slate_support::msghdr,
 // CHECK-NEXT:             0i32 as i32,
 // CHECK-NEXT:         ) as i64
-// CHECK-NEXT:     }) != 11
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) != 11 {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
@@ -159,8 +163,7 @@ int main(void) {
 // CHECK-NEXT:             core::ptr::addr_of_mut!(receive_message) as *mut slate_support::msghdr,
 // CHECK-NEXT:             0i32 as i32,
 // CHECK-NEXT:         ) as i64
-// CHECK-NEXT:     }) != 11
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) != 11 {
 // CHECK-NEXT:         return 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -179,6 +182,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { close(pair[1] as i32) as i32 };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

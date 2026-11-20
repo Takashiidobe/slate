@@ -100,7 +100,8 @@ int main(void) { return 0; }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut time: _SYSTEMTIME = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe { GetSystemTime(core::ptr::addr_of_mut!(time)) };
-// CHECK-NEXT:     if (time.wYear as i32) < 2020 || (time.wMonth as i32) < 1 || (time.wMonth as i32) > 12 {
+// CHECK-NEXT:     if (time.wYear as i32) < 2020 || (time.wMonth as i32) < 1
+// CHECK-NEXT:         || (time.wMonth as i32) > 12 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let event: *mut () = unsafe {

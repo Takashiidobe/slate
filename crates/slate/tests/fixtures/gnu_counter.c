@@ -21,17 +21,25 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut direct_zero: i32 = 0;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut macro_one: i32 = 1;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut pair: i32 = 23;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let local_four: i32 = 4;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", unsafe { direct_zero }, unsafe { macro_one }, unsafe { pair },
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         unsafe { direct_zero },
+// CHECK-NEXT:         unsafe { macro_one },
+// CHECK-NEXT:         unsafe { pair },
 // CHECK-NEXT:         local_four
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

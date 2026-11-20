@@ -42,30 +42,38 @@ int late = 99;
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut total: i32 = 10;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut scale: i64 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Tally {
 // CHECK-NEXT:     hits: i32,
 // CHECK-NEXT:     weight: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut tally: Tally = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Tally = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].hits = 1i32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn bump([[V_0:__v[0-9]+]]: *mut i32, by: i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] = *[[V_0]] + by;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn shadow_param(total__0: i32) -> i32 {
 // CHECK-NEXT:     total__0 * 2
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn record(t: *mut Tally, weight: i64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*t).hits = (*t).hits + 1;
@@ -74,6 +82,7 @@ int late = 99;
 // CHECK-NEXT:         (*t).weight = (*t).weight + weight;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let before: i32 = unsafe { total };
 // CHECK-NEXT:     let mut total__0: i32 = 3;
@@ -91,7 +100,9 @@ int late = 99;
 // CHECK-NEXT:     println!("late {}", unsafe { late });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut late: i32 = 99;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

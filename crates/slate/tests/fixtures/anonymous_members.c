@@ -34,6 +34,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct container {
@@ -41,21 +42,25 @@ int main(void) {
 // CHECK-NEXT:     [[SLATE_ANON_0:__slate_anon_[0-9]+]]: __SlateRecord_anonymous_members_c_5,
 // CHECK-NEXT:     [[SLATE_ANON_1:__slate_anon_[0-9]+]]: __SlateRecord_anonymous_members_c_9,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_anonymous_members_c_5 {
 // CHECK-NEXT:     integer: i32,
 // CHECK-NEXT:     real: f32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_anonymous_members_c_9 {
 // CHECK-NEXT:     x: i32,
 // CHECK-NEXT:     y: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut value: container = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: container = unsafe { core::mem::zeroed() };
@@ -108,15 +113,22 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", positional.prefix, unsafe { positional.[[SLATE_ANON_0]].integer },
-// CHECK-NEXT:         positional.[[SLATE_ANON_1]].x, positional.[[SLATE_ANON_1]].y
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         positional.prefix,
+// CHECK-NEXT:         unsafe { positional.[[SLATE_ANON_0]].integer },
+// CHECK-NEXT:         positional.[[SLATE_ANON_1]].x,
+// CHECK-NEXT:         positional.[[SLATE_ANON_1]].y
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", designated.prefix, unsafe { designated.[[SLATE_ANON_0]].integer },
-// CHECK-NEXT:         designated.[[SLATE_ANON_1]].x, designated.[[SLATE_ANON_1]].y
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         designated.prefix,
+// CHECK-NEXT:         unsafe { designated.[[SLATE_ANON_0]].integer },
+// CHECK-NEXT:         designated.[[SLATE_ANON_1]].x,
+// CHECK-NEXT:         designated.[[SLATE_ANON_1]].y
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

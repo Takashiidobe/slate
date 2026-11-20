@@ -44,9 +44,11 @@ int main(void) {
 // CHECK-NEXT: #![feature(portable_simd)]
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let add_i: i32 = 2147483642i32.saturating_add(10i32);
 // CHECK-NEXT:     println!("{}", add_i);
@@ -61,50 +63,41 @@ int main(void) {
 // CHECK-NEXT:     let u128a: u128 = (0 as u128).wrapping_sub(1 as u128);
 // CHECK-NEXT:     let add_u128: u128 = u128a.saturating_add(5 as u128);
 // CHECK-NEXT:     println!("{}", (add_u128 == (0 as u128).wrapping_sub(1 as u128)) as i32);
-// CHECK-NEXT:     let mut s200a: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(-1 as i128);
+// CHECK-NEXT:     let mut s200a: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:         -1 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut add_s200: bitint::BInt<200, 4, 32, bitint::A8> = s200a
 // CHECK-NEXT:         .saturating_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(5 as i128));
 // CHECK-NEXT:     println!("{}", add_s200.to_i128() as i32);
-// CHECK-NEXT:     let mut u200a: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_bint(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(3 as i128));
+// CHECK-NEXT:     let mut u200a: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<200, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(3 as i128),
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut sub_u200: bitint::BUint<200, 4, 32, bitint::A8> = u200a
 // CHECK-NEXT:         .saturating_sub(
-// CHECK-NEXT:             <bitint::BUint<
-// CHECK-NEXT:                 200,
-// CHECK-NEXT:                 4,
-// CHECK-NEXT:                 32,
-// CHECK-NEXT:                 bitint::A8,
-// CHECK-NEXT:             >>::from_bint(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(10 as i128)),
+// CHECK-NEXT:             <bitint::BUint<200, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:                 <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(10 as i128),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", (sub_u200.compare(< bitint::BUint < 200, 4, 32, bitint::A8 >>::from_bint(<
-// CHECK-NEXT:         bitint::BInt < 200, 4, 32, bitint::A8 >>::from_i128(0 as i128))) == 0) as i32
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         (sub_u200
+// CHECK-NEXT:             .compare(
+// CHECK-NEXT:                 <bitint::BUint<200, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:                     <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(0 as i128),
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ) == 0) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let va: core::simd::Simd<i32, 4> = core::simd::Simd::from_array([
-// CHECK-NEXT:         2147483647i32,
-// CHECK-NEXT:         1i32,
-// CHECK-NEXT:         -2147483648i32,
-// CHECK-NEXT:         0i32,
-// CHECK-NEXT:     ]);
-// CHECK-NEXT:     let vb: core::simd::Simd<i32, 4> = core::simd::Simd::from_array([
-// CHECK-NEXT:         10i32,
-// CHECK-NEXT:         1i32,
-// CHECK-NEXT:         -10i32,
-// CHECK-NEXT:         0i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let va: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [2147483647i32, 1i32, -2147483648i32, 0i32],
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let vb: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
+// CHECK-NEXT:         [10i32, 1i32, -10i32, 0i32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let vr: core::simd::Simd<i32, 4> = core::simd::num::SimdInt::saturating_add(va, vb);
 // CHECK-NEXT:     println!("{} {} {} {}", vr[0], vr[1], vr[2], vr[3]);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

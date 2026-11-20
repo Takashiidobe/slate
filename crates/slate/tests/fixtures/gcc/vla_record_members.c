@@ -132,8 +132,8 @@ int main(void) {
 // CHECK-NEXT:     c: [i8; 0],
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::memset;
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
@@ -155,15 +155,19 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64 = n as u64;
 // CHECK-NEXT:     let mut x: Vec<u32> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<u32> = Vec::with_capacity(
-// CHECK-NEXT:             (7usize + (((([[V_0]] as usize) * core::mem::size_of::<i8>()) as isize) as usize))
+// CHECK-NEXT:             (7usize
+// CHECK-NEXT:                 + (((([[V_0]] as usize) * core::mem::size_of::<i8>()) as isize) as usize))
 // CHECK-NEXT:                 / 4usize,
 // CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(
-// CHECK-NEXT:                 0u8,
-// CHECK-NEXT:                 (7usize + (((([[V_0]] as usize) * core::mem::size_of::<i8>()) as isize) as usize))
-// CHECK-NEXT:                     / 4usize,
-// CHECK-NEXT:             );
+// CHECK-NEXT:             __slate_vla
+// CHECK-NEXT:                 .as_mut_ptr()
+// CHECK-NEXT:                 .write_bytes(
+// CHECK-NEXT:                     0u8,
+// CHECK-NEXT:                     (7usize
+// CHECK-NEXT:                         + (((([[V_0]] as usize) * core::mem::size_of::<i8>()) as isize)
+// CHECK-NEXT:                             as usize)) / 4usize,
+// CHECK-NEXT:                 );
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
@@ -187,7 +191,8 @@ int main(void) {
 // CHECK-NEXT:             n,
 // CHECK-NEXT:             (&raw mut (*(x.as_mut_ptr() as *mut S)).tail as *mut [i8; 0]) as *mut i8,
 // CHECK-NEXT:             checksum(
-// CHECK-NEXT:                 (&raw mut (*(x.as_mut_ptr() as *mut S)).tail as *mut [i8; 0]) as *const (),
+// CHECK-NEXT:                 (&raw mut (*(x.as_mut_ptr() as *mut S)).tail as *mut [i8; 0])
+// CHECK-NEXT:                     as *const (),
 // CHECK-NEXT:                 n as u64,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
@@ -205,29 +210,36 @@ int main(void) {
 // CHECK-NEXT:     let mut g: Vec<u32> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<u32> = Vec::with_capacity(
 // CHECK-NEXT:             (7usize
-// CHECK-NEXT:                 + (((([[V_0]] as usize) * ([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize)
-// CHECK-NEXT:                     as usize))
-// CHECK-NEXT:                 / 4usize,
+// CHECK-NEXT:                 + (((([[V_0]] as usize) * ([[V_1]] as usize) * core::mem::size_of::<i32>())
+// CHECK-NEXT:                     as isize) as usize)) / 4usize,
 // CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(
-// CHECK-NEXT:                 0u8,
-// CHECK-NEXT:                 (7usize
-// CHECK-NEXT:                     + (((([[V_0]] as usize) * ([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize)
-// CHECK-NEXT:                         as usize))
-// CHECK-NEXT:                     / 4usize,
-// CHECK-NEXT:             );
+// CHECK-NEXT:             __slate_vla
+// CHECK-NEXT:                 .as_mut_ptr()
+// CHECK-NEXT:                 .write_bytes(
+// CHECK-NEXT:                     0u8,
+// CHECK-NEXT:                     (7usize
+// CHECK-NEXT:                         + (((([[V_0]] as usize) * ([[V_1]] as usize)
+// CHECK-NEXT:                             * core::mem::size_of::<i32>()) as isize) as usize)) / 4usize,
+// CHECK-NEXT:                 );
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(g.as_mut_ptr() as *mut __SlateRecord_vla_record_members_c_25)).tag =
-// CHECK-NEXT:             (rows * 10 + cols) as i16;
+// CHECK-NEXT:         (*(g.as_mut_ptr() as *mut __SlateRecord_vla_record_members_c_25)).tag = (rows
+// CHECK-NEXT:             * 10 + cols) as i16;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for r in 0..rows {
 // CHECK-NEXT:         for c in 0..cols {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *(((&raw mut (*(g.as_mut_ptr() as *mut __SlateRecord_vla_record_members_c_25)).cells as *mut {{\[\[}}i32; 0]; 0]) as *mut [i32; 0]).byte_offset((r as isize) * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize)) as *mut i32).offset(c as isize) = r * 100 + c;
+// CHECK-NEXT:                 *(((&raw mut (*(g.as_mut_ptr()
+// CHECK-NEXT:                             as *mut __SlateRecord_vla_record_members_c_25)).cells
+// CHECK-NEXT:                             as *mut {{\[\[}}i32; 0]; 0]) as *mut [i32; 0])
+// CHECK-NEXT:                         .byte_offset(
+// CHECK-NEXT:                             (r as isize)
+// CHECK-NEXT:                                 * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                         ) as *mut i32)
+// CHECK-NEXT:                     .offset(c as isize) = r * 100 + c;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -237,12 +249,13 @@ int main(void) {
 // CHECK-NEXT:             let [[V_2:__v[0-9]+]]: i32 = total;
 // CHECK-NEXT:             total = [[V_2]]
 // CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     *(((&raw mut (*(g.as_mut_ptr() as *mut __SlateRecord_vla_record_members_c_25))
-// CHECK-NEXT:                         .cells as *mut {{\[\[}}i32; 0]; 0]) as *mut [i32; 0])
-// CHECK-NEXT:                         .byte_offset(
-// CHECK-NEXT:                             (r as isize)
-// CHECK-NEXT:                                 * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize),
-// CHECK-NEXT:                         ) as *mut i32)
+// CHECK-NEXT:                     *(((&raw mut (*(g.as_mut_ptr()
+// CHECK-NEXT:                                 as *mut __SlateRecord_vla_record_members_c_25)).cells
+// CHECK-NEXT:                                 as *mut {{\[\[}}i32; 0]; 0]) as *mut [i32; 0])
+// CHECK-NEXT:                             .byte_offset(
+// CHECK-NEXT:                                 (r as isize)
+// CHECK-NEXT:                                     * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                             ) as *mut i32)
 // CHECK-NEXT:                         .offset(c as isize)
 // CHECK-NEXT:                 };
 // CHECK-NEXT:         }
@@ -253,15 +266,17 @@ int main(void) {
 // CHECK-NEXT:             c"grid %dx%d: size %zu tag %d total %d last %d\n".as_ptr(),
 // CHECK-NEXT:             rows,
 // CHECK-NEXT:             cols,
-// CHECK-NEXT:             (7u64.wrapping_add([[V_0]].wrapping_mul([[V_1]].wrapping_mul(4))) / 4).wrapping_mul(4),
+// CHECK-NEXT:             (7u64.wrapping_add([[V_0]].wrapping_mul([[V_1]].wrapping_mul(4))) / 4)
+// CHECK-NEXT:                 .wrapping_mul(4),
 // CHECK-NEXT:             (*(g.as_mut_ptr() as *mut __SlateRecord_vla_record_members_c_25)).tag as i32,
 // CHECK-NEXT:             total,
-// CHECK-NEXT:             *(((&raw mut (*(g.as_mut_ptr() as *mut __SlateRecord_vla_record_members_c_25)).cells
-// CHECK-NEXT:                 as *mut {{\[\[}}i32; 0]; 0]) as *mut [i32; 0])
-// CHECK-NEXT:                 .byte_offset(
-// CHECK-NEXT:                     ((rows - 1) as isize)
-// CHECK-NEXT:                         * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize),
-// CHECK-NEXT:                 ) as *mut i32)
+// CHECK-NEXT:             *(((&raw mut (*(g.as_mut_ptr()
+// CHECK-NEXT:                         as *mut __SlateRecord_vla_record_members_c_25)).cells
+// CHECK-NEXT:                         as *mut {{\[\[}}i32; 0]; 0]) as *mut [i32; 0])
+// CHECK-NEXT:                     .byte_offset(
+// CHECK-NEXT:                         ((rows - 1) as isize)
+// CHECK-NEXT:                             * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                     ) as *mut i32)
 // CHECK-NEXT:                 .offset((cols - 1) as isize),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -273,30 +288,35 @@ int main(void) {
 // CHECK-NEXT:     let mut u: Vec<u32> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<u32> = Vec::with_capacity(
 // CHECK-NEXT:             (3usize
-// CHECK-NEXT:                 + (((1usize * ([[V_0]] as usize) * core::mem::size_of::<i32>()) as isize) as usize))
-// CHECK-NEXT:                 / 4usize,
+// CHECK-NEXT:                 + (((1usize * ([[V_0]] as usize) * core::mem::size_of::<i32>()) as isize)
+// CHECK-NEXT:                     as usize)) / 4usize,
 // CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(
-// CHECK-NEXT:                 0u8,
-// CHECK-NEXT:                 (3usize
-// CHECK-NEXT:                     + (((1usize * ([[V_0]] as usize) * core::mem::size_of::<i32>()) as isize)
-// CHECK-NEXT:                         as usize))
-// CHECK-NEXT:                     / 4usize,
-// CHECK-NEXT:             );
+// CHECK-NEXT:             __slate_vla
+// CHECK-NEXT:                 .as_mut_ptr()
+// CHECK-NEXT:                 .write_bytes(
+// CHECK-NEXT:                     0u8,
+// CHECK-NEXT:                     (3usize
+// CHECK-NEXT:                         + (((1usize * ([[V_0]] as usize) * core::mem::size_of::<i32>())
+// CHECK-NEXT:                             as isize) as usize)) / 4usize,
+// CHECK-NEXT:                 );
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(((&raw mut (*(u.as_mut_ptr() as *mut U)).ar as *mut {{\[\[}}i32; 0]; 1]) as *mut [i32; 0])
-// CHECK-NEXT:             .byte_offset(0 * ((([[V_0]] as usize) * core::mem::size_of::<i32>()) as isize))
-// CHECK-NEXT:             as *mut i32)
+// CHECK-NEXT:         *(((&raw mut (*(u.as_mut_ptr() as *mut U)).ar as *mut {{\[\[}}i32; 0]; 1])
+// CHECK-NEXT:                     as *mut [i32; 0])
+// CHECK-NEXT:                 .byte_offset(
+// CHECK-NEXT:                     0 * ((([[V_0]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                 ) as *mut i32)
 // CHECK-NEXT:             .add(0) = 7;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(((&raw mut (*(u.as_mut_ptr() as *mut U)).ar as *mut {{\[\[}}i32; 0]; 1]) as *mut [i32; 0])
-// CHECK-NEXT:             .byte_offset(0 * ((([[V_0]] as usize) * core::mem::size_of::<i32>()) as isize))
-// CHECK-NEXT:             as *mut i32)
+// CHECK-NEXT:         *(((&raw mut (*(u.as_mut_ptr() as *mut U)).ar as *mut {{\[\[}}i32; 0]; 1])
+// CHECK-NEXT:                     as *mut [i32; 0])
+// CHECK-NEXT:                 .byte_offset(
+// CHECK-NEXT:                     0 * ((([[V_0]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                 ) as *mut i32)
 // CHECK-NEXT:             .offset((n - 1) as isize) = 9;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -304,14 +324,19 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"union %d: size %zu first %d last %d\n".as_ptr(),
 // CHECK-NEXT:             n,
-// CHECK-NEXT:             (3u64.wrapping_add(1u64.wrapping_mul([[V_0]].wrapping_mul(4))) / 4).wrapping_mul(4),
-// CHECK-NEXT:             *(((&raw mut (*(u.as_mut_ptr() as *mut U)).ar as *mut {{\[\[}}i32; 0]; 1]) as *mut [i32; 0])
-// CHECK-NEXT:                 .byte_offset(0 * ((([[V_0]] as usize) * core::mem::size_of::<i32>()) as isize))
-// CHECK-NEXT:                 as *mut i32)
+// CHECK-NEXT:             (3u64.wrapping_add(1u64.wrapping_mul([[V_0]].wrapping_mul(4))) / 4)
+// CHECK-NEXT:                 .wrapping_mul(4),
+// CHECK-NEXT:             *(((&raw mut (*(u.as_mut_ptr() as *mut U)).ar as *mut {{\[\[}}i32; 0]; 1])
+// CHECK-NEXT:                         as *mut [i32; 0])
+// CHECK-NEXT:                     .byte_offset(
+// CHECK-NEXT:                         0 * ((([[V_0]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                     ) as *mut i32)
 // CHECK-NEXT:                 .add(0),
-// CHECK-NEXT:             *(((&raw mut (*(u.as_mut_ptr() as *mut U)).ar as *mut {{\[\[}}i32; 0]; 1]) as *mut [i32; 0])
-// CHECK-NEXT:                 .byte_offset(0 * ((([[V_0]] as usize) * core::mem::size_of::<i32>()) as isize))
-// CHECK-NEXT:                 as *mut i32)
+// CHECK-NEXT:             *(((&raw mut (*(u.as_mut_ptr() as *mut U)).ar as *mut {{\[\[}}i32; 0]; 1])
+// CHECK-NEXT:                         as *mut [i32; 0])
+// CHECK-NEXT:                     .byte_offset(
+// CHECK-NEXT:                         0 * ((([[V_0]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                     ) as *mut i32)
 // CHECK-NEXT:                 .offset((n - 1) as isize),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -323,16 +348,19 @@ int main(void) {
 // CHECK-NEXT:         let mut [[V_0]]: u64 = n as u64;
 // CHECK-NEXT:         let mut v: Vec<u64> = {
 // CHECK-NEXT:             let mut __slate_vla: Vec<u64> = Vec::with_capacity(
-// CHECK-NEXT:                 (15usize + (((([[V_0]] as usize) * core::mem::size_of::<f64>()) as isize) as usize))
-// CHECK-NEXT:                     / 8usize,
+// CHECK-NEXT:                 (15usize
+// CHECK-NEXT:                     + (((([[V_0]] as usize) * core::mem::size_of::<f64>()) as isize)
+// CHECK-NEXT:                         as usize)) / 8usize,
 // CHECK-NEXT:             );
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 __slate_vla.as_mut_ptr().write_bytes(
-// CHECK-NEXT:                     0u8,
-// CHECK-NEXT:                     (15usize
-// CHECK-NEXT:                         + (((([[V_0]] as usize) * core::mem::size_of::<f64>()) as isize) as usize))
-// CHECK-NEXT:                         / 8usize,
-// CHECK-NEXT:                 );
+// CHECK-NEXT:                 __slate_vla
+// CHECK-NEXT:                     .as_mut_ptr()
+// CHECK-NEXT:                     .write_bytes(
+// CHECK-NEXT:                         0u8,
+// CHECK-NEXT:                         (15usize
+// CHECK-NEXT:                             + (((([[V_0]] as usize) * core::mem::size_of::<f64>()) as isize)
+// CHECK-NEXT:                                 as usize)) / 8usize,
+// CHECK-NEXT:                     );
 // CHECK-NEXT:             }
 // CHECK-NEXT:             __slate_vla
 // CHECK-NEXT:         };
@@ -341,12 +369,25 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         for i in 0..n {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *((&raw mut (*(v.as_mut_ptr() as *mut __SlateRecord_vla_record_members_c_48)).values as *mut [f64; 0]) as *mut f64).offset(i as isize) = (i as f64) * 1.5f64;
+// CHECK-NEXT:                 *((&raw mut (*(v.as_mut_ptr()
+// CHECK-NEXT:                         as *mut __SlateRecord_vla_record_members_c_48)).values
+// CHECK-NEXT:                         as *mut [f64; 0]) as *mut f64)
+// CHECK-NEXT:                     .offset(i as isize) = (i as f64) * 1.5f64;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(c"iteration %d: size %zu flag %c last %.1f\n".as_ptr(), n, (15u64.wrapping_add([[V_0]].wrapping_mul(8)) / 8).wrapping_mul(8), (*(v.as_mut_ptr() as *mut __SlateRecord_vla_record_members_c_48)).flag as i32, *((&raw mut (*(v.as_mut_ptr() as *mut __SlateRecord_vla_record_members_c_48)).values as *mut [f64; 0]) as *mut f64).offset((n - 1) as isize))
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"iteration %d: size %zu flag %c last %.1f\n".as_ptr(),
+// CHECK-NEXT:                 n,
+// CHECK-NEXT:                 (15u64.wrapping_add([[V_0]].wrapping_mul(8)) / 8).wrapping_mul(8),
+// CHECK-NEXT:                 (*(v.as_mut_ptr() as *mut __SlateRecord_vla_record_members_c_48)).flag
+// CHECK-NEXT:                     as i32,
+// CHECK-NEXT:                 *((&raw mut (*(v.as_mut_ptr()
+// CHECK-NEXT:                         as *mut __SlateRecord_vla_record_members_c_48)).values
+// CHECK-NEXT:                         as *mut [f64; 0]) as *mut f64)
+// CHECK-NEXT:                     .offset((n - 1) as isize),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
@@ -355,18 +396,21 @@ int main(void) {
 // CHECK-NEXT: fn heap(n: i32) {
 // CHECK-NEXT:     let [[V_0]]: u64 = n as u64;
 // CHECK-NEXT:     let h: *mut H = (unsafe {
-// CHECK-NEXT:         malloc((15u64.wrapping_add([[V_0]].wrapping_mul(4)) / 8).wrapping_mul(8) as usize) as *mut ()
+// CHECK-NEXT:         malloc((15u64.wrapping_add([[V_0]].wrapping_mul(4)) / 8).wrapping_mul(8) as usize)
+// CHECK-NEXT:             as *mut ()
 // CHECK-NEXT:     }) as *mut H;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*h).id = 42;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *((&raw mut (*h).data as *mut [i32; 0]) as *mut i32).offset(i as isize) = i * i;
+// CHECK-NEXT:             *((&raw mut (*h).data as *mut [i32; 0]) as *mut i32).offset(i as isize) = i
+// CHECK-NEXT:                 * i;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let last: *mut i32 =
-// CHECK-NEXT:         unsafe { ((&raw mut (*h).data as *mut [i32; 0]) as *mut i32).offset((n - 1) as isize) };
+// CHECK-NEXT:     let last: *mut i32 = unsafe {
+// CHECK-NEXT:         ((&raw mut (*h).data as *mut [i32; 0]) as *mut i32).offset((n - 1) as isize)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -387,15 +431,19 @@ int main(void) {
 // CHECK-NEXT:     n += 10;
 // CHECK-NEXT:     let mut a: Vec<u8> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<u8> = Vec::with_capacity(
-// CHECK-NEXT:             (0usize + (((([[V_0]] as usize) * core::mem::size_of::<i8>()) as isize) as usize))
+// CHECK-NEXT:             (0usize
+// CHECK-NEXT:                 + (((([[V_0]] as usize) * core::mem::size_of::<i8>()) as isize) as usize))
 // CHECK-NEXT:                 / 1usize,
 // CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(
-// CHECK-NEXT:                 0u8,
-// CHECK-NEXT:                 (0usize + (((([[V_0]] as usize) * core::mem::size_of::<i8>()) as isize) as usize))
-// CHECK-NEXT:                     / 1usize,
-// CHECK-NEXT:             );
+// CHECK-NEXT:             __slate_vla
+// CHECK-NEXT:                 .as_mut_ptr()
+// CHECK-NEXT:                 .write_bytes(
+// CHECK-NEXT:                     0u8,
+// CHECK-NEXT:                     (0usize
+// CHECK-NEXT:                         + (((([[V_0]] as usize) * core::mem::size_of::<i8>()) as isize)
+// CHECK-NEXT:                             as usize)) / 1usize,
+// CHECK-NEXT:                 );
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
@@ -413,7 +461,8 @@ int main(void) {
 // CHECK-NEXT:             c"captured %d: size %zu first %c\n".as_ptr(),
 // CHECK-NEXT:             n,
 // CHECK-NEXT:             0u64.wrapping_add([[V_0]].wrapping_mul(1)),
-// CHECK-NEXT:             *((&raw mut (*(a.as_mut_ptr() as *mut C)).c as *mut [i8; 0]) as *mut i8).add(0) as i32,
+// CHECK-NEXT:             *((&raw mut (*(a.as_mut_ptr() as *mut C)).c as *mut [i8; 0]) as *mut i8)
+// CHECK-NEXT:                 .add(0) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

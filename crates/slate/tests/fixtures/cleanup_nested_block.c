@@ -27,12 +27,15 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut total: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn release(value: *mut i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         total = total + *value;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn scope() -> i32 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut value: i32 = 53;
@@ -62,11 +65,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     after * 10000 + unsafe { total }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", scope());
 // CHECK-NEXT:     println!("{}", unsafe { total });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

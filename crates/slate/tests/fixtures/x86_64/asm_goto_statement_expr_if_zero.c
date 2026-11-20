@@ -26,6 +26,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn classify_zero(mut value: i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -33,8 +34,12 @@ int main(void) {
 // CHECK-NEXT:             result = 11;
 // CHECK-NEXT:             let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "testl {0:e}, {0:e}\n\tjz {1}", in (reg) value as u32, label {
-// CHECK-NEXT:                 __slate_asm_target = true; }, options(nostack, att_syntax)
+// CHECK-NEXT:                 "testl {0:e}, {0:e}\n\tjz {1}",
+// CHECK-NEXT:                 in(reg) value as u32,
+// CHECK-NEXT:                 label {
+// CHECK-NEXT:                     __slate_asm_target = true;
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 options(nostack, att_syntax),
 // CHECK-NEXT:             );
 // CHECK-NEXT:             if !__slate_asm_target {
 // CHECK-NEXT:                 if true {
@@ -47,10 +52,12 @@ int main(void) {
 // CHECK-NEXT:         return result;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{} {}", classify_zero(0i32), classify_zero(9i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -81,6 +81,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn rawmemchr([[ARG_0:arg[0-9]+]]: *const (), [[ARG_1:arg[0-9]+]]: i32) -> *mut ();
 // CHECK-NEXT:     fn memrchr([[ARG_0]]: *const (), [[ARG_1]]: i32, [[ARG_2:arg[0-9]+]]: u64) -> *mut ();
@@ -117,20 +118,26 @@ int main(void) {
 // CHECK-NEXT:     fn envz_remove([[ARG_0]]: *mut *mut i8, [[ARG_1]]: *mut u64, [[ARG_2]]: *const i8);
 // CHECK-NEXT:     fn envz_strip([[ARG_0]]: *mut *mut i8, [[ARG_1]]: *mut u64);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: use slate_support::strchrnul;
 // CHECK-NEXT: use slate_support::strcasestr;
 // CHECK-NEXT: use slate_support::mempcpy;
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: use slate_support::free;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_string_extensions() -> i32 {
-// CHECK-NEXT:     let mut destination: __SlateAlign16<[i8; 16]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut destination: __SlateAlign16<[i8; 16]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: [i8; 16] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut repeated: [i8; 5] = [97, 98, 99, 97, 0];
 // CHECK-NEXT:     let mut obscured: [i8; 4] = [103, 110, 117, 0];
 // CHECK-NEXT:     let mut tokens: [i8; 6] = [97, 58, 58, 98, 99, 0];
@@ -176,15 +183,15 @@ int main(void) {
 // CHECK-NEXT:         }) as i64)
 // CHECK-NEXT:         + ((unsafe {
 // CHECK-NEXT:             (strchrnul(c"abc".as_ptr() as *const core::ffi::c_char, 122i32 as i32)
-// CHECK-NEXT:                 as *mut i8)
+// CHECK-NEXT:                     as *mut i8)
 // CHECK-NEXT:                 .offset_from(c"abc".as_ptr() as *mut i8)
 // CHECK-NEXT:         }) as i64)
 // CHECK-NEXT:         + ((!unsafe {
-// CHECK-NEXT:             strcasestr(
-// CHECK-NEXT:                 c"GNU Library".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"library".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as *mut i8
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 strcasestr(
+// CHECK-NEXT:                     c"GNU Library".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:                     c"library".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:                 ) as *mut i8
+// CHECK-NEXT:             }
 // CHECK-NEXT:             .is_null() as i32) as i64)
 // CHECK-NEXT:         + ((((unsafe { strverscmp(c"release-2".as_ptr(), c"release-10".as_ptr()) }) < 0)
 // CHECK-NEXT:             as i32) as i64)
@@ -204,6 +211,7 @@ int main(void) {
 // CHECK-NEXT:         + ((!unsafe { strerrordesc_np(slate_support::EINVAL as i32) }.is_null() as i32)
 // CHECK-NEXT:             as i64)) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_argz_extensions() -> i32 {
 // CHECK-NEXT:     let mut argz: *mut i8 = core::ptr::null_mut::<i8>();
 // CHECK-NEXT:     let mut length: u64 = 0;
@@ -265,6 +273,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { free((argz as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_envz_extensions() -> i32 {
 // CHECK-NEXT:     let mut envz: *mut i8 = core::ptr::null_mut::<i8>();
 // CHECK-NEXT:     let mut length: u64 = 0;
@@ -318,12 +327,17 @@ int main(void) {
 // CHECK-NEXT:     unsafe { free((envz as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", gnu_string_extensions(), gnu_argz_extensions(), gnu_envz_extensions()
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         gnu_string_extensions(),
+// CHECK-NEXT:         gnu_argz_extensions(),
+// CHECK-NEXT:         gnu_envz_extensions()
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

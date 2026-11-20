@@ -40,54 +40,73 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn to_bool(x: i32) -> bool {
 // CHECK-NEXT:     x != 0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn to_bool_u8(x: u8) -> bool {
 // CHECK-NEXT:     x != 0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn to_bool_ll(x: i64) -> bool {
 // CHECK-NEXT:     x != 0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn from_bool(b: bool) -> i32 {
 // CHECK-NEXT:     (b as i32) + 1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn trunc_sc(x: i32) -> i8 {
 // CHECK-NEXT:     x as i8
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn trunc_uc(x: i32) -> u8 {
 // CHECK-NEXT:     x as u8
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn trunc_s(x: i64) -> i16 {
 // CHECK-NEXT:     x as i16
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn widen_u(c: i8) -> u32 {
 // CHECK-NEXT:     c as u32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn widen_ll(s: u16) -> i64 {
 // CHECK-NEXT:     s as i64
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn widen_ull(x: i32) -> u64 {
 // CHECK-NEXT:     x as u64
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn reinterp(x: u32) -> i32 {
 // CHECK-NEXT:     x as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn reinterp_u(x: i32) -> u32 {
 // CHECK-NEXT:     x as u32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn promote(a: u8, b: u8) -> i32 {
 // CHECK-NEXT:     (a as i32) - (b as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn promote_s(a: i16, b: i16) -> i32 {
 // CHECK-NEXT:     (a as i32) * (b as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", to_bool(256i32) as i32, to_bool(0i32) as i32, to_bool(- 7i32) as i32
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         to_bool(256i32) as i32,
+// CHECK-NEXT:         to_bool(0i32) as i32,
+// CHECK-NEXT:         to_bool(-7i32) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {}", to_bool_u8(0u8) as i32, to_bool_u8(200u8) as i32);
 // CHECK-NEXT:     println!("{} {}", to_bool_ll(1099511627776i64) as i32, to_bool_ll(0i64) as i32);
@@ -97,7 +116,9 @@ int main(void) {
 // CHECK-NEXT:     let bi: i32 = b as i32;
 // CHECK-NEXT:     println!("{}", bi);
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", trunc_sc(200i32) as i32, trunc_uc(- 1i32) as i32,
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         trunc_sc(200i32) as i32,
+// CHECK-NEXT:         trunc_uc(-1i32) as i32,
 // CHECK-NEXT:         trunc_s(305419896i64) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
@@ -126,6 +147,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {}", c as i32, (bi == 0) as i32);
 // CHECK-NEXT:     (to_bool(3i32) as i32) + (to_bool(0i32) as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

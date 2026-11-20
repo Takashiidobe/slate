@@ -68,10 +68,12 @@ int main(void) {
 // CHECK-NEXT: #![feature(f16)]
 // CHECK-NEXT: #![feature(f128)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_libgcc {
 // CHECK-NEXT:     #[link(name = "gcc", kind = "static")]
 // CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -160,36 +162,43 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // CHECK-NEXT:     fn __slate_printf__ri32_pi8_f80(_0: *const i8, _1: LongDouble) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct LongDouble([u8; 10]);
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Add for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_add(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Sub for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_sub(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Mul for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_mul(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Div for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_div(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::AddAssign for LongDouble {
 // CHECK-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -197,6 +206,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::SubAssign for LongDouble {
 // CHECK-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -204,6 +214,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::MulAssign for LongDouble {
 // CHECK-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -211,6 +222,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::DivAssign for LongDouble {
 // CHECK-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -218,41 +230,38 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Neg for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn neg(self) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_neg(self)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialEq for LongDouble {
 // CHECK-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
 // CHECK-NEXT:         __slate_f80_eq(*self, *__other)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn ld_to() {
-// CHECK-NEXT:     let mut a: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(1 as i128);
+// CHECK-NEXT:     let mut a: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:         1 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = a;
 // CHECK-NEXT:     a = [[V_0]].shl_bits(150 as usize);
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = a;
@@ -261,12 +270,9 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), l) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut b: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(1 as i128);
+// CHECK-NEXT:     let mut b: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:         1 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = b;
 // CHECK-NEXT:     b = [[V_2]].shl_bits(100 as usize);
 // CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = b;
@@ -277,12 +283,9 @@ int main(void) {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(b.to_f80_bytes()))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut c: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(9223372036854775807 as i128);
+// CHECK-NEXT:     let mut c: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:         9223372036854775807 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     c = c
 // CHECK-NEXT:         .wrapping_mul(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(2 as i128))
 // CHECK-NEXT:         .wrapping_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128));
@@ -304,12 +307,9 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut tie: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(1 as i128);
+// CHECK-NEXT:     let mut tie: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:         1 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut [[V_6:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = tie;
 // CHECK-NEXT:     tie = [[V_6]].shl_bits(100 as usize);
 // CHECK-NEXT:     let mut [[V_7:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = tie;
@@ -334,12 +334,9 @@ int main(void) {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(tie.to_f80_bytes()))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut u: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_bint(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(3 as i128));
+// CHECK-NEXT:     let mut u: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<200, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(3 as i128),
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut [[V_9:__v[0-9]+]]: bitint::BUint<200, 4, 32, bitint::A8> = u;
 // CHECK-NEXT:     u = [[V_9]].shl_bits(190 as usize);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -347,18 +344,16 @@ int main(void) {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(u.to_f80_bytes()))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut z: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         135,
-// CHECK-NEXT:         3,
-// CHECK-NEXT:         24,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(0 as i128);
+// CHECK-NEXT:     let mut z: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<135, 3, 24, bitint::A8>>::from_i128(
+// CHECK-NEXT:         0 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(z.to_f80_bytes()))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn ld_from() {
 // CHECK-NEXT:     let values: [LongDouble; 6] = [
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]),
@@ -369,24 +364,15 @@ int main(void) {
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 254, 63]),
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     for i in 0i32..6i32 {
-// CHECK-NEXT:         let mut s: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:             200,
-// CHECK-NEXT:             4,
-// CHECK-NEXT:             32,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_f80_bytes(values[i as usize].0);
-// CHECK-NEXT:         let mut u: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<
-// CHECK-NEXT:             200,
-// CHECK-NEXT:             4,
-// CHECK-NEXT:             32,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_f80_bytes(
+// CHECK-NEXT:         let mut s: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:             values[i as usize].0,
+// CHECK-NEXT:         );
+// CHECK-NEXT:         let mut u: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<200, 4, 32, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:             if values[i as usize] < __slate_f80_from_i32(0i32) {
 // CHECK-NEXT:                 -values[i as usize]
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 values[i as usize]
-// CHECK-NEXT:             }
-// CHECK-NEXT:                 .0,
+// CHECK-NEXT:             }.0,
 // CHECK-NEXT:         );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -394,66 +380,65 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{}", s.wrapping_rem(< bitint::BInt < 200, 4, 32, bitint::A8
-// CHECK-NEXT:             >>::from_i128(1000 as i128)).to_i128() as i32
+// CHECK-NEXT:             "{}",
+// CHECK-NEXT:             s
+// CHECK-NEXT:                 .wrapping_rem(
+// CHECK-NEXT:                     <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1000 as i128),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .to_i128() as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn half_quad() {
-// CHECK-NEXT:     let mut h: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         135,
-// CHECK-NEXT:         3,
-// CHECK-NEXT:         24,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(65519 as i128);
-// CHECK-NEXT:     println!("{}", (f16::from_bits(h.to_ieee_bits(10, 5, false) as u16) as f32) as i32);
-// CHECK-NEXT:     let mut h2: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         135,
-// CHECK-NEXT:         3,
-// CHECK-NEXT:         24,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(65520 as i128);
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", (f16::from_bits(h2.to_ieee_bits(10, 5, false) as u16) > (65504i32 as f16))
-// CHECK-NEXT:         as i32
+// CHECK-NEXT:     let mut h: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<135, 3, 24, bitint::A8>>::from_i128(
+// CHECK-NEXT:         65519 as i128,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut m: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(2049 as i128);
+// CHECK-NEXT:     println!("{}", (f16::from_bits(h.to_ieee_bits(10, 5, false) as u16) as f32) as i32);
+// CHECK-NEXT:     let mut h2: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<135, 3, 24, bitint::A8>>::from_i128(
+// CHECK-NEXT:         65520 as i128,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         (f16::from_bits(h2.to_ieee_bits(10, 5, false) as u16) > (65504i32 as f16)) as i32
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut m: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:         2049 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", (f16::from_bits(m.to_ieee_bits(10, 5, false) as u16) as f32) as i32);
 // CHECK-NEXT:     m = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128)
 // CHECK-NEXT:         .shl_bits(120 as usize)
 // CHECK-NEXT:         .wrapping_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128));
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", (__slate_f80_from_f128(f128::from_bits(m.to_ieee_bits(112, 15, false))) ==
-// CHECK-NEXT:         LongDouble(m.to_f80_bytes())) as i32
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         (__slate_f80_from_f128(f128::from_bits(m.to_ieee_bits(112, 15, false)))
+// CHECK-NEXT:             == LongDouble(m.to_f80_bytes())) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let q: f128 = f128::from_bits(m.to_ieee_bits(112, 15, false));
-// CHECK-NEXT:     let mut back: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_ieee_bits(q.to_bits() as u128, 112, 15, false);
+// CHECK-NEXT:     let mut back: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_ieee_bits(
+// CHECK-NEXT:         q.to_bits() as u128,
+// CHECK-NEXT:         112,
+// CHECK-NEXT:         15,
+// CHECK-NEXT:         false,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", (back.compare(m) == 0) as i32);
 // CHECK-NEXT:     let hv: f16 = -300.75f64 as f16;
-// CHECK-NEXT:     let mut hb: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:         135,
-// CHECK-NEXT:         3,
-// CHECK-NEXT:         24,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_ieee_bits(hv.to_bits() as u128, 10, 5, false);
+// CHECK-NEXT:     let mut hb: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<135, 3, 24, bitint::A8>>::from_ieee_bits(
+// CHECK-NEXT:         hv.to_bits() as u128,
+// CHECK-NEXT:         10,
+// CHECK-NEXT:         5,
+// CHECK-NEXT:         false,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", hb.to_i128() as i32);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     ld_to();
 // CHECK-NEXT:     ld_from();
 // CHECK-NEXT:     half_quad();
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

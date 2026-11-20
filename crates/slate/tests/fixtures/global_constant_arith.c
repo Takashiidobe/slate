@@ -25,30 +25,45 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut negative: i32 = -1;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut wide_neg: i64 = -9000000000;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut wrapped: u32 = 1u32.wrapping_neg();
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut mixed: i32 = -15;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut bits: i32 = 236;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut shifted: u32 = 1;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut scaled: f64 = -2.5f64 * 4.0f64 + 1.0f64;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut halved: f32 = -(1.0f32 / 2.0f32);
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut sign: i8 = -97;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut table: [i32; 3] = [-1, -6, -3];
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_global_constant_arith_c_13 {
 // CHECK-NEXT:     lo: i32,
 // CHECK-NEXT:     hi: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut range: __SlateRecord_global_constant_arith_c_13 = __SlateRecord_global_constant_arith_c_13 {
 // CHECK-NEXT:     lo: -5i32,
 // CHECK-NEXT:     hi: 5i32,
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut exported: i32 = -42;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -69,8 +84,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {}", unsafe { table[0] }, unsafe { table[1] }, unsafe { table[2]
-// CHECK-NEXT:         }, unsafe { range.lo }, unsafe { range.hi }, unsafe { exported }
+// CHECK-NEXT:         "{} {} {} {} {} {}",
+// CHECK-NEXT:         unsafe { table[0] },
+// CHECK-NEXT:         unsafe { table[1] },
+// CHECK-NEXT:         unsafe { table[2] },
+// CHECK-NEXT:         unsafe { range.lo },
+// CHECK-NEXT:         unsafe { range.hi },
+// CHECK-NEXT:         unsafe { exported }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         negative = negative - 1;
@@ -78,6 +98,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", unsafe { negative });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

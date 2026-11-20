@@ -28,31 +28,41 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN aarch64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut wide: i64 = 7;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut narrow: i32 = 9;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut pair: [i64; 2] = [3, 4];
+// CHECK-EMPTY:
 // CHECK-NEXT: fn store_long(mut target: *mut i64, mut value: i64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "str {1:x}, [{0:x}]", in (reg) target, in (reg) value as u64,
-// CHECK-NEXT:             options(nostack, preserves_flags)
+// CHECK-NEXT:             "str {1:x}, [{0:x}]",
+// CHECK-NEXT:             in(reg) target,
+// CHECK-NEXT:             in(reg) value as u64,
+// CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "str xzr, [{0:x}]", in (reg) core::ptr::addr_of_mut!(wide), options(nostack,
-// CHECK-NEXT:             preserves_flags)
+// CHECK-NEXT:             "str xzr, [{0:x}]",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(wide),
+// CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "str wzr, [{0:x}]", in (reg) core::ptr::addr_of_mut!(narrow),
-// CHECK-NEXT:             options(nostack, preserves_flags)
+// CHECK-NEXT:             "str wzr, [{0:x}]",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(narrow),
+// CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -60,8 +70,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "stp xzr, {1:x}, [{0:x}]", in (reg) core::ptr::addr_of_mut!(pair), in (reg)
-// CHECK-NEXT:             (11 as i64) as u64, options(nostack, preserves_flags)
+// CHECK-NEXT:             "stp xzr, {1:x}, [{0:x}]",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(pair),
+// CHECK-NEXT:             in(reg) (11 as i64) as u64,
+// CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -71,8 +83,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "add {0:x}, {1:x}, xzr", lateout(reg) [[T_0]], in (reg) (5 as i64) as u64,
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags)
+// CHECK-NEXT:             "add {0:x}, {1:x}, xzr",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) (5 as i64) as u64,
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         sum = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
@@ -83,8 +97,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov {0:w}, wzr", lateout(reg) [[T_1]], options(pure, nomem, nostack,
-// CHECK-NEXT:             preserves_flags)
+// CHECK-NEXT:             "mov {0:w}, wzr",
+// CHECK-NEXT:             lateout(reg) [[T_1]],
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         moved = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
@@ -95,6 +110,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

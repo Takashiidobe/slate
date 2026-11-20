@@ -36,15 +36,18 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct block {
 // CHECK-NEXT:     a: [i32; 64],
 // CHECK-NEXT:     tag: [i8; 4],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn make(seed: i32) -> block {
 // CHECK-NEXT:     let mut b: block = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: block = unsafe { core::mem::zeroed() };
@@ -56,6 +59,7 @@ int main(void) {
 // CHECK-NEXT:     b.tag[0] = (97 + seed % 26) as i8;
 // CHECK-NEXT:     return b;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn summed(count: i32, mut __va_args: ...) -> block {
 // CHECK-NEXT:     let mut b: block = {
 // CHECK-NEXT:         let mut [[T_0]]: block = unsafe { core::mem::zeroed() };
@@ -63,16 +67,16 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     ap = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         b.a[i as usize] = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     return b;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: block = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: block = unsafe { core::mem::zeroed() };
@@ -84,11 +88,10 @@ int main(void) {
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe {
 // CHECK-NEXT:             *((*{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = make(i);
-// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:             })
-// CHECK-NEXT:                 .a
-// CHECK-NEXT:                 .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:                         [[SLATE_COMPOUND_0]] = make(i);
+// CHECK-NEXT:                         core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                     }).a
+// CHECK-NEXT:                     .as_mut_ptr() as *mut i32)
 // CHECK-NEXT:                 .offset((i + 1) as isize)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         total += [[V_0]];
@@ -98,52 +101,48 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %c\n".as_ptr(),
 // CHECK-NEXT:             *((*{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_1]] = make(3i32);
-// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
-// CHECK-NEXT:             })
-// CHECK-NEXT:                 .a
-// CHECK-NEXT:                 .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:                         [[SLATE_COMPOUND_1]] = make(3i32);
+// CHECK-NEXT:                         core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:                     }).a
+// CHECK-NEXT:                     .as_mut_ptr() as *mut i32)
 // CHECK-NEXT:                 .add(5),
 // CHECK-NEXT:             total,
 // CHECK-NEXT:             *((*{
-// CHECK-NEXT:                 [[SLATE_COMPOUND_2]] = make(4i32);
-// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
-// CHECK-NEXT:             })
-// CHECK-NEXT:                 .tag
-// CHECK-NEXT:                 .as_mut_ptr() as *mut i8)
+// CHECK-NEXT:                         [[SLATE_COMPOUND_2]] = make(4i32);
+// CHECK-NEXT:                         core::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
+// CHECK-NEXT:                     }).tag
+// CHECK-NEXT:                     .as_mut_ptr() as *mut i8)
 // CHECK-NEXT:                 .add(0) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let __slate_printf_arg0 = unsafe {
 // CHECK-NEXT:         *((*{
-// CHECK-NEXT:             [[SLATE_COMPOUND_3]] = summed(3i32, 7i32, 8i32, 9i32);
-// CHECK-NEXT:             core::ptr::addr_of_mut!([[SLATE_COMPOUND_3]])
-// CHECK-NEXT:         })
-// CHECK-NEXT:             .a
-// CHECK-NEXT:             .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:                     [[SLATE_COMPOUND_3]] = summed(3i32, 7i32, 8i32, 9i32);
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_3]])
+// CHECK-NEXT:                 }).a
+// CHECK-NEXT:                 .as_mut_ptr() as *mut i32)
 // CHECK-NEXT:             .add(2)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let __slate_printf_arg1 = unsafe {
 // CHECK-NEXT:         *((*{
-// CHECK-NEXT:             [[SLATE_COMPOUND_5]] = make(
-// CHECK-NEXT:                 *((*{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_4]] = make(2i32);
-// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_4]])
-// CHECK-NEXT:                 })
-// CHECK-NEXT:                     .a
-// CHECK-NEXT:                     .as_mut_ptr() as *mut i32)
-// CHECK-NEXT:                     .add(3),
-// CHECK-NEXT:             );
-// CHECK-NEXT:             core::ptr::addr_of_mut!([[SLATE_COMPOUND_5]])
-// CHECK-NEXT:         })
-// CHECK-NEXT:             .a
-// CHECK-NEXT:             .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:                     [[SLATE_COMPOUND_5]] = make(
+// CHECK-NEXT:                         *((*{
+// CHECK-NEXT:                                     [[SLATE_COMPOUND_4]] = make(2i32);
+// CHECK-NEXT:                                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_4]])
+// CHECK-NEXT:                                 }).a
+// CHECK-NEXT:                                 .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:                             .add(3),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_5]])
+// CHECK-NEXT:                 }).a
+// CHECK-NEXT:                 .as_mut_ptr() as *mut i32)
 // CHECK-NEXT:             .add(2)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -49,6 +49,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn classify(x: i32) -> i32 {
 // CHECK-NEXT:     match x {
 // CHECK-NEXT:         1 | 2 => {
@@ -64,6 +65,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     40
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn stacked(x: u64) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 0;
 // CHECK-NEXT:     match x {
@@ -83,17 +85,23 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in -8..9i32 {
 // CHECK-NEXT:         print!("{} ", classify(i));
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "\n{} {} {} {} {}", stacked(0u64), stacked(18446744073709551615u64),
-// CHECK-NEXT:         stacked(9223372036854775808u64), stacked(3u64), stacked(4u64)
+// CHECK-NEXT:         "\n{} {} {} {} {}",
+// CHECK-NEXT:         stacked(0u64),
+// CHECK-NEXT:         stacked(18446744073709551615u64),
+// CHECK-NEXT:         stacked(9223372036854775808u64),
+// CHECK-NEXT:         stacked(3u64),
+// CHECK-NEXT:         stacked(4u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

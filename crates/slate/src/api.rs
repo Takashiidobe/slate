@@ -17,8 +17,6 @@ pub enum Error {
         #[source]
         source: std::io::Error,
     },
-    #[error("format generated Rust: {message}")]
-    Format { message: String },
     #[error("{0}")]
     Merge(String),
 }
@@ -179,12 +177,12 @@ fn merge_targets(path: &Path, extra_args: &[String], targets: &[String]) -> Resu
             .flat_map(|macros| macros.items),
     );
     insert_after_crate_attrs(&mut program, prologue);
-    backend::pretty_rust(&program.emit()).map_err(|message| Error::Format { message })
+    Ok(program.emit())
 }
 
 fn format_program(mut program: rust_ast::Program) -> Result<String, Error> {
     backend::assign_template_names(std::iter::once(&mut program));
-    backend::pretty_rust(&program.emit()).map_err(|message| Error::Format { message })
+    Ok(program.emit())
 }
 
 fn dedup(targets: &[String]) -> Vec<String> {

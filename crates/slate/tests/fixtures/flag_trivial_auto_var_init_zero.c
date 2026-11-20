@@ -75,7 +75,9 @@ int main(void) {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(s) as *mut _) as *mut u8;
 // CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 24usize);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut many: __SlateAlign16<[padded; 4]> = __SlateAlign16(unsafe { core::mem::zeroed() });
+// CHECK-NEXT:     let mut many: __SlateAlign16<[padded; 4]> = __SlateAlign16(
+// CHECK-NEXT:         unsafe { core::mem::zeroed() },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(many.0) as *mut _) as *mut u8;
 // CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 96usize);

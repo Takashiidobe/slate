@@ -45,148 +45,170 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct point {
 // CHECK-NEXT:     x: i32,
 // CHECK-NEXT:     y: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct row {
 // CHECK-NEXT:     tag: i32,
 // CHECK-NEXT:     pts: [point; 3],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
-// CHECK-NEXT: static mut flat: __SlateAlign16<[i32; 8]> = __SlateAlign16({
-// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [i32; 8] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let [[T_1:__t[0-9]+]] = 7i32;
-// CHECK-NEXT:     let mut [[T_2:__t[0-9]+]]: usize = 1;
-// CHECK-NEXT:     while [[T_2]] <= 3 {
-// CHECK-NEXT:         [[T_0]][[[T_2]]] = [[T_1]];
-// CHECK-NEXT:         [[T_2]] += 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     [[T_0]][5] = 9i32;
-// CHECK-NEXT:     let [[T_3:__t[0-9]+]] = -1i32;
-// CHECK-NEXT:     let mut [[T_4:__t[0-9]+]]: usize = 6;
-// CHECK-NEXT:     while [[T_4]] <= 7 {
-// CHECK-NEXT:         [[T_0]][[[T_4]]] = [[T_3]];
-// CHECK-NEXT:         [[T_4]] += 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     [[T_0]]
-// CHECK-NEXT: });
-// CHECK-NEXT: static mut grid: __SlateAlign16<{{\[\[}}i32; 4]; 3]> = __SlateAlign16([
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut flat: __SlateAlign16<[i32; 8]> = __SlateAlign16(
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_0]]: [i32; 4] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[T_1]] = 4i32;
-// CHECK-NEXT:         let mut [[T_2]]: usize = 1;
-// CHECK-NEXT:         while [[T_2]] <= 2 {
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 8] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = 7i32;
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: usize = 1;
+// CHECK-NEXT:         while [[T_2]] <= 3 {
 // CHECK-NEXT:             [[T_0]][[[T_2]]] = [[T_1]];
 // CHECK-NEXT:             [[T_2]] += 1;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         [[T_0]][5] = 9i32;
+// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = -1i32;
+// CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: usize = 6;
+// CHECK-NEXT:         while [[T_4]] <= 7 {
+// CHECK-NEXT:             [[T_0]][[[T_4]]] = [[T_3]];
+// CHECK-NEXT:             [[T_4]] += 1;
+// CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_3]]: [i32; 4] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_3]][1] = 4i32;
-// CHECK-NEXT:         [[T_3]][2] = 5i32;
-// CHECK-NEXT:         [[T_3]]
-// CHECK-NEXT:     },
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_4]]: [i32; 4] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[T_5:__t[0-9]+]] = 4i32;
-// CHECK-NEXT:         let mut [[T_6:__t[0-9]+]]: usize = 1;
-// CHECK-NEXT:         while [[T_6]] <= 2 {
-// CHECK-NEXT:             [[T_4]][[[T_6]]] = [[T_5]];
-// CHECK-NEXT:             [[T_6]] += 1;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         [[T_4]]
-// CHECK-NEXT:     },
-// CHECK-NEXT: ]);
-// CHECK-NEXT: static mut rows: __SlateAlign16<[row; 3]> = __SlateAlign16({
-// CHECK-NEXT:     let mut [[T_0]]: [row; 3] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let [[T_1]] = {
-// CHECK-NEXT:         let mut [[T_3]]: row = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_3]].pts = {
-// CHECK-NEXT:             let mut [[T_4]]: [point; 3] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             let [[T_5]] = point { x: 1i32, y: 2i32 };
-// CHECK-NEXT:             let mut [[T_6]]: usize = 0;
-// CHECK-NEXT:             while [[T_6]] <= 1 {
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut grid: __SlateAlign16<{{\[\[}}i32; 4]; 3]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0]]: [i32; 4] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             let [[T_1]] = 4i32;
+// CHECK-NEXT:             let mut [[T_2]]: usize = 1;
+// CHECK-NEXT:             while [[T_2]] <= 2 {
+// CHECK-NEXT:                 [[T_0]][[[T_2]]] = [[T_1]];
+// CHECK-NEXT:                 [[T_2]] += 1;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_3]]: [i32; 4] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_3]][1] = 4i32;
+// CHECK-NEXT:             [[T_3]][2] = 5i32;
+// CHECK-NEXT:             [[T_3]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_4]]: [i32; 4] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             let [[T_5:__t[0-9]+]] = 4i32;
+// CHECK-NEXT:             let mut [[T_6:__t[0-9]+]]: usize = 1;
+// CHECK-NEXT:             while [[T_6]] <= 2 {
 // CHECK-NEXT:                 [[T_4]][[[T_6]]] = [[T_5]];
 // CHECK-NEXT:                 [[T_6]] += 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             [[T_4]]
-// CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_3]]
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let mut [[T_2]]: usize = 0;
-// CHECK-NEXT:     while [[T_2]] <= 1 {
-// CHECK-NEXT:         [[T_0]][[[T_2]]] = [[T_1]];
-// CHECK-NEXT:         [[T_2]] += 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     [[T_0]][2] = row {
-// CHECK-NEXT:         tag: 8i32,
-// CHECK-NEXT:         pts: {
-// CHECK-NEXT:             let mut [[T_7:__t[0-9]+]]: [point; 3] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             let [[T_8:__t[0-9]+]] = point { x: 1i32, y: 2i32 };
-// CHECK-NEXT:             let mut [[T_9:__t[0-9]+]]: usize = 0;
-// CHECK-NEXT:             while [[T_9]] <= 1 {
-// CHECK-NEXT:                 [[T_7]][[[T_9]]] = [[T_8]];
-// CHECK-NEXT:                 [[T_9]] += 1;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             [[T_7]]
 // CHECK-NEXT:         },
-// CHECK-NEXT:     };
-// CHECK-NEXT:     [[T_0]]
-// CHECK-NEXT: });
-// CHECK-NEXT: static mut scalar: i32 = {
-// CHECK-NEXT:     let mut [[T_0]]: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]]
-// CHECK-NEXT: };
-// CHECK-NEXT: static mut real: f64 = {
-// CHECK-NEXT:     let mut [[T_0]]: f64 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]]
-// CHECK-NEXT: };
-// CHECK-NEXT: static mut pointer: *mut () = {
-// CHECK-NEXT:     let mut [[T_0]]: *mut () = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]]
-// CHECK-NEXT: };
-// CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: f32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let seed: i32 = 3;
-// CHECK-NEXT:     let local: __SlateAlign16<[i32; 6]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0]]: [i32; 6] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[T_1]] = seed * 2;
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut rows: __SlateAlign16<[row; 3]> = __SlateAlign16(
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut [[T_0]]: [row; 3] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         let [[T_1]] = {
+// CHECK-NEXT:             let mut [[T_3]]: row = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_3]].pts = {
+// CHECK-NEXT:                 let mut [[T_4]]: [point; 3] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:                 let [[T_5]] = point { x: 1i32, y: 2i32 };
+// CHECK-NEXT:                 let mut [[T_6]]: usize = 0;
+// CHECK-NEXT:                 while [[T_6]] <= 1 {
+// CHECK-NEXT:                     [[T_4]][[[T_6]]] = [[T_5]];
+// CHECK-NEXT:                     [[T_6]] += 1;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 [[T_4]]
+// CHECK-NEXT:             };
+// CHECK-NEXT:             [[T_3]]
+// CHECK-NEXT:         };
 // CHECK-NEXT:         let mut [[T_2]]: usize = 0;
 // CHECK-NEXT:         while [[T_2]] <= 1 {
 // CHECK-NEXT:             [[T_0]][[[T_2]]] = [[T_1]];
 // CHECK-NEXT:             [[T_2]] += 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         [[T_0]][2] = seed;
-// CHECK-NEXT:         let [[T_3]] = seed * 2;
-// CHECK-NEXT:         let mut [[T_4]]: usize = 3;
-// CHECK-NEXT:         while [[T_4]] <= 4 {
-// CHECK-NEXT:             [[T_0]][[[T_4]]] = [[T_3]];
-// CHECK-NEXT:             [[T_4]] += 1;
-// CHECK-NEXT:         }
+// CHECK-NEXT:         [[T_0]][2] = row {
+// CHECK-NEXT:             tag: 8i32,
+// CHECK-NEXT:             pts: {
+// CHECK-NEXT:                 let mut [[T_7:__t[0-9]+]]: [point; 3] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:                 let [[T_8:__t[0-9]+]] = point { x: 1i32, y: 2i32 };
+// CHECK-NEXT:                 let mut [[T_9:__t[0-9]+]]: usize = 0;
+// CHECK-NEXT:                 while [[T_9]] <= 1 {
+// CHECK-NEXT:                     [[T_7]][[[T_9]]] = [[T_8]];
+// CHECK-NEXT:                     [[T_9]] += 1;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 [[T_7]]
+// CHECK-NEXT:             },
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let many: __SlateAlign16<[point; 4]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_5]]: [point; 4] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[T_6]] = point { x: seed, y: -seed };
-// CHECK-NEXT:         let mut [[T_7]]: usize = 1;
-// CHECK-NEXT:         while [[T_7]] <= 3 {
-// CHECK-NEXT:             [[T_5]][[[T_7]]] = [[T_6]];
-// CHECK-NEXT:             [[T_7]] += 1;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         [[T_5]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut scalar: i32 = {
+// CHECK-NEXT:     let mut [[T_0]]: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     [[T_0]]
+// CHECK-NEXT: };
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut real: f64 = {
+// CHECK-NEXT:     let mut [[T_0]]: f64 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     [[T_0]]
+// CHECK-NEXT: };
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut pointer: *mut () = {
+// CHECK-NEXT:     let mut [[T_0]]: *mut () = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     [[T_0]]
+// CHECK-NEXT: };
+// CHECK-EMPTY:
+// CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: f32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let seed: i32 = 3;
+// CHECK-NEXT:     let local: __SlateAlign16<[i32; 6]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0]]: [i32; 6] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             let [[T_1]] = seed * 2;
+// CHECK-NEXT:             let mut [[T_2]]: usize = 0;
+// CHECK-NEXT:             while [[T_2]] <= 1 {
+// CHECK-NEXT:                 [[T_0]][[[T_2]]] = [[T_1]];
+// CHECK-NEXT:                 [[T_2]] += 1;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             [[T_0]][2] = seed;
+// CHECK-NEXT:             let [[T_3]] = seed * 2;
+// CHECK-NEXT:             let mut [[T_4]]: usize = 3;
+// CHECK-NEXT:             while [[T_4]] <= 4 {
+// CHECK-NEXT:                 [[T_0]][[[T_4]]] = [[T_3]];
+// CHECK-NEXT:                 [[T_4]] += 1;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let many: __SlateAlign16<[point; 4]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_5]]: [point; 4] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             let [[T_6]] = point { x: seed, y: -seed };
+// CHECK-NEXT:             let mut [[T_7]]: usize = 1;
+// CHECK-NEXT:             while [[T_7]] <= 3 {
+// CHECK-NEXT:                 [[T_5]][[[T_7]]] = [[T_6]];
+// CHECK-NEXT:                 [[T_7]] += 1;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             [[T_5]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let empty: i32 = {
 // CHECK-NEXT:         let mut [[T_8]]: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_8]]
@@ -200,9 +222,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         for j in 0i32..4i32 {
-// CHECK-NEXT:             println!(
-// CHECK-NEXT:                 "grid[{}][{}]={}", i, j, unsafe { grid.0[i as usize] [j as usize] }
-// CHECK-NEXT:             );
+// CHECK-NEXT:             println!("grid[{}][{}]={}", i, j, unsafe { grid.0[i as usize][j as usize] });
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..3i32 {
@@ -210,8 +230,9 @@ int main(void) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         for j in 0i32..3i32 {
 // CHECK-NEXT:             print!(
-// CHECK-NEXT:                 " ({},{})", unsafe { rows.0[i as usize].pts[j as usize].x }, unsafe {
-// CHECK-NEXT:                 rows.0[i as usize].pts[j as usize].y }
+// CHECK-NEXT:                 " ({},{})",
+// CHECK-NEXT:                 unsafe { rows.0[i as usize].pts[j as usize].x },
+// CHECK-NEXT:                 unsafe { rows.0[i as usize].pts[j as usize].y }
 // CHECK-NEXT:             );
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         }
@@ -251,6 +272,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

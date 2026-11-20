@@ -118,10 +118,12 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(f128)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_libgcc {
 // CHECK-NEXT:     #[link(name = "gcc", kind = "static")]
 // CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn cacosl([[ARG_0:arg[0-9]+]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
 // CHECK-NEXT:     fn casinl([[ARG_0]]: num_complex::Complex<f128>) -> num_complex::Complex<f128>;
@@ -150,9 +152,11 @@ int main(void) {
 // CHECK-NEXT:     fn creall([[ARG_0]]: num_complex::Complex<f128>) -> f128;
 // CHECK-NEXT:     fn abort();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn print_lc(name: *const u8, z: num_complex::Complex<f128>) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -160,6 +164,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn mix_complex(
 // CHECK-NEXT:     a: num_complex::Complex<f128>,
 // CHECK-NEXT:     b: num_complex::Complex<f128>,
@@ -167,6 +172,7 @@ int main(void) {
 // CHECK-NEXT:     let c: num_complex::Complex<f128> = (a + b) / 2f128;
 // CHECK-NEXT:     c * 3f128
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn check_arithmetic() {
 // CHECK-NEXT:     let mut a: num_complex::Complex<f128> = num_complex::Complex {
 // CHECK-NEXT:         re: 1f128,
@@ -211,6 +217,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn check_casts() {
 // CHECK-NEXT:     let ld: f128 = 5f128;
 // CHECK-NEXT:     let z: num_complex::Complex<f128> = num_complex::Complex {
@@ -284,6 +291,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     print_lc(c"from_int".as_ptr(), fromi);
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn check_stdlib_functions() {
 // CHECK-NEXT:     let z: num_complex::Complex<f128> = num_complex::Complex {
 // CHECK-NEXT:         re: 3f128,
@@ -301,19 +309,23 @@ int main(void) {
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"cexp".as_ptr(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             cexpl(num_complex::Complex {
-// CHECK-NEXT:                 re: 0f128,
-// CHECK-NEXT:                 im: 0f128,
-// CHECK-NEXT:             })
+// CHECK-NEXT:             cexpl(
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: 0f128,
+// CHECK-NEXT:                     im: 0f128,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"clog".as_ptr(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             clogl(num_complex::Complex {
-// CHECK-NEXT:                 re: 1f128,
-// CHECK-NEXT:                 im: 0f128,
-// CHECK-NEXT:             })
+// CHECK-NEXT:             clogl(
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: 1f128,
+// CHECK-NEXT:                     im: 0f128,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     print_lc(
@@ -334,109 +346,133 @@ int main(void) {
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"csin".as_ptr(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             csinl(num_complex::Complex {
-// CHECK-NEXT:                 re: 0f128,
-// CHECK-NEXT:                 im: 0f128,
-// CHECK-NEXT:             })
+// CHECK-NEXT:             csinl(
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: 0f128,
+// CHECK-NEXT:                     im: 0f128,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"ccos".as_ptr(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             ccosl(num_complex::Complex {
-// CHECK-NEXT:                 re: 0f128,
-// CHECK-NEXT:                 im: 0f128,
-// CHECK-NEXT:             })
+// CHECK-NEXT:             ccosl(
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: 0f128,
+// CHECK-NEXT:                     im: 0f128,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"ctan".as_ptr(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             ctanl(num_complex::Complex {
-// CHECK-NEXT:                 re: 0f128,
-// CHECK-NEXT:                 im: 0f128,
-// CHECK-NEXT:             })
+// CHECK-NEXT:             ctanl(
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: 0f128,
+// CHECK-NEXT:                     im: 0f128,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"casin".as_ptr(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             casinl(num_complex::Complex {
-// CHECK-NEXT:                 re: 0f128,
-// CHECK-NEXT:                 im: 0f128,
-// CHECK-NEXT:             })
+// CHECK-NEXT:             casinl(
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: 0f128,
+// CHECK-NEXT:                     im: 0f128,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"cacos".as_ptr(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             cacosl(num_complex::Complex {
-// CHECK-NEXT:                 re: 1f128,
-// CHECK-NEXT:                 im: 0f128,
-// CHECK-NEXT:             })
+// CHECK-NEXT:             cacosl(
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: 1f128,
+// CHECK-NEXT:                     im: 0f128,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"catan".as_ptr(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             catanl(num_complex::Complex {
-// CHECK-NEXT:                 re: 0f128,
-// CHECK-NEXT:                 im: 0f128,
-// CHECK-NEXT:             })
+// CHECK-NEXT:             catanl(
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: 0f128,
+// CHECK-NEXT:                     im: 0f128,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"csinh".as_ptr(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             csinhl(num_complex::Complex {
-// CHECK-NEXT:                 re: 0f128,
-// CHECK-NEXT:                 im: 0f128,
-// CHECK-NEXT:             })
+// CHECK-NEXT:             csinhl(
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: 0f128,
+// CHECK-NEXT:                     im: 0f128,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"ccosh".as_ptr(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             ccoshl(num_complex::Complex {
-// CHECK-NEXT:                 re: 0f128,
-// CHECK-NEXT:                 im: 0f128,
-// CHECK-NEXT:             })
+// CHECK-NEXT:             ccoshl(
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: 0f128,
+// CHECK-NEXT:                     im: 0f128,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"ctanh".as_ptr(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             ctanhl(num_complex::Complex {
-// CHECK-NEXT:                 re: 0f128,
-// CHECK-NEXT:                 im: 0f128,
-// CHECK-NEXT:             })
+// CHECK-NEXT:             ctanhl(
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: 0f128,
+// CHECK-NEXT:                     im: 0f128,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"casinh".as_ptr(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             casinhl(num_complex::Complex {
-// CHECK-NEXT:                 re: 0f128,
-// CHECK-NEXT:                 im: 0f128,
-// CHECK-NEXT:             })
+// CHECK-NEXT:             casinhl(
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: 0f128,
+// CHECK-NEXT:                     im: 0f128,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"cacosh".as_ptr(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             cacoshl(num_complex::Complex {
-// CHECK-NEXT:                 re: 1f128,
-// CHECK-NEXT:                 im: 0f128,
-// CHECK-NEXT:             })
+// CHECK-NEXT:             cacoshl(
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: 1f128,
+// CHECK-NEXT:                     im: 0f128,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"catanh".as_ptr(),
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             catanhl(num_complex::Complex {
-// CHECK-NEXT:                 re: 0f128,
-// CHECK-NEXT:                 im: 0f128,
-// CHECK-NEXT:             })
+// CHECK-NEXT:             catanhl(
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: 0f128,
+// CHECK-NEXT:                     im: 0f128,
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -445,12 +481,14 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     check_arithmetic();
 // CHECK-NEXT:     check_casts();
 // CHECK-NEXT:     check_stdlib_functions();
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

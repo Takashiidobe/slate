@@ -75,10 +75,7 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -145,7 +142,8 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((buffer as i32) | ((lc.wrapping_sub(1) as u16) as i32) << 1i32) as u16;
+// CHECK-NEXT:             buffer = ((buffer as i32) | ((lc.wrapping_sub(1) as u16) as i32) << 1i32)
+// CHECK-NEXT:                 as u16;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { flips }) != 0 {
@@ -158,7 +156,8 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             buffer = ((buffer as i32) | ((((code as i32) + 1) as u16) as i32) << 1i32) as u16;
+// CHECK-NEXT:             buffer = ((buffer as i32) | ((((code as i32) + 1) as u16) as i32) << 1i32)
+// CHECK-NEXT:                 as u16;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     PUT!(lc as i32, (unsafe { flips }) != 0);

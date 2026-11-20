@@ -25,7 +25,9 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memcmp;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn cmp_bytes(a: &[u8], b: &[u8]) -> i32 {
 // CHECK-NEXT:     let mut sa: i32 = 0;
 // CHECK-NEXT:     let mut sb: i32 = 0;
@@ -42,13 +44,15 @@ int main(void) {
 // CHECK-NEXT:     let sign: i32 = ((order > 0) as i32) - ((order < 0) as i32);
 // CHECK-NEXT:     sign * 1000 + (sa - sb)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: [u8; 3] = [1, 2, 3];
 // CHECK-NEXT:     let y: [u8; 3] = [1, 2, 4];
 // CHECK-NEXT:     let z: [u8; 3] = [1, 2, 3];
-// CHECK-NEXT:     println!("{} {} {}", cmp_bytes(& x, & y), cmp_bytes(& y, & x), cmp_bytes(& x, & z));
+// CHECK-NEXT:     println!("{} {} {}", cmp_bytes(&x, &y), cmp_bytes(&y, &x), cmp_bytes(&x, &z));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -114,20 +114,11 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #![no_std]
 // CHECK-NEXT: #![no_builtins]
-// CHECK-NEXT: #![allow(
-// CHECK-NEXT:     non_camel_case_types,
-// CHECK-NEXT:     non_snake_case,
-// CHECK-NEXT:     non_upper_case_globals,
-// CHECK-NEXT:     rustdoc::all
-// CHECK-NEXT: )]
+// CHECK-NEXT: #![allow(non_camel_case_types, non_snake_case, non_upper_case_globals, rustdoc::all)]
 // CHECK-NEXT: #![allow(suspicious_runtime_symbol_definitions)]
 // CHECK-NEXT: #![feature(linkage)]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(all(
-// CHECK-NEXT:     any(target_arch = "x86", target_arch = "x86_64"),
-// CHECK-NEXT:     target_os = "linux",
-// CHECK-NEXT:     target_env = "gnu"
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(all(any(target_arch = "x86", target_arch = "x86_64"), target_os = "linux", target_env = "gnu")))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[path = "freestanding_runtime.rs"]

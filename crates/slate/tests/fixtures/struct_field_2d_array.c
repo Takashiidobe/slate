@@ -60,41 +60,46 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct table {
 // CHECK-NEXT:     rows: {{\[\[}}i8; 3]; 4],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct cube {
 // CHECK-NEXT:     v: {{\[\[}}[i32; 4]; 3]; 2],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn fill(t: &mut table) {
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *((*((*(t as *mut table)).rows.as_mut_ptr() as *mut [i8; 3])
-// CHECK-NEXT:                 .offset(i as isize))
-// CHECK-NEXT:                 .as_mut_ptr() as *mut i8)
+// CHECK-NEXT:                         .offset(i as isize))
+// CHECK-NEXT:                     .as_mut_ptr() as *mut i8)
 // CHECK-NEXT:                 .add(0) = (97 + i) as i8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *((*((*(t as *mut table)).rows.as_mut_ptr() as *mut [i8; 3])
-// CHECK-NEXT:                 .offset(i as isize))
-// CHECK-NEXT:                 .as_mut_ptr() as *mut i8)
+// CHECK-NEXT:                         .offset(i as isize))
+// CHECK-NEXT:                     .as_mut_ptr() as *mut i8)
 // CHECK-NEXT:                 .add(1) = (48 + i) as i8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *((*((*(t as *mut table)).rows.as_mut_ptr() as *mut [i8; 3])
-// CHECK-NEXT:                 .offset(i as isize))
-// CHECK-NEXT:                 .as_mut_ptr() as *mut i8)
+// CHECK-NEXT:                         .offset(i as isize))
+// CHECK-NEXT:                     .as_mut_ptr() as *mut i8)
 // CHECK-NEXT:                 .add(2) = 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn fill_via_ptr(t: &mut table, i: i32) {
 // CHECK-NEXT:     let row: *mut [i8; 3] = unsafe {
 // CHECK-NEXT:         (*(t as *mut table)).rows.as_mut_ptr() as *mut [i8; 3]
@@ -103,22 +108,24 @@ int main(void) {
 // CHECK-NEXT:         *((*row.offset(i as isize).add(0)).as_mut_ptr() as *mut i8).add(0) = 88;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn fill_cube(c: &mut cube) {
 // CHECK-NEXT:     for i in 0i32..2i32 {
 // CHECK-NEXT:         for j in 0i32..3i32 {
 // CHECK-NEXT:             for k in 0i32..4i32 {
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     *((*((*((*(c as *mut cube)).v.as_mut_ptr() as *mut {{\[\[}}i32; 4]; 3])
-// CHECK-NEXT:                         .offset(i as isize))
-// CHECK-NEXT:                         .as_mut_ptr() as *mut [i32; 4])
-// CHECK-NEXT:                         .offset(j as isize))
-// CHECK-NEXT:                         .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:                                         .offset(i as isize))
+// CHECK-NEXT:                                     .as_mut_ptr() as *mut [i32; 4])
+// CHECK-NEXT:                                 .offset(j as isize))
+// CHECK-NEXT:                             .as_mut_ptr() as *mut i32)
 // CHECK-NEXT:                         .offset(k as isize) = i * 100 + j * 10 + k;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn sum_cube_via_ptr(c: &mut cube) -> i32 {
 // CHECK-NEXT:     let plane: *mut [i32; 4] = unsafe {
 // CHECK-NEXT:         (*((*(c as *mut cube)).v.as_mut_ptr() as *mut {{\[\[}}i32; 4]; 3]).add(1)).as_mut_ptr()
@@ -137,6 +144,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut t: table = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     fill(unsafe { &mut (*core::ptr::addr_of_mut!(t)) });
@@ -153,12 +161,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut c: cube = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     fill_cube(unsafe { &mut (*core::ptr::addr_of_mut!(c)) });
-// CHECK-NEXT:     let __slate_printf_arg2 = sum_cube_via_ptr(unsafe {
-// CHECK-NEXT:         &mut (*core::ptr::addr_of_mut!(c))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     println!("{} {} {}", c.v[0] [0] [0], c.v[1] [2] [3], __slate_printf_arg2);
+// CHECK-NEXT:     let __slate_printf_arg2 = sum_cube_via_ptr(
+// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(c)) },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {} {}", c.v[0][0][0], c.v[1][2][3], __slate_printf_arg2);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

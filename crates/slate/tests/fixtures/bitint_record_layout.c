@@ -31,12 +31,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union BitIntOrArray {
 // CHECK-NEXT:     bits: bitint::BInt<65, 2, 16, bitint::A8>,
 // CHECK-NEXT:     bytes: [i8; 20],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct NestedBitInt {
@@ -44,58 +46,60 @@ int main(void) {
 // CHECK-NEXT:     inner: __SlateRecord_bitint_record_layout_c_10,
 // CHECK-NEXT:     tail: i16,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_bitint_record_layout_c_10 {
 // CHECK-NEXT:     prefix: i32,
 // CHECK-NEXT:     value: bitint::BInt<65, 2, 16, bitint::A8>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
-// CHECK-NEXT: static mut values: __SlateAlign16<[NestedBitInt; 2]> = __SlateAlign16([
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: NestedBitInt = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].tag = 1i8;
-// CHECK-NEXT:         [[T_0]].inner = {
-// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: __SlateRecord_bitint_record_layout_c_10 = unsafe {
-// CHECK-NEXT:                 core::mem::zeroed()
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut values: __SlateAlign16<[NestedBitInt; 2]> = __SlateAlign16(
+// CHECK-NEXT:     [
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: NestedBitInt = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]].tag = 1i8;
+// CHECK-NEXT:             [[T_0]].inner = {
+// CHECK-NEXT:                 let mut [[T_1:__t[0-9]+]]: __SlateRecord_bitint_record_layout_c_10 = unsafe {
+// CHECK-NEXT:                     core::mem::zeroed()
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 [[T_1]].prefix = 2i32;
+// CHECK-NEXT:                 [[T_1]].value = <bitint::BInt<65, 2, 16, bitint::A8>>::from_i128(
+// CHECK-NEXT:                     333i32 as i128,
+// CHECK-NEXT:                 );
+// CHECK-NEXT:                 [[T_1]]
 // CHECK-NEXT:             };
-// CHECK-NEXT:             [[T_1]].prefix = 2i32;
-// CHECK-NEXT:             [[T_1]].value = <bitint::BInt<
-// CHECK-NEXT:                 65,
-// CHECK-NEXT:                 2,
-// CHECK-NEXT:                 16,
-// CHECK-NEXT:                 bitint::A8,
-// CHECK-NEXT:             >>::from_i128(333i32 as i128);
-// CHECK-NEXT:             [[T_1]]
-// CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_0]].tail = 4i16;
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     },
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: NestedBitInt = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_2]].tag = 5i8;
-// CHECK-NEXT:         [[T_2]].inner = {
-// CHECK-NEXT:             let mut [[T_3:__t[0-9]+]]: __SlateRecord_bitint_record_layout_c_10 = unsafe {
-// CHECK-NEXT:                 core::mem::zeroed()
+// CHECK-NEXT:             [[T_0]].tail = 4i16;
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: NestedBitInt = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_2]].tag = 5i8;
+// CHECK-NEXT:             [[T_2]].inner = {
+// CHECK-NEXT:                 let mut [[T_3:__t[0-9]+]]: __SlateRecord_bitint_record_layout_c_10 = unsafe {
+// CHECK-NEXT:                     core::mem::zeroed()
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 [[T_3]].prefix = 6i32;
+// CHECK-NEXT:                 [[T_3]].value = <bitint::BInt<65, 2, 16, bitint::A8>>::from_i128(
+// CHECK-NEXT:                     777i32 as i128,
+// CHECK-NEXT:                 );
+// CHECK-NEXT:                 [[T_3]]
 // CHECK-NEXT:             };
-// CHECK-NEXT:             [[T_3]].prefix = 6i32;
-// CHECK-NEXT:             [[T_3]].value = <bitint::BInt<
-// CHECK-NEXT:                 65,
-// CHECK-NEXT:                 2,
-// CHECK-NEXT:                 16,
-// CHECK-NEXT:                 bitint::A8,
-// CHECK-NEXT:             >>::from_i128(777i32 as i128);
-// CHECK-NEXT:             [[T_3]]
-// CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_2]].tail = 8i16;
-// CHECK-NEXT:         [[T_2]]
-// CHECK-NEXT:     },
-// CHECK-NEXT: ]);
+// CHECK-NEXT:             [[T_2]].tail = 8i16;
+// CHECK-NEXT:             [[T_2]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     ],
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let item: BitIntOrArray = {
 // CHECK-NEXT:         let mut [[T_0]]: BitIntOrArray = unsafe { core::mem::zeroed() };
@@ -126,6 +130,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

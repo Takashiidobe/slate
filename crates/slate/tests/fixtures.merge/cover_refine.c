@@ -101,11 +101,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn joint() -> i32 {
-// CHECK-NEXT:     #[cfg(any(
-// CHECK-NEXT:         feature = "beta",
-// CHECK-NEXT:         all(feature = "delta", feature = "epsilon"),
-// CHECK-NEXT:         all(feature = "alpha", feature = "epsilon", feature = "gamma")
-// CHECK-NEXT:     ))]
+// CHECK-NEXT:     #[cfg(any(feature = "beta", all(feature = "delta", feature = "epsilon"), all(feature = "alpha", feature = "epsilon", feature = "gamma")))]
 // CHECK-NEXT:     let mut value: i32 = 0;
 // CHECK-NEXT:     #[cfg(all(feature = "alpha", feature = "epsilon", feature = "gamma"))]
 // CHECK-NEXT:     {
@@ -115,11 +111,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         value += 16;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(
-// CHECK-NEXT:         all(not(feature = "beta"), not(feature = "epsilon")),
-// CHECK-NEXT:         all(not(feature = "alpha"), not(feature = "beta"), not(feature = "delta")),
-// CHECK-NEXT:         all(not(feature = "beta"), not(feature = "delta"), not(feature = "gamma"))
-// CHECK-NEXT:     ))]
+// CHECK-NEXT:     #[cfg(any(all(not(feature = "beta"), not(feature = "epsilon")), all(not(feature = "alpha"), not(feature = "beta"), not(feature = "delta")), all(not(feature = "beta"), not(feature = "delta"), not(feature = "gamma"))))]
 // CHECK-NEXT:     let value: i32 = 0;
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
@@ -147,19 +139,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn shape(mut x: i32) -> i32 {
-// CHECK-NEXT:     #[cfg(any(
-// CHECK-NEXT:         all(not(feature = "alpha"), not(feature = "beta")),
-// CHECK-NEXT:         all(not(feature = "beta"), not(feature = "delta"))
-// CHECK-NEXT:     ))]
+// CHECK-NEXT:     #[cfg(any(all(not(feature = "alpha"), not(feature = "beta")), all(not(feature = "beta"), not(feature = "delta"))))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         if x > 0 {
 // CHECK-NEXT:             return x * 3;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(any(
-// CHECK-NEXT:         all(not(feature = "alpha"), feature = "beta"),
-// CHECK-NEXT:         all(feature = "beta", not(feature = "delta"))
-// CHECK-NEXT:     ))]
+// CHECK-NEXT:     #[cfg(any(all(not(feature = "alpha"), feature = "beta"), all(feature = "beta", not(feature = "delta"))))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         for i in 0i32..2i32 {
 // CHECK-NEXT:             x += i;
@@ -190,10 +176,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: //! merge-features: alpha beta gamma delta epsilon
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

@@ -41,15 +41,18 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __builtin_expect([[ARG_0:arg[0-9]+]]: i64, [[ARG_1:arg[0-9]+]]: i64) -> i64;
 // CHECK-NEXT:     fn __builtin_assume([[ARG_0]]: bool);
 // CHECK-NEXT:     fn __builtin_unreachable();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.trap"]
 // CHECK-NEXT:     fn __slate_intrinsic_46d8fd79c9d1f86c();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn likely_nonzero(x: i32) -> i32 {
 // CHECK-NEXT:     if x != 0 {
 // CHECK-NEXT:         unsafe { core::hint::assert_unchecked(x != 0) };
@@ -57,39 +60,44 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     -1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn assume_true(x: i32) -> i32 {
 // CHECK-NEXT:     unsafe { core::hint::assert_unchecked(true) };
 // CHECK-NEXT:     x + 1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn guarded_trap(x: i32) -> i32 {
 // CHECK-NEXT:     if x < 0 {
 // CHECK-NEXT:         unsafe { __slate_intrinsic_46d8fd79c9d1f86c() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn guarded_unreachable(x: i32) -> i32 {
 // CHECK-NEXT:     if x < 0 {
 // CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x * 2
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let input: i32 = 5;
-// CHECK-NEXT:     let a: i32 = likely_nonzero(unsafe {
-// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(input))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let b: i32 = assume_true(unsafe {
-// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(input))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let c: i32 = guarded_trap(unsafe {
-// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(input))
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let d: i32 = guarded_unreachable(unsafe {
-// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(input))
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let a: i32 = likely_nonzero(
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(input)) },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let b: i32 = assume_true(
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(input)) },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let c: i32 = guarded_trap(
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(input)) },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let d: i32 = guarded_unreachable(
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(input)) },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {} {} {}", a, b, c, d);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

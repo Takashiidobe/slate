@@ -20,21 +20,27 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn f32_from(bits: u32) -> f32 {
 // CHECK-NEXT:     unsafe { core::mem::transmute::<u32, f32>(bits) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn f32_bits(value: f32) -> u32 {
 // CHECK-NEXT:     unsafe { core::mem::transmute::<f32, u32>(value) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn f64_from(bits: i64) -> f64 {
 // CHECK-NEXT:     unsafe { core::mem::transmute::<i64, f64>(bits) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn f64_bits(value: f64) -> i64 {
 // CHECK-NEXT:     unsafe { core::mem::transmute::<f64, i64>(value) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let one: u32 = 1065353216;
 // CHECK-NEXT:     let half: f32 = -0.5f32;
@@ -69,6 +75,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

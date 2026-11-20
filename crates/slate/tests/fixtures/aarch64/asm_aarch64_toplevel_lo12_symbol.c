@@ -28,23 +28,32 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(used_with_arg)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn store_helper();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: static mut lo12: i32 = 3;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: static mut helper_value: i32 = 7;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut stored: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // CHECK-NEXT:     ".text\n.globl store_helper\nstore_helper:\n\tadrp x9, {0}\n\tldr w10, [x9, :lo12:{0}]\n\tadrp x9, {1}\n\tldr w11, [x9, :lo12:{1}]\n\tadd w10, w10, w11\n\tadrp x9, {2}\n\tstr w10, [x9, :lo12:{2}]\n\tret\n",
-// CHECK-NEXT:     sym helper_value, sym lo12, sym stored
+// CHECK-NEXT:     sym helper_value,
+// CHECK-NEXT:     sym lo12,
+// CHECK-NEXT:     sym stored,
 // CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe { store_helper() };
 // CHECK-NEXT:     println!("{}", unsafe { stored });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

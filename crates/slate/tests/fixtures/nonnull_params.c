@@ -12,18 +12,24 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn add(a: &i32, b: &i32) -> i32 {
 // CHECK-NEXT:     (unsafe { *(a as *const i32) }) + unsafe { *(b as *const i32) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut x: i32 = 3;
 // CHECK-NEXT:     let mut y: i32 = 4;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", add(unsafe { & (* core::ptr::addr_of_mut!(x)) }, unsafe { & (*
-// CHECK-NEXT:         core::ptr::addr_of_mut!(y)) })
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         add(
+// CHECK-NEXT:             unsafe { &(*core::ptr::addr_of_mut!(x)) },
+// CHECK-NEXT:             unsafe { &(*core::ptr::addr_of_mut!(y)) },
+// CHECK-NEXT:         )
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

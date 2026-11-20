@@ -17,23 +17,18 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: i128 = (1 as i128) << 126i32;
 // CHECK-NEXT:     let b: i128 = (1 as i128) << 126i32;
 // CHECK-NEXT:     let mut r: i128 = 0;
 // CHECK-NEXT:     let mut o: i32 = ({
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:             258,
-// CHECK-NEXT:             5,
-// CHECK-NEXT:             40,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_i128(a as i128);
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:             258,
-// CHECK-NEXT:             5,
-// CHECK-NEXT:             40,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_i128(b as i128);
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<258, 5, 40, bitint::A8>>::from_i128(
+// CHECK-NEXT:             a as i128,
+// CHECK-NEXT:         );
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<258, 5, 40, bitint::A8>>::from_i128(
+// CHECK-NEXT:             b as i128,
+// CHECK-NEXT:         );
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = [[T_0]].wrapping_add([[T_1]]);
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]]: i128 = [[T_2]].to_i128() as i128;
 // CHECK-NEXT:         unsafe {
@@ -46,18 +41,12 @@ int main(void) {
 // CHECK-NEXT:     let ua: u128 = !0;
 // CHECK-NEXT:     let mut ur: u128 = 0;
 // CHECK-NEXT:     o = ({
-// CHECK-NEXT:         let [[T_4:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:             258,
-// CHECK-NEXT:             5,
-// CHECK-NEXT:             40,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_u128(ua as u128);
-// CHECK-NEXT:         let [[T_5:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:             258,
-// CHECK-NEXT:             5,
-// CHECK-NEXT:             40,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_u128(1 as u128);
+// CHECK-NEXT:         let [[T_4:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<258, 5, 40, bitint::A8>>::from_u128(
+// CHECK-NEXT:             ua as u128,
+// CHECK-NEXT:         );
+// CHECK-NEXT:         let [[T_5:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<258, 5, 40, bitint::A8>>::from_u128(
+// CHECK-NEXT:             1 as u128,
+// CHECK-NEXT:         );
 // CHECK-NEXT:         let [[T_6:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = [[T_4]].wrapping_add([[T_5]]);
 // CHECK-NEXT:         let [[T_7:__t[0-9]+]]: u128 = [[T_6]].to_i128() as u128;
 // CHECK-NEXT:         unsafe {
@@ -68,18 +57,12 @@ int main(void) {
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     println!("{} {}", o, ur as i32);
 // CHECK-NEXT:     o = ({
-// CHECK-NEXT:         let [[T_8:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:             258,
-// CHECK-NEXT:             5,
-// CHECK-NEXT:             40,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_u128(ua as u128);
-// CHECK-NEXT:         let [[T_9:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:             258,
-// CHECK-NEXT:             5,
-// CHECK-NEXT:             40,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_u128(2 as u128);
+// CHECK-NEXT:         let [[T_8:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<258, 5, 40, bitint::A8>>::from_u128(
+// CHECK-NEXT:             ua as u128,
+// CHECK-NEXT:         );
+// CHECK-NEXT:         let [[T_9:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<258, 5, 40, bitint::A8>>::from_u128(
+// CHECK-NEXT:             2 as u128,
+// CHECK-NEXT:         );
 // CHECK-NEXT:         let [[T_10:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = [[T_8]].wrapping_mul([[T_9]]);
 // CHECK-NEXT:         let [[T_11:__t[0-9]+]]: u128 = [[T_10]].to_i128() as u128;
 // CHECK-NEXT:         unsafe {
@@ -90,18 +73,12 @@ int main(void) {
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     println!("{} {}", o, (ur >> 120i32) as i32);
 // CHECK-NEXT:     o = ({
-// CHECK-NEXT:         let [[T_12:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:             258,
-// CHECK-NEXT:             5,
-// CHECK-NEXT:             40,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_i128(a as i128);
-// CHECK-NEXT:         let [[T_13:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<
-// CHECK-NEXT:             258,
-// CHECK-NEXT:             5,
-// CHECK-NEXT:             40,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_i128(-1 as i128);
+// CHECK-NEXT:         let [[T_12:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<258, 5, 40, bitint::A8>>::from_i128(
+// CHECK-NEXT:             a as i128,
+// CHECK-NEXT:         );
+// CHECK-NEXT:         let [[T_13:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = <bitint::BInt<258, 5, 40, bitint::A8>>::from_i128(
+// CHECK-NEXT:             -1 as i128,
+// CHECK-NEXT:         );
 // CHECK-NEXT:         let [[T_14:__t[0-9]+]]: bitint::BInt<258, 5, 40, bitint::A8> = [[T_12]].wrapping_sub([[T_13]]);
 // CHECK-NEXT:         let [[T_15:__t[0-9]+]]: i128 = [[T_14]].to_i128() as i128;
 // CHECK-NEXT:         unsafe {
@@ -113,6 +90,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", o);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

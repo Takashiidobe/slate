@@ -27,6 +27,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn pthread_create(
 // CHECK-NEXT:         [[ARG_0:arg[0-9]+]]: *mut u64,
@@ -35,11 +36,16 @@ int main(void) {
 // CHECK-NEXT:         [[ARG_3:arg[0-9]+]]: *mut (),
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut counter: i32 = 0;
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::pthread_join;
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn worker(arg: *mut ()) -> *mut () {
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..100000i32 {
 // CHECK-NEXT:         unsafe {
@@ -53,6 +59,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     core::ptr::null_mut::<()>()
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut threads: __SlateAlign16<[u64; 4]> = __SlateAlign16([0u64; 4]);
 // CHECK-NEXT:     for i in 0i32..4i32 {
@@ -74,12 +81,17 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}", unsafe {
-// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of!(counter) as * mut
-// CHECK-NEXT:         i32).load(core::sync::atomic::Ordering::SeqCst) }
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                     core::ptr::addr_of!(counter) as *mut i32,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .load(core::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

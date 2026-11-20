@@ -230,7 +230,9 @@ int main(void) {
 // CHECK-NEXT:     ($n:expr) => {
 // CHECK-NEXT:         let made: *mut i32 = make_buffer($n);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), *made.offset((($n) - 1) as isize)) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(c"%d\n".as_ptr(), *made.offset((($n) - 1) as isize))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         unsafe { free((made as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     };
@@ -240,7 +242,12 @@ int main(void) {
 // CHECK-NEXT: macro_rules! CALL_EXPORTED_LENGTH {
 // CHECK-NEXT:     ($s:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), exported_length(($s) as *const c_char)) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%d\n".as_ptr(),
+// CHECK-NEXT:                 exported_length(($s) as *const c_char),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -249,7 +256,9 @@ int main(void) {
 // CHECK-NEXT: macro_rules! CALL_LENGTH {
 // CHECK-NEXT:     ($s:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), length_of(($s) as *const c_char)) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(c"%d\n".as_ptr(), length_of(($s) as *const c_char))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -314,10 +323,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: //! merge-sources: units/macro_calls_helper.c
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -331,7 +337,9 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), length_of(c"direct".as_ptr())) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(c"%d\n".as_ptr(), length_of(c"direct".as_ptr()))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
@@ -424,8 +432,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn make_buffer(count: i32) -> *mut i32 {
 // CHECK-NEXT:     let buffer: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc((count as size_t).wrapping_mul(core::mem::size_of::<i32>() as size_t) as usize)
-// CHECK-NEXT:             as *mut ()
+// CHECK-NEXT:         malloc(
+// CHECK-NEXT:             (count as size_t).wrapping_mul(core::mem::size_of::<i32>() as size_t)
+// CHECK-NEXT:                 as usize,
+// CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         unsafe {
@@ -495,7 +505,7 @@ int main(void) {
 // CHECK-NEXT: use core::ffi::c_char;
 // CHECK-NEXT: use slate_support::size_t;
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

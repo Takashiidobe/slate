@@ -15,6 +15,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut global_value: num_complex::Complex<i32> = {
 // CHECK-NEXT:     let [[T_0:__t[0-9]+]] = 17i32;
 // CHECK-NEXT:     let [[T_1:__t[0-9]+]] = num_complex::Complex {
@@ -26,6 +27,7 @@ int main(void) {
 // CHECK-NEXT:         im: [[T_1]].im,
 // CHECK-NEXT:     }
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let first: num_complex::Complex<i32> = 5
 // CHECK-NEXT:         + num_complex::Complex {
@@ -42,11 +44,19 @@ int main(void) {
 // CHECK-NEXT:         im: 13,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {} {} {} {} {}", first.re, first.im, second.re, second.im, imaginary
-// CHECK-NEXT:         .re, imaginary.im, unsafe { global_value.re }, unsafe { global_value.im }
+// CHECK-NEXT:         "{} {} {} {} {} {} {} {}",
+// CHECK-NEXT:         first.re,
+// CHECK-NEXT:         first.im,
+// CHECK-NEXT:         second.re,
+// CHECK-NEXT:         second.im,
+// CHECK-NEXT:         imaginary.re,
+// CHECK-NEXT:         imaginary.im,
+// CHECK-NEXT:         unsafe { global_value.re },
+// CHECK-NEXT:         unsafe { global_value.im }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

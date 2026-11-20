@@ -17,18 +17,22 @@ int main(int argc, char **argv) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(used_with_arg)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn cleanup() {
 // CHECK-NEXT:     println!("destructor ran");
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn __slate_fini_cleanup() {
 // CHECK-NEXT:     cleanup();
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[allow(non_upper_case_globals)]
 // CHECK-NEXT: #[used(compiler)]
 // CHECK-NEXT: #[unsafe(link_section = ".fini_array")]
 // CHECK-NEXT: static __SLATE_FINI_cleanup: Option<unsafe extern "C-unwind" fn()> = Some(
 // CHECK-NEXT:     __slate_fini_cleanup,
 // CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8) -> i32 {
 // CHECK-NEXT:     if argc == 1 {
 // CHECK-NEXT:         println!("early exit");
@@ -37,6 +41,7 @@ int main(int argc, char **argv) {
 // CHECK-NEXT:     println!("main ran");
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

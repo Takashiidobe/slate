@@ -31,6 +31,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memcmp;
 // CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: use slate_support::strncmp;
@@ -41,9 +42,11 @@ int main(void) {
 // CHECK-NEXT: use slate_support::strpbrk;
 // CHECK-NEXT: use slate_support::strstr;
 // CHECK-NEXT: use slate_support::strlen;
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut alpha: [i8; 4] = [97, 98, 99, 0];
 // CHECK-NEXT:     let mut beta: [i8; 4] = [97, 98, 100, 0];
@@ -101,19 +104,19 @@ int main(void) {
 // CHECK-NEXT:             *last as i32,
 // CHECK-NEXT:             (last == first.add(4)) as i32,
 // CHECK-NEXT:             !(strstr(
-// CHECK-NEXT:                 (hay.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 (sub.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as *mut i8)
+// CHECK-NEXT:                     (hay.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                     (sub.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 ) as *mut i8)
 // CHECK-NEXT:                 .is_null() as i32,
 // CHECK-NEXT:             !(strstr(
-// CHECK-NEXT:                 (hay.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 (empty.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as *mut i8)
+// CHECK-NEXT:                     (hay.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                     (empty.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 ) as *mut i8)
 // CHECK-NEXT:                 .is_null() as i32,
 // CHECK-NEXT:             (strpbrk(
-// CHECK-NEXT:                 (hay.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 (set.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as *mut i8)
+// CHECK-NEXT:                     (hay.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                     (set.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 ) as *mut i8)
 // CHECK-NEXT:                 .is_null() as i32,
 // CHECK-NEXT:             strspn(
 // CHECK-NEXT:                 (hay.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
@@ -127,28 +130,31 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let __slate_printf_arg0 = !unsafe {
-// CHECK-NEXT:         strchr((hay.as_mut_ptr() as *const i8) as *const core::ffi::c_char, 0i32 as i32)
-// CHECK-NEXT:             as *mut i8
-// CHECK-NEXT:     }
+// CHECK-NEXT:             strchr(
+// CHECK-NEXT:                 (hay.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 0i32 as i32,
+// CHECK-NEXT:             ) as *mut i8
+// CHECK-NEXT:         }
 // CHECK-NEXT:         .is_null() as i32;
 // CHECK-NEXT:     let __slate_printf_arg1 = unsafe {
-// CHECK-NEXT:         strchr(
-// CHECK-NEXT:             (hay.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:             122i32 as i32,
-// CHECK-NEXT:         ) as *mut i8
-// CHECK-NEXT:     }
+// CHECK-NEXT:             strchr(
+// CHECK-NEXT:                 (hay.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 122i32 as i32,
+// CHECK-NEXT:             ) as *mut i8
+// CHECK-NEXT:         }
 // CHECK-NEXT:         .is_null() as i32;
 // CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);
 // CHECK-NEXT:     let __slate_printf_arg0 = !unsafe {
-// CHECK-NEXT:         strchr(
-// CHECK-NEXT:             (utf8.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:             second_byte as i32,
-// CHECK-NEXT:         ) as *mut i8
-// CHECK-NEXT:     }
+// CHECK-NEXT:             strchr(
+// CHECK-NEXT:                 (utf8.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 second_byte as i32,
+// CHECK-NEXT:             ) as *mut i8
+// CHECK-NEXT:         }
 // CHECK-NEXT:         .is_null() as i32;
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

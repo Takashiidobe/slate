@@ -13,14 +13,19 @@ int main(int argc, char **argv) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::strlen;
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main(argc: i32, argv: *mut *mut i8) -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", argc, ! unsafe { * argv.add(0) } .is_null() as i32, unsafe { * argv
-// CHECK-NEXT:         .offset(argc as isize) } .is_null() as i32
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         argc,
+// CHECK-NEXT:         !unsafe { *argv.add(0) }.is_null() as i32,
+// CHECK-NEXT:         unsafe { *argv.offset(argc as isize) }.is_null() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let length: u64 = unsafe {
 // CHECK-NEXT:         strlen((*argv.add(0) as *const i8) as *const core::ffi::c_char) as u64
@@ -33,6 +38,7 @@ int main(int argc, char **argv) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     argc - 1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

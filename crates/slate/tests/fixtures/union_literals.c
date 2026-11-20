@@ -92,6 +92,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -177,36 +178,43 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
 // CHECK-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct LongDouble([u8; 10]);
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Add for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_add(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Sub for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_sub(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Mul for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_mul(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Div for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_div(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::AddAssign for LongDouble {
 // CHECK-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -214,6 +222,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::SubAssign for LongDouble {
 // CHECK-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -221,6 +230,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::MulAssign for LongDouble {
 // CHECK-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -228,6 +238,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::DivAssign for LongDouble {
 // CHECK-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -235,109 +246,111 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Neg for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn neg(self) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_neg(self)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialEq for LongDouble {
 // CHECK-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
 // CHECK-NEXT:         __slate_f80_eq(*self, *__other)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union same_size {
 // CHECK-NEXT:     freq: u16,
 // CHECK-NEXT:     code: u16,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union second_member {
 // CHECK-NEXT:     real: f32,
 // CHECK-NEXT:     bits: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union pointer_or_int {
 // CHECK-NEXT:     text: *const i8,
 // CHECK-NEXT:     bytes: [i8; 8],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union array_member {
 // CHECK-NEXT:     text: [i8; 4],
 // CHECK-NEXT:     word: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union partial {
 // CHECK-NEXT:     small: i8,
 // CHECK-NEXT:     large: i64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct padded {
 // CHECK-NEXT:     tag: i8,
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union record_member {
 // CHECK-NEXT:     record: padded,
 // CHECK-NEXT:     bytes: [u8; 8],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union long_double_member {
 // CHECK-NEXT:     wide: LongDouble,
 // CHECK-NEXT:     bytes: [u8; 16],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union bit_field_member {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits9U0,
 // CHECK-NEXT:     word: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct entry {
 // CHECK-NEXT:     fc: same_size,
 // CHECK-NEXT:     dl: same_size,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(transparent)]
 // CHECK-NEXT: struct __SlateConst<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u8,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u8, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits9U0 {
 // CHECK-NEXT:         #[bits(3)]
 // CHECK-NEXT:         pub bits: u32,
@@ -345,6 +358,7 @@ int main(void) {
 // CHECK-NEXT:         pub __slate_pad_1: u8,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static table: [entry; 3] = [
 // CHECK-NEXT:     entry {
 // CHECK-NEXT:         fc: same_size { freq: 12u16 },
@@ -359,20 +373,27 @@ int main(void) {
 // CHECK-NEXT:         dl: same_size { code: 9u16 },
 // CHECK-NEXT:     },
 // CHECK-NEXT: ];
+// CHECK-EMPTY:
 // CHECK-NEXT: static second: second_member = second_member {
 // CHECK-NEXT:     bits: 1065353216u32,
 // CHECK-NEXT: };
-// CHECK-NEXT: static pointer: __SlateConst<pointer_or_int> = __SlateConst(pointer_or_int {
-// CHECK-NEXT:     text: (b"text\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static pointer: __SlateConst<pointer_or_int> = __SlateConst(
+// CHECK-NEXT:     pointer_or_int {
+// CHECK-NEXT:         text: (b"text\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:     },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: static array: array_member = array_member {
 // CHECK-NEXT:     text: [97i8, 98i8, 99i8, 0i8],
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static partial_static: partial = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: partial = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].small = 120i8;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static record_static: record_member = {
 // CHECK-NEXT:     let mut [[T_0]]: record_member = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].record = {
@@ -383,11 +404,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static wide_static: long_double_member = {
 // CHECK-NEXT:     let mut [[T_0]]: long_double_member = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].wide = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: static bit_static: bit_field_member = {
 // CHECK-NEXT:     let mut [[T_0]]: bit_field_member = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -395,6 +418,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn zero_after(object: *const (), start: u64, size: u64) -> i32 {
 // CHECK-NEXT:     let bytes: *const u8 = object as *const u8;
 // CHECK-NEXT:     for i in start..size {
@@ -404,11 +428,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {}", (unsafe { table[i as usize].fc.freq }) as i32, (unsafe { table[i as
-// CHECK-NEXT:             usize].dl.code }) as i32
+// CHECK-NEXT:             "{} {}",
+// CHECK-NEXT:             (unsafe { table[i as usize].fc.freq }) as i32,
+// CHECK-NEXT:             (unsafe { table[i as usize].dl.code }) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -422,17 +448,27 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", zero_after((unsafe { core::ptr::addr_of!(partial_static) }) as * const
-// CHECK-NEXT:         (), 1u64, core::mem::size_of::< partial > () as u64), (unsafe { partial_static
-// CHECK-NEXT:         .small }) as i32
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         zero_after(
+// CHECK-NEXT:             (unsafe { core::ptr::addr_of!(partial_static) }) as *const (),
+// CHECK-NEXT:             1u64,
+// CHECK-NEXT:             core::mem::size_of::<partial>() as u64,
+// CHECK-NEXT:         ),
+// CHECK-NEXT:         (unsafe { partial_static.small }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", (unsafe { record_static.record.tag }) as i32, unsafe { record_static
-// CHECK-NEXT:         .record.value }
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         (unsafe { record_static.record.tag }) as i32,
+// CHECK-NEXT:         unsafe { record_static.record.value }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", zero_after((unsafe { core::ptr::addr_of!(record_static) }) as * const
-// CHECK-NEXT:         (), 1u64, 4u64), __slate_f80_to_i32(unsafe { wide_static.wide })
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         zero_after(
+// CHECK-NEXT:             (unsafe { core::ptr::addr_of!(record_static) }) as *const (),
+// CHECK-NEXT:             1u64,
+// CHECK-NEXT:             4u64,
+// CHECK-NEXT:         ),
+// CHECK-NEXT:         __slate_f80_to_i32(unsafe { wide_static.wide })
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), bit_static.word) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -454,10 +490,14 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", (unsafe { local.code }) as i32,
-// CHECK-NEXT:         zero_after(core::ptr::addr_of_mut!(local_partial) as * const (), 1u64,
-// CHECK-NEXT:         core::mem::size_of::< partial > () as u64), (unsafe { local_partial.small }) as
-// CHECK-NEXT:         i32
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         (unsafe { local.code }) as i32,
+// CHECK-NEXT:         zero_after(
+// CHECK-NEXT:             core::ptr::addr_of_mut!(local_partial) as *const (),
+// CHECK-NEXT:             1u64,
+// CHECK-NEXT:             core::mem::size_of::<partial>() as u64,
+// CHECK-NEXT:         ),
+// CHECK-NEXT:         (unsafe { local_partial.small }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -473,6 +513,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

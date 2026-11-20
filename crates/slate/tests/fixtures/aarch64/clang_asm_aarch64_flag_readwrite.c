@@ -36,42 +36,53 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN aarch64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn carry_in(mut flag: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "msr nzcv, {1:x}\nnop\ncset {0:w}, cs", out(reg) [[T_0]], in (reg) (flag as u32)
-// CHECK-NEXT:             as u64, options(pure, nomem, nostack)
+// CHECK-NEXT:             "msr nzcv, {1:x}\nnop\ncset {0:w}, cs",
+// CHECK-NEXT:             out(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) (flag as u32) as u64,
+// CHECK-NEXT:             options(pure, nomem, nostack),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn zero_in(mut flag: u32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "msr nzcv, {1:x}\nnop\ncset {0:w}, eq", out(reg) [[T_0]], in (reg) (flag as u32)
-// CHECK-NEXT:             as u64, options(pure, nomem, nostack)
+// CHECK-NEXT:             "msr nzcv, {1:x}\nnop\ncset {0:w}, eq",
+// CHECK-NEXT:             out(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) (flag as u32) as u64,
+// CHECK-NEXT:             options(pure, nomem, nostack),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn wide_in(mut flag: i64) -> i64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "msr nzcv, {1:x}\nnop\ncset {0:w}, mi", out(reg) [[T_0]], in (reg) flag as u64,
-// CHECK-NEXT:             options(pure, nomem, nostack)
+// CHECK-NEXT:             "msr nzcv, {1:x}\nnop\ncset {0:w}, mi",
+// CHECK-NEXT:             out(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) flag as u64,
+// CHECK-NEXT:             options(pure, nomem, nostack),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn flags_name(mut left: i32, mut right: i32) -> u64 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     let mut bits: u64 = 0;
@@ -79,17 +90,21 @@ int main(void) {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {2:w}, {3:w}\n\tmrs {1:x}, nzcv\ncset {0:w}, eq", lateout(reg) [[T_0]],
-// CHECK-NEXT:             lateout(reg) [[T_1]], in (reg) left as u32, in (reg) right as u32, options(pure,
-// CHECK-NEXT:             nomem, nostack)
+// CHECK-NEXT:             "cmp {2:w}, {3:w}\n\tmrs {1:x}, nzcv\ncset {0:w}, eq",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             lateout(reg) [[T_1]],
+// CHECK-NEXT:             in(reg) left as u32,
+// CHECK-NEXT:             in(reg) right as u32,
+// CHECK-NEXT:             options(pure, nomem, nostack),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:         bits = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bits >> 28i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{} {} {}", carry_in(536870912i32), carry_in(0i32), carry_in(- 1i32));
+// CHECK-NEXT:     println!("{} {} {}", carry_in(536870912i32), carry_in(0i32), carry_in(-1i32));
 // CHECK-NEXT:     println!("{} {}", zero_in(1073741824u32), zero_in(5u32));
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -110,6 +125,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

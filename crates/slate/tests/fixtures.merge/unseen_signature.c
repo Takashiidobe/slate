@@ -74,19 +74,13 @@ int main(void) {
 // CHECK-NEXT: //! merge-expect-exit: 1
 // CHECK-NEXT: //!
 // CHECK-NEXT: //! merge-features: alpha beta gamma
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(all(
-// CHECK-NEXT:         windows,
-// CHECK-NEXT:         any(not(feature = "alpha"), not(feature = "beta"), feature = "gamma")
-// CHECK-NEXT:     ))]
+// CHECK-NEXT:     #[cfg(all(windows, any(not(feature = "alpha"), not(feature = "beta"), feature = "gamma")))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), widen(1i32)) };
 // CHECK-NEXT:     }
@@ -98,10 +92,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(all(
-// CHECK-NEXT:         unix,
-// CHECK-NEXT:         any(not(feature = "alpha"), not(feature = "beta"), feature = "gamma")
-// CHECK-NEXT:     ))]
+// CHECK-NEXT:     #[cfg(all(unix, any(not(feature = "alpha"), not(feature = "beta"), feature = "gamma")))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{}", unsafe { widen(1i32) });
 // CHECK-NEXT:     }

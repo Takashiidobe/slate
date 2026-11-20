@@ -9,18 +9,21 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct __SlateRecord_anonymous_header_types_h_10 {
 // CHECK-NEXT:     count: i32,
 // CHECK-NEXT:     value: __SlateRecord_anonymous_header_types_h_10_2,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_anonymous_header_types_h_10_2 {
 // CHECK-NEXT:     wide: i32,
 // CHECK-NEXT:     bytes: [i8; 4],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut state: __SlateRecord_anonymous_header_types_h_10 = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: __SlateRecord_anonymous_header_types_h_10 = unsafe {
@@ -34,6 +37,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     state.count + (((unsafe { state.value.wide }) != 7) as i32)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -15,35 +15,43 @@ int main(void){ printf("%ld %ld\n", za_roundtrip(7), fpmr_rw(5)); return 0; }
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(aarch64_unstable_target_feature)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sme")]
 // CHECK-NEXT: unsafe fn za_roundtrip(mut v: i64) -> i64 {
 // CHECK-NEXT:     let mut r: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "smstart za\n\tzero {{[{][{]}}za}}\n\tsmstop za\n\tmov {0:x}, {1:x}", lateout(reg)
-// CHECK-NEXT:             [[T_0]], in (reg) v as u64, options(nostack, preserves_flags)
+// CHECK-NEXT:             "smstart za\n\tzero {{[{][{]}}za}}\n\tsmstop za\n\tmov {0:x}, {1:x}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) v as u64,
+// CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         r = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "fp8")]
 // CHECK-NEXT: unsafe fn fpmr_rw(mut v: i64) -> i64 {
 // CHECK-NEXT:     let mut r: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "msr fpmr, {1:x}\n\tmrs {0:x}, fpmr", lateout(reg) [[T_0]], in (reg) v as u64,
-// CHECK-NEXT:             options(nostack, preserves_flags)
+// CHECK-NEXT:             "msr fpmr, {1:x}\n\tmrs {0:x}, fpmr",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) v as u64,
+// CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         r = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -52,6 +60,7 @@ int main(void){ printf("%ld %ld\n", za_roundtrip(7), fpmr_rw(5)); return 0; }
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

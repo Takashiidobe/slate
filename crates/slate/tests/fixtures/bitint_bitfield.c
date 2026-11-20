@@ -83,33 +83,41 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(8))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct S156 {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits0U0,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(8))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct T156 {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits1U0,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(8))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Mixed {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits2U0,
 // CHECK-NEXT:     __slate_bits_1: __slate_bits::__SlateBits2U1,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(8))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Narrow {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits3U0,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_bits {
 // CHECK-NEXT:     #[derive(Clone, Copy)]
 // CHECK-NEXT:     pub struct __SlateBits0U0 {
@@ -123,17 +131,7 @@ int main(void) {
 // CHECK-NEXT:     pub struct __SlateBits2U0 {
 // CHECK-NEXT:         pub bytes: [u8; 34],
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u8,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u8, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits2U1 {
 // CHECK-NEXT:         #[bits(7)]
 // CHECK-NEXT:         pub small: i8,
@@ -145,6 +143,7 @@ int main(void) {
 // CHECK-NEXT:         pub bytes: [u8; 9],
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl __slate_bits::__SlateBits0U0 {
 // CHECK-NEXT:     const fn __get_a(&self) -> bitint::BUint<156, 3, 24, bitint::A8> {
 // CHECK-NEXT:         <bitint::BUint<156, 3, 24, bitint::A8>>::from_bit_range(&self.bytes, 0, 135)
@@ -159,6 +158,7 @@ int main(void) {
 // CHECK-NEXT:         value.write_bit_range(&mut self.bytes, 135, 2)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl __slate_bits::__SlateBits1U0 {
 // CHECK-NEXT:     const fn __get_a(&self) -> bitint::BInt<156, 3, 24, bitint::A8> {
 // CHECK-NEXT:         <bitint::BInt<156, 3, 24, bitint::A8>>::from_bit_range(&self.bytes, 0, 2)
@@ -179,6 +179,7 @@ int main(void) {
 // CHECK-NEXT:         value.write_bit_range(&mut self.bytes, 137, 2)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl __slate_bits::__SlateBits2U0 {
 // CHECK-NEXT:     const fn __get_tag(&self) -> i32 {
 // CHECK-NEXT:         bitint::load_bits_signed(&self.bytes, 0, 5) as i32
@@ -205,6 +206,7 @@ int main(void) {
 // CHECK-NEXT:         value.write_bit_range(&mut self.bytes, 76, 190)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl __slate_bits::__SlateBits3U0 {
 // CHECK-NEXT:     const fn __get_x(&self) -> bitint::BInt<100, 2, 16, bitint::A8> {
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_bit_range(&self.bytes, 0, 3)
@@ -219,6 +221,7 @@ int main(void) {
 // CHECK-NEXT:         value.write_bit_range(&mut self.bytes, 3, 64)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn combine(
 // CHECK-NEXT:     p: *mut S156,
 // CHECK-NEXT:     q: *mut T156,
@@ -226,42 +229,28 @@ int main(void) {
 // CHECK-NEXT:     n: i32,
 // CHECK-NEXT: ) -> bitint::BInt<156, 3, 24, bitint::A8> {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (*p.add(0))
-// CHECK-NEXT:             .__slate_bits_0
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (*p.add(0)).__slate_bits_0
 // CHECK-NEXT:             .__get_a()
 // CHECK-NEXT:             .wrapping_add((*q.add(0)).__slate_bits_0.__get_b());
 // CHECK-NEXT:         (*r.add(0)).__slate_bits_0.__set_b([[T_0]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = (*p.add(1))
-// CHECK-NEXT:             .__slate_bits_0
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = (*p.add(1)).__slate_bits_0
 // CHECK-NEXT:             .__get_a()
 // CHECK-NEXT:             .wrapping_mul((*q.add(1)).__slate_bits_0.__get_b());
 // CHECK-NEXT:         (*r.add(1)).__slate_bits_0.__set_b([[T_1]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = <bitint::BInt<
-// CHECK-NEXT:             156,
-// CHECK-NEXT:             3,
-// CHECK-NEXT:             24,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_u128(
-// CHECK-NEXT:             ((*p.add(2))
-// CHECK-NEXT:                 .__slate_bits_0
+// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = <bitint::BInt<156, 3, 24, bitint::A8>>::from_u128(
+// CHECK-NEXT:             ((*p.add(2)).__slate_bits_0
 // CHECK-NEXT:                 .__get_a()
 // CHECK-NEXT:                 .compare((*q.add(2)).__slate_bits_0.__get_b()) == 0) as u128,
 // CHECK-NEXT:         );
 // CHECK-NEXT:         (*r.add(2)).__slate_bits_0.__set_a([[T_2]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = <bitint::BInt<
-// CHECK-NEXT:             156,
-// CHECK-NEXT:             3,
-// CHECK-NEXT:             24,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_u128(
-// CHECK-NEXT:             ((*p.add(3))
-// CHECK-NEXT:                 .__slate_bits_0
+// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = <bitint::BInt<156, 3, 24, bitint::A8>>::from_u128(
+// CHECK-NEXT:             ((*p.add(3)).__slate_bits_0
 // CHECK-NEXT:                 .__get_a()
 // CHECK-NEXT:                 .compare((*q.add(3)).__slate_bits_0.__get_b()) < 0) as u128,
 // CHECK-NEXT:         );
@@ -271,16 +260,12 @@ int main(void) {
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]] = (*p.add(4)).__slate_bits_0.__get_a().shl_bits(n as usize);
 // CHECK-NEXT:         (*r.add(4)).__slate_bits_0.__set_b([[T_4]]);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     return <bitint::BInt<
-// CHECK-NEXT:         156,
-// CHECK-NEXT:         3,
-// CHECK-NEXT:         24,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_buint(
+// CHECK-NEXT:     return <bitint::BInt<156, 3, 24, bitint::A8>>::from_buint(
 // CHECK-NEXT:         unsafe { (*p.add(5)).__slate_bits_0.__get_a() }
 // CHECK-NEXT:             .wrapping_add(unsafe { (*q.add(5)).__slate_bits_0.__get_b() }),
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn dump(m: &mut Mixed) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -298,8 +283,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%llu\n".as_ptr(),
-// CHECK-NEXT:             (*(m as *mut Mixed))
-// CHECK-NEXT:                 .__slate_bits_0
+// CHECK-NEXT:             (*(m as *mut Mixed)).__slate_bits_0
 // CHECK-NEXT:                 .__get_top()
 // CHECK-NEXT:                 .shr_bits(100 as usize)
 // CHECK-NEXT:                 .to_u128() as u64,
@@ -307,74 +291,55 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut s: __SlateAlign16<[S156; 6]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:         core::mem::zeroed()
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let mut t: __SlateAlign16<[T156; 6]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:         core::mem::zeroed()
-// CHECK-NEXT:     });
-// CHECK-NEXT:     let mut r: __SlateAlign16<[T156; 5]> = __SlateAlign16({
-// CHECK-NEXT:         let mut [[T_0]]: [T156; 5] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = {
-// CHECK-NEXT:             let mut [[T_1]]: T156 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             [[T_1]].__slate_bits_0
-// CHECK-NEXT:                 .__set_a(<bitint::BInt<156, 3, 24, bitint::A8>>::from_i128(0 as i128));
-// CHECK-NEXT:             [[T_1]]
-// CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_0]]
-// CHECK-NEXT:     });
+// CHECK-NEXT:     let mut s: __SlateAlign16<[S156; 6]> = __SlateAlign16(
+// CHECK-NEXT:         unsafe { core::mem::zeroed() },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut t: __SlateAlign16<[T156; 6]> = __SlateAlign16(
+// CHECK-NEXT:         unsafe { core::mem::zeroed() },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut r: __SlateAlign16<[T156; 5]> = __SlateAlign16(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[T_0]]: [T156; 5] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_0]][0] = {
+// CHECK-NEXT:                 let mut [[T_1]]: T156 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:                 [[T_1]].__slate_bits_0
+// CHECK-NEXT:                     .__set_a(
+// CHECK-NEXT:                         <bitint::BInt<156, 3, 24, bitint::A8>>::from_i128(0 as i128),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                 [[T_1]]
+// CHECK-NEXT:             };
+// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..6i32 {
-// CHECK-NEXT:         let [[T_2]] = <bitint::BUint<
-// CHECK-NEXT:             156,
-// CHECK-NEXT:             3,
-// CHECK-NEXT:             24,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_bint(<bitint::BInt<156, 3, 24, bitint::A8>>::from_i128(1000 as i128))
+// CHECK-NEXT:         let [[T_2]] = <bitint::BUint<156, 3, 24, bitint::A8>>::from_bint(
+// CHECK-NEXT:                 <bitint::BInt<156, 3, 24, bitint::A8>>::from_i128(1000 as i128),
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .wrapping_mul(
-// CHECK-NEXT:                 <bitint::BUint<
-// CHECK-NEXT:                     156,
-// CHECK-NEXT:                     3,
-// CHECK-NEXT:                     24,
-// CHECK-NEXT:                     bitint::A8,
-// CHECK-NEXT:                 >>::from_bint(
+// CHECK-NEXT:                 <bitint::BUint<156, 3, 24, bitint::A8>>::from_bint(
 // CHECK-NEXT:                     <bitint::BInt<156, 3, 24, bitint::A8>>::from_i128((i + 3) as i128),
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .wrapping_add(
-// CHECK-NEXT:                 <bitint::BUint<
-// CHECK-NEXT:                     156,
-// CHECK-NEXT:                     3,
-// CHECK-NEXT:                     24,
-// CHECK-NEXT:                     bitint::A8,
-// CHECK-NEXT:                 >>::from_bint(
+// CHECK-NEXT:                 <bitint::BUint<156, 3, 24, bitint::A8>>::from_bint(
 // CHECK-NEXT:                     <bitint::BInt<156, 3, 24, bitint::A8>>::from_i128(7 as i128),
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             );
 // CHECK-NEXT:         s.0[i as usize].__slate_bits_0.__set_a([[T_2]]);
-// CHECK-NEXT:         let [[T_3]] = <bitint::BInt<
-// CHECK-NEXT:             156,
-// CHECK-NEXT:             3,
-// CHECK-NEXT:             24,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_i128((if i & 1 != 0 { -1i32 } else { 1i32 }) as i128);
+// CHECK-NEXT:         let [[T_3]] = <bitint::BInt<156, 3, 24, bitint::A8>>::from_i128(
+// CHECK-NEXT:             (if i & 1 != 0 { -1i32 } else { 1i32 }) as i128,
+// CHECK-NEXT:         );
 // CHECK-NEXT:         s.0[i as usize].__slate_bits_0.__set_b([[T_3]]);
 // CHECK-NEXT:         let [[T_4]] = <bitint::BInt<156, 3, 24, bitint::A8>>::from_i128(-1 as i128);
 // CHECK-NEXT:         t.0[i as usize].__slate_bits_0.__set_a([[T_4]]);
-// CHECK-NEXT:         let [[T_5:__t[0-9]+]] = <bitint::BUint<
-// CHECK-NEXT:             156,
-// CHECK-NEXT:             3,
-// CHECK-NEXT:             24,
-// CHECK-NEXT:             bitint::A8,
-// CHECK-NEXT:         >>::from_bint(<bitint::BInt<156, 3, 24, bitint::A8>>::from_i128(1 as i128))
+// CHECK-NEXT:         let [[T_5:__t[0-9]+]] = <bitint::BUint<156, 3, 24, bitint::A8>>::from_bint(
+// CHECK-NEXT:                 <bitint::BInt<156, 3, 24, bitint::A8>>::from_i128(1 as i128),
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .shl_bits(130 as usize)
 // CHECK-NEXT:             .wrapping_add(
-// CHECK-NEXT:                 <bitint::BUint<
-// CHECK-NEXT:                     156,
-// CHECK-NEXT:                     3,
-// CHECK-NEXT:                     24,
-// CHECK-NEXT:                     bitint::A8,
-// CHECK-NEXT:                 >>::from_bint(
+// CHECK-NEXT:                 <bitint::BUint<156, 3, 24, bitint::A8>>::from_bint(
 // CHECK-NEXT:                     <bitint::BInt<156, 3, 24, bitint::A8>>::from_i128(i as i128),
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             );
@@ -409,20 +374,14 @@ int main(void) {
 // CHECK-NEXT:         [[T_7]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     m.__slate_bits_0.__set_tag(-9i32);
-// CHECK-NEXT:     let [[T_8:__t[0-9]+]] = <bitint::BInt<
-// CHECK-NEXT:         100,
-// CHECK-NEXT:         2,
-// CHECK-NEXT:         16,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_i128(-123456789012345 as i128);
+// CHECK-NEXT:     let [[T_8:__t[0-9]+]] = <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(
+// CHECK-NEXT:         -123456789012345 as i128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     m.__slate_bits_0.__set_mid([[T_8]]);
 // CHECK-NEXT:     m.__slate_bits_0.__set_flag(1u8);
-// CHECK-NEXT:     let [[T_9:__t[0-9]+]] = <bitint::BUint<
-// CHECK-NEXT:         200,
-// CHECK-NEXT:         4,
-// CHECK-NEXT:         32,
-// CHECK-NEXT:         bitint::A8,
-// CHECK-NEXT:     >>::from_u128(1234567890123456789 as u128);
+// CHECK-NEXT:     let [[T_9:__t[0-9]+]] = <bitint::BUint<200, 4, 32, bitint::A8>>::from_u128(
+// CHECK-NEXT:         1234567890123456789 as u128,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     m.__slate_bits_0.__set_top([[T_9]]);
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bitint::BUint<200, 4, 32, bitint::A8> = m.__slate_bits_0.__get_top();
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bitint::BUint<200, 4, 32, bitint::A8> = [[V_0]].shl_bits(60 as usize);
@@ -430,12 +389,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: bitint::BUint<200, 4, 32, bitint::A8> = m.__slate_bits_0.__get_top();
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: bitint::BUint<200, 4, 32, bitint::A8> = [[V_2]]
 // CHECK-NEXT:         .wrapping_add(
-// CHECK-NEXT:             <bitint::BUint<
-// CHECK-NEXT:                 200,
-// CHECK-NEXT:                 4,
-// CHECK-NEXT:                 32,
-// CHECK-NEXT:                 bitint::A8,
-// CHECK-NEXT:             >>::from_bint(
+// CHECK-NEXT:             <bitint::BUint<200, 4, 32, bitint::A8>>::from_bint(
 // CHECK-NEXT:                 <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(12345 as i128),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         );
@@ -448,17 +402,13 @@ int main(void) {
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: bitint::BInt<100, 2, 16, bitint::A8> = [[V_4]]
 // CHECK-NEXT:         .wrapping_add(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1 as i128));
 // CHECK-NEXT:     copy.__slate_bits_0.__set_mid([[V_5]]);
-// CHECK-NEXT:     let mut [[V_6:__v[0-9]+]]: bitint::BUint<200, 4, 32, bitint::A8> = copy
-// CHECK-NEXT:         .__slate_bits_0
+// CHECK-NEXT:     let mut [[V_6:__v[0-9]+]]: bitint::BUint<200, 4, 32, bitint::A8> = copy.__slate_bits_0
 // CHECK-NEXT:         .__get_top();
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: bitint::BUint<200, 4, 32, bitint::A8> = [[V_6]]
 // CHECK-NEXT:         .wrapping_sub(
-// CHECK-NEXT:             <bitint::BUint<
-// CHECK-NEXT:                 200,
-// CHECK-NEXT:                 4,
-// CHECK-NEXT:                 32,
-// CHECK-NEXT:                 bitint::A8,
-// CHECK-NEXT:             >>::from_bint(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(5 as i128)),
+// CHECK-NEXT:             <bitint::BUint<200, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:                 <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(5 as i128),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     copy.__slate_bits_0.__set_top([[V_7]]);
 // CHECK-NEXT:     let [[T_11:__t[0-9]+]] = 63i8;
@@ -467,18 +417,13 @@ int main(void) {
 // CHECK-NEXT:     dump(unsafe { &mut (*core::ptr::addr_of_mut!(m)) });
 // CHECK-NEXT:     let mut n: Narrow = {
 // CHECK-NEXT:         let mut [[T_12:__t[0-9]+]]: Narrow = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_12]]
-// CHECK-NEXT:             .__slate_bits_0
+// CHECK-NEXT:         [[T_12]].__slate_bits_0
 // CHECK-NEXT:             .__set_x(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(-4 as i128));
-// CHECK-NEXT:         [[T_12]]
-// CHECK-NEXT:             .__slate_bits_0
+// CHECK-NEXT:         [[T_12]].__slate_bits_0
 // CHECK-NEXT:             .__set_y(
-// CHECK-NEXT:                 <bitint::BUint<
-// CHECK-NEXT:                     100,
-// CHECK-NEXT:                     2,
-// CHECK-NEXT:                     16,
-// CHECK-NEXT:                     bitint::A8,
-// CHECK-NEXT:                 >>::from_u128(18364758544493064720 as u128),
+// CHECK-NEXT:                 <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(
+// CHECK-NEXT:                     18364758544493064720 as u128,
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             );
 // CHECK-NEXT:         [[T_12]]
 // CHECK-NEXT:     };
@@ -496,12 +441,9 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_8:__v[0-9]+]]: bitint::BUint<100, 2, 16, bitint::A8> = n.__slate_bits_0.__get_y();
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: bitint::BUint<100, 2, 16, bitint::A8> = [[V_8]]
 // CHECK-NEXT:         .wrapping_add(
-// CHECK-NEXT:             <bitint::BUint<
-// CHECK-NEXT:                 100,
-// CHECK-NEXT:                 2,
-// CHECK-NEXT:                 16,
-// CHECK-NEXT:                 bitint::A8,
-// CHECK-NEXT:             >>::from_bint(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1 as i128)),
+// CHECK-NEXT:             <bitint::BUint<100, 2, 16, bitint::A8>>::from_bint(
+// CHECK-NEXT:                 <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1 as i128),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     n.__slate_bits_0.__set_y([[V_9]]);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -517,6 +459,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

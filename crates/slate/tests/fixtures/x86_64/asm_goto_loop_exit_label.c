@@ -37,20 +37,25 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut open_regions: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn region_begin() {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         open_regions = open_regions + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn region_end() {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         open_regions = open_regions - 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn fill_until_fault(mut buf: *mut i8, size: u64, mut fault_at: u64) -> u64 {
 // CHECK-NEXT:     let mut i: core::mem::MaybeUninit<u64> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut u64 = core::ptr::addr_of_mut!(i) as *mut u64;
@@ -63,10 +68,14 @@ int main(void) {
 // CHECK-NEXT:             while *[[SLATE_SLOT_0]] < size {
 // CHECK-NEXT:                 let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:                 core::arch::asm!(
-// CHECK-NEXT:                     "cmpq {0:r}, {1:r}\n\tje {3}\n\tmovb $1, ({2:r})", in (reg) *
-// CHECK-NEXT:                     [[SLATE_SLOT_0]] as u64, in (reg) fault_at as u64, in (reg) buf
-// CHECK-NEXT:                     .offset(* [[SLATE_SLOT_0]] as isize) as u64, label { __slate_asm_target
-// CHECK-NEXT:                     = true; }, options(nostack, att_syntax)
+// CHECK-NEXT:                     "cmpq {0:r}, {1:r}\n\tje {3}\n\tmovb $1, ({2:r})",
+// CHECK-NEXT:                     in(reg) *[[SLATE_SLOT_0]] as u64,
+// CHECK-NEXT:                     in(reg) fault_at as u64,
+// CHECK-NEXT:                     in(reg) buf.offset(*[[SLATE_SLOT_0]] as isize) as u64,
+// CHECK-NEXT:                     label {
+// CHECK-NEXT:                         __slate_asm_target = true;
+// CHECK-NEXT:                     },
+// CHECK-NEXT:                     options(nostack, att_syntax),
 // CHECK-NEXT:                 );
 // CHECK-NEXT:                 if __slate_asm_target {
 // CHECK-NEXT:                     break;
@@ -80,6 +89,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buf: [i8; 8] = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 8] = unsafe { core::mem::zeroed() };
@@ -110,6 +120,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

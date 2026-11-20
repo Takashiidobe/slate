@@ -54,25 +54,27 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn half() -> f64 {
 // CHECK-NEXT:     0.5f64
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let values: __SlateAlign16<[f64; 7]> = __SlateAlign16([
-// CHECK-NEXT:         3.9f64,
-// CHECK-NEXT:         -3.9f64,
-// CHECK-NEXT:         0.999f64,
-// CHECK-NEXT:         -0.999f64,
-// CHECK-NEXT:         255.5f64,
-// CHECK-NEXT:         2147483647.0f64,
-// CHECK-NEXT:         -2147483648.0f64,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let values: __SlateAlign16<[f64; 7]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             3.9f64, -3.9f64, 0.999f64, -0.999f64, 255.5f64, 2147483647.0f64,
+// CHECK-NEXT:             -2147483648.0f64,
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..7i32 {
 // CHECK-NEXT:         print!("{} ", values.0[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -91,7 +93,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{} {}", (- 32768.9f64 as i16) as i32, (65535.9f64 as u16) as i32);
+// CHECK-NEXT:     println!("{} {}", (-32768.9f64 as i16) as i32, (65535.9f64 as u16) as i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%lld %lld\n".as_ptr(), 1e18f64 as i64, -9.2e18f64 as i64)
 // CHECK-NEXT:     };
@@ -156,8 +158,11 @@ int main(void) {
 // CHECK-NEXT:     let from_zero: bool = -0.0f64 != 0.0f64;
 // CHECK-NEXT:     let from_nan: bool = 0.0f64 / (half() - 0.5f64) != 0.0f64;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", from_half as i32, from_tiny as i32, from_zero as i32, from_nan as
-// CHECK-NEXT:         i32
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         from_half as i32,
+// CHECK-NEXT:         from_tiny as i32,
+// CHECK-NEXT:         from_zero as i32,
+// CHECK-NEXT:         from_nan as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut n: i32 = 10;
 // CHECK-NEXT:     let r: f64 = (n / 4) as f64;
@@ -178,6 +183,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

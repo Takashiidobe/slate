@@ -22,12 +22,16 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut f: f32 = 1.5f32;
 // CHECK-NEXT:     let mut old_f: f32 = 0 as f32;
@@ -51,9 +55,9 @@ int main(void) {
 // CHECK-NEXT:                 .load(core::sync::atomic::Ordering::SeqCst),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         10i32, 20i32, 30i32, 40i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16(
+// CHECK-NEXT:         [10i32, 20i32, 30i32, 40i32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut p: *mut i32 = values.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut i32 = unsafe {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]] = core::sync::atomic::AtomicPtr::from_ptr(
@@ -105,6 +109,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

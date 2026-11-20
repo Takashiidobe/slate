@@ -42,34 +42,35 @@ int main(void) {
 // CHECK-NEXT:     show + ((((unsafe { *line.add(0) }) as i32) == 120) as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "stdcall-unwind" fn DllMain(module: *mut (), reason: u32, reserved: *mut ()) -> i32 {
+// CHECK-NEXT: extern "stdcall-unwind" fn DllMain(
+// CHECK-NEXT:     module: *mut (),
+// CHECK-NEXT:     reason: u32,
+// CHECK-NEXT:     reserved: *mut (),
+// CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     (reason as i32) * 2
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let win: Option<unsafe extern "stdcall-unwind" fn(*mut (), *mut (), *mut i8, i32) -> i32> =
-// CHECK-NEXT:         Some(WinMain);
-// CHECK-NEXT:     let dll: Option<unsafe extern "stdcall-unwind" fn(*mut (), u32, *mut ()) -> i32> =
-// CHECK-NEXT:         Some(DllMain);
+// CHECK-NEXT:     let win: Option<unsafe extern "stdcall-unwind" fn(*mut (), *mut (), *mut i8, i32) -> i32> = Some(
+// CHECK-NEXT:         WinMain,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let dll: Option<unsafe extern "stdcall-unwind" fn(*mut (), u32, *mut ()) -> i32> = Some(
+// CHECK-NEXT:         DllMain,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     if (unsafe {
-// CHECK-NEXT:         win.unwrap()(
+// CHECK-NEXT:         win
+// CHECK-NEXT:             .unwrap()(
 // CHECK-NEXT:             core::ptr::null_mut::<()>(),
 // CHECK-NEXT:             core::ptr::null_mut::<()>(),
 // CHECK-NEXT:             c"x".as_ptr() as *mut i8,
 // CHECK-NEXT:             4i32,
 // CHECK-NEXT:         )
-// CHECK-NEXT:     }) != 5
-// CHECK-NEXT:     {
+// CHECK-NEXT:     }) != 5 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe {
-// CHECK-NEXT:         dll.unwrap()(
-// CHECK-NEXT:             core::ptr::null_mut::<()>(),
-// CHECK-NEXT:             3u32,
-// CHECK-NEXT:             core::ptr::null_mut::<()>(),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     }) != 6
-// CHECK-NEXT:     {
+// CHECK-NEXT:         dll.unwrap()(core::ptr::null_mut::<()>(), 3u32, core::ptr::null_mut::<()>())
+// CHECK-NEXT:     }) != 6 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

@@ -21,28 +21,30 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Allocator {
 // CHECK-NEXT:     realloc_fn: Option<unsafe extern "C-unwind" fn(*mut (), u64) -> *mut ()>,
 // CHECK-NEXT:     free_fn: Option<unsafe extern "C-unwind" fn(*mut ())>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut alloc: Allocator = Allocator {
 // CHECK-NEXT:     realloc_fn: unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *const (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(*mut (), u64) -> *mut ()>,
-// CHECK-NEXT:         >(realloc as *const ())
+// CHECK-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(*mut (), u64) -> *mut ()>>(
+// CHECK-NEXT:             realloc as *const (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     },
 // CHECK-NEXT:     free_fn: unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             *const (),
-// CHECK-NEXT:             Option<unsafe extern "C-unwind" fn(*mut ())>,
-// CHECK-NEXT:         >(free as *const ())
+// CHECK-NEXT:         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(*mut ())>>(
+// CHECK-NEXT:             free as *const (),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     },
 // CHECK-NEXT: };
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::realloc;
 // CHECK-NEXT: use slate_support::free;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let p: *mut () = unsafe {
 // CHECK-NEXT:         unsafe { alloc.realloc_fn }.unwrap()(core::ptr::null_mut::<()>(), 8u64)
@@ -51,6 +53,7 @@ int main(void) {
 // CHECK-NEXT:     println!("ok");
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

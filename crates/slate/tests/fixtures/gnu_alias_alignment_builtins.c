@@ -33,23 +33,33 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     #[link_name = "llabs"]
 // CHECK-NEXT:     fn __builtin_llabs([[ARG_0:arg[0-9]+]]: i64) -> i64;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut counter: i32 = 3;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut hidden: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
+// CHECK-EMPTY:
 // CHECK-NEXT: fn aligned_function() {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn plain_function() {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn llabs(value: i64) -> i64 {
 // CHECK-NEXT:     value + 1000
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         counter = counter + 4;
@@ -59,34 +69,43 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{} {}", unsafe { counter }, unsafe { hidden.0[2] });
 // CHECK-NEXT:     println!("{} {}", 64i32, 4i32);
-// CHECK-NEXT:     let values: __SlateAlign16<[i32; 6]> = __SlateAlign16([
-// CHECK-NEXT:         0i32,
-// CHECK-NEXT:         -1i32,
-// CHECK-NEXT:         1i32,
-// CHECK-NEXT:         255i32,
-// CHECK-NEXT:         -256i32,
-// CHECK-NEXT:         1073741824i32,
-// CHECK-NEXT:     ]);
-// CHECK-NEXT:     let wide: __SlateAlign16<[i64; 4]> = __SlateAlign16([
-// CHECK-NEXT:         0i64,
-// CHECK-NEXT:         -1i64,
-// CHECK-NEXT:         1099511627776i64,
-// CHECK-NEXT:         -1099511627776i64,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let values: __SlateAlign16<[i32; 6]> = __SlateAlign16(
+// CHECK-NEXT:         [0i32, -1i32, 1i32, 255i32, -256i32, 1073741824i32],
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let wide: __SlateAlign16<[i64; 4]> = __SlateAlign16(
+// CHECK-NEXT:         [0i64, -1i64, 1099511627776i64, -1099511627776i64],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..6i32 {
 // CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {}", { let [[T_0:__t[0-9]+]] = values.0[i as usize]; ((if [[T_0]] < 0 { (! [[T_0]])
-// CHECK-NEXT:             .leading_zeros() } else { [[T_0]].leading_zeros() }) - 1) as i32 }, { let [[T_1:__t[0-9]+]] =
-// CHECK-NEXT:             values.0[i as usize] as u32; ([[T_1]].count_ones() & 1) as i32 }
+// CHECK-NEXT:             "{} {}",
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_0:__t[0-9]+]] = values.0[i as usize];
+// CHECK-NEXT:                 ((if [[T_0]] < 0 { (![[T_0]]).leading_zeros() } else { [[T_0]].leading_zeros() })
+// CHECK-NEXT:                     - 1) as i32
+// CHECK-NEXT:             },
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_1:__t[0-9]+]] = values.0[i as usize] as u32;
+// CHECK-NEXT:                 ([[T_1]].count_ones() & 1) as i32
+// CHECK-NEXT:             }
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
 // CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {} {}", { let [[T_2:__t[0-9]+]] = wide.0[i as usize]; ((if [[T_2]] < 0 { (! [[T_2]])
-// CHECK-NEXT:             .leading_zeros() } else { [[T_2]].leading_zeros() }) - 1) as i32 }, { let [[T_3:__t[0-9]+]] =
-// CHECK-NEXT:             wide.0[i as usize]; ((if [[T_3]] < 0 { (! [[T_3]]).leading_zeros() } else { [[T_3]]
-// CHECK-NEXT:             .leading_zeros() }) - 1) as i32 }, { let [[T_4:__t[0-9]+]] = wide.0[i as usize] as u64;
-// CHECK-NEXT:             ([[T_4]].count_ones() & 1) as i32 }
+// CHECK-NEXT:             "{} {} {}",
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_2:__t[0-9]+]] = wide.0[i as usize];
+// CHECK-NEXT:                 ((if [[T_2]] < 0 { (![[T_2]]).leading_zeros() } else { [[T_2]].leading_zeros() })
+// CHECK-NEXT:                     - 1) as i32
+// CHECK-NEXT:             },
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_3:__t[0-9]+]] = wide.0[i as usize];
+// CHECK-NEXT:                 ((if [[T_3]] < 0 { (![[T_3]]).leading_zeros() } else { [[T_3]].leading_zeros() })
+// CHECK-NEXT:                     - 1) as i32
+// CHECK-NEXT:             },
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_4:__t[0-9]+]] = wide.0[i as usize] as u64;
+// CHECK-NEXT:                 ([[T_4]].count_ones() & 1) as i32
+// CHECK-NEXT:             }
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let negative: i64 = -42;
@@ -101,6 +120,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

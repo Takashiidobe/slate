@@ -16,26 +16,33 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![allow(named_asm_labels)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     static mut slate_cs_start: [i8; 0];
 // CHECK-NEXT:     static mut slate_cs_end: [i8; 0];
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn bump(x: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "slate_cs_start:\n\tnop\nslate_cs_end:", options(nostack, att_syntax)
+// CHECK-NEXT:             "slate_cs_start:\n\tnop\nslate_cs_end:",
+// CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x + 1
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", bump(1i32), ((unsafe { core::ptr::addr_of!(slate_cs_end) as * const i8
-// CHECK-NEXT:         }) >= unsafe { core::ptr::addr_of!(slate_cs_start) as * const i8 }) as i32
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         bump(1i32),
+// CHECK-NEXT:         ((unsafe { core::ptr::addr_of!(slate_cs_end) as *const i8 })
+// CHECK-NEXT:             >= unsafe { core::ptr::addr_of!(slate_cs_start) as *const i8 }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

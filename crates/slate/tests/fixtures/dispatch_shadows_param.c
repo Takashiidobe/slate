@@ -32,11 +32,13 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct fd {
 // CHECK-NEXT:     name: u32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pick(fd: &fd, name: u32, k: i32) -> i32 {
 // CHECK-NEXT:     let mut name__1: u32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
@@ -55,16 +57,19 @@ int main(void) {
 // CHECK-NEXT:         return total;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut small: fd = fd { name: 3 };
 // CHECK-NEXT:     let mut big: fd = fd { name: 9 };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", pick(unsafe { & (* core::ptr::addr_of_mut!(small)) }, 2u32, 0i32),
-// CHECK-NEXT:         pick(unsafe { & (* core::ptr::addr_of_mut!(big)) }, 2u32, 0i32), pick(unsafe { &
-// CHECK-NEXT:         (* core::ptr::addr_of_mut!(small)) }, 2u32, 1i32)
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         pick(unsafe { &(*core::ptr::addr_of_mut!(small)) }, 2u32, 0i32),
+// CHECK-NEXT:         pick(unsafe { &(*core::ptr::addr_of_mut!(big)) }, 2u32, 0i32),
+// CHECK-NEXT:         pick(unsafe { &(*core::ptr::addr_of_mut!(small)) }, 2u32, 1i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -32,37 +32,42 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! va_copy {
 // CHECK-NEXT:     ($d:expr, $s:expr) => {
-// CHECK-NEXT:         $d = unsafe { (* core::ptr::addr_of_mut!($s)).clone() };
+// CHECK-NEXT:         $d = unsafe { (*core::ptr::addr_of_mut!($s)).clone() };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn vprintf([[ARG_0:arg[0-9]+]]: *const i8, [[ARG_1:arg[0-9]+]]: core::ffi::VaList<'static>) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct va_format {
 // CHECK-NEXT:     fmt: *const i8,
 // CHECK-NEXT:     va: *mut core::ffi::VaList<'static>,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn emit(vaf: *mut va_format) {
 // CHECK-NEXT:     let mut va: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     va_copy!(va, * unsafe { (* vaf).va });
+// CHECK-NEXT:     va_copy!(va, *unsafe { (*vaf).va });
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { vprintf((*vaf).fmt, va.clone()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn outer(fmt: *const i8, mut __va_args: ...) {
 // CHECK-NEXT:     let mut args: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     args = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut vaf: va_format = va_format {
 // CHECK-NEXT:         fmt: fmt,
@@ -71,10 +76,12 @@ int main(void) {
 // CHECK-NEXT:     emit(core::ptr::addr_of_mut!(vaf));
 // CHECK-NEXT:     emit(core::ptr::addr_of_mut!(vaf));
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe { outer(c"%d-%s\n".as_ptr(), 7i32, c"x".as_ptr() as *mut i8) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

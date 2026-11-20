@@ -31,23 +31,13 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     all(target_arch = "x86", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     not(slate_profile_i686_unknown_linux_gnu)
-// CHECK-NEXT: ))]
+// CHECK-NEXT: #[cfg(all(all(target_arch = "x86", target_os = "linux", target_env = "gnu"), not(slate_profile_i686_unknown_linux_gnu)))]
 // CHECK-NEXT: compile_error!("build i686-unknown-linux-gnu with --profile i686-unknown-linux-gnu");
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(all(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     not(slate_profile_default)
-// CHECK-NEXT: ))]
+// CHECK-NEXT: #[cfg(all(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), not(slate_profile_default)))]
 // CHECK-NEXT: compile_error!("build x86_64-unknown-linux-gnu with the dev or release profile");
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(all(
-// CHECK-NEXT:     any(target_arch = "x86", target_arch = "x86_64"),
-// CHECK-NEXT:     target_os = "linux",
-// CHECK-NEXT:     target_env = "gnu"
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(all(any(target_arch = "x86", target_arch = "x86_64"), target_os = "linux", target_env = "gnu")))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]

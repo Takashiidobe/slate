@@ -43,6 +43,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn lookup(status: i32, found: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: i32 = status;
@@ -58,6 +59,7 @@ int main(void) {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn skip_into_else(x: i32, y: i32) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -87,6 +89,7 @@ int main(void) {
 // CHECK-NEXT:         return out;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for status in -1..14i32 {
 // CHECK-NEXT:         print!("{}:{},{} ", status, lookup(status, 0i32), lookup(status, 1i32));
@@ -94,12 +97,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT:     for x in 0..5i32 {
-// CHECK-NEXT:         print!("{}:{},{} ", x, skip_into_else(x, 1i32), skip_into_else(x, - 1i32));
+// CHECK-NEXT:         print!("{}:{},{} ", x, skip_into_else(x, 1i32), skip_into_else(x, -1i32));
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

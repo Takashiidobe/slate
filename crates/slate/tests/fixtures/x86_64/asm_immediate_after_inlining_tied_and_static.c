@@ -42,7 +42,12 @@ int main(void) {
 // CHECK-NEXT:     let mut out: u32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!("addl ${1}, {0:e}", inlateout(reg) x as u32 => [[T_0]], const 2 as i32, options(pure, nomem, nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "addl ${1}, {0:e}",
+// CHECK-NEXT:             inlateout(reg) x as u32 => [[T_0]],
+// CHECK-NEXT:             const 2 as i32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         out = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
@@ -52,7 +57,12 @@ int main(void) {
 // CHECK-NEXT: fn add_inplace__const2(mut x: u32, n: i32) -> u32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!("addl ${1}, {0:e}", inlateout(reg) x as u32 => [[T_0]], const 5 as i32, options(pure, nomem, nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "addl ${1}, {0:e}",
+// CHECK-NEXT:             inlateout(reg) x as u32 => [[T_0]],
+// CHECK-NEXT:             const 5 as i32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
@@ -66,7 +76,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!("movl ${1}, {0:e}", lateout(reg) [[T_0]], const 3 as i32, options(pure, nomem, nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "movl ${1}, {0:e}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             const 3 as i32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         out = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out + unsafe { calls }
@@ -80,7 +95,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!("movl ${1}, {0:e}", lateout(reg) [[T_0]], const 4 as i32, options(pure, nomem, nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "movl ${1}, {0:e}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             const 4 as i32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         out = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out + unsafe { calls }
@@ -93,7 +113,13 @@ int main(void) {
 // CHECK-NEXT:     let mut out: u32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!("movl ({1:r}), {0:e}\n\taddl ${2}, {0:e}", lateout(reg) [[T_0]], in(reg) p as *const u32, const 3 as i32, options(pure, readonly, nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "movl ({1:r}), {0:e}\n\taddl ${2}, {0:e}",
+// CHECK-NEXT:             lateout(reg) [[T_0]],
+// CHECK-NEXT:             in(reg) p as *const u32,
+// CHECK-NEXT:             const 3 as i32,
+// CHECK-NEXT:             options(pure, readonly, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:         out = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out

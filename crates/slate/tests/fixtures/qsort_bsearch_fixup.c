@@ -36,29 +36,36 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct Item {
 // CHECK-NEXT:     key: i32,
 // CHECK-NEXT:     value: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::bsearch;
 // CHECK-NEXT: use slate_support::qsort;
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.cmp_int")]
 // CHECK-NEXT: extern "C-unwind" fn cmp_int(a: *const (), b: *const ()) -> i32 {
 // CHECK-NEXT:     (unsafe { *(a as *const i32) }) - unsafe { *(b as *const i32) }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.cmp_item")]
 // CHECK-NEXT: extern "C-unwind" fn cmp_item(a: *const (), b: *const ()) -> i32 {
 // CHECK-NEXT:     (unsafe { (*(a as *const Item)).key }) - unsafe { (*(b as *const Item)).key }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut nums: __SlateAlign16<[i32; 5]> = __SlateAlign16([
-// CHECK-NEXT:         4i32, 1i32, 5i32, 3i32, 2i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut nums: __SlateAlign16<[i32; 5]> = __SlateAlign16(
+// CHECK-NEXT:         [4i32, 1i32, 5i32, 3i32, 2i32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut key: i32 = 3;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         qsort(
@@ -66,15 +73,9 @@ int main(void) {
 // CHECK-NEXT:             5u64 as usize,
 // CHECK-NEXT:             (core::mem::size_of::<i32>() as u64) as usize,
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
-// CHECK-NEXT:                     Option<
-// CHECK-NEXT:                         unsafe extern "C" fn(
-// CHECK-NEXT:                             *const core::ffi::c_void,
-// CHECK-NEXT:                             *const core::ffi::c_void,
-// CHECK-NEXT:                         ) -> i32,
-// CHECK-NEXT:                     >,
-// CHECK-NEXT:                 >(Some(cmp_int))
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>, Option<unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void) -> i32>>(
+// CHECK-NEXT:                     Some(cmp_int),
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -85,24 +86,20 @@ int main(void) {
 // CHECK-NEXT:             5u64 as usize,
 // CHECK-NEXT:             (core::mem::size_of::<i32>() as u64) as usize,
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
-// CHECK-NEXT:                     Option<
-// CHECK-NEXT:                         unsafe extern "C" fn(
-// CHECK-NEXT:                             *const core::ffi::c_void,
-// CHECK-NEXT:                             *const core::ffi::c_void,
-// CHECK-NEXT:                         ) -> i32,
-// CHECK-NEXT:                     >,
-// CHECK-NEXT:                 >(Some(cmp_int))
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>, Option<unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void) -> i32>>(
+// CHECK-NEXT:                     Some(cmp_int),
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut i32;
-// CHECK-NEXT:     let mut items: __SlateAlign16<[Item; 4]> = __SlateAlign16([
-// CHECK-NEXT:         Item { key: 3, value: 30 },
-// CHECK-NEXT:         Item { key: 1, value: 10 },
-// CHECK-NEXT:         Item { key: 4, value: 40 },
-// CHECK-NEXT:         Item { key: 2, value: 20 },
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut items: __SlateAlign16<[Item; 4]> = __SlateAlign16(
+// CHECK-NEXT:         [
+// CHECK-NEXT:             Item { key: 3, value: 30 },
+// CHECK-NEXT:             Item { key: 1, value: 10 },
+// CHECK-NEXT:             Item { key: 4, value: 40 },
+// CHECK-NEXT:             Item { key: 2, value: 20 },
+// CHECK-NEXT:         ],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut needle: Item = Item { key: 4, value: 0 };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         qsort(
@@ -110,15 +107,9 @@ int main(void) {
 // CHECK-NEXT:             4u64 as usize,
 // CHECK-NEXT:             (core::mem::size_of::<Item>() as u64) as usize,
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
-// CHECK-NEXT:                     Option<
-// CHECK-NEXT:                         unsafe extern "C" fn(
-// CHECK-NEXT:                             *const core::ffi::c_void,
-// CHECK-NEXT:                             *const core::ffi::c_void,
-// CHECK-NEXT:                         ) -> i32,
-// CHECK-NEXT:                     >,
-// CHECK-NEXT:                 >(Some(cmp_item))
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>, Option<unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void) -> i32>>(
+// CHECK-NEXT:                     Some(cmp_item),
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -129,24 +120,22 @@ int main(void) {
 // CHECK-NEXT:             4u64 as usize,
 // CHECK-NEXT:             (core::mem::size_of::<Item>() as u64) as usize,
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>,
-// CHECK-NEXT:                     Option<
-// CHECK-NEXT:                         unsafe extern "C" fn(
-// CHECK-NEXT:                             *const core::ffi::c_void,
-// CHECK-NEXT:                             *const core::ffi::c_void,
-// CHECK-NEXT:                         ) -> i32,
-// CHECK-NEXT:                     >,
-// CHECK-NEXT:                 >(Some(cmp_item))
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>, Option<unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void) -> i32>>(
+// CHECK-NEXT:                     Some(cmp_item),
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut Item;
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}", nums.0[0], nums.0[4], if ! hit.is_null() { unsafe { * hit } } else
-// CHECK-NEXT:         { - 1i32 }, if ! found.is_null() { unsafe { (* found).value } } else { - 1i32 }
+// CHECK-NEXT:         "{} {} {} {}",
+// CHECK-NEXT:         nums.0[0],
+// CHECK-NEXT:         nums.0[4],
+// CHECK-NEXT:         if !hit.is_null() { unsafe { *hit } } else { -1i32 },
+// CHECK-NEXT:         if !found.is_null() { unsafe { (*found).value } } else { -1i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

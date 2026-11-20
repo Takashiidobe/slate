@@ -29,12 +29,16 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut g_shared: *mut () = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::abort;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pick(fresh: &()) -> *mut () {
 // CHECK-NEXT:     let previous: *mut () = unsafe { g_shared };
 // CHECK-NEXT:     if !previous.is_null() { previous } else { (fresh as *const ()) as *mut () }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pick_int(fresh: &i32, which: i32) -> *mut i32 {
 // CHECK-NEXT:     match which {
 // CHECK-NEXT:         0 => {
@@ -50,12 +54,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: i32 = 1;
 // CHECK-NEXT:     let mut b: i32 = 2;
 // CHECK-NEXT:     if pick(unsafe { &(*(core::ptr::addr_of_mut!(a) as *mut ())) })
-// CHECK-NEXT:         != (core::ptr::addr_of_mut!(a) as *mut ())
-// CHECK-NEXT:     {
+// CHECK-NEXT:         != (core::ptr::addr_of_mut!(a) as *mut ()) {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
@@ -75,6 +79,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

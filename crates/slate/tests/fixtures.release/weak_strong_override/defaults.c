@@ -10,7 +10,8 @@ int *__attribute__((weak)) lone_pointer_weak(void) { return &default_slot; }
 int defaults_used(void) { return fallback() * 100 + threshold; }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}use crate::__slate_unit_overrides::fallback;
+// CHECK: {{^}}
+// CHECK-NEXT: use crate::__slate_unit_overrides::fallback;
 // CHECK-NEXT: use crate::__slate_unit_overrides::pointer_fallback;
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {

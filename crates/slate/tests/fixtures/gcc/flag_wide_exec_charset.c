@@ -25,12 +25,13 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let text: __SlateAlign16<[i32; 4]> =
-// CHECK-NEXT:         __SlateAlign16([1090519040i32, 2046820352i32, -385875968i32, 0i32]);
+// CHECK-NEXT:     let text: __SlateAlign16<[i32; 4]> = __SlateAlign16(
+// CHECK-NEXT:         [1090519040i32, 2046820352i32, -385875968i32, 0i32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
-// CHECK-NEXT:         < (core::mem::size_of::<[i32; 4]>() as u64) / (core::mem::size_of::<i32>() as u64)
-// CHECK-NEXT:     {
+// CHECK-NEXT:         < (core::mem::size_of::<[i32; 4]>() as u64)
+// CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%08x ".as_ptr(), text.0[i as usize] as u32) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };

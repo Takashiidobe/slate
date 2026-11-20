@@ -160,10 +160,7 @@ int main(void) {
 // CHECK-NEXT: file main.rs
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(not(any(
-// CHECK-NEXT:     all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"),
-// CHECK-NEXT:     all(target_arch = "x86_64", windows, target_env = "msvc")
-// CHECK-NEXT: )))]
+// CHECK-NEXT: #[cfg(not(any(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu"), all(target_arch = "x86_64", windows, target_env = "msvc"))))]
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
@@ -211,17 +208,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u8,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u8, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits0U0 {
 // CHECK-NEXT:         #[bits(3)]
 // CHECK-NEXT:         pub flag: u32,
@@ -292,17 +279,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u32,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u32, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits8U0 {
 // CHECK-NEXT:         #[bits(3)]
 // CHECK-NEXT:         pub flag: u32,
@@ -356,8 +333,9 @@ int main(void) {
 // CHECK-NEXT:     let mut n: i32 = 1;
 // CHECK-NEXT:     let mut unused_write: i32 = 0;
 // CHECK-NEXT:     let mut temp_source: i32 = 10;
-// CHECK-NEXT:     let mut stack: __SlateAlignLargeArray<[i32; 4]> =
-// CHECK-NEXT:         __SlateAlignLargeArray([0i32, 0i32, 0i32, 0i32]);
+// CHECK-NEXT:     let mut stack: __SlateAlignLargeArray<[i32; 4]> = __SlateAlignLargeArray(
+// CHECK-NEXT:         [0i32, 0i32, 0i32, 0i32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut top: i32 = 0;
 // CHECK-NEXT:     let mut array: [i32; 3] = [1, 2, 3];
 // CHECK-NEXT:     let index: i32 = 1;
@@ -394,9 +372,10 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     PUSH!(stack.0, top, 5i32);
 // CHECK-NEXT:     PUSH!(stack.0, top, 6i32);
-// CHECK-NEXT:     pushes(stack.0.as_mut_ptr() as *mut i32, unsafe {
-// CHECK-NEXT:         &mut (*core::ptr::addr_of_mut!(top))
-// CHECK-NEXT:     });
+// CHECK-NEXT:     pushes(
+// CHECK-NEXT:         stack.0.as_mut_ptr() as *mut i32,
+// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(top)) },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     SET_COUNT__2!(s);
 // CHECK-NEXT:     SHOW_COUNT!(s);
 // CHECK-NEXT:     SHOW_COUNT__2!(*ps);
@@ -466,7 +445,12 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {} {} {} {}",
-// CHECK-NEXT:             n, unused_write, top, stack.0[0], stack.0[1], stack.0[2]
+// CHECK-NEXT:             n,
+// CHECK-NEXT:             unused_write,
+// CHECK-NEXT:             top,
+// CHECK-NEXT:             stack.0[0],
+// CHECK-NEXT:             stack.0[1],
+// CHECK-NEXT:             stack.0[2]
 // CHECK-NEXT:         );
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {} {} {}",

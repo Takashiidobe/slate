@@ -204,6 +204,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     safe fn __slate_f80_add(__a: LongDouble, __b: LongDouble) -> LongDouble;
 // CHECK-NEXT:     safe fn __slate_f80_sub(__a: LongDouble, __b: LongDouble) -> LongDouble;
@@ -289,33 +290,39 @@ int main(void) {
 // CHECK-NEXT:     safe fn __slate_f80_to_f64(__a: LongDouble) -> f64;
 // CHECK-NEXT:     safe fn __slate_f80_to_bool(__a: LongDouble) -> bool;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct LongDouble([u8; 10]);
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Add for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn add(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_add(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Sub for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn sub(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_sub(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Mul for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn mul(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_mul(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Div for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn div(self, __o: LongDouble) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_div(self, __o)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::AddAssign for LongDouble {
 // CHECK-NEXT:     fn add_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -323,6 +330,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::SubAssign for LongDouble {
 // CHECK-NEXT:     fn sub_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -330,6 +338,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::MulAssign for LongDouble {
 // CHECK-NEXT:     fn mul_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -337,6 +346,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::DivAssign for LongDouble {
 // CHECK-NEXT:     fn div_assign(&mut self, __o: LongDouble) {
 // CHECK-NEXT:         {
@@ -344,66 +354,61 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::ops::Neg for LongDouble {
 // CHECK-NEXT:     type Output = LongDouble;
 // CHECK-NEXT:     fn neg(self) -> LongDouble {
 // CHECK-NEXT:         __slate_f80_neg(self)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialEq for LongDouble {
 // CHECK-NEXT:     fn eq(&self, __other: &LongDouble) -> bool {
 // CHECK-NEXT:         __slate_f80_eq(*self, *__other)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: impl core::cmp::PartialOrd for LongDouble {
 // CHECK-NEXT:     fn partial_cmp(&self, __other: &LongDouble) -> Option<core::cmp::Ordering> {
 // CHECK-NEXT:         if __slate_f80_lt(*self, *__other) {
 // CHECK-NEXT:             Some(core::cmp::Ordering::Less)
+// CHECK-NEXT:         } else if __slate_f80_gt(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Greater)
+// CHECK-NEXT:         } else if __slate_f80_eq(*self, *__other) {
+// CHECK-NEXT:             Some(core::cmp::Ordering::Equal)
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if __slate_f80_gt(*self, *__other) {
-// CHECK-NEXT:                 Some(core::cmp::Ordering::Greater)
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if __slate_f80_eq(*self, *__other) {
-// CHECK-NEXT:                     Some(core::cmp::Ordering::Equal)
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     None
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:             None
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct C89Point {
 // CHECK-NEXT:     x: i32,
 // CHECK-NEXT:     y: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(4))]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct C89Bits {
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits4U0,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union C89Number {
 // CHECK-NEXT:     integer: i32,
 // CHECK-NEXT:     real: f64,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u8,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u8, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits4U0 {
 // CHECK-NEXT:         #[bits(3)]
 // CHECK-NEXT:         pub low: u32,
@@ -413,26 +418,32 @@ int main(void) {
 // CHECK-NEXT:         pub __slate_pad_2: u8,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut c89_external_value: i32 = 11;
+// CHECK-EMPTY:
 // CHECK-NEXT: static c89_const_global: i32 = 17;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut c89_volatile_global: i32 = 19;
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut c89_joined_value: i32 = 23;
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn c89_add(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     left + right
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c89_store(destination: &mut (), source: &()) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *((destination as *mut ()) as *mut i32) = *((source as *const ()) as *const i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn c89_variadic_sum(count: i32, mut __va_args: ...) -> i32 {
 // CHECK-NEXT:     let mut arguments: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     arguments = unsafe {
-// CHECK-NEXT:         core::mem::transmute::<
-// CHECK-NEXT:             core::ffi::VaList<'_>,
-// CHECK-NEXT:             core::ffi::VaList<'static>,
-// CHECK-NEXT:         >(__va_args.clone())
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
+// CHECK-NEXT:             __va_args.clone(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for index in 0..count {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { arguments.next_arg::<i32>() };
@@ -440,13 +451,16 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c89_static_local() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { calls }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = 0;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn c89_control_flow(value: i32) -> i32 {
 // CHECK-NEXT:     let mut index: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
@@ -483,6 +497,7 @@ int main(void) {
 // CHECK-NEXT:         return result;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut automatic_value: i32 = 2;
 // CHECK-NEXT:     let register_value: i32 = 3;
@@ -541,19 +556,39 @@ int main(void) {
 // CHECK-NEXT:     control_total = c89_control_flow(4i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
-// CHECK-NEXT:         unsafe { c89_external_value }, unsafe { c89_const_global }, unsafe {
-// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(c89_volatile_global)) }, unsafe {
-// CHECK-NEXT:         c89_joined_value }, 13i32, standard_macro, signed_value, unsigned_value as i32,
-// CHECK-NEXT:         signed_character as i32, float_value as i32, double_value as i32,
-// CHECK-NEXT:         __slate_f80_to_i32(long_double_value), wide_character, color as u32, point.x +
-// CHECK-NEXT:         point.y, bits.__slate_bits_0.__get_low() as i32, bits.__slate_bits_0
-// CHECK-NEXT:         .__get_high(), unsafe { number.integer }, (unsafe { * const_pointer.add(0) }) +
-// CHECK-NEXT:         unsafe { * const_pointer.add(3) }, copied_value, unsafe { operation.unwrap()
-// CHECK-NEXT:         (53i32, 6i32) }, arithmetic, bitwise, logical, conditional, comma_value,
-// CHECK-NEXT:         string_length, static_calls, variadic_total + control_total
+// CHECK-NEXT:         unsafe { c89_external_value },
+// CHECK-NEXT:         unsafe { c89_const_global },
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(c89_volatile_global)) },
+// CHECK-NEXT:         unsafe { c89_joined_value },
+// CHECK-NEXT:         13i32,
+// CHECK-NEXT:         standard_macro,
+// CHECK-NEXT:         signed_value,
+// CHECK-NEXT:         unsigned_value as i32,
+// CHECK-NEXT:         signed_character as i32,
+// CHECK-NEXT:         float_value as i32,
+// CHECK-NEXT:         double_value as i32,
+// CHECK-NEXT:         __slate_f80_to_i32(long_double_value),
+// CHECK-NEXT:         wide_character,
+// CHECK-NEXT:         color as u32,
+// CHECK-NEXT:         point.x + point.y,
+// CHECK-NEXT:         bits.__slate_bits_0.__get_low() as i32,
+// CHECK-NEXT:         bits.__slate_bits_0.__get_high(),
+// CHECK-NEXT:         unsafe { number.integer },
+// CHECK-NEXT:         (unsafe { *const_pointer.add(0) }) + unsafe { *const_pointer.add(3) },
+// CHECK-NEXT:         copied_value,
+// CHECK-NEXT:         unsafe { operation.unwrap()(53i32, 6i32) },
+// CHECK-NEXT:         arithmetic,
+// CHECK-NEXT:         bitwise,
+// CHECK-NEXT:         logical,
+// CHECK-NEXT:         conditional,
+// CHECK-NEXT:         comma_value,
+// CHECK-NEXT:         string_length,
+// CHECK-NEXT:         static_calls,
+// CHECK-NEXT:         variadic_total + control_total
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

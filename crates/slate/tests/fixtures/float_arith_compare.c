@@ -49,31 +49,41 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn zero() -> f64 {
 // CHECK-NEXT:     0.0f64
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn compare_all(a: f64, b: f64) -> i32 {
 // CHECK-NEXT:     ((a < b) as i32) | ((a <= b) as i32) << 1i32 | ((a > b) as i32) << 2i32
 // CHECK-NEXT:         | ((a >= b) as i32) << 3i32 | ((a == b) as i32) << 4i32
 // CHECK-NEXT:         | ((a != b) as i32) << 5i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let nan: f64 = zero() / zero();
 // CHECK-NEXT:     let inf: f64 = 1.0f64 / zero();
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", compare_all(nan, nan), compare_all(nan, 1.0f64), compare_all(1.0f64,
-// CHECK-NEXT:         2.0f64)
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         compare_all(nan, nan),
+// CHECK-NEXT:         compare_all(nan, 1.0f64),
+// CHECK-NEXT:         compare_all(1.0f64, 2.0f64)
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!("{} {}", compare_all(- 0.0f64, 0.0f64), compare_all(inf, - inf));
+// CHECK-NEXT:     println!("{} {}", compare_all(-0.0f64, 0.0f64), compare_all(inf, -inf));
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", (nan == 0.0f64) as i32, if nan != 0.0f64 { 1i32 } else { 0i32 }, if -
-// CHECK-NEXT:         0.0f64 != 0.0f64 { 1i32 } else { 0i32 }
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         (nan == 0.0f64) as i32,
+// CHECK-NEXT:         if nan != 0.0f64 { 1i32 } else { 0i32 },
+// CHECK-NEXT:         if -0.0f64 != 0.0f64 { 1i32 } else { 0i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -139,12 +149,9 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let values: __SlateAlign16<[f64; 4]> = __SlateAlign16([
-// CHECK-NEXT:         3.5f64,
-// CHECK-NEXT:         -1.25f64,
-// CHECK-NEXT:         0.0f64,
-// CHECK-NEXT:         1e300f64,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let values: __SlateAlign16<[f64; 4]> = __SlateAlign16(
+// CHECK-NEXT:         [3.5f64, -1.25f64, 0.0f64, 1e300f64],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut max: f64 = values.0[0];
 // CHECK-NEXT:     for k in 1i32..4i32 {
 // CHECK-NEXT:         max = if values.0[k as usize] > max { values.0[k as usize] } else { max };
@@ -155,11 +162,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}", ((1.0f32 as f64) < 1.0f64) as i32, (((0.1f64 as f32) as f64) == 0.1f64)
-// CHECK-NEXT:         as i32
+// CHECK-NEXT:         "{} {}",
+// CHECK-NEXT:         ((1.0f32 as f64) < 1.0f64) as i32,
+// CHECK-NEXT:         (((0.1f64 as f32) as f64) == 0.1f64) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

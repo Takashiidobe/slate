@@ -47,16 +47,19 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union FuzzPair {
 // CHECK-NEXT:     left: i32,
 // CHECK-NEXT:     right: i32,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn helper(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let c: i32 = a + b;
 // CHECK-NEXT:     c
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn loop_sum(n: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 1;
@@ -66,6 +69,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn array_pick(index: i32) -> i32 {
 // CHECK-NEXT:     let mut values: [i32; 3] = [0i32; 3];
 // CHECK-NEXT:     values[0] = 6;
@@ -73,6 +77,7 @@ int main(void) {
 // CHECK-NEXT:     values[2] = values[0] + values[1];
 // CHECK-NEXT:     values[index as usize]
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn union_pick(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let mut p: FuzzPair = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -83,6 +88,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { p.left }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", helper(7i32, 2i32));
 // CHECK-NEXT:     println!("{}", loop_sum(2i32));
@@ -91,6 +97,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", 6i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

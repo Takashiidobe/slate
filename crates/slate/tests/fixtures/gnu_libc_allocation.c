@@ -60,6 +60,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![allow(arithmetic_overflow, unconditional_panic)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn memalign([[ARG_0:arg[0-9]+]]: u64, [[ARG_1:arg[0-9]+]]: u64) -> *mut ();
 // CHECK-NEXT:     fn valloc([[ARG_0]]: u64) -> *mut ();
@@ -77,6 +78,7 @@ int main(void) {
 // CHECK-NEXT:     ) -> i32;
 // CHECK-NEXT:     fn obstack_free([[ARG_0]]: *mut obstack, [[ARG_1]]: *mut ());
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct _obstack_chunk {
@@ -84,6 +86,7 @@ int main(void) {
 // CHECK-NEXT:     prev: *mut _obstack_chunk,
 // CHECK-NEXT:     contents: [i8; 4],
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct obstack {
@@ -99,24 +102,16 @@ int main(void) {
 // CHECK-NEXT:     extra_arg: *mut (),
 // CHECK-NEXT:     __slate_bits_0: __slate_bits::__SlateBits1U0,
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: union __SlateRecord_obstack_h_160 {
 // CHECK-NEXT:     tempint: i64,
 // CHECK-NEXT:     tempptr: *mut (),
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: mod __slate_bits {
-// CHECK-NEXT:     #[bitfields::bitfield(
-// CHECK-NEXT:         u8,
-// CHECK-NEXT:         c_names = true,
-// CHECK-NEXT:         new = false,
-// CHECK-NEXT:         from_into_bits = false,
-// CHECK-NEXT:         from_traits = false,
-// CHECK-NEXT:         default = false,
-// CHECK-NEXT:         debug = false,
-// CHECK-NEXT:         builder = false,
-// CHECK-NEXT:         bit_ops = false
-// CHECK-NEXT:     )]
+// CHECK-NEXT:     #[bitfields::bitfield(u8, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits1U0 {
 // CHECK-NEXT:         #[bits(1)]
 // CHECK-NEXT:         pub use_extra_arg: u32,
@@ -128,12 +123,14 @@ int main(void) {
 // CHECK-NEXT:         pub __slate_pad_3: u8,
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::reallocarray;
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: use slate_support::sysconf;
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_allocation_extensions() -> i32 {
 // CHECK-NEXT:     let values: *mut i32 = (unsafe {
 // CHECK-NEXT:         reallocarray(
@@ -154,9 +151,8 @@ int main(void) {
 // CHECK-NEXT:             *values.offset(index as isize) = index + 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     total
-// CHECK-NEXT:         += (unsafe { *values.add(0) }) + unsafe { *values.add(1) }
-// CHECK-NEXT:             + unsafe { *values.add(2) } + unsafe { *values.add(3) };
+// CHECK-NEXT:     total += (unsafe { *values.add(0) }) + unsafe { *values.add(1) }
+// CHECK-NEXT:         + unsafe { *values.add(2) } + unsafe { *values.add(3) };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = ((unsafe { malloc_usable_size(values as *mut ()) })
 // CHECK-NEXT:         >= 4u64.wrapping_mul(core::mem::size_of::<i32>() as u64)) as i32;
 // CHECK-NEXT:     total += [[V_0]];
@@ -178,6 +174,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { free(rounded as *mut core::ffi::c_void) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_obstack_extensions() -> i32 {
 // CHECK-NEXT:     let mut storage: obstack = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut total: i32 = 0;
@@ -187,21 +184,18 @@ int main(void) {
 // CHECK-NEXT:             0i32,
 // CHECK-NEXT:             0i32,
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(u64) -> *mut ()>,
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(i64) -> *mut ()>,
-// CHECK-NEXT:                 >(unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<
-// CHECK-NEXT:                         *const (),
-// CHECK-NEXT:                         Option<unsafe extern "C-unwind" fn(u64) -> *mut ()>,
-// CHECK-NEXT:                     >(malloc as *const ())
-// CHECK-NEXT:                 })
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(u64) -> *mut ()>, Option<unsafe extern "C-unwind" fn(i64) -> *mut ()>>(
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(u64) -> *mut ()>>(
+// CHECK-NEXT:                             malloc as *const (),
+// CHECK-NEXT:                         )
+// CHECK-NEXT:                     },
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<
-// CHECK-NEXT:                     *const (),
-// CHECK-NEXT:                     Option<unsafe extern "C-unwind" fn(*mut ())>,
-// CHECK-NEXT:                 >(free as *const ())
+// CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(*mut ())>>(
+// CHECK-NEXT:                     free as *const (),
+// CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -211,8 +205,7 @@ int main(void) {
 // CHECK-NEXT:         let __o: *mut obstack = __h;
 // CHECK-NEXT:         let __len: i32 = 3;
 // CHECK-NEXT:         if (unsafe { unsafe { (*__o).next_free }.offset(__len as isize).add(1) })
-// CHECK-NEXT:             > unsafe { (*__o).chunk_limit }
-// CHECK-NEXT:         {
+// CHECK-NEXT:             > unsafe { (*__o).chunk_limit } {
 // CHECK-NEXT:             unsafe { _obstack_newchunk(__o, __len + 1) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
@@ -244,18 +237,16 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (*__o1).next_free = if (core::mem::size_of::<i64>() as u64)
-// CHECK-NEXT:                 < (core::mem::size_of::<*mut ()>() as u64)
-// CHECK-NEXT:             {
-// CHECK-NEXT:                 (*__o1).object_base
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 core::ptr::null_mut::<i8>()
-// CHECK-NEXT:             }
+// CHECK-NEXT:                     < (core::mem::size_of::<*mut ()>() as u64) {
+// CHECK-NEXT:                     (*__o1).object_base
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     core::ptr::null_mut::<i8>()
+// CHECK-NEXT:                 }
 // CHECK-NEXT:                 .offset(
 // CHECK-NEXT:                     ((unsafe { (*__o1).next_free }
 // CHECK-NEXT:                         .offset_from(
 // CHECK-NEXT:                             (if (core::mem::size_of::<i64>() as u64)
-// CHECK-NEXT:                                 < (core::mem::size_of::<*mut ()>() as u64)
-// CHECK-NEXT:                             {
+// CHECK-NEXT:                                 < (core::mem::size_of::<*mut ()>() as u64) {
 // CHECK-NEXT:                                 (*__o1).object_base
 // CHECK-NEXT:                             } else {
 // CHECK-NEXT:                                 core::ptr::null_mut::<i8>()
@@ -269,8 +260,7 @@ int main(void) {
 // CHECK-NEXT:         }) as i64)
 // CHECK-NEXT:             > ((unsafe {
 // CHECK-NEXT:                 unsafe { (*__o1).chunk_limit }.offset_from((*__o1).chunk as *mut i8)
-// CHECK-NEXT:             }) as i64)
-// CHECK-NEXT:         {
+// CHECK-NEXT:             }) as i64) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 (*__o1).next_free = (*__o1).chunk_limit;
 // CHECK-NEXT:             }
@@ -288,8 +278,7 @@ int main(void) {
 // CHECK-NEXT:         let __o: *mut obstack = __h;
 // CHECK-NEXT:         let __len: i32 = 4;
 // CHECK-NEXT:         if (unsafe { unsafe { (*__o).next_free }.offset(__len as isize).add(1) })
-// CHECK-NEXT:             > unsafe { (*__o).chunk_limit }
-// CHECK-NEXT:         {
+// CHECK-NEXT:             > unsafe { (*__o).chunk_limit } {
 // CHECK-NEXT:             unsafe { _obstack_newchunk(__o, __len + 1) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
@@ -322,18 +311,16 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*__o1).next_free = if (core::mem::size_of::<i64>() as u64)
-// CHECK-NEXT:             < (core::mem::size_of::<*mut ()>() as u64)
-// CHECK-NEXT:         {
-// CHECK-NEXT:             (*__o1).object_base
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             core::ptr::null_mut::<i8>()
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 < (core::mem::size_of::<*mut ()>() as u64) {
+// CHECK-NEXT:                 (*__o1).object_base
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 core::ptr::null_mut::<i8>()
+// CHECK-NEXT:             }
 // CHECK-NEXT:             .offset(
 // CHECK-NEXT:                 ((unsafe { (*__o1).next_free }
 // CHECK-NEXT:                     .offset_from(
 // CHECK-NEXT:                         (if (core::mem::size_of::<i64>() as u64)
-// CHECK-NEXT:                             < (core::mem::size_of::<*mut ()>() as u64)
-// CHECK-NEXT:                         {
+// CHECK-NEXT:                             < (core::mem::size_of::<*mut ()>() as u64) {
 // CHECK-NEXT:                             (*__o1).object_base
 // CHECK-NEXT:                         } else {
 // CHECK-NEXT:                             core::ptr::null_mut::<i8>()
@@ -346,8 +333,7 @@ int main(void) {
 // CHECK-NEXT:         as i64)
 // CHECK-NEXT:         > ((unsafe {
 // CHECK-NEXT:             unsafe { (*__o1).chunk_limit }.offset_from((*__o1).chunk as *mut i8)
-// CHECK-NEXT:         }) as i64)
-// CHECK-NEXT:     {
+// CHECK-NEXT:         }) as i64) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (*__o1).next_free = (*__o1).chunk_limit;
 // CHECK-NEXT:         }
@@ -385,8 +371,7 @@ int main(void) {
 // CHECK-NEXT:     let __o: *mut obstack = core::ptr::addr_of_mut!(storage);
 // CHECK-NEXT:     let __obj: *mut () = core::ptr::null_mut::<()>();
 // CHECK-NEXT:     if __obj > ((unsafe { (*__o).chunk }) as *mut ())
-// CHECK-NEXT:         && __obj < ((unsafe { (*__o).chunk_limit }) as *mut ())
-// CHECK-NEXT:     {
+// CHECK-NEXT:         && __obj < ((unsafe { (*__o).chunk_limit }) as *mut ()) {
 // CHECK-NEXT:         let [[V_14:__v[0-9]+]]: *mut i8 = __obj as *mut i8;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (*__o).object_base = [[V_14]];
@@ -399,10 +384,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{} {}", gnu_allocation_extensions(), gnu_obstack_extensions());
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

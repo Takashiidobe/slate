@@ -33,14 +33,20 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut g: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut log_index: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT: static mut calls: __SlateAlign16<[i32; 16]> = __SlateAlign16(unsafe {
-// CHECK-NEXT:     core::mem::zeroed()
-// CHECK-NEXT: });
+// CHECK-EMPTY:
+// CHECK-NEXT: static mut calls: __SlateAlign16<[i32; 16]> = __SlateAlign16(
+// CHECK-NEXT:     unsafe { core::mem::zeroed() },
+// CHECK-NEXT: );
+// CHECK-EMPTY:
 // CHECK-NEXT: fn observe(tag: i32) -> i32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe { log_index };
 // CHECK-NEXT:     unsafe {
@@ -51,9 +57,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { g }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn pair(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     a * 100 + b
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn pick(tag: i32) -> Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> {
 // CHECK-NEXT:     let [[V_0]]: i32 = unsafe { log_index };
 // CHECK-NEXT:     unsafe {
@@ -64,6 +72,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     Some(pair)
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     let [[V_0]]: i32 = observe(1i32);
@@ -108,6 +117,7 @@ int main(void) {
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

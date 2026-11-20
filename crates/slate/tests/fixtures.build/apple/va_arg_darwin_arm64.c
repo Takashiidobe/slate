@@ -31,7 +31,8 @@ long sum(int count, ...) {
 }
 
 // SLATE-FILECHECK-BEGIN aarch64-apple-darwin
-// CHECK: {{^}}mod __slate_darwin_arm64_va {
+// CHECK: {{^}}
+// CHECK-NEXT: mod __slate_darwin_arm64_va {
 // CHECK-NEXT:     pub unsafe fn arg<L, T>(list: *mut L) -> T {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             let cursor = &mut *(list as *mut *const u8);
@@ -98,7 +99,8 @@ long sum(int count, ...) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_char(mut ap: *mut i8) -> i8 {
-// CHECK-NEXT:     (unsafe { __slate_darwin_arm64_va::arg::<_, i32>(core::ptr::addr_of_mut!(ap)) }) as i8
+// CHECK-NEXT:     (unsafe { __slate_darwin_arm64_va::arg::<_, i32>(core::ptr::addr_of_mut!(ap)) })
+// CHECK-NEXT:         as i8
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -123,40 +125,53 @@ long sum(int count, ...) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_small(mut ap: *mut i8) -> small {
-// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::arg::<_, small>(core::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         __slate_darwin_arm64_va::arg::<_, small>(core::ptr::addr_of_mut!(ap))
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_big(mut ap: *mut i8) -> big {
-// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::indirect::<_, big>(core::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         __slate_darwin_arm64_va::indirect::<_, big>(core::ptr::addr_of_mut!(ap))
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_hfa(mut ap: *mut i8) -> hfa {
-// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::arg::<_, hfa>(core::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         __slate_darwin_arm64_va::arg::<_, hfa>(core::ptr::addr_of_mut!(ap))
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_quad(mut ap: *mut i8) -> quad {
-// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::arg::<_, quad>(core::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         __slate_darwin_arm64_va::arg::<_, quad>(core::ptr::addr_of_mut!(ap))
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_wide(mut ap: *mut i8) -> wide {
-// CHECK-NEXT:     return unsafe { __slate_darwin_arm64_va::arg::<_, wide>(core::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         __slate_darwin_arm64_va::arg::<_, wide>(core::ptr::addr_of_mut!(ap))
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn sum(count: i32, mut __va_args: ...) -> i64 {
 // CHECK-NEXT:     let mut ap: *mut i8 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     ap = unsafe { core::mem::transmute::<core::ffi::VaList<'_>, *mut i8>(__va_args.clone()) };
+// CHECK-NEXT:     ap = unsafe {
+// CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, *mut i8>(__va_args.clone())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = take_int(ap);
 // CHECK-NEXT:         total += [[V_0]] as i64;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let b: big =
-// CHECK-NEXT:         unsafe { __slate_darwin_arm64_va::indirect::<_, big>(core::ptr::addr_of_mut!(ap)) };
+// CHECK-NEXT:     let b: big = unsafe {
+// CHECK-NEXT:         __slate_darwin_arm64_va::indirect::<_, big>(core::ptr::addr_of_mut!(ap))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     total + b.a + b.c
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}

@@ -52,21 +52,28 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
+// CHECK-EMPTY:
 // CHECK-NEXT: fn as_int(color: u32) -> i32 {
 // CHECK-NEXT:     (color as u32) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn from_int(value: i32) -> u32 {
 // CHECK-NEXT:     value as u32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn flip(value: i32) -> i32 {
 // CHECK-NEXT:     -(value as i32) as i32
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{} {} {}", as_int(0u32), as_int(5u32), as_int(6u32));
 // CHECK-NEXT:     let mut color: u32 = from_int(6i32);
@@ -75,7 +82,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", (color as u32) as i32);
 // CHECK-NEXT:     color = (color as u32).wrapping_add(1) as u32;
 // CHECK-NEXT:     println!("{}", color as u32);
-// CHECK-NEXT:     println!("{} {}", flip(- 3i32) as i32, ((flip(3i32) as i32) < 0) as i32);
+// CHECK-NEXT:     println!("{} {}", flip(-3i32) as i32, ((flip(3i32) as i32) < 0) as i32);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u %d\n".as_ptr(), 4294967295u32, true as i32) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let wide: i64 = -3;
@@ -83,16 +90,16 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld %u\n".as_ptr(), wide, narrow as u32) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([
-// CHECK-NEXT:         10i32, 20i32, 30i32, 40i32,
-// CHECK-NEXT:     ]);
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16(
+// CHECK-NEXT:         [10i32, 20i32, 30i32, 40i32],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let p: *mut i32 = values.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     let address: u64 = p as u64;
 // CHECK-NEXT:     let back: *mut i32 = address as *mut i32;
-// CHECK-NEXT:     println!("{} {}", (back == p) as i32, unsafe { * back });
+// CHECK-NEXT:     println!("{} {}", (back == p) as i32, unsafe { *back });
 // CHECK-NEXT:     println!("{}", ((unsafe { p.add(3) }) as u64).wrapping_sub(address) as i32);
 // CHECK-NEXT:     let signed_address: i64 = (unsafe { p.add(2) }) as i64;
-// CHECK-NEXT:     println!("{}", unsafe { * (signed_address as * mut i32) });
+// CHECK-NEXT:     println!("{}", unsafe { *(signed_address as *mut i32) });
 // CHECK-NEXT:     let opaque: *mut () = (unsafe { (values.0.as_mut_ptr() as *mut i32).add(1) })
 // CHECK-NEXT:         as *mut ();
 // CHECK-NEXT:     let read_only: *const i32 = opaque as *const i32;
@@ -113,14 +120,17 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let null: *mut () = core::ptr::null_mut::<()>();
 // CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {}", null.is_null() as i32, null.is_null() as i32, ((null as i64) == 0) as
-// CHECK-NEXT:         i32
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         null.is_null() as i32,
+// CHECK-NEXT:         null.is_null() as i32,
+// CHECK-NEXT:         ((null as i64) == 0) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let from_zero: *mut i32 = core::ptr::null_mut::<i32>();
 // CHECK-NEXT:     println!("{}", from_zero.is_null() as i32);
-// CHECK-NEXT:     println!("{}", ! p.is_null() as i32);
+// CHECK-NEXT:     println!("{}", !p.is_null() as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

@@ -53,6 +53,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: fn scan(n: i32, mode: i32) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
@@ -75,6 +76,7 @@ int main(void) {
 // CHECK-NEXT:         return s;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn flags(mut c: i32) -> i32 {
 // CHECK-NEXT:     let mut fl: i32 = 0;
 // CHECK-NEXT:     let mut w: i32 = 0;
@@ -126,6 +128,7 @@ int main(void) {
 // CHECK-NEXT:     println!("flags {} {} {}", fl, w, c);
 // CHECK-NEXT:     fl + w
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     scan(3i32, 0i32);
 // CHECK-NEXT:     scan(3i32, 1i32);
@@ -134,6 +137,7 @@ int main(void) {
 // CHECK-NEXT:     flags(49i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,

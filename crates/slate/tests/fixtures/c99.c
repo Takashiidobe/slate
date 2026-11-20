@@ -188,8 +188,8 @@ int main(void) {
 // CHECK-NEXT: ///
 // CHECK-NEXT: static mut slash_comment_value: i32 = 3;
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::malloc;
+// CHECK-NEXT: use slate_support::free;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c99_inline_square(value: i32) -> i32 {
 // CHECK-NEXT:     value * value
@@ -249,37 +249,9 @@ int main(void) {
 // CHECK-NEXT:     p31: i32,
 // CHECK-NEXT:     p32: i32,
 // CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     p01 + p02
-// CHECK-NEXT:         + p03
-// CHECK-NEXT:         + p04
-// CHECK-NEXT:         + p05
-// CHECK-NEXT:         + p06
-// CHECK-NEXT:         + p07
-// CHECK-NEXT:         + p08
-// CHECK-NEXT:         + p09
-// CHECK-NEXT:         + p10
-// CHECK-NEXT:         + p11
-// CHECK-NEXT:         + p12
-// CHECK-NEXT:         + p13
-// CHECK-NEXT:         + p14
-// CHECK-NEXT:         + p15
-// CHECK-NEXT:         + p16
-// CHECK-NEXT:         + p17
-// CHECK-NEXT:         + p18
-// CHECK-NEXT:         + p19
-// CHECK-NEXT:         + p20
-// CHECK-NEXT:         + p21
-// CHECK-NEXT:         + p22
-// CHECK-NEXT:         + p23
-// CHECK-NEXT:         + p24
-// CHECK-NEXT:         + p25
-// CHECK-NEXT:         + p26
-// CHECK-NEXT:         + p27
-// CHECK-NEXT:         + p28
-// CHECK-NEXT:         + p29
-// CHECK-NEXT:         + p30
-// CHECK-NEXT:         + p31
-// CHECK-NEXT:         + p32
+// CHECK-NEXT:     p01 + p02 + p03 + p04 + p05 + p06 + p07 + p08 + p09 + p10 + p11 + p12 + p13 + p14
+// CHECK-NEXT:         + p15 + p16 + p17 + p18 + p19 + p20 + p21 + p22 + p23 + p24 + p25 + p26 + p27
+// CHECK-NEXT:         + p28 + p29 + p30 + p31 + p32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -296,27 +268,29 @@ int main(void) {
 // CHECK-NEXT:                 im: 1.0f32,
 // CHECK-NEXT:             };
 // CHECK-NEXT:     let double_complex: num_complex::Complex<f64> = 3.0f64
-// CHECK-NEXT:         + 4.0f64 * {
-// CHECK-NEXT:             let [[T_0:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:                 re: 0.0f32,
-// CHECK-NEXT:                 im: 1.0f32,
+// CHECK-NEXT:         + 4.0f64
+// CHECK-NEXT:             * {
+// CHECK-NEXT:                 let [[T_0:__t[0-9]+]] = num_complex::Complex {
+// CHECK-NEXT:                     re: 0.0f32,
+// CHECK-NEXT:                     im: 1.0f32,
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: [[T_0]].re as f64,
+// CHECK-NEXT:                     im: [[T_0]].im as f64,
+// CHECK-NEXT:                 }
 // CHECK-NEXT:             };
-// CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_0]].re as f64,
-// CHECK-NEXT:                 im: [[T_0]].im as f64,
-// CHECK-NEXT:             }
-// CHECK-NEXT:         };
 // CHECK-NEXT:     let long_double_complex: num_complex::Complex<f128> = 5f128
-// CHECK-NEXT:         + 6f128 * {
-// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:                 re: 0.0f32,
-// CHECK-NEXT:                 im: 1.0f32,
+// CHECK-NEXT:         + 6f128
+// CHECK-NEXT:             * {
+// CHECK-NEXT:                 let [[T_1:__t[0-9]+]] = num_complex::Complex {
+// CHECK-NEXT:                     re: 0.0f32,
+// CHECK-NEXT:                     im: 1.0f32,
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: [[T_1]].re as f128,
+// CHECK-NEXT:                     im: [[T_1]].im as f128,
+// CHECK-NEXT:                 }
 // CHECK-NEXT:             };
-// CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_1]].re as f128,
-// CHECK-NEXT:                 im: [[T_1]].im as f128,
-// CHECK-NEXT:             }
-// CHECK-NEXT:         };
 // CHECK-NEXT:     let enhanced_arithmetic: i32 = (boolean_value as i32)
 // CHECK-NEXT:         + ((signed_long_long == -9000000000) as i32)
 // CHECK-NEXT:         + ((unsigned_long_long == 18000000000) as i32)
@@ -329,32 +303,36 @@ int main(void) {
 // CHECK-NEXT:                     }) as i32)
 // CHECK-NEXT:         + ((double_complex
 // CHECK-NEXT:             == 3.0f64
-// CHECK-NEXT:                 + 4.0f64 * {
-// CHECK-NEXT:                     let [[T_2:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:                         re: 0.0f32,
-// CHECK-NEXT:                         im: 1.0f32,
-// CHECK-NEXT:                     };
-// CHECK-NEXT:                     num_complex::Complex {
-// CHECK-NEXT:                         re: [[T_2]].re as f64,
-// CHECK-NEXT:                         im: [[T_2]].im as f64,
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }) as i32)
+// CHECK-NEXT:                 + 4.0f64
+// CHECK-NEXT:                     * {
+// CHECK-NEXT:                         let [[T_2:__t[0-9]+]] = num_complex::Complex {
+// CHECK-NEXT:                             re: 0.0f32,
+// CHECK-NEXT:                             im: 1.0f32,
+// CHECK-NEXT:                         };
+// CHECK-NEXT:                         num_complex::Complex {
+// CHECK-NEXT:                             re: [[T_2]].re as f64,
+// CHECK-NEXT:                             im: [[T_2]].im as f64,
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     }) as i32)
 // CHECK-NEXT:         + ((long_double_complex
 // CHECK-NEXT:             == 5f128
-// CHECK-NEXT:                 + 6f128 * {
-// CHECK-NEXT:                     let [[T_3:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:                         re: 0.0f32,
-// CHECK-NEXT:                         im: 1.0f32,
-// CHECK-NEXT:                     };
-// CHECK-NEXT:                     num_complex::Complex {
-// CHECK-NEXT:                         re: [[T_3]].re as f128,
-// CHECK-NEXT:                         im: [[T_3]].im as f128,
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }) as i32);
+// CHECK-NEXT:                 + 6f128
+// CHECK-NEXT:                     * {
+// CHECK-NEXT:                         let [[T_3:__t[0-9]+]] = num_complex::Complex {
+// CHECK-NEXT:                             re: 0.0f32,
+// CHECK-NEXT:                             im: 1.0f32,
+// CHECK-NEXT:                         };
+// CHECK-NEXT:                         num_complex::Complex {
+// CHECK-NEXT:                             re: [[T_3]].re as f128,
+// CHECK-NEXT:                             im: [[T_3]].im as f128,
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     }) as i32);
 // CHECK-NEXT:     let mut flexible_total: i32 = 0;
 // CHECK-NEXT:     let flexible: *mut C99Flexible = (unsafe {
-// CHECK-NEXT:         malloc(8u64.wrapping_add(3u64.wrapping_mul(core::mem::size_of::<i32>() as u64)) as usize)
-// CHECK-NEXT:             as *mut ()
+// CHECK-NEXT:         malloc(
+// CHECK-NEXT:             8u64.wrapping_add(3u64.wrapping_mul(core::mem::size_of::<i32>() as u64))
+// CHECK-NEXT:                 as usize,
+// CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut C99Flexible;
 // CHECK-NEXT:     if flexible.is_null() {
 // CHECK-NEXT:         return 2;
@@ -366,12 +344,13 @@ int main(void) {
 // CHECK-NEXT:         let mut index: u64 = 0;
 // CHECK-NEXT:         while index < unsafe { (*flexible).count } {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *(core::ptr::addr_of_mut!((*flexible).values) as *mut i32).add(index as usize) =
-// CHECK-NEXT:                     (index as i32) + 1;
+// CHECK-NEXT:                 *(core::ptr::addr_of_mut!((*flexible).values) as *mut i32)
+// CHECK-NEXT:                     .add(index as usize) = (index as i32) + 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = flexible_total
 // CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     *(core::ptr::addr_of_mut!((*flexible).values) as *mut i32).add(index as usize)
+// CHECK-NEXT:                     *(core::ptr::addr_of_mut!((*flexible).values) as *mut i32)
+// CHECK-NEXT:                         .add(index as usize)
 // CHECK-NEXT:                 };
 // CHECK-NEXT:             flexible_total = [[V_0]];
 // CHECK-NEXT:             index = index.wrapping_add(1);
@@ -389,19 +368,20 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for index in 0..length {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *(variable_length_array.as_mut_ptr() as *mut i32).offset(index as isize) = index + 4;
+// CHECK-NEXT:             *(variable_length_array.as_mut_ptr() as *mut i32).offset(index as isize) = index
+// CHECK-NEXT:                 + 4;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let vm_total: i32 = c99_vm_sum(length, variable_length_array.as_mut_ptr() as *mut [i32; 0]);
+// CHECK-NEXT:     let vm_total: i32 = c99_vm_sum(
+// CHECK-NEXT:         length,
+// CHECK-NEXT:         variable_length_array.as_mut_ptr() as *mut [i32; 0],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let initializer_seed: i32 = 19;
 // CHECK-NEXT:     let nonconstant_initializer: C99Pair = C99Pair {
 // CHECK-NEXT:         first: initializer_seed,
 // CHECK-NEXT:         second: initializer_seed + 1,
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let designated_initializer: C99Pair = C99Pair {
-// CHECK-NEXT:         first: 22,
-// CHECK-NEXT:         second: 23,
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let designated_initializer: C99Pair = C99Pair { first: 22, second: 23 };
 // CHECK-NEXT:     let designated_array: [i32; 4] = {
 // CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: [i32; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_4]][0] = 27i32;
@@ -411,26 +391,24 @@ int main(void) {
 // CHECK-NEXT:     let const_value: i32 = 31;
 // CHECK-NEXT:     let idempotent_const_value: i32 = const_value;
 // CHECK-NEXT:     let volatile_value: i32 = 37;
-// CHECK-NEXT:     let idempotent_volatile_value: i32 =
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(volatile_value)) };
+// CHECK-NEXT:     let idempotent_volatile_value: i32 = unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(volatile_value))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut restricted_value: i32 = 41;
 // CHECK-NEXT:     let restricted_pointer: *mut i32 = core::ptr::addr_of_mut!(restricted_value);
 // CHECK-NEXT:     let hexadecimal_float: f64 = 3.0f64;
 // CHECK-NEXT:     let compound_pair: C99Pair = unsafe {
 // CHECK-NEXT:         *{
-// CHECK-NEXT:             [[SLATE_COMPOUND_0]] = C99Pair {
-// CHECK-NEXT:                 first: 43,
-// CHECK-NEXT:                 second: 47,
-// CHECK-NEXT:             };
+// CHECK-NEXT:             [[SLATE_COMPOUND_0]] = C99Pair { first: 43, second: 47 };
 // CHECK-NEXT:             core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let compound_array_value: i32 = unsafe {
 // CHECK-NEXT:         *((*{
-// CHECK-NEXT:             [[SLATE_COMPOUND_1]] = [51i32, 53i32];
-// CHECK-NEXT:             core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
-// CHECK-NEXT:         })
-// CHECK-NEXT:         .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:                     [[SLATE_COMPOUND_1]] = [51i32, 53i32];
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:                 })
+// CHECK-NEXT:                 .as_mut_ptr() as *mut i32)
 // CHECK-NEXT:             .add(1)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let signed_quotient: i32 = -7 / 3;
@@ -445,15 +423,50 @@ int main(void) {
 // CHECK-NEXT:     let mut qualified_values: [i32; 3] = [2, 3, 5];
 // CHECK-NEXT:     let macro_total: i32 = sum3(7i32, 11i32, 13i32);
 // CHECK-NEXT:     let translation_limit_total: i32 = c99_thirty_two_parameters(
-// CHECK-NEXT:         1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32,
-// CHECK-NEXT:         1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32,
-// CHECK-NEXT:         1i32, 1i32,
+// CHECK-NEXT:         1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32,
+// CHECK-NEXT:         1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32,
+// CHECK-NEXT:         1i32, 1i32, 1i32, 1i32, 1i32, 1i32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let fenv_clear: i32 = unsafe { feclearexcept(31i32) };
 // CHECK-NEXT:     let fenv_flags: i32 = unsafe { fetestexcept(31i32) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n".as_ptr(), c"main".as_ptr() as *mut u8, α, c99_external_identifier_with_more_than_thirty_one_significant_characters, slash_comment_value, enhanced_arithmetic, flexible_total, vm_total, nonconstant_initializer.first + nonconstant_initializer.second, designated_initializer.first + designated_initializer.second, designated_array[0] + designated_array[2], idempotent_const_value, core::ptr::read_volatile(core::ptr::addr_of!(idempotent_volatile_value)), *restricted_pointer, hexadecimal_float as i32, compound_pair.first + compound_pair.second, compound_array_value, signed_quotient, signed_remainder, mixed_order, declaration_after_statement, for_total, c99_inline_square(8i32), c99_qualified_array_sum(qualified_values.as_mut_ptr() as *mut i32), macro_total, translation_limit_total, 17i32, fenv_clear, fenv_flags, c99_restrict_sum((qualified_values.as_mut_ptr() as *mut i32).add(0) as *const i32, (qualified_values.as_mut_ptr() as *mut i32).add(1) as *const i32))
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n"
+// CHECK-NEXT:                 .as_ptr(),
+// CHECK-NEXT:             c"main".as_ptr() as *mut u8,
+// CHECK-NEXT:             α,
+// CHECK-NEXT:             c99_external_identifier_with_more_than_thirty_one_significant_characters,
+// CHECK-NEXT:             slash_comment_value,
+// CHECK-NEXT:             enhanced_arithmetic,
+// CHECK-NEXT:             flexible_total,
+// CHECK-NEXT:             vm_total,
+// CHECK-NEXT:             nonconstant_initializer.first + nonconstant_initializer.second,
+// CHECK-NEXT:             designated_initializer.first + designated_initializer.second,
+// CHECK-NEXT:             designated_array[0] + designated_array[2],
+// CHECK-NEXT:             idempotent_const_value,
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(idempotent_volatile_value)),
+// CHECK-NEXT:             *restricted_pointer,
+// CHECK-NEXT:             hexadecimal_float as i32,
+// CHECK-NEXT:             compound_pair.first + compound_pair.second,
+// CHECK-NEXT:             compound_array_value,
+// CHECK-NEXT:             signed_quotient,
+// CHECK-NEXT:             signed_remainder,
+// CHECK-NEXT:             mixed_order,
+// CHECK-NEXT:             declaration_after_statement,
+// CHECK-NEXT:             for_total,
+// CHECK-NEXT:             c99_inline_square(8i32),
+// CHECK-NEXT:             c99_qualified_array_sum(qualified_values.as_mut_ptr() as *mut i32),
+// CHECK-NEXT:             macro_total,
+// CHECK-NEXT:             translation_limit_total,
+// CHECK-NEXT:             17i32,
+// CHECK-NEXT:             fenv_clear,
+// CHECK-NEXT:             fenv_flags,
+// CHECK-NEXT:             c99_restrict_sum(
+// CHECK-NEXT:                 (qualified_values.as_mut_ptr() as *mut i32).add(0) as *const i32,
+// CHECK-NEXT:                 (qualified_values.as_mut_ptr() as *mut i32).add(1) as *const i32,
+// CHECK-NEXT:             ),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0

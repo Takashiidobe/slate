@@ -9,7 +9,8 @@ int counter_get(const struct counter *c) { return c->value; }
 int counter_apply(int (*fn)(struct counter *), struct counter *c) { return fn(c); }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK: {{^}}use crate::__slate_types::counter;
+// CHECK: {{^}}
+// CHECK-NEXT: use crate::__slate_types::counter;
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn counter_add(c: &mut counter, by: i32) {
 // CHECK-NEXT:     unsafe {

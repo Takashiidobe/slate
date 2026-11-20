@@ -180,10 +180,7 @@ int main(void) {
 // CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(sn) }) as *const (),
 // CHECK-NEXT:         core::mem::size_of::<nested>() as u32,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     dump(
-// CHECK-NEXT:         (unsafe { gl }) as *const (),
-// CHECK-NEXT:         core::mem::size_of::<nested>() as u32,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     dump((unsafe { gl }) as *const (), core::mem::size_of::<nested>() as u32);
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(lu) }) as *const (),
 // CHECK-NEXT:         core::mem::size_of::<small_first>() as u32,

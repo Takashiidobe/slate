@@ -57,8 +57,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if ((unsafe { *page }) as i32) != ((unsafe { *NlsAnsiCodePage }) as i32)
-// CHECK-NEXT:         || page != unsafe { core::ptr::addr_of_mut!(*NlsAnsiCodePage) }
-// CHECK-NEXT:     {
+// CHECK-NEXT:         || page != unsafe { core::ptr::addr_of_mut!(*NlsAnsiCodePage) } {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if ((unsafe { *NlsMbCodePageTag }) as i32) > 1 {

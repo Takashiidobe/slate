@@ -19,6 +19,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![feature(link_llvm_intrinsics)]
 // CHECK-NEXT: #![no_main]
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "llvm-intrinsic" {
 // CHECK-NEXT:     #[link_name = "llvm.bswap.i16"]
 // CHECK-NEXT:     fn __slate_intrinsic_1a0c079c71348b00([[ARG_0:arg[0-9]+]]: u16) -> u16;
@@ -27,16 +28,20 @@ int main(void) {
 // CHECK-NEXT:     #[link_name = "llvm.bswap.i32"]
 // CHECK-NEXT:     fn __slate_intrinsic_e94e9cf815168b51([[ARG_0]]: u32) -> u32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
 // CHECK-NEXT: fn input() -> u32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     2309737967
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let small: u16 = unsafe { __slate_intrinsic_1a0c079c71348b00(35243u16) };
 // CHECK-NEXT:     let medium: u32 = unsafe { __slate_intrinsic_e94e9cf815168b51(input()) };
@@ -56,6 +61,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: unsafe extern "C-unwind" fn main(
 // CHECK-NEXT:     argc: i32,
