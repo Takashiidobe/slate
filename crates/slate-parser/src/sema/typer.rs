@@ -1287,7 +1287,7 @@ impl TypeResolver {
         }
         for object in operands.objects {
             let pointee = self.atomic_pointee(object)?;
-            if matches!(self.ir_type(pointee), Type::Void | Type::Function { .. }) {
+            if self.ir_type(pointee).is_void_or_function() {
                 return Err(ResolveError::Rejected(
                     "atomic builtin on non-object pointer",
                 ));
@@ -1311,6 +1311,10 @@ impl TypeResolver {
                 }
                 Type::Pointer { .. } => Vec::new(),
                 Type::Bool => vec![pointee, self.ctypes.qual(CTypeKind::UChar)],
+                #[expect(
+                    slate::sensitive_wildcard,
+                    reason = "pointers and _Bool are the objects whose fetch operand is not converted straight to the object type; fetch_rule rejects the rest"
+                )]
                 _ => vec![pointee],
             };
             let reason = ConversionReason::Arg;
@@ -1334,12 +1338,14 @@ impl TypeResolver {
             AtomicResult::Object(object) | AtomicResult::Fetched(object) => {
                 let pointer = self.operand_type(object)?;
                 let pointee = self.ctypes.pointee(pointer).ok_or(UNTYPED)?;
-                match self.ir_type(pointee) {
-                    Type::Void | Type::Function { .. } => return Err(UNTYPED),
-                    Type::Bool if matches!(result, AtomicResult::Fetched(_)) => {
-                        self.ctypes.unqualified(pointee)
-                    }
-                    _ => pointee,
+                let object = self.ir_type(pointee);
+                if object.is_void_or_function() {
+                    return Err(UNTYPED);
+                }
+                if object == Type::Bool && matches!(result, AtomicResult::Fetched(_)) {
+                    self.ctypes.unqualified(pointee)
+                } else {
+                    pointee
                 }
             }
             AtomicResult::Flag(object) => {

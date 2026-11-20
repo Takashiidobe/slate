@@ -442,14 +442,13 @@ impl Lowerer {
 
     fn known_value(&self, value: &Value, known: &Known) -> Option<Value> {
         let value = super::asm::substitute(value, known);
-        if matches!(
-            value.ty,
-            Type::Numeric(NumericType::Integer { .. }) | Type::Bool
-        ) && let Some(constant) = integer_with_objects(
-            &value,
-            self.types.fold_target(),
-            self.types.entities.constants(),
-        ) {
+        if value.ty.integer_bits().is_some()
+            && let Some(constant) = integer_with_objects(
+                &value,
+                self.types.fold_target(),
+                self.types.entities.constants(),
+            )
+        {
             let mut folded = value;
             folded.node.value = ValueKind::Constant(integer_number(&folded.ty, constant));
             return Some(folded);

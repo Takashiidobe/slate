@@ -45,6 +45,10 @@ impl Tables<'_> {
                 (0..length.unwrap_or(0))
                     .try_for_each(|index| self.mark_data(element, base + index * stride, keep))
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "records and arrays are walked; every other type counts as all data bytes, including x87 and _BitInt tail padding (slate-yar4.58)"
+            )]
             ty => {
                 let (size, _) = self.storage_of(ty)?;
                 let start = usize::try_from(base).ok()?;
@@ -77,6 +81,10 @@ impl FunctionLowerer<'_, '_> {
             && self.zeroes_padding(&variable.ty)
     }
 
+    #[expect(
+        slate::sensitive_wildcard,
+        reason = "records and arrays are the aggregates whose padding the flag zeroes; a scalar initializer writes the whole value"
+    )]
     pub(super) fn zeroes_padding(&self, ty: &ir::Type) -> bool {
         match self.tables.zero_init_padding_bits {
             ZeroInitPaddingBits::Standard => false,

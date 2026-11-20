@@ -2,6 +2,7 @@ use num_bigint::{BigInt, BigUint};
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[slate::sensitive]
 pub enum Type {
     Void,
     Bool,
@@ -241,9 +242,83 @@ impl Type {
         match self {
             Self::VariableArray { .. } => true,
             Self::Array { element, .. } => element.is_variably_modified(),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only arrays nest a variable extent in the type itself; a record with a VLA member is answered by TypeResolver::has_runtime_size"
+            )]
             _ => false,
         }
     }
+
+    pub fn integer_bits(&self) -> Option<(u32, bool)> {
+        match self {
+            Self::Bool => Some((1, false)),
+            Self::Numeric(NumericType::Integer { width, signed, .. }) => Some((*width, *signed)),
+            Self::Void
+            | Self::Numeric(NumericType::Float(_))
+            | Self::Complex(_)
+            | Self::Imaginary(_)
+            | Self::FixedPoint(_)
+            | Self::Vector { .. }
+            | Self::VaList
+            | Self::Sizeless(_)
+            | Self::Defined(_)
+            | Self::Pointer { .. }
+            | Self::BlockPointer { .. }
+            | Self::Array { .. }
+            | Self::VariableArray { .. }
+            | Self::Function { .. } => None,
+        }
+    }
+
+    pub fn numeric_domain(&self) -> Option<(NumericType, NumericDomain)> {
+        match self {
+            Self::Numeric(numeric) => Some((*numeric, NumericDomain::Real)),
+            Self::Complex(component) => Some((*component, NumericDomain::Complex)),
+            Self::Imaginary(format) => {
+                Some((NumericType::Float(*format), NumericDomain::Imaginary))
+            }
+            Self::Void
+            | Self::Bool
+            | Self::FixedPoint(_)
+            | Self::Vector { .. }
+            | Self::VaList
+            | Self::Sizeless(_)
+            | Self::Defined(_)
+            | Self::Pointer { .. }
+            | Self::BlockPointer { .. }
+            | Self::Array { .. }
+            | Self::VariableArray { .. }
+            | Self::Function { .. } => None,
+        }
+    }
+
+    pub fn is_void_or_function(&self) -> bool {
+        match self {
+            Self::Void | Self::Function { .. } => true,
+            Self::Bool
+            | Self::Numeric(_)
+            | Self::Complex(_)
+            | Self::Imaginary(_)
+            | Self::FixedPoint(_)
+            | Self::Vector { .. }
+            | Self::VaList
+            | Self::Sizeless(_)
+            | Self::Defined(_)
+            | Self::Pointer { .. }
+            | Self::BlockPointer { .. }
+            | Self::Array { .. }
+            | Self::VariableArray { .. } => false,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[slate::sensitive]
+pub enum NumericDomain {
+    Real,
+    Complex,
+    Imaginary,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

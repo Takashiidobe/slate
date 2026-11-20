@@ -779,15 +779,8 @@ fn enumerated(value: &Value, depth: usize, env: Env) -> Option<BigInt> {
 }
 
 fn integer_type(ty: &Type) -> Option<(u32, bool)> {
-    match ty {
-        Type::Bool => Some((1, false)),
-        Type::Numeric(NumericType::Integer { width, signed, .. })
-            if (1..=MAX_WIDTH).contains(width) =>
-        {
-            Some((*width, *signed))
-        }
-        _ => None,
-    }
+    ty.integer_bits()
+        .filter(|(width, _)| (1..=MAX_WIDTH).contains(width))
 }
 
 fn arithmetic(

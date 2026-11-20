@@ -19,6 +19,10 @@ impl Tables<'_> {
                 ir::Type::Pointer { .. } => {}
                 ir::Type::Numeric(ir::NumericType::Integer { width, .. })
                     if *width == self.target.pointer_width => {}
+                #[expect(
+                    slate::sensitive_wildcard,
+                    reason = "an address survives only through pointers and pointer-width integers; any other step ends the provenance walk"
+                )]
                 _ => return None,
             }
             match &current.node.value {
@@ -136,6 +140,10 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
+    #[expect(
+        slate::sensitive_wildcard,
+        reason = "variably modified, void and function elements need their own stride; every other element type is offset in units of itself"
+    )]
     pub(super) fn lower_pointer_offset(
         &mut self,
         value: &ir::Value,
@@ -223,6 +231,10 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
+    #[expect(
+        slate::sensitive_wildcard,
+        reason = "variably modified, void and function elements need their own stride; every other element type is measured in units of itself"
+    )]
     pub(super) fn lower_pointer_difference(
         &mut self,
         value: &ir::Value,

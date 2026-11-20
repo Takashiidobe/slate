@@ -221,42 +221,45 @@ impl FunctionLowerer<'_, '_> {
                 };
                 let auto_init = variable.auto_init.filter(|_| auto_value.is_none());
                 let init = init.or(auto_value);
-                let init = match (init, &variable.ty) {
-                    (Some(init), _) => Some(init),
-                    (
-                        None,
+                let init = Some(match init {
+                    Some(init) => init,
+                    None => match &variable.ty {
                         ir::Type::Array {
                             element,
                             length: Some(length),
-                        },
-                    ) => match self.lower_type(element)? {
-                        rust::Type::Prim(Prim::Bool) => Some(Expr::ArrayRepeat {
-                            elem: Box::new(Expr::Value(rust::RustValue::Bool(false))),
-                            len: *length as usize,
-                        }),
-                        ty @ (rust::Type::Prim(_) | rust::Type::Ptr { .. }) => {
-                            Some(Expr::ArrayRepeat {
-                                elem: Box::new(Expr::Cast {
-                                    expr: Box::new(Expr::Value(rust::RustValue::I64(0))),
-                                    ty,
-                                }),
+                        } => match self.lower_type(element)? {
+                            rust::Type::Prim(Prim::Bool) => Expr::ArrayRepeat {
+                                elem: Box::new(Expr::Value(rust::RustValue::Bool(false))),
                                 len: *length as usize,
-                            })
-                        }
-                        _ => Some(zeroed()),
-                    },
-                    (None, ir::Type::Sizeless(name)) if let Some(zero) = sve::sve_zero(name) => {
-                        Some(zero)
-                    }
-                    (None, ty) => Some(match self.lower_type(ty)? {
-                        rust::Type::Prim(Prim::Bool) => Expr::Value(rust::RustValue::Bool(false)),
-                        ty @ rust::Type::Prim(_) => Expr::Cast {
-                            expr: Box::new(Expr::Value(rust::RustValue::I64(0))),
-                            ty,
+                            },
+                            ty @ (rust::Type::Prim(_) | rust::Type::Ptr { .. }) => {
+                                Expr::ArrayRepeat {
+                                    elem: Box::new(Expr::Cast {
+                                        expr: Box::new(Expr::Value(rust::RustValue::I64(0))),
+                                        ty,
+                                    }),
+                                    len: *length as usize,
+                                }
+                            }
+                            _ => zeroed(),
                         },
-                        _ => zeroed(),
-                    }),
-                };
+                        ir::Type::Sizeless(name) if let Some(zero) = sve::sve_zero(name) => zero,
+                        #[expect(
+                            slate::sensitive_wildcard,
+                            reason = "fixed arrays and SVE types have their own zero; every other type zeroes by its lowered Rust type"
+                        )]
+                        ty => match self.lower_type(ty)? {
+                            rust::Type::Prim(Prim::Bool) => {
+                                Expr::Value(rust::RustValue::Bool(false))
+                            }
+                            ty @ rust::Type::Prim(_) => Expr::Cast {
+                                expr: Box::new(Expr::Value(rust::RustValue::I64(0))),
+                                ty,
+                            },
+                            _ => zeroed(),
+                        },
+                    },
+                });
                 let ty = self.lower_binding_type(&variable.ty, variable.id)?;
                 let (ty, init) = match alignment {
                     Some(wrapper) => (

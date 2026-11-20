@@ -191,6 +191,10 @@ impl TypeResolver {
                 .storage_of(Type::Numeric(x87))
                 .is_ok_and(|layout| layout.size_bytes != 16),
             Type::Complex(numeric) => numeric == x87,
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "gcc's pattern fill departs from the repeated byte only for a _Bool or x87 long double variable; every other type, aggregates included, takes the repeated byte"
+            )]
             _ => false,
         }
     }
@@ -2188,10 +2192,8 @@ impl TypeResolver {
 
     fn integer_fits(&self, value: &BigInt, q: QualType) -> bool {
         let q = self.ctypes.enum_underlying(q).unwrap_or(q);
-        let (width, signed) = match self.ir_type(q) {
-            Type::Bool => (1, false),
-            Type::Numeric(NumericType::Integer { width, signed, .. }) => (width, signed),
-            _ => return false,
+        let Some((width, signed)) = self.ir_type(q).integer_bits() else {
+            return false;
         };
         let limit = BigInt::from(1u8) << (width - u32::from(signed));
         let min = if signed { -&limit } else { BigInt::ZERO };
@@ -3172,21 +3174,25 @@ impl TypeResolver {
         declared_array: ArrayDeclarator,
     ) -> Result<ParameterShape, ResolveError> {
         let written = self.object_type(resolved, "void parameter")?;
-        let array = match &written {
-            Type::Array { length, .. } => Some(ArrayParameter {
-                extent: length.map_or(ArrayExtent::Unspecified, ArrayExtent::Fixed),
-                guaranteed: declared_array.is_static,
-            }),
-            Type::VariableArray { extent, .. } => Some(ArrayParameter {
-                extent: ArrayExtent::Variable(*extent),
-                guaranteed: declared_array.is_static,
-            }),
+        let extent = match &written {
+            Type::Array { length, .. } => {
+                Some(length.map_or(ArrayExtent::Unspecified, ArrayExtent::Fixed))
+            }
+            Type::VariableArray { extent, .. } => Some(ArrayExtent::Variable(*extent)),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "array parameters are the ones adjusted to pointers that take the declarator's qualifiers; every other parameter keeps its own"
+            )]
             _ => None,
         };
-        let qualifiers = match written {
-            Type::Array { .. } | Type::VariableArray { .. } => declared_array.qualifiers.into(),
-            _ => self.ctypes.quals(resolved),
+        let qualifiers = match extent {
+            Some(_) => declared_array.qualifiers.into(),
+            None => self.ctypes.quals(resolved),
         };
+        let array = extent.map(|extent| ArrayParameter {
+            extent,
+            guaranteed: declared_array.is_static,
+        });
         let adjusted = self.adjusted_parameter(resolved, qualifiers);
         Ok(ParameterShape {
             ty: self.ir_type(adjusted),
@@ -3948,10 +3954,11 @@ impl TypeResolver {
         let Some(first) = types.first() else {
             return;
         };
-        if matches!(
-            self.unaliased(first),
-            Type::Numeric(NumericType::Float(_)) | Type::Vector { .. }
-        ) {
+        let first = self.unaliased(first);
+        let floating = first
+            .numeric_domain()
+            .is_some_and(|(component, _)| matches!(component, NumericType::Float(_)));
+        if floating || matches!(first, Type::Vector { .. }) {
             return;
         }
         let layouts: Result<Vec<_>, _> = types
@@ -4069,6 +4076,10 @@ impl TypeResolver {
         match ty {
             Type::VariableArray { element, .. } => self.require_pointer_element(element),
             Type::Void | Type::Function { .. } => Ok(()),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "pointee types that need no size are listed; storage decides every other type"
+            )]
             ty => self.storage(ty.clone()).map(|_| ()),
         }
     }
@@ -4306,6 +4317,10 @@ impl TypeResolver {
             Type::Sizeless(_) => Err(ResolveError::Rejected(
                 "sizeless type does not have a fixed size",
             )),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "types whose size depends on definitions or extents are listed; TargetInfo::storage_of is exhaustive over the rest"
+            )]
             _ => Ok(promote(self.dialect.target().storage_of(ty)?)),
         }
     }
@@ -4332,6 +4347,10 @@ impl TypeResolver {
                     ))
                 }
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "the arithmetic fundamentals ms_struct aligns to their size are listed; pointers already align to their size, and complex, vectors and records keep natural alignment"
+            )]
             _ => Ok(None),
         }
     }
@@ -4529,6 +4548,10 @@ impl TypeResolver {
                         .alignment_bytes,
                 })
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only a trailing array can be a flexible member; every other field takes its full storage"
+            )]
             ty => self.qualified_storage(ty.clone(), field.access.atomic),
         }
     }
@@ -4541,6 +4564,10 @@ impl TypeResolver {
         match ty {
             Type::VariableArray { .. } | Type::Array { .. } => ty.is_variably_modified(),
             Type::Defined(id) => self.variable_records.contains(id),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "arrays and records are the only types that can hold a runtime extent by value"
+            )]
             _ => false,
         }
     }
@@ -4753,6 +4780,10 @@ impl TypeResolver {
                 } => layout.required_align,
                 _ => None,
             },
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "a required alignment comes from a record's declspec(align); arrays and aliases only pass it through"
+            )]
             _ => None,
         }
     }
@@ -5076,6 +5107,10 @@ pub(super) fn same_layout(a: &Type, b: &Type) -> bool {
                 length: b_length,
             },
         ) => a_length == b_length && same_layout(a, b),
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "signedness is ignored at the top and through pointers and arrays, the declarators cl.exe looks through; any other pair must be identical"
+        )]
         _ => a == b,
     }
 }
@@ -5405,11 +5440,9 @@ fn resolve_parameters(
 }
 
 pub(super) fn is_folded(value: &Value) -> bool {
-    match value.ty {
-        Type::Bool | Type::Numeric(NumericType::Integer { .. }) => {
-            super::fold::integer(value).is_some()
-        }
-        _ => matches!(value.node.value, ValueKind::Constant(_)),
+    match value.ty.integer_bits() {
+        Some(_) => super::fold::integer(value).is_some(),
+        None => matches!(value.node.value, ValueKind::Constant(_)),
     }
 }
 

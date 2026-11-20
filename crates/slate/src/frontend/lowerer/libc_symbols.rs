@@ -151,16 +151,16 @@ impl FunctionLowerer<'_, '_> {
                 expr: Box::new(lowered),
             });
         }
-        if matches!(
-            ty,
-            ir::Type::Bool | ir::Type::Numeric(_) | ir::Type::Pointer { .. }
-        ) {
-            Ok(Expr::Cast {
+        match ty {
+            ir::Type::Bool | ir::Type::Numeric(_) | ir::Type::Pointer { .. } => Ok(Expr::Cast {
                 expr: Box::new(lowered),
                 ty: expected,
-            })
-        } else {
-            Ok(lowered)
+            }),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "the types `as` converts to the catalog's spelling are listed; any other argument is passed in its own lowered type"
+            )]
+            _ => Ok(lowered),
         }
     }
 
@@ -176,12 +176,7 @@ impl FunctionLowerer<'_, '_> {
         }
         let symbol =
             libc_catalog::lookup(&definition.name, &self.tables.target.triple, Kind::Constant)?;
-        if !matches!(
-            self.tables.resolve_type(&value.ty),
-            ir::Type::Numeric(ir::NumericType::Integer { .. }) | ir::Type::Bool
-        ) {
-            return None;
-        }
+        self.tables.resolve_type(&value.ty).integer_bits()?;
         Some(self.lower_value_type(value).map(|ty| Expr::Cast {
             expr: Box::new(Expr::Path(rust::Path::new(
                 symbol.rust_path.split("::").map(rust::Ident::from),

@@ -12,8 +12,8 @@ use crate::const_expr::{
 use crate::ir::{
     AggregateMember, AggregateTarget, ArithOp, ArithSema, AsmDialect, CompareOp, ComplexRange,
     ConversionKind, ConversionReason, ConversionSema, Fits, FixedOverflow, FixedPointType,
-    FixedRounding, FloatType, LogicalOp, Number, NumericType, Overflow, ShiftFill, Type, UbPolicy,
-    UnaryArithOp, Value, ValueKind,
+    FixedRounding, FloatType, LogicalOp, Number, NumericDomain, NumericType, Overflow, ShiftFill,
+    Type, UbPolicy, UnaryArithOp, Value, ValueKind,
 };
 use crate::standard_features::StandardFeatures;
 use crate::target::isa::TargetIsa;
@@ -207,6 +207,10 @@ impl Context {
         }
     }
 
+    #[expect(
+        slate::sensitive_wildcard,
+        reason = "excess precision covers real and complex values, as in excess_type; imaginary values are never widened"
+    )]
     fn half_excess(&self, ty: &Type) -> bool {
         self.target.float16_excess_precision()
             && matches!(ty, Type::Numeric(HALF) | Type::Complex(HALF))
@@ -1006,10 +1010,13 @@ impl Context {
         let Type::Vector { element, .. } = to else {
             return Err(ResolveError::Internal("vector arithmetic conversion"));
         };
-        if !matches!(value.ty, Type::Numeric(_) | Type::Bool) {
-            return Err(ResolveError::Internal(
-                "vector operand must be a vector or a scalar",
-            ));
+        match value.ty {
+            Type::Numeric(_) | Type::Bool => {}
+            _ => {
+                return Err(ResolveError::Internal(
+                    "vector operand must be a vector or a scalar",
+                ));
+            }
         }
         let value = self.emit_arithmetic_conversion(
             value,
@@ -1256,11 +1263,7 @@ impl Context {
         left: Value,
         right: Value,
     ) -> Result<Resolved, ResolveError> {
-        let component = |ty: &Type| match ty {
-            Type::Numeric(component) | Type::Complex(component) => Some(*component),
-            Type::Imaginary(format) => Some(NumericType::Float(*format)),
-            _ => None,
-        };
+        let component = |ty: &Type| ty.numeric_domain().map(|(component, _)| component);
         let (Some(a), Some(b)) = (component(&left.ty), component(&right.ty)) else {
             return Err(ResolveError::Internal("imaginary arithmetic conversion"));
         };
@@ -1279,10 +1282,12 @@ impl Context {
             ));
         }
         let domain = |value: Value| {
-            let to = match value.ty {
-                Type::Numeric(_) => Type::Numeric(NumericType::Float(format)),
-                Type::Imaginary(_) => Type::Imaginary(format),
-                _ => Type::Complex(NumericType::Float(format)),
+            let to = match value.ty.numeric_domain() {
+                Some((_, NumericDomain::Real)) => Type::Numeric(NumericType::Float(format)),
+                Some((_, NumericDomain::Imaginary)) => Type::Imaginary(format),
+                Some((_, NumericDomain::Complex)) | None => {
+                    Type::Complex(NumericType::Float(format))
+                }
             };
             self.emit_arithmetic_conversion(value, to, ConversionReason::UsualArith)
         };
@@ -1702,6 +1707,10 @@ impl Context {
                     ConversionSema::Exceptions(self.region.floating.exceptions),
                 )
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "a pair with nothing to convert keeps the value; the postcondition below rejects any pair whose type still differs"
+            )]
             _ => value,
         };
         // an unhandled type pair would otherwise leave the operand at its source
@@ -1718,6 +1727,10 @@ impl Context {
             Type::Numeric(ty) => ty,
             Type::Imaginary(format) => NumericType::Float(format),
             Type::FixedPoint(fixed) => fixed.storage(),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "the expression-level condition routes only real, imaginary and fixed-point values here; it compares _Bool, complex and pointers itself"
+            )]
             _ => return value,
         };
         let zero = match ty {
@@ -1885,11 +1898,9 @@ pub(super) fn reject_mixed_decimal(
     left: &Type,
     right: &Type,
 ) -> Result<(), ResolveError> {
-    let family = |ty: &Type| match ty {
-        Type::Numeric(NumericType::Float(format)) | Type::Complex(NumericType::Float(format)) => {
-            Some(format.is_decimal())
-        }
-        _ => None,
+    let family = |ty: &Type| match ty.numeric_domain() {
+        Some((NumericType::Float(format), _)) => Some(format.is_decimal()),
+        Some((NumericType::Integer { .. }, _)) | None => None,
     };
     match (family(left), family(right)) {
         (Some(a), Some(b)) if a != b => Err(ResolveError::InvalidOperands {
@@ -1947,11 +1958,10 @@ pub(super) fn binary_rule(
     let complex = matches!(left, Type::Complex(_)) || matches!(right, Type::Complex(_));
     let equality = matches!(op, BinaryOp::Equal | BinaryOp::NotEqual);
     if imaginary && (equality || !comparison) {
-        let decimal = |ty: &Type| match ty {
-            Type::Numeric(NumericType::Float(format))
-            | Type::Complex(NumericType::Float(format))
-            | Type::Imaginary(format) => format.is_decimal(),
-            _ => false,
+        let decimal = |ty: &Type| {
+            ty.numeric_domain().is_some_and(|(component, _)| {
+                matches!(component, NumericType::Float(format) if format.is_decimal())
+            })
         };
         if decimal(left) || decimal(right) {
             return Err(ResolveError::Rejected(
@@ -2029,12 +2039,14 @@ fn vector_rule(
             element
         }
         (Type::Vector { element, .. }, scalar) | (scalar, Type::Vector { element, .. }) => {
-            if !matches!(scalar, Type::Numeric(_) | Type::Bool) {
-                return Err(ResolveError::Rejected(
-                    "vector operand must be a vector or a scalar",
-                ));
+            match scalar {
+                Type::Numeric(_) | Type::Bool => element,
+                _ => {
+                    return Err(ResolveError::Rejected(
+                        "vector operand must be a vector or a scalar",
+                    ));
+                }
             }
-            element
         }
         _ => return Err(ResolveError::Internal("vector arithmetic conversion")),
     };
@@ -2071,6 +2083,10 @@ pub(super) fn unary_rule(op: UnaryOp, operand: &Type) -> Result<(), ResolveError
             "bitwise complement of imaginary operand",
         )),
         Type::Vector { .. } | Type::FixedPoint(_) | Type::Imaginary(_) | Type::Complex(_) => Ok(()),
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "every operand family with its own rule is listed; numeric_type rejects any remaining type that is not real"
+        )]
         ty => match numeric_type(ty)? {
             ty @ NumericType::Float(_) if complement => Err(ResolveError::InvalidOperand {
                 operator: <&'static str>::from(op),
@@ -2081,6 +2097,10 @@ pub(super) fn unary_rule(op: UnaryOp, operand: &Type) -> Result<(), ResolveError
     }
 }
 
+#[expect(
+    slate::sensitive_wildcard,
+    reason = "excess precision covers real and complex values, as in excess_type; imaginary values are never widened"
+)]
 fn is_x87_wide(ty: &Type) -> bool {
     matches!(ty, Type::Numeric(X87) | Type::Complex(X87))
 }

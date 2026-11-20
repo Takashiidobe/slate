@@ -157,6 +157,10 @@ impl TypeResolver {
         match ty {
             Type::Array { length: None, .. } => Some(0),
             Type::Function { .. } | Type::Void | Type::VariableArray { .. } => None,
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "types without a static size are listed; storage answers every other type, and an incomplete one yields None"
+            )]
             ty => Some(i128::from(self.storage(ty.clone()).ok()?.size_bytes)),
         }
     }

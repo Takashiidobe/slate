@@ -445,6 +445,10 @@ impl FunctionLowerer<'_, '_> {
                         "size_t" | "ssize_t" | "ptrdiff_t" | "intptr_t" | "uintptr_t"
                     )
                 }),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "void pointers and pointer-sized integer typedefs are the fields whose libc spelling differs from the C type; any other field reads as itself"
+            )]
             _ => false,
         }
     }

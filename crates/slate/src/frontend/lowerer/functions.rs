@@ -321,13 +321,21 @@ impl Tables<'_> {
                 ir::Type::Numeric(ir::NumericType::Float(
                     ir::FloatType::F32 | ir::FloatType::F64,
                 )) => {}
-                ty if msvc && self.record_fields(ty).is_some() => {}
+                ty @ ir::Type::Defined(_) if msvc && self.record_fields(ty).is_some() => {}
+                #[expect(
+                    slate::sensitive_wildcard,
+                    reason = "the parameter types known to take the same registers under rustc are listed; false keeps any other signature off the native fastcall path"
+                )]
                 _ => return false,
             }
         }
         true
     }
 
+    #[expect(
+        slate::sensitive_wildcard,
+        reason = "the scalars vectorcall passes in integer or float registers are listed; vectors and aggregates go through the HVA classification"
+    )]
     pub(super) fn vectorcall_scalar(&self, ty: &ir::Type) -> bool {
         matches!(
             self.resolve_type(ty),

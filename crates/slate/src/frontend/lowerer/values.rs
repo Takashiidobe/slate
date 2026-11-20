@@ -1532,11 +1532,7 @@ impl FunctionLowerer<'_, '_> {
                 op,
                 operand,
                 semantics,
-            } if matches!(
-                value.ty,
-                ir::Type::Bool | ir::Type::Numeric(ir::NumericType::Integer { .. })
-            ) =>
-            {
+            } if value.ty.integer_bits().is_some() => {
                 let operand = self.lower_value(operand)?;
                 match (op, semantics) {
                     (ir::UnaryArithOp::Not, _) => Expr::Unary {

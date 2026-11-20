@@ -679,7 +679,7 @@ impl Lowerer {
     fn atomic_object(&mut self, object: &Expr) -> Result<Lvalue, ResolveError> {
         let pointer = self.expr(object)?;
         let place = self.deref(pointer)?;
-        if matches!(place.ty, Type::Void | Type::Function { .. }) {
+        if place.ty.is_void_or_function() {
             return Err(ResolveError::Internal(
                 "atomic builtin on non-object pointer",
             ));

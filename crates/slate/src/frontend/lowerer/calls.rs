@@ -184,10 +184,7 @@ impl FunctionLowerer<'_, '_> {
                 return_type: Some(ret),
                 ..
             } = self.tables.resolve_type(signature)
-                && matches!(
-                    self.tables.resolve_type(ret),
-                    ir::Type::Numeric(_) | ir::Type::Pointer { .. }
-                )
+                && support_result_needs_cast(self.tables.resolve_type(ret))
                 && !matches!(callee, ir::Callee::Direct(id) if self.tables.support_functions[id].shape.ends_with(" -> !"))
             {
                 Expr::Cast {
@@ -315,4 +312,12 @@ impl FunctionLowerer<'_, '_> {
                 safe: false,
             });
     }
+}
+
+#[expect(
+    slate::sensitive_wildcard,
+    reason = "support functions return their Rust spelling of a number or pointer, cast to the C type; any other result type is returned as is"
+)]
+fn support_result_needs_cast(ty: &ir::Type) -> bool {
+    matches!(ty, ir::Type::Numeric(_) | ir::Type::Pointer { .. })
 }

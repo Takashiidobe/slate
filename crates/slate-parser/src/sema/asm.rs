@@ -417,6 +417,10 @@ impl Lowerer {
             }
             Candidate::Output(_) => (None, None),
         };
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "arrays and functions are the C types that decay to pointers"
+        )]
         let decays = ty.is_some_and(|ty| {
             matches!(
                 ty,
@@ -1133,10 +1137,10 @@ impl TypeResolver {
             if !self.ctypes.is_integer(ty) && !self.ctypes.is_pointer(ty) {
                 return None;
             }
-            match self.ir_type(ty) {
-                Type::Bool => Some(1),
-                Type::Numeric(NumericType::Integer { width, .. }) => Some(u64::from(width)),
-                erased => self
+            let erased = self.ir_type(ty);
+            match erased.integer_bits() {
+                Some((width, _)) => Some(u64::from(width)),
+                None => self
                     .storage(erased)
                     .ok()
                     .map(|storage| storage.size_bytes * 8),

@@ -5,7 +5,7 @@ use crate::compiler_options::{ComplexMethod, InlineSemantics};
 use crate::const_expr::{AssignOp, BinaryOp, UnaryOp};
 use crate::diagnostics::Warning;
 use crate::ir::{
-    BindingId, BindingKind, FloatType, Linkage, NameResolution, Number, NumericType,
+    BindingId, BindingKind, FloatType, Linkage, NameResolution, Number, NumericDomain, NumericType,
     StorageDuration, SymbolAttributes, Type, Value, ValueKind,
 };
 use crate::target_info::TargetEnvironment;
@@ -1895,12 +1895,11 @@ impl Checker<'_> {
         }
         let format = |checker: &mut Self, operand: &Expr| {
             let typed = checker.types.typed(operand).ok()?;
-            match checker.types.ir_type(typed.c) {
-                Type::Complex(NumericType::Float(format)) | Type::Imaginary(format) => {
-                    Some((format, true))
+            match checker.types.ir_type(typed.c).numeric_domain() {
+                Some((NumericType::Float(format), domain)) => {
+                    Some((format, domain != NumericDomain::Real))
                 }
-                Type::Numeric(NumericType::Float(format)) => Some((format, false)),
-                _ => None,
+                Some((NumericType::Integer { .. }, _)) | None => None,
             }
         };
         let (Some((left, _)), Some((right, true))) = (format(self, left), format(self, right))

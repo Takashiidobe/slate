@@ -213,6 +213,10 @@ pub fn shape(
                 };
                 format!("unsafe extern \"{abi}\" fn({}) -> {ret}", params.join(", "))
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "the types with a libc spelling are listed; None makes the catalog decline any other type"
+            )]
             _ => return None,
         })
     }

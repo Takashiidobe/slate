@@ -73,8 +73,9 @@ set was implicit. Resolve it so the assumption is written down.
    representation instead: an audited view on the owning type that lists the
    enum once and returns a small enum the call sites can list cheaply
    (`CTypeKind::integer() -> Option<IntegerKind>`, `complex_domain()`,
-   `sugared()`), or a call to an existing helper that already makes the
-   decision (`CTypes::adjust_parameter`).
+   `sugared()`, `ir::Type::integer_bits()`, `numeric_domain()`), or a call to
+   an existing helper that already makes the decision
+   (`CTypes::adjust_parameter`).
 2. Return an error from the catch-all if a new variant reaching it is a bug.
 3. When the wildcard is right, `#[expect(slate::sensitive_wildcard, reason =
    "...")]` on the arm. The reason is documentation: it names the property the

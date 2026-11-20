@@ -45,8 +45,8 @@ use crate::ast::{MacroInvocations, Span};
 pub use numeric::{
     ArithOp, ArithSema, CompareOp, ComplexRange, Contraction, ConversionKind, ConversionReason,
     ConversionSema, Exceptions, Fits, FixedOverflow, FixedPointType, FixedRounding, FloatClassTest,
-    FloatType, FloatingSemantics, LogicalOp, Number, NumericType, Overflow, PointerSpace, Rounding,
-    ShiftFill, Type, UbPolicy, UnaryArithOp, VariableExtent,
+    FloatType, FloatingSemantics, LogicalOp, Number, NumericDomain, NumericType, Overflow,
+    PointerSpace, Rounding, ShiftFill, Type, UbPolicy, UnaryArithOp, VariableExtent,
 };
 use rustc_apfloat::{
     Float,
@@ -723,6 +723,10 @@ impl Value {
                     FloatType::F128 => format_apfloat::<Quad>(f, self.ty.clone(), *bits),
                     _ => write!(f, "const<{}>(bits=0x{bits:x})", self.ty),
                 },
+                #[expect(
+                    slate::sensitive_wildcard,
+                    reason = "printing raw bits is correct for any type; the arm above only decodes real and imaginary formats"
+                )]
                 _ => write!(f, "const<{}>(bits=0x{bits:x})", self.ty),
             },
             ValueKind::Convert {

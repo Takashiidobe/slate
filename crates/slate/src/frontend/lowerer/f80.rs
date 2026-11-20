@@ -139,6 +139,10 @@ impl Tables<'_> {
         match self.resolve_type(ty) {
             ir::Type::Vector { .. } => true,
             ir::Type::Array { element, .. } => self.holds_vector(element),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "vectors and arrays are listed; record_fields answers records and is None for every other type"
+            )]
             ty => self
                 .record_fields(ty)
                 .is_some_and(|fields| fields.iter().any(|field| self.holds_vector(&field.ty))),
@@ -177,6 +181,10 @@ impl Tables<'_> {
                 .iter()
                 .chain(return_type.as_deref())
                 .any(|ty| self.bridges_long_double(ty)),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only function pointers reach a callee signature; block pointers are lowered through their own invoke shim"
+            )]
             _ => false,
         }
     }
@@ -185,6 +193,10 @@ impl Tables<'_> {
         match self.resolve_type(ty) {
             ir::Type::Pointer { pointee, .. } => self.is_variadic_function_pointer(pointee),
             ir::Type::Function { variadic, .. } => *variadic,
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only function pointers reach a callee signature; block pointers are lowered through their own invoke shim"
+            )]
             _ => false,
         }
     }

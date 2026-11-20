@@ -43,6 +43,10 @@ impl<'m> Tables<'m> {
                 .iter()
                 .chain(return_type.as_deref())
                 .any(|ty| matches!(self.resolve_type(ty), ir::Type::Vector { .. })),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only function pointers reach a callee signature; block pointers are lowered through their own invoke shim"
+            )]
             _ => false,
         }
     }
@@ -125,7 +129,13 @@ impl<'m> Tables<'m> {
                     _ => false,
                 }
             }
-            _ => false,
+            ir::Type::Void
+            | ir::Type::VaList
+            | ir::Type::Sizeless(_)
+            | ir::Type::Pointer { .. }
+            | ir::Type::BlockPointer { .. }
+            | ir::Type::VariableArray { .. }
+            | ir::Type::Function { .. } => false,
         }
     }
 
@@ -217,6 +227,10 @@ impl<'m> Tables<'m> {
             ir::Type::VariableArray { element, .. } => {
                 self.storage_of(element).map(|(_, align)| (0, align))
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "types whose layout comes from definitions or elements are listed; the target's storage_of is exhaustive over the rest"
+            )]
             ty => self
                 .rust_layout
                 .storage_of(ty.clone())
@@ -262,6 +276,10 @@ impl Tables<'_> {
                     .all(|field| !field.access.atomic && self.rust_layout_matches_c(&field.ty)),
                 _ => false,
             },
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "types whose Rust layout is known to equal C's are listed; false keeps any other layout query a constant"
+            )]
             _ => false,
         }
     }
@@ -588,6 +606,10 @@ impl FunctionLowerer<'_, '_> {
                             if fields.iter().any(|field| self.contains_raised_align(&field.ty))
                     )
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "x87 long double is the scalar lowered with a raised alignment; arrays and records propagate it, every other type has none"
+            )]
             _ => false,
         }
     }

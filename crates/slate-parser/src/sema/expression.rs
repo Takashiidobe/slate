@@ -1248,6 +1248,10 @@ impl Lowerer {
         Operand { value, c }
     }
 
+    #[expect(
+        slate::sensitive_wildcard,
+        reason = "the types gcc folds to a known constant at -O1 are listed; any other type keeps the query at run time, which is always correct"
+    )]
     fn statically_known_query(&self, operand: &Value) -> bool {
         self.types.dialect().options().codegen.optimization
             != crate::compiler_options::Optimization::None
@@ -1634,7 +1638,7 @@ impl Lowerer {
                     },
                 )
             }
-            ty if self.pointee(ty).is_ok() || matches!(ty, Type::BlockPointer { .. }) => {
+            ty @ (Type::Pointer { .. } | Type::BlockPointer { .. }) => {
                 let zero = self.value(&value.node, ty.clone(), ValueKind::Null);
                 let node = value.node.clone();
                 self.value(
@@ -2306,6 +2310,10 @@ impl Lowerer {
                 }
                 ValueKind::FunctionDecay { place }
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "arrays and functions decay and a runtime-sized record is rejected; every other type is read by value"
+            )]
             _ => {
                 let bits = match &place.kind {
                     PlaceKind::Field {
@@ -2566,6 +2574,10 @@ impl Lowerer {
             Type::Defined(id) if self.types.has_runtime_size(ty) => {
                 return self.record_runtime_size(e, *id);
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "every type that can carry a runtime extent is listed; any other type has a constant size"
+            )]
             _ => {
                 let size = self.types.storage(ty.clone())?.size_bytes;
                 return Ok(self.size_constant(e, size));
@@ -3064,18 +3076,15 @@ impl Lowerer {
                 match op {
                     UnaryOp::Plus => {
                         let value = self.converted(e, Slot::Operand, value)?;
-                        if !matches!(
-                            value.ty,
+                        match value.ty {
                             Type::Bool
-                                | Type::Numeric(_)
-                                | Type::Complex(_)
-                                | Type::Imaginary(_)
-                                | Type::FixedPoint(_)
-                                | Type::Vector { .. }
-                        ) {
-                            return Err(ResolveError::Internal("non-numeric unary plus"));
+                            | Type::Numeric(_)
+                            | Type::Complex(_)
+                            | Type::Imaginary(_)
+                            | Type::FixedPoint(_)
+                            | Type::Vector { .. } => Ok(value),
+                            _ => Err(ResolveError::Internal("non-numeric unary plus")),
                         }
-                        Ok(value)
                     }
                     UnaryOp::Not => {
                         let value = self.enum_operand(value);

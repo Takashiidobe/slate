@@ -1377,7 +1377,15 @@ impl FunctionLowerer<'_, '_> {
             | ir::Type::Numeric(_)
             | ir::Type::Pointer { .. }
             | ir::Type::Vector { .. } => true,
-            _ => false,
+            ir::Type::Void
+            | ir::Type::Complex(_)
+            | ir::Type::Imaginary(_)
+            | ir::Type::FixedPoint(_)
+            | ir::Type::VaList
+            | ir::Type::Sizeless(_)
+            | ir::Type::BlockPointer { .. }
+            | ir::Type::VariableArray { .. }
+            | ir::Type::Function { .. } => false,
         }
     }
 
@@ -1407,6 +1415,10 @@ impl FunctionLowerer<'_, '_> {
                     }
                 }
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "_Bool and the aggregates that can hold one are listed; every other bridgeable type holds no _Bool byte"
+            )]
             _ => {}
         }
     }

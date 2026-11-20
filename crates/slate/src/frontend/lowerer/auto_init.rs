@@ -499,6 +499,10 @@ impl FunctionLowerer<'_, '_> {
             ir::Type::Bool if integer <= 1 => {
                 return Ok(Some(Expr::Value(rust::RustValue::Bool(integer == 1))));
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "the types with a typed constant pattern are listed; None makes the caller initialize any other type through its auto_init fallback"
+            )]
             _ => return Ok(None),
         };
         Ok(match self.lower_type(ty)? {
@@ -675,7 +679,19 @@ impl Tables<'_> {
             ir::Type::Numeric(NumericType::Integer {
                 bit_precise: true, ..
             }) => true,
-            _ => false,
+            ir::Type::Void
+            | ir::Type::Bool
+            | ir::Type::Numeric(_)
+            | ir::Type::Complex(_)
+            | ir::Type::Imaginary(_)
+            | ir::Type::FixedPoint(_)
+            | ir::Type::Vector { .. }
+            | ir::Type::VaList
+            | ir::Type::Sizeless(_)
+            | ir::Type::Pointer { .. }
+            | ir::Type::BlockPointer { .. }
+            | ir::Type::VariableArray { .. }
+            | ir::Type::Function { .. } => false,
         }
     }
 }

@@ -637,6 +637,10 @@ impl<'a> AbiClassifier<'a> {
             Type::Complex(component) => {
                 self.hva_base(&Type::Numeric(component), base)?.then_some(2)
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "every type that aggregates members is listed; any other type is one member, and vectorcall_register_type decides whether it is a register type"
+            )]
             other => self.hva_base(&other, base)?.then_some(1),
         };
         Ok(count.filter(|count| (1..=4).contains(count)))
@@ -670,7 +674,20 @@ impl<'a> AbiClassifier<'a> {
                 AbiChunk::Float(format)
             }
             Type::Vector { element, lanes, .. } => AbiChunk::Vector { element, lanes },
-            _ => return Ok(None),
+            Type::Numeric(_)
+            | Type::Void
+            | Type::Bool
+            | Type::Complex(_)
+            | Type::Imaginary(_)
+            | Type::FixedPoint(_)
+            | Type::VaList
+            | Type::Sizeless(_)
+            | Type::Defined(_)
+            | Type::Pointer { .. }
+            | Type::BlockPointer { .. }
+            | Type::Array { .. }
+            | Type::VariableArray { .. }
+            | Type::Function { .. } => return Ok(None),
         };
         let size = self.types.qualified_storage(ty.clone(), false)?.size_bytes;
         Ok(
@@ -736,12 +753,19 @@ impl<'a> AbiClassifier<'a> {
             | Type::Imaginary(_)
             | Type::FixedPoint(_)
             | Type::Pointer { .. }
+            | Type::BlockPointer { .. }
+            | Type::VaList
             | Type::Complex(_) => true,
             Type::Vector { .. } => size != 8,
             Type::Array {
                 element,
                 length: Some(_),
             } => self.win32_returns_in_register(element)?,
+            Type::Void
+            | Type::Sizeless(_)
+            | Type::Array { length: None, .. }
+            | Type::VariableArray { .. }
+            | Type::Function { .. } => false,
             Type::Defined(id) => match &self.types.definitions[id.0 as usize].kind {
                 TypeDefinitionKind::Alias(inner) => self.win32_returns_in_register(inner)?,
                 TypeDefinitionKind::Enum { .. } => true,
@@ -764,7 +788,6 @@ impl<'a> AbiClassifier<'a> {
                 }
                 TypeDefinitionKind::Record { .. } => false,
             },
-            _ => false,
         })
     }
 
@@ -780,6 +803,10 @@ impl<'a> AbiClassifier<'a> {
                 } => fields.iter().any(|field| self.contains_vector(&field.ty)),
                 _ => false,
             },
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "every type that can hold a vector by value is listed: vectors, arrays, aliases and records"
+            )]
             _ => false,
         }
     }
@@ -791,6 +818,10 @@ impl<'a> AbiClassifier<'a> {
                 &self.types.definitions[id.0 as usize].kind,
                 TypeDefinitionKind::Alias(inner) if self.is_vector(inner)
             ),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "a vector or an alias of one; Defined is listed only to look through aliases"
+            )]
             _ => false,
         }
     }
@@ -813,6 +844,10 @@ impl<'a> AbiClassifier<'a> {
                 } => fields.iter().all(|field| self.is_empty_field(field)),
                 _ => false,
             },
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only arrays and records can have no data bytes; every other type has a nonzero size"
+            )]
             _ => false,
         }
     }
@@ -846,6 +881,10 @@ impl<'a> AbiClassifier<'a> {
                 TypeDefinitionKind::Record { .. } => true,
                 TypeDefinitionKind::Enum { .. } => false,
             },
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "clang lowers atomic complex and records as aggregates; every scalar, vector and pointer type is passed as itself"
+            )]
             _ => false,
         }
     }
@@ -1068,6 +1107,10 @@ impl<'a> AbiClassifier<'a> {
                 }
                 _ => None,
             },
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "a single float element is a float, a one-element array or a record wrapping one; every other type is returned as an integer or in memory"
+            )]
             _ => None,
         }
     }
@@ -1097,6 +1140,10 @@ impl<'a> AbiClassifier<'a> {
                 }
                 _ => None,
             },
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "a single float element is a float, a one-element array or a record wrapping one; every other type is returned as an integer or in memory"
+            )]
             _ => None,
         }
     }
@@ -1127,6 +1174,10 @@ impl<'a> AbiClassifier<'a> {
                     .is_some(),
                 _ => false,
             },
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "rustc passes only complex values and homogeneous float records in float registers here; scalars are classified by the caller"
+            )]
             _ => false,
         }
     }
@@ -1168,6 +1219,10 @@ impl<'a> AbiClassifier<'a> {
                 }
                 _ => None,
             },
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "HFA bases are real floats, arrays and records of them; complex members are not counted yet (slate-yar4.57), every other type disqualifies the aggregate"
+            )]
             _ => None,
         }
     }
@@ -1278,7 +1333,11 @@ impl<'a> AbiClassifier<'a> {
                     kind,
                 });
             }
-            Type::Bool | Type::Numeric(_) | Type::FixedPoint(_) | Type::Pointer { .. } => {
+            Type::Bool
+            | Type::Numeric(_)
+            | Type::FixedPoint(_)
+            | Type::Pointer { .. }
+            | Type::BlockPointer { .. } => {
                 leaves.push(SysvLeaf {
                     offset,
                     size: size()?,
@@ -1360,7 +1419,12 @@ impl<'a> AbiClassifier<'a> {
                 }
                 TypeDefinitionKind::Record { .. } => return Ok(false),
             },
-            _ => return Ok(false),
+            Type::Void
+            | Type::Vector { .. }
+            | Type::VaList
+            | Type::Sizeless(_)
+            | Type::VariableArray { .. }
+            | Type::Function { .. } => return Ok(false),
         }
         Ok(true)
     }

@@ -32,9 +32,14 @@ Found by adding a dummy variant and collecting `E0004`; repeat the probe if this
 list looks stale. Handling these makes a declaration lower, not any operation
 correct.
 
-- `ir::Type`: `Display for Type` (`ir/numeric.rs`), `storage_of`
-  (`target_info.rs`), `abi_pass` (`sema/abi.rs`), `numeric()`
-  (`sema/numeric.rs`).
+- `ir::Type`: `Display for Type` and the views `integer_bits`,
+  `numeric_domain` and `is_void_or_function` (`ir/numeric.rs`), `storage_of`
+  (`target_info.rs`), `abi_pass`, `vectorcall_register_type`,
+  `win32_returns_in_register` and `sysv_leaves` (`sema/abi.rs`), `numeric()`
+  (`sema/numeric.rs`); in `crates/slate`, `asm_bridgeable`,
+  `has_padding_bytes` and `is_sync`. Predicates over `_Bool`-or-integer, over
+  the real/complex/imaginary domains, and over void-or-function go through the
+  views; `NumericDomain` is small enough to list at each use.
 - `CTypeKind`: `ir_type` and `numeric()` (`sema/ctype/layout.rs`), `name`
   (`sema/ctype/render.rs`), the views `sugared`, `integer` and
   `complex_domain` and `canonical_form` (`sema/ctype/mod.rs`), the mangler's
@@ -59,10 +64,10 @@ correct.
 
 ## Not caught by the compiler
 
-These have `_ =>` arms that silently accept a new family. `CTypeKind` is
-`#[slate::sensitive]`, so each remaining catch-all over it carries an
-`#[expect(slate::sensitive_wildcard, reason = ...)]` stating why the default
-holds; search for `slate::sensitive_wildcard` and check each reason against the
+These have `_ =>` arms that silently accept a new family. `CTypeKind` and
+`ir::Type` are `#[slate::sensitive]`, so each remaining catch-all over them
+carries an `#[expect(slate::sensitive_wildcard, reason = ...)]` stating why the
+default holds; search for `slate::sensitive_wildcard` and check each reason against the
 new variant. See [linting](linting.md).
 
 Classification (`sema/ctype/convert.rs`):

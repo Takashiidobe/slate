@@ -447,6 +447,10 @@ fn intrinsic(name: &str, arguments: Vec<Value>) -> ValueKind {
 fn lanewise_element(ty: &Type) -> Option<NumericType> {
     match ty {
         Type::Vector { element, .. } | Type::Numeric(element) => Some(*element),
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "lanewise builtins take vectors and real scalars; every other operand type has no lane element and is rejected by the caller"
+        )]
         _ => None,
     }
 }

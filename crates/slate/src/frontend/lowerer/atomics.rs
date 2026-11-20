@@ -234,6 +234,10 @@ fn native_rmw(
 }
 
 impl Tables<'_> {
+    #[expect(
+        slate::sensitive_wildcard,
+        reason = "the types with a native Rust atomic are listed; every other type takes the lock-based path"
+    )]
     pub(super) fn atomic_scalar(&self, ty: &ir::Type) -> bool {
         matches!(
             self.resolve_type(ty),
@@ -246,6 +250,10 @@ impl Tables<'_> {
         )
     }
 
+    #[expect(
+        slate::sensitive_wildcard,
+        reason = "native atomics and real or complex floats are the atomic globals supported off Linux; any other type stays a barrier there"
+    )]
     pub(super) fn atomic_unpadded(&self, ty: &ir::Type) -> bool {
         self.atomic_scalar(ty)
             || matches!(

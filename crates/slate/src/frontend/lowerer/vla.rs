@@ -16,6 +16,10 @@ impl Tables<'_> {
             ir::Type::VariableArray { .. } => true,
             ir::Type::Array { element, .. } => self.variably_modified(element),
             ir::Type::Defined(_) => self.variable_record(ty).is_some(),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "arrays and records are the only types that can hold a runtime extent by value"
+            )]
             _ => false,
         }
     }
@@ -82,6 +86,10 @@ impl FunctionLowerer<'_, '_> {
                 factors.push(usize_value(*length));
                 self.vla_layout(element, factors)
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "every type that can carry a runtime extent is listed; any other element has a fixed Rust layout"
+            )]
             resolved => self.lower_type(resolved),
         }
     }

@@ -17,10 +17,7 @@ impl Lowerer {
         };
         let ty = self.types.ir_type(returned);
         let scalar = self.ms_asm_return_scalar(&ty);
-        if !matches!(
-            scalar,
-            Type::Bool | Type::Numeric(NumericType::Integer { .. }) | Type::Pointer { .. }
-        ) {
+        if scalar.integer_bits().is_none() && !matches!(scalar, Type::Pointer { .. }) {
             return Ok(Vec::new());
         }
         let bytes = self.types.storage(ty)?.size_bytes;
@@ -154,6 +151,10 @@ impl Lowerer {
                     ConversionReason::Return,
                 )?
             }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "ms_asm_return_operands admits only integers, _Bool and pointers, so this arm sees integers"
+            )]
             _ => {
                 self.context
                     .emit_arithmetic_conversion(value, scalar, ConversionReason::Return)?

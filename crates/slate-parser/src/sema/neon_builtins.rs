@@ -860,6 +860,10 @@ impl Lowerer {
                 (*element, element_bytes(*element) * u64::from(*lanes))
             }
             Type::Numeric(element) => (*element, element_bytes(*element)),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "vectors and scalars give the element; any other pointee is addressed as bytes, like clang's void and record pointers"
+            )]
             _ => (NumericType::integer(8, false), 1),
         };
         let align = element_bytes(element);

@@ -2539,10 +2539,7 @@ impl Lowerer {
                         if self.enum_underlying(&filter.ty).is_some() {
                             filter = self.enum_integer(filter);
                         }
-                        if !matches!(
-                            filter.ty,
-                            Type::Bool | Type::Numeric(NumericType::Integer { .. })
-                        ) {
+                        if filter.ty.integer_bits().is_none() {
                             return Err(ResolveError::Internal(
                                 "filter expression has non-integral type",
                             ));

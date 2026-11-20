@@ -255,6 +255,10 @@ fn scalar(ty: &Type, types: &HashMap<TypeId, &TypeDefinitionKind>) -> Option<Sca
             } => scalar(underlying, types),
             TypeDefinitionKind::Enum { .. } | TypeDefinitionKind::Record { .. } => None,
         },
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "the types with a register class are listed; any other parameter or return type gives no Scalar and keeps the signature distinct"
+        )]
         _ => None,
     }
 }

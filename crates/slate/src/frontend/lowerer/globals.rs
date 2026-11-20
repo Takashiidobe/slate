@@ -66,11 +66,9 @@ impl FunctionLowerer<'_, '_> {
         register: RegisterGlobal,
         value: &ir::Value,
     ) -> Result<Expr> {
-        if !matches!(
-            self.tables.resolve_type(&value.ty),
-            ir::Type::Pointer { .. } | ir::Type::Numeric(ir::NumericType::Integer { .. })
-        ) {
-            return Err(unsupported_value(value));
+        match self.tables.resolve_type(&value.ty) {
+            ir::Type::Pointer { .. } | ir::Type::Numeric(ir::NumericType::Integer { .. }) => {}
+            _ => return Err(unsupported_value(value)),
         }
         let ty = self.lower_type(&value.ty)?;
         let temp = self.next_temp();
