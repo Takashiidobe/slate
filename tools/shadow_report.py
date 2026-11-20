@@ -8,7 +8,8 @@ Run from the workspace root after building release:
     python3 tools/shadow_report.py --project ~/c-corpus/sqlite/compile_commands.json
     python3 tools/shadow_report.py --json target/shadow.json crates/slate/tests/fixtures
 
-Each input is translated with SLATE_SHADOW=<pass>. The pass prints one
+Each input is translated with SLATE_SHADOW=<pass> and, like the differential
+harness, -std=c23 unless its dg-options set a standard. The pass prints one
 `slate-shadow` line per binding whose decisions differ (or exist on one side
 only) and a summary line. The report groups differences by pass, kind and
 (rust -> ir) decision, with example sites, so each group can be triaged as an
@@ -38,7 +39,10 @@ DG_OPTIONS = re.compile(r'dg-options\s+"([^"]*)"')
 
 def fixture_args(path):
     match = DG_OPTIONS.search(path.read_text(errors="replace"))
-    return shlex.split(match[1]) if match else []
+    args = shlex.split(match[1]) if match else []
+    if not any(arg.startswith("-std=") for arg in args):
+        args.insert(0, "-std=c23")
+    return args
 
 
 def inputs(paths):
@@ -83,7 +87,7 @@ def report(rows, totals, failed, examples):
             for row in members[:examples]:
                 print(f"          {row['site']}: {row['fn']}::{row['binding']}")
     if failed:
-        print(f"\ntranslate failed on {len(failed)} inputs (not compared; flags set by test harnesses are not applied):")
+        print(f"\ntranslate failed on {len(failed)} inputs (not compared):")
         for site in failed:
             print(f"  {site}")
 
