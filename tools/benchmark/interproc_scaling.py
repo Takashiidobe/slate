@@ -147,6 +147,59 @@ def fields(n):
     return "\n".join(out), []
 
 
+def rev_alias(n, elem, use):
+    names = [f"t{i}" for i in range(1, n + 1)]
+    decls = "\n".join(f"    {elem} *{t} = 0;" for t in names)
+    assigns = "\n".join(
+        f"        {names[i]} = {names[i - 1] if i else 'p'};" for i in reversed(range(n))
+    )
+    return (
+        f"{decls}\n"
+        f"    for (int k = 0; k < {n}; k++) {{\n{assigns}\n    }}\n"
+        f"    {use.format(t=names[-1])}"
+    )
+
+
+def rev_alias_str(n):
+    body = rev_alias(n, "const char", "return (int)strlen({t});")
+    src = (
+        "#include <string.h>\n"
+        f"static int use(const char *p) {{\n{body}\n}}\n"
+        'int main(void) { return use("hello"); }'
+    )
+    return src, []
+
+
+def rev_alias_ptr(n):
+    body = rev_alias(n, "int", "{t}[0] = 1; return {t}[0];")
+    src = (
+        f"static int use(int *p) {{\n{body}\n}}\n"
+        "int main(void) { int a[1] = {0}; return use(a); }"
+    )
+    return src, []
+
+
+def hub_kill(n):
+    out = ["static int hub(int *p) { return p[0]; }"]
+    for i in range(n):
+        out.append(f"static int d{i}(int *p) {{ p[0] = {i}; return 0; }}")
+        out.append(f"static int c{i}(int *p) {{ return hub(p) + d{i}(p); }}")
+    calls = " + ".join(f"c{i}(a)" for i in range(n))
+    out.append(f"int main(void) {{ int a[1] = {{0}}; return {calls}; }}")
+    return "\n".join(out), []
+
+
+def str_hub_kill(n):
+    out = ["#include <string.h>", "static int hub(const char *s) { return (int)strlen(s); }"]
+    for i in range(n):
+        out.append(f"static int d{i}(const char *s) {{ return s[0] == {i % 128}; }}")
+        out.append(f"static int c{i}(const char *s) {{ return hub(s) + d{i}(s); }}")
+    out.append("static char buf[8];")
+    calls = " + ".join(f"c{i}({'buf' if i == n - 1 else chr(34) + 'x' + chr(34)})" for i in range(n))
+    out.append(f"int main(void) {{ return {calls}; }}")
+    return "\n".join(out), []
+
+
 SHAPES = {
     "chain_ptr": chain_ptr,
     "chain_ptr_wrapv": chain_ptr_wrapv,
@@ -158,6 +211,10 @@ SHAPES = {
     "buf_chain": buf_chain,
     "wide_locals": wide_locals,
     "fields": fields,
+    "rev_alias_str": rev_alias_str,
+    "rev_alias_ptr": rev_alias_ptr,
+    "hub_kill": hub_kill,
+    "str_hub_kill": str_hub_kill,
 }
 
 TIMING = re.compile(r"^interproc-timing pass=(\S+) phase=(\S+) ms=([0-9.]+)$")
