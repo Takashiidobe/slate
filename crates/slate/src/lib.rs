@@ -1,3 +1,5 @@
+#![feature(register_tool)]
+#![register_tool(slate)]
 /// The [api] module describes different ways to call the slate toolchain.
 pub mod api;
 /// The [backend] contains rewrites from rust to improved rust code.

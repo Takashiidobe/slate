@@ -1,0 +1,18 @@
+[package]
+name = "slate_lints"
+version = "0.1.0"
+description = "slate-specific dylint lints"
+edition = "2024"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+dylint_linting = "6.4"
+
+[dev-dependencies]
+dylint_testing = "6.4"
+
+[package.metadata.rust-analyzer]
+rustc_private = true

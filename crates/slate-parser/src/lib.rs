@@ -1,3 +1,5 @@
+#![feature(register_tool)]
+#![register_tool(slate)]
 #![deny(
     clippy::unwrap_used,
     clippy::expect_used,

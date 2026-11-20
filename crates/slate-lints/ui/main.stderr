@@ -1,0 +1,76 @@
+warning: catch-all over sensitive enum `Kind` hides variants added later
+  --> $DIR/main.rs:30:9
+   |
+LL |         _ => 0,
+   |         ^
+   |
+   = help: list the variants, or `#[expect(slate::sensitive_wildcard, reason = "...")]` on the arm or item
+   = note: `#[warn(slate::sensitive_wildcard)]` on by default
+
+warning: catch-all over sensitive enum `Kind` hides variants added later
+  --> $DIR/main.rs:37:9
+   |
+LL |         other => size(other),
+   |         ^^^^^
+   |
+   = help: list the variants, or `#[expect(slate::sensitive_wildcard, reason = "...")]` on the arm or item
+
+warning: catch-all over sensitive enum `Kind` hides variants added later
+  --> $DIR/main.rs:76:29
+   |
+LL |         Kind::Ptr(inner) if matches!(**inner, Kind::Int) => 1,
+   |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: list the variants, or `#[expect(slate::sensitive_wildcard, reason = "...")]` on the arm or item
+
+warning: catch-all over sensitive enum `Kind` hides variants added later
+  --> $DIR/main.rs:88:9
+   |
+LL |         _ => 0,
+   |         ^
+   |
+   = help: list the variants, or `#[expect(slate::sensitive_wildcard, reason = "...")]` on the arm or item
+
+warning: catch-all over sensitive enum `Kind` hides variants added later
+  --> $DIR/main.rs:86:13
+   |
+LL |             _ => 2,
+   |             ^
+   |
+   = help: list the variants, or `#[expect(slate::sensitive_wildcard, reason = "...")]` on the arm or item
+
+warning: catch-all over sensitive enum `Kind` hides variants added later
+  --> $DIR/main.rs:95:21
+   |
+LL |         (Kind::Int, _) => 2,
+   |                     ^
+   |
+   = help: list the variants, or `#[expect(slate::sensitive_wildcard, reason = "...")]` on the arm or item
+
+warning: catch-all over sensitive enum `Kind` hides variants added later
+  --> $DIR/main.rs:96:9
+   |
+LL |         _ => 0,
+   |         ^
+   |
+   = help: list the variants, or `#[expect(slate::sensitive_wildcard, reason = "...")]` on the arm or item
+
+warning: catch-all over sensitive enum `Kind` hides variants added later
+  --> $DIR/main.rs:101:5
+   |
+LL |     matches!(k, Kind::Int | Kind::Float)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: list the variants, or `#[expect(slate::sensitive_wildcard, reason = "...")]` on the arm or item
+
+warning: `..` skips sensitive field `scalable`
+  --> $DIR/main.rs:120:9
+   |
+LL |     let Vector { lanes, .. } = v;
+   |         ^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: bind the field, or write `field: _` to show it was considered
+   = note: `#[warn(slate::sensitive_field_rest)]` on by default
+
+warning: 9 warnings emitted
+
