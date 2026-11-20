@@ -1,5 +1,6 @@
 use foldhash::{HashMap, HashMapExt};
 use slate_parser::ast::Span;
+use slate_parser::files::Files;
 use slate_parser::ir::{self, BindingId, Callee, Linkage};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -20,20 +21,28 @@ pub struct FunctionEntry<'m> {
     pub function: &'m Span<ir::Function>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Copy)]
+pub struct ProgramUnit<'m> {
+    pub module: &'m ir::Module,
+    pub files: &'m Files,
+}
+
 pub struct Program<'m> {
-    units: Vec<&'m ir::Module>,
+    units: Vec<ProgramUnit<'m>>,
     functions: Vec<FunctionEntry<'m>>,
     resolved: HashMap<ProgramBinding, FunctionId>,
 }
 
 impl<'m> Program<'m> {
-    pub fn new(units: impl IntoIterator<Item = &'m ir::Module>) -> Self {
-        let units: Vec<_> = units.into_iter().collect();
+    pub fn new(units: impl IntoIterator<Item = (&'m ir::Module, &'m Files)>) -> Self {
+        let units: Vec<_> = units
+            .into_iter()
+            .map(|(module, files)| ProgramUnit { module, files })
+            .collect();
         let mut functions = Vec::new();
         let mut resolved = HashMap::new();
         let mut external: HashMap<&'m str, FunctionId> = HashMap::new();
-        for (unit, module) in (0u32..).map(UnitId).zip(&units) {
+        for (unit, ProgramUnit { module, .. }) in (0u32..).map(UnitId).zip(&units) {
             for function in module.functions.iter().filter(|f| has_known_body(f)) {
                 let id = FunctionId(functions.len() as u32);
                 functions.push(FunctionEntry { unit, function });
@@ -49,7 +58,7 @@ impl<'m> Program<'m> {
                 }
             }
         }
-        for (unit, module) in (0u32..).map(UnitId).zip(&units) {
+        for (unit, ProgramUnit { module, .. }) in (0u32..).map(UnitId).zip(&units) {
             for function in &module.functions {
                 let key = ProgramBinding {
                     unit,
@@ -71,11 +80,11 @@ impl<'m> Program<'m> {
         }
     }
 
-    pub fn units(&self) -> impl ExactSizeIterator<Item = (UnitId, &'m ir::Module)> + '_ {
+    pub fn units(&self) -> impl ExactSizeIterator<Item = (UnitId, ProgramUnit<'m>)> + '_ {
         self.units
             .iter()
             .enumerate()
-            .map(|(index, module)| (UnitId(index as u32), *module))
+            .map(|(index, unit)| (UnitId(index as u32), *unit))
     }
 
     pub fn functions(&self) -> impl ExactSizeIterator<Item = (FunctionId, FunctionEntry<'m>)> + '_ {

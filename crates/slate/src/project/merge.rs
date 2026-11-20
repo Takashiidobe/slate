@@ -319,7 +319,12 @@ pub fn translate_units(
             )
         })
         .collect();
-    let program = slate_analysis::Program::new(modules.iter().map(|module| &**module));
+    let program = slate_analysis::Program::new(
+        modules
+            .iter()
+            .zip(units)
+            .map(|(module, unit)| (&**module, &unit.files)),
+    );
     let facts = slate_analysis::analyze(&program);
     let jobs: Vec<_> = units
         .iter()

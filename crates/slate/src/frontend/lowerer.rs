@@ -1,8 +1,7 @@
 use super::long_double;
 use crate::backend::asm::{self as asm_out, AsmTemplate, Directive};
 use crate::backend::rust_ast::{self as rust, Attr, BinOp, Expr, FnDef, FnParam, Item, Prim, Stmt};
-use crate::function_identity::CallBinding;
-use crate::function_identity::{FunctionIdentity, classify_function};
+use crate::function_identity::{CallBinding, FunctionIdentity};
 use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use slate_analysis::UnitFacts;
 use slate_parser::ast::Span;
@@ -729,22 +728,7 @@ impl<'m> ModuleLowerer<'m> {
                         exported: function.body.is_some()
                             && exports_symbol(options, module, function),
                         noreturn: function.semantics.noreturn,
-                        identity: if function.body.is_none() {
-                            let provenance = &function.provenance;
-                            let system_headers: Vec<&str> = provenance
-                                .system_header
-                                .into_iter()
-                                .flat_map(|outermost| [outermost, provenance.file])
-                                .filter_map(|header| files.get_path(header))
-                                .filter_map(|path| path.file_name())
-                                .filter_map(|name| name.to_str())
-                                .collect();
-                            classify_function(&function.name, &system_headers, module.hosted)
-                        } else if function.provenance.system_header.is_some() {
-                            FunctionIdentity::HeaderInline
-                        } else {
-                            FunctionIdentity::Unknown
-                        },
+                        identity: facts.identity(function.value.id),
                     },
                 )
             })

@@ -70,6 +70,14 @@ runs, or `None` when the callee is opaque:
 `None` is always sound: the analysis treats the call as escaping its pointer
 arguments.
 
+A declaration's libc identity (`Known`, `FunctionIdentity`) is also a fact:
+`analyze` classifies each function once from its declaration provenance (the
+system header it came from, resolved through the unit's `Files`) and
+`module.hosted`, and lowering reads `UnitFacts::identity` instead of
+classifying. The catalog lives in `slate-analysis/src/identity.rs`; slate
+re-exports it from `function_identity`, where `CallBinding` (a Rust-AST
+concept) stays.
+
 ## Scaling rule
 
 Analyses here must stay near-linear (`n` or `n log n` in IR size) on

@@ -10,7 +10,9 @@
 )]
 
 mod facts;
+mod identity;
 mod program;
 
 pub use facts::{BindingFacts, Facts, UnitFacts, ValueFacts, analyze};
-pub use program::{FunctionEntry, FunctionId, Program, ProgramBinding, UnitId};
+pub use identity::{FunctionIdentity, Known};
+pub use program::{FunctionEntry, FunctionId, Program, ProgramBinding, ProgramUnit, UnitId};
