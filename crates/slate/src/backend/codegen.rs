@@ -961,14 +961,22 @@ impl<W: Write> Codegen<W> {
                 && comment.attach == CommentAttach::Trailing
                 && let [line] = comment.lines.as_slice()
             {
-                let mut inline = Codegen::new(String::new());
+                let mut inline = Codegen {
+                    out: String::new(),
+                    macro_params: self.macro_params.clone(),
+                    no_unwind: self.no_unwind,
+                };
                 inline.stmt(stmt)?;
                 let text = inline.into_inner();
-                if text.trim_end().lines().count() == 1 {
-                    writeln!(self.out, "{} // {line}", text.trim_end())?;
+                let trimmed = text.trim_end();
+                if !trimmed.contains('\n') {
+                    writeln!(self.out, "{trimmed} // {line}")?;
                     index += 2;
-                    continue;
+                } else {
+                    self.out.write_str(&text)?;
+                    index += 1;
                 }
+                continue;
             }
             self.stmt(stmt)?;
             index += 1;
