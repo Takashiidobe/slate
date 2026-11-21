@@ -19,29 +19,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! START_OR_INDEX {
-// CHECK-NEXT:     ($req:expr) => {
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let __v: u64 = if $req.is_null() {
-// CHECK-NEXT:                 start()
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 unsafe { (*(($req) as *mut arena)).idx }
-// CHECK-NEXT:             };
-// CHECK-NEXT:             __v
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! START_OR_INDEX__2 {
-// CHECK-NEXT:     () => {
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let mut __v: u64;
-// CHECK-NEXT:             __v = start();
-// CHECK-NEXT:             __v
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct arena {
@@ -60,19 +37,20 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut arena: arena = arena { idx: 42 };
 // CHECK-NEXT:     let given: *mut () = core::ptr::addr_of_mut!(arena) as *mut ();
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(
-// CHECK-NEXT:             c"%lu %lu\n".as_ptr(),
-// CHECK-NEXT:             START_OR_INDEX__2!(),
-// CHECK-NEXT:             START_OR_INDEX!(given),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64;
-// CHECK-NEXT:     [[V_0]] = start().wrapping_add(1);
+// CHECK-NEXT:     [[V_0]] = start();
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u64 = if given.is_null() {
+// CHECK-NEXT:         start()
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         unsafe { (*(given as *mut arena)).idx }
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%lu\n".as_ptr(), [[V_0]]) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lu %lu\n".as_ptr(), [[V_0]], [[V_1]]) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: u64;
+// CHECK-NEXT:     [[V_2]] = start().wrapping_add(1);
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lu\n".as_ptr(), [[V_2]]) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

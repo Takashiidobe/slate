@@ -128,11 +128,12 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_control_flow.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_control_flow: 32 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_control_flow: 31 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced fn:bails: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: macros: 12 function-like, 10 lifted at least once (expansions counted per distinct compile)
+// CHECK-NEXT: macros: 12 function-like, 9 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   inline break_out_of_macro: 4
+// CHECK-NEXT:   inline hoist_split_region: 2
 // CHECK-NEXT:   macro BAIL: 2 lifted, inline:
 // CHECK-NEXT:   macro BAIL_IF: 2 lifted, inline:
 // CHECK-NEXT:   macro CHECK: 10 lifted, inline:
@@ -144,7 +145,7 @@ int main(void) {
 // CHECK-NEXT:   macro PICK: 2 lifted, inline:
 // CHECK-NEXT:   macro SKIP_IF: 0 lifted, inline: break_out_of_macro 2
 // CHECK-NEXT:   macro STOP_IF: 0 lifted, inline: break_out_of_macro 2
-// CHECK-NEXT:   macro TAKE: 2 lifted, inline:
+// CHECK-NEXT:   macro TAKE: 0 lifted, inline: hoist_split_region 2
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -457,7 +458,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn value_position(a: i32) -> i32 {
-// CHECK-NEXT:     let t: i32 = TAKE!(a);
+// CHECK-NEXT:     let mut t: i32 = 0;
+// CHECK-NEXT:     let mut [[V_0]]: i32;
+// CHECK-NEXT:     if a < 0 {
+// CHECK-NEXT:         return -2;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     [[V_0]] = a + 1;
+// CHECK-NEXT:     t = [[V_0]];
 // CHECK-NEXT:     t * 2
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -590,19 +597,6 @@ int main(void) {
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 return 2i32;
 // CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! TAKE {
-// CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let mut __v: i32;
-// CHECK-NEXT:             if ($x) < 0 {
-// CHECK-NEXT:                 return -2i32;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             __v = ($x) + 1;
-// CHECK-NEXT:             __v
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

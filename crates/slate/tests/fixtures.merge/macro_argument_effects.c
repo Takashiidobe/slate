@@ -38,10 +38,10 @@ int main(void) {
 // CHECK-NEXT: total: 2 compiles across 2 targets
 // CHECK-NEXT: unit macro_argument_effects: 11 items, 1 gated, 0 duplicated functions
 // CHECK-NEXT: macros: 3 function-like, 2 lifted at least once (expansions counted per distinct compile)
-// CHECK-NEXT:   inline argument_reads_macro_local: 12
-// CHECK-NEXT:   macro ITEM: 0 lifted, inline: argument_reads_macro_local 4
-// CHECK-NEXT:   macro TO_LONG: 2 lifted, inline: argument_reads_macro_local 4
-// CHECK-NEXT:   macro WRAP: 2 lifted, inline: argument_reads_macro_local 4
+// CHECK-NEXT:   inline hoist_split_region: 12
+// CHECK-NEXT:   macro ITEM: 0 lifted, inline: hoist_split_region 4
+// CHECK-NEXT:   macro TO_LONG: 2 lifted, inline: hoist_split_region 4
+// CHECK-NEXT:   macro WRAP: 2 lifted, inline: hoist_split_region 4
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0

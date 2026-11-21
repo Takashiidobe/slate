@@ -171,10 +171,13 @@ and the [cover table](../preprocessor.md#macro-invocations) before lowering:
   `static` or `extern` declaration, or when a value expansion's only tokens are
   its own argument (`#define ID(x) x`).
 
-Effects hoist out of a hole, into the enclosing `body` or `evaluation`, and stop
-at a `MacroExpansion` value: `r += NEXT()` keeps `*cursor++`'s temporaries in
-that value's `evaluation.statements`. The enclosing operators still see it as
-having effects, so `a && NEXT()` still branches. An analysis that matches on
+Hoisting ignores macro structure: effects hoist out of a hole and out of a
+`MacroExpansion` value into the enclosing `body` or `evaluation`, exactly as
+without structure, so a value expansion's `evaluation.statements` is always
+empty after normalization. An expansion whose value hoisted statements
+(`r += NEXT()` with `*cursor++`, `GT_OFF(x)` with a call under `&&`) is split:
+`effects_statements::normalize` records it in `Module::macro_rejections` as
+`hoist_split_region`, and it stays inline. An analysis that matches on
 value shape must look through these forms with `Value::without_macro_structure()`
 (`MacroArg`, and a `MacroExpansion` without hoisted statements);
 `ValueKind` is `#[slate::sensitive]`, so a catch-all that skips them is
@@ -190,14 +193,13 @@ node metadata included. `Module::strip_macro_structure` moves a removed
 wrapper's C spelling onto the node that replaces it.
 `SLATE_CHECK_MACRO_STRUCTURE=1` checks this in `lower_parsed` and fails the
 translation on the first differing line. `project_merge` sets it.
-`Sema::with_macro_keep` passes `crates/slate/src/frontend/macro_keep.rs`, which
-picks the expansions that are safe to lift from a normalized module. Hoisting
-has already kept value expansions together by then and cannot be undone, so
-`finish_module` puts the unnormalized bodies back, calls
-`Module::strip_macro_structure` (`ir/macro_strip.rs`, an `ir::Visitor` whose
-`keep` drops expansions) to remove the expansions
-`keep` rejected, and normalizes again. A stripped expansion therefore hoists
-exactly as if it had no structure and stays inline in the
+Sema always returns the full structure. Slate's `lower_parsed` then calls
+`crates/slate/src/frontend/macro_keep.rs` `kept_expansions`, which picks the
+expansions that are safe to lift from the normalized module (split expansions
+included in its rejections), and `Module::strip_macro_structure`
+(`ir/macro_strip.rs`, an `ir::Visitor` whose `keep` drops expansions) removes
+the rest. Normalization does not depend on structure, so nothing is normalized
+twice. A stripped expansion stays inline in the
 [generated Rust](../slate-architecture.md#macro-templates).
 
 Per-value expansion chains are not in the IR yet (only atomic builtins record

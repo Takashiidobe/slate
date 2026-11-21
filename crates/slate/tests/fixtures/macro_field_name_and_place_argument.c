@@ -32,20 +32,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! hybrid_var {
-// CHECK-NEXT:     ($_pmu:expr, $_var:expr) => {
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let mut __v: *mut {{\[\[}}u64; 3]; 2];
-// CHECK-NEXT:             let mut [[V_0:__v[0-9]+]]: *mut {{\[\[}}u64; 3]; 2] = unsafe { core::ptr::addr_of_mut!($_var) };
-// CHECK-NEXT:             if is_hybrid($_pmu) != 0 {
-// CHECK-NEXT:                 [[V_0]] = unsafe { core::ptr::addr_of_mut!((*$_pmu).regs) };
-// CHECK-NEXT:             }
-// CHECK-NEXT:             __v = [[V_0]];
-// CHECK-NEXT:             unsafe { (*__v).as_mut_ptr() as *mut [u64; 3] }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct pmu {
@@ -87,20 +73,38 @@ int main(void) {
 // CHECK-NEXT:         [[T_1]].hybrid = 0i32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
+// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: *mut {{\[\[}}u64; 3]; 2];
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut __Fp: *mut {{\[\[}}u64; 3]; 2] = unsafe { core::ptr::addr_of_mut!(regs.0) };
+// CHECK-NEXT:         if is_hybrid(core::ptr::addr_of_mut!(hybrid)) != 0 {
+// CHECK-NEXT:             __Fp = unsafe {
+// CHECK-NEXT:                 core::ptr::addr_of_mut!((*core::ptr::addr_of_mut!(hybrid)).regs)
+// CHECK-NEXT:             };
+// CHECK-NEXT:         }
+// CHECK-NEXT:         [[V_0]] = __Fp;
+// CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             (((core::ptr::addr_of!(source.0) as *const [u64; 3]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
-// CHECK-NEXT:             ((hybrid_var!(core::ptr::addr_of_mut!(hybrid), regs.0) as *mut ())
+// CHECK-NEXT:             ((((*[[V_0]]).as_mut_ptr() as *mut [u64; 3]) as *mut ())
 // CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             ((core::mem::size_of::<{{\[\[}}u64; 3]; 2]>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: *mut {{\[\[}}u64; 3]; 2];
+// CHECK-NEXT:     let mut __Fp: *mut {{\[\[}}u64; 3]; 2] = unsafe { core::ptr::addr_of_mut!(regs.0) };
+// CHECK-NEXT:     if is_hybrid(core::ptr::addr_of_mut!(plain)) != 0 {
+// CHECK-NEXT:         __Fp = unsafe {
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*core::ptr::addr_of_mut!(plain)).regs)
+// CHECK-NEXT:         };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     [[V_1]] = __Fp;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             (((core::ptr::addr_of!(source.0) as *const [u64; 3]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
-// CHECK-NEXT:             ((hybrid_var!(core::ptr::addr_of_mut!(plain), regs.0) as *mut ())
+// CHECK-NEXT:             ((((*[[V_1]]).as_mut_ptr() as *mut [u64; 3]) as *mut ())
 // CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             ((core::mem::size_of::<{{\[\[}}u64; 3]; 2]>() as u64) as usize) as usize,
 // CHECK-NEXT:         )

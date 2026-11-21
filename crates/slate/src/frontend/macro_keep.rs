@@ -420,6 +420,7 @@ pub(super) fn pass_caller_locals(module: &mut Module) {
 
 pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> {
     let globals = global_bindings(module);
+    let split = std::mem::take(&mut module.macro_rejections);
     let mut rejections = HashMap::new();
     let mut seen = HashSet::new();
     for function in &mut module.functions {
@@ -450,6 +451,9 @@ pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> 
         if let Some(reason) = definition_unfit(module.macros.definition(*id)) {
             rejections.entry(*id).or_insert(reason);
         }
+    }
+    for (id, reason) in split {
+        rejections.entry(id).or_insert(reason);
     }
     let mut kept: HashSet<_> = seen
         .into_iter()

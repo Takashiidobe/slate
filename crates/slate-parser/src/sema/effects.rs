@@ -106,6 +106,7 @@ pub(super) struct Hoister {
     inlined: HashMap<BindingId, Value>,
     pub(super) c_nodes: HashMap<crate::ast::NodeId, super::ctype::QualType>,
     pub(super) c_bindings: HashMap<BindingId, super::ctype::QualType>,
+    pub(super) split_expansions: HashSet<crate::ast::MacroExpansionId>,
 }
 
 impl Hoister {
@@ -126,6 +127,7 @@ impl Hoister {
             inlined: HashMap::new(),
             c_nodes: HashMap::new(),
             c_bindings: HashMap::new(),
+            split_expansions: HashSet::new(),
         }
     }
 
@@ -522,11 +524,19 @@ impl Hoister {
                 expansion,
                 evaluation,
             } => {
-                let mut statements = self.statements(evaluation.statements)?;
-                let value = self.value(evaluation.value, &mut statements)?;
+                let before = out.len();
+                let statements = self.statements(evaluation.statements)?;
+                out.extend(statements);
+                let value = self.value(evaluation.value, out)?;
+                if out.len() > before {
+                    self.split_expansions.insert(expansion);
+                }
                 ValueKind::MacroExpansion {
                     expansion,
-                    evaluation: Box::new(Evaluation { statements, value }),
+                    evaluation: Box::new(Evaluation {
+                        statements: Vec::new(),
+                        value,
+                    }),
                 }
             }
             ValueKind::Store {

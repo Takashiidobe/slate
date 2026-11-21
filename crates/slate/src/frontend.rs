@@ -409,9 +409,7 @@ fn lower_parsed(
     (unit, files): (TranslationUnit, Files),
     diagnostics: &mut Vec<serde_json::Value>,
 ) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
-    let mut sema = Sema::new(&unit)
-        .with_macro_structure(true)
-        .with_macro_keep(macro_keep::kept_expansions);
+    let mut sema = Sema::new(&unit).with_macro_structure(true);
     let warnings = sema.analyze(&files).map_err(|error| {
         crate::diagnostics::collect(&error, diagnostics);
         Error::Analyze {
@@ -435,6 +433,8 @@ fn lower_parsed(
     for warning in warnings {
         crate::diagnostics::collect(&warning, diagnostics);
     }
+    let kept = macro_keep::kept_expansions(&mut module);
+    module.strip_macro_structure(|expansion| kept.contains(&expansion));
     macro_keep::pass_caller_locals(&mut module);
     if std::env::var_os("SLATE_CHECK_MACRO_STRUCTURE").is_some() {
         check_macro_structure(path, &unit, &files)?;
@@ -443,18 +443,15 @@ fn lower_parsed(
 }
 
 fn check_macro_structure(path: &Path, unit: &TranslationUnit, files: &Files) -> Result<(), Error> {
-    let print = |sema: Sema| -> Option<String> {
-        let mut sema = sema;
+    let print = |structure: bool| -> Option<String> {
+        let mut sema = Sema::new(unit).with_macro_structure(structure);
         sema.analyze(files).ok()?;
-        let (module, _) = sema.lower(files).ok()?;
+        let (mut module, _) = sema.lower(files).ok()?;
+        module.strip_macro_structure(|_| false);
         Some(module.display(true).to_string())
     };
-    let plain = print(Sema::new(unit));
-    let stripped = print(
-        Sema::new(unit)
-            .with_macro_structure(true)
-            .with_macro_keep(|_| HashSet::default()),
-    );
+    let plain = print(false);
+    let stripped = print(true);
     let (Some(plain), Some(stripped)) = (plain, stripped) else {
         return Ok(());
     };

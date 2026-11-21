@@ -62,32 +62,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! FIND {
-// CHECK-NEXT:     ($start:expr, $prev_ptr:expr) => {
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let mut __v: i32;
-// CHECK-NEXT:             let mut [[V_0:__v[0-9]+]]: i32 = $start;
-// CHECK-NEXT:             let mut [[V_1:__v[0-9]+]]: i32 = 0;
-// CHECK-NEXT:             let mut [[V_2:__v[0-9]+]]: i32 = 0;
-// CHECK-NEXT:             while [[V_0]] < 10 {
-// CHECK-NEXT:                 if [[V_0]] == 7 {
-// CHECK-NEXT:                     [[V_2]] = [[V_0]];
-// CHECK-NEXT:                     if !$prev_ptr.is_null() {
-// CHECK-NEXT:                         unsafe {
-// CHECK-NEXT:                             *$prev_ptr = [[V_1]] as u8;
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 [[V_1]] = [[V_0]];
-// CHECK-NEXT:                 [[V_0]] += 1;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             __v = [[V_2]];
-// CHECK-NEXT:             __v
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! STORE {
 // CHECK-NEXT:     ($p:expr, $i:expr, $v:expr) => {
 // CHECK-NEXT:         loop {
@@ -165,8 +139,44 @@ int main(void) {
 // CHECK-NEXT:     fill_null(core::ptr::addr_of_mut!(e));
 // CHECK-NEXT:     println!("{}", e.band);
 // CHECK-NEXT:     let mut prev: u8 = 0;
-// CHECK-NEXT:     let a: i32 = FIND!(2i32, core::ptr::addr_of_mut!(prev));
-// CHECK-NEXT:     let b: i32 = FIND!(3i32, core::ptr::null_mut::<u8>());
+// CHECK-NEXT:     let mut a: i32 = 0;
+// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32;
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut __prev: i32 = 0;
+// CHECK-NEXT:         let mut __found: i32 = 0;
+// CHECK-NEXT:         for __pos in 2i32..10i32 {
+// CHECK-NEXT:             if __pos == 7 {
+// CHECK-NEXT:                 __found = __pos;
+// CHECK-NEXT:                 if !core::ptr::addr_of_mut!(prev).is_null() {
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         *core::ptr::addr_of_mut!(prev) = __prev as u8;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             __prev = __pos;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         [[V_0]] = __found;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     a = [[V_0]];
+// CHECK-NEXT:     let mut b: i32 = 0;
+// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: i32;
+// CHECK-NEXT:     let mut __prev: i32 = 0;
+// CHECK-NEXT:     let mut __found: i32 = 0;
+// CHECK-NEXT:     for __pos in 3i32..10i32 {
+// CHECK-NEXT:         if __pos == 7 {
+// CHECK-NEXT:             __found = __pos;
+// CHECK-NEXT:             if core::ptr::null_mut::<u8>() != core::ptr::null_mut::<u8>() {
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     *core::ptr::null_mut::<u8>() = __prev as u8;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         __prev = __pos;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     [[V_1]] = __found;
+// CHECK-NEXT:     b = [[V_1]];
 // CHECK-NEXT:     let mut slots: [i32; 3] = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [i32; 3] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]][0] = 0i32;

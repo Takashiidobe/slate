@@ -33,6 +33,12 @@ pub(super) fn normalize(
     }
     module.c_types.nodes = hoister.c_nodes;
     module.c_types.bindings = hoister.c_bindings;
+    for expansion in hoister.split_expansions {
+        module
+            .macro_rejections
+            .entry(expansion)
+            .or_insert("hoist_split_region");
+    }
     Ok(())
 }
 

@@ -41,7 +41,6 @@ mod vector_builtins;
 mod x86_vector_builtins;
 
 pub use ctype::compat::PointerMerge;
-pub use module::MacroKeep;
 pub use validate::{SemaError, SemaErrors};
 
 use crate::ast::{DeclKind, Expr, StmtKind, TranslationUnit};
@@ -65,7 +64,6 @@ pub struct Sema<'u> {
     items: Vec<names::ItemResolution>,
     types: types::TypeResolver,
     macro_structure: bool,
-    macro_keep: Option<module::MacroKeep>,
 }
 
 impl<'u> Sema<'u> {
@@ -78,17 +76,11 @@ impl<'u> Sema<'u> {
             items,
             types,
             macro_structure: false,
-            macro_keep: None,
         }
     }
 
     pub fn with_macro_structure(mut self, enabled: bool) -> Self {
         self.macro_structure = enabled;
-        self
-    }
-
-    pub fn with_macro_keep(mut self, keep: module::MacroKeep) -> Self {
-        self.macro_keep = Some(keep);
         self
     }
 

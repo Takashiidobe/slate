@@ -25,8 +25,6 @@ use crate::target_info::TargetEnvironment;
 use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use num_bigint::Sign;
 
-pub type MacroKeep = fn(&mut Module) -> HashSet<ast::MacroExpansionId>;
-
 impl super::Sema<'_> {
     pub fn lower(
         self,
@@ -44,7 +42,6 @@ impl super::Sema<'_> {
             self.types,
             files,
             macro_structure,
-            self.macro_keep,
         )
     }
 }
@@ -56,7 +53,6 @@ fn resolve_module(
     mut types: TypeResolver,
     files: &crate::files::Files,
     macro_structure: MacroStructure,
-    macro_keep: Option<MacroKeep>,
 ) -> Result<(Module, Vec<SemaError>), SemaErrors> {
     let context = Context::for_dialect(&unit.dialect);
     let next_id = names
@@ -234,11 +230,9 @@ fn resolve_module(
         }
     }
     lower.module.macros = unit.macros.clone();
-    lower
-        .finish_module(unit, macro_keep)
-        .map_err(|error| SemaErrors {
-            errors: vec![SemaError::resolve_error(&error.checked(), files)],
-        })?;
+    lower.finish_module(unit).map_err(|error| SemaErrors {
+        errors: vec![SemaError::resolve_error(&error.checked(), files)],
+    })?;
     lower.module.c_types.types = lower.types.ctypes;
     lower.module.c_types.definitions = lower.types.definitions;
     lower.module.c_types.record_fields = lower.types.record_fields;
@@ -436,11 +430,7 @@ fn item_error(error: &ResolveError, item: &ast::Decl) -> SemaError {
 }
 
 impl Lowerer {
-    fn finish_module(
-        &mut self,
-        unit: &TranslationUnit,
-        macro_keep: Option<MacroKeep>,
-    ) -> Result<(), ResolveError> {
+    fn finish_module(&mut self, unit: &TranslationUnit) -> Result<(), ResolveError> {
         self.resolve_object_requests(unit)?;
         self.finish_functions(unit.dialect.inline_semantics())?;
         self.complete_declaration_abis()?;
@@ -458,65 +448,12 @@ impl Lowerer {
             .collect();
         let arguments_reversed =
             self.types.flavor().is_gcc() && self.context.target.family.is_x86();
-        match macro_keep {
-            None => super::effects_statements::normalize(
-                &mut self.module,
-                self.next_id,
-                access,
-                arguments_reversed,
-            )?,
-            Some(keep) => self.normalize_kept_expansions(keep, access, arguments_reversed)?,
-        }
-        Ok(())
-    }
-
-    fn normalize_kept_expansions(
-        &mut self,
-        keep: MacroKeep,
-        access: HashMap<BindingId, Access>,
-        arguments_reversed: bool,
-    ) -> Result<(), ResolveError> {
-        let bodies: Vec<_> = self
-            .module
-            .functions
-            .iter()
-            .map(|function| function.value.body.clone())
-            .collect();
-        let nodes = self.module.c_types.nodes.clone();
-        let bindings = self.module.c_types.bindings.clone();
         super::effects_statements::normalize(
             &mut self.module,
             self.next_id,
-            access.clone(),
+            access,
             arguments_reversed,
-        )?;
-        let mut kept = keep(&mut self.module);
-        let mut rejections = std::mem::take(&mut self.module.macro_rejections);
-        loop {
-            for (function, body) in self.module.functions.iter_mut().zip(bodies.iter()) {
-                function.value.body = body.clone();
-            }
-            self.module.c_types.nodes = nodes.clone();
-            self.module.c_types.bindings = bindings.clone();
-            self.module
-                .strip_macro_structure(|expansion| kept.contains(&expansion));
-            super::effects_statements::normalize(
-                &mut self.module,
-                self.next_id,
-                access.clone(),
-                arguments_reversed,
-            )?;
-            let survived = keep(&mut self.module);
-            for (expansion, reason) in std::mem::take(&mut self.module.macro_rejections) {
-                rejections.entry(expansion).or_insert(reason);
-            }
-            if kept.iter().all(|expansion| survived.contains(expansion)) {
-                break;
-            }
-            kept.retain(|expansion| survived.contains(expansion));
-        }
-        self.module.macro_rejections = rejections;
-        Ok(())
+        )
     }
 
     fn complete_declaration_abis(&mut self) -> Result<(), ResolveError> {
