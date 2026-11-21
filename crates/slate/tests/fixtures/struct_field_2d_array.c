@@ -77,7 +77,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn fill(t: &mut table) {
+// CHECK-NEXT: fn fill(t: *mut table) {
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *((*((*t).rows.as_mut_ptr() as *mut [i8; 3]).offset(i as isize)).as_mut_ptr()
@@ -97,8 +97,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn fill_via_ptr(t: &mut [table], i: i32) {
-// CHECK-NEXT:     let row: *mut [i8; 3] = t[0usize].rows.as_mut_ptr() as *mut [i8; 3];
+// CHECK-NEXT: fn fill_via_ptr(t: *mut table, i: i32) {
+// CHECK-NEXT:     let row: *mut [i8; 3] = unsafe { (*t).rows.as_mut_ptr() as *mut [i8; 3] };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *((*row.offset(i as isize).add(0)).as_mut_ptr() as *mut i8).add(0) = 88;
 // CHECK-NEXT:     }
@@ -142,8 +142,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut t: table = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     fill(&mut t);
-// CHECK-NEXT:     fill_via_ptr(core::slice::from_mut(&mut t), 2i32);
+// CHECK-NEXT:     fill(core::ptr::addr_of_mut!(t));
+// CHECK-NEXT:     fill_via_ptr(core::ptr::addr_of_mut!(t), 2i32);
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {

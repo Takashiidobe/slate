@@ -131,6 +131,8 @@ struct Summary {
     results: Vec<(u32, FunctionId)>,
     returned: Option<u32>,
     address_taken: Vec<FunctionId>,
+    leaked: HashSet<BindingId>,
+    automatic: HashSet<BindingId>,
 }
 
 #[derive(Default)]
@@ -166,6 +168,7 @@ struct Walker<'a, 'm> {
     program: &'a Program<'m>,
     identities: &'a HashMap<ProgramBinding, FunctionIdentity>,
     inert: &'a HashSet<ProgramBinding>,
+    constants: &'a HashSet<ProgramBinding>,
     unit: UnitId,
     nodes: Vec<Node>,
     index: HashMap<BindingId, u32>,
@@ -181,6 +184,7 @@ struct Walker<'a, 'm> {
     written: HashSet<BindingId>,
     reads: HashMap<BindingId, u32>,
     allocations: HashMap<BindingId, (BindingId, Type)>,
+    leaked: HashSet<BindingId>,
 }
 
 fn peel_argument(value: &Value) -> &Value {
@@ -289,8 +293,12 @@ impl Walker<'_, '_> {
     }
 
     fn mark(&mut self, value: &Value, flags: u8) {
-        for (node, _) in self.sources(value).roots {
+        let sources = self.sources(value);
+        for (node, _) in sources.roots {
             self.flag(node, flags);
+        }
+        if flags & ESCAPE != 0 {
+            self.leaked.extend(sources.objects);
         }
     }
 
@@ -441,6 +449,7 @@ impl Walker<'_, '_> {
         if sources.null {
             self.flag(destination, NULLABLE);
         }
+        self.leaked.extend(sources.objects);
     }
 
     fn macro_mentions(&mut self, named: Named) {
@@ -457,17 +466,24 @@ impl Walker<'_, '_> {
             ValueKind::ArrayDecay {
                 place:
                     Place {
-                        kind: PlaceKind::Binding(_),
+                        kind: PlaceKind::Binding(array),
                         ..
                     },
                 length: Some(length),
-            } => match pointee(&peeled.ty) {
-                Some(element) => Shape::Array {
-                    length: *length,
-                    element: element.clone(),
-                },
-                None => Shape::Other,
-            },
+            } if self.automatic.contains(array)
+                || self.constants.contains(&ProgramBinding {
+                    unit: self.unit,
+                    binding: *array,
+                }) =>
+            {
+                match pointee(&peeled.ty) {
+                    Some(element) => Shape::Array {
+                        length: *length,
+                        element: element.clone(),
+                    },
+                    None => Shape::Other,
+                }
+            }
             ValueKind::Constant(ir::Number::Integer(number)) => {
                 u64::try_from(number).map_or(Shape::Other, Shape::Constant)
             }
@@ -973,7 +989,64 @@ impl Walker<'_, '_> {
         }
         let mut named = Named(Vec::new());
         ir::walk_body(&mut vec![statement.clone()], &mut named);
+        self.leaked.extend(named.0.iter().copied());
         self.written.extend(named.0);
+    }
+
+    fn asm(&mut self, asm: &ir::InlineAsm) {
+        let executes = !asm.template.trim().is_empty();
+        for operand in &asm.operands {
+            match &operand.kind {
+                ir::AsmOperandKind::In(value) => self.asm_input(value, executes),
+                ir::AsmOperandKind::InPlace(place) => self.asm_place(place, Use::Read),
+                ir::AsmOperandKind::Out { place, .. } => self.asm_place(place, Use::Write),
+                ir::AsmOperandKind::InOut { place, input, .. } => {
+                    match input {
+                        Some(tied) => self.asm_input(&tied.value, executes),
+                        None => self.asm_place(place, Use::Read),
+                    }
+                    self.asm_place(place, Use::Write);
+                }
+                ir::AsmOperandKind::Memory { place, access } => {
+                    if matches!(access, ir::AsmAccess::Read | ir::AsmAccess::ReadWrite) {
+                        self.asm_place(place, Use::Read);
+                    }
+                    if matches!(access, ir::AsmAccess::Write | ir::AsmAccess::ReadWrite) {
+                        self.asm_place(place, Use::Write);
+                    }
+                }
+                ir::AsmOperandKind::Symbol(_) => {}
+            }
+        }
+    }
+
+    fn asm_input(&mut self, value: &Value, executes: bool) {
+        self.value(value);
+        if executes && tracked_pointer(&value.ty).is_some() {
+            self.mark(value, ESCAPE | WRITE);
+        }
+    }
+
+    fn asm_place(&mut self, place: &Place, access: Use) {
+        self.place(place, access);
+        let mut named = Named(Vec::new());
+        place_bindings(place, &mut named);
+        self.leaked.extend(named.0);
+        if tracked_pointer(&place.ty).is_none() {
+            return;
+        }
+        let mut root = place;
+        while let PlaceKind::MacroArg { place, .. } = &root.kind {
+            root = place;
+        }
+        if let PlaceKind::Binding(binding) = root.kind
+            && let Some(node) = self.node(binding)
+        {
+            match access {
+                Use::Read => self.flag(node, ESCAPE | WRITE),
+                Use::Write | Use::Address => self.nodes[node as usize].raw = true,
+            }
+        }
     }
 
     fn statement(&mut self, statement: &Span<Statement>) {
@@ -1131,10 +1204,10 @@ impl Walker<'_, '_> {
                     SehHandler::Finally(body) => self.statements(body),
                 }
             }
-            Statement::Asm(_)
-            | Statement::OmpParallel(_)
-            | Statement::OmpFor(_)
-            | Statement::NestedFunction(_) => self.escape_all(statement),
+            Statement::Asm(asm) => self.asm(asm),
+            Statement::OmpParallel(_) | Statement::OmpFor(_) | Statement::NestedFunction(_) => {
+                self.escape_all(statement)
+            }
         }
     }
 }
@@ -1230,6 +1303,7 @@ fn summarize(
     program: &Program<'_>,
     identities: &HashMap<ProgramBinding, FunctionIdentity>,
     inert: &HashSet<ProgramBinding>,
+    constants: &HashSet<ProgramBinding>,
     function: FunctionId,
 ) -> Option<Summary> {
     let entry = program.function(function)?;
@@ -1237,6 +1311,7 @@ fn summarize(
         program,
         identities,
         inert,
+        constants,
         unit: entry.unit,
         nodes: Vec::new(),
         index: HashMap::new(),
@@ -1252,6 +1327,7 @@ fn summarize(
         written: HashSet::new(),
         reads: HashMap::new(),
         allocations: HashMap::new(),
+        leaked: HashSet::new(),
     };
     if let Some(return_type) = &entry.function.return_type {
         walker.returned = walker.anonymous(entry.function.value.id, return_type, NodeKind::Return);
@@ -1295,6 +1371,8 @@ fn summarize(
         results: walker.results,
         returned: walker.returned,
         address_taken: walker.address_taken,
+        leaked: walker.leaked,
+        automatic: walker.automatic,
     })
 }
 
@@ -1411,9 +1489,20 @@ pub(crate) fn analyze(
             }
         }
     }
+    let mut constants = HashSet::new();
+    for (unit, entry) in program.units() {
+        for global in &entry.module.globals {
+            if global.variable.is_const {
+                constants.insert(ProgramBinding {
+                    unit,
+                    binding: global.variable.id,
+                });
+            }
+        }
+    }
     let summaries: Vec<Option<Summary>> = (0..count as u32)
         .into_par_iter()
-        .map(|index| summarize(program, identities, &inert, FunctionId(index)))
+        .map(|index| summarize(program, identities, &inert, &constants, FunctionId(index)))
         .collect();
     let summarized = timing.map(|start| (start.elapsed(), std::time::Instant::now()));
 
@@ -1579,6 +1668,45 @@ pub(crate) fn analyze(
         }
     }
     propagate(&mut class_flags, ESCAPE, &mut backward);
+    let mut returned = vec![false; total];
+    for (function, summary) in summaries.iter().enumerate() {
+        let Some(summary) = summary else { continue };
+        if let Some(node) = summary.returned {
+            returned[classes.find(base[function] + node) as usize] = true;
+        }
+    }
+    reach(total, &mut backward, &mut returned);
+    let mut pinned = Vec::new();
+    for summary in summaries.iter().flatten() {
+        let mut leaked = summary.leaked.clone();
+        for site in &summary.calls {
+            let callee = site.callee.0 as usize;
+            for &(index, object) in &site.objects {
+                let retained = match parameters[callee].get(&index) {
+                    Some(&parameter) => {
+                        let class = classes.find(parameter) as usize;
+                        class_flags[class] & ESCAPE != 0 || returned[class]
+                    }
+                    None => true,
+                };
+                if retained {
+                    leaked.insert(object);
+                }
+            }
+        }
+        for site in &summary.calls {
+            let callee = site.callee.0 as usize;
+            for &(index, object) in &site.objects {
+                if leaked.contains(&object)
+                    && summary.automatic.contains(&object)
+                    && candidates[callee]
+                    && let Some(&parameter) = parameters[callee].get(&index)
+                {
+                    pinned.push(parameter);
+                }
+            }
+        }
+    }
     propagate(&mut class_flags, NULLABLE, &mut forward);
     reach(total, &mut copies, &mut raw);
 
@@ -1591,6 +1719,9 @@ pub(crate) fn analyze(
             if class_flags[class] & MACRO != 0 || class_borrow(class_flags[class]).is_none() {
                 unproven[class] = true;
             }
+        }
+        for &parameter in &pinned {
+            unproven[class_of[parameter as usize] as usize] = true;
         }
         for (function, summary) in summaries.iter().enumerate() {
             let Some(summary) = summary else { continue };

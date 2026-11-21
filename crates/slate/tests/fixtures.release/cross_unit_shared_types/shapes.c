@@ -121,11 +121,11 @@ int count_vowels(const char *text) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: pub fn shape_area_sum(shapes: &[shape]) -> i32 {
-// CHECK-NEXT:     let count: i32 = shapes.len() as i32;
+// CHECK-NEXT: pub fn shape_area_sum(shapes: *const shape, count: i32) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         sum += shapes[i as usize].origin.x * shapes[i as usize].origin.y;
+// CHECK-NEXT:         sum += (unsafe { (*shapes.offset(i as isize)).origin.x })
+// CHECK-NEXT:             * unsafe { (*shapes.offset(i as isize)).origin.y };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }

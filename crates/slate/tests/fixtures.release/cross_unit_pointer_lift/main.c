@@ -41,15 +41,18 @@ int main(void) {
 // CHECK-NEXT:     (unsafe { (*c).value }) * 2
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn add_twice(c: &mut counter, by: i32) {
+// CHECK-NEXT: fn add_twice(c: *mut counter, by: i32) {
 // CHECK-NEXT:     unsafe { counter_add(c, by) };
 // CHECK-NEXT:     unsafe { counter_add(c, by) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut local: counter = counter { value: 1 };
-// CHECK-NEXT:     add_twice(&mut local, 2i32);
-// CHECK-NEXT:     println!("{}", unsafe { counter_get(&local) });
+// CHECK-NEXT:     add_twice(core::ptr::addr_of_mut!(local), 2i32);
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         unsafe { counter_get(core::ptr::addr_of_mut!(local) as *const counter) }
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}",
 // CHECK-NEXT:         unsafe { counter_apply(Some(doubled), core::ptr::addr_of_mut!(local)) }

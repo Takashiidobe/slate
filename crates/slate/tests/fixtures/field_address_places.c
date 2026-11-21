@@ -104,18 +104,18 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn pick(outer: &mut Outer, which: i32) -> *mut i32 {
+// CHECK-NEXT: fn pick(outer: *mut Outer, which: i32) -> *mut i32 {
 // CHECK-NEXT:     if which == 0 {
-// CHECK-NEXT:         return core::ptr::addr_of_mut!((*outer).id);
+// CHECK-NEXT:         return unsafe { core::ptr::addr_of_mut!((*outer).id) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if which == 1 {
-// CHECK-NEXT:         return core::ptr::addr_of_mut!((*outer).inner.value);
+// CHECK-NEXT:         return unsafe { core::ptr::addr_of_mut!((*outer).inner.value) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { ((*outer).items.as_mut_ptr() as *mut i32).offset((which - 2) as isize) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn inner_of(outer: &mut Outer) -> *mut Inner {
-// CHECK-NEXT:     core::ptr::addr_of_mut!((*outer).inner)
+// CHECK-NEXT: fn inner_of(outer: *mut Outer) -> *mut Inner {
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!((*outer).inner) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -145,15 +145,15 @@ int main(void) {
 // CHECK-NEXT:     scale(core::ptr::addr_of_mut!(local.inner.weight), 4.0f64);
 // CHECK-NEXT:     bump(unsafe { core::ptr::addr_of_mut!((*local.link).value) }, 9i32);
 // CHECK-NEXT:     scale(unsafe { core::ptr::addr_of_mut!((*local.link).weight) }, 8.0f64);
-// CHECK-NEXT:     let slot: *mut i32 = pick(&mut local, 3i32);
+// CHECK-NEXT:     let slot: *mut i32 = pick(core::ptr::addr_of_mut!(local), 3i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *slot = *slot * 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_0]]: *mut i32 = pick(&mut local, 0i32);
+// CHECK-NEXT:     let [[V_0]]: *mut i32 = pick(core::ptr::addr_of_mut!(local), 0i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 1000;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let inner: *mut Inner = inner_of(&mut local);
+// CHECK-NEXT:     let inner: *mut Inner = inner_of(core::ptr::addr_of_mut!(local));
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*inner).value = (*inner).value + 50;
 // CHECK-NEXT:     }

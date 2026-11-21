@@ -63,11 +63,10 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK-LABEL: {{^}}fn sum_values(values: &[i32]) -> i32 {
-// CHECK-NEXT:     let len: i32 = values.len() as i32;
+// CHECK-LABEL: {{^}}fn sum_values(values: *const i32, len: i32) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         sum += values[i as usize];
+// CHECK-NEXT:         sum += unsafe { *values.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK: {{^}}}

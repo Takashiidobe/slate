@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn add_rm(mut a: i32, mut p: *mut i32) -> i32 {
+// CHECK-LABEL: {{^}}fn add_rm(mut a: i32, mut p: &i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;

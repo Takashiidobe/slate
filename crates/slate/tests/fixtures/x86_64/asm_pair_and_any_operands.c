@@ -125,14 +125,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn any_operands(
 // CHECK-NEXT:     mut x: i32,
-// CHECK-NEXT:     mut big: *mut __SlateRecord_asm_pair_and_any_operands_c_3,
+// CHECK-NEXT:     mut big: &__SlateRecord_asm_pair_and_any_operands_c_3,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "\n# {0:e}\n# {1}\n# {2}",
 // CHECK-NEXT:             in(reg) x as u32,
 // CHECK-NEXT:             const 5 as i32,
-// CHECK-NEXT:             in(reg) big,
+// CHECK-NEXT:             in(reg) (big as *const __SlateRecord_asm_pair_and_any_operands_c_3)
+// CHECK-NEXT:                 as *mut __SlateRecord_asm_pair_and_any_operands_c_3,
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
@@ -152,7 +153,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: u128 = pair_out();
 // CHECK-NEXT:     let b: u128 = pair_inout((4 as u128) << 64i32 | (18446744073709551615u64 as u128));
-// CHECK-NEXT:     let mut big: __SlateRecord_asm_pair_and_any_operands_c_3 = __SlateRecord_asm_pair_and_any_operands_c_3 {
+// CHECK-NEXT:     let big: __SlateRecord_asm_pair_and_any_operands_c_3 = __SlateRecord_asm_pair_and_any_operands_c_3 {
 // CHECK-NEXT:         a: 1,
 // CHECK-NEXT:         b: 2,
 // CHECK-NEXT:         c: 3,
@@ -173,7 +174,7 @@ int main(void) {
 // CHECK-NEXT:             c"%lu %lu %d\n".as_ptr(),
 // CHECK-NEXT:             pair_in_high((11 as u128) << 64i32 | 12),
 // CHECK-NEXT:             single_a(39u64),
-// CHECK-NEXT:             any_operands(40i32, core::ptr::addr_of_mut!(big)),
+// CHECK-NEXT:             any_operands(40i32, &big),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

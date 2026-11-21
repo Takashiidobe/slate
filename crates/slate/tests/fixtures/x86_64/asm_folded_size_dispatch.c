@@ -100,7 +100,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn zero_u8(mut p: *mut u8) -> i32 {
+// CHECK-NEXT: fn zero_u8(mut p: &u8) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut __slate_asm_target: bool = false;
@@ -124,7 +124,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn zero_u32(mut p: *mut u32) -> i32 {
+// CHECK-NEXT: fn zero_u32(mut p: &u32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut __slate_asm_target: bool = false;
@@ -148,7 +148,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn zero_u64(mut p: *mut u64) -> i32 {
+// CHECK-NEXT: fn zero_u64(mut p: &u64) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut __slate_asm_target: bool = false;
@@ -172,7 +172,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn load_u64(mut p: *mut u64) -> u64 {
+// CHECK-NEXT: fn load_u64(mut p: &u64) -> u64 {
 // CHECK-NEXT:     let mut x: u64 = 0;
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         if ((const { core::mem::size_of::<u64>() }) as u64) == 4 {
@@ -181,7 +181,7 @@ int main(void) {
 // CHECK-NEXT:                 core::arch::asm!(
 // CHECK-NEXT:                     "movl ({1:r}), {0:r}",
 // CHECK-NEXT:                     lateout(reg) [[T_0]],
-// CHECK-NEXT:                     in(reg) p,
+// CHECK-NEXT:                     in(reg) (p as *const u64) as *mut u64,
 // CHECK-NEXT:                     options(pure, readonly, nostack, att_syntax),
 // CHECK-NEXT:                 );
 // CHECK-NEXT:                 x = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
@@ -193,7 +193,7 @@ int main(void) {
 // CHECK-NEXT:                     core::arch::asm!(
 // CHECK-NEXT:                         "movq ({1:r}), {0:r}",
 // CHECK-NEXT:                         lateout(reg) [[T_1]],
-// CHECK-NEXT:                         in(reg) p,
+// CHECK-NEXT:                         in(reg) (p as *const u64) as *mut u64,
 // CHECK-NEXT:                         options(pure, readonly, nostack, att_syntax),
 // CHECK-NEXT:                     );
 // CHECK-NEXT:                     x = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
@@ -209,7 +209,7 @@ int main(void) {
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn load_u32(mut p: *mut u32) -> u32 {
+// CHECK-NEXT: fn load_u32(mut p: &u32) -> u32 {
 // CHECK-NEXT:     let mut x: u32 = 0;
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         if ((const { core::mem::size_of::<u32>() }) as u64) == 4 {
@@ -218,7 +218,7 @@ int main(void) {
 // CHECK-NEXT:                 core::arch::asm!(
 // CHECK-NEXT:                     "movl ({1:r}), {0:e}",
 // CHECK-NEXT:                     lateout(reg) [[T_0]],
-// CHECK-NEXT:                     in(reg) p,
+// CHECK-NEXT:                     in(reg) (p as *const u32) as *mut u32,
 // CHECK-NEXT:                     options(pure, readonly, nostack, att_syntax),
 // CHECK-NEXT:                 );
 // CHECK-NEXT:                 x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
@@ -230,7 +230,7 @@ int main(void) {
 // CHECK-NEXT:                     core::arch::asm!(
 // CHECK-NEXT:                         "movq ({1:r}), {0:e}",
 // CHECK-NEXT:                         lateout(reg) [[T_1]],
-// CHECK-NEXT:                         in(reg) p,
+// CHECK-NEXT:                         in(reg) (p as *const u32) as *mut u32,
 // CHECK-NEXT:                         options(pure, readonly, nostack, att_syntax),
 // CHECK-NEXT:                     );
 // CHECK-NEXT:                     x = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
@@ -246,7 +246,7 @@ int main(void) {
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn pick(mut p: *mut u64) -> i32 {
+// CHECK-NEXT: fn pick(mut p: &u64) -> i32 {
 // CHECK-NEXT:     let mut r: i32 = 0;
 // CHECK-NEXT:     match (const { core::mem::size_of::<u64>() }) as u64 {
 // CHECK-NEXT:         4 => {
@@ -262,7 +262,7 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         8 => {
-// CHECK-NEXT:             r = (unsafe { *p }) as i32;
+// CHECK-NEXT:             r = *p as i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         _ => {}
 // CHECK-NEXT:     }
@@ -270,27 +270,27 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut a: u8 = 0;
-// CHECK-NEXT:     let mut b: u8 = 3;
-// CHECK-NEXT:     let mut c: u32 = 0;
-// CHECK-NEXT:     let mut d: u32 = 5;
-// CHECK-NEXT:     let mut e: u64 = 0;
-// CHECK-NEXT:     let mut f: u64 = 7;
+// CHECK-NEXT:     let a: u8 = 0;
+// CHECK-NEXT:     let b: u8 = 3;
+// CHECK-NEXT:     let c: u32 = 0;
+// CHECK-NEXT:     let d: u32 = 5;
+// CHECK-NEXT:     let e: u64 = 0;
+// CHECK-NEXT:     let f: u64 = 7;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {}",
-// CHECK-NEXT:         zero_u8(core::ptr::addr_of_mut!(a)),
-// CHECK-NEXT:         zero_u8(core::ptr::addr_of_mut!(b)),
-// CHECK-NEXT:         zero_u32(core::ptr::addr_of_mut!(c)),
-// CHECK-NEXT:         zero_u32(core::ptr::addr_of_mut!(d)),
-// CHECK-NEXT:         zero_u64(core::ptr::addr_of_mut!(e)),
-// CHECK-NEXT:         zero_u64(core::ptr::addr_of_mut!(f))
+// CHECK-NEXT:         zero_u8(&a),
+// CHECK-NEXT:         zero_u8(&b),
+// CHECK-NEXT:         zero_u32(&c),
+// CHECK-NEXT:         zero_u32(&d),
+// CHECK-NEXT:         zero_u64(&e),
+// CHECK-NEXT:         zero_u64(&f)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lu %u %d\n".as_ptr(),
-// CHECK-NEXT:             load_u64(core::ptr::addr_of_mut!(f)),
-// CHECK-NEXT:             load_u32(core::ptr::addr_of_mut!(d)),
-// CHECK-NEXT:             pick(core::ptr::addr_of_mut!(f)),
+// CHECK-NEXT:             load_u64(&f),
+// CHECK-NEXT:             load_u32(&d),
+// CHECK-NEXT:             pick(&f),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

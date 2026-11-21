@@ -117,8 +117,25 @@ and rebuilt from `len()`). Lowering reads `borrow` and `length` by default
   collects use flags from its members: write through `*p`, `p[i]` and
   `p->f = ..`; offset from `p[i]`, `p + n`, `p - q`; escape from stores into
   memory or globals, aggregates, pointer-to-integer conversions, `&p`, opaque
-  calls, intrinsics, atomics, and anything inside `asm`, OpenMP and nested
+  calls, intrinsics, atomics, and anything inside OpenMP and nested
   functions; nullable from comparisons with null and null assignments.
+- An `asm` statement is an opaque call over its operands, the bound gcc, clang
+  and Rust's `asm!` all assume. A pointer value as an operand (`"r"(p)`,
+  `"D"(dst)`) escapes, unless the template is empty (the barrier idiom
+  `"" : : "r"(p) : "memory"` executes nothing, so it only reads `p`). A pointee
+  lvalue operand (`"+m"(*p)`, `"=b"(*out)`, `"r"(*p)`) is a place use: input
+  reads, output writes, in-out does both. An operand whose object is itself a
+  tracked pointer escapes when read and becomes `raw` when written. The
+  `"memory"` clobber, symbol operands and goto labels change no parameter that
+  is not an operand. Lowering passes a borrowed param to a memory operand as
+  `p as *mut T` (or `as_ptr()` for a slice).
+- A call-site proof from `&x` or a decayed automatic array holds only if no
+  other pointer to `x` can be live: `x`'s address must not leak anywhere in the
+  caller (a copy into a pointer variable, a store, an escaping use, an asm
+  operand, or another call whose parameter escapes or is returned). Leaks are
+  flow-insensitive, so `int *q = &x;` anywhere in the caller pins every
+  `f(&x)`. A static array is a length proof only when it is `const`; a mutable
+  static can be reached by name during the call (`slate-8ge7.16`).
 - `raw` is per binding and flows forward along copies: a binding assigned a
   moved pointer (`p + 1`, `&p->f`), an opaque value (call to an unresolved
   function, a load from memory), or a non-candidate parameter cannot be a

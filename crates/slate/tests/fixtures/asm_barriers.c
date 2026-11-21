@@ -133,13 +133,18 @@ int main(void) {
 // CHECK-NEXT:     x.wrapping_add(1)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn input_barrier(mut p: *const u8, n: i32) -> i32 {
+// CHECK-NEXT: fn input_barrier(mut p: &[u8]) -> i32 {
+// CHECK-NEXT:     let n: i32 = p.len() as i32;
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         sum += (unsafe { *p.offset(i as isize) }) as i32;
+// CHECK-NEXT:         sum += p[i as usize] as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("\n# {0:r}", in(reg) p as u64, options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "\n# {0:r}",
+// CHECK-NEXT:             in(reg) p.as_ptr() as u64,
+// CHECK-NEXT:             options(nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
@@ -200,17 +205,18 @@ int main(void) {
 // CHECK-NEXT:     (1 & (e as i32) - 1 >> 8i32) - 1
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn no_unroll(mut p: *const f32, n: i32) -> i32 {
+// CHECK-NEXT: fn no_unroll(mut p: &[f32]) -> i32 {
+// CHECK-NEXT:     let n: i32 = p.len() as i32;
 // CHECK-NEXT:     let mut sum: f32 = 0i32 as f32;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::arch::asm!(
 // CHECK-NEXT:                 "\n# {0:r}",
-// CHECK-NEXT:                 in(reg) p as u64,
+// CHECK-NEXT:                 in(reg) p.as_ptr() as u64,
 // CHECK-NEXT:                 options(nostack, att_syntax),
 // CHECK-NEXT:             );
 // CHECK-NEXT:         }
-// CHECK-NEXT:         sum += unsafe { *p.offset(i as isize) };
+// CHECK-NEXT:         sum += p[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum as i32
 // CHECK-NEXT: }
@@ -229,8 +235,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let __slate_printf_arg0 = input_barrier(bytes.as_mut_ptr() as *const u8, 4i32);
-// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
+// CHECK-NEXT:     println!("{}", input_barrier(bytes.as_slice()));
 // CHECK-NEXT:     let mut zeros: [u8; 4] = {
 // CHECK-NEXT:         let mut [[T_0]]: [u8; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0u8;
@@ -247,8 +252,7 @@ int main(void) {
 // CHECK-NEXT:         nonvolatile_guard(zeros.as_slice()),
 // CHECK-NEXT:         nonvolatile_guard(bytes.as_slice())
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_printf_arg0 = no_unroll(floats.as_mut_ptr() as *const f32, 3i32);
-// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
+// CHECK-NEXT:     println!("{}", no_unroll(floats.as_slice()));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

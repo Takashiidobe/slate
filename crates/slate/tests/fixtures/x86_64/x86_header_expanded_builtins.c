@@ -1700,13 +1700,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse4.1")]
 // CHECK-NEXT: #[inline(never)]
-// CHECK-NEXT: unsafe fn sse(fa: &f32, fb: &f32, da: &f64, db: &f64, ia: &i32) {
+// CHECK-NEXT: unsafe fn sse(fa: &f32, fb: &f32, da: &f64, db: &f64, ia: *const i32) {
 // CHECK-NEXT:     let mut a: core::simd::Simd<f32, 4> = unsafe { _mm_loadu_ps(fa) };
 // CHECK-NEXT:     let mut b: core::simd::Simd<f32, 4> = unsafe { _mm_loadu_ps(fb) };
 // CHECK-NEXT:     let mut c: core::simd::Simd<f64, 2> = unsafe { _mm_loadu_pd(da) };
 // CHECK-NEXT:     let mut d: core::simd::Simd<f64, 2> = unsafe { _mm_loadu_pd(db) };
 // CHECK-NEXT:     let i: core::simd::Simd<i64, 2> = unsafe {
-// CHECK-NEXT:         _mm_loadu_si128((ia as *const i32) as *const core::simd::Simd<i64, 2>)
+// CHECK-NEXT:         _mm_loadu_si128(ia as *const core::simd::Simd<i64, 2>)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     SHOW!(c"sqrt_ps".as_ptr() as *mut i8, unsafe { _mm_sqrt_ps(a) });
 // CHECK-NEXT:     SHOW__4!(c"sqrt_pd".as_ptr() as *mut i8, unsafe { _mm_sqrt_pd(c) });
@@ -1988,12 +1988,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
 // CHECK-NEXT: #[inline(never)]
-// CHECK-NEXT: unsafe fn avx(fa: &f32, fb: &f32, da: &f64, ia: &i32) {
+// CHECK-NEXT: unsafe fn avx(fa: &f32, fb: &f32, da: &f64, ia: *const i32) {
 // CHECK-NEXT:     let a: core::simd::Simd<f32, 8> = unsafe { _mm256_loadu_ps(fa) };
 // CHECK-NEXT:     let b: core::simd::Simd<f32, 8> = unsafe { _mm256_loadu_ps(fb) };
 // CHECK-NEXT:     let mut c: core::simd::Simd<f64, 4> = unsafe { _mm256_loadu_pd(da) };
 // CHECK-NEXT:     let mut i: core::simd::Simd<i64, 4> = unsafe {
-// CHECK-NEXT:         _mm256_loadu_si256((ia as *const i32) as *const core::simd::Simd<i64, 4>)
+// CHECK-NEXT:         _mm256_loadu_si256(ia as *const core::simd::Simd<i64, 4>)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     SHOW__9!(c"sqrt256_ps".as_ptr() as *mut i8, unsafe { _mm256_sqrt_ps(a) });
 // CHECK-NEXT:     SHOW__7!(c"sqrt256_pd".as_ptr() as *mut i8, unsafe { _mm256_sqrt_pd(c) });
@@ -3328,11 +3328,15 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..64i32 {
 // CHECK-NEXT:         bytes.0[i as usize] = (i * 37 + 11) as i8;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         sse(&fa.0[0usize], &fb.0[0usize], &da.0[0usize], &db.0[0usize], &ia.0[0usize])
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_0]] = ia.0.as_mut_ptr() as *const i32;
+// CHECK-NEXT:         unsafe { sse(&fa.0[0usize], &fb.0[0usize], &da.0[0usize], &db.0[0usize], [[T_0]]) }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if std::arch::is_x86_feature_detected!("avx2") {
-// CHECK-NEXT:         unsafe { avx(&fa.0[0usize], &fb.0[0usize], &da.0[0usize], &ia.0[0usize]) };
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let [[T_1]] = ia.0.as_mut_ptr() as *const i32;
+// CHECK-NEXT:             unsafe { avx(&fa.0[0usize], &fb.0[0usize], &da.0[0usize], [[T_1]]) }
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if std::arch::is_x86_feature_detected!("avx512bw")
 // CHECK-NEXT:         && std::arch::is_x86_feature_detected!("avx512dq")
@@ -3340,9 +3344,9 @@ int main(void) {
 // CHECK-NEXT:         let mut tail: i32 = 0;
 // CHECK-NEXT:         '[[SLATE_BREAK_30:__slate_break_[0-9]+]]: while tail <= 16 {
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let [[T_0]] = ia.0.as_mut_ptr() as *const i32;
-// CHECK-NEXT:                 let [[T_1]] = bytes.0.as_mut_ptr() as *const i8;
-// CHECK-NEXT:                 unsafe { avx512(&fa.0[0usize], &fb.0[0usize], [[T_0]], [[T_1]], tail) }
+// CHECK-NEXT:                 let [[T_2]] = ia.0.as_mut_ptr() as *const i32;
+// CHECK-NEXT:                 let [[T_3]] = bytes.0.as_mut_ptr() as *const i8;
+// CHECK-NEXT:                 unsafe { avx512(&fa.0[0usize], &fb.0[0usize], [[T_2]], [[T_3]], tail) }
 // CHECK-NEXT:             };
 // CHECK-NEXT:             tail += 5;
 // CHECK-NEXT:         }

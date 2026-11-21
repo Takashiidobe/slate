@@ -75,11 +75,10 @@ int main(void) {
 // CHECK-NEXT: use slate_support::recvmsg;
 // CHECK-NEXT: use slate_support::close;
 // CHECK-EMPTY:
-// CHECK-NEXT: fn total_length(vec: &[slate_support::iovec]) -> u64 {
-// CHECK-NEXT:     let count: i32 = vec.len() as i32;
+// CHECK-NEXT: fn total_length(vec: *const slate_support::iovec, count: i32) -> u64 {
 // CHECK-NEXT:     let mut total: u64 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         total = total.wrapping_add(vec[i as usize].iov_len as u64);
+// CHECK-NEXT:         total = total.wrapping_add(unsafe { (*vec.offset(i as isize)).iov_len as u64 });
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -171,8 +170,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %s%s %d\n".as_ptr(),
-// CHECK-NEXT:             total_length(out.0.as_slice()),
-// CHECK-NEXT:             total_length(r#in.0.as_slice()),
+// CHECK-NEXT:             total_length(out.0.as_mut_ptr() as *const slate_support::iovec, 2i32),
+// CHECK-NEXT:             total_length(r#in.0.as_mut_ptr() as *const slate_support::iovec, 2i32),
 // CHECK-NEXT:             a.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             b.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:             (receive_message.msg_iovlen as u64) as i32,

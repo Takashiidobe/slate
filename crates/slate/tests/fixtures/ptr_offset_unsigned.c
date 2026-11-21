@@ -35,8 +35,8 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK-LABEL: {{^}}fn load_at(p: &[i32], i: u32) -> i32 {
-// CHECK-NEXT:     p[i as usize]
+// CHECK-LABEL: {{^}}fn load_at(p: *const i32, i: u32) -> i32 {
+// CHECK-NEXT:     unsafe { *p.add(i as usize) }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn load_byte(p: &[u8], n: u64) -> i32 {
 // CHECK-NEXT:     p[(n / 8) as usize] as i32
