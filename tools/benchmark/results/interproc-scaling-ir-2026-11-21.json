@@ -1,0 +1,866 @@
+{
+  "chain_ptr": [
+    {
+      "n": 400,
+      "wall_ms": 72.4511660009739,
+      "phases": {
+        "ir_pointer.summarize": 1.008,
+        "ir_pointer.join": 0.272
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 803,
+        "ir_pointer.nodes": 2001
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 117.32799500168767,
+      "phases": {
+        "ir_pointer.summarize": 1.142,
+        "ir_pointer.join": 0.389
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 1603,
+        "ir_pointer.nodes": 4001
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 222.6980140003434,
+      "phases": {
+        "ir_pointer.summarize": 0.465,
+        "ir_pointer.join": 0.825
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 3203,
+        "ir_pointer.nodes": 8001
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 476.4778450007725,
+      "phases": {
+        "ir_pointer.summarize": 1.289,
+        "ir_pointer.join": 1.9
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 6403,
+        "ir_pointer.nodes": 16001
+      }
+    }
+  ],
+  "chain_ptr_wrapv": [
+    {
+      "n": 400,
+      "wall_ms": 72.16056600009324,
+      "phases": {
+        "ir_pointer.summarize": 1.092,
+        "ir_pointer.join": 0.275
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 803,
+        "ir_pointer.nodes": 2001
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 119.85445499885827,
+      "phases": {
+        "ir_pointer.summarize": 1.475,
+        "ir_pointer.join": 0.413
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 1603,
+        "ir_pointer.nodes": 4001
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 220.52631599945016,
+      "phases": {
+        "ir_pointer.summarize": 0.615,
+        "ir_pointer.join": 0.828
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 3203,
+        "ir_pointer.nodes": 8001
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 479.458108999097,
+      "phases": {
+        "ir_pointer.summarize": 1.015,
+        "ir_pointer.join": 1.807
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 6403,
+        "ir_pointer.nodes": 16001
+      }
+    }
+  ],
+  "chain_kill_leaf": [
+    {
+      "n": 400,
+      "wall_ms": 55.6937889996334,
+      "phases": {
+        "ir_pointer.summarize": 0.101,
+        "ir_pointer.join": 0.125
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 404,
+        "ir_pointer.nodes": 401
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 74.75185699877329,
+      "phases": {
+        "ir_pointer.summarize": 0.133,
+        "ir_pointer.join": 0.201
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 804,
+        "ir_pointer.nodes": 801
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 124.03580500176759,
+      "phases": {
+        "ir_pointer.summarize": 1.044,
+        "ir_pointer.join": 0.471
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 1604,
+        "ir_pointer.nodes": 1601
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 230.24178099876735,
+      "phases": {
+        "ir_pointer.summarize": 0.378,
+        "ir_pointer.join": 0.837
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 3204,
+        "ir_pointer.nodes": 3201
+      }
+    }
+  ],
+  "chain_kill_root": [
+    {
+      "n": 400,
+      "wall_ms": 39.33847599910223,
+      "phases": {
+        "ir_pointer.summarize": 0.167,
+        "ir_pointer.join": 0.109
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 404,
+        "ir_pointer.nodes": 402
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 53.24008100069477,
+      "phases": {
+        "ir_pointer.summarize": 0.132,
+        "ir_pointer.join": 0.269
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 804,
+        "ir_pointer.nodes": 802
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 80.09868599765468,
+      "phases": {
+        "ir_pointer.summarize": 0.182,
+        "ir_pointer.join": 0.382
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 1604,
+        "ir_pointer.nodes": 1602
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 155.3926099986711,
+      "phases": {
+        "ir_pointer.summarize": 0.541,
+        "ir_pointer.join": 1.077
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 3204,
+        "ir_pointer.nodes": 3202
+      }
+    }
+  ],
+  "scc_ring": [
+    {
+      "n": 400,
+      "wall_ms": 72.98738200188382,
+      "phases": {
+        "ir_pointer.summarize": 1.056,
+        "ir_pointer.join": 0.219
+      },
+      "counts": {
+        "output.lifted": 400,
+        "output.raw": 2,
+        "ir_pointer.nodes": 800
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 124.61036300010164,
+      "phases": {
+        "ir_pointer.summarize": 1.21,
+        "ir_pointer.join": 0.392
+      },
+      "counts": {
+        "output.lifted": 800,
+        "output.raw": 2,
+        "ir_pointer.nodes": 1600
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 239.18108100042446,
+      "phases": {
+        "ir_pointer.summarize": 0.33,
+        "ir_pointer.join": 0.603
+      },
+      "counts": {
+        "output.lifted": 1600,
+        "output.raw": 2,
+        "ir_pointer.nodes": 3200
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 535.2046779989905,
+      "phases": {
+        "ir_pointer.summarize": 1.09,
+        "ir_pointer.join": 1.219
+      },
+      "counts": {
+        "output.lifted": 3200,
+        "output.raw": 2,
+        "ir_pointer.nodes": 6400
+      }
+    }
+  ],
+  "fanout": [
+    {
+      "n": 400,
+      "wall_ms": 60.70347700006096,
+      "phases": {
+        "ir_pointer.summarize": 0.327,
+        "ir_pointer.join": 0.153
+      },
+      "counts": {
+        "output.lifted": 400,
+        "output.raw": 403,
+        "ir_pointer.nodes": 801
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 105.13996100053191,
+      "phases": {
+        "ir_pointer.summarize": 1.519,
+        "ir_pointer.join": 0.45
+      },
+      "counts": {
+        "output.lifted": 800,
+        "output.raw": 803,
+        "ir_pointer.nodes": 1601
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 213.83468600106426,
+      "phases": {
+        "ir_pointer.summarize": 1.686,
+        "ir_pointer.join": 0.76
+      },
+      "counts": {
+        "output.lifted": 1600,
+        "output.raw": 1603,
+        "ir_pointer.nodes": 3201
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 529.827367998223,
+      "phases": {
+        "ir_pointer.summarize": 2.559,
+        "ir_pointer.join": 1.163
+      },
+      "counts": {
+        "output.lifted": 3200,
+        "output.raw": 3203,
+        "ir_pointer.nodes": 6401
+      }
+    }
+  ],
+  "str_chain": [
+    {
+      "n": 400,
+      "wall_ms": 49.83231499863905,
+      "phases": {
+        "ir_pointer.summarize": 0.105,
+        "ir_pointer.join": 0.14
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 403,
+        "ir_pointer.nodes": 801
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 67.44380799864302,
+      "phases": {
+        "ir_pointer.summarize": 0.136,
+        "ir_pointer.join": 0.243
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 803,
+        "ir_pointer.nodes": 1601
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 111.73485900144442,
+      "phases": {
+        "ir_pointer.summarize": 0.998,
+        "ir_pointer.join": 0.669
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 1603,
+        "ir_pointer.nodes": 3201
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 211.69060799729778,
+      "phases": {
+        "ir_pointer.summarize": 0.333,
+        "ir_pointer.join": 0.936
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 3203,
+        "ir_pointer.nodes": 6401
+      }
+    }
+  ],
+  "buf_chain": [
+    {
+      "n": 400,
+      "wall_ms": 43.1708059986704,
+      "phases": {
+        "ir_pointer.summarize": 0.994,
+        "ir_pointer.join": 0.265
+      },
+      "counts": {
+        "output.lifted": 401,
+        "output.raw": 2,
+        "ir_pointer.nodes": 401
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 59.224068998446455,
+      "phases": {
+        "ir_pointer.summarize": 0.131,
+        "ir_pointer.join": 0.516
+      },
+      "counts": {
+        "output.lifted": 801,
+        "output.raw": 2,
+        "ir_pointer.nodes": 801
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 95.05909500148846,
+      "phases": {
+        "ir_pointer.summarize": 0.948,
+        "ir_pointer.join": 1.466
+      },
+      "counts": {
+        "output.lifted": 1601,
+        "output.raw": 2,
+        "ir_pointer.nodes": 1601
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 189.0244360001816,
+      "phases": {
+        "ir_pointer.summarize": 0.341,
+        "ir_pointer.join": 4.5
+      },
+      "counts": {
+        "output.lifted": 3201,
+        "output.raw": 2,
+        "ir_pointer.nodes": 3201
+      }
+    }
+  ],
+  "wide_locals": [
+    {
+      "n": 400,
+      "wall_ms": 45.76274799910607,
+      "phases": {
+        "ir_pointer.summarize": 0.306,
+        "ir_pointer.join": 0.032
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 403,
+        "ir_pointer.nodes": 402
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 62.04354899819009,
+      "phases": {
+        "ir_pointer.summarize": 0.398,
+        "ir_pointer.join": 0.049
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 803,
+        "ir_pointer.nodes": 802
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 106.75701199943433,
+      "phases": {
+        "ir_pointer.summarize": 0.901,
+        "ir_pointer.join": 0.154
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 1603,
+        "ir_pointer.nodes": 1602
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 215.11837499929243,
+      "phases": {
+        "ir_pointer.summarize": 1.308,
+        "ir_pointer.join": 0.16
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 3203,
+        "ir_pointer.nodes": 3202
+      }
+    }
+  ],
+  "fields": [
+    {
+      "n": 400,
+      "wall_ms": 81.67141499870922,
+      "phases": {
+        "ir_pointer.summarize": 0.456,
+        "ir_pointer.join": 0.137
+      },
+      "counts": {
+        "output.lifted": 400,
+        "output.raw": 802,
+        "ir_pointer.nodes": 800
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 178.4290340001462,
+      "phases": {
+        "ir_pointer.summarize": 0.603,
+        "ir_pointer.join": 0.216
+      },
+      "counts": {
+        "output.lifted": 800,
+        "output.raw": 1602,
+        "ir_pointer.nodes": 1600
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 505.0260489988432,
+      "phases": {
+        "ir_pointer.summarize": 1.432,
+        "ir_pointer.join": 0.414
+      },
+      "counts": {
+        "output.lifted": 1600,
+        "output.raw": 3202,
+        "ir_pointer.nodes": 3200
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 1608.2061169981898,
+      "phases": {
+        "ir_pointer.summarize": 2.897,
+        "ir_pointer.join": 0.843
+      },
+      "counts": {
+        "output.lifted": 3200,
+        "output.raw": 6402,
+        "ir_pointer.nodes": 6400
+      }
+    }
+  ],
+  "rev_alias_str": [
+    {
+      "n": 400,
+      "wall_ms": 40.144651000446174,
+      "phases": {
+        "ir_pointer.summarize": 0.117,
+        "ir_pointer.join": 0.029
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 403,
+        "ir_pointer.nodes": 401
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 48.33610800051247,
+      "phases": {
+        "ir_pointer.summarize": 0.182,
+        "ir_pointer.join": 0.044
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 803,
+        "ir_pointer.nodes": 801
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 66.19421900177258,
+      "phases": {
+        "ir_pointer.summarize": 0.315,
+        "ir_pointer.join": 0.086
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 1603,
+        "ir_pointer.nodes": 1601
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 107.64619999827119,
+      "phases": {
+        "ir_pointer.summarize": 0.506,
+        "ir_pointer.join": 0.138
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 3203,
+        "ir_pointer.nodes": 3201
+      }
+    }
+  ],
+  "rev_alias_ptr": [
+    {
+      "n": 400,
+      "wall_ms": 35.06631100026425,
+      "phases": {
+        "ir_pointer.summarize": 0.105,
+        "ir_pointer.join": 0.027
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 403,
+        "ir_pointer.nodes": 401
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 44.788596002035774,
+      "phases": {
+        "ir_pointer.summarize": 0.157,
+        "ir_pointer.join": 0.046
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 803,
+        "ir_pointer.nodes": 801
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 59.97458300043945,
+      "phases": {
+        "ir_pointer.summarize": 0.23,
+        "ir_pointer.join": 0.068
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 1603,
+        "ir_pointer.nodes": 1601
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 97.39579800225329,
+      "phases": {
+        "ir_pointer.summarize": 0.438,
+        "ir_pointer.join": 0.13
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 3203,
+        "ir_pointer.nodes": 3201
+      }
+    }
+  ],
+  "hub_kill": [
+    {
+      "n": 400,
+      "wall_ms": 73.0171329996665,
+      "phases": {
+        "ir_pointer.summarize": 1.349,
+        "ir_pointer.join": 0.392
+      },
+      "counts": {
+        "output.lifted": 801,
+        "output.raw": 2,
+        "ir_pointer.nodes": 801
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 133.07271800294984,
+      "phases": {
+        "ir_pointer.summarize": 1.448,
+        "ir_pointer.join": 0.586
+      },
+      "counts": {
+        "output.lifted": 1601,
+        "output.raw": 2,
+        "ir_pointer.nodes": 1601
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 288.32324300310574,
+      "phases": {
+        "ir_pointer.summarize": 1.314,
+        "ir_pointer.join": 0.906
+      },
+      "counts": {
+        "output.lifted": 3201,
+        "output.raw": 2,
+        "ir_pointer.nodes": 3201
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 715.0761720004084,
+      "phases": {
+        "ir_pointer.summarize": 2.579,
+        "ir_pointer.join": 2.1
+      },
+      "counts": {
+        "output.lifted": 6401,
+        "output.raw": 2,
+        "ir_pointer.nodes": 6401
+      }
+    }
+  ],
+  "str_hub_kill": [
+    {
+      "n": 400,
+      "wall_ms": 80.7453550005448,
+      "phases": {
+        "ir_pointer.summarize": 0.404,
+        "ir_pointer.join": 0.333
+      },
+      "counts": {
+        "output.lifted": 399,
+        "output.raw": 404,
+        "ir_pointer.nodes": 801
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 145.42688599976827,
+      "phases": {
+        "ir_pointer.summarize": 0.906,
+        "ir_pointer.join": 0.85
+      },
+      "counts": {
+        "output.lifted": 799,
+        "output.raw": 804,
+        "ir_pointer.nodes": 1601
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 315.20622599782655,
+      "phases": {
+        "ir_pointer.summarize": 1.657,
+        "ir_pointer.join": 1.49
+      },
+      "counts": {
+        "output.lifted": 1599,
+        "output.raw": 1604,
+        "ir_pointer.nodes": 3201
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 787.0984020009928,
+      "phases": {
+        "ir_pointer.summarize": 3.077,
+        "ir_pointer.join": 3.632
+      },
+      "counts": {
+        "output.lifted": 3199,
+        "output.raw": 3204,
+        "ir_pointer.nodes": 6401
+      }
+    }
+  ],
+  "copy_chain": [
+    {
+      "n": 400,
+      "wall_ms": 31.2571710019256,
+      "phases": {
+        "ir_pointer.summarize": 0.072,
+        "ir_pointer.join": 0.029
+      },
+      "counts": {
+        "output.lifted": 401,
+        "output.raw": 2,
+        "ir_pointer.nodes": 401
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 37.408385000162525,
+      "phases": {
+        "ir_pointer.summarize": 0.103,
+        "ir_pointer.join": 0.042
+      },
+      "counts": {
+        "output.lifted": 801,
+        "output.raw": 2,
+        "ir_pointer.nodes": 801
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 46.610553999926196,
+      "phases": {
+        "ir_pointer.summarize": 0.201,
+        "ir_pointer.join": 0.072
+      },
+      "counts": {
+        "output.lifted": 1601,
+        "output.raw": 2,
+        "ir_pointer.nodes": 1601
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 66.37338400105364,
+      "phases": {
+        "ir_pointer.summarize": 0.305,
+        "ir_pointer.join": 0.127
+      },
+      "counts": {
+        "output.lifted": 3201,
+        "output.raw": 2,
+        "ir_pointer.nodes": 3201
+      }
+    }
+  ],
+  "reassign": [
+    {
+      "n": 400,
+      "wall_ms": 46.39452599803917,
+      "phases": {
+        "ir_pointer.summarize": 0.17,
+        "ir_pointer.join": 0.019
+      },
+      "counts": {
+        "output.lifted": 3,
+        "output.raw": 2,
+        "ir_pointer.nodes": 3
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 70.66499899883638,
+      "phases": {
+        "ir_pointer.summarize": 0.299,
+        "ir_pointer.join": 0.024
+      },
+      "counts": {
+        "output.lifted": 3,
+        "output.raw": 2,
+        "ir_pointer.nodes": 3
+      }
+    },
+    {
+      "n": 1600,
+      "wall_ms": 118.00657500134548,
+      "phases": {
+        "ir_pointer.summarize": 0.526,
+        "ir_pointer.join": 0.032
+      },
+      "counts": {
+        "output.lifted": 3,
+        "output.raw": 2,
+        "ir_pointer.nodes": 3
+      }
+    },
+    {
+      "n": 3200,
+      "wall_ms": 225.71237699958147,
+      "phases": {
+        "ir_pointer.summarize": 1.112,
+        "ir_pointer.join": 0.052
+      },
+      "counts": {
+        "output.lifted": 3,
+        "output.raw": 2,
+        "ir_pointer.nodes": 3
+      }
+    }
+  ]
+}
