@@ -75,6 +75,7 @@ impl FunctionLowerer<'_, '_> {
         Ok(Expr::Unsafe(Box::new(rust::Block {
             stmts: vec![
                 Stmt::Let {
+                    synthetic: true,
                     name: temp.clone(),
                     mutable: false,
                     ty: Some(rust::Type::Prim(Prim::Usize)),
@@ -459,6 +460,7 @@ impl FunctionLowerer<'_, '_> {
         let pointer = self.next_temp();
         let mut stmts = vec![
             Stmt::Let {
+                synthetic: true,
                 name: storage.clone(),
                 mutable: true,
                 ty: Some(maybe_uninit(image)),
@@ -469,6 +471,7 @@ impl FunctionLowerer<'_, '_> {
                 }),
             },
             Stmt::Let {
+                synthetic: true,
                 name: pointer.clone(),
                 mutable: false,
                 ty: None,

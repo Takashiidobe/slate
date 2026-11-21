@@ -111,6 +111,7 @@ impl FunctionLowerer<'_, '_> {
         self.byref.insert(id);
         self.byref_slots.insert(id);
         Ok(Stmt::Let {
+            synthetic: false,
             name: self.binding_name(id),
             mutable: true,
             ty: Some(rust::Type::Generic {
@@ -167,6 +168,7 @@ impl FunctionLowerer<'_, '_> {
         let name = self.binding_name(variable.id);
         let slot = format!("{name}_byref");
         self.reserve(Stmt::Let {
+            synthetic: true,
             name: slot.as_str().into(),
             mutable: true,
             ty: Some(rust::Type::Generic {
@@ -176,12 +178,14 @@ impl FunctionLowerer<'_, '_> {
             init: Some(Expr::Var("core::mem::MaybeUninit::uninit()".into())),
         });
         self.after_declaration = Some(Stmt::Let {
+            synthetic: true,
             name: format!("{name}_scope").as_str().into(),
             mutable: false,
             ty: None,
             init: Some(support_call("scope", vec![Expr::Var(name.as_str().into())])),
         });
         self.pending.push(Stmt::Let {
+            synthetic: false,
             name: name.clone(),
             mutable: false,
             ty: Some(rust::Type::Ptr {
@@ -249,6 +253,7 @@ impl FunctionLowerer<'_, '_> {
                 (value_ty, self.lower_binding(capture.id))
             };
             loads.push(Stmt::Let {
+                synthetic: false,
                 name: self.binding_name(capture.id),
                 mutable: true,
                 ty: Some(ty.clone()),
@@ -341,6 +346,7 @@ impl FunctionLowerer<'_, '_> {
         });
         let slot = format!("{function_name}_slot");
         self.reserve(Stmt::Let {
+            synthetic: true,
             name: slot.as_str().into(),
             mutable: true,
             ty: Some(rust::Type::Custom(format!(
@@ -416,6 +422,7 @@ impl FunctionLowerer<'_, '_> {
             .transpose()?;
         self.non_index_names = self.non_index_names(&params, body);
         let mut statements = vec![Stmt::Let {
+            synthetic: true,
             name: "__captures".into(),
             mutable: false,
             ty: Some(captures_ty.clone()),
@@ -497,6 +504,7 @@ impl FunctionLowerer<'_, '_> {
         let callee = self.lower_value(block)?;
         Ok(Expr::Unsafe(Box::new(rust::Block {
             stmts: vec![Stmt::Let {
+                synthetic: true,
                 name: temp.clone(),
                 mutable: false,
                 ty: None,

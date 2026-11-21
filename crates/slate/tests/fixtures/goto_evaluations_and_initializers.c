@@ -60,6 +60,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn run(mode: i32) -> i32 {
+// CHECK-NEXT:     let skipped: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut value: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut steps: i32 = unsafe { core::mem::zeroed() };

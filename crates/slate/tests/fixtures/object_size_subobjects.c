@@ -116,7 +116,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let record: Record = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let trailing: Trailing = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     __SlateAlign16([0i32; 5]);
+// CHECK-NEXT:     let nested: Nested = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let numbers: __SlateAlign16<[i32; 5]> = __SlateAlign16([0i32; 5]);
 // CHECK-NEXT:     let index: i32 = 2;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

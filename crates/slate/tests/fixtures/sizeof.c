@@ -46,6 +46,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sizeof_values() -> i32 {
+// CHECK-NEXT:     let values: [i32; 3] = [0i32; 3];
 // CHECK-NEXT:     (core::mem::size_of::<i32>() as u64)
 // CHECK-NEXT:         .wrapping_add(core::mem::size_of::<[i32; 3]>() as u64)
 // CHECK-NEXT:         .wrapping_add(core::mem::size_of::<Pair>() as u64)
@@ -53,6 +54,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sizeof_expr() -> i32 {
+// CHECK-NEXT:     let value: i32 = 0;
 // CHECK-NEXT:     core::mem::size_of::<i32>() as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -128,6 +128,7 @@ impl FunctionLowerer<'_, '_> {
             inner: Box::new(rust::Type::Prim(Prim::U8)),
         };
         let mut stmts = vec![Stmt::Let {
+            synthetic: true,
             name: bytes.clone(),
             mutable: false,
             ty: Some(byte_pointer.clone()),

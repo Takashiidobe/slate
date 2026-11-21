@@ -44,6 +44,7 @@ impl FunctionLowerer<'_, '_> {
             };
             let pointer = self.shared_pointer(variable.binding);
             outer.push(Stmt::Let {
+                synthetic: true,
                 name: pointer.clone(),
                 mutable: false,
                 ty: None,
@@ -67,6 +68,7 @@ impl FunctionLowerer<'_, '_> {
                 };
                 let pointer = self.firstprivate_pointer(private.copy.id);
                 outer.push(Stmt::Let {
+                    synthetic: true,
                     name: pointer.clone(),
                     mutable: false,
                     ty: None,

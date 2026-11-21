@@ -287,6 +287,7 @@ impl FunctionLowerer<'_, '_> {
         let [bits, otherwise] = [self.next_temp(), self.next_temp()];
         let var = |name: &String| Expr::Var(name.as_str().into());
         let bind = |name: &String, init: Expr| Stmt::Let {
+            synthetic: true,
             name: name.clone(),
             mutable: false,
             ty: None,
@@ -366,6 +367,7 @@ impl FunctionLowerer<'_, '_> {
         };
         Ok(Expr::Block(Box::new(rust::Block {
             stmts: vec![Stmt::Let {
+                synthetic: true,
                 name: bits.clone(),
                 mutable: false,
                 ty: None,
@@ -390,6 +392,7 @@ impl FunctionLowerer<'_, '_> {
         let result = self.lower_type(&value.ty)?;
         Ok(Expr::Block(Box::new(rust::Block {
             stmts: vec![Stmt::Let {
+                synthetic: true,
                 name: bits.clone(),
                 mutable: false,
                 ty: None,
@@ -999,6 +1002,7 @@ impl FunctionLowerer<'_, '_> {
                         self.with_erased_copy(erased, |lowerer| lowerer.lower_value(value))?;
                     return Ok(Expr::Unsafe(Box::new(rust::Block {
                         stmts: vec![Stmt::Let {
+                            synthetic: true,
                             name: copy,
                             mutable: false,
                             ty: None,
@@ -1669,6 +1673,7 @@ impl FunctionLowerer<'_, '_> {
                         let temp = self.next_temp();
                         Expr::Block(Box::new(rust::Block {
                             stmts: vec![Stmt::Let {
+                                synthetic: true,
                                 name: temp.clone(),
                                 mutable: false,
                                 ty: Some(ty),
@@ -2012,6 +2017,7 @@ impl FunctionLowerer<'_, '_> {
                     [buf] => {
                         let env = self.next_temp();
                         self.hoisted.push(Stmt::Let {
+                            synthetic: true,
                             name: env.clone(),
                             mutable: true,
                             ty: Some(buffer_type.clone()),
@@ -2215,6 +2221,7 @@ impl FunctionLowerer<'_, '_> {
                     (Some("__builtin_prefetch"), Some(address)) => {
                         Expr::Block(Box::new(rust::Block {
                             stmts: vec![Stmt::Let {
+                                synthetic: true,
                                 name: "_".into(),
                                 mutable: false,
                                 ty: None,
@@ -2469,12 +2476,14 @@ impl FunctionLowerer<'_, '_> {
                     let position = || Expr::Var(index.as_str().into());
                     stmts.extend([
                         Stmt::Let {
+                            synthetic: true,
                             name: element.clone(),
                             mutable: false,
                             ty: None,
                             init: Some(self.lower_value(&member.value)?),
                         },
                         Stmt::Let {
+                            synthetic: true,
                             name: index.clone(),
                             mutable: true,
                             ty: Some(rust::Type::Prim(Prim::Usize)),
@@ -2631,6 +2640,7 @@ impl FunctionLowerer<'_, '_> {
         }
         let target = self.next_temp();
         let mut stmts = vec![Stmt::Let {
+            synthetic: true,
             name: target.clone(),
             mutable: true,
             ty: Some(lowered_ty),

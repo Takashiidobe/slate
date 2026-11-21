@@ -929,6 +929,7 @@ pub enum AsmKind {
 pub enum Stmt {
     Comment(Comment),
     Let {
+        synthetic: bool,
         name: String,
         mutable: bool,
         ty: Option<Type>,

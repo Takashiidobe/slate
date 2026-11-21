@@ -1872,6 +1872,7 @@ impl FunctionLowerer<'_, '_> {
             Some(input) => {
                 let temp = self.next_temp();
                 prefix.push(Stmt::Let {
+                    synthetic: true,
                     name: temp.clone(),
                     mutable: false,
                     ty: Some(wide.clone()),
@@ -1890,6 +1891,7 @@ impl FunctionLowerer<'_, '_> {
                 let [low_temp, high_temp] = [self.next_temp(), self.next_temp()];
                 for temp in [&low_temp, &high_temp] {
                     prefix.push(Stmt::Let {
+                        synthetic: true,
                         name: temp.clone(),
                         mutable: false,
                         ty: Some(half.clone()),
@@ -1994,6 +1996,7 @@ impl FunctionLowerer<'_, '_> {
             let bytes = this.asm_spill_bytes(register, ty)?;
             let temp = this.next_temp();
             prefix.push(Stmt::Let {
+                synthetic: true,
                 name: temp.clone(),
                 mutable,
                 ty: Some(this.lower_type(ty)?),
@@ -2225,6 +2228,7 @@ impl FunctionLowerer<'_, '_> {
                     };
                     let temp = self.next_temp();
                     prefix.push(Stmt::Let {
+                        synthetic: true,
                         name: temp.clone(),
                         mutable: false,
                         ty: Some(rust::Type::Prim(if x86 { Prim::U8 } else { Prim::U32 })),
@@ -2323,6 +2327,7 @@ impl FunctionLowerer<'_, '_> {
                         ir::AsmOperandKind::In(value) => {
                             let temp = self.next_temp();
                             prefix.push(Stmt::Let {
+                                synthetic: true,
                                 name: temp.clone(),
                                 mutable: false,
                                 ty: Some(self.lower_type(&value.ty)?),
@@ -2561,6 +2566,7 @@ impl FunctionLowerer<'_, '_> {
                     let ty = self.asm_scratch_type(operand)?;
                     let temp = self.next_temp();
                     prefix.push(Stmt::Let {
+                        synthetic: true,
                         name: temp.clone(),
                         mutable: false,
                         ty: Some(ty.clone()),

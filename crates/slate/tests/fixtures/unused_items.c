@@ -44,6 +44,7 @@ int main(void) {
 // CHECK-NEXT: static mut live_static: i32 = 7;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn compute() -> i32 {
+// CHECK-NEXT:     let x: i32 = unsafe { hidden_static };
 // CHECK-NEXT:     42
 // CHECK-NEXT: }
 // CHECK-EMPTY:

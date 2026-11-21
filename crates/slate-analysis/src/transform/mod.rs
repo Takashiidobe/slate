@@ -1,4 +1,5 @@
 mod const_fold;
+mod dead_temporaries;
 mod inline_temporaries;
 mod truth_canonicalize;
 
@@ -32,6 +33,11 @@ pub static PASSES: &[Pass] = &[
         name: "const-fold",
         slots: &[Slot::AfterMacroStrip],
         run: const_fold::transform,
+    },
+    Pass {
+        name: "dead-temporaries",
+        slots: &[Slot::AfterMacroStrip],
+        run: dead_temporaries::transform,
     },
 ];
 

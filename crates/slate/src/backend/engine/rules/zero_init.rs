@@ -200,6 +200,7 @@ impl NodeRule for ZeroInitFold {
             mutable: true,
             ty: Some(_),
             init: Some(init),
+            ..
         }) = arena.get(id)
         else {
             return false;

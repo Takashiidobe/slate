@@ -30,6 +30,7 @@ int main(void) {
 // CHECK-NEXT:     return result;
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn initialize_chars() -> i32 {
+// CHECK-NEXT:     let text: [i8; 4] = [97, 98, 99, 0];
 // CHECK-NEXT:     5
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

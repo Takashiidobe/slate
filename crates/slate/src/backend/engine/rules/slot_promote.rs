@@ -254,10 +254,11 @@ impl NodeRule for DeclSink {
         let Some((name, assign)) = sole_assignment(arena, id) else {
             return false;
         };
-        let Some(NodeKind::Let { ty, .. }) = arena.get(id) else {
+        let Some(NodeKind::Let { ty, synthetic, .. }) = arena.get(id) else {
             return false;
         };
         let ty = ty.clone();
+        let synthetic = *synthetic;
         let Some(NodeKind::Assign { value, .. }) = arena.get(assign) else {
             return false;
         };
@@ -266,6 +267,7 @@ impl NodeRule for DeclSink {
         arena.set_kind(
             assign,
             NodeKind::Let {
+                synthetic,
                 name,
                 mutable: true,
                 ty,
@@ -324,9 +326,17 @@ impl NodeRule for SlotPromote {
             }
             arena.touch(user);
         }
+        let synthetic = matches!(
+            arena.get(plan.storage_id),
+            Some(NodeKind::Let {
+                synthetic: true,
+                ..
+            })
+        );
         arena.set_kind(
             plan.storage_id,
             NodeKind::Let {
+                synthetic,
                 name: plan.storage,
                 mutable: true,
                 ty: Some(plan.ty),

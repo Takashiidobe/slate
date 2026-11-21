@@ -328,6 +328,7 @@ impl FunctionLowerer<'_, '_> {
         }
         Ok(Expr::Block(Box::new(rust::Block {
             stmts: vec![Stmt::Let {
+                synthetic: true,
                 name: "__slate_function".into(),
                 mutable: false,
                 ty: Some(self.lower_type(&value.ty)?),

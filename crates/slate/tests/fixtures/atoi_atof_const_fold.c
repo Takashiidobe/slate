@@ -29,6 +29,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
+// CHECK-NEXT:     let s: *const i8 = c"-7xyz".as_ptr();
 // CHECK-NEXT:     println!("{}", unsafe { 42i32 as i32 });
 // CHECK-NEXT:     println!("{}", unsafe { 13i32 as i32 });
 // CHECK-NEXT:     println!("{}", unsafe { -7i32 as i32 });

@@ -21,6 +21,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn freeze_probe(seed: i32) -> i32 {
+// CHECK-NEXT:     let value: i32 = seed * 2 + 1;
 // CHECK-NEXT:     let frozen: i32 = 0;
 // CHECK-NEXT:     (frozen == frozen) as i32
 // CHECK-NEXT: }

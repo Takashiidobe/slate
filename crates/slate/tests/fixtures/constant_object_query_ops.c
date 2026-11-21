@@ -38,7 +38,8 @@ int main(void) {
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     __SlateAlign16([0i32; 6]);
+// CHECK-NEXT:     let local: __SlateAlign16<[i32; 6]> = __SlateAlign16([0i32; 6]);
+// CHECK-NEXT:     let v: i32 = 3;
 // CHECK-NEXT:     let c_literal: i32 = 1;
 // CHECK-NEXT:     let c_expr: i32 = 1;
 // CHECK-NEXT:     let c_volatile: i32 = 0;

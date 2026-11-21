@@ -19,6 +19,7 @@ pub trait Visitor {
     fn rewrite_place(&mut self, _place: &mut Place) {}
     fn rewrite_value(&mut self, _value: &mut Value) {}
     fn rewrite_statement(&mut self, _statement: &mut Statement) {}
+    fn rewrite_statement_list(&mut self, _body: &mut Vec<Span<Statement>>) {}
 }
 
 struct Walker<'a, V> {
@@ -84,6 +85,7 @@ impl<V: Visitor> Walker<'_, V> {
                 _ => position += 1,
             }
         }
+        self.visitor.rewrite_statement_list(body);
     }
 
     fn evaluation(&mut self, evaluation: &mut Evaluation) {

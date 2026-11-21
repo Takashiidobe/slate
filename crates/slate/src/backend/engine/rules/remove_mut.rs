@@ -168,6 +168,7 @@ fn demotable(arena: &FunctionOptimizer, id: NodeId) -> bool {
             mutable: true,
             ty,
             init: Some(_),
+            ..
         })
         | Some(NodeKind::LetIf {
             name,

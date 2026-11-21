@@ -219,6 +219,7 @@ impl FunctionLowerer<'_, '_> {
             } else {
                 let vector = self.next_temp();
                 stmts.push(Stmt::Let {
+                    synthetic: true,
                     name: vector.clone(),
                     mutable: false,
                     ty: Some(self.lower_type(&operand.ty)?),
@@ -258,6 +259,7 @@ impl FunctionLowerer<'_, '_> {
         };
         let temp = self.next_temp();
         stmts.push(Stmt::Let {
+            synthetic: true,
             name: temp.clone(),
             mutable: false,
             ty: Some(result.clone()),

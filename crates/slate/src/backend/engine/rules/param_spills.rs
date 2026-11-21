@@ -27,6 +27,7 @@ impl NodeRule for ParamSpillFold {
             mutable,
             ty: Some(ty),
             init: Some(Expr::Var(source)),
+            ..
         }) = arena.get(id)
         else {
             return false;
@@ -42,6 +43,7 @@ impl NodeRule for ParamSpillFold {
             mutable,
             ty: Some(ty),
             init: Some(Expr::Var(source)),
+            ..
         }) = arena.get(id)
         else {
             return false;

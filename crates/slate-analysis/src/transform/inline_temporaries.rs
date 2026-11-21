@@ -17,7 +17,7 @@ pub(crate) fn transform(module: &mut Module) {
     }
 }
 
-fn record_captures(module: &Module) -> HashSet<BindingId> {
+pub(super) fn record_captures(module: &Module) -> HashSet<BindingId> {
     let mut captures = HashSet::new();
     for definition in &module.types {
         if let TypeDefinitionKind::Record {

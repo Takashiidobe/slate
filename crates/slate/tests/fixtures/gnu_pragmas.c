@@ -82,6 +82,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_pragma_diagnostic() -> i32 {
+// CHECK-NEXT:     let ignored: i32 = 0;
 // CHECK-NEXT:     23
 // CHECK-NEXT: }
 // CHECK-EMPTY:

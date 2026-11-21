@@ -327,6 +327,7 @@ int main(void) {
 // CHECK-NEXT:     let aligned_value: __SlateAlign32<i32> = __SlateAlign32(3i32);
 // CHECK-NEXT:     let inferred_value: i32 = 67;
 // CHECK-NEXT:     let same_type_value: i32 = 71;
+// CHECK-NEXT:     let qualified_value: i32 = 73;
 // CHECK-NEXT:     let unqualified_value: i32 = 79;
 // CHECK-NEXT:     let α: i32 = 5;
 // CHECK-NEXT:     let signed_precise: i32 = -12345;

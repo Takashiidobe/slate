@@ -62,57 +62,64 @@ int main(void) {
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"one %d\n".as_ptr(), 1i32) };
-// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::putc(50i32, slate_support::stdout()) };
-// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("one {}", 1i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_os = "freebsd")]
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if (unsafe { __isthreaded }) == 0 {
-// CHECK-NEXT:         unsafe { slate_support::__sputc(50i32, slate_support::stdout()) }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         unsafe { slate_support::putc(50i32, slate_support::stdout()) }
-// CHECK-NEXT:     };
-// CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::putc(50i32, slate_support::stdout()) };
+// CHECK-NEXT:         if (unsafe { __isthreaded }) == 0 {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { slate_support::__sputc(50i32, slate_support::stdout()) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { slate_support::putc(50i32, slate_support::stdout()) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     #[cfg(not(target_env = "gnu"))]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(not(target_os = "freebsd"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { putc_unlocked(10i32, slate_support::stdout()) };
-// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_os = "freebsd")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::__sputc(10i32, slate_support::stdout()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { slate_support::printf(c"one %d\n".as_ptr(), 1i32) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(target_env = "gnu"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(target_env = "gnu"))]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(not(target_os = "freebsd"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { slate_support::putc(50i32, slate_support::stdout()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(target_os = "freebsd"))]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     #[cfg(not(target_os = "freebsd"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         unsafe { putc_unlocked(10i32, slate_support::stdout()) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(not(target_os = "freebsd"))]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     let written: i32 = unsafe { slate_support::printf(c"three\n".as_ptr()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     #[cfg(unix)]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         println!("written {}", written);
+// CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"written %d\n".as_ptr(), written) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         println!("written {}", written);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

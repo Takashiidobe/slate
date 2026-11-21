@@ -1155,6 +1155,7 @@ impl Codegen {
                 mutable,
                 ty,
                 init,
+                ..
             } => {
                 self.p.ibox(0);
                 self.let_head(name, *mutable, ty.as_ref());

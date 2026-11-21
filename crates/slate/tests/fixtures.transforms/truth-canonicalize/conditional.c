@@ -15,7 +15,7 @@ int other_kept(int a) { return a ? 2 : 0; }
 // CHECK-NEXT:     return from_bool<i32, reason=assign>(lt<i32>(read<i32>(%[[V_A:[0-9]+]]), read<i32>(%[[V_B:[0-9]+]])));
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn %{{[0-9]+}} @select_inverted(%{{[0-9]+}} a: i32, %{{[0-9]+}} b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// CHECK-NEXT:     return from_bool<i32, reason=assign>(not<bool>(lt<i32>(read<i32>(%[[V_A:[0-9]+]]), read<i32>(%[[V_B:[0-9]+]]))));
+// CHECK-NEXT:     return from_bool<i32, reason=assign>(ge<i32>(read<i32>(%[[V_A:[0-9]+]]), read<i32>(%[[V_B:[0-9]+]])));
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn %{{[0-9]+}} @tested_select(%{{[0-9]+}} a: i32, %{{[0-9]+}} b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // CHECK-NEXT:     return from_bool<i32, reason=return>(lt<i32>(read<i32>(%[[V_A:[0-9]+]]), read<i32>(%[[V_B:[0-9]+]])));

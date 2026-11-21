@@ -357,7 +357,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn report_kept() {
-// CHECK-NEXT:     __SlateAlign16([0i32; 5]);
+// CHECK-NEXT:     let values: __SlateAlign16<[i32; 5]> = __SlateAlign16([0i32; 5]);
+// CHECK-NEXT:     let text: *mut i8 = c"abc".as_ptr() as *mut i8;
 // CHECK-NEXT:     println!("{}", core::mem::size_of::<[i32; 5]>() as i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}",

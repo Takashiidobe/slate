@@ -58,6 +58,11 @@ impl DefUse {
         )
     }
 
+    pub fn only_writes(&self, binding: BindingId, count: usize) -> bool {
+        let uses = self.uses.get(&binding).map(Vec::as_slice).unwrap_or(&[]);
+        uses.len() == count && uses.iter().all(|(_, access)| *access == Access::Write)
+    }
+
     pub fn touched_in(&self, binding: BindingId, region: &Range<u32>) -> bool {
         self.uses.get(&binding).is_some_and(|uses| {
             uses.iter().any(|(position, access)| {

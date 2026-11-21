@@ -89,6 +89,7 @@ fn parts_block(mut stmts: Vec<Stmt>, re: Expr, im: Expr) -> Expr {
             mutable: false,
             ty: None,
             init: Some(init),
+            ..
         } = &stmts[index]
         else {
             continue;
@@ -172,6 +173,7 @@ impl FunctionLowerer<'_, '_> {
         }
         let temp = self.next_temp();
         stmts.push(Stmt::Let {
+            synthetic: true,
             name: temp.clone(),
             mutable: false,
             ty: None,

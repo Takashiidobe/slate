@@ -1330,6 +1330,7 @@ impl NodeRule for LateInlineTemps {
             mutable: false,
             init: Some(init),
             ty,
+            ..
         }) = arena.get(id)
         else {
             return false;
@@ -1783,6 +1784,7 @@ impl NodeRule for InlineConstArgTemps {
             mutable: false,
             init: Some(init),
             ty,
+            ..
         }) = arena.get(id)
         else {
             return false;

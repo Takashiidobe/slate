@@ -425,6 +425,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut count: i32 = 2;
 // CHECK-NEXT:     let mut state: i32 = 0;
+// CHECK-NEXT:     let t: i32 = 40;
 // CHECK-NEXT:     let a_value: i32 = 9;
 // CHECK-NEXT:     let mut buffer: [c_char; 4] = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 4] = unsafe { core::mem::zeroed() };

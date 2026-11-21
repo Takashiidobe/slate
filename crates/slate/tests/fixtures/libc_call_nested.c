@@ -69,12 +69,15 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn count_alpha() -> i32 {
+// CHECK-NEXT:     let alpha: *const i8 = c"alpha".as_ptr();
+// CHECK-NEXT:     let beta: *const i8 = c"beta".as_ptr();
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     total += ((unsafe { ("alpha".cmp("alpha") as i32) as i32 }) == 0) as i32;
 // CHECK-NEXT:     total += ((unsafe { ("beta".cmp("alpha") as i32) as i32 }) == 0) as i32;
 // CHECK-NEXT:     total
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn same_prefix() -> i32 {
+// CHECK-NEXT:     let a: *const i8 = c"abx".as_ptr();
 // CHECK-NEXT:     if (unsafe {
 // CHECK-NEXT:         ("abx".as_bytes()[0usize..2usize].cmp(&"aby".as_bytes()[0usize..2usize]) as i32)
 // CHECK-NEXT:             as i32
@@ -84,9 +87,11 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn long_word() -> i32 {
+// CHECK-NEXT:     let s: *const i8 = c"lengthy".as_ptr();
 // CHECK-NEXT:     (((unsafe { ("lengthy".len() as i32) as u64 }) as i32) > 4) as i32
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn spans() -> i32 {
+// CHECK-NEXT:     let s: *const i8 = c"  word".as_ptr();
 // CHECK-NEXT:     ((unsafe {
 // CHECK-NEXT:         ("  word"
 // CHECK-NEXT:             .as_bytes()
@@ -106,6 +111,7 @@ int main(void) {
 // CHECK-NEXT:     3 + (unsafe { 12i32 as i32 }) * 2
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn embedded(n: i32) -> i32 {
+// CHECK-NEXT:     let s: *const i8 = b"ab\0cd\0".as_ptr() as *const i8;
 // CHECK-NEXT:     ((unsafe {
 // CHECK-NEXT:         ("ab\u{0}cd"
 // CHECK-NEXT:                 .as_bytes()[0usize.."ab\u{0}cd"

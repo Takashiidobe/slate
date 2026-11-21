@@ -410,6 +410,7 @@ fn emit(writes: &[Write], base: &str, depth: usize) -> Vec<Stmt> {
                 let index = format!("__slate_auto_index{depth}");
                 let element = format!("{BYTES}{depth}");
                 let mut stmts = vec![Stmt::Let {
+                    synthetic: true,
                     name: element.clone(),
                     mutable: false,
                     ty: None,
@@ -602,6 +603,7 @@ impl FunctionLowerer<'_, '_> {
         stmts.insert(
             0,
             Stmt::Let {
+                synthetic: true,
                 name: BYTES.into(),
                 mutable: false,
                 ty: None,

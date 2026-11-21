@@ -256,6 +256,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {}", bit__const6(9i32), bit__const7(3i32));
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32;
 // CHECK-NEXT:     {
+// CHECK-NEXT:         let __flags: i32 = 256 | 3;
 // CHECK-NEXT:         let mut __out: i32 = 0;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             let [[T_0]]: u32;
@@ -270,6 +271,7 @@ int main(void) {
 // CHECK-NEXT:         [[V_0]] = __out;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: i32;
+// CHECK-NEXT:     let __flags: i32 = 256 | 1i32 << 4i32;
 // CHECK-NEXT:     let mut __out: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;

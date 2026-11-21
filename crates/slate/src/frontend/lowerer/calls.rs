@@ -224,6 +224,7 @@ impl FunctionLowerer<'_, '_> {
                 }
                 let temp = self.next_temp();
                 evaluated.push(Stmt::Let {
+                    synthetic: true,
                     name: temp.clone(),
                     mutable: false,
                     ty: None,

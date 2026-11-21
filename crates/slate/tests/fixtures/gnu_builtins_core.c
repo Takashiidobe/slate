@@ -166,6 +166,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_builtin_compile_time() -> i32 {
+// CHECK-NEXT:     let runtime: i32 = 3;
 // CHECK-NEXT:     let selected: i32 = 19;
 // CHECK-NEXT:     let type_total: i32 = 1 + 0;
 // CHECK-NEXT:     1 + 0 + selected + type_total
@@ -209,7 +210,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_builtin_sizes() -> i32 {
-// CHECK-NEXT:     __SlateAlign16(
+// CHECK-NEXT:     let object: __SlateAlign16<[u8; 24]> = __SlateAlign16(
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_0]]: [u8; 24] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_0]]

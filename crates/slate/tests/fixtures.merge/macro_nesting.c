@@ -251,6 +251,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ARG_NAMES_TEMP {
 // CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:         let temp: i32 = 7;
 // CHECK-NEXT:         let temp: i32 = 5;
 // CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {

@@ -248,6 +248,7 @@ fn stdout_flush_stmt() -> Stmt {
         expr: Box::new(path_call(&["std", "io", "stdout"], Vec::new())),
     };
     Stmt::Let {
+        synthetic: true,
         name: "_".into(),
         mutable: false,
         ty: None,
@@ -323,6 +324,7 @@ fn try_convert(stmt: &Stmt) -> Option<Vec<Stmt>> {
         if needs_hoist(&arg) {
             let name = format!("__slate_printf_arg{index}");
             hoisted.push(Stmt::Let {
+                synthetic: true,
                 name: name.clone(),
                 mutable: false,
                 ty: None,
@@ -351,6 +353,7 @@ fn wrap_stdout_writer_preserving_tail(stmt: Stmt) -> Vec<Stmt> {
     vec![
         stdout_flush_stmt(),
         Stmt::Let {
+            synthetic: true,
             name: STDOUT_TAIL_TEMP.into(),
             mutable: false,
             ty: None,

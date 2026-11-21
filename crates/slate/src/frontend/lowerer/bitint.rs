@@ -195,6 +195,7 @@ impl FunctionLowerer<'_, '_> {
             else_expr: Box::new(else_expr),
         };
         let bind = |name: &str, init: Expr| Stmt::Let {
+            synthetic: true,
             name: name.to_string(),
             mutable: false,
             ty: None,
@@ -405,12 +406,14 @@ impl FunctionLowerer<'_, '_> {
                 Ok(Expr::Block(Box::new(rust::Block {
                     stmts: vec![
                         Stmt::Let {
+                            synthetic: true,
                             name: operand_name,
                             mutable: false,
                             ty: None,
                             init: Some(recv),
                         },
                         Stmt::Let {
+                            synthetic: true,
                             name: shift_name,
                             mutable: false,
                             ty: None,
@@ -724,6 +727,7 @@ impl FunctionLowerer<'_, '_> {
         ];
         let var = |name: &String| Expr::Var(name.as_str().into());
         let bind = |name: &String, ty: Option<rust::Type>, init: Expr| Stmt::Let {
+            synthetic: true,
             name: name.clone(),
             mutable: false,
             ty,
