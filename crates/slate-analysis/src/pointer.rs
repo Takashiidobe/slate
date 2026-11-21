@@ -1,6 +1,6 @@
 use crate::identity::{FunctionIdentity, Known};
 use crate::program::{FunctionId, Program, ProgramBinding, UnitId};
-use foldhash::{HashMap, HashMapExt};
+use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use rayon::prelude::*;
 use slate_parser::ast::{NodeId, Span};
 use slate_parser::ir::{
@@ -31,9 +31,27 @@ pub enum PointerRole {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Borrow {
+    pub mutable: bool,
+    pub many: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct PointerFact {
     pub role: PointerRole,
     pub capability: PointerCapability,
+    pub borrow: Option<Borrow>,
+}
+
+impl PointerCapability {
+    fn borrow(&self) -> Option<Borrow> {
+        let shared_write = self.write && !self.unique;
+        (!self.raw && !self.escape && !self.nullable && !self.free && !self.string && !shared_write)
+            .then_some(Borrow {
+                mutable: self.write,
+                many: self.offset,
+            })
+    }
 }
 
 pub(crate) struct PointerFacts {
@@ -48,6 +66,7 @@ const ESCAPE: u8 = 1 << 3;
 const NULLABLE: u8 = 1 << 4;
 const STRING: u8 = 1 << 5;
 const SHARED: u8 = 1 << 6;
+const MACRO: u8 = 1 << 7;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum NodeKind {
@@ -61,6 +80,7 @@ struct Node {
     binding: BindingId,
     kind: NodeKind,
     byte_elements: bool,
+    opaque_pointee: bool,
     flags: u8,
     raw: bool,
     reads: u32,
@@ -70,6 +90,8 @@ struct CallSite {
     callee: FunctionId,
     arguments: Vec<(usize, u32)>,
     objects: Vec<(usize, BindingId)>,
+    unproven: Vec<usize>,
+    pinned: bool,
 }
 
 struct Summary {
@@ -88,6 +110,7 @@ struct Sources {
     objects: Vec<BindingId>,
     null: bool,
     opaque: bool,
+    retyped: bool,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -123,6 +146,12 @@ struct Walker<'a, 'm> {
     result_nodes: HashMap<NodeId, u32>,
     returned: Option<u32>,
     address_taken: Vec<FunctionId>,
+    automatic: HashSet<BindingId>,
+    macro_depth: u32,
+}
+
+fn same_pointee(from: &Type, to: &Type) -> bool {
+    matches!((from, to), (Type::Pointer { pointee: left, .. }, Type::Pointer { pointee: right, .. }) if left == right)
 }
 
 impl Walker<'_, '_> {
@@ -139,6 +168,7 @@ impl Walker<'_, '_> {
             binding,
             kind,
             byte_elements,
+            opaque_pointee: matches!(ty, Type::Pointer { pointee, .. } if **pointee == Type::Void),
             flags: 0,
             raw: false,
             reads: 0,
@@ -194,6 +224,7 @@ impl Walker<'_, '_> {
             ValueKind::Copy { operand, .. } => self.collect_sources(operand, moved, out),
             ValueKind::Convert { kind, operand, .. } => match kind {
                 ConversionKind::PointerCast | ConversionKind::AddressSpaceCast => {
+                    out.retyped |= !same_pointee(&operand.ty, &value.ty);
                     self.collect_sources(operand, moved, out)
                 }
                 _ => out.opaque = true,
@@ -297,15 +328,69 @@ impl Walker<'_, '_> {
                 self.unions.push((destination, source));
                 self.copies.push((source, destination));
             }
-            if moved {
+            if moved
+                || matches!(
+                    self.nodes[source as usize].kind,
+                    NodeKind::Temporary | NodeKind::Return
+                )
+            {
                 self.nodes[destination as usize].raw = true;
             }
         }
-        if sources.opaque {
+        if sources.opaque || sources.retyped {
             self.nodes[destination as usize].raw = true;
         }
         if sources.null {
             self.flag(destination, NULLABLE);
+        }
+    }
+
+    fn macro_mentions(&mut self, named: Named) {
+        for binding in named.0 {
+            if let Some(node) = self.node(binding) {
+                self.flag(node, MACRO);
+            }
+        }
+    }
+
+    fn proven(&self, value: &Value) -> bool {
+        match &value.node.value {
+            ValueKind::Read {
+                place:
+                    Place {
+                        kind: PlaceKind::Binding(binding),
+                        ..
+                    },
+                ordering: None,
+            } => self.node(*binding).is_some(),
+            ValueKind::Copy { operand, .. } => self.proven(operand),
+            ValueKind::Convert {
+                kind: ConversionKind::PointerCast,
+                operand,
+                ..
+            } => same_pointee(&operand.ty, &value.ty) && self.proven(operand),
+            ValueKind::Conditional {
+                then_value,
+                else_value,
+                ..
+            } => self.proven(then_value) && self.proven(else_value),
+            ValueKind::AddressOf(Place {
+                kind: PlaceKind::Binding(binding),
+                ..
+            })
+            | ValueKind::ArrayDecay {
+                place:
+                    Place {
+                        kind: PlaceKind::Binding(binding),
+                        ..
+                    },
+                length: Some(_),
+            } => self.automatic.contains(binding),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only reads of tracked bindings and addresses of automatic objects lower to a borrow"
+            )]
+            _ => false,
         }
     }
 
@@ -384,7 +469,12 @@ impl Walker<'_, '_> {
                     self.mark(base, WRITE);
                 }
             }
-            PlaceKind::MacroArg { place, .. } => self.place(place, access),
+            PlaceKind::MacroArg { place, .. } => {
+                self.place(place, access);
+                let mut named = Named(Vec::new());
+                place_bindings(place, &mut named);
+                self.macro_mentions(named);
+            }
         }
     }
 
@@ -509,9 +599,18 @@ impl Walker<'_, '_> {
                 self.place(destination, Use::Write);
                 self.place(source, Use::Read);
             }
-            ValueKind::StatementExpression(evaluation)
-            | ValueKind::MacroExpansion { evaluation, .. } => self.evaluation(evaluation),
-            ValueKind::MacroArg { value, .. } => self.value(value),
+            ValueKind::StatementExpression(evaluation) => self.evaluation(evaluation),
+            ValueKind::MacroExpansion { evaluation, .. } => {
+                self.macro_depth += 1;
+                self.evaluation(evaluation);
+                self.macro_depth -= 1;
+            }
+            ValueKind::MacroArg { value, .. } => {
+                self.value(value);
+                let mut named = Named(Vec::new());
+                ir::walk_value(&mut (**value).clone(), &mut named);
+                self.macro_mentions(named);
+            }
             ValueKind::Block(literal) => {
                 for capture in &literal.captures {
                     if let Some(node) = self.node(capture.id) {
@@ -600,8 +699,13 @@ impl Walker<'_, '_> {
                 callee: target,
                 arguments: Vec::new(),
                 objects: Vec::new(),
+                unproven: Vec::new(),
+                pinned: self.macro_depth > 0,
             };
             for (index, argument) in arguments.iter().enumerate() {
+                if tracked_pointer(&argument.ty).is_some() && !self.proven(argument) {
+                    site.unproven.push(index);
+                }
                 let sources = self.sources(argument);
                 for (node, _) in sources.roots {
                     site.arguments.push((index, node));
@@ -610,9 +714,7 @@ impl Walker<'_, '_> {
                     site.objects.push((index, object));
                 }
             }
-            if !site.arguments.is_empty() || site.objects.len() > 1 {
-                self.calls.push(site);
-            }
+            self.calls.push(site);
             return;
         }
         let known = match callee {
@@ -688,6 +790,22 @@ impl Walker<'_, '_> {
                 {
                     self.flag(node, ESCAPE | WRITE);
                 }
+                if let Some(handler) = variable.cleanup
+                    && let Some(id) = self.program.callee(self.unit, &Callee::Direct(handler))
+                {
+                    self.address_taken.push(id);
+                }
+                if let Some(node) = node
+                    && variable.initializer.is_none()
+                {
+                    self.nodes[node as usize].raw = true;
+                }
+                if matches!(variable.storage, StorageDuration::Automatic)
+                    && !variable.byref
+                    && variable.register.is_none()
+                {
+                    self.automatic.insert(variable.id);
+                }
                 if let Some(initializer) = &variable.initializer {
                     self.value(initializer);
                     match node {
@@ -711,8 +829,12 @@ impl Walker<'_, '_> {
             }
             Statement::Block(body)
             | Statement::Default { body, .. }
-            | Statement::Label { body, .. }
-            | Statement::MacroExpansion { body, .. } => self.statements(body),
+            | Statement::Label { body, .. } => self.statements(body),
+            Statement::MacroExpansion { body, .. } => {
+                self.macro_depth += 1;
+                self.statements(body);
+                self.macro_depth -= 1;
+            }
             Statement::If {
                 condition,
                 then_body,
@@ -799,6 +921,37 @@ impl Visitor for Escaper<'_> {
     }
 }
 
+struct Named(Vec<BindingId>);
+
+fn place_bindings(place: &Place, named: &mut Named) {
+    match &place.kind {
+        PlaceKind::Binding(binding) => named.0.push(*binding),
+        PlaceKind::Deref(value) => ir::walk_value(&mut value.clone(), named),
+        PlaceKind::Index { base, index } => {
+            ir::walk_value(&mut base.clone(), named);
+            ir::walk_value(&mut index.clone(), named);
+        }
+        PlaceKind::Lane { base, index } => {
+            place_bindings(base, named);
+            ir::walk_value(&mut index.clone(), named);
+        }
+        PlaceKind::Field { base, .. }
+        | PlaceKind::ComplexPart { base, .. }
+        | PlaceKind::Swizzle { base, .. } => place_bindings(base, named),
+        PlaceKind::MacroArg { place, .. } => place_bindings(place, named),
+        PlaceKind::CompoundLiteral { initializer, .. }
+        | PlaceKind::Temporary { initializer, .. } => {
+            ir::walk_value(&mut initializer.clone(), named)
+        }
+    }
+}
+
+impl Visitor for Named {
+    fn binding(&mut self, binding: BindingId) {
+        self.0.push(binding);
+    }
+}
+
 fn null_like(value: &Value) -> bool {
     match &value.node.value {
         ValueKind::Null => true,
@@ -863,12 +1016,15 @@ fn summarize(
         result_nodes: HashMap::new(),
         returned: None,
         address_taken: Vec::new(),
+        automatic: HashSet::new(),
+        macro_depth: 0,
     };
     if let Some(return_type) = &entry.function.return_type {
         walker.returned = walker.anonymous(entry.function.value.id, return_type, NodeKind::Return);
     }
     if let Parameters::Prototype { fixed, .. } = &entry.function.parameters {
         for (index, parameter) in fixed.iter().enumerate() {
+            walker.automatic.insert(parameter.value.id);
             walker.register(
                 parameter.value.id,
                 &parameter.value.ty,
@@ -962,6 +1118,20 @@ fn propagate(flags: &mut [u8], flag: u8, edges: &mut [(u32, u32)]) {
     }
 }
 
+fn capability(flags: u8, raw: bool, byte_elements: bool) -> PointerCapability {
+    PointerCapability {
+        write: flags & WRITE != 0,
+        unique: flags & SHARED == 0,
+        free: flags & FREE != 0,
+        offset: flags & OFFSET != 0,
+        escape: flags & ESCAPE != 0,
+        nullable: flags & NULLABLE != 0,
+        string: flags & STRING != 0 && byte_elements,
+        raw,
+        byte_elements,
+    }
+}
+
 fn candidate(function: &ir::Function, exported: bool, address_taken: bool) -> bool {
     !address_taken
         && !exported
@@ -1003,6 +1173,19 @@ pub(crate) fn analyze(
     for summary in summaries.iter().flatten() {
         for function in &summary.address_taken {
             address_taken[function.0 as usize] = true;
+        }
+    }
+    for (unit, entry) in program.units() {
+        let mut named = Named(Vec::new());
+        for global in &entry.module.globals {
+            if let Some(initializer) = &global.variable.initializer {
+                ir::walk_value(&mut initializer.clone(), &mut named);
+            }
+        }
+        for binding in named.0 {
+            if let Some(function) = program.callee(unit, &Callee::Direct(binding)) {
+                address_taken[function.0 as usize] = true;
+            }
         }
     }
     let candidates: Vec<bool> = program
@@ -1139,6 +1322,49 @@ pub(crate) fn analyze(
     propagate(&mut class_flags, NULLABLE, &mut forward);
     reach(total, &mut copies, &mut raw);
 
+    let class_borrow = |flags: u8| capability(flags, false, false).borrow();
+    let mut unproven = vec![false; total];
+    for node in 0..total as u32 {
+        let class = classes.find(node) as usize;
+        if class_flags[class] & MACRO != 0 || class_borrow(class_flags[class]).is_none() {
+            unproven[class] = true;
+        }
+    }
+    for (function, summary) in summaries.iter().enumerate() {
+        let Some(summary) = summary else { continue };
+        let offset = base[function];
+        let unit = program
+            .function(FunctionId(function as u32))
+            .map(|entry| entry.unit);
+        for site in &summary.calls {
+            let callee = site.callee.0 as usize;
+            if !candidates[callee] {
+                continue;
+            }
+            let foreign =
+                site.pinned || program.function(site.callee).map(|entry| entry.unit) != unit;
+            for (index, &parameter) in &parameters[callee] {
+                if foreign || site.unproven.contains(index) {
+                    unproven[classes.find(parameter) as usize] = true;
+                }
+            }
+            for &(index, node) in &site.arguments {
+                let global = offset + node;
+                let item = &summary.nodes[node as usize];
+                let class = classes.find(global) as usize;
+                let lowered_raw = raw[global as usize]
+                    || item.opaque_pointee
+                    || matches!(item.kind, NodeKind::Temporary | NodeKind::Return)
+                    || (item.kind == NodeKind::Local
+                        && class_borrow(class_flags[class]).is_none_or(|borrow| borrow.mutable));
+                if lowered_raw && let Some(&parameter) = parameters[callee].get(&index) {
+                    unproven[classes.find(parameter) as usize] = true;
+                }
+            }
+        }
+    }
+    reach(total, &mut forward, &mut unproven);
+
     let mut facts = PointerFacts {
         bindings: HashMap::new(),
         functions: HashMap::new(),
@@ -1156,24 +1382,24 @@ pub(crate) fn analyze(
                 NodeKind::Parameter(_) | NodeKind::Temporary | NodeKind::Return => continue,
             };
             let global = base[function] + node as u32;
-            let flags = class_flags[classes.find(global) as usize];
-            let capability = PointerCapability {
-                write: flags & WRITE != 0,
-                unique: flags & SHARED == 0,
-                free: flags & FREE != 0,
-                offset: flags & OFFSET != 0,
-                escape: flags & ESCAPE != 0,
-                nullable: flags & NULLABLE != 0,
-                string: flags & STRING != 0 && item.byte_elements,
-                raw: raw[global as usize],
-                byte_elements: item.byte_elements,
-            };
+            let class = classes.find(global) as usize;
+            let capability =
+                capability(class_flags[class], raw[global as usize], item.byte_elements);
+            let borrow = capability.borrow().filter(|borrow| {
+                !item.opaque_pointee
+                    && !unproven[class]
+                    && (role == PointerRole::Parameter || !borrow.mutable)
+            });
             facts.bindings.insert(
                 ProgramBinding {
                     unit: entry.unit,
                     binding: item.binding,
                 },
-                PointerFact { role, capability },
+                PointerFact {
+                    role,
+                    capability,
+                    borrow,
+                },
             );
             reported.push(item.binding);
         }

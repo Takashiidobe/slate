@@ -64,6 +64,8 @@ impl<'a, 'm> FunctionLowerer<'a, 'm> {
             pending: Vec::new(),
             dispatching: false,
             switch_lets: HashSet::new(),
+            unborrowed: HashSet::new(),
+            reassigned_borrows: HashSet::new(),
             erased_copy: None,
             const_layout: false,
         }
@@ -72,6 +74,9 @@ impl<'a, 'm> FunctionLowerer<'a, 'm> {
 
 impl FunctionLowerer<'_, '_> {
     pub(super) fn place_is_unsafe(&self, place: &ir::Place) -> bool {
+        if self.borrowed_root(place) {
+            return self.rooted_in_byref(place);
+        }
         self.tables.place_is_unsafe(place) || self.rooted_in_byref(place)
     }
 

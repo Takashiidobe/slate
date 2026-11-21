@@ -129,8 +129,23 @@ impl FunctionLowerer<'_, '_> {
             ir::Callee::Direct(id) => self.nested_capture_arguments(*id)?,
             ir::Callee::Indirect(_) => Vec::new(),
         };
+        let mut borrowed = Vec::new();
+        let mut kept: Vec<usize> = (0..args.len()).collect();
         for (index, argument) in arguments.iter().enumerate() {
+            if matches!(self.tables.resolve_type(&argument.ty), ir::Type::Pointer { pointee, .. } if matches!(**pointee, ir::Type::Function { .. }))
+            {
+                kept.push(args.len());
+            }
             let variadic = variadic_start.is_some_and(|start| index >= start);
+            let borrow = match callee {
+                ir::Callee::Direct(id) if !variadic => self.tables.parameter_borrow(*id, index),
+                ir::Callee::Direct(_) | ir::Callee::Indirect(_) => None,
+            };
+            if let Some(borrow) = borrow {
+                args.push(self.lower_borrow(argument, borrow)?);
+                borrowed.push((args.len() - 1, borrow.mutable));
+                continue;
+            }
             let mut lowered = self.lower_call_argument(argument, variadic)?;
             if !variadic
                 && matches!(callee, ir::Callee::Direct(id) if self.tables.support_functions.contains_key(id))
@@ -144,6 +159,38 @@ impl FunctionLowerer<'_, '_> {
                 lowered = self.support_argument(argument, lowered, &expected)?;
             }
             args.push(lowered);
+        }
+        let mut evaluated = Vec::new();
+        if !borrowed.is_empty() {
+            let exclusive = borrowed.iter().any(|&(_, mutable)| mutable);
+            for (index, arg) in args.iter_mut().enumerate() {
+                let trivial = match arg {
+                    Expr::Value(_) => true,
+                    Expr::Var(_) => !exclusive,
+                    Expr::Cast { expr, .. } => {
+                        matches!(**expr, Expr::Value(_))
+                            || (!exclusive && matches!(**expr, Expr::Var(_)))
+                    }
+                    #[expect(
+                        slate::sensitive_wildcard,
+                        reason = "any other argument may read an object a sibling argument borrows"
+                    )]
+                    _ => false,
+                };
+                if borrowed.iter().any(|&(borrow, _)| borrow == index)
+                    || kept.contains(&index)
+                    || trivial
+                {
+                    continue;
+                }
+                let temp = self.next_temp();
+                evaluated.push(Stmt::Let {
+                    name: temp.clone(),
+                    mutable: false,
+                    ty: None,
+                    init: Some(std::mem::replace(arg, Expr::Var(temp.as_str().into()))),
+                });
+            }
         }
         let names = &self.tables.names;
         let call = Expr::Call {
@@ -215,13 +262,21 @@ impl FunctionLowerer<'_, '_> {
             ir::Callee::Direct(id) => names.get(id).is_some_and(|name| name.is_unsafe),
             ir::Callee::Indirect(_) => true,
         };
-        Ok(if unsafe_call {
+        let call = if unsafe_call {
             Expr::Unsafe(Box::new(rust::Block {
                 stmts: Vec::new(),
                 tail: Some(Box::new(call)),
             }))
         } else {
             call
+        };
+        Ok(if evaluated.is_empty() {
+            call
+        } else {
+            Expr::Block(Box::new(rust::Block {
+                stmts: evaluated,
+                tail: Some(Box::new(call)),
+            }))
         })
     }
 

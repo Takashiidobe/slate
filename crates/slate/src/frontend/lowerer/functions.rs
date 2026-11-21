@@ -625,9 +625,14 @@ impl FunctionLowerer<'_, '_> {
                     comments: self.claim_comments(param.id),
                     name: self.binding_name(param.value.id),
                     mutable: true,
-                    ty: self
-                        .lower_c_type(&param.ty, self.tables.c_types.nodes.get(&param.id).copied())
-                        .map_err(|e| e.used_at(Site::of(param)))?,
+                    ty: match self.borrow_of(param.value.id) {
+                        Some(borrow) => self.borrow_type(&param.ty, borrow),
+                        None => self.lower_c_type(
+                            &param.ty,
+                            self.tables.c_types.nodes.get(&param.id).copied(),
+                        ),
+                    }
+                    .map_err(|e| e.used_at(Site::of(param)))?,
                 })
             })
             .collect::<Result<Vec<_>>>()?;
@@ -668,6 +673,20 @@ impl FunctionLowerer<'_, '_> {
         };
         statements.extend(self.remaining_statement_comments(body));
         statements.splice(0..0, std::mem::take(&mut self.hoisted));
+        let rebound: Vec<Stmt> = fixed
+            .iter()
+            .filter(|param| self.reassigned_borrows.contains(&param.value.id))
+            .map(|param| {
+                let name = self.binding_name(param.value.id);
+                Stmt::Let {
+                    name: name.clone(),
+                    mutable: true,
+                    ty: None,
+                    init: Some(Expr::Var(name.as_str().into())),
+                }
+            })
+            .collect();
+        statements.splice(0..0, rebound);
         if self.uses_alloca {
             statements.insert(
                 0,

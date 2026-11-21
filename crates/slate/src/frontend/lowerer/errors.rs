@@ -129,6 +129,8 @@ pub enum Invariant {
     AsmOperandIndex(usize),
     #[error("asm operand has no width")]
     AsmOperandWidth,
+    #[error("value {0} cannot become the borrow slate-analysis planned")]
+    UnprovenBorrow(String),
 }
 
 #[derive(Debug, Clone, Error)]

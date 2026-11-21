@@ -16,6 +16,7 @@ mod atomics;
 mod auto_init;
 mod bitint;
 mod blocks;
+mod borrows;
 mod calls;
 mod comment_text;
 mod comments;
@@ -102,6 +103,7 @@ struct Tables<'m> {
     target: &'m TargetInfo,
     module: &'m ir::Module,
     facts: UnitFacts<'m>,
+    borrowed_parameters: HashMap<BindingId, Vec<Option<slate_analysis::Borrow>>>,
     unit_features: Vec<&'static str>,
     zero_init_padding_bits: slate_parser::compiler_options::ZeroInitPaddingBits,
     alloca_layout: ir::AllocaLayout,
@@ -223,6 +225,8 @@ struct FunctionLowerer<'a, 'm> {
     pending: Vec<Stmt>,
     dispatching: bool,
     switch_lets: HashSet<BindingId>,
+    unborrowed: HashSet<BindingId>,
+    reassigned_borrows: HashSet<BindingId>,
     erased_copy: Option<(*const ir::Place, String)>,
     const_layout: bool,
 }
@@ -376,6 +380,33 @@ fn elf_alias_target(target: &slate_parser::target_info::TargetInfo) -> bool {
             | slate_parser::target_info::TargetOs::Android
             | slate_parser::target_info::TargetOs::FreeBsd
     )
+}
+
+pub fn ir_pointers() -> bool {
+    static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *ENABLED.get_or_init(|| std::env::var_os("SLATE_IR_POINTERS").is_some_and(|value| value != "0"))
+}
+
+impl Tables<'_> {
+    fn borrow_of(&self, binding: BindingId) -> Option<slate_analysis::Borrow> {
+        if !ir_pointers() {
+            return None;
+        }
+        self.facts
+            .binding(binding)
+            .and_then(|facts| facts.pointer)
+            .and_then(|fact| fact.borrow)
+    }
+
+    fn parameter_borrow(
+        &self,
+        function: BindingId,
+        index: usize,
+    ) -> Option<slate_analysis::Borrow> {
+        self.borrowed_parameters
+            .get(&function)
+            .and_then(|borrows| borrows.get(index).copied().flatten())
+    }
 }
 
 pub fn program_entry(module: &ir::Module, function: &ir::Function) -> bool {
@@ -816,9 +847,37 @@ impl<'m> ModuleLowerer<'m> {
                 collect_statement_names(body, &mut bindings, &static_names, &mut next);
             }
         }
+        let borrowed_parameters = if ir_pointers() {
+            module
+                .functions
+                .iter()
+                .filter(|function| function.value.body.is_some())
+                .filter_map(|function| {
+                    let ir::Parameters::Prototype { fixed, .. } = &function.value.parameters else {
+                        return None;
+                    };
+                    let borrows: Vec<_> = fixed
+                        .iter()
+                        .map(|parameter| {
+                            facts
+                                .binding(parameter.value.id)
+                                .and_then(|facts| facts.pointer)
+                                .and_then(|fact| fact.borrow)
+                        })
+                        .collect();
+                    borrows
+                        .iter()
+                        .any(Option::is_some)
+                        .then_some((function.value.id, borrows))
+                })
+                .collect()
+        } else {
+            HashMap::new()
+        };
         let mut tables = Tables {
             module,
             facts,
+            borrowed_parameters,
             support_functions: HashMap::new(),
             support_globals: HashMap::new(),
             names,

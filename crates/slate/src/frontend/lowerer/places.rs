@@ -468,14 +468,16 @@ impl FunctionLowerer<'_, '_> {
                 ir: place.to_string(),
             }
             .into()),
-            _ if mutable && self.tables.place_is_read_only(place) => Ok(Expr::MethodCall {
-                recv: Box::new(Expr::AddrOf {
-                    mutable: false,
-                    expr: Box::new(self.lower_place(place)?),
-                }),
-                method: "cast_mut".into(),
-                args: Vec::new(),
-            }),
+            _ if mutable && (self.tables.place_is_read_only(place) || self.shared_root(place)) => {
+                Ok(Expr::MethodCall {
+                    recv: Box::new(Expr::AddrOf {
+                        mutable: false,
+                        expr: Box::new(self.lower_place(place)?),
+                    }),
+                    method: "cast_mut".into(),
+                    args: Vec::new(),
+                })
+            }
             _ => Ok(Expr::AddrOf {
                 mutable,
                 expr: Box::new(self.lower_place(place)?),
@@ -511,6 +513,9 @@ impl FunctionLowerer<'_, '_> {
                 op: rust::UnaryOp::Deref,
                 expr: Box::new(address),
             });
+        }
+        if let Some(element) = self.lower_borrowed_place(place)? {
+            return Ok(element);
         }
         if let Some((array, index)) = tables.array_subscript(place) {
             return Ok(Expr::Index {

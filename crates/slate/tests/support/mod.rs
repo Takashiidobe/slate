@@ -1659,6 +1659,18 @@ fn local_inputs_hash(dir: &Path) -> u64 {
     hash
 }
 
+pub fn fixture_environment(c_src: &Path) -> Vec<(String, String)> {
+    std::fs::read_to_string(c_src)
+        .unwrap_or_default()
+        .lines()
+        .filter_map(|line| line.trim().strip_prefix("// SLATE-ENV:"))
+        .filter_map(|assignment| {
+            let (key, value) = assignment.trim().split_once('=')?;
+            Some((key.to_string(), value.to_string()))
+        })
+        .collect()
+}
+
 pub fn translation_key(c_src: &Path, extra_args: &[String]) -> Option<String> {
     use std::hash::{Hash, Hasher};
     let binary = std::fs::metadata(env!("CARGO_BIN_EXE_slate")).ok()?;
@@ -1666,6 +1678,7 @@ pub fn translation_key(c_src: &Path, extra_args: &[String]) -> Option<String> {
     binary.len().hash(&mut hasher);
     binary.modified().ok()?.hash(&mut hasher);
     slate_parser::sysroot::root().hash(&mut hasher);
+    std::env::var_os("SLATE_IR_POINTERS").hash(&mut hasher);
     extra_args.hash(&mut hasher);
     c_src.hash(&mut hasher);
     std::fs::read(c_src).ok()?.hash(&mut hasher);
@@ -1686,6 +1699,7 @@ pub fn translate_slate(c_src: &Path, rs_out: &Path, extra_args: &[String]) -> Re
     let _ = std::fs::remove_file(&key_path);
     let o = Command::new(env!("CARGO_BIN_EXE_slate"))
         .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
+        .envs(fixture_environment(c_src))
         .args(["translate", "-std=c23"])
         .args(extra_args)
         .arg(c_src)

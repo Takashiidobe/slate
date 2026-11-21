@@ -1,3 +1,4 @@
+// SLATE-ENV: SLATE_IR_POINTERS=1
 #include <stdlib.h>
 
 static int sum(const int *p, int n) {
@@ -20,6 +21,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
+// CHECK-NEXT: //! SLATE-ENV: SLATE_IR_POINTERS=1
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
@@ -27,17 +29,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::abort;
 // CHECK-EMPTY:
-// CHECK-NEXT: fn sum(t2: *const i32, n: i32) -> i32 {
+// CHECK-NEXT: fn sum(t2: &[i32], n: i32) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         s += unsafe { *t2.offset(i as isize) };
+// CHECK-NEXT:         s += t2[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
-// CHECK-NEXT:     if sum(a.0.as_mut_ptr() as *const i32, 4i32) != 10 {
+// CHECK-NEXT:     if sum(a.0.as_slice(), 4i32) != 10 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

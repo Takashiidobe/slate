@@ -185,6 +185,20 @@ impl FunctionLowerer<'_, '_> {
                     self.register_locals.insert(variable.id);
                 }
                 let alignment = self.tables.over_alignment(&variable.ty, variable.alignment);
+                if let Some(borrow) = self.borrow_of(variable.id) {
+                    if let Some(initializer) = &variable.initializer
+                        && alignment.is_none()
+                        && variable.register.is_none()
+                    {
+                        return Ok(Stmt::Let {
+                            name: self.binding_name(variable.id),
+                            mutable: true,
+                            ty: Some(self.borrow_type(&variable.ty, borrow)?),
+                            init: Some(self.lower_borrow(initializer, borrow)?),
+                        });
+                    }
+                    self.unborrowed.insert(variable.id);
+                }
                 if alignment.is_some() {
                     self.aligned_locals.insert(variable.id);
                 }
@@ -352,6 +366,24 @@ impl FunctionLowerer<'_, '_> {
                 }
                 _ => Stmt::Expr(self.lower_value(value)?),
             },
+            ir::Statement::Write {
+                place:
+                    place @ ir::Place {
+                        kind: PlaceKind::Binding(id),
+                        ..
+                    },
+                value,
+                ordering: None,
+                ..
+            } if !place.access.volatile
+                && let Some(borrow) = self.borrow_of(*id) =>
+            {
+                self.reassigned_borrows.insert(*id);
+                Stmt::Assign {
+                    target: Expr::Var(self.binding_name(*id).as_str().into()),
+                    value: self.lower_borrow(value, borrow)?,
+                }
+            }
             ir::Statement::Write {
                 place,
                 value,

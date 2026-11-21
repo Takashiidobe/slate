@@ -1,6 +1,10 @@
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::Expr;
+use crate::backend::rust_ast::{Expr, Type};
+
+fn reassigned_reference(mutable: bool, ty: &Type) -> bool {
+    mutable && matches!(ty, Type::Ref { .. })
+}
 
 pub(in crate::backend::engine) struct ParamSpillFold;
 
@@ -20,14 +24,16 @@ impl NodeRule for ParamSpillFold {
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::Let {
             name,
+            mutable,
             ty: Some(ty),
             init: Some(Expr::Var(source)),
-            ..
         }) = arena.get(id)
         else {
             return false;
         };
-        name != source && arena.param_type(*source) == Some(ty)
+        name != source
+            && !reassigned_reference(*mutable, ty)
+            && arena.param_type(*source) == Some(ty)
     }
 
     fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
@@ -42,6 +48,7 @@ impl NodeRule for ParamSpillFold {
         };
         let (name, source, mutable, ty) = (*name, *source, *mutable, ty.clone());
         if name == source
+            || reassigned_reference(mutable, &ty)
             || arena.param_type(source) != Some(&ty)
             || arena.def_use_neighbors(source) != [id]
         {

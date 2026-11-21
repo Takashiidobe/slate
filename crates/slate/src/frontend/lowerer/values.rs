@@ -466,6 +466,9 @@ impl FunctionLowerer<'_, '_> {
         if let Some(lowered) = self.lower_complex_value(value)? {
             return Ok(lowered);
         }
+        if let Some(read) = self.borrowed_read(value)? {
+            return Ok(read);
+        }
         Ok(match &value.node.value {
             ValueKind::Constant(number) => {
                 let mut literal = self.lower_number(number, &value.ty)?;
@@ -1060,6 +1063,13 @@ impl FunctionLowerer<'_, '_> {
             }
             ValueKind::AddressOf(place) => match place.kind {
                 PlaceKind::Deref(ref pointer) => self.lower_value(pointer)?,
+                _ if self.shared_root(place) => Expr::Cast {
+                    expr: Box::new(Expr::AddrOf {
+                        mutable: false,
+                        expr: Box::new(self.lower_place(place)?),
+                    }),
+                    ty: self.lower_value_type(value)?,
+                },
                 _ => {
                     let address = Expr::AddrOf {
                         mutable: !matches!(
@@ -1345,10 +1355,11 @@ impl FunctionLowerer<'_, '_> {
                             } else {
                                 Expr::MethodCall {
                                     recv: Box::new(array),
-                                    method: if matches!(
-                                        value.ty,
-                                        ir::Type::Pointer { is_const: true, .. }
-                                    ) {
+                                    method: if self.shared_root(place)
+                                        || matches!(
+                                            value.ty,
+                                            ir::Type::Pointer { is_const: true, .. }
+                                        ) {
                                         "as_ptr"
                                     } else {
                                         "as_mut_ptr"

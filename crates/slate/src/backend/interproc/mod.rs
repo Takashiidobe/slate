@@ -52,12 +52,14 @@ pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) -> Op
     else {
         timer.lap("pinned");
         string_params::run(programs, &BTreeSet::new(), &named_in_templates);
-        pointer_lattice::apply(
-            programs,
-            &BTreeSet::new(),
-            &BTreeSet::new(),
-            &named_in_templates,
-        );
+        if !crate::frontend::lowerer::ir_pointers() {
+            pointer_lattice::apply(
+                programs,
+                &BTreeSet::new(),
+                &BTreeSet::new(),
+                &named_in_templates,
+            );
+        }
         timer.lap("passes");
         return None;
     };
@@ -67,7 +69,9 @@ pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) -> Op
     let c_bound = link::rust_bound(programs, &c_abi, &types);
     timer.lap("pinned");
     string_params::run(programs, &rust_bound, &named_in_templates);
-    pointer_lattice::apply(programs, &liftable, &rust_bound, &named_in_templates);
+    if !crate::frontend::lowerer::ir_pointers() {
+        pointer_lattice::apply(programs, &liftable, &rust_bound, &named_in_templates);
+    }
     timer.lap("passes");
     link::bind_calls(programs, &rust_bound, &c_bound, modules);
     let hoisted = types.hoist(programs);

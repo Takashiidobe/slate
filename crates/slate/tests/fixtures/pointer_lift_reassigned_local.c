@@ -1,3 +1,4 @@
+// SLATE-ENV: SLATE_IR_POINTERS=1
 #include <stdlib.h>
 
 static int pick(const int *a, const int *b, int n, int which) {
@@ -21,15 +22,17 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
+// CHECK-NEXT: //! SLATE-ENV: SLATE_IR_POINTERS=1
 // CHECK-NEXT: use slate_support::abort;
 // CHECK-EMPTY:
-// CHECK-NEXT: fn pick(mut q: *const i32, b: *const i32, n: i32, which: i32) -> i32 {
+// CHECK-NEXT: fn pick(a: &[i32], b: &[i32], n: i32, which: i32) -> i32 {
+// CHECK-NEXT:     let mut q: &[i32] = a;
 // CHECK-NEXT:     if which != 0 {
 // CHECK-NEXT:         q = b;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         s += unsafe { *q.offset(i as isize) };
+// CHECK-NEXT:         s += q[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK-NEXT: }
@@ -37,14 +40,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: [i32; 2] = [1, 2];
 // CHECK-NEXT:     let mut b: [i32; 2] = [3, 4];
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = pick(
-// CHECK-NEXT:         a.as_mut_ptr() as *const i32,
-// CHECK-NEXT:         b.as_mut_ptr() as *const i32,
-// CHECK-NEXT:         2i32,
-// CHECK-NEXT:         0i32,
-// CHECK-NEXT:     ) != 3
-// CHECK-NEXT:         || pick(a.as_mut_ptr() as *const i32, b.as_mut_ptr() as *const i32, 2i32, 1i32)
-// CHECK-NEXT:             != 7;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = pick(a.as_slice(), b.as_slice(), 2i32, 0i32) != 3
+// CHECK-NEXT:         || pick(a.as_slice(), b.as_slice(), 2i32, 1i32) != 7;
 // CHECK-NEXT:     if [[V_0]] {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
