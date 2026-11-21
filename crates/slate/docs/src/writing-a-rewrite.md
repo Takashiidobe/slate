@@ -1,8 +1,8 @@
 # Rewriting
 
 `src/backend/engine` applies registered rules over the Rust AST. Whole-program
-analyses live in `src/backend/interproc`; the backend receives target facts
-from the parser module.
+analyses live in `crates/slate-analysis` as IR facts lowering reads; the
+backend receives target facts from the parser module.
 
 `translate` runs the full backend; project translation runs its control-flow
 subset. There is no raw lowering mode, so the Slate nextest profile exercises

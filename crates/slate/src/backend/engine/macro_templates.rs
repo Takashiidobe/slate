@@ -53,10 +53,6 @@ pub(crate) fn is_valid_macro_name(name: &str) -> bool {
     !is_rust_keyword(name) && !STD_MACROS.contains(&name)
 }
 
-pub fn child_exprs_of(expr: &Expr) -> Vec<&Expr> {
-    child_exprs(expr)
-}
-
 fn expr_calls_template(expr: &Expr, names: &BTreeSet<String>) -> bool {
     matches!(expr, Expr::Macro { name, .. } if names.contains(name))
         || child_exprs(expr)

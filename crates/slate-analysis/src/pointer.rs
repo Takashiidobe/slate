@@ -12,16 +12,16 @@ const STACK_RED_ZONE: usize = 512 << 10;
 const STACK_GROWTH: usize = 16 << 20;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct PointerCapability {
-    pub write: bool,
-    pub unique: bool,
-    pub free: bool,
-    pub offset: bool,
-    pub escape: bool,
-    pub nullable: bool,
-    pub string: bool,
-    pub raw: bool,
-    pub byte_elements: bool,
+struct PointerCapability {
+    write: bool,
+    unique: bool,
+    free: bool,
+    offset: bool,
+    escape: bool,
+    nullable: bool,
+    string: bool,
+    raw: bool,
+    byte_elements: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -39,7 +39,6 @@ pub struct Borrow {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct PointerFact {
     pub role: PointerRole,
-    pub capability: PointerCapability,
     pub borrow: Option<Borrow>,
     pub length: Option<Length>,
     pub c_string: bool,
@@ -64,7 +63,6 @@ impl PointerCapability {
 
 pub(crate) struct PointerFacts {
     pub bindings: HashMap<ProgramBinding, PointerFact>,
-    pub functions: HashMap<ProgramBinding, Vec<BindingId>>,
 }
 
 const WRITE: u8 = 1;
@@ -2103,14 +2101,12 @@ pub(crate) fn analyze(
 
     let mut facts = PointerFacts {
         bindings: HashMap::new(),
-        functions: HashMap::new(),
     };
     for (function, summary) in summaries.iter().enumerate() {
         let Some(summary) = summary else { continue };
         let Some(entry) = program.function(FunctionId(function as u32)) else {
             continue;
         };
-        let mut reported = Vec::new();
         for (node, item) in summary.nodes.iter().enumerate() {
             let role = match item.kind {
                 NodeKind::Parameter(_) if candidates[function] => PointerRole::Parameter,
@@ -2166,21 +2162,10 @@ pub(crate) fn analyze(
                 },
                 PointerFact {
                     role,
-                    capability,
                     borrow,
                     length,
                     c_string: matches!(item.kind, NodeKind::Parameter(index) if c_strings.contains(&(function, index))),
                 },
-            );
-            reported.push(item.binding);
-        }
-        if !reported.is_empty() {
-            facts.functions.insert(
-                ProgramBinding {
-                    unit: entry.unit,
-                    binding: entry.function.value.id,
-                },
-                reported,
             );
         }
     }

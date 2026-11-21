@@ -23,8 +23,9 @@ lowering reads, not as Rust-AST rewrites; see
 
 - `src/frontend/lowerer.rs`, `src/frontend/lowerer/`: IR to `rust_ast`.
 - `src/backend/engine/`, `src/backend/engine/rules/`: per-function rewrites.
-- `src/backend/interproc/`: whole-project analyses (pointer, length, string
-  params).
+- `src/backend/interproc/`: whole-project link step (export pinning, cross-unit
+  call binding). Pointer, length and C-string facts come from
+  `crates/slate-analysis`.
 - `src/backend/link/`: cross-unit signature lifting, shared types, export calls.
 - `src/backend/codegen.rs`, `rust_ast.rs`, `format.rs`: output.
 - `src/project/`: `translate-project`, library and executable projects.

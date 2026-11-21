@@ -23,15 +23,6 @@ pub struct Program {
     pub reg_struct_return: bool,
     pub regparm: u8,
     pub linux: bool,
-    pub shadow: Vec<ShadowDecision>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct ShadowDecision {
-    pub pass: String,
-    pub function: String,
-    pub binding: String,
-    pub decision: String,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]

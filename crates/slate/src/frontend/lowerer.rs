@@ -386,16 +386,8 @@ fn elf_alias_target(target: &slate_parser::target_info::TargetInfo) -> bool {
 
 type ParameterBorrow = (slate_analysis::Borrow, Option<slate_analysis::Length>);
 
-pub fn ir_pointers() -> bool {
-    static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
-    *ENABLED.get_or_init(|| std::env::var_os("SLATE_IR_POINTERS").is_none_or(|value| value != "0"))
-}
-
 impl Tables<'_> {
     fn borrow_of(&self, binding: BindingId) -> Option<slate_analysis::Borrow> {
-        if !ir_pointers() {
-            return None;
-        }
         self.facts
             .binding(binding)
             .and_then(|facts| facts.pointer)
@@ -403,12 +395,10 @@ impl Tables<'_> {
     }
 
     fn c_string_of(&self, binding: BindingId) -> bool {
-        ir_pointers()
-            && self
-                .facts
-                .binding(binding)
-                .and_then(|facts| facts.pointer)
-                .is_some_and(|fact| fact.c_string)
+        self.facts
+            .binding(binding)
+            .and_then(|facts| facts.pointer)
+            .is_some_and(|fact| fact.c_string)
     }
 
     fn parameter_c_string(&self, function: BindingId, index: usize) -> bool {
@@ -890,32 +880,28 @@ impl<'m> ModuleLowerer<'m> {
                 collect_statement_names(body, &mut bindings, &static_names, &mut next);
             }
         }
-        let borrowed_parameters = if ir_pointers() {
-            module
-                .functions
-                .iter()
-                .filter_map(|function| {
-                    let ir::Parameters::Prototype { fixed, .. } = &function.value.parameters else {
-                        return None;
-                    };
-                    let borrows: Vec<_> = fixed
-                        .iter()
-                        .map(|parameter| {
-                            facts
-                                .binding(parameter.value.id)
-                                .and_then(|facts| facts.pointer)
-                                .and_then(|fact| Some((fact.borrow?, fact.length)))
-                        })
-                        .collect();
-                    borrows
-                        .iter()
-                        .any(Option::is_some)
-                        .then_some((function.value.id, borrows))
-                })
-                .collect()
-        } else {
-            HashMap::new()
-        };
+        let borrowed_parameters = module
+            .functions
+            .iter()
+            .filter_map(|function| {
+                let ir::Parameters::Prototype { fixed, .. } = &function.value.parameters else {
+                    return None;
+                };
+                let borrows: Vec<_> = fixed
+                    .iter()
+                    .map(|parameter| {
+                        facts
+                            .binding(parameter.value.id)
+                            .and_then(|facts| facts.pointer)
+                            .and_then(|fact| Some((fact.borrow?, fact.length)))
+                    })
+                    .collect();
+                borrows
+                    .iter()
+                    .any(Option::is_some)
+                    .then_some((function.value.id, borrows))
+            })
+            .collect();
         let c_string_parameters = module
             .functions
             .iter()
@@ -926,11 +912,10 @@ impl<'m> ModuleLowerer<'m> {
                 let lifted: Vec<bool> = fixed
                     .iter()
                     .map(|parameter| {
-                        ir_pointers()
-                            && facts
-                                .binding(parameter.value.id)
-                                .and_then(|facts| facts.pointer)
-                                .is_some_and(|fact| fact.c_string)
+                        facts
+                            .binding(parameter.value.id)
+                            .and_then(|facts| facts.pointer)
+                            .is_some_and(|fact| fact.c_string)
                     })
                     .collect();
                 lifted
@@ -1998,42 +1983,9 @@ impl<'m> ModuleLowerer<'m> {
                 reg_struct_return: self.module.machine.reg_struct_return,
                 regparm: self.module.machine.regparm,
                 linux: self.module.target.os == slate_parser::target_info::TargetOs::Linux,
-                shadow: pointer_shadow(&tables, self.module),
             },
             barriers,
             address_taken: dependencies.taken_functions,
         }
     }
-}
-
-fn pointer_shadow(tables: &Tables<'_>, module: &ir::Module) -> Vec<rust::ShadowDecision> {
-    if !crate::backend::shadow_diff::enabled("pointer_lattice") {
-        return Vec::new();
-    }
-    let mut decisions = Vec::new();
-    for function in &module.functions {
-        let bindings = tables.facts.pointer_bindings(function.value.id);
-        let Some(name) = tables.names.get(&function.value.id) else {
-            continue;
-        };
-        for &binding in bindings {
-            let Some(fact) = tables
-                .facts
-                .binding(binding)
-                .and_then(|facts| facts.pointer)
-            else {
-                continue;
-            };
-            decisions.push(rust::ShadowDecision {
-                pass: "pointer_lattice".to_owned(),
-                function: name.rust.clone(),
-                binding: binding_name(binding, &tables.bindings),
-                decision: crate::backend::shadow_diff::pointer_decision(
-                    &fact.capability,
-                    tables.runtime.has_std(),
-                ),
-            });
-        }
-    }
-    decisions
 }

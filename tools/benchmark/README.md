@@ -56,10 +56,8 @@ use `--raw` only with revisions that support it.
 # Interprocedural pass scaling
 
 `SLATE_INTERPROC_TIMING=1` makes `slate translate` and `translate-project`
-print per-phase times for `string_params`, `pointer_lattice` and
-`length_lattice` to stderr: `extract` (facts read from the Rust AST),
-`propagate` (call-graph fixpoint), `apply` (rewrite), and `mixed` (analysis and
-rewrite interleaved), plus worklist iteration counts.
+print per-phase times to stderr: `ir_pointer` (slate-analysis `summarize` and
+`join`) and `interproc` (`pinned` and `link`), plus node and lift counts.
 
 ```bash
 python3 tools/benchmark/interproc_scaling.py
@@ -72,4 +70,7 @@ python3 tools/benchmark/interproc_scaling.py --shapes "" --sqlite
 - `exp` is the log-log slope over the four largest sizes: 1 is linear.
 - `--sqlite` also times `translate-project` on `~/c-corpus/sqlite`.
 - Baseline: [synthetic](results/interproc-scaling-2026-11-20.json),
-  [sqlite](results/interproc-sqlite-2026-11-20.txt).
+  [sqlite](results/interproc-sqlite-2026-11-20.txt) (Rust-side passes).
+  [After their deletion](results/interproc-scaling-2026-11-21.json): IR-only,
+  N=800 wall time unchanged from the IR default; the Rust-side interproc phases
+  (2.4-18 ms at N=800) are gone.

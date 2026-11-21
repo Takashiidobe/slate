@@ -1678,7 +1678,6 @@ pub fn translation_key(c_src: &Path, extra_args: &[String]) -> Option<String> {
     binary.len().hash(&mut hasher);
     binary.modified().ok()?.hash(&mut hasher);
     slate_parser::sysroot::root().hash(&mut hasher);
-    std::env::var_os("SLATE_IR_POINTERS").hash(&mut hasher);
     extra_args.hash(&mut hasher);
     c_src.hash(&mut hasher);
     std::fs::read(c_src).ok()?.hash(&mut hasher);

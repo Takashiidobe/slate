@@ -29,13 +29,4 @@ impl PhaseTimer {
             *last = Instant::now();
         }
     }
-
-    pub(in crate::backend) fn count(&self, name: &str, value: usize) {
-        if self.last.is_some() {
-            eprintln!(
-                "interproc-count pass={} name={name} value={value}",
-                self.pass
-            );
-        }
-    }
 }

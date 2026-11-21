@@ -131,9 +131,7 @@ pub enum Invariant {
     AsmOperandWidth,
     #[error("value {0} cannot become the borrow slate-analysis planned")]
     UnprovenBorrow(String),
-    #[error(
-        "record {0} field {1} is not underaligned but its Rust type does not fit its offset"
-    )]
+    #[error("record {0} field {1} is not underaligned but its Rust type does not fit its offset")]
     AlignedFieldMisplaced(String, usize),
 }
 

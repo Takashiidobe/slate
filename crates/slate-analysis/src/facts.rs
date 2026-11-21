@@ -18,7 +18,6 @@ pub struct Facts {
     bindings: HashMap<ProgramBinding, BindingFacts>,
     values: HashMap<NodeId, ValueFacts>,
     identities: HashMap<ProgramBinding, FunctionIdentity>,
-    pointer_bindings: HashMap<ProgramBinding, Vec<BindingId>>,
 }
 
 impl Facts {
@@ -56,13 +55,6 @@ impl<'f> UnitFacts<'f> {
             .copied()
             .unwrap_or_default()
     }
-
-    pub fn pointer_bindings(&self, function: BindingId) -> &'f [BindingId] {
-        self.facts
-            .pointer_bindings
-            .get(&self.key(function))
-            .map_or(&[], Vec::as_slice)
-    }
 }
 
 pub fn analyze(program: &Program<'_>) -> Facts {
@@ -98,6 +90,5 @@ pub fn analyze(program: &Program<'_>) -> Facts {
         bindings,
         values: HashMap::new(),
         identities,
-        pointer_bindings: pointers.functions,
     }
 }

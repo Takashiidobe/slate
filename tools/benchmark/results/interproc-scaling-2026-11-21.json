@@ -1,0 +1,1074 @@
+{
+  "chain_ptr": [
+    {
+      "n": 50,
+      "wall_ms": 31.350068999927316,
+      "phases": {
+        "ir_pointer.summarize": 0.105,
+        "ir_pointer.join": 0.034
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 153,
+        "ir_pointer.nodes": 251
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 37.70687700000508,
+      "phases": {
+        "ir_pointer.summarize": 0.249,
+        "ir_pointer.join": 0.051
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 303,
+        "ir_pointer.nodes": 501
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 50.39237400001184,
+      "phases": {
+        "ir_pointer.summarize": 0.867,
+        "ir_pointer.join": 0.102
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 603,
+        "ir_pointer.nodes": 1001
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 76.24641300003532,
+      "phases": {
+        "ir_pointer.summarize": 1.09,
+        "ir_pointer.join": 0.255
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 1203,
+        "ir_pointer.nodes": 2001
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 127.42055299997901,
+      "phases": {
+        "ir_pointer.summarize": 0.397,
+        "ir_pointer.join": 0.344
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 2403,
+        "ir_pointer.nodes": 4001
+      }
+    }
+  ],
+  "chain_ptr_wrapv": [
+    {
+      "n": 50,
+      "wall_ms": 30.823620999967716,
+      "phases": {
+        "ir_pointer.summarize": 0.776,
+        "ir_pointer.join": 0.029
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 153,
+        "ir_pointer.nodes": 251
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 36.8139859999701,
+      "phases": {
+        "ir_pointer.summarize": 0.455,
+        "ir_pointer.join": 0.049
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 303,
+        "ir_pointer.nodes": 501
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 50.45231600001898,
+      "phases": {
+        "ir_pointer.summarize": 1.152,
+        "ir_pointer.join": 0.116
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 603,
+        "ir_pointer.nodes": 1001
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 75.43239500000709,
+      "phases": {
+        "ir_pointer.summarize": 0.967,
+        "ir_pointer.join": 0.241
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 1203,
+        "ir_pointer.nodes": 2001
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 128.64645600006952,
+      "phases": {
+        "ir_pointer.summarize": 0.405,
+        "ir_pointer.join": 0.356
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 2403,
+        "ir_pointer.nodes": 4001
+      }
+    }
+  ],
+  "chain_kill_leaf": [
+    {
+      "n": 50,
+      "wall_ms": 40.456371000004765,
+      "phases": {
+        "ir_pointer.summarize": 0.936,
+        "ir_pointer.join": 0.024
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 54,
+        "ir_pointer.nodes": 51
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 42.135459999940394,
+      "phases": {
+        "ir_pointer.summarize": 0.916,
+        "ir_pointer.join": 0.038
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 104,
+        "ir_pointer.nodes": 101
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 46.23814100000345,
+      "phases": {
+        "ir_pointer.summarize": 0.095,
+        "ir_pointer.join": 0.058
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 204,
+        "ir_pointer.nodes": 201
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 54.755033999981606,
+      "phases": {
+        "ir_pointer.summarize": 0.098,
+        "ir_pointer.join": 0.092
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 404,
+        "ir_pointer.nodes": 401
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 75.57756000005611,
+      "phases": {
+        "ir_pointer.summarize": 0.151,
+        "ir_pointer.join": 0.166
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 804,
+        "ir_pointer.nodes": 801
+      }
+    }
+  ],
+  "chain_kill_root": [
+    {
+      "n": 50,
+      "wall_ms": 26.428729000031126,
+      "phases": {
+        "ir_pointer.summarize": 0.067,
+        "ir_pointer.join": 0.023
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 54,
+        "ir_pointer.nodes": 52
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 28.5836030000155,
+      "phases": {
+        "ir_pointer.summarize": 0.405,
+        "ir_pointer.join": 0.032
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 104,
+        "ir_pointer.nodes": 102
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 32.29212100006862,
+      "phases": {
+        "ir_pointer.summarize": 0.799,
+        "ir_pointer.join": 0.047
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 204,
+        "ir_pointer.nodes": 202
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 38.00762800005941,
+      "phases": {
+        "ir_pointer.summarize": 0.173,
+        "ir_pointer.join": 0.089
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 404,
+        "ir_pointer.nodes": 402
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 52.431984000008924,
+      "phases": {
+        "ir_pointer.summarize": 0.124,
+        "ir_pointer.join": 0.221
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 804,
+        "ir_pointer.nodes": 802
+      }
+    }
+  ],
+  "scc_ring": [
+    {
+      "n": 50,
+      "wall_ms": 32.02132100000199,
+      "phases": {
+        "ir_pointer.summarize": 0.584,
+        "ir_pointer.join": 0.025
+      },
+      "counts": {
+        "output.lifted": 50,
+        "output.raw": 2,
+        "ir_pointer.nodes": 100
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 38.63474000002043,
+      "phases": {
+        "ir_pointer.summarize": 0.622,
+        "ir_pointer.join": 0.038
+      },
+      "counts": {
+        "output.lifted": 100,
+        "output.raw": 2,
+        "ir_pointer.nodes": 200
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 50.158734999968146,
+      "phases": {
+        "ir_pointer.summarize": 0.11,
+        "ir_pointer.join": 0.096
+      },
+      "counts": {
+        "output.lifted": 200,
+        "output.raw": 2,
+        "ir_pointer.nodes": 400
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 77.07187099993007,
+      "phases": {
+        "ir_pointer.summarize": 1.214,
+        "ir_pointer.join": 0.218
+      },
+      "counts": {
+        "output.lifted": 400,
+        "output.raw": 2,
+        "ir_pointer.nodes": 800
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 131.63961800000834,
+      "phases": {
+        "ir_pointer.summarize": 0.722,
+        "ir_pointer.join": 0.536
+      },
+      "counts": {
+        "output.lifted": 800,
+        "output.raw": 2,
+        "ir_pointer.nodes": 1600
+      }
+    }
+  ],
+  "fanout": [
+    {
+      "n": 50,
+      "wall_ms": 29.535076000001936,
+      "phases": {
+        "ir_pointer.summarize": 0.337,
+        "ir_pointer.join": 0.023
+      },
+      "counts": {
+        "output.lifted": 50,
+        "output.raw": 53,
+        "ir_pointer.nodes": 101
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 35.50608099999408,
+      "phases": {
+        "ir_pointer.summarize": 0.756,
+        "ir_pointer.join": 0.04
+      },
+      "counts": {
+        "output.lifted": 100,
+        "output.raw": 103,
+        "ir_pointer.nodes": 201
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 43.24773700000151,
+      "phases": {
+        "ir_pointer.summarize": 0.683,
+        "ir_pointer.join": 0.078
+      },
+      "counts": {
+        "output.lifted": 200,
+        "output.raw": 203,
+        "ir_pointer.nodes": 401
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 63.3386800000153,
+      "phases": {
+        "ir_pointer.summarize": 0.311,
+        "ir_pointer.join": 0.133
+      },
+      "counts": {
+        "output.lifted": 400,
+        "output.raw": 403,
+        "ir_pointer.nodes": 801
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 114.6293430000469,
+      "phases": {
+        "ir_pointer.summarize": 0.796,
+        "ir_pointer.join": 0.471
+      },
+      "counts": {
+        "output.lifted": 800,
+        "output.raw": 803,
+        "ir_pointer.nodes": 1601
+      }
+    }
+  ],
+  "str_chain": [
+    {
+      "n": 50,
+      "wall_ms": 34.19554699996752,
+      "phases": {
+        "ir_pointer.summarize": 0.912,
+        "ir_pointer.join": 0.026
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 53,
+        "ir_pointer.nodes": 101
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 36.20148600009543,
+      "phases": {
+        "ir_pointer.summarize": 0.857,
+        "ir_pointer.join": 0.039
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 103,
+        "ir_pointer.nodes": 201
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 40.19731200003207,
+      "phases": {
+        "ir_pointer.summarize": 0.09,
+        "ir_pointer.join": 0.065
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 203,
+        "ir_pointer.nodes": 401
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 48.60667299999477,
+      "phases": {
+        "ir_pointer.summarize": 0.103,
+        "ir_pointer.join": 0.118
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 403,
+        "ir_pointer.nodes": 801
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 66.07719399994494,
+      "phases": {
+        "ir_pointer.summarize": 0.12,
+        "ir_pointer.join": 0.208
+      },
+      "counts": {
+        "output.lifted": 1,
+        "output.raw": 803,
+        "ir_pointer.nodes": 1601
+      }
+    }
+  ],
+  "buf_chain": [
+    {
+      "n": 50,
+      "wall_ms": 27.62103999998544,
+      "phases": {
+        "ir_pointer.summarize": 0.851,
+        "ir_pointer.join": 0.029
+      },
+      "counts": {
+        "output.lifted": 51,
+        "output.raw": 2,
+        "ir_pointer.nodes": 51
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 28.754019999951197,
+      "phases": {
+        "ir_pointer.summarize": 0.312,
+        "ir_pointer.join": 0.044
+      },
+      "counts": {
+        "output.lifted": 101,
+        "output.raw": 2,
+        "ir_pointer.nodes": 101
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 33.70304000009128,
+      "phases": {
+        "ir_pointer.summarize": 0.992,
+        "ir_pointer.join": 0.097
+      },
+      "counts": {
+        "output.lifted": 201,
+        "output.raw": 2,
+        "ir_pointer.nodes": 201
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 41.608261999954266,
+      "phases": {
+        "ir_pointer.summarize": 0.972,
+        "ir_pointer.join": 0.243
+      },
+      "counts": {
+        "output.lifted": 401,
+        "output.raw": 2,
+        "ir_pointer.nodes": 401
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 58.090088999961154,
+      "phases": {
+        "ir_pointer.summarize": 0.128,
+        "ir_pointer.join": 0.455
+      },
+      "counts": {
+        "output.lifted": 801,
+        "output.raw": 2,
+        "ir_pointer.nodes": 801
+      }
+    }
+  ],
+  "wide_locals": [
+    {
+      "n": 50,
+      "wall_ms": 28.340254999989156,
+      "phases": {
+        "ir_pointer.summarize": 0.17,
+        "ir_pointer.join": 0.01
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 53,
+        "ir_pointer.nodes": 52
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 30.627214000105596,
+      "phases": {
+        "ir_pointer.summarize": 0.077,
+        "ir_pointer.join": 0.012
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 103,
+        "ir_pointer.nodes": 102
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 36.164874999940366,
+      "phases": {
+        "ir_pointer.summarize": 0.099,
+        "ir_pointer.join": 0.016
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 203,
+        "ir_pointer.nodes": 202
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 49.105560000043624,
+      "phases": {
+        "ir_pointer.summarize": 0.165,
+        "ir_pointer.join": 0.024
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 403,
+        "ir_pointer.nodes": 402
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 73.14099600000645,
+      "phases": {
+        "ir_pointer.summarize": 0.388,
+        "ir_pointer.join": 0.043
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 803,
+        "ir_pointer.nodes": 802
+      }
+    }
+  ],
+  "fields": [
+    {
+      "n": 50,
+      "wall_ms": 30.35700399993857,
+      "phases": {
+        "ir_pointer.summarize": 0.789,
+        "ir_pointer.join": 0.021
+      },
+      "counts": {
+        "output.lifted": 50,
+        "output.raw": 102,
+        "ir_pointer.nodes": 100
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 34.808498000074906,
+      "phases": {
+        "ir_pointer.summarize": 0.588,
+        "ir_pointer.join": 0.044
+      },
+      "counts": {
+        "output.lifted": 100,
+        "output.raw": 202,
+        "ir_pointer.nodes": 200
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 48.73638699996263,
+      "phases": {
+        "ir_pointer.summarize": 0.198,
+        "ir_pointer.join": 0.057
+      },
+      "counts": {
+        "output.lifted": 200,
+        "output.raw": 402,
+        "ir_pointer.nodes": 400
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 81.7546629999697,
+      "phases": {
+        "ir_pointer.summarize": 0.34,
+        "ir_pointer.join": 0.094
+      },
+      "counts": {
+        "output.lifted": 400,
+        "output.raw": 802,
+        "ir_pointer.nodes": 800
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 184.776938999903,
+      "phases": {
+        "ir_pointer.summarize": 0.838,
+        "ir_pointer.join": 0.201
+      },
+      "counts": {
+        "output.lifted": 800,
+        "output.raw": 1602,
+        "ir_pointer.nodes": 1600
+      }
+    }
+  ],
+  "rev_alias_str": [
+    {
+      "n": 50,
+      "wall_ms": 31.31476799990196,
+      "phases": {
+        "ir_pointer.summarize": 0.05,
+        "ir_pointer.join": 0.011
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 53,
+        "ir_pointer.nodes": 51
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 33.65926800006491,
+      "phases": {
+        "ir_pointer.summarize": 0.054,
+        "ir_pointer.join": 0.013
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 103,
+        "ir_pointer.nodes": 101
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 34.91012100005264,
+      "phases": {
+        "ir_pointer.summarize": 0.069,
+        "ir_pointer.join": 0.017
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 203,
+        "ir_pointer.nodes": 201
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 40.11855099997774,
+      "phases": {
+        "ir_pointer.summarize": 0.082,
+        "ir_pointer.join": 0.025
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 403,
+        "ir_pointer.nodes": 401
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 47.11303199997019,
+      "phases": {
+        "ir_pointer.summarize": 0.131,
+        "ir_pointer.join": 0.042
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 803,
+        "ir_pointer.nodes": 801
+      }
+    }
+  ],
+  "rev_alias_ptr": [
+    {
+      "n": 50,
+      "wall_ms": 25.279990999933943,
+      "phases": {
+        "ir_pointer.summarize": 0.044,
+        "ir_pointer.join": 0.009
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 53,
+        "ir_pointer.nodes": 51
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 26.697849000015594,
+      "phases": {
+        "ir_pointer.summarize": 0.055,
+        "ir_pointer.join": 0.011
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 103,
+        "ir_pointer.nodes": 101
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 29.387990999907743,
+      "phases": {
+        "ir_pointer.summarize": 0.067,
+        "ir_pointer.join": 0.016
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 203,
+        "ir_pointer.nodes": 201
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 34.70617399989351,
+      "phases": {
+        "ir_pointer.summarize": 0.092,
+        "ir_pointer.join": 0.023
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 403,
+        "ir_pointer.nodes": 401
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 42.44324000001143,
+      "phases": {
+        "ir_pointer.summarize": 0.141,
+        "ir_pointer.join": 0.038
+      },
+      "counts": {
+        "output.lifted": 0,
+        "output.raw": 803,
+        "ir_pointer.nodes": 801
+      }
+    }
+  ],
+  "hub_kill": [
+    {
+      "n": 50,
+      "wall_ms": 30.27724200001103,
+      "phases": {
+        "ir_pointer.summarize": 0.443,
+        "ir_pointer.join": 0.038
+      },
+      "counts": {
+        "output.lifted": 101,
+        "output.raw": 2,
+        "ir_pointer.nodes": 101
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 36.37102200002573,
+      "phases": {
+        "ir_pointer.summarize": 0.145,
+        "ir_pointer.join": 0.053
+      },
+      "counts": {
+        "output.lifted": 201,
+        "output.raw": 2,
+        "ir_pointer.nodes": 201
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 47.75102300004619,
+      "phases": {
+        "ir_pointer.summarize": 0.235,
+        "ir_pointer.join": 0.165
+      },
+      "counts": {
+        "output.lifted": 401,
+        "output.raw": 2,
+        "ir_pointer.nodes": 401
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 75.35746299993207,
+      "phases": {
+        "ir_pointer.summarize": 0.41,
+        "ir_pointer.join": 0.192
+      },
+      "counts": {
+        "output.lifted": 801,
+        "output.raw": 2,
+        "ir_pointer.nodes": 801
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 143.23397900000145,
+      "phases": {
+        "ir_pointer.summarize": 0.894,
+        "ir_pointer.join": 0.636
+      },
+      "counts": {
+        "output.lifted": 1601,
+        "output.raw": 2,
+        "ir_pointer.nodes": 1601
+      }
+    }
+  ],
+  "str_hub_kill": [
+    {
+      "n": 50,
+      "wall_ms": 37.84217300005821,
+      "phases": {
+        "ir_pointer.summarize": 0.913,
+        "ir_pointer.join": 0.052
+      },
+      "counts": {
+        "output.lifted": 49,
+        "output.raw": 54,
+        "ir_pointer.nodes": 101
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 43.711335000011786,
+      "phases": {
+        "ir_pointer.summarize": 0.841,
+        "ir_pointer.join": 0.081
+      },
+      "counts": {
+        "output.lifted": 99,
+        "output.raw": 104,
+        "ir_pointer.nodes": 201
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 55.362445000014304,
+      "phases": {
+        "ir_pointer.summarize": 0.211,
+        "ir_pointer.join": 0.13
+      },
+      "counts": {
+        "output.lifted": 199,
+        "output.raw": 204,
+        "ir_pointer.nodes": 401
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 84.61971199994878,
+      "phases": {
+        "ir_pointer.summarize": 0.376,
+        "ir_pointer.join": 0.295
+      },
+      "counts": {
+        "output.lifted": 399,
+        "output.raw": 404,
+        "ir_pointer.nodes": 801
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 161.3414419999799,
+      "phases": {
+        "ir_pointer.summarize": 1.19,
+        "ir_pointer.join": 0.762
+      },
+      "counts": {
+        "output.lifted": 799,
+        "output.raw": 804,
+        "ir_pointer.nodes": 1601
+      }
+    }
+  ],
+  "copy_chain": [
+    {
+      "n": 50,
+      "wall_ms": 25.635423000039737,
+      "phases": {
+        "ir_pointer.summarize": 0.049,
+        "ir_pointer.join": 0.012
+      },
+      "counts": {
+        "output.lifted": 51,
+        "output.raw": 2,
+        "ir_pointer.nodes": 51
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 26.056667000034395,
+      "phases": {
+        "ir_pointer.summarize": 0.178,
+        "ir_pointer.join": 0.016
+      },
+      "counts": {
+        "output.lifted": 101,
+        "output.raw": 2,
+        "ir_pointer.nodes": 101
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 27.634380999984387,
+      "phases": {
+        "ir_pointer.summarize": 0.059,
+        "ir_pointer.join": 0.017
+      },
+      "counts": {
+        "output.lifted": 201,
+        "output.raw": 2,
+        "ir_pointer.nodes": 201
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 29.70490300003803,
+      "phases": {
+        "ir_pointer.summarize": 0.081,
+        "ir_pointer.join": 0.026
+      },
+      "counts": {
+        "output.lifted": 401,
+        "output.raw": 2,
+        "ir_pointer.nodes": 401
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 35.66692699996565,
+      "phases": {
+        "ir_pointer.summarize": 0.112,
+        "ir_pointer.join": 0.039
+      },
+      "counts": {
+        "output.lifted": 801,
+        "output.raw": 2,
+        "ir_pointer.nodes": 801
+      }
+    }
+  ],
+  "reassign": [
+    {
+      "n": 50,
+      "wall_ms": 28.300223999963237,
+      "phases": {
+        "ir_pointer.summarize": 0.126,
+        "ir_pointer.join": 0.01
+      },
+      "counts": {
+        "output.lifted": 3,
+        "output.raw": 2,
+        "ir_pointer.nodes": 3
+      }
+    },
+    {
+      "n": 100,
+      "wall_ms": 31.249784999999974,
+      "phases": {
+        "ir_pointer.summarize": 0.077,
+        "ir_pointer.join": 0.011
+      },
+      "counts": {
+        "output.lifted": 3,
+        "output.raw": 2,
+        "ir_pointer.nodes": 3
+      }
+    },
+    {
+      "n": 200,
+      "wall_ms": 37.378765999960706,
+      "phases": {
+        "ir_pointer.summarize": 0.127,
+        "ir_pointer.join": 0.012
+      },
+      "counts": {
+        "output.lifted": 3,
+        "output.raw": 2,
+        "ir_pointer.nodes": 3
+      }
+    },
+    {
+      "n": 400,
+      "wall_ms": 50.21593899994059,
+      "phases": {
+        "ir_pointer.summarize": 0.182,
+        "ir_pointer.join": 0.014
+      },
+      "counts": {
+        "output.lifted": 3,
+        "output.raw": 2,
+        "ir_pointer.nodes": 3
+      }
+    },
+    {
+      "n": 800,
+      "wall_ms": 80.2222109999775,
+      "phases": {
+        "ir_pointer.summarize": 0.372,
+        "ir_pointer.join": 0.02
+      },
+      "counts": {
+        "output.lifted": 3,
+        "output.raw": 2,
+        "ir_pointer.nodes": 3
+      }
+    }
+  ]
+}

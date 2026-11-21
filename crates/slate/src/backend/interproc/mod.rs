@@ -1,8 +1,6 @@
-pub(in crate::backend) mod length_lattice;
-pub(in crate::backend) mod pointer_lattice;
 pub(in crate::backend) mod timing;
 
-use std::collections::{BTreeMap, BTreeSet, VecDeque};
+use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 
 use crate::backend::engine::macro_templates;
@@ -42,48 +40,32 @@ pub enum Exports {
 }
 
 pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) -> Option<Program> {
-    let mut timer = timing::PhaseTimer::new("interproc");
-    let named_in_templates = functions_pinned_by_templates(programs);
     let Exports::Liftable {
         address_taken,
         modules,
     } = exports
     else {
-        timer.lap("pinned");
-        if !crate::frontend::lowerer::ir_pointers() {
-            pointer_lattice::apply(
-                programs,
-                &BTreeSet::new(),
-                &BTreeSet::new(),
-                &named_in_templates,
-            );
-        }
-        timer.lap("passes");
         return None;
     };
+    let mut timer = timing::PhaseTimer::new("interproc");
+    let named_in_templates = functions_pinned_by_templates(programs);
     let types = link::SharedTypes::plan(programs);
     let (liftable, c_abi) = export_candidates(programs, address_taken, &named_in_templates);
     let rust_bound = link::rust_bound(programs, &liftable, &types);
     let c_bound = link::rust_bound(programs, &c_abi, &types);
     timer.lap("pinned");
-    if !crate::frontend::lowerer::ir_pointers() {
-        pointer_lattice::apply(programs, &liftable, &rust_bound, &named_in_templates);
-    }
-    timer.lap("passes");
     link::bind_calls(programs, &rust_bound, &c_bound, modules);
-    if crate::frontend::lowerer::ir_pointers() {
-        for program in programs.iter() {
-            for_each_extern_fn(&program.items, &mut |decl| {
-                let sliced = decl.params.iter().any(|param| {
-                    matches!(&param.ty, Type::Ref { inner, .. } if matches!(&**inner, Type::Slice(_)) || **inner == Type::Custom("core::ffi::CStr".into()))
-                });
-                assert!(
-                    !sliced,
-                    "IR pointer lift of `{}` gave it a slice or CStr parameter, but link did not bind its cross-unit calls",
-                    decl.name
-                );
+    for program in programs.iter() {
+        for_each_extern_fn(&program.items, &mut |decl| {
+            let sliced = decl.params.iter().any(|param| {
+                matches!(&param.ty, Type::Ref { inner, .. } if matches!(&**inner, Type::Slice(_)) || **inner == Type::Custom("core::ffi::CStr".into()))
             });
-        }
+            assert!(
+                !sliced,
+                "IR pointer lift of `{}` gave it a slice or CStr parameter, but link did not bind its cross-unit calls",
+                decl.name
+            );
+        });
     }
     let hoisted = types.hoist(programs);
     timer.lap("link");
@@ -327,141 +309,4 @@ fn decl_matches(decl: &ExternFnDecl, def: &FnDef) -> bool {
         && decl.params.iter().zip(&def.params).all(|(decl, def)| {
             !matches!(def.ty, Type::Ptr { .. }) || matches!(decl.ty, Type::Ptr { .. })
         })
-}
-
-#[derive(Debug, Default)]
-pub(in crate::backend) struct CallGraph {
-    nodes: BTreeSet<FnKey>,
-    callees: BTreeMap<FnKey, BTreeSet<FnKey>>,
-    callers: BTreeMap<FnKey, BTreeSet<FnKey>>,
-}
-
-impl CallGraph {
-    pub(in crate::backend) fn new(nodes: impl IntoIterator<Item = FnKey>) -> Self {
-        Self {
-            nodes: nodes.into_iter().collect(),
-            callees: BTreeMap::new(),
-            callers: BTreeMap::new(),
-        }
-    }
-
-    pub(in crate::backend) fn add_edge(&mut self, caller: &FnKey, callee: &FnKey) {
-        if !self.nodes.contains(caller) || !self.nodes.contains(callee) {
-            return;
-        }
-        self.callees
-            .entry(caller.clone())
-            .or_default()
-            .insert(callee.clone());
-        self.callers
-            .entry(callee.clone())
-            .or_default()
-            .insert(caller.clone());
-    }
-
-    fn callees_of(&self, key: &FnKey) -> impl Iterator<Item = &FnKey> {
-        self.callees.get(key).into_iter().flatten()
-    }
-
-    fn callers_of(&self, key: &FnKey) -> impl Iterator<Item = &FnKey> {
-        self.callers.get(key).into_iter().flatten()
-    }
-}
-
-pub(in crate::backend) fn scc_order(graph: &CallGraph) -> Vec<FnKey> {
-    struct Tarjan<'g> {
-        graph: &'g CallGraph,
-        index: BTreeMap<FnKey, usize>,
-        lowlink: BTreeMap<FnKey, usize>,
-        on_stack: BTreeSet<FnKey>,
-        stack: Vec<FnKey>,
-        counter: usize,
-        sccs: Vec<Vec<FnKey>>,
-    }
-
-    impl<'g> Tarjan<'g> {
-        fn visit(&mut self, node: &FnKey) {
-            self.index.insert(node.clone(), self.counter);
-            self.lowlink.insert(node.clone(), self.counter);
-            self.counter += 1;
-            self.stack.push(node.clone());
-            self.on_stack.insert(node.clone());
-
-            let callees: Vec<FnKey> = self.graph.callees_of(node).cloned().collect();
-            for callee in callees {
-                if !self.index.contains_key(&callee) {
-                    self.visit(&callee);
-                    let callee_low = self.lowlink[&callee];
-                    let entry = self.lowlink.get_mut(node).expect("node just inserted");
-                    *entry = (*entry).min(callee_low);
-                } else if self.on_stack.contains(&callee) {
-                    let callee_index = self.index[&callee];
-                    let entry = self.lowlink.get_mut(node).expect("node just inserted");
-                    *entry = (*entry).min(callee_index);
-                }
-            }
-
-            if self.lowlink[node] == self.index[node] {
-                let mut scc = Vec::new();
-                loop {
-                    let popped = self.stack.pop().expect("node's own SCC root is on stack");
-                    self.on_stack.remove(&popped);
-                    let done = &popped == node;
-                    scc.push(popped);
-                    if done {
-                        break;
-                    }
-                }
-                self.sccs.push(scc);
-            }
-        }
-    }
-
-    let mut tarjan = Tarjan {
-        graph,
-        index: BTreeMap::new(),
-        lowlink: BTreeMap::new(),
-        on_stack: BTreeSet::new(),
-        stack: Vec::new(),
-        counter: 0,
-        sccs: Vec::new(),
-    };
-    for node in &graph.nodes {
-        if !tarjan.index.contains_key(node) {
-            tarjan.visit(node);
-        }
-    }
-    tarjan.sccs.into_iter().flatten().collect()
-}
-
-const WORKLIST_EDIT_BUDGET: usize = 200_000;
-
-pub(in crate::backend) fn run_worklist(
-    graph: &CallGraph,
-    initial_order: &[FnKey],
-    mut recompute: impl FnMut(&FnKey) -> bool,
-) -> usize {
-    let mut queued: BTreeSet<FnKey> = initial_order.iter().cloned().collect();
-    let mut queue: VecDeque<FnKey> = initial_order.iter().cloned().collect();
-    let mut iterations = 0usize;
-
-    while let Some(key) = queue.pop_front() {
-        queued.remove(&key);
-        let changed = recompute(&key);
-        iterations += 1;
-        assert!(
-            iterations <= WORKLIST_EDIT_BUDGET,
-            "interproc worklist exceeded {WORKLIST_EDIT_BUDGET} iterations processing `{key}`; \
-             likely oscillation (non-monotone recompute), not slow convergence"
-        );
-        if !changed {
-            continue;
-        }
-        for neighbor in graph.callers_of(&key).chain(graph.callees_of(&key)) {
-            if queued.insert(neighbor.clone()) {
-                queue.push_back(neighbor.clone());
-            }
-        }
-    }
-    iterations
 }
