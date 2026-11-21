@@ -687,6 +687,40 @@ impl FunctionLowerer<'_, '_> {
             })
             .collect();
         statements.splice(0..0, rebound);
+        let mut lengths = Vec::new();
+        let mut dropped = Vec::new();
+        for (index, param) in fixed.iter().enumerate() {
+            let Some((pointer, length)) = self.tables.length_parameter(function.value.id, index)
+            else {
+                continue;
+            };
+            dropped.push(index);
+            if !length.read {
+                continue;
+            }
+            let ty = params[index].ty.clone();
+            lengths.push(Stmt::Let {
+                name: self.binding_name(param.value.id),
+                mutable: false,
+                ty: Some(ty.clone()),
+                init: Some(Expr::Cast {
+                    expr: Box::new(Expr::MethodCall {
+                        recv: Box::new(Expr::Var(params[pointer].name.as_str().into())),
+                        method: "len".into(),
+                        args: Vec::new(),
+                    }),
+                    ty,
+                }),
+            });
+        }
+        if !dropped.is_empty() {
+            let mut index = 0;
+            params.retain(|_| {
+                index += 1;
+                !dropped.contains(&(index - 1))
+            });
+            statements.splice(0..0, lengths);
+        }
         if self.uses_alloca {
             statements.insert(
                 0,

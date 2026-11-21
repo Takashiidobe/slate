@@ -150,6 +150,15 @@ impl FunctionLowerer<'_, '_> {
             }
             ir::Statement::Temporary {
                 id,
+                initializer: Some(initializer),
+                ..
+            } if let Some((pointer, amount)) = self.element_view(initializer) => {
+                self.views
+                    .insert(*id, (pointer, amount.clone(), initializer.clone()));
+                Stmt::Block(rust::Block::default())
+            }
+            ir::Statement::Temporary {
+                id,
                 ty,
                 initializer,
                 ..

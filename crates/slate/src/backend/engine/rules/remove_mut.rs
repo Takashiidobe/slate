@@ -27,7 +27,10 @@ struct Binding<'a> {
 
 impl Binding<'_> {
     fn roots(&self, place: &Expr) -> bool {
-        place_root(place) == Some(self.name)
+        match self.ty {
+            Some(Type::Ref { .. }) => matches!(place, Expr::Var(name) if *name == self.name),
+            _ => place_root(place) == Some(self.name),
+        }
     }
 
     fn derefs_owner(&self, place: &Expr) -> bool {

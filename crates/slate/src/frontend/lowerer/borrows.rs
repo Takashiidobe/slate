@@ -48,10 +48,41 @@ impl FunctionLowerer<'_, '_> {
         self.tables.borrow_of(binding)
     }
 
-    fn borrowed_place<'p>(
+    pub(super) fn element_view<'v>(
         &self,
-        place: &'p ir::Place,
-    ) -> Option<(BindingId, Borrow, Option<&'p ir::Value>)> {
+        value: &'v ir::Value,
+    ) -> Option<(BindingId, &'v ir::Value)> {
+        let ValueKind::PointerOffset {
+            pointer,
+            amount,
+            subtract: false,
+            ..
+        } = &value.node.value
+        else {
+            return None;
+        };
+        let (id, borrow) = self.borrowed_binding(pointer)?;
+        let mut index = &**amount;
+        while let ValueKind::Convert { operand, .. } | ValueKind::Copy { operand, .. } =
+            &index.node.value
+        {
+            index = operand;
+        }
+        let pure = matches!(
+            &index.node.value,
+            ValueKind::Constant(_)
+                | ValueKind::Read {
+                    place: ir::Place {
+                        kind: PlaceKind::Binding(_),
+                        ..
+                    },
+                    ordering: None,
+                }
+        );
+        (borrow.many && pure && !self.packed_pointee(pointer)).then_some((id, &**amount))
+    }
+
+    fn borrowed_place(&self, place: &ir::Place) -> Option<(BindingId, Borrow, Option<ir::Value>)> {
         let PlaceKind::Deref(pointer) = &place.kind else {
             return None;
         };
@@ -60,6 +91,18 @@ impl FunctionLowerer<'_, '_> {
         }
         if let Some((id, borrow)) = self.borrowed_binding(pointer) {
             return Some((id, borrow, None));
+        }
+        if let ValueKind::Read {
+            place:
+                ir::Place {
+                    kind: PlaceKind::Binding(temporary),
+                    ..
+                },
+            ordering: None,
+        } = &pointer.node.value
+            && let Some((id, amount, _)) = self.views.get(temporary)
+        {
+            return Some((*id, self.borrow_of(*id)?, Some(amount.clone())));
         }
         let ValueKind::PointerOffset {
             pointer,
@@ -71,7 +114,9 @@ impl FunctionLowerer<'_, '_> {
             return None;
         };
         let (id, borrow) = self.borrowed_binding(pointer)?;
-        borrow.many.then_some((id, borrow, Some(amount)))
+        borrow
+            .many
+            .then_some((id, borrow, Some((**amount).clone())))
     }
 
     fn packed_pointee(&self, pointer: &ir::Value) -> bool {
@@ -127,7 +172,7 @@ impl FunctionLowerer<'_, '_> {
         }
         let index = match index {
             Some(amount) => Expr::Cast {
-                expr: Box::new(self.lower_value(amount)?),
+                expr: Box::new(self.lower_value(&amount)?),
                 ty: rust::Type::Prim(Prim::Usize),
             },
             None => Expr::Value(rust::RustValue::Usize(0)),
@@ -164,6 +209,10 @@ impl FunctionLowerer<'_, '_> {
         else {
             return Ok(None);
         };
+        if let Some((_, _, initializer)) = self.views.get(id) {
+            let initializer = initializer.clone();
+            return self.lower_value(&initializer).map(Some);
+        }
         let Some(borrow) = self.borrow_of(*id) else {
             return Ok(None);
         };
@@ -220,6 +269,59 @@ impl FunctionLowerer<'_, '_> {
             return None;
         };
         Some((*id, self.borrow_of(*id)?))
+    }
+
+    pub(super) fn lower_sized_borrow(
+        &mut self,
+        pointer: &ir::Value,
+        length: &ir::Value,
+        target: Borrow,
+    ) -> Result<Expr> {
+        let mut peeled = pointer;
+        while let ValueKind::Copy { operand, .. }
+        | ValueKind::Convert {
+            kind: ir::ConversionKind::PointerCast,
+            operand,
+            ..
+        } = &peeled.node.value
+            && same_pointee(&operand.ty, &peeled.ty)
+        {
+            peeled = operand;
+        }
+        let safe = match &peeled.node.value {
+            ValueKind::ArrayDecay { place, .. } => !self.place_is_unsafe(place),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only safe arrays and borrowed bindings borrow without a length"
+            )]
+            _ => self.borrowed_binding(peeled).is_some(),
+        };
+        if safe {
+            return self.lower_borrow(pointer, target);
+        }
+        let raw = self.lower_value(pointer)?;
+        let count = self.lower_value(length)?;
+        Ok(Expr::Unsafe(Box::new(rust::Block {
+            stmts: Vec::new(),
+            tail: Some(Box::new(Expr::Call {
+                func: Box::new(Expr::Var(
+                    if target.mutable {
+                        "core::slice::from_raw_parts_mut"
+                    } else {
+                        "core::slice::from_raw_parts"
+                    }
+                    .into(),
+                )),
+                args: vec![
+                    raw,
+                    Expr::Cast {
+                        expr: Box::new(count),
+                        ty: rust::Type::Prim(Prim::Usize),
+                    },
+                ],
+                binding: CallBinding::Generated,
+            })),
+        })))
     }
 
     pub(super) fn lower_borrow(&mut self, value: &ir::Value, target: Borrow) -> Result<Expr> {
@@ -284,9 +386,6 @@ impl FunctionLowerer<'_, '_> {
             {
                 let binding = Expr::Var(self.binding_name(id).as_str().into());
                 Ok(match (source.many, target.many) {
-                    (false, false) | (true, true) if source.mutable => {
-                        reborrow(target.mutable, binding)
-                    }
                     (false, false) | (true, true) => binding,
                     (true, false) => first_element(target.mutable, binding),
                     (false, true) if source.mutable => {

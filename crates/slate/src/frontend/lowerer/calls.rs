@@ -141,8 +141,24 @@ impl FunctionLowerer<'_, '_> {
                 ir::Callee::Direct(id) if !variadic => self.tables.parameter_borrow(*id, index),
                 ir::Callee::Direct(_) | ir::Callee::Indirect(_) => None,
             };
+            if let ir::Callee::Direct(id) = callee
+                && !variadic
+                && self.tables.length_parameter(*id, index).is_some()
+            {
+                continue;
+            }
             if let Some(borrow) = borrow {
-                args.push(self.lower_borrow(argument, borrow)?);
+                let length = match callee {
+                    ir::Callee::Direct(id) => self
+                        .tables
+                        .parameter_length(*id, index)
+                        .and_then(|length| arguments.get(length)),
+                    ir::Callee::Indirect(_) => None,
+                };
+                args.push(match length {
+                    Some(length) => self.lower_sized_borrow(argument, length, borrow)?,
+                    None => self.lower_borrow(argument, borrow)?,
+                });
                 borrowed.push((args.len() - 1, borrow.mutable));
                 continue;
             }

@@ -29,7 +29,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::abort;
 // CHECK-EMPTY:
-// CHECK-NEXT: fn sum(t2: &[i32], n: i32) -> i32 {
+// CHECK-NEXT: fn sum(p: &[i32]) -> i32 {
+// CHECK-NEXT:     let n: i32 = p.len() as i32;
+// CHECK-NEXT:     let t1: &[i32] = p;
+// CHECK-NEXT:     let t2: &[i32] = t1;
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         s += t2[i as usize];
@@ -39,7 +42,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
-// CHECK-NEXT:     if sum(a.0.as_slice(), 4i32) != 10 {
+// CHECK-NEXT:     if sum(a.0.as_slice()) != 10 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

@@ -103,7 +103,7 @@ struct Tables<'m> {
     target: &'m TargetInfo,
     module: &'m ir::Module,
     facts: UnitFacts<'m>,
-    borrowed_parameters: HashMap<BindingId, Vec<Option<slate_analysis::Borrow>>>,
+    borrowed_parameters: HashMap<BindingId, Vec<Option<ParameterBorrow>>>,
     unit_features: Vec<&'static str>,
     zero_init_padding_bits: slate_parser::compiler_options::ZeroInitPaddingBits,
     alloca_layout: ir::AllocaLayout,
@@ -227,6 +227,7 @@ struct FunctionLowerer<'a, 'm> {
     switch_lets: HashSet<BindingId>,
     unborrowed: HashSet<BindingId>,
     reassigned_borrows: HashSet<BindingId>,
+    views: HashMap<BindingId, (BindingId, ir::Value, ir::Value)>,
     erased_copy: Option<(*const ir::Place, String)>,
     const_layout: bool,
 }
@@ -382,6 +383,8 @@ fn elf_alias_target(target: &slate_parser::target_info::TargetInfo) -> bool {
     )
 }
 
+type ParameterBorrow = (slate_analysis::Borrow, Option<slate_analysis::Length>);
+
 pub fn ir_pointers() -> bool {
     static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
     *ENABLED.get_or_init(|| std::env::var_os("SLATE_IR_POINTERS").is_some_and(|value| value != "0"))
@@ -406,6 +409,28 @@ impl Tables<'_> {
         self.borrowed_parameters
             .get(&function)
             .and_then(|borrows| borrows.get(index).copied().flatten())
+            .map(|(borrow, _)| borrow)
+    }
+
+    fn parameter_length(&self, function: BindingId, index: usize) -> Option<usize> {
+        self.borrowed_parameters
+            .get(&function)
+            .and_then(|borrows| borrows.get(index).copied().flatten())
+            .and_then(|(_, length)| length)
+            .map(|length| length.parameter)
+    }
+
+    fn length_parameter(
+        &self,
+        function: BindingId,
+        index: usize,
+    ) -> Option<(usize, slate_analysis::Length)> {
+        self.borrowed_parameters.get(&function).and_then(|borrows| {
+            borrows.iter().enumerate().find_map(|(pointer, borrow)| {
+                let length = (*borrow)?.1?;
+                (length.parameter == index).then_some((pointer, length))
+            })
+        })
     }
 }
 
@@ -862,7 +887,7 @@ impl<'m> ModuleLowerer<'m> {
                             facts
                                 .binding(parameter.value.id)
                                 .and_then(|facts| facts.pointer)
-                                .and_then(|fact| fact.borrow)
+                                .and_then(|fact| Some((fact.borrow?, fact.length)))
                         })
                         .collect();
                     borrows
