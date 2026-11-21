@@ -213,15 +213,21 @@ impl FunctionLowerer<'_, '_> {
         let mut stmts = Vec::new();
         let mut arrays = Vec::new();
         for operand in [left, right] {
-            let vector = self.next_temp();
-            stmts.push(Stmt::Let {
-                name: vector.clone(),
-                mutable: false,
-                ty: Some(self.lower_type(&operand.ty)?),
-                init: Some(self.lower_value(operand)?),
-            });
+            let lowered = self.lower_value(operand)?;
+            let recv = if matches!(lowered, Expr::Var(_)) {
+                lowered
+            } else {
+                let vector = self.next_temp();
+                stmts.push(Stmt::Let {
+                    name: vector.clone(),
+                    mutable: false,
+                    ty: Some(self.lower_type(&operand.ty)?),
+                    init: Some(lowered),
+                });
+                Expr::Var(vector.into())
+            };
             let array = Expr::MethodCall {
-                recv: Box::new(Expr::Var(vector.into())),
+                recv: Box::new(recv),
                 method: "to_array".into(),
                 args: Vec::new(),
             };

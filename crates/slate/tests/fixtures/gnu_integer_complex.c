@@ -16,16 +16,9 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut global_value: num_complex::Complex<i32> = {
-// CHECK-NEXT:     let [[T_0:__t[0-9]+]] = 17i32;
-// CHECK-NEXT:     let [[T_1:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:         re: 0i32,
-// CHECK-NEXT:         im: 19i32,
-// CHECK-NEXT:     };
-// CHECK-NEXT:     num_complex::Complex {
-// CHECK-NEXT:         re: [[T_0]] + [[T_1]].re,
-// CHECK-NEXT:         im: [[T_1]].im,
-// CHECK-NEXT:     }
+// CHECK-NEXT: static mut global_value: num_complex::Complex<i32> = num_complex::Complex {
+// CHECK-NEXT:     re: 17i32,
+// CHECK-NEXT:     im: 19i32,
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

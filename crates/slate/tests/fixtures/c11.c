@@ -664,12 +664,10 @@ int main(void) {
 // CHECK-NEXT:         *slate_support::errno_location() = slate_support::ERANGE as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = increment;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(c11_atomic_total) as *mut i32,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .fetch_add([[T_0]], core::sync::atomic::Ordering::SeqCst);
-// CHECK-NEXT:         [[T_1]]
+// CHECK-NEXT:             .fetch_add(increment, core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (unsafe { c11_thread_local_value })
 // CHECK-NEXT:         + (((unsafe { *slate_support::errno_location() })
@@ -683,12 +681,10 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.c11_quick_handler")]
 // CHECK-NEXT: extern "C-unwind" fn c11_quick_handler() {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0]] = 100i32;
-// CHECK-NEXT:         let [[T_1]] = core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(c11_atomic_total) as *mut i32,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .fetch_add([[T_0]], core::sync::atomic::Ordering::Relaxed);
-// CHECK-NEXT:         [[T_1]]
+// CHECK-NEXT:             .fetch_add(100i32, core::sync::atomic::Ordering::Relaxed)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -713,13 +709,13 @@ int main(void) {
 // CHECK-NEXT:     let utf16_character: u16 = 937;
 // CHECK-NEXT:     let utf32_character: u32 = 128578;
 // CHECK-NEXT:     let mut anonymous: C11Anonymous = {
-// CHECK-NEXT:         let mut [[T_1]]: C11Anonymous = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_1]].[[SLATE_ANON_0]] = {
-// CHECK-NEXT:             let mut [[T_0]]: __SlateRecord_c11_c_56 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             [[T_0]].integer = 0i32;
-// CHECK-NEXT:             [[T_0]]
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: C11Anonymous = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]].[[SLATE_ANON_0]] = {
+// CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: __SlateRecord_c11_c_56 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_1]].integer = 0i32;
+// CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_1]]
+// CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut aligned_object: C11OverAligned = {
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: C11OverAligned = unsafe { core::mem::zeroed() };

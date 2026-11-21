@@ -75,20 +75,14 @@ int main(void) {
 // CHECK-NEXT:     y: num_complex::Complex<f16>,
 // CHECK-NEXT: ) -> num_complex::Complex<f16> {
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = {
-// CHECK-NEXT:                 let [[T_1:__t[0-9]+]] = x;
-// CHECK-NEXT:                 num_complex::Complex {
-// CHECK-NEXT:                     re: [[T_1]].re as f32,
-// CHECK-NEXT:                     im: [[T_1]].im as f32,
-// CHECK-NEXT:                 }
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = num_complex::Complex {
+// CHECK-NEXT:                 re: x.re as f32,
+// CHECK-NEXT:                 im: x.im as f32,
 // CHECK-NEXT:             }
 // CHECK-NEXT:             .c_mul(
-// CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_2:__t[0-9]+]] = y;
-// CHECK-NEXT:                     num_complex::Complex {
-// CHECK-NEXT:                         re: [[T_2]].re as f32,
-// CHECK-NEXT:                         im: [[T_2]].im as f32,
-// CHECK-NEXT:                     }
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: y.re as f32,
+// CHECK-NEXT:                     im: y.im as f32,
 // CHECK-NEXT:                 },
 // CHECK-NEXT:                 false,
 // CHECK-NEXT:             );
@@ -105,33 +99,24 @@ int main(void) {
 // CHECK-NEXT:     z: num_complex::Complex<f16>,
 // CHECK-NEXT: ) -> num_complex::Complex<f16> {
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = {
-// CHECK-NEXT:                 let [[T_1]] = x;
-// CHECK-NEXT:                 num_complex::Complex {
-// CHECK-NEXT:                     re: [[T_1]].re as f32,
-// CHECK-NEXT:                     im: [[T_1]].im as f32,
-// CHECK-NEXT:                 }
+// CHECK-NEXT:         let [[T_0]] = num_complex::Complex {
+// CHECK-NEXT:                 re: x.re as f32,
+// CHECK-NEXT:                 im: x.im as f32,
 // CHECK-NEXT:             }
 // CHECK-NEXT:             .c_mul(
-// CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_2]] = y;
-// CHECK-NEXT:                     num_complex::Complex {
-// CHECK-NEXT:                         re: [[T_2]].re as f32,
-// CHECK-NEXT:                         im: [[T_2]].im as f32,
-// CHECK-NEXT:                     }
+// CHECK-NEXT:                 num_complex::Complex {
+// CHECK-NEXT:                     re: y.re as f32,
+// CHECK-NEXT:                     im: y.im as f32,
 // CHECK-NEXT:                 },
 // CHECK-NEXT:                 false,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             + {
-// CHECK-NEXT:                 let [[T_0]] = z;
-// CHECK-NEXT:                 num_complex::Complex {
-// CHECK-NEXT:                     re: [[T_0]].re as f32,
-// CHECK-NEXT:                     im: [[T_0]].im as f32,
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             + num_complex::Complex {
+// CHECK-NEXT:                 re: z.re as f32,
+// CHECK-NEXT:                 im: z.im as f32,
 // CHECK-NEXT:             };
 // CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: [[T_3]].re as f16,
-// CHECK-NEXT:             im: [[T_3]].im as f16,
+// CHECK-NEXT:             re: [[T_0]].re as f16,
+// CHECK-NEXT:             im: [[T_0]].im as f16,
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -153,57 +138,39 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let x: num_complex::Complex<f16> = {
-// CHECK-NEXT:         let [[T_2]] = (a as f32)
+// CHECK-NEXT:         let [[T_0]] = (a as f32)
 // CHECK-NEXT:             + (a as f32)
-// CHECK-NEXT:                 * {
-// CHECK-NEXT:                     let [[T_1]] = num_complex::Complex {
-// CHECK-NEXT:                         re: 0f16,
-// CHECK-NEXT:                         im: 1f16,
-// CHECK-NEXT:                     };
-// CHECK-NEXT:                     num_complex::Complex {
-// CHECK-NEXT:                         re: [[T_1]].re as f32,
-// CHECK-NEXT:                         im: [[T_1]].im as f32,
-// CHECK-NEXT:                     }
+// CHECK-NEXT:                 * num_complex::Complex {
+// CHECK-NEXT:                     re: 0f16 as f32,
+// CHECK-NEXT:                     im: 1f16 as f32,
+// CHECK-NEXT:                 };
+// CHECK-NEXT:         num_complex::Complex {
+// CHECK-NEXT:             re: [[T_0]].re as f16,
+// CHECK-NEXT:             im: [[T_0]].im as f16,
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let y: num_complex::Complex<f16> = {
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = (a as f32)
+// CHECK-NEXT:             - (a as f32)
+// CHECK-NEXT:                 * num_complex::Complex {
+// CHECK-NEXT:                     re: 0f16 as f32,
+// CHECK-NEXT:                     im: 1f16 as f32,
+// CHECK-NEXT:                 };
+// CHECK-NEXT:         num_complex::Complex {
+// CHECK-NEXT:             re: [[T_1]].re as f16,
+// CHECK-NEXT:             im: [[T_1]].im as f16,
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let z: num_complex::Complex<f16> = {
+// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = (c as f32)
+// CHECK-NEXT:             + (c as f32)
+// CHECK-NEXT:                 * num_complex::Complex {
+// CHECK-NEXT:                     re: 0f16 as f32,
+// CHECK-NEXT:                     im: 1f16 as f32,
 // CHECK-NEXT:                 };
 // CHECK-NEXT:         num_complex::Complex {
 // CHECK-NEXT:             re: [[T_2]].re as f16,
 // CHECK-NEXT:             im: [[T_2]].im as f16,
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let y: num_complex::Complex<f16> = {
-// CHECK-NEXT:         let [[T_3]] = (a as f32)
-// CHECK-NEXT:             - (a as f32)
-// CHECK-NEXT:                 * {
-// CHECK-NEXT:                     let [[T_0]] = num_complex::Complex {
-// CHECK-NEXT:                         re: 0f16,
-// CHECK-NEXT:                         im: 1f16,
-// CHECK-NEXT:                     };
-// CHECK-NEXT:                     num_complex::Complex {
-// CHECK-NEXT:                         re: [[T_0]].re as f32,
-// CHECK-NEXT:                         im: [[T_0]].im as f32,
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 };
-// CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: [[T_3]].re as f16,
-// CHECK-NEXT:             im: [[T_3]].im as f16,
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let z: num_complex::Complex<f16> = {
-// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = (c as f32)
-// CHECK-NEXT:             + (c as f32)
-// CHECK-NEXT:                 * {
-// CHECK-NEXT:                     let [[T_5:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:                         re: 0f16,
-// CHECK-NEXT:                         im: 1f16,
-// CHECK-NEXT:                     };
-// CHECK-NEXT:                     num_complex::Complex {
-// CHECK-NEXT:                         re: [[T_5]].re as f32,
-// CHECK-NEXT:                         im: [[T_5]].im as f32,
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 };
-// CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: [[T_4]].re as f16,
-// CHECK-NEXT:             im: [[T_4]].im as f16,
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let p: num_complex::Complex<f16> = cmul(x, y);
@@ -226,26 +193,20 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}",
 // CHECK-NEXT:         (({
-// CHECK-NEXT:             let [[T_6:__t[0-9]+]] = {
-// CHECK-NEXT:                     let [[T_7:__t[0-9]+]] = x;
-// CHECK-NEXT:                     num_complex::Complex {
-// CHECK-NEXT:                         re: [[T_7]].re as f32,
-// CHECK-NEXT:                         im: [[T_7]].im as f32,
-// CHECK-NEXT:                     }
+// CHECK-NEXT:             let [[T_3:__t[0-9]+]] = num_complex::Complex {
+// CHECK-NEXT:                     re: x.re as f32,
+// CHECK-NEXT:                     im: x.im as f32,
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 .c_mul(
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_8:__t[0-9]+]] = x;
-// CHECK-NEXT:                         num_complex::Complex {
-// CHECK-NEXT:                             re: [[T_8]].re as f32,
-// CHECK-NEXT:                             im: [[T_8]].im as f32,
-// CHECK-NEXT:                         }
+// CHECK-NEXT:                     num_complex::Complex {
+// CHECK-NEXT:                         re: x.re as f32,
+// CHECK-NEXT:                         im: x.im as f32,
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                     false,
 // CHECK-NEXT:                 );
 // CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_6]].re as f16,
-// CHECK-NEXT:                 im: [[T_6]].im as f16,
+// CHECK-NEXT:                 re: [[T_3]].re as f16,
+// CHECK-NEXT:                 im: [[T_3]].im as f16,
 // CHECK-NEXT:             }
 // CHECK-NEXT:         })
 // CHECK-NEXT:             == num_complex::Complex {

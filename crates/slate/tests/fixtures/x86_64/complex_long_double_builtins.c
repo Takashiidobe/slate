@@ -263,39 +263,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut gs: S = S {
-// CHECK-NEXT:     x: {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = {
-// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = 100i32;
-// CHECK-NEXT:             let [[T_2:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:                 re: 0i32,
-// CHECK-NEXT:                 im: 200i32,
-// CHECK-NEXT:             };
-// CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_1]] + [[T_2]].re,
-// CHECK-NEXT:                 im: [[T_2]].im,
-// CHECK-NEXT:             }
-// CHECK-NEXT:         };
-// CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: [[T_0]].re as u16,
-// CHECK-NEXT:             im: [[T_0]].im as u16,
-// CHECK-NEXT:         }
+// CHECK-NEXT:     x: num_complex::Complex {
+// CHECK-NEXT:         re: 100u16,
+// CHECK-NEXT:         im: 200u16,
 // CHECK-NEXT:     },
-// CHECK-NEXT:     y: {
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = {
-// CHECK-NEXT:             let [[T_4:__t[0-9]+]] = 3i32;
-// CHECK-NEXT:             let [[T_5:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:                 re: 0i32,
-// CHECK-NEXT:                 im: 4i32,
-// CHECK-NEXT:             };
-// CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_4]] - [[T_5]].re,
-// CHECK-NEXT:                 im: -[[T_5]].im,
-// CHECK-NEXT:             }
-// CHECK-NEXT:         };
-// CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: [[T_3]].re as i8,
-// CHECK-NEXT:             im: [[T_3]].im as i8,
-// CHECK-NEXT:         }
+// CHECK-NEXT:     y: num_complex::Complex {
+// CHECK-NEXT:         re: 3i8,
+// CHECK-NEXT:         im: -4i8,
 // CHECK-NEXT:     },
 // CHECK-NEXT: };
 // CHECK-EMPTY:

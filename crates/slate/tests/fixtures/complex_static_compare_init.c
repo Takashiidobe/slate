@@ -16,90 +16,15 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut nonzero_double: bool = num_complex::Complex {
-// CHECK-NEXT:     re: 2.5f64,
-// CHECK-NEXT:     im: 3.5f64,
-// CHECK-NEXT: }.re
-// CHECK-NEXT:     != num_complex::Complex {
-// CHECK-NEXT:         re: 0.0f64,
-// CHECK-NEXT:         im: 0.0,
-// CHECK-NEXT:     }.re
-// CHECK-NEXT:     || num_complex::Complex {
-// CHECK-NEXT:         re: 2.5f64,
-// CHECK-NEXT:         im: 3.5f64,
-// CHECK-NEXT:     }.im
-// CHECK-NEXT:         != num_complex::Complex {
-// CHECK-NEXT:             re: 0.0f64,
-// CHECK-NEXT:             im: 0.0,
-// CHECK-NEXT:         }.im;
+// CHECK-NEXT: static mut nonzero_double: bool = 2.5f64 != 0.0f64 || 3.5f64 != 0.0;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut zero_double: bool = num_complex::Complex {
-// CHECK-NEXT:     re: 0.0f64,
-// CHECK-NEXT:     im: 0.0f64,
-// CHECK-NEXT: }.re
-// CHECK-NEXT:     != num_complex::Complex {
-// CHECK-NEXT:         re: 0.0f64,
-// CHECK-NEXT:         im: 0.0,
-// CHECK-NEXT:     }.re
-// CHECK-NEXT:     || num_complex::Complex {
-// CHECK-NEXT:         re: 0.0f64,
-// CHECK-NEXT:         im: 0.0f64,
-// CHECK-NEXT:     }.im
-// CHECK-NEXT:         != num_complex::Complex {
-// CHECK-NEXT:             re: 0.0f64,
-// CHECK-NEXT:             im: 0.0,
-// CHECK-NEXT:         }.im;
+// CHECK-NEXT: static mut zero_double: bool = 0.0f64 != 0.0f64 || 0.0f64 != 0.0;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut imag_only_float: bool = num_complex::Complex {
-// CHECK-NEXT:     re: 0.0f32,
-// CHECK-NEXT:     im: 1.0f32,
-// CHECK-NEXT: }.re
-// CHECK-NEXT:     != num_complex::Complex {
-// CHECK-NEXT:         re: 0.0f32,
-// CHECK-NEXT:         im: 0.0,
-// CHECK-NEXT:     }.re
-// CHECK-NEXT:     || num_complex::Complex {
-// CHECK-NEXT:         re: 0.0f32,
-// CHECK-NEXT:         im: 1.0f32,
-// CHECK-NEXT:     }.im
-// CHECK-NEXT:         != num_complex::Complex {
-// CHECK-NEXT:             re: 0.0f32,
-// CHECK-NEXT:             im: 0.0,
-// CHECK-NEXT:         }.im;
+// CHECK-NEXT: static mut imag_only_float: bool = 0.0f32 != 0.0f32 || 1.0f32 != 0.0;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut equal: i32 = (num_complex::Complex {
-// CHECK-NEXT:     re: 1.0f64,
-// CHECK-NEXT:     im: 2.0f64,
-// CHECK-NEXT: }.re
-// CHECK-NEXT:     == num_complex::Complex {
-// CHECK-NEXT:         re: 1.0f64,
-// CHECK-NEXT:         im: 2.0f64,
-// CHECK-NEXT:     }.re
-// CHECK-NEXT:     && num_complex::Complex {
-// CHECK-NEXT:         re: 1.0f64,
-// CHECK-NEXT:         im: 2.0f64,
-// CHECK-NEXT:     }.im
-// CHECK-NEXT:         == num_complex::Complex {
-// CHECK-NEXT:             re: 1.0f64,
-// CHECK-NEXT:             im: 2.0f64,
-// CHECK-NEXT:         }.im) as i32;
+// CHECK-NEXT: static mut equal: i32 = (1.0f64 == 1.0f64 && 2.0f64 == 2.0f64) as i32;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut differ: i32 = (num_complex::Complex {
-// CHECK-NEXT:     re: 1.0f64,
-// CHECK-NEXT:     im: 2.0f64,
-// CHECK-NEXT: }.re
-// CHECK-NEXT:     != num_complex::Complex {
-// CHECK-NEXT:         re: 1.0f64,
-// CHECK-NEXT:         im: -2.0f64,
-// CHECK-NEXT:     }.re
-// CHECK-NEXT:     || num_complex::Complex {
-// CHECK-NEXT:         re: 1.0f64,
-// CHECK-NEXT:         im: 2.0f64,
-// CHECK-NEXT:     }.im
-// CHECK-NEXT:         != num_complex::Complex {
-// CHECK-NEXT:             re: 1.0f64,
-// CHECK-NEXT:             im: -2.0f64,
-// CHECK-NEXT:         }.im) as i32;
+// CHECK-NEXT: static mut differ: i32 = (1.0f64 != 1.0f64 || 2.0f64 != -2.0f64) as i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(

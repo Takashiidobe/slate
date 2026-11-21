@@ -34,36 +34,20 @@ int main(void) {
 // CHECK-NEXT:     let mut u32: u32 = 1000;
 // CHECK-NEXT:     let mut i64: i64 = -10000000000;
 // CHECK-NEXT:     let old_u8: u8 = unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = 3u8;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::sync::atomic::AtomicU8::from_ptr(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(u8) as *mut u8,
-// CHECK-NEXT:             )
-// CHECK-NEXT:             .fetch_add([[T_0]], core::sync::atomic::Ordering::Relaxed);
-// CHECK-NEXT:         [[T_1]]
+// CHECK-NEXT:         core::sync::atomic::AtomicU8::from_ptr(core::ptr::addr_of_mut!(u8) as *mut u8)
+// CHECK-NEXT:             .fetch_add(3u8, core::sync::atomic::Ordering::Relaxed)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let old_i8: i8 = unsafe {
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = 7i8;
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = core::sync::atomic::AtomicI8::from_ptr(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(i8) as *mut i8,
-// CHECK-NEXT:             )
-// CHECK-NEXT:             .fetch_sub([[T_2]], core::sync::atomic::Ordering::AcqRel);
-// CHECK-NEXT:         [[T_3]]
+// CHECK-NEXT:         core::sync::atomic::AtomicI8::from_ptr(core::ptr::addr_of_mut!(i8) as *mut i8)
+// CHECK-NEXT:             .fetch_sub(7i8, core::sync::atomic::Ordering::AcqRel)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let old_u32: u32 = unsafe {
-// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = 255u32;
-// CHECK-NEXT:         let [[T_5:__t[0-9]+]] = core::sync::atomic::AtomicU32::from_ptr(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(u32) as *mut u32,
-// CHECK-NEXT:             )
-// CHECK-NEXT:             .fetch_xor([[T_4]], core::sync::atomic::Ordering::Release);
-// CHECK-NEXT:         [[T_5]]
+// CHECK-NEXT:         core::sync::atomic::AtomicU32::from_ptr(core::ptr::addr_of_mut!(u32) as *mut u32)
+// CHECK-NEXT:             .fetch_xor(255u32, core::sync::atomic::Ordering::Release)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let old_i64: i64 = unsafe {
-// CHECK-NEXT:         let [[T_6:__t[0-9]+]] = 1234567890123i64;
-// CHECK-NEXT:         let [[T_7:__t[0-9]+]] = core::sync::atomic::AtomicI64::from_ptr(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(i64) as *mut i64,
-// CHECK-NEXT:             )
-// CHECK-NEXT:             .swap([[T_6]], core::sync::atomic::Ordering::Acquire);
-// CHECK-NEXT:         [[T_7]]
+// CHECK-NEXT:         core::sync::atomic::AtomicI64::from_ptr(core::ptr::addr_of_mut!(i64) as *mut i64)
+// CHECK-NEXT:             .swap(1234567890123i64, core::sync::atomic::Ordering::Acquire)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

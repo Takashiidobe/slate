@@ -767,8 +767,7 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:             re: 0f128,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:             im: 2f128,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         };
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     let mut [[V_0:__v[0-9]+]]: num_complex::Complex<f128> = l;
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     l = [[V_0]]
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     l = l
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         .c_div_improved(
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:             3f128
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 + num_complex::Complex {
@@ -776,20 +775,12 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     im: 7f128,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 },
 // CHECK-NEXT:         );
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:         let [[T_1:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:         let [[T_1:__t[0-9]+]] = num_complex::Complex {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// I686-UNKNOWN-LINUX-GNU-NEXT:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
-// I686-UNKNOWN-LINUX-GNU-NEXT:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:         };
-// I686-UNKNOWN-LINUX-GNU-NEXT:         };
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         num_complex::Complex {
 // I686-UNKNOWN-LINUX-GNU-NEXT:         num_complex::Complex {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             re: [[T_0]] + [[T_1]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             re: [[T_0]] + [[T_1]].re,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             im: [[T_1]].im,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             im: [[T_1]].im,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             re: [[T_0]] + LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// I686-UNKNOWN-LINUX-GNU-NEXT:             re: [[T_0]] + LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
+// I686-UNKNOWN-LINUX-GNU-NEXT:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         }
 // I686-UNKNOWN-LINUX-GNU-NEXT:         }
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     };
@@ -798,26 +789,14 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:     l = __slate_cf80_div_improved(
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         l,
 // I686-UNKNOWN-LINUX-GNU-NEXT:         l,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:         {
-// I686-UNKNOWN-LINUX-GNU-NEXT:         {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             let [[T_2:__t[0-9]+]] = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_2:__t[0-9]+]] = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             let [[T_3:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_3:__t[0-9]+]] = num_complex::Complex {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 1, 64]),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 1, 64]),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             };
-// I686-UNKNOWN-LINUX-GNU-NEXT:             };
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:             num_complex::Complex {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 re: [[T_2]] + [[T_3]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: [[T_2]] + [[T_3]].re,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 im: [[T_3]].im,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: [[T_3]].im,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             }
-// I686-UNKNOWN-LINUX-GNU-NEXT:             }
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:         num_complex::Complex {
+// I686-UNKNOWN-LINUX-GNU-NEXT:         num_complex::Complex {
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64])
+// I686-UNKNOWN-LINUX-GNU-NEXT:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64])
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 + LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 + LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 1, 64]),
+// I686-UNKNOWN-LINUX-GNU-NEXT:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 1, 64]),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         },
 // I686-UNKNOWN-LINUX-GNU-NEXT:         },
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     );

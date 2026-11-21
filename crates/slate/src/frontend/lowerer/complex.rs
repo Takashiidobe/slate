@@ -29,7 +29,27 @@ fn is_f80(component: ir::NumericType) -> bool {
     matches!(component, ir::NumericType::Float(ir::FloatType::F80))
 }
 
+fn duplicable(expr: &Expr) -> bool {
+    match expr {
+        Expr::Var(_) | Expr::Value(_) | Expr::HexFloat(_) => true,
+        Expr::Cast { expr, .. } | Expr::Unary { expr, .. } | Expr::Field { base: expr, .. } => {
+            duplicable(expr)
+        }
+        Expr::StructLit { fields, .. } => fields.iter().all(|(_, field)| duplicable(field)),
+        Expr::TupleStructLit { fields, .. } | Expr::ArrayLit(fields) => {
+            fields.iter().all(duplicable)
+        }
+        _ => false,
+    }
+}
+
 fn part(base: &Expr, field: &str) -> Expr {
+    if let Expr::StructLit { name, fields } = base
+        && name.as_str() == COMPLEX
+        && let Some((_, value)) = fields.iter().find(|(name, _)| name.as_str() == field)
+    {
+        return value.clone();
+    }
     Expr::Field {
         base: Box::new(base.clone()),
         field: field.into(),
@@ -59,15 +79,97 @@ fn negate(expr: Expr) -> Expr {
     }
 }
 
-fn parts_block(stmts: Vec<Stmt>, re: Expr, im: Expr) -> Expr {
+fn parts_block(mut stmts: Vec<Stmt>, re: Expr, im: Expr) -> Expr {
+    let mut tail = complex_literal(re, im);
+    let mut index = stmts.len();
+    while index > 0 {
+        index -= 1;
+        let Stmt::Let {
+            name,
+            mutable: false,
+            ty: None,
+            init: Some(init),
+        } = &stmts[index]
+        else {
+            continue;
+        };
+        if !name.starts_with("__t") || !pure(init) {
+            continue;
+        }
+        let mut uses = Vec::new();
+        for stmt in &stmts[index + 1..] {
+            stmt.collect_vars(&mut uses);
+        }
+        tail.collect_vars(&mut uses);
+        if uses.iter().filter(|var| var.as_str() == name).count() != 1 {
+            continue;
+        }
+        if let Stmt::Let {
+            name,
+            init: Some(init),
+            ..
+        } = stmts.remove(index)
+        {
+            for stmt in &mut stmts[index..] {
+                stmt.substitute_var(&name, &init);
+            }
+            tail.substitute_var(&name, &init);
+        }
+    }
+    if stmts.is_empty() {
+        return tail;
+    }
     Expr::Block(Box::new(rust::Block {
         stmts,
-        tail: Some(Box::new(complex_literal(re, im))),
+        tail: Some(Box::new(tail)),
     }))
+}
+
+fn pure(expr: &Expr) -> bool {
+    match expr {
+        Expr::Binary { lhs, rhs, .. } => pure(lhs) && pure(rhs),
+        Expr::Call { func, args, .. } => {
+            matches!(func.as_ref(), Expr::Var(name) if name.as_str().starts_with("__slate_f80_"))
+                && args.iter().all(pure)
+        }
+        Expr::Cast { expr, .. } | Expr::Unary { expr, .. } | Expr::Field { base: expr, .. } => {
+            pure(expr)
+        }
+        _ => duplicable(expr),
+    }
 }
 
 impl FunctionLowerer<'_, '_> {
     pub(super) fn bind(&mut self, stmts: &mut Vec<Stmt>, init: Expr) -> Expr {
+        let init = match init {
+            Expr::Block(block)
+                if block.tail.is_some()
+                    && block.stmts.iter().all(
+                        |stmt| matches!(stmt, Stmt::Let { name, .. } if name.starts_with("__t")),
+                    ) =>
+            {
+                let rust::Block {
+                    stmts: hoisted,
+                    tail,
+                } = *block;
+                stmts.extend(hoisted);
+                *tail.expect("guarded by is_some")
+            }
+            init => init,
+        };
+        let init = match init {
+            Expr::StructLit { name, fields } if name.as_str() == COMPLEX => {
+                let fields = fields
+                    .into_iter()
+                    .map(|(field, value)| (field, self.bind(stmts, value)))
+                    .collect();
+                return Expr::StructLit { name, fields };
+            }
+            init => init,
+        };
+        if duplicable(&init) {
+            return init;
+        }
         let temp = self.next_temp();
         stmts.push(Stmt::Let {
             name: temp.clone(),

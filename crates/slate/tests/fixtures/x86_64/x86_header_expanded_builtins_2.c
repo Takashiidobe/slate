@@ -1325,7 +1325,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let [[V_0]]: core::simd::Simd<i32, 8> = unsafe {
+// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<i32, 8> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
 // CHECK-NEXT:             unsafe { _mm512_castsi512_si256(x) },
 // CHECK-NEXT:         )
@@ -1336,20 +1336,19 @@ int main(void) {
 // CHECK-NEXT:             c"cmp_epi32_gt %02x\n".as_ptr(),
 // CHECK-NEXT:             (core::simd::cmp::SimdPartialOrd::simd_lt(
 // CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_25:__t[0-9]+]]: core::simd::Simd<i32, 8> = [[V_0]];
-// CHECK-NEXT:                         let [[T_26:__t[0-9]+]] = [[T_25]].to_array();
-// CHECK-NEXT:                         let [[T_27:__t[0-9]+]]: core::simd::Simd<i32, 8> = unsafe {
+// CHECK-NEXT:                         let [[T_25:__t[0-9]+]] = [[V_0]].to_array();
+// CHECK-NEXT:                         let [[T_26:__t[0-9]+]]: core::simd::Simd<i32, 8> = unsafe {
 // CHECK-NEXT:                             core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
 // CHECK-NEXT:                                 _mm512_castsi512_si256(y),
 // CHECK-NEXT:                             )
 // CHECK-NEXT:                         };
-// CHECK-NEXT:                         let [[T_28:__t[0-9]+]] = [[T_27]].to_array();
-// CHECK-NEXT:                         let [[T_29:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         let [[T_27:__t[0-9]+]] = [[T_26]].to_array();
+// CHECK-NEXT:                         let [[T_28:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_26]][__lane] > [[T_28]][__lane]) as i32),
+// CHECK-NEXT:                                 |__lane| -(([[T_25]][__lane] > [[T_27]][__lane]) as i32),
 // CHECK-NEXT:                             ),
 // CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_29]]
+// CHECK-NEXT:                         [[T_28]]
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                     core::simd::Simd::<i32, 8>::default(),
 // CHECK-NEXT:                 )
@@ -1487,9 +1486,9 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut scattered: __SlateAlign16<[i32; 64]> = __SlateAlign16(
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_30:__t[0-9]+]]: [i32; 64] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             [[T_30]][0] = 0i32;
-// CHECK-NEXT:             [[T_30]]
+// CHECK-NEXT:             let mut [[T_29:__t[0-9]+]]: [i32; 64] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_29]][0] = 0i32;
+// CHECK-NEXT:             [[T_29]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
@@ -1519,9 +1518,9 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut stored: __SlateAlign16<[i64; 8]> = __SlateAlign16(
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_31:__t[0-9]+]]: [i64; 8] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             [[T_31]][0] = 0i64;
-// CHECK-NEXT:             [[T_31]]
+// CHECK-NEXT:             let mut [[T_30:__t[0-9]+]]: [i64; 8] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_30]][0] = 0i64;
+// CHECK-NEXT:             [[T_30]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
@@ -1538,9 +1537,9 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut stored8: __SlateAlign16<[i8; 64]> = __SlateAlign16(
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_32:__t[0-9]+]]: [i8; 64] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             [[T_32]][0] = 0i8;
-// CHECK-NEXT:             [[T_32]]
+// CHECK-NEXT:             let mut [[T_31:__t[0-9]+]]: [i8; 64] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_31]][0] = 0i8;
+// CHECK-NEXT:             [[T_31]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
@@ -1557,9 +1556,9 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut stored32: __SlateAlign16<[i32; 8]> = __SlateAlign16(
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[T_33:__t[0-9]+]]: [i32; 8] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             [[T_33]][0] = 0i32;
-// CHECK-NEXT:             [[T_33]]
+// CHECK-NEXT:             let mut [[T_32:__t[0-9]+]]: [i32; 8] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:             [[T_32]][0] = 0i32;
+// CHECK-NEXT:             [[T_32]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {

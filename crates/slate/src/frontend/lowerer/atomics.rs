@@ -58,6 +58,14 @@ fn identity_closure(name: &str) -> Expr {
     }
 }
 
+fn literal(expr: &Expr) -> bool {
+    match expr {
+        Expr::Value(_) | Expr::HexFloat(_) => true,
+        Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => literal(expr),
+        _ => false,
+    }
+}
+
 fn unsafe_block(stmts: Vec<Stmt>, tail: Expr) -> Expr {
     Expr::Unsafe(Box::new(rust::Block {
         stmts,
@@ -580,38 +588,46 @@ impl FunctionLowerer<'_, '_> {
         let is_bool = matches!(target.ty, rust::Type::Prim(Prim::Bool));
         let old = self.next_temp();
         if let Some((rmw, operand, combine)) = native_rmw(computation, target.repr, is_bool) {
-            let operand_name = self.next_temp();
             let lowered_operand = self.lower_value(operand)?;
+            let mut stmts = Vec::new();
+            let operand_value = if postfix || literal(&lowered_operand) {
+                lowered_operand
+            } else {
+                let operand_name = self.next_temp();
+                stmts.push(let_stmt(&operand_name, lowered_operand));
+                var(&operand_name)
+            };
             let recv = self.atomic_receiver(place, &target, true)?;
-            let previous = method(recv, rmw, vec![target.to_atomic(var(&operand_name)), order]);
+            let previous = method(
+                recv,
+                rmw,
+                vec![target.to_atomic(operand_value.clone()), order],
+            );
             let result = if postfix {
-                target.to_c(var(&old))
+                target.to_c(previous)
             } else {
                 match combine {
-                    Combine::Operand => var(&operand_name),
-                    Combine::Wrapping(name) => method(var(&old), name, vec![var(&operand_name)]),
+                    Combine::Operand => {
+                        stmts.push(let_stmt(&old, previous));
+                        operand_value
+                    }
+                    Combine::Wrapping(name) => method(previous, name, vec![operand_value]),
                     Combine::Binary(op) => Expr::Binary {
                         op,
-                        lhs: Box::new(var(&old)),
-                        rhs: Box::new(var(&operand_name)),
+                        lhs: Box::new(previous),
+                        rhs: Box::new(operand_value),
                     },
                     Combine::Nand => Expr::Unary {
                         op: rust::UnaryOp::Not,
                         expr: Box::new(Expr::Binary {
                             op: BinOp::BitAnd,
-                            lhs: Box::new(var(&old)),
-                            rhs: Box::new(var(&operand_name)),
+                            lhs: Box::new(previous),
+                            rhs: Box::new(operand_value),
                         }),
                     },
                 }
             };
-            return Ok(Some(unsafe_block(
-                vec![
-                    let_stmt(&operand_name, lowered_operand),
-                    let_stmt(&old, previous),
-                ],
-                result,
-            )));
+            return Ok(Some(unsafe_block(stmts, result)));
         }
         if !pure_update(computation) {
             return Ok(None);
@@ -628,11 +644,10 @@ impl FunctionLowerer<'_, '_> {
             "unwrap_or_else",
             vec![identity_closure(&current)],
         );
-        let result = if postfix {
-            target.to_c(var(&old))
-        } else {
-            self.lower_with_old(computation, target.to_c(var(&old)))?
-        };
+        if postfix {
+            return Ok(Some(unsafe_block(Vec::new(), target.to_c(previous))));
+        }
+        let result = self.lower_with_old(computation, target.to_c(var(&old)))?;
         Ok(Some(unsafe_block(vec![let_stmt(&old, previous)], result)))
     }
 
@@ -648,45 +663,53 @@ impl FunctionLowerer<'_, '_> {
         let Some(target) = self.atomic_target(&place.ty)? else {
             return Ok(None);
         };
-        let expected_name = self.next_temp();
-        let desired_name = self.next_temp();
-        let result_name = self.next_temp();
-        let mut stmts = vec![
-            let_stmt(&expected_name, self.lower_value(expected)?),
-            let_stmt(&desired_name, self.lower_value(desired)?),
-        ];
-        let expected_value = if form == ir::CompareExchangeForm::WriteBack {
+        let write_back = form == ir::CompareExchangeForm::WriteBack;
+        let mut stmts = Vec::new();
+        let expected = self.lower_value(expected)?;
+        let expected = if write_back && !literal(&expected) {
+            let expected_name = self.next_temp();
+            stmts.push(let_stmt(&expected_name, expected));
+            var(&expected_name)
+        } else {
+            expected
+        };
+        let desired = self.lower_value(desired)?;
+        let desired = if write_back && !literal(&desired) {
+            let desired_name = self.next_temp();
+            stmts.push(let_stmt(&desired_name, desired));
+            var(&desired_name)
+        } else {
+            desired
+        };
+        let expected_value = if write_back {
             Expr::Unary {
                 op: rust::UnaryOp::Deref,
-                expr: Box::new(var(&expected_name)),
+                expr: Box::new(expected),
             }
         } else {
-            var(&expected_name)
+            expected
         };
         let recv = self.atomic_receiver(place, &target, true)?;
-        stmts.push(let_stmt(
-            &result_name,
-            method(
-                recv,
-                exchange,
-                vec![
-                    target.to_atomic(expected_value.clone()),
-                    target.to_atomic(var(&desired_name)),
-                    success,
-                    failure,
-                ],
-            ),
-        ));
+        let exchanged = method(
+            recv,
+            exchange,
+            vec![
+                target.to_atomic(expected_value.clone()),
+                target.to_atomic(desired),
+                success,
+                failure,
+            ],
+        );
         let observed = self.next_temp();
         let tail = match form {
             ir::CompareExchangeForm::Old => target.to_c(method(
-                var(&result_name),
+                exchanged,
                 "unwrap_or_else",
                 vec![identity_closure(&observed)],
             )),
-            ir::CompareExchangeForm::Success => method(var(&result_name), "is_ok", Vec::new()),
+            ir::CompareExchangeForm::Success => method(exchanged, "is_ok", Vec::new()),
             ir::CompareExchangeForm::WriteBack => Expr::Match {
-                expr: Box::new(var(&result_name)),
+                expr: Box::new(exchanged),
                 arms: vec![
                     rust::ExprMatchArm {
                         pattern: rust::Pattern::TupleStruct {

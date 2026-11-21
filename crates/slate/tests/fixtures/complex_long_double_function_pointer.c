@@ -277,11 +277,10 @@ int main(void) {
 // CHECK-NEXT:     z: num_complex::Complex<LongDouble>,
 // CHECK-NEXT: ) -> num_complex::Complex<LongDouble> {
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = z;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = __slate_f80_from_i32(2i32);
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = __slate_f80_from_i32(2i32);
 // CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: [[T_0]].re * [[T_1]],
-// CHECK-NEXT:             im: [[T_0]].im * [[T_1]],
+// CHECK-NEXT:             re: z.re * [[T_0]],
+// CHECK-NEXT:             im: z.im * [[T_0]],
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -291,23 +290,9 @@ int main(void) {
 // CHECK-NEXT: extern "C-unwind" fn swap(
 // CHECK-NEXT:     z: num_complex::Complex<LongDouble>,
 // CHECK-NEXT: ) -> num_complex::Complex<LongDouble> {
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = z.im;
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = {
-// CHECK-NEXT:             let [[T_0]] = z.re;
-// CHECK-NEXT:             let [[T_1]] = num_complex::Complex {
-// CHECK-NEXT:                 re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// CHECK-NEXT:                 im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
-// CHECK-NEXT:             };
-// CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_0]] * [[T_1]].re,
-// CHECK-NEXT:                 im: [[T_0]] * [[T_1]].im,
-// CHECK-NEXT:             }
-// CHECK-NEXT:         };
-// CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: [[T_2]] + [[T_3]].re,
-// CHECK-NEXT:             im: [[T_3]].im,
-// CHECK-NEXT:         }
+// CHECK-NEXT:     num_complex::Complex {
+// CHECK-NEXT:         re: z.im + z.re * LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// CHECK-NEXT:         im: z.re * LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -358,16 +343,10 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut z: num_complex::Complex<LongDouble> = {
-// CHECK-NEXT:         let [[T_0]] = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
-// CHECK-NEXT:         let [[T_1]] = num_complex::Complex {
-// CHECK-NEXT:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// CHECK-NEXT:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 253, 63]),
-// CHECK-NEXT:         };
-// CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: [[T_0]] + [[T_1]].re,
-// CHECK-NEXT:             im: [[T_1]].im,
-// CHECK-NEXT:         }
+// CHECK-NEXT:     let mut z: num_complex::Complex<LongDouble> = num_complex::Complex {
+// CHECK-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63])
+// CHECK-NEXT:             + LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// CHECK-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 253, 63]),
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         z = apply(table.0[i as usize], z);
@@ -402,7 +381,7 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..3i32 {
+// CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             __slate_printf__ri32_pi8_i32_f80(
@@ -414,16 +393,10 @@ int main(void) {
 // CHECK-NEXT:                             parts.0[i as usize],
 // CHECK-NEXT:                         )
 // CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]);
-// CHECK-NEXT:                         let [[T_3]] = num_complex::Complex {
-// CHECK-NEXT:                             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// CHECK-NEXT:                             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
-// CHECK-NEXT:                         };
-// CHECK-NEXT:                         num_complex::Complex {
-// CHECK-NEXT:                             re: [[T_2]] - [[T_3]].re,
-// CHECK-NEXT:                             im: -[[T_3]].im,
-// CHECK-NEXT:                         }
+// CHECK-NEXT:                     num_complex::Complex {
+// CHECK-NEXT:                         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64])
+// CHECK-NEXT:                             - LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// CHECK-NEXT:                         im: -LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )

@@ -28,13 +28,11 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut flag: atomic_flag = atomic_flag { _Value: false };
 // CHECK-NEXT:     let first: i32 = (unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = true;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::sync::atomic::AtomicBool::from_ptr(
+// CHECK-NEXT:         core::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!((*core::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .swap([[T_0]], core::sync::atomic::Ordering::SeqCst);
-// CHECK-NEXT:         [[T_1]]
+// CHECK-NEXT:             .swap(true, core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicBool::from_ptr(
@@ -44,22 +42,18 @@ int main(void) {
 // CHECK-NEXT:             .store(false, core::sync::atomic::Ordering::Release)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let second: i32 = (unsafe {
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = true;
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = core::sync::atomic::AtomicBool::from_ptr(
+// CHECK-NEXT:         core::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!((*core::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .swap([[T_2]], core::sync::atomic::Ordering::Acquire);
-// CHECK-NEXT:         [[T_3]]
+// CHECK-NEXT:             .swap(true, core::sync::atomic::Ordering::Acquire)
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     let third: i32 = (unsafe {
-// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = true;
-// CHECK-NEXT:         let [[T_5:__t[0-9]+]] = core::sync::atomic::AtomicBool::from_ptr(
+// CHECK-NEXT:         core::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!((*core::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .swap([[T_4]], core::sync::atomic::Ordering::Relaxed);
-// CHECK-NEXT:         [[T_5]]
+// CHECK-NEXT:             .swap(true, core::sync::atomic::Ordering::Relaxed)
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicBool::from_ptr(
@@ -69,13 +63,11 @@ int main(void) {
 // CHECK-NEXT:             .store(false, core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let fourth: i32 = (unsafe {
-// CHECK-NEXT:         let [[T_6:__t[0-9]+]] = true;
-// CHECK-NEXT:         let [[T_7:__t[0-9]+]] = core::sync::atomic::AtomicBool::from_ptr(
+// CHECK-NEXT:         core::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!((*core::ptr::addr_of_mut!(flag))._Value)
 // CHECK-NEXT:                     as *mut bool,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .swap([[T_6]], core::sync::atomic::Ordering::SeqCst);
-// CHECK-NEXT:         [[T_7]]
+// CHECK-NEXT:             .swap(true, core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     println!("{} {} {} {}", first, second, third, fourth);
 // CHECK-NEXT:     0

@@ -47,14 +47,12 @@ int main(void) {
 // CHECK-NEXT: use slate_support::pthread_join;
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn worker(arg: *mut ()) -> *mut () {
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..100000i32 {
+// CHECK-NEXT:     for i in 0i32..100000i32 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             let [[T_0:__t[0-9]+]] = 1i32;
-// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(counter) as *mut i32,
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .fetch_add([[T_0]], core::sync::atomic::Ordering::SeqCst);
-// CHECK-NEXT:             [[T_1]]
+// CHECK-NEXT:                 .fetch_add(1i32, core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     core::ptr::null_mut::<()>()

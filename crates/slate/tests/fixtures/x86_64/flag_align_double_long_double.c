@@ -281,16 +281,10 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     z.z = {
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]);
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// CHECK-NEXT:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]),
-// CHECK-NEXT:         };
-// CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: [[T_2]] + [[T_3]].re,
-// CHECK-NEXT:             im: [[T_3]].im,
-// CHECK-NEXT:         }
+// CHECK-NEXT:     z.z = num_complex::Complex {
+// CHECK-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63])
+// CHECK-NEXT:             + LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// CHECK-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]),
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
