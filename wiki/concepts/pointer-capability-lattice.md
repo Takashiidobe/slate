@@ -14,6 +14,8 @@
 As of 2026-11-20 (`slate-8ge7.14`) the Rust-side `pointer_lattice` runs only
 with `SLATE_IR_POINTERS=0`; by default the same lattice runs on the IR in
 `crates/slate-analysis` ([slate-analysis](slate-analysis.md#pointer-capabilities)).
+`string_params.rs` was deleted in `slate-8ge7.7`; C-string params are the IR
+`c_string` fact (`&CStr`), and mentions of it below are history.
 
 Tracked by `slate-y0qs.4` (SCC-ordered call-graph worklist for interprocedural
 fixpoint families). As of 2026-09-19, this page is the canonical reference for

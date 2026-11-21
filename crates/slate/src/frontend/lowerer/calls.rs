@@ -165,6 +165,13 @@ impl FunctionLowerer<'_, '_> {
             {
                 continue;
             }
+            if let ir::Callee::Direct(id) = callee
+                && !variadic
+                && self.tables.parameter_c_string(*id, index)
+            {
+                args.push(self.lower_c_string_argument(argument)?);
+                continue;
+            }
             if let Some(borrow) = borrow {
                 let length = match callee {
                     ir::Callee::Direct(id) => self

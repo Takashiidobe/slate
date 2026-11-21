@@ -104,6 +104,7 @@ struct Tables<'m> {
     module: &'m ir::Module,
     facts: UnitFacts<'m>,
     borrowed_parameters: HashMap<BindingId, Vec<Option<ParameterBorrow>>>,
+    c_string_parameters: HashMap<BindingId, Vec<bool>>,
     unit_features: Vec<&'static str>,
     zero_init_padding_bits: slate_parser::compiler_options::ZeroInitPaddingBits,
     alloca_layout: ir::AllocaLayout,
@@ -399,6 +400,23 @@ impl Tables<'_> {
             .binding(binding)
             .and_then(|facts| facts.pointer)
             .and_then(|fact| fact.borrow)
+    }
+
+    fn c_string_of(&self, binding: BindingId) -> bool {
+        ir_pointers()
+            && self
+                .facts
+                .binding(binding)
+                .and_then(|facts| facts.pointer)
+                .is_some_and(|fact| fact.c_string)
+    }
+
+    fn parameter_c_string(&self, function: BindingId, index: usize) -> bool {
+        self.c_string_parameters
+            .get(&function)
+            .and_then(|parameters| parameters.get(index))
+            .copied()
+            .unwrap_or(false)
     }
 
     fn parameter_borrow(
@@ -898,10 +916,33 @@ impl<'m> ModuleLowerer<'m> {
         } else {
             HashMap::new()
         };
+        let c_string_parameters = module
+            .functions
+            .iter()
+            .filter_map(|function| {
+                let ir::Parameters::Prototype { fixed, .. } = &function.value.parameters else {
+                    return None;
+                };
+                let lifted: Vec<bool> = fixed
+                    .iter()
+                    .map(|parameter| {
+                        ir_pointers()
+                            && facts
+                                .binding(parameter.value.id)
+                                .and_then(|facts| facts.pointer)
+                                .is_some_and(|fact| fact.c_string)
+                    })
+                    .collect();
+                lifted
+                    .contains(&true)
+                    .then_some((function.value.id, lifted))
+            })
+            .collect();
         let mut tables = Tables {
             module,
             facts,
             borrowed_parameters,
+            c_string_parameters,
             support_functions: HashMap::new(),
             support_globals: HashMap::new(),
             names,

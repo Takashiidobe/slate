@@ -1,3 +1,4 @@
+use super::borrows::c_string_type;
 use super::*;
 use slate_parser::sema::ctype::CTypeKind;
 use slate_parser::target_info::{TargetFamily, TargetOs};
@@ -535,6 +536,9 @@ impl FunctionLowerer<'_, '_> {
                 })
                 .map(|(index, parameter)| {
                     let ty = match self.tables.parameter_borrow(function.value.id, index) {
+                        _ if self.tables.parameter_c_string(function.value.id, index) => {
+                            Ok(c_string_type())
+                        }
                         Some(borrow) => self.borrow_type(&parameter.ty, borrow),
                         None => self.lower_c_type(
                             &parameter.ty,
@@ -634,6 +638,7 @@ impl FunctionLowerer<'_, '_> {
                     name: self.binding_name(param.value.id),
                     mutable: true,
                     ty: match self.borrow_of(param.value.id) {
+                        _ if self.c_string_of(param.value.id) => Ok(c_string_type()),
                         Some(borrow) => self.borrow_type(&param.ty, borrow),
                         None => self.lower_c_type(
                             &param.ty,

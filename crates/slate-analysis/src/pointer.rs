@@ -42,6 +42,7 @@ pub struct PointerFact {
     pub capability: PointerCapability,
     pub borrow: Option<Borrow>,
     pub length: Option<Length>,
+    pub c_string: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -116,6 +117,7 @@ struct CallSite {
     unproven: Vec<usize>,
     pinned: bool,
     shapes: Vec<Shape>,
+    literals: Vec<bool>,
 }
 
 struct Summary {
@@ -169,6 +171,7 @@ struct Walker<'a, 'm> {
     identities: &'a HashMap<ProgramBinding, FunctionIdentity>,
     inert: &'a HashSet<ProgramBinding>,
     constants: &'a HashSet<ProgramBinding>,
+    strings: &'a HashSet<ProgramBinding>,
     unit: UnitId,
     nodes: Vec<Node>,
     index: HashMap<BindingId, u32>,
@@ -506,6 +509,22 @@ impl Walker<'_, '_> {
                 None => Shape::Other,
             },
         }
+    }
+
+    fn literal(&self, value: &Value) -> bool {
+        matches!(
+            &peel_argument(value).node.value,
+            ValueKind::ArrayDecay {
+                place: Place {
+                    kind: PlaceKind::Binding(string),
+                    ..
+                },
+                length: Some(_),
+            } if self.strings.contains(&ProgramBinding {
+                unit: self.unit,
+                binding: *string,
+            })
+        )
     }
 
     fn allocation(&self, ty: &Type, initializer: &Value) -> Option<(BindingId, Type)> {
@@ -930,6 +949,10 @@ impl Walker<'_, '_> {
                     .iter()
                     .map(|argument| self.shape(argument))
                     .collect(),
+                literals: arguments
+                    .iter()
+                    .map(|argument| self.literal(argument))
+                    .collect(),
             };
             for (index, argument) in arguments.iter().enumerate() {
                 if tracked_pointer(&argument.ty).is_some() && !self.proven(argument) {
@@ -1304,6 +1327,7 @@ fn summarize(
     identities: &HashMap<ProgramBinding, FunctionIdentity>,
     inert: &HashSet<ProgramBinding>,
     constants: &HashSet<ProgramBinding>,
+    strings: &HashSet<ProgramBinding>,
     function: FunctionId,
 ) -> Option<Summary> {
     let entry = program.function(function)?;
@@ -1312,6 +1336,7 @@ fn summarize(
         identities,
         inert,
         constants,
+        strings,
         unit: entry.unit,
         nodes: Vec::new(),
         index: HashMap::new(),
@@ -1455,6 +1480,25 @@ fn capability(flags: u8, raw: bool, byte_elements: bool) -> PointerCapability {
     }
 }
 
+fn c_string_literal(variable: &ir::Variable) -> bool {
+    let Some(ValueKind::CodeUnits(units)) = variable
+        .initializer
+        .as_ref()
+        .map(|initializer| &initializer.node.value)
+    else {
+        return false;
+    };
+    variable.name.starts_with('.')
+        && matches!(
+            &variable.ty,
+            Type::Array { element, .. }
+                if matches!(**element, Type::Numeric(NumericType::Integer { width: 8, .. }))
+        )
+        && units.split_last().is_some_and(|(last, rest)| {
+            *last == 0 && rest.iter().all(|unit| (1..=255).contains(unit))
+        })
+}
+
 fn candidate(function: &ir::Function, exported: bool, address_taken: bool) -> bool {
     !address_taken
         && !exported
@@ -1468,6 +1512,78 @@ fn candidate(function: &ir::Function, exported: bool, address_taken: bool) -> bo
         )
         && !function.semantics.naked
         && !function.semantics.interrupt
+}
+
+struct CStringClasses<'a> {
+    class_of: &'a [u32],
+    flags: &'a [u8],
+    raw: &'a [bool],
+    returned: &'a [bool],
+    pinned: &'a [u32],
+}
+
+fn c_string_parameters(
+    summaries: &[Option<Summary>],
+    candidates: &[bool],
+    incoming: &[Vec<(usize, usize)>],
+    parameters: &[HashMap<usize, u32>],
+    base: &[u32],
+    classes: &CStringClasses<'_>,
+) -> HashSet<(usize, usize)> {
+    let mut active = HashSet::new();
+    for (function, summary) in summaries.iter().enumerate() {
+        let Some(summary) = summary else { continue };
+        if !candidates[function] || incoming[function].is_empty() {
+            continue;
+        }
+        for (&index, &node) in &parameters[function] {
+            let item = &summary.nodes[(node - base[function]) as usize];
+            let class = classes.class_of[node as usize] as usize;
+            let flags = classes.flags[class];
+            if item.byte_elements
+                && !item.opaque_pointee
+                && !classes.raw[node as usize]
+                && !classes.returned[class]
+                && !classes.pinned.contains(&node)
+                && flags & STRING != 0
+                && flags & (WRITE | FREE | ESCAPE | NULLABLE | MACRO) == 0
+                && !summary.written.contains(&summary.parameters[index])
+            {
+                active.insert((function, index));
+            }
+        }
+    }
+    loop {
+        let next: HashSet<(usize, usize)> = active
+            .iter()
+            .copied()
+            .filter(|&(function, index)| {
+                incoming[function].iter().all(|&(caller, site)| {
+                    let Some(summary) = &summaries[caller] else {
+                        return false;
+                    };
+                    let site = &summary.calls[site];
+                    let forwarded = match site.shapes.get(index) {
+                        Some(Shape::Binding(binding)) => {
+                            !summary.written.contains(binding)
+                                && summary
+                                    .parameters
+                                    .iter()
+                                    .position(|id| id == binding)
+                                    .is_some_and(|parameter| active.contains(&(caller, parameter)))
+                        }
+                        Some(_) | None => false,
+                    };
+                    !site.pinned
+                        && (forwarded || site.literals.get(index).copied().unwrap_or(false))
+                })
+            })
+            .collect();
+        if next == active {
+            return active;
+        }
+        active = next;
+    }
 }
 
 pub(crate) fn analyze(
@@ -1490,19 +1606,33 @@ pub(crate) fn analyze(
         }
     }
     let mut constants = HashSet::new();
+    let mut strings = HashSet::new();
     for (unit, entry) in program.units() {
         for global in &entry.module.globals {
+            let binding = ProgramBinding {
+                unit,
+                binding: global.variable.id,
+            };
             if global.variable.is_const {
-                constants.insert(ProgramBinding {
-                    unit,
-                    binding: global.variable.id,
-                });
+                constants.insert(binding);
+            }
+            if c_string_literal(&global.variable) {
+                strings.insert(binding);
             }
         }
     }
     let summaries: Vec<Option<Summary>> = (0..count as u32)
         .into_par_iter()
-        .map(|index| summarize(program, identities, &inert, &constants, FunctionId(index)))
+        .map(|index| {
+            summarize(
+                program,
+                identities,
+                &inert,
+                &constants,
+                &strings,
+                FunctionId(index),
+            )
+        })
         .collect();
     let summarized = timing.map(|start| (start.elapsed(), std::time::Instant::now()));
 
@@ -1902,6 +2032,20 @@ pub(crate) fn analyze(
         .iter()
         .map(|&(function, pointer, length)| ((function, pointer), length))
         .collect();
+    let c_strings = c_string_parameters(
+        &summaries,
+        &candidates,
+        &incoming,
+        &parameters,
+        &base,
+        &CStringClasses {
+            class_of: &class_of,
+            flags: &class_flags,
+            raw: &raw,
+            returned: &returned,
+            pinned: &pinned,
+        },
+    );
 
     let mut facts = PointerFacts {
         bindings: HashMap::new(),
@@ -1971,6 +2115,7 @@ pub(crate) fn analyze(
                     capability,
                     borrow,
                     length,
+                    c_string: matches!(item.kind, NodeKind::Parameter(index) if c_strings.contains(&(function, index))),
                 },
             );
             reported.push(item.binding);

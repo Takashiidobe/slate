@@ -159,12 +159,21 @@ and rebuilt from `len()`). Lowering reads `borrow` and `length` by default
   candidate gets the definition's parameter facts, so its extern declaration
   and its call sites lower with the same borrow and dropped length. Link must
   then bind those calls through a Rust path; an extern declaration left with a
-  slice parameter is a panic, because `&[T]` has no C ABI.
+  slice or `&CStr` parameter is a panic, because neither has a C ABI.
 - Two arguments of one call that share a class or the same `&local` object
   alias; if either parameter is written, both escape.
 - Libc calls use the declaration's identity: `free` frees, `mem*`/`str*cpy`
   write argument 0, `str*` reads mark string and offset, other known
   functions escape.
+- `c_string` (`slate-8ge7.7`, replacing the Rust-side `string_params`): a
+  candidate's byte-pointer parameter becomes `&core::ffi::CStr` when its class
+  is string-marked, never written, freed, escaped, nullable, returned, raw or
+  in a macro, and every call site (none pinned) passes a NUL-terminated
+  literal with no interior NUL or an unwritten `c_string` parameter of the
+  caller (a shrinking fixpoint). Reads lower to `s.as_ptr()`, so `strlen`,
+  `p[i]` and `memcpy` stay inside the `CStr`'s provenance, terminator
+  included; call sites pass `c"..."` or the caller's `&CStr`. Not `&str`: a
+  Rust `"abc"` has no NUL, so `strlen(s.as_ptr())` would read past it.
 
 Measured (`SLATE_INTERPROC_TIMING`, pass `ir_pointer`): N=800 on every
 `interproc_scaling.py` shape at most 1 ms (Rust-side `pointer_lattice`

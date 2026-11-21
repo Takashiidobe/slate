@@ -275,8 +275,10 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn sdsnew(init: *const i8, r#type: i32) -> *mut i8 {
-// CHECK-NEXT:     let len: u64 = unsafe { strlen(init as *const core::ffi::c_char) as u64 };
+// CHECK-NEXT: fn sdsnew(init: &core::ffi::CStr, r#type: i32) -> *mut i8 {
+// CHECK-NEXT:     let len: u64 = unsafe {
+// CHECK-NEXT:         strlen((init.as_ptr() as *const i8) as *const core::ffi::c_char) as u64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let header: u64 = if r#type == 1 { 3 } else if r#type == 2 { 5 } else { 17 };
 // CHECK-NEXT:     let memory: *mut i8 = (unsafe {
 // CHECK-NEXT:         malloc(header.wrapping_add(len).wrapping_add(16) as usize) as *mut ()
@@ -317,7 +319,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((init as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((init.as_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((s as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (len.wrapping_add(1) as usize) as usize,
 // CHECK-NEXT:         )
@@ -442,7 +444,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let types: [i32; 3] = [1, 2, 4];
 // CHECK-NEXT:     for i in 0i32..3i32 {
-// CHECK-NEXT:         let s: *mut i8 = sdsnew(c"hello".as_ptr(), types[i as usize]);
+// CHECK-NEXT:         let s: *mut i8 = sdsnew(c"hello", types[i as usize]);
 // CHECK-NEXT:         sdsinclen(s, 2u64);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {

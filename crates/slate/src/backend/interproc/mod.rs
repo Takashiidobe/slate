@@ -1,6 +1,5 @@
 pub(in crate::backend) mod length_lattice;
 pub(in crate::backend) mod pointer_lattice;
-pub(in crate::backend) mod string_params;
 pub(in crate::backend) mod timing;
 
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
@@ -51,7 +50,6 @@ pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) -> Op
     } = exports
     else {
         timer.lap("pinned");
-        string_params::run(programs, &BTreeSet::new(), &named_in_templates);
         if !crate::frontend::lowerer::ir_pointers() {
             pointer_lattice::apply(
                 programs,
@@ -68,7 +66,6 @@ pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) -> Op
     let rust_bound = link::rust_bound(programs, &liftable, &types);
     let c_bound = link::rust_bound(programs, &c_abi, &types);
     timer.lap("pinned");
-    string_params::run(programs, &rust_bound, &named_in_templates);
     if !crate::frontend::lowerer::ir_pointers() {
         pointer_lattice::apply(programs, &liftable, &rust_bound, &named_in_templates);
     }
@@ -78,11 +75,11 @@ pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) -> Op
         for program in programs.iter() {
             for_each_extern_fn(&program.items, &mut |decl| {
                 let sliced = decl.params.iter().any(|param| {
-                    matches!(&param.ty, Type::Ref { inner, .. } if matches!(**inner, Type::Slice(_)))
+                    matches!(&param.ty, Type::Ref { inner, .. } if matches!(&**inner, Type::Slice(_)) || **inner == Type::Custom("core::ffi::CStr".into()))
                 });
                 assert!(
                     !sliced,
-                    "IR pointer lift of `{}` gave it a slice parameter, but link did not bind its cross-unit calls",
+                    "IR pointer lift of `{}` gave it a slice or CStr parameter, but link did not bind its cross-unit calls",
                     decl.name
                 );
             });

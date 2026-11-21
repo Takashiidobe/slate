@@ -5,6 +5,13 @@ fn same_pointee(from: &ir::Type, to: &ir::Type) -> bool {
     matches!((from, to), (ir::Type::Pointer { pointee: left, .. }, ir::Type::Pointer { pointee: right, .. }) if left == right)
 }
 
+pub(super) fn c_string_type() -> rust::Type {
+    rust::Type::Ref {
+        mutable: false,
+        inner: Box::new(rust::Type::Custom("core::ffi::CStr".into())),
+    }
+}
+
 fn reborrow(mutable: bool, expr: Expr) -> Expr {
     Expr::Ref {
         mutable,
@@ -46,6 +53,48 @@ impl FunctionLowerer<'_, '_> {
             return None;
         }
         self.tables.borrow_of(binding)
+    }
+
+    pub(super) fn c_string_of(&self, binding: BindingId) -> bool {
+        !self.unborrowed.contains(&binding)
+            && !self.switch_lets.contains(&binding)
+            && self.tables.c_string_of(binding)
+    }
+
+    pub(super) fn lower_c_string_argument(&mut self, value: &ir::Value) -> Result<Expr> {
+        match &value.node.value {
+            ValueKind::Copy { operand, .. } => self.lower_c_string_argument(operand),
+            ValueKind::Convert {
+                kind: ir::ConversionKind::PointerCast,
+                operand,
+                ..
+            } if same_pointee(&operand.ty, &value.ty) => self.lower_c_string_argument(operand),
+            ValueKind::ArrayDecay {
+                place:
+                    ir::Place {
+                        kind: PlaceKind::Binding(id),
+                        ..
+                    },
+                length: Some(_),
+            } if let Some((0, content)) = self
+                .tables
+                .strings
+                .get(id)
+                .and_then(|bytes| bytes.split_last())
+                && !content.contains(&0) =>
+            {
+                Ok(Expr::CStr(content.to_vec()))
+            }
+            ValueKind::Read {
+                place:
+                    ir::Place {
+                        kind: PlaceKind::Binding(id),
+                        ..
+                    },
+                ordering: None,
+            } if self.c_string_of(*id) => Ok(Expr::Var(self.binding_name(*id).as_str().into())),
+            _ => Err(Invariant::UnprovenBorrow(value.to_string()).into()),
+        }
     }
 
     pub(super) fn element_view<'v>(
@@ -212,6 +261,16 @@ impl FunctionLowerer<'_, '_> {
         if let Some((_, _, initializer)) = self.views.get(id) {
             let initializer = initializer.clone();
             return self.lower_value(&initializer).map(Some);
+        }
+        if self.c_string_of(*id) {
+            return Ok(Some(Expr::Cast {
+                expr: Box::new(Expr::MethodCall {
+                    recv: Box::new(Expr::Var(self.binding_name(*id).as_str().into())),
+                    method: "as_ptr".into(),
+                    args: Vec::new(),
+                }),
+                ty: self.lower_type(&value.ty)?,
+            }));
         }
         let Some(borrow) = self.borrow_of(*id) else {
             return Ok(None);
