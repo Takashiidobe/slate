@@ -175,14 +175,12 @@ impl Hoister {
                     condition,
                     increment,
                     body,
-                    counted,
                 } => Statement::For {
                     id,
                     init: self.statements(init)?,
                     condition: condition.map(|v| self.evaluation(v, false)).transpose()?,
                     increment: increment.map(|v| self.evaluation(v, true)).transpose()?,
                     body: self.statements(body)?,
-                    counted,
                 },
                 Statement::Switch {
                     id,

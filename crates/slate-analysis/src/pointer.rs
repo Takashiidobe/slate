@@ -1281,7 +1281,6 @@ impl Walker<'_, '_> {
                 condition,
                 increment,
                 body,
-                counted,
                 ..
             } => {
                 self.statements(init);
@@ -1292,10 +1291,6 @@ impl Walker<'_, '_> {
                     self.evaluation(increment);
                 }
                 self.statements(body);
-                if let Some(counted) = counted {
-                    self.value(&counted.start);
-                    self.value(&counted.end);
-                }
             }
             Statement::Switch {
                 discriminant, body, ..

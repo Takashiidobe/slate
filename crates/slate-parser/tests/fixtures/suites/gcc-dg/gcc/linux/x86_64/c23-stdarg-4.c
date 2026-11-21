@@ -228,7 +228,6 @@ main ()
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE12]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(10)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 if ne<f64, exceptions=observable>(va_arg<f64>(%[[VALUE_ap_2]]), int_to_float<f64, reason=usual_arith, exact=true, rounding=nearest_even, exceptions=observable>(read<i32>(%[[VALUE_i]])))
 // DEFAULT-NEXT:                     call<void, signature=fn() -> void>(%[[VALUE_abort]]);

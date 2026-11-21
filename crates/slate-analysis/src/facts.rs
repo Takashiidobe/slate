@@ -1,3 +1,4 @@
+use crate::counted_loops::{self, CountedLoop};
 use crate::identity::{FunctionIdentity, identify};
 use crate::pointer::{self, PointerFact};
 use crate::program::{Program, ProgramBinding, UnitId};
@@ -18,6 +19,7 @@ pub struct Facts {
     bindings: HashMap<ProgramBinding, BindingFacts>,
     values: HashMap<NodeId, ValueFacts>,
     identities: HashMap<ProgramBinding, FunctionIdentity>,
+    counted_loops: Vec<HashMap<BindingId, CountedLoop>>,
 }
 
 impl Facts {
@@ -48,6 +50,13 @@ impl<'f> UnitFacts<'f> {
         self.facts.values.get(&node)
     }
 
+    pub fn counted_loop(&self, statement: BindingId) -> Option<&'f CountedLoop> {
+        self.facts
+            .counted_loops
+            .get(self.unit.0 as usize)
+            .and_then(|loops| loops.get(&statement))
+    }
+
     pub fn identity(&self, function: BindingId) -> FunctionIdentity {
         self.facts
             .identities
@@ -73,6 +82,16 @@ pub fn analyze(program: &Program<'_>) -> Facts {
             }
         }
     }
+    let counted_loops = program
+        .units()
+        .map(|(_, program_unit)| {
+            let mut loops = HashMap::new();
+            for function in &program_unit.module.functions {
+                counted_loops::analyze(&function.value, &mut loops);
+            }
+            loops
+        })
+        .collect();
     let pointers = pointer::analyze(program, &identities);
     let bindings = pointers
         .bindings
@@ -90,5 +109,6 @@ pub fn analyze(program: &Program<'_>) -> Facts {
         bindings,
         values: HashMap::new(),
         identities,
+        counted_loops,
     }
 }

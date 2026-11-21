@@ -352,7 +352,6 @@ statement  = simple { metadata } ";"
                "init:" body
                "condition:" ( evaluation | "omitted" )
                "increment:" ( evaluation | "omitted" )
-               [ "counted:" binding "in" value ( ".." | "..=" ) value ]
                "body:" body
            | "switch" binding value [ "[folded=" [ "-" ] digits "]" ] { metadata } body
            | "case" binding value [ "..." value ] ":" { metadata } body

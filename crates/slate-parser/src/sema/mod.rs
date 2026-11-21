@@ -9,7 +9,6 @@ mod builtins;
 pub(crate) use builtins::{
     gcc_aarch64_tuple_declarations, is_gcc_aarch64_tuple_name, is_gcc_target_type_name,
 };
-mod counted_loops;
 pub mod ctype;
 mod effects;
 mod effects_statements;
@@ -51,6 +50,10 @@ use numeric::{Context, ResolveError};
 
 const STACK_RED_ZONE: usize = 512 << 10;
 const STACK_GROWTH: usize = 16 << 20;
+
+pub fn fold_integer(value: &crate::ir::Value) -> Option<num_bigint::BigInt> {
+    fold::integer(value)
+}
 
 pub(crate) fn deep<T>(recurse: impl FnOnce() -> T) -> T {
     stacker::maybe_grow(STACK_RED_ZONE, STACK_GROWTH, recurse)

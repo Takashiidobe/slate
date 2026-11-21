@@ -53,7 +53,6 @@ int sum(const int *a, int n) {
 // IR-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // IR-NEXT:                 yield void;
 // IR-NEXT:             }
-// IR-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..macro_value<i32>(#[[#NODE0]], statements=0, const<i32>(10) [macro=LIMIT#0 body]) [macro=LIMIT#0 body]
 // IR-NEXT:             body:
 // IR-NEXT:                 let %[[VALUE3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_s]]);
 // IR-NEXT:                 let %[[VALUE4:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE3]]), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false>(read<ptr<const i32>>(%[[VALUE_a]]), read<i32>(%[[VALUE_i]])))));
@@ -68,7 +67,6 @@ int sum(const int *a, int n) {
 // IR-NEXT:                 write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE7]]));
 // IR-NEXT:                 yield void;
 // IR-NEXT:             }
-// IR-NEXT:             counted: %[[VALUE_i_2]] in const<i32>(0)..macro_value<i32>(#[[#NODE1]], statements=0, mul<i32>(macro_arg<i32>(#[[#NODE1]], 0, read<i32>(%[[VALUE_n]]) [macro=TWICE#1 arg0]) [macro=TWICE#1 arg0], const<i32>(2) [macro=TWICE#1 body]) [macro=TWICE#1 body]) [macro=TWICE#1 body]
 // IR-NEXT:             body:
 // IR-NEXT:                 let %[[VALUE8:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_s]]);
 // IR-NEXT:                 let %[[VALUE9:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE8]]), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false>(read<ptr<const i32>>(%[[VALUE_a]]), read<i32>(%[[VALUE_i_2]])))));
@@ -83,7 +81,6 @@ int sum(const int *a, int n) {
 // IR-NEXT:                 write<i32>(%[[VALUE_i_3]], read<i32>(%[[VALUE12]]));
 // IR-NEXT:                 yield void;
 // IR-NEXT:             }
-// IR-NEXT:             counted: %[[VALUE_i_3]] in const<i32>(0)..macro_arg<i32>(#[[#NODE2]], 1, read<i32>(%[[VALUE_n]]) [macro=BELOW#2 arg1]) [macro=BELOW#2 arg1]
 // IR-NEXT:             body:
 // IR-NEXT:                 let %[[VALUE13:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_s]]);
 // IR-NEXT:                 let %[[VALUE14:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE13]]), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false>(read<ptr<const i32>>(%[[VALUE_a]]), read<i32>(%[[VALUE_i_3]])))));
@@ -98,7 +95,6 @@ int sum(const int *a, int n) {
 // IR-NEXT:                 write<i32>(%[[VALUE_i_4]], read<i32>(%[[VALUE17]]));
 // IR-NEXT:                 yield void;
 // IR-NEXT:             }
-// IR-NEXT:             counted: %[[VALUE_i_4]] in const<i32>(0)..=macro_value<i32>(#[[#NODE3]], statements=0, mul<i32>(macro_arg<i32>(#[[#NODE3]], 0, const<i32>(4) [macro=TWICE#3 arg0]) [macro=TWICE#3 arg0], const<i32>(2) [macro=TWICE#3 body]) [macro=TWICE#3 body]) [macro=TWICE#3 body]
 // IR-NEXT:             body:
 // IR-NEXT:                 let %[[VALUE18:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_s]]);
 // IR-NEXT:                 let %[[VALUE19:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE18]]), read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false>(read<ptr<const i32>>(%[[VALUE_a]]), read<i32>(%[[VALUE_i_4]])))));

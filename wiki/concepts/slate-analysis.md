@@ -7,6 +7,8 @@
 - [Scaling rule](#scaling-rule)
 - [Pointer capabilities](#pointer-capabilities)
 - [Effect summaries](#effect-summaries)
+- [Def-use](#def-use)
+  - [Counted loops](#counted-loops)
 - [Shadow mode](#shadow-mode)
 - [Related](#related)
 <!-- /toc -->
@@ -40,8 +42,7 @@ ir::Module per unit -> Program (one target) -> analyze -> Facts
   An analysis that cannot see a callee or a use gives up for that entity, not
   for the program.
 - C semantics the checker needs stay in slate-parser's sema. Facts that only
-  idiomization needs (`counted_loops`, possibly others) may move here
-  (`slate-8ge7.8`).
+  idiomization needs move here (`slate-8ge7.8`): `counted_loops` was the first.
 
 ## Keys
 
@@ -216,6 +217,35 @@ questions of the same shape (`slate-8ge7.17`, purity for `slate-8ge7.9`).
 Limits: a static whose address is stored anywhere (a `static int *tail =
 &values[2]` initializer) never proves, even when the callee cannot load that
 pointer; that needs points-to for the holders.
+
+## Def-use
+
+`def_use::DefUse::of(body)` (`slate-8ge7.5`) is one function's def-use, built
+in one walk over the IR. It is the base for local facts that need "who reads or
+writes this binding, and where", in place of each analysis keeping its own
+walker. No SSA: one C variable keeps one Rust binding, and the `slate-8ge7.1`
+benchmark showed no analysis that SSA would make asymptotically cheaper.
+
+- Positions number statements in pre-order, so a statement's subtree is a
+  contiguous range. Each use records its binding, its position, and its access:
+  `Read`, `Write` (assignment target, initializer, update), or `Escape` (address
+  taken, place operand, asm operand, OpenMP clause, nested-function capture,
+  `cleanup`). An update (`x += 1`, compare-exchange) is both a read and a write.
+- Each loop and switch records its body's range, so "inside this loop" is a
+  range test. Labels, asm, SEH `__try` and OpenMP regions, and every `case` with
+  its switch's position, are recorded to reject unstructured regions.
+- `ordered` is false when the function has a `goto`, a computed goto, a label
+  or a label address. Position order is execution order only for ordered
+  functions; queries that need order (`slate-8ge7.9` inline_temps) must treat
+  an unordered function as having every use overlap.
+
+### Counted loops
+
+`counted_loops::analyze` is the first consumer. It produces
+`UnitFacts::counted_loop(for_id) -> CountedLoop { index, start, end, inclusive }`
+for a `for` whose index provably runs over `start..end`. The conditions are in
+[ir/control-flow](ir/control-flow.md#counted-loops). It used to be a sema pass
+that wrote `counted:` into the IR; the IR no longer carries it.
 
 ## Shadow mode
 

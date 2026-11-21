@@ -136,7 +136,6 @@ impl<V: Visitor> Walker<'_, V> {
                 condition,
                 increment,
                 body,
-                counted,
                 ..
             } => {
                 self.statements(init);
@@ -147,10 +146,6 @@ impl<V: Visitor> Walker<'_, V> {
                     self.evaluation(increment);
                 }
                 self.statements(body);
-                if let Some(counted) = counted {
-                    self.value(&mut counted.start);
-                    self.value(&mut counted.end);
-                }
             }
             Statement::Switch {
                 discriminant, body, ..

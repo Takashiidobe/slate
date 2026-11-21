@@ -76,7 +76,6 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(100000)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE3:[0-9]+]]: i32 [synthetic] = update<i32, result=old, atomic=seq_cst>(deref(addr_of<ptr<atomic i32>>(%[[VALUE_counter]])), add<i32, overflow=wrap>(old<i32> [c="atomic_int"], const<i32>(1)) [c="atomic_int"]) [c="atomic_int"] [c="atomic_int"];
@@ -95,7 +94,6 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_2]], read<i32>(%[[VALUE6]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             counted: %[[VALUE_i_2]] in const<i32>(0)..const<i32>(4)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     call<i32, signature=fn(ptr<u64>, ptr<const @type[[TYPE_pthread_attr_t]]>, ptr<fn(ptr<void>) -> ptr<void>>, ptr<void>) -> i32>(%[[VALUE_pthread_create]], addr_of<ptr<u64>>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(4)>(%[[VALUE_threads]]), read<i32>(%[[VALUE_i_2]])))) [c="pthread_t *"], null<ptr<const @type[[TYPE_pthread_attr_t]]>> [c="const pthread_attr_t *"], function_decay<ptr<fn(ptr<void>) -> ptr<void>>>(%[[VALUE_worker]]), null<ptr<void>>);
@@ -110,7 +108,6 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i_3]], read<i32>(%[[VALUE9]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             counted: %[[VALUE_i_3]] in const<i32>(0)..const<i32>(4)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     call<i32, signature=fn(u64, ptr<ptr<void>>) -> i32>(%[[VALUE_pthread_join]], read<u64>(deref(ptr_offset<ptr<u64>, subtract=false, element=u64, overflow=ub>(array_decay<ptr<u64>, length=Some(4)>(%[[VALUE_threads]]), read<i32>(%[[VALUE_i_3]])))) [c="pthread_t"], null<ptr<ptr<void>>>);

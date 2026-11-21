@@ -168,7 +168,6 @@ funcs(funcs1)
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_x_25]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             counted: %[[VALUE_x_25]] in neg<i32, overflow=ub>(const<i32>(10))..const<i32>(10)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 for %[[VALUE3:[0-9]+]]
 // DEFAULT-NEXT:                     init:
@@ -180,7 +179,6 @@ funcs(funcs1)
 // DEFAULT-NEXT:                         write<i32>(%[[VALUE_y]], read<i32>(%[[VALUE5]]));
 // DEFAULT-NEXT:                         yield void;
 // DEFAULT-NEXT:                     }
-// DEFAULT-NEXT:                     counted: %[[VALUE_y]] in neg<i32, overflow=ub>(const<i32>(10))..const<i32>(10)
 // DEFAULT-NEXT:                     body:
 // DEFAULT-NEXT:                         {
 // DEFAULT-NEXT:                             do %[[VALUE6:[0-9]+]]

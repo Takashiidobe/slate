@@ -466,9 +466,8 @@ impl FunctionLowerer<'_, '_> {
                 condition,
                 increment,
                 body,
-                counted,
             } => {
-                if let Some(counted) = counted
+                if let Some(counted) = self.tables.facts.counted_loop(*id)
                     && let Some(lowered) = self.lower_counted_for(*id, init, counted, body)?
                 {
                     return Ok(lowered);
@@ -583,7 +582,7 @@ impl FunctionLowerer<'_, '_> {
     ) -> HashSet<String> {
         let mut lets = Vec::new();
         let mut indices = HashSet::new();
-        collect_lets(body, &mut lets, &mut indices);
+        collect_lets(self.tables.facts, body, &mut lets, &mut indices);
         lets.into_iter()
             .filter(|id| !indices.contains(id))
             .map(|id| self.binding_name(id))
@@ -595,7 +594,7 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         id: BindingId,
         init: &[slate_parser::ast::Span<ir::Statement>],
-        counted: &ir::CountedLoop,
+        counted: &slate_analysis::CountedLoop,
         body: &[slate_parser::ast::Span<ir::Statement>],
     ) -> Result<Option<Stmt>> {
         let Some((last, prefix)) = init.split_last() else {
@@ -752,7 +751,8 @@ impl FunctionLowerer<'_, '_> {
     }
 }
 
-pub(super) fn collect_lets(
+fn collect_lets(
+    facts: slate_analysis::UnitFacts<'_>,
     statements: &[slate_parser::ast::Span<ir::Statement>],
     lets: &mut Vec<BindingId>,
     indices: &mut HashSet<BindingId>,
@@ -760,16 +760,15 @@ pub(super) fn collect_lets(
     for statement in statements {
         match &statement.value {
             ir::Statement::Let(variable) => lets.push(variable.id),
-            ir::Statement::For {
-                counted: Some(counted),
-                ..
-            } => {
-                indices.insert(counted.index);
+            ir::Statement::For { id, .. } => {
+                if let Some(counted) = facts.counted_loop(*id) {
+                    indices.insert(counted.index);
+                }
             }
             _ => {}
         }
         for body in control_flow::children(&statement.value) {
-            collect_lets(body, lets, indices);
+            collect_lets(facts, body, lets, indices);
         }
     }
 }

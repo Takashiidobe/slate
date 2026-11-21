@@ -9,6 +9,7 @@ include = ["/src"]
 
 [dependencies]
 foldhash.workspace = true
+num-bigint.workspace = true
 rayon.workspace = true
 slate-parser.workspace = true
 stacker = "0.1.25"

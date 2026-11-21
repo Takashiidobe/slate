@@ -73,8 +73,9 @@ was.
 
 ### Counted loops
 
-After side-effect hoisting, `sema/counted_loops.rs` marks a `for` whose index
-provably runs over a range: `counted: %i in start..end` (`..=` when inclusive).
+`slate-analysis` (`counted_loops.rs`, on [def-use](../slate-analysis.md#def-use))
+proves that a `for` index runs over a range and records it as a fact keyed by
+the `for`'s id, not in the IR (`slate-8ge7.8`).
 Inside the body the index holds a value in that range, only the increment writes
 it, and `end` has the same value at every condition check, so the loop runs
 exactly like `for i in start..end` in Rust. `start` and `end` are copies of the
@@ -101,7 +102,10 @@ index's initializer and the condition's bound. The `init`, `condition` and
 - The body writes neither the index nor any binding `end` reads, and contains no
   label, no `case` or `default` of a switch outside the body, no asm, no SEH
   `__try`, and no OpenMP region.
-- Fixtures: `ir_counted_loops.c`, `ir_counted_loops_rejected.c`.
+- Fixtures: `crates/slate/tests/fixtures/for_range_counted.c` and
+  `for_range_rejected.c`. A `case` whose switch is outside the body cannot be
+  written in defined C, since the jump skips the index's initializer, so no
+  runtime fixture covers it.
 
 Slate (`lower_counted_for` in `frontend/lowerer/statements.rs`) lowers a counted
 `for` to `'__slate_break_N: for i in start..end` (`end + 1` when inclusive),
@@ -112,8 +116,7 @@ drops the label when nothing nested needs it. Slate keeps the `loop` lowering
 when the index is over-aligned, its initializer reads the index, or its Rust
 name is shared with a parameter or a local that is not a counted index. The
 interprocedural passes do not track scopes, and a `for` pattern that shadows a
-pointer parameter would be rewritten as that parameter. `length_lattice` reads a
-`for` range as the loop's bound and body. Fixture:
+pointer parameter would be rewritten as that parameter. Fixture:
 `crates/slate/tests/fixtures/for_range_counted.c`.
 
 ### Structured exception handling

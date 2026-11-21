@@ -80,7 +80,6 @@ int main(void) {
 // DEFAULT-NEXT:                 write<i32>(%[[VALUE_i]], read<i32>(%[[VALUE2]]));
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             counted: %[[VALUE_i]] in const<i32>(0)..const<i32>(1)
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if logical_and<bool>(eq<ptr<const i8>>(read<ptr<const i8>>(field0(deref(ptr_offset<ptr<@type[[TYPE_pair]]>, subtract=false, element=@type[[TYPE_pair]], overflow=ub>(array_decay<ptr<@type[[TYPE_pair]]>, length=Some(1)>(%[[VALUE_pairs]]), read<i32>(%[[VALUE_i]]))))), null<ptr<const i8>>), eq<ptr<const i8>>(read<ptr<const i8>>(field1(deref(ptr_offset<ptr<@type[[TYPE_pair]]>, subtract=false, element=@type[[TYPE_pair]], overflow=ub>(array_decay<ptr<@type[[TYPE_pair]]>, length=Some(1)>(%[[VALUE_pairs]]), read<i32>(%[[VALUE_i]]))))), null<ptr<const i8>>))
@@ -105,7 +104,6 @@ int main(void) {
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_i_2]], read<u64>(%[[VALUE7]]) [c="size_t"]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             counted: %[[VALUE_i_2]] in reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"]..reinterpret<u64, reason=usual_arith>(div<u64, by_zero=ub>(size_of<u64, array<bool, 2>>(2) [c="__size_t"], size_of<u64, bool>(1) [c="__size_t"]) [c="__size_t"]) [c="size_t"]
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     if read<bool>(deref(ptr_offset<ptr<bool>, subtract=false, element=bool, overflow=ub>(array_decay<ptr<bool>, length=Some(2)>(%[[VALUE_values]]), read<u64>(%[[VALUE_i_2]]))))

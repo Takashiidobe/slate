@@ -410,7 +410,6 @@ int main(void) {
 // DEFAULT-NEXT:                 write<u64>(%[[VALUE_index_2]], read<u64>(%[[VALUE18]]) [c="size_t"]) [c="size_t"] [c="size_t"];
 // DEFAULT-NEXT:                 yield void;
 // DEFAULT-NEXT:             }
-// DEFAULT-NEXT:             counted: %[[VALUE_index_2]] in reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))) [c="size_t"]..reinterpret<u64, reason=usual_arith, fits=unknown>(widen<i64, reason=usual_arith>(const<i32>(4))) [c="size_t"]
 // DEFAULT-NEXT:             body:
 // DEFAULT-NEXT:                 {
 // DEFAULT-NEXT:                     let %[[VALUE_value:[0-9]+]] value: ptr<i32> [storage=automatic] = pointer_cast<ptr<i32>, reason=assign>(call<ptr<void>, signature=fn(u64) -> ptr<void>>(%[[VALUE_malloc]], size_of<u64, i32>(4) [c="__size_t"]));

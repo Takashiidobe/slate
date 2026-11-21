@@ -467,7 +467,6 @@ impl Lowerer {
             )?,
             Some(keep) => self.normalize_kept_expansions(keep, access, arguments_reversed)?,
         }
-        super::counted_loops::annotate(&mut self.module);
         Ok(())
     }
 
@@ -2513,7 +2512,6 @@ impl Lowerer {
                     condition: condition.map(Into::into),
                     increment: increment.map(|value| value.value.into()),
                     body,
-                    counted: None,
                 }
             }
             StmtKind::Break => Statement::Break(
