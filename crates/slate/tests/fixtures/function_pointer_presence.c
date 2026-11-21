@@ -41,6 +41,6 @@ int main(void) {
 // CHECK-NEXT:     if op == None {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if total == 10 { 0 } else { 1 }
+// CHECK-NEXT:     (total != 10) as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

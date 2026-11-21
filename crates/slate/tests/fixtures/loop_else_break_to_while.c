@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-NEXT:     while n > 0 {
 // CHECK-NEXT:         s += n;
 // CHECK-NEXT:         n -= 1;
-// CHECK-NEXT:         if s <= 50 {
+// CHECK-NEXT:         if !(s > 50) {
 // CHECK-NEXT:             s += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

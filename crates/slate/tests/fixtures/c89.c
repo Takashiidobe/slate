@@ -480,7 +480,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             result -= 1;
-// CHECK-NEXT:             if result <= 6 {
+// CHECK-NEXT:             if !(result > 6) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

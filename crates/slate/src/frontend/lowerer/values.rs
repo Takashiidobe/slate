@@ -425,12 +425,23 @@ impl FunctionLowerer<'_, '_> {
         Ok(statements)
     }
 
-    pub(super) fn lower_evaluation(
+    pub(super) fn lower_exit_condition(
         &mut self,
         evaluation: &ir::Evaluation,
+        head: bool,
     ) -> Result<(Vec<Stmt>, Expr)> {
         let statements = self.lower_statement_list(&evaluation.statements)?;
-        let condition = self.lower_condition(&evaluation.value)?;
+        let negated = (matches!(evaluation.value.ty, ir::Type::Bool)
+            && !(head && statements.is_empty()))
+        .then(|| slate_analysis::transform::negation(&evaluation.value, self.tables.macro_values))
+        .flatten();
+        let condition = match negated {
+            Some(negated) => self.lower_condition(&negated)?,
+            None => Expr::Unary {
+                op: rust::UnaryOp::Not,
+                expr: Box::new(self.lower_condition(&evaluation.value)?),
+            },
+        };
         Ok((statements, condition))
     }
 
@@ -2880,9 +2891,13 @@ impl FunctionLowerer<'_, '_> {
             }
             _ => return Err(unsupported_constant(number)),
         };
+        let ty = self.lower_type(ty)?;
+        if matches!(value, rust::RustValue::Bool(_)) && ty == rust::Type::Prim(rust::Prim::Bool) {
+            return Ok(Expr::Value(value));
+        }
         Ok(Expr::Cast {
             expr: Box::new(Expr::Value(value)),
-            ty: self.lower_type(ty)?,
+            ty,
         })
     }
 }

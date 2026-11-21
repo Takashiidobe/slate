@@ -190,8 +190,7 @@ int main(void) {
 // CHECK-NEXT:     ) as *mut ()) as *mut i8;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = aligned_to(a as *mut (), 8u64) != 0
 // CHECK-NEXT:         && aligned_to(b as *mut (), 64u64) != 0;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = [[V_0]] && aligned_to(c as *mut (), 4096u64) != 0;
-// CHECK-NEXT:     ok &= [[V_1]] as i32;
+// CHECK-NEXT:     ok &= ([[V_0]] && aligned_to(c as *mut (), 4096u64) != 0) as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_bytes(
 // CHECK-NEXT:             ((small as *mut ()) as *mut core::ffi::c_void) as *mut u8,

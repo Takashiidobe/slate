@@ -99,7 +99,7 @@ int main(void) {
 // CHECK-NEXT:         core::mem::offset_of!(PackedTwoAgain, value) as i32,
 // CHECK-NEXT:         core::mem::offset_of!(NaturalAfter, value) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     if (packed.tag as i32) == 29 && packed.value == 31 { 0 } else { 1 }
+// CHECK-NEXT:     !((packed.tag as i32) == 29 && packed.value == 31) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

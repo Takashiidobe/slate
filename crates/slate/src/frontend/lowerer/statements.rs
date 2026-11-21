@@ -442,12 +442,9 @@ impl FunctionLowerer<'_, '_> {
                 body,
             } => {
                 let body = self.lower_statement_list(body)?;
-                let (mut prefix, condition) = self.lower_evaluation(condition)?;
+                let (mut prefix, condition) = self.lower_exit_condition(condition, true)?;
                 prefix.push(Stmt::If {
-                    cond: Expr::Unary {
-                        op: rust::UnaryOp::Not,
-                        expr: Box::new(condition),
-                    },
+                    cond: condition,
                     then_body: vec![Stmt::Break(None)],
                     else_body: Vec::new(),
                 });
@@ -476,13 +473,10 @@ impl FunctionLowerer<'_, '_> {
                 let body = self.lower_statement_list(body)?;
                 let mut loop_body = Vec::new();
                 if let Some(condition) = condition {
-                    let (prefix, condition) = self.lower_evaluation(condition)?;
+                    let (prefix, condition) = self.lower_exit_condition(condition, true)?;
                     loop_body.extend(prefix);
                     loop_body.push(Stmt::If {
-                        cond: Expr::Unary {
-                            op: rust::UnaryOp::Not,
-                            expr: Box::new(condition),
-                        },
+                        cond: condition,
                         then_body: vec![Stmt::Break(None)],
                         else_body: Vec::new(),
                     });
@@ -510,13 +504,10 @@ impl FunctionLowerer<'_, '_> {
                     label: self.continue_label(*id),
                     body,
                 }];
-                let (prefix, condition) = self.lower_evaluation(condition)?;
+                let (prefix, condition) = self.lower_exit_condition(condition, false)?;
                 loop_body.extend(prefix);
                 loop_body.push(Stmt::If {
-                    cond: Expr::Unary {
-                        op: rust::UnaryOp::Not,
-                        expr: Box::new(condition),
-                    },
+                    cond: condition,
                     then_body: vec![Stmt::Break(None)],
                     else_body: Vec::new(),
                 });

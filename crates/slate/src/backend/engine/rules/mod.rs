@@ -1,6 +1,4 @@
 mod array_iter;
-mod bool_simplify;
-mod bool_ternary;
 mod branch_init;
 mod compound_assign;
 mod cstr_literal;
@@ -66,16 +64,11 @@ pub(super) fn registry(
         Box::new(array_iter::ForArrayIterRecover),
         Box::new(return_cleanup::UnreachableAfterReturn),
         Box::new(return_cleanup::ReturnSlotFold),
-        Box::new(bool_ternary::BoolTernaryFold),
-        Box::new(bool_ternary::BoolIntTernaryFold),
         Box::new(inline_temps::LateInlineTemps),
         Box::new(inline_temps::InlineConstArgTemps),
         Box::new(inline_temps::AsmOutputTempFold),
         Box::new(null_compare::NullCompare),
         Box::new(ptr_offset::PtrOffset {
-            pointer_width: target.pointer_width,
-        }),
-        Box::new(bool_simplify::BoolSimplify {
             pointer_width: target.pointer_width,
         }),
         Box::new(pattern_range::MatchRangeFold),

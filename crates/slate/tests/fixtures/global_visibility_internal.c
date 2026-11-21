@@ -56,7 +56,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     if (unsafe { counter }) == 15 { 0 } else { 1 }
+// CHECK-NEXT:     ((unsafe { counter }) != 15) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

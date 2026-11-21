@@ -68,8 +68,7 @@ int main(void) {
 // CHECK-NEXT:         }) == 0) as i32;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = same != 0 && (src[0] as i32) == 0
 // CHECK-NEXT:         && text_len(dst.as_mut_ptr() as *const i8) == 7;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = [[V_0]] && parse_num(dst.as_mut_ptr()) == 1234567;
-// CHECK-NEXT:     if [[V_1]] { 0 } else { 1 }
+// CHECK-NEXT:     !([[V_0]] && parse_num(dst.as_mut_ptr()) == 1234567) as i32
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! likely {
 // CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         (($x) != 0) as i64
+// CHECK-NEXT:         !(!(($x) != 0)) as i64
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -110,7 +110,7 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld %d\n".as_ptr(), e, calls) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     if (unsafe { calls }) == 2 {
+// CHECK-NEXT:     if (((unsafe { calls }) == 2) as i64) != 0 {
 // CHECK-NEXT:         println!("probable");
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

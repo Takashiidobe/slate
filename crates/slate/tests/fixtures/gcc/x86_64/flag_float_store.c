@@ -510,18 +510,14 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "cond {}",
-// CHECK-NEXT:         if __slate_f80_to_f64(
+// CHECK-NEXT:         (__slate_f80_to_f64(
 // CHECK-NEXT:             __slate_f80_from_f64(
 // CHECK-NEXT:                 unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) },
 // CHECK-NEXT:             )
 // CHECK-NEXT:                 * __slate_f80_from_f64(
 // CHECK-NEXT:                     unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) },
 // CHECK-NEXT:                 ),
-// CHECK-NEXT:         ) != 0.0f64 {
-// CHECK-NEXT:             1i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
+// CHECK-NEXT:         ) != 0.0f64) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if __slate_f80_to_f64(
 // CHECK-NEXT:         __slate_f80_from_f64(

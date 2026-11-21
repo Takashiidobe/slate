@@ -38,13 +38,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn logical_and(a: i32, b: i32) -> i32 {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = a != 0 && mark(b) != 0;
-// CHECK-NEXT:     [[V_0]] as i32
+// CHECK-NEXT:     (a != 0 && mark(b) != 0) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn logical_or(a: i32, b: i32) -> i32 {
-// CHECK-NEXT:     let [[V_0]]: bool = a != 0 || mark(b) != 0;
-// CHECK-NEXT:     [[V_0]] as i32
+// CHECK-NEXT:     (a != 0 || mark(b) != 0) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

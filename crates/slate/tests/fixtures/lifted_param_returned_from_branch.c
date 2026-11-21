@@ -65,9 +65,7 @@ int main(void) {
 // CHECK-NEXT:         != (core::ptr::addr_of_mut!(b) as *mut ())
 // CHECK-NEXT:         || pick_int(core::ptr::addr_of_mut!(a), 2i32) != core::ptr::addr_of_mut!(a);
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = [[V_0]] || !pick_int(core::ptr::addr_of_mut!(a), 1i32).is_null();
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = [[V_1]]
-// CHECK-NEXT:         || pick_int(core::ptr::addr_of_mut!(a), 0i32) != core::ptr::addr_of_mut!(b);
-// CHECK-NEXT:     if [[V_2]] {
+// CHECK-NEXT:     if [[V_1]] || pick_int(core::ptr::addr_of_mut!(a), 0i32) != core::ptr::addr_of_mut!(b) {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

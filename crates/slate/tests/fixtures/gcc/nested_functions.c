@@ -283,7 +283,7 @@ int main(void) {
 // CHECK-NEXT:             with_goto__add(core::ptr::addr_of_mut!(acc), n);
 // CHECK-NEXT:             let [[V_3]]: i32 = n - 1;
 // CHECK-NEXT:             n = [[V_3]];
-// CHECK-NEXT:             if [[V_3]] <= 0 {
+// CHECK-NEXT:             if !([[V_3]] > 0) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

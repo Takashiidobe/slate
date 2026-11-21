@@ -51,7 +51,7 @@ int main(void) {
 // CHECK-NEXT:             out += 100;
 // CHECK-NEXT:             out += 1;
 // CHECK-NEXT:             out += 2;
-// CHECK-NEXT:             if out <= 50 {
+// CHECK-NEXT:             if !(out > 50) {
 // CHECK-NEXT:                 out += 3;
 // CHECK-NEXT:                 out += 4;
 // CHECK-NEXT:                 if x % 2 != 0 {
@@ -63,7 +63,7 @@ int main(void) {
 // CHECK-NEXT:         0 | 1 => {
 // CHECK-NEXT:             out += 1;
 // CHECK-NEXT:             out += 2;
-// CHECK-NEXT:             if out <= 50 {
+// CHECK-NEXT:             if !(out > 50) {
 // CHECK-NEXT:                 out += 3;
 // CHECK-NEXT:                 out += 4;
 // CHECK-NEXT:                 if x % 2 != 0 {
@@ -74,7 +74,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         2..=100 => {
 // CHECK-NEXT:             out += 2;
-// CHECK-NEXT:             if out <= 50 {
+// CHECK-NEXT:             if !(out > 50) {
 // CHECK-NEXT:                 out += 3;
 // CHECK-NEXT:                 out += 4;
 // CHECK-NEXT:                 if x % 2 != 0 {

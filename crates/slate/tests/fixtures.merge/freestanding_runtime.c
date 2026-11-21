@@ -64,7 +64,7 @@ int main(void) {
 // CHECK-NEXT:     step(3i32);
 // CHECK-NEXT:     step(4i32);
 // CHECK-NEXT:     unsafe { console_put(counter + buffer.0[2]) };
-// CHECK-NEXT:     if (unsafe { counter }) == 7 { 0 } else { 1 }
+// CHECK-NEXT:     ((unsafe { counter }) != 7) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: // merge-second-target: linux-i686 i686-unknown-linux-gnu clang

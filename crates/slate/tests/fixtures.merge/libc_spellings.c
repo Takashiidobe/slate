@@ -72,9 +72,9 @@ int main(void) {
 // CHECK-NEXT:   libc_spellings.c: [] 1 compiled
 // CHECK-NEXT:   units/libc_spellings_address.c: [] 1 compiled
 // CHECK-NEXT: total: 12 compiles across 6 targets
-// CHECK-NEXT: unit libc_spellings: 13 items, 7 gated, 2 duplicated functions
+// CHECK-NEXT: unit libc_spellings: 14 items, 8 gated, 2 duplicated functions
 // CHECK-NEXT:   duplicated fn:graph_at: 2 variants
-// CHECK-NEXT:   duplicated fn:hand_written: 2 variants
+// CHECK-NEXT:   duplicated fn:hand_written: 3 variants
 // CHECK-NEXT:   spliced fn:classify: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit libc_spellings_address: 36 items, 34 gated, 2 duplicated functions
@@ -321,12 +321,12 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(target_os = "android")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         count(Some(isdigit)) + unsafe { *(__errno() as *mut i32) }
-// CHECK-NEXT:             + if isgraph(97i32) != 0 { 1 } else { 0 }
+// CHECK-NEXT:             + ((isgraph(97i32) != 0) as i32)
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_os = "macos")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         count(Some(isdigit)) + unsafe { *(__error() as *mut i32) }
-// CHECK-NEXT:             + if isgraph(97i32) != 0 { 1 } else { 0 }
+// CHECK-NEXT:             + ((isgraph(97i32) != 0) as i32)
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_os = "freebsd")]
 // CHECK-NEXT:     {
@@ -337,7 +337,7 @@ int main(void) {
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ) + unsafe { *(__error() as *mut i32) }
-// CHECK-NEXT:             + if __sbistype(97i32, 2048 as c_ulong) != 0 { 1 } else { 0 }
+// CHECK-NEXT:             + ((__sbistype(97i32, 2048 as c_ulong) != 0) as i32)
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
@@ -348,12 +348,8 @@ int main(void) {
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ) + unsafe { *(__errno_location() as *mut i32) }
-// CHECK-NEXT:             + if ((unsafe { *unsafe { *__ctype_b_loc() }.add(97) }) as i32) & 32768
-// CHECK-NEXT:                 != 0 {
-// CHECK-NEXT:                 1
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 0
-// CHECK-NEXT:             }
+// CHECK-NEXT:             + ((((unsafe { *unsafe { *__ctype_b_loc() }.add(97) }) as i32) & 32768 != 0)
+// CHECK-NEXT:                 as i32)
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_env = "musl")]
 // CHECK-NEXT:     {
@@ -364,15 +360,11 @@ int main(void) {
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ) + unsafe { *(__errno_location() as *mut i32) }
-// CHECK-NEXT:             + if (if false {
+// CHECK-NEXT:             + (((if false {
 // CHECK-NEXT:                 unsafe { isgraph(97i32 as i32) as i32 }
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 (97u32.wrapping_sub(33u32) < 94) as i32
-// CHECK-NEXT:             }) != 0 {
-// CHECK-NEXT:                 1
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 0
-// CHECK-NEXT:             }
+// CHECK-NEXT:             }) != 0) as i32)
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
@@ -383,7 +375,7 @@ int main(void) {
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ) + unsafe { *_errno() }
-// CHECK-NEXT:             + if (unsafe { isgraph(97i32 as i32) as i32 }) != 0 { 1 } else { 0 }
+// CHECK-NEXT:             + (((unsafe { isgraph(97i32 as i32) as i32 }) != 0) as i32)
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -400,7 +392,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(thread_local)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(any(target_os = "macos", target_os = "linux"))]
+// CHECK-NEXT: #[cfg(any(target_os = "macos", target_env = "gnu"))]
 // CHECK-NEXT: fn hand_written(c: i32) -> i32 {
 // CHECK-NEXT:     if false { unsafe { slate_support::isgraph(c) } } else { 7 }
 // CHECK-NEXT: }
@@ -421,11 +413,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *position = [[V_1]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe { slate_support::isgraph(*text.offset([[V_1]] as isize) as i32) }) != 0 {
-// CHECK-NEXT:         1
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     }
+// CHECK-NEXT:     ((unsafe { slate_support::isgraph(*text.offset([[V_1]] as isize) as i32) }) != 0) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_env = "musl")]
@@ -448,7 +436,20 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         (((unsafe { *text.offset([[V_3]] as isize) }) as u32).wrapping_sub(33) < 94) as i32
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if [[V_0]] != 0 { 1 } else { 0 }
+// CHECK-NEXT:     ([[V_0]] != 0) as i32
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: #[cfg(target_env = "musl")]
+// CHECK-NEXT: fn hand_written(c: i32) -> i32 {
+// CHECK-NEXT:     if false {
+// CHECK-NEXT:         if false {
+// CHECK-NEXT:             unsafe { slate_support::isgraph(c) }
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             ((c as u32).wrapping_sub(33) < 94) as i32
+// CHECK-NEXT:         }
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         7
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
@@ -549,24 +550,90 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn classify(c: i32) -> i32 {
 // CHECK-NEXT:     let mut bits: i32 = 0;
-// CHECK-NEXT:     bits |= if (unsafe { slate_support::isalnum(c) }) != 0 { 1 } else { 0 };
-// CHECK-NEXT:     bits |= if (unsafe { slate_support::isalpha(c) }) != 0 { 2 } else { 0 };
+// CHECK-NEXT:     bits |= ((unsafe { slate_support::isalnum(c) }) != 0) as i32;
+// CHECK-NEXT:     #[cfg(not(target_env = "musl"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= if (unsafe { slate_support::isalpha(c) }) != 0 { 2 } else { 0 };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(target_env = "musl")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= if (if false {
+// CHECK-NEXT:             unsafe { slate_support::isalpha(c) }
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             (((c as u32) | 32).wrapping_sub(97) < 26) as i32
+// CHECK-NEXT:         }) != 0 {
+// CHECK-NEXT:             2
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             0
+// CHECK-NEXT:         };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     bits |= if (unsafe { slate_support::isblank(c) }) != 0 { 4 } else { 0 };
 // CHECK-NEXT:     bits |= if (unsafe { slate_support::iscntrl(c) }) != 0 { 8 } else { 0 };
-// CHECK-NEXT:     bits |= if (unsafe { slate_support::isdigit(c) }) != 0 { 16 } else { 0 };
-// CHECK-NEXT:     bits |= if (unsafe { slate_support::isgraph(c) }) != 0 { 32 } else { 0 };
-// CHECK-NEXT:     bits |= if (unsafe { slate_support::islower(c) }) != 0 { 64 } else { 0 };
-// CHECK-NEXT:     bits |= if (unsafe { slate_support::isprint(c) }) != 0 { 128 } else { 0 };
+// CHECK-NEXT:     #[cfg(not(target_env = "musl"))]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= if (unsafe { slate_support::isdigit(c) }) != 0 { 16 } else { 0 };
+// CHECK-NEXT:         bits |= if (unsafe { slate_support::isgraph(c) }) != 0 { 32 } else { 0 };
+// CHECK-NEXT:         bits |= if (unsafe { slate_support::islower(c) }) != 0 { 64 } else { 0 };
+// CHECK-NEXT:         bits |= if (unsafe { slate_support::isprint(c) }) != 0 { 128 } else { 0 };
+// CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(target_env = "musl")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         bits |= if (if false {
+// CHECK-NEXT:             unsafe { slate_support::isdigit(c) }
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             ((c as u32).wrapping_sub(48) < 10) as i32
+// CHECK-NEXT:         }) != 0 {
+// CHECK-NEXT:             16
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             0
+// CHECK-NEXT:         };
+// CHECK-NEXT:         bits |= if (if false {
+// CHECK-NEXT:             unsafe { slate_support::isgraph(c) }
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             ((c as u32).wrapping_sub(33) < 94) as i32
+// CHECK-NEXT:         }) != 0 {
+// CHECK-NEXT:             32
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             0
+// CHECK-NEXT:         };
+// CHECK-NEXT:         bits |= if (if false {
+// CHECK-NEXT:             unsafe { slate_support::islower(c) }
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             ((c as u32).wrapping_sub(97) < 26) as i32
+// CHECK-NEXT:         }) != 0 {
+// CHECK-NEXT:             64
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             0
+// CHECK-NEXT:         };
+// CHECK-NEXT:         bits |= if (if false {
+// CHECK-NEXT:             unsafe { slate_support::isprint(c) }
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             ((c as u32).wrapping_sub(32) < 95) as i32
+// CHECK-NEXT:         }) != 0 {
+// CHECK-NEXT:             128
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             0
+// CHECK-NEXT:         };
+// CHECK-NEXT:     }
 // CHECK-NEXT:     bits |= if (unsafe { slate_support::ispunct(c) }) != 0 { 256 } else { 0 };
 // CHECK-NEXT:     #[cfg(not(target_env = "musl"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         bits |= if (unsafe { slate_support::isspace(c) }) != 0 { 512 } else { 0 };
+// CHECK-NEXT:         bits |= if (unsafe { slate_support::isupper(c) }) != 0 { 1024 } else { 0 };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_env = "musl")]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         bits |= if __isspace(c) != 0 { 512 } else { 0 };
+// CHECK-NEXT:         bits |= if (if false {
+// CHECK-NEXT:             unsafe { slate_support::isupper(c) }
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             ((c as u32).wrapping_sub(65) < 26) as i32
+// CHECK-NEXT:         }) != 0 {
+// CHECK-NEXT:             1024
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             0
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     bits |= if (unsafe { slate_support::isupper(c) }) != 0 { 1024 } else { 0 };
 // CHECK-NEXT:     bits |= if (unsafe { slate_support::isxdigit(c) }) != 0 { 2048 } else { 0 };
 // CHECK-NEXT:     bits
 // CHECK-NEXT: }

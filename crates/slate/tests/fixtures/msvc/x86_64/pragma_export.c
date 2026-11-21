@@ -91,12 +91,10 @@ int main(void) {
 // CHECK-NEXT:             unsafe { GetProcAddress(self_, c"exp_data".as_ptr()) },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = exported == None || (unsafe { exported.unwrap()() }) != 7;
-// CHECK-NEXT:     if [[V_0]] {
+// CHECK-NEXT:     if exported == None || (unsafe { exported.unwrap()() }) != 7 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = aliased == None || (unsafe { aliased.unwrap()() }) != 9;
-// CHECK-NEXT:     if [[V_1]] {
+// CHECK-NEXT:     if aliased == None || (unsafe { aliased.unwrap()() }) != 9 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if data.is_null() || (unsafe { *data }) != 5 {

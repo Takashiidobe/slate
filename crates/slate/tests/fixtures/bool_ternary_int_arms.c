@@ -45,19 +45,19 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn big(x: i32) -> bool {
-// CHECK-NEXT:     x > 3
+// CHECK-NEXT:     (if x > 3 { true as i32 } else { false as i32 }) != 0
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn small(x: i32) -> bool {
-// CHECK-NEXT:     x <= 3
+// CHECK-NEXT:     (if x > 3 { false as i32 } else { true as i32 }) != 0
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn both(c: bool, y: i32) -> bool {
-// CHECK-NEXT:     c && y > 0
+// CHECK-NEXT:     (if c { (y > 0) as i32 } else { false as i32 }) != 0
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn either(c: bool, y: i32) -> bool {
-// CHECK-NEXT:     c || y < 0
+// CHECK-NEXT:     (if c { true as i32 } else { (y < 0) as i32 }) != 0
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn flag_or(x: i32, flag: bool) -> bool {
-// CHECK-NEXT:     let r: bool = x == 2 || flag;
+// CHECK-NEXT:     let r: bool = (if x == 2 { true as i32 } else { flag as i32 }) != 0;
 // CHECK-NEXT:     r
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn counted(x: i32) -> i32 {

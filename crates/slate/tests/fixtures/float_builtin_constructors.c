@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0i32
 // CHECK-NEXT:             }) != 0) as i32,
-// CHECK-NEXT:             !(!core::ptr::read_volatile(core::ptr::addr_of!(nan)).is_nan()) as i32,
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(nan)).is_nan() as i32,
 // CHECK-NEXT:             f.bits,
 // CHECK-NEXT:             d.bits,
 // CHECK-NEXT:             calls,

@@ -93,7 +93,7 @@ int main(void) {
 // CHECK-NEXT:                         if unlikely!(copy < 0) != 0 {
 // CHECK-NEXT:                             break '__loop_1;
 // CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             if true {
+// CHECK-NEXT:                             if !false {
 // CHECK-NEXT:                                 break;
 // CHECK-NEXT:                             }
 // CHECK-NEXT:                         }
@@ -111,7 +111,7 @@ int main(void) {
 // CHECK-NEXT:             loop {
 // CHECK-NEXT:                 core::arch::asm!("", options(nostack, att_syntax));
 // CHECK-NEXT:                 core::ptr::write_volatile(core::ptr::addr_of_mut!(trapped), 1i32);
-// CHECK-NEXT:                 if true {
+// CHECK-NEXT:                 if !false {
 // CHECK-NEXT:                     core::hint::unreachable_unchecked();
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }

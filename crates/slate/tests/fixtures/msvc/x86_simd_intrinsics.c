@@ -299,12 +299,12 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     let mut extended: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
 // X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe { __cpuid(basic.0.as_mut_ptr() as *mut i32, 0i32 as i32) };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe { __cpuidex(extended.0.as_mut_ptr() as *mut i32, 0i32 as i32, 0i32 as i32) };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_0:__v[0-9]+]]: bool = basic.0[0] <= 0
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if basic.0[0] <= 0
 // I686-PC-WINDOWS-MSVC-NEXT:     let mut basic: [i32; 4] = [0i32; 4];
 // I686-PC-WINDOWS-MSVC-NEXT:     let mut extended: [i32; 4] = [0i32; 4];
 // I686-PC-WINDOWS-MSVC-NEXT:     unsafe { __cpuid(basic.as_mut_ptr() as *mut i32, 0i32 as i32) };
 // I686-PC-WINDOWS-MSVC-NEXT:     unsafe { __cpuidex(extended.as_mut_ptr() as *mut i32, 0i32 as i32, 0i32 as i32) };
-// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_0:__v[0-9]+]]: bool = basic[0] <= 0
+// I686-PC-WINDOWS-MSVC-NEXT:     if basic[0] <= 0
 // X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:             memcmp(
@@ -317,10 +317,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:                 (core::mem::size_of::<[i32; 4]>() as u32) as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ) as i32
 // I686-PC-WINDOWS-MSVC-NEXT:             ) as i32
-// X86_64-PC-WINDOWS-MSVC-NEXT:         }) != 0;
-// I686-PC-WINDOWS-MSVC-NEXT:         }) != 0;
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_0]] {
-// I686-PC-WINDOWS-MSVC-NEXT:     if [[V_0]] {
+// X86_64-PC-WINDOWS-MSVC-NEXT:         }) != 0 {
+// I686-PC-WINDOWS-MSVC-NEXT:         }) != 0 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
@@ -399,10 +397,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:         }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // I686-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_0]]: bool = lane(sum, 0i32) != 11 || lane(sum, 3i32) != 14;
-// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_0]]: bool = lane(sum, 0i32) != 11 || lane(sum, 3i32) != 14;
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_0]] {
-// I686-PC-WINDOWS-MSVC-NEXT:     if [[V_0]] {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if lane(sum, 0i32) != 11 || lane(sum, 3i32) != 14 {
+// I686-PC-WINDOWS-MSVC-NEXT:     if lane(sum, 0i32) != 11 || lane(sum, 3i32) != 14 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
@@ -483,10 +479,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:         }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // I686-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_1:__v[0-9]+]]: bool = lane(rotated, 0i32) != 2 || lane(rotated, 3i32) != 1;
-// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_1:__v[0-9]+]]: bool = lane(rotated, 0i32) != 2 || lane(rotated, 3i32) != 1;
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_1]] {
-// I686-PC-WINDOWS-MSVC-NEXT:     if [[V_1]] {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if lane(rotated, 0i32) != 2 || lane(rotated, 3i32) != 1 {
+// I686-PC-WINDOWS-MSVC-NEXT:     if lane(rotated, 0i32) != 2 || lane(rotated, 3i32) != 1 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
@@ -515,10 +509,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:         }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // I686-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_2:__v[0-9]+]]: bool = lane(shifted, 0i32) != 2 || lane(shifted, 3i32) != 0;
-// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_2:__v[0-9]+]]: bool = lane(shifted, 0i32) != 2 || lane(shifted, 3i32) != 0;
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_2]] {
-// I686-PC-WINDOWS-MSVC-NEXT:     if [[V_2]] {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if lane(shifted, 0i32) != 2 || lane(shifted, 3i32) != 0 {
+// I686-PC-WINDOWS-MSVC-NEXT:     if lane(shifted, 0i32) != 2 || lane(shifted, 3i32) != 0 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
@@ -653,12 +645,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: fn check_ssse3_sse41() {
 // I686-PC-WINDOWS-MSVC-NEXT: fn check_ssse3_sse41() {
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_0]]: bool = has_feature(1i32, 2i32, 9i32) == 0
-// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_0]]: bool = has_feature(1i32, 2i32, 9i32) == 0
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || has_feature(1i32, 2i32, 19i32) == 0;
-// I686-PC-WINDOWS-MSVC-NEXT:         || has_feature(1i32, 2i32, 19i32) == 0;
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_0]] {
-// I686-PC-WINDOWS-MSVC-NEXT:     if [[V_0]] {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if has_feature(1i32, 2i32, 9i32) == 0 || has_feature(1i32, 2i32, 19i32) == 0 {
+// I686-PC-WINDOWS-MSVC-NEXT:     if has_feature(1i32, 2i32, 9i32) == 0 || has_feature(1i32, 2i32, 19i32) == 0 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         return;
 // I686-PC-WINDOWS-MSVC-NEXT:         return;
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
@@ -867,12 +855,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: fn check_aes_clmul() {
 // I686-PC-WINDOWS-MSVC-NEXT: fn check_aes_clmul() {
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_0]]: bool = has_feature(1i32, 2i32, 25i32) == 0
-// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_0]]: bool = has_feature(1i32, 2i32, 25i32) == 0
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || has_feature(1i32, 2i32, 1i32) == 0;
-// I686-PC-WINDOWS-MSVC-NEXT:         || has_feature(1i32, 2i32, 1i32) == 0;
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_0]] {
-// I686-PC-WINDOWS-MSVC-NEXT:     if [[V_0]] {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if has_feature(1i32, 2i32, 25i32) == 0 || has_feature(1i32, 2i32, 1i32) == 0 {
+// I686-PC-WINDOWS-MSVC-NEXT:     if has_feature(1i32, 2i32, 25i32) == 0 || has_feature(1i32, 2i32, 1i32) == 0 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         return;
 // I686-PC-WINDOWS-MSVC-NEXT:         return;
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
@@ -1007,12 +991,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:         }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // I686-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_1]]: bool = lane(back, 0i32) == lane(state, 0i32)
-// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_1]]: bool = lane(back, 0i32) == lane(state, 0i32)
-// X86_64-PC-WINDOWS-MSVC-NEXT:         && lane(round, 0i32) == lane(state, 0i32);
-// I686-PC-WINDOWS-MSVC-NEXT:         && lane(round, 0i32) == lane(state, 0i32);
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_1]] {
-// I686-PC-WINDOWS-MSVC-NEXT:     if [[V_1]] {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if lane(back, 0i32) == lane(state, 0i32) && lane(round, 0i32) == lane(state, 0i32) {
+// I686-PC-WINDOWS-MSVC-NEXT:     if lane(back, 0i32) == lane(state, 0i32) && lane(round, 0i32) == lane(state, 0i32) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
@@ -1179,10 +1159,8 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:         }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // I686-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_0]]: bool = lane(rounds, 0i32) == 0 && lane(rounds, 1i32) == 0;
-// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_0]]: bool = lane(rounds, 0i32) == 0 && lane(rounds, 1i32) == 0;
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_0]] {
-// I686-PC-WINDOWS-MSVC-NEXT:     if [[V_0]] {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if lane(rounds, 0i32) == 0 && lane(rounds, 1i32) == 0 {
+// I686-PC-WINDOWS-MSVC-NEXT:     if lane(rounds, 0i32) == 0 && lane(rounds, 1i32) == 0 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }

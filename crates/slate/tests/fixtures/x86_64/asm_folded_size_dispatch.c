@@ -115,7 +115,7 @@ int main(void) {
 // CHECK-NEXT:             if __slate_asm_target {
 // CHECK-NEXT:                 return 1;
 // CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if true {
+// CHECK-NEXT:                 if !false {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
@@ -139,7 +139,7 @@ int main(void) {
 // CHECK-NEXT:             if __slate_asm_target {
 // CHECK-NEXT:                 return 1;
 // CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if true {
+// CHECK-NEXT:                 if !false {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
@@ -163,7 +163,7 @@ int main(void) {
 // CHECK-NEXT:             if __slate_asm_target {
 // CHECK-NEXT:                 return 1;
 // CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if true {
+// CHECK-NEXT:                 if !false {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }

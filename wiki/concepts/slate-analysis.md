@@ -5,6 +5,7 @@
 - [Where a rewrite belongs](#where-a-rewrite-belongs)
 - [Transform stage](#transform-stage)
   - [Const-fold](#const-fold)
+  - [Truth canonicalization](#truth-canonicalization)
   - [Casts are lowering, not a
     transform](#casts-are-lowering-not-a-transform)
 - [Keys](#keys)
@@ -114,9 +115,12 @@ spell and nothing else:
   two's complement for signed `T`); `char c = 200` is `const<i8>(-56)`.
 - `neg` of a constant with a signed type becomes a negative constant, since C
   has no negative literal; `-1` is `const<i32>(-1)`.
-- Arithmetic, comparisons and shifts on constants stay as written (`60 * 60`,
-  `1 << 18`, `FE_ALL_EXCEPT`'s `|` chain): rustc folds them, and the output
-  keeps the C's meaning. Explicit casts stay, no-op ones included (see
+- A comparison of two integer constants becomes `const<bool>` unless it is an
+  explicit `(_Bool)` conversion (`slate-8ge7.24.6`); `_Bool f = 1` is
+  `const<bool>(true)`, and lowering spells a bool constant without a cast.
+- Arithmetic and shifts on constants stay as written (`60 * 60`, `1 << 18`,
+  `FE_ALL_EXCEPT`'s `|` chain): rustc folds them, and the output keeps the C's
+  meaning. Explicit casts stay, no-op ones included (see
   [Casts are lowering](#casts-are-lowering-not-a-transform)).
 - Values inside a kept expansion or a `Module::macro_values` region, and
   conversions of a macro-valued constant, are left alone.
@@ -128,6 +132,38 @@ suffix where the context types it (`let c: i8 = 97`), and
 `literal_casts::bare_initializers` does the same for a static whose declared
 type is `T`. A constant array index or lane is written bare by
 `FunctionLowerer::lower_index` when it fits the target's `usize`.
+
+### Truth canonicalization
+
+`truth-canonicalize` (`transform/truth_canonicalize.rs`, `slate-8ge7.24.6`)
+runs first in `Slot::AfterMacroStrip`, before `inline-temps`, and replaced the
+Rust rules `bool_simplify` and `bool_ternary`. Sema already types every
+condition, `&&`, `||` and `!` operand as `bool` and spells C's int round trips
+as `from_bool` and `ne(_, 0)`, so each rewrite keeps the value in any context,
+not only a truth context:
+
+- `ne(from_bool(b), 0)` is `b`; `eq(from_bool(b), 0)` is `not(b)`.
+- `not(not(b))` is `b`; `not(const<bool>)` folds.
+- `not` of `eq`/`ne` inverts the comparison for any operand type (exact under
+  NaN); `not` of `lt`/`le`/`gt`/`ge` inverts only for integer, bool or pointer
+  operands, so `!(a < b)` on doubles stays.
+- `conditional<int>(c, 1, 0)` is `from_bool(c)`, `(c, 0, 1)` is
+  `from_bool(not(c))`, `(c, 1, from_bool(y))` is `from_bool(c || y)` and
+  `(c, from_bool(y), 0)` is `from_bool(c && y)`; the same shapes with `bool`
+  arms drop the `from_bool`.
+- Sema lowers `a || f()` as `let t: bool; if a { t = true } else { t = f() != 0 }`.
+  When both arms write one `Temporary` of type `bool` this becomes
+  `let t = a || f() != 0`, which `inline-temps` then moves into its use. A
+  user variable written that way stays an `if`.
+
+Nothing is rewritten that removes an `explicit` conversion or comparison, a
+`Module::macro_values` node, or a node inside a kept expansion.
+
+Lowering uses the same rules through `transform::negation` for loop exit tests
+(`if !c { break }`) of a `do`/`while` and of a `while`/`for` whose condition
+has hoisted statements; a head test with none keeps `!c` so `LoopToWhile`
+recovers `while c`. Negations that the backend's goto structuring builds
+(`if !(i < 5) { break }` from `if (i < 5) goto top`) are not canonicalized.
 
 ### Casts are lowering, not a transform
 

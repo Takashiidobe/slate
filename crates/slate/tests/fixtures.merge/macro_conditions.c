@@ -177,7 +177,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! UNLESS {
 // CHECK-NEXT:     ($c:expr) => {
-// CHECK-NEXT:         (unsafe { verbose }) > 1 && ($c) == 0
+// CHECK-NEXT:         (unsafe { verbose }) > 1 && !(($c) != 0)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

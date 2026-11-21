@@ -54,7 +54,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn likely_nonzero(x: i32) -> i32 {
-// CHECK-NEXT:     if x != 0 {
+// CHECK-NEXT:     if ((x != 0) as i64) != 0 {
 // CHECK-NEXT:         unsafe { core::hint::assert_unchecked(x != 0) };
 // CHECK-NEXT:         return x + 10;
 // CHECK-NEXT:     }

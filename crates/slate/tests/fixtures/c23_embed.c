@@ -47,14 +47,10 @@ int main(void) {
 // CHECK-NEXT:         && ((unsafe { framed[7] }) as i32) == 221) as i32;
 // CHECK-NEXT:     let empty_ok: i32 = ((core::mem::size_of::<[u8; 1]>() as u64) == 1
 // CHECK-NEXT:         && ((unsafe { empty[0] }) as i32) == 238) as i32;
-// CHECK-NEXT:     if (core::mem::size_of::<[u8; 4]>() as u64) == 4
+// CHECK-NEXT:     !((core::mem::size_of::<[u8; 4]>() as u64) == 4
 // CHECK-NEXT:         && ((unsafe { data[0] }) as i32) == 67 && ((unsafe { data[1] }) as i32) == 50
 // CHECK-NEXT:         && ((unsafe { data[2] }) as i32) == 51 && ((unsafe { data[3] }) as i32) == 10
-// CHECK-NEXT:         && framed_ok != 0 && empty_ok != 0 {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         1
-// CHECK-NEXT:     }
+// CHECK-NEXT:         && framed_ok != 0 && empty_ok != 0) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static data: [u8; 4] = [67, 50, 51, 10];

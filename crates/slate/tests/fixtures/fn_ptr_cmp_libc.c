@@ -38,7 +38,7 @@ int main(void) {
 // CHECK-NEXT:                 malloc as *const (),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) as i32;
-// CHECK-NEXT:     if matches != 0 { 0 } else { 1 }
+// CHECK-NEXT:     (matches == 0) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

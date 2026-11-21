@@ -548,7 +548,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.compare")]
 // CHECK-NEXT: extern "C-unwind" fn compare(lhs: *const (), rhs: *const ()) -> i32 {
-// CHECK-NEXT:     if lhs == rhs { 0 } else { 1 }
+// CHECK-NEXT:     (lhs != rhs) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn start(arg: *mut ()) -> *mut () {

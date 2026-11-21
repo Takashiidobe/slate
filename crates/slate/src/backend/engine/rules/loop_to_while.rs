@@ -1,7 +1,7 @@
 use super::inline_temps;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Expr, UnaryOp};
+use crate::backend::rust_ast::{Expr, RustValue, UnaryOp};
 
 pub(in crate::backend::engine) struct LoopToWhile;
 
@@ -13,6 +13,7 @@ pub(super) fn negate(cond: &Expr) -> Expr {
             op: UnaryOp::Not,
             expr,
         } => (**expr).clone(),
+        Expr::Value(RustValue::Bool(value)) => Expr::Value(RustValue::Bool(!value)),
         _ => Expr::Unary {
             op: UnaryOp::Not,
             expr: Box::new(cond.clone()),

@@ -90,15 +90,15 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{}{}{}{}{} {}",
-// CHECK-NEXT:             !(!x.is_nan()) as i32,
+// CHECK-NEXT:             x.is_nan() as i32,
 // CHECK-NEXT:             ((if x.is_infinite() {
 // CHECK-NEXT:                 if x.is_sign_negative() { -1i32 } else { 1i32 }
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0i32
 // CHECK-NEXT:             }) != 0) as i32,
-// CHECK-NEXT:             !(!x.is_finite()) as i32,
-// CHECK-NEXT:             !(!x.is_normal()) as i32,
-// CHECK-NEXT:             !(!x.is_sign_negative()) as i32,
+// CHECK-NEXT:             x.is_finite() as i32,
+// CHECK-NEXT:             x.is_normal() as i32,
+// CHECK-NEXT:             x.is_sign_negative() as i32,
 // CHECK-NEXT:             if x.is_nan() {
 // CHECK-NEXT:                 0i32
 // CHECK-NEXT:             } else if x.is_infinite() {
@@ -128,15 +128,15 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{}{}{}{}{} {}",
-// CHECK-NEXT:             !(!x.is_nan()) as i32,
+// CHECK-NEXT:             x.is_nan() as i32,
 // CHECK-NEXT:             ((if x.is_infinite() {
 // CHECK-NEXT:                 if x.is_sign_negative() { -1i32 } else { 1i32 }
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 0i32
 // CHECK-NEXT:             }) != 0) as i32,
-// CHECK-NEXT:             !(!x.is_finite()) as i32,
-// CHECK-NEXT:             !(!x.is_normal()) as i32,
-// CHECK-NEXT:             !(!x.is_sign_negative()) as i32,
+// CHECK-NEXT:             x.is_finite() as i32,
+// CHECK-NEXT:             x.is_normal() as i32,
+// CHECK-NEXT:             x.is_sign_negative() as i32,
 // CHECK-NEXT:             if x.is_nan() {
 // CHECK-NEXT:                 0i32
 // CHECK-NEXT:             } else if x.is_infinite() {

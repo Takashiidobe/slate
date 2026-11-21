@@ -93,7 +93,7 @@ fn collect_locals(body: &mut [Span<Statement>], locals: &mut HashSet<BindingId>)
     }
 }
 
-fn children(statement: &mut Statement) -> Vec<&mut Vec<Span<Statement>>> {
+pub(super) fn children(statement: &mut Statement) -> Vec<&mut Vec<Span<Statement>>> {
     match statement {
         Statement::Block(body)
         | Statement::While { body, .. }
@@ -140,7 +140,7 @@ fn children(statement: &mut Statement) -> Vec<&mut Vec<Span<Statement>>> {
     }
 }
 
-fn evaluations(statement: &mut Statement) -> Vec<&mut Evaluation> {
+pub(super) fn evaluations(statement: &mut Statement) -> Vec<&mut Evaluation> {
     match statement {
         Statement::While { condition, .. } | Statement::DoWhile { condition, .. } => {
             vec![condition]

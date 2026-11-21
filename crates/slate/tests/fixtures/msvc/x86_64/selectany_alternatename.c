@@ -97,18 +97,14 @@ int main(void) {
 // CHECK-NEXT:     if (unsafe { present_flag }) != 1 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = wmemcpy(
-// CHECK-NEXT:         target.as_mut_ptr(),
-// CHECK-NEXT:         source.as_mut_ptr() as *const u16,
-// CHECK-NEXT:         5u64,
-// CHECK-NEXT:     ) != target.as_mut_ptr()
+// CHECK-NEXT:     if wmemcpy(target.as_mut_ptr(), source.as_mut_ptr() as *const u16, 5u64)
+// CHECK-NEXT:         != target.as_mut_ptr()
 // CHECK-NEXT:         || (unsafe {
 // CHECK-NEXT:             wcscmp(
 // CHECK-NEXT:                 target.as_mut_ptr() as *const u16,
 // CHECK-NEXT:                 (core::ptr::addr_of_mut!(__slate_str28) as *mut u16) as *const u16,
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }) != 0;
-// CHECK-NEXT:     if [[V_0]] {
+// CHECK-NEXT:         }) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

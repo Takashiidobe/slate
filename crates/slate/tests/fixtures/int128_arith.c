@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT:     let y: u128 = 1000000000000;
 // CHECK-NEXT:     let prod: u128 = mul128(x, y);
 // CHECK-NEXT:     print128(prod);
-// CHECK-NEXT:     let cmp: i32 = if sum > 0 { 1 } else { 0 };
+// CHECK-NEXT:     let cmp: i32 = (sum > 0) as i32;
 // CHECK-NEXT:     println!("{}", cmp);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

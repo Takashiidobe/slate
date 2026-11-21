@@ -76,7 +76,11 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn flag(a: i32) -> i32 {
-// CHECK-NEXT:     let r: bool = a == 0;
+// CHECK-NEXT:     let r: bool = if a != 0 {
+// CHECK-NEXT:         false
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         true
+// CHECK-NEXT:     };
 // CHECK-NEXT:     r as i32
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn dneg(a: i32) -> i32 {

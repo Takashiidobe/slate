@@ -38,9 +38,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: [i32; 2] = [1, 2];
 // CHECK-NEXT:     let mut b: [i32; 2] = [3, 4];
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = pick(a.as_slice(), b.as_slice(), 2i32, 0i32) != 3
-// CHECK-NEXT:         || pick(a.as_slice(), b.as_slice(), 2i32, 1i32) != 7;
-// CHECK-NEXT:     if [[V_0]] {
+// CHECK-NEXT:     if pick(a.as_slice(), b.as_slice(), 2i32, 0i32) != 3
+// CHECK-NEXT:         || pick(a.as_slice(), b.as_slice(), 2i32, 1i32) != 7 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

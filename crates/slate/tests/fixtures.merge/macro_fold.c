@@ -648,7 +648,7 @@ int main(void) {
 // CHECK-NEXT:                 i
 // CHECK-NEXT:             );
 // CHECK-NEXT:             i += 1;
-// CHECK-NEXT:             if i >= 2 {
+// CHECK-NEXT:             if !(i < 2) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

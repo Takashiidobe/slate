@@ -158,11 +158,11 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_a(-3i32);
 // CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_A(9u32);
 // CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_type(-11i32);
-// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_ready(1i32 != 0i32);
+// CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_ready(true);
 // CHECK-NEXT:     [[T_0]].tag = 103i8;
 // CHECK-NEXT:     [[T_0]].__slate_bits_1.__set__flags2(-200i32);
 // CHECK-NEXT:     [[T_0]].__slate_bits_2.__set_wide(-5000000000i64);
-// CHECK-NEXT:     [[T_0]].__slate_bits_2.__set_last(1i32 != 0i32);
+// CHECK-NEXT:     [[T_0]].__slate_bits_2.__set_last(true);
 // CHECK-NEXT:     [[T_0]].after = 77i16;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
@@ -181,7 +181,7 @@ int main(void) {
 // CHECK-NEXT:         (*flags).__slate_bits_1.__set__flags2([[T_2]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = ((*flags).__slate_bits_0.__get_ready() as i32) == 0;
+// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = !(*flags).__slate_bits_0.__get_ready();
 // CHECK-NEXT:         (*flags).__slate_bits_0.__set_ready([[T_3]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -197,13 +197,11 @@ int main(void) {
 // CHECK-NEXT:     local.__slate_bits_0.__set_a(-8i32);
 // CHECK-NEXT:     local.__slate_bits_0.__set_A(15u32);
 // CHECK-NEXT:     local.__slate_bits_0.__set_type(15i32);
-// CHECK-NEXT:     let [[T_1]] = true;
-// CHECK-NEXT:     local.__slate_bits_0.__set_ready([[T_1]]);
+// CHECK-NEXT:     local.__slate_bits_0.__set_ready(true);
 // CHECK-NEXT:     local.tag = 116;
 // CHECK-NEXT:     local.__slate_bits_1.__set__flags2(8388607i32);
 // CHECK-NEXT:     local.__slate_bits_2.__set_wide(549755813887i64);
-// CHECK-NEXT:     let [[T_2]] = true;
-// CHECK-NEXT:     local.__slate_bits_2.__set_last([[T_2]]);
+// CHECK-NEXT:     local.__slate_bits_2.__set_last(true);
 // CHECK-NEXT:     local.after = -2;
 // CHECK-NEXT:     let assigned: i32 = 4;
 // CHECK-NEXT:     local.__slate_bits_0.__set_x(12u32);

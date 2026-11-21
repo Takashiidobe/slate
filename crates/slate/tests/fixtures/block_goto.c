@@ -317,7 +317,7 @@ again:
 // CHECK-NEXT:             _Block_release(inc as *const ());
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = round + 1;
 // CHECK-NEXT:             round = [[V_0]];
-// CHECK-NEXT:             if [[V_0]] >= rounds {
+// CHECK-NEXT:             if !([[V_0]] < rounds) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -364,7 +364,7 @@ again:
 // CHECK-NEXT:             );
 // CHECK-NEXT:             let [[V_0]]: i32 = rounds - 1;
 // CHECK-NEXT:             rounds = [[V_0]];
-// CHECK-NEXT:             if [[V_0]] <= 0 {
+// CHECK-NEXT:             if !([[V_0]] > 0) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

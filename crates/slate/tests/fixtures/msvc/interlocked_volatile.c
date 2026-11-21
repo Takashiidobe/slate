@@ -213,8 +213,7 @@ int main(void) { return 0; }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     enter();
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(g_locked)) })
-// CHECK-NEXT:         != 1
+// CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(g_locked)) }) != 1
 // CHECK-NEXT:         || (unsafe {
 // CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(g_locked) as *mut i32,
@@ -226,8 +225,7 @@ int main(void) { return 0; }
 // CHECK-NEXT:                     core::sync::atomic::Ordering::SeqCst,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .unwrap_or_else(|[[T_0]]| [[T_0]])
-// CHECK-NEXT:         }) != 1;
-// CHECK-NEXT:     if [[V_0]] {
+// CHECK-NEXT:         }) != 1 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     leave();
@@ -235,7 +233,7 @@ int main(void) { return 0; }
 // CHECK-NEXT:         || (unsafe { g_entered }) != 1 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = (unsafe {
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = (unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(g_counter) as *mut i32,
 // CHECK-NEXT:             )
@@ -248,7 +246,7 @@ int main(void) { return 0; }
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .fetch_add(5i32, core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:         }) != 1;
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = [[V_1]]
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = [[V_0]]
 // CHECK-NEXT:         || (unsafe {
 // CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(g_counter) as *mut i32,
@@ -256,41 +254,40 @@ int main(void) { return 0; }
 // CHECK-NEXT:                 .fetch_sub(1i32, core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:                 .wrapping_sub(1)
 // CHECK-NEXT:         }) != 5;
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: bool = [[V_2]]
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = [[V_1]]
 // CHECK-NEXT:         || (unsafe {
 // CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(g_counter) as *mut i32,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .fetch_or(48i32, core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:         }) != 5;
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: bool = [[V_3]]
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: bool = [[V_2]]
 // CHECK-NEXT:         || (unsafe {
 // CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(g_counter) as *mut i32,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .fetch_and(49i32, core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:         }) != 53;
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: bool = [[V_4]]
+// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: bool = [[V_3]]
 // CHECK-NEXT:         || (unsafe {
 // CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(g_counter) as *mut i32,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .fetch_xor(17i32, core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:         }) != 49;
-// CHECK-NEXT:     if [[V_5]]
+// CHECK-NEXT:     if [[V_4]]
 // CHECK-NEXT:         || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(g_counter)) }) != 32 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut a: i32 = 1;
 // CHECK-NEXT:     let mut b: i32 = 2;
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: bool = reference_shared(core::ptr::addr_of_mut!(a) as *mut ())
+// CHECK-NEXT:     if reference_shared(core::ptr::addr_of_mut!(a) as *mut ())
 // CHECK-NEXT:         != (core::ptr::addr_of_mut!(a) as *mut ())
 // CHECK-NEXT:         || reference_shared(core::ptr::addr_of_mut!(b) as *mut ())
-// CHECK-NEXT:             != (core::ptr::addr_of_mut!(a) as *mut ());
-// CHECK-NEXT:     if [[V_6]] {
+// CHECK-NEXT:             != (core::ptr::addr_of_mut!(a) as *mut ()) {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_7:__v[0-9]+]]: *mut () = unsafe {
+// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_5:__v[0-9]+]]: *mut () = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         core::sync::atomic::AtomicPtr::from_ptr(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 core::ptr::addr_of_mut!(g_shared) as *mut *mut (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             )
@@ -299,12 +296,12 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 core::sync::atomic::Ordering::SeqCst,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             ) as *mut ()
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_7]] != (core::ptr::addr_of_mut!(a) as *mut ())
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_5]] != (core::ptr::addr_of_mut!(a) as *mut ())
 // I686-PC-WINDOWS-MSVC-NEXT:     if _InlineInterlockedExchangePointer(
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { core::ptr::addr_of_mut!(g_shared) },
 // I686-PC-WINDOWS-MSVC-NEXT:         core::ptr::addr_of_mut!(b) as *mut (),
 // I686-PC-WINDOWS-MSVC-NEXT:     ) != (core::ptr::addr_of_mut!(a) as *mut ())
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     let [[V_7:__v[0-9]+]]: *mut () = unsafe {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     let [[V_5:__v[0-9]+]]: *mut () = unsafe {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         core::sync::atomic::AtomicPtr::from_ptr(
 // AARCH64-PC-WINDOWS-MSVC-NEXT:                 core::ptr::addr_of_mut!(g_shared) as *mut *mut (),
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             )
@@ -313,12 +310,37 @@ int main(void) { return 0; }
 // AARCH64-PC-WINDOWS-MSVC-NEXT:                 core::sync::atomic::Ordering::SeqCst,
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             ) as *mut ()
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     };
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     if [[V_7]] != (core::ptr::addr_of_mut!(a) as *mut ())
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     if [[V_5]] != (core::ptr::addr_of_mut!(a) as *mut ())
 // CHECK-NEXT:         || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(g_shared)) })
 // CHECK-NEXT:             != (core::ptr::addr_of_mut!(b) as *mut ()) {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut flags: i32 = 5;
+// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_6:__v[0-9]+]]: i32 = 2;
+// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_7:__v[0-9]+]]: u8 = unsafe {
+// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_5:__v[0-9]+]]: i32 = 2;
+// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_6:__v[0-9]+]]: u8 = unsafe {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     let [[V_6:__v[0-9]+]]: i32 = 2;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     let [[V_7:__v[0-9]+]]: u8 = unsafe {
+// CHECK-NEXT:         core::sync::atomic::AtomicU8::from_ptr(
+// CHECK-NEXT:                 (((core::ptr::addr_of_mut!(flags) as *mut i32) as *mut i32) as *mut u8)
+// X86_64-PC-WINDOWS-MSVC-NEXT:                     .wrapping_offset(([[V_6]] >> 3i32) as isize) as *mut u8,
+// I686-PC-WINDOWS-MSVC-NEXT:                     .wrapping_offset(([[V_5]] >> 3i32) as isize) as *mut u8,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                     .wrapping_offset(([[V_6]] >> 3i32) as isize) as *mut u8,
+// CHECK-NEXT:             )
+// CHECK-NEXT:             .fetch_and(
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 !(1u8 << (([[V_6]] as u8) & 7)),
+// I686-PC-WINDOWS-MSVC-NEXT:                 !(1u8 << (([[V_5]] as u8) & 7)),
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 !(1u8 << (([[V_6]] as u8) & 7)),
+// CHECK-NEXT:                 core::sync::atomic::Ordering::SeqCst,
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_7]] >> (([[V_6]] as u8) & 7) & 1 == 0
+// I686-PC-WINDOWS-MSVC-NEXT:     if [[V_6]] >> (([[V_5]] as u8) & 7) & 1 == 0
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     if [[V_7]] >> (([[V_6]] as u8) & 7) & 1 == 0
+// CHECK-NEXT:         || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(flags)) }) != 1 {
+// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_8:__v[0-9]+]]: i32 = 2;
 // X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_9:__v[0-9]+]]: u8 = unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:     let [[V_7:__v[0-9]+]]: i32 = 2;
@@ -338,17 +360,17 @@ int main(void) { return 0; }
 // CHECK-NEXT:                 core::sync::atomic::Ordering::SeqCst,
 // CHECK-NEXT:             )
 // CHECK-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_9]] >> (([[V_8]] as u8) & 7) & 1 == 0
-// I686-PC-WINDOWS-MSVC-NEXT:     if [[V_8]] >> (([[V_7]] as u8) & 7) & 1 == 0
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     if [[V_9]] >> (([[V_8]] as u8) & 7) & 1 == 0
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_9]] >> (([[V_8]] as u8) & 7) & 1 != 0
+// I686-PC-WINDOWS-MSVC-NEXT:     if [[V_8]] >> (([[V_7]] as u8) & 7) & 1 != 0
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     if [[V_9]] >> (([[V_8]] as u8) & 7) & 1 != 0
 // CHECK-NEXT:         || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(flags)) }) != 1 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_10:__v[0-9]+]]: i32 = 2;
+// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_10:__v[0-9]+]]: i32 = 3;
 // X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_11:__v[0-9]+]]: u8 = unsafe {
-// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_9:__v[0-9]+]]: i32 = 2;
+// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_9:__v[0-9]+]]: i32 = 3;
 // I686-PC-WINDOWS-MSVC-NEXT:     let [[V_10:__v[0-9]+]]: u8 = unsafe {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     let [[V_10:__v[0-9]+]]: i32 = 2;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     let [[V_10:__v[0-9]+]]: i32 = 3;
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     let [[V_11:__v[0-9]+]]: u8 = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicU8::from_ptr(
 // CHECK-NEXT:                 (((core::ptr::addr_of_mut!(flags) as *mut i32) as *mut i32) as *mut u8)
@@ -356,38 +378,13 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:                     .wrapping_offset(([[V_9]] >> 3i32) as isize) as *mut u8,
 // AARCH64-PC-WINDOWS-MSVC-NEXT:                     .wrapping_offset(([[V_10]] >> 3i32) as isize) as *mut u8,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .fetch_and(
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 !(1u8 << (([[V_10]] as u8) & 7)),
-// I686-PC-WINDOWS-MSVC-NEXT:                 !(1u8 << (([[V_9]] as u8) & 7)),
-// AARCH64-PC-WINDOWS-MSVC-NEXT:                 !(1u8 << (([[V_10]] as u8) & 7)),
-// CHECK-NEXT:                 core::sync::atomic::Ordering::SeqCst,
-// CHECK-NEXT:             )
+// X86_64-PC-WINDOWS-MSVC-NEXT:             .fetch_or(1u8 << (([[V_10]] as u8) & 7), core::sync::atomic::Ordering::SeqCst)
+// I686-PC-WINDOWS-MSVC-NEXT:             .fetch_or(1u8 << (([[V_9]] as u8) & 7), core::sync::atomic::Ordering::SeqCst)
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             .fetch_or(1u8 << (([[V_10]] as u8) & 7), core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_11]] >> (([[V_10]] as u8) & 7) & 1 != 0
 // I686-PC-WINDOWS-MSVC-NEXT:     if [[V_10]] >> (([[V_9]] as u8) & 7) & 1 != 0
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     if [[V_11]] >> (([[V_10]] as u8) & 7) & 1 != 0
-// CHECK-NEXT:         || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(flags)) }) != 1 {
-// CHECK-NEXT:         unsafe { std::process::abort() };
-// CHECK-NEXT:     }
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_12:__v[0-9]+]]: i32 = 3;
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_13:__v[0-9]+]]: u8 = unsafe {
-// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_11:__v[0-9]+]]: i32 = 3;
-// I686-PC-WINDOWS-MSVC-NEXT:     let [[V_12:__v[0-9]+]]: u8 = unsafe {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     let [[V_12:__v[0-9]+]]: i32 = 3;
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     let [[V_13:__v[0-9]+]]: u8 = unsafe {
-// CHECK-NEXT:         core::sync::atomic::AtomicU8::from_ptr(
-// CHECK-NEXT:                 (((core::ptr::addr_of_mut!(flags) as *mut i32) as *mut i32) as *mut u8)
-// X86_64-PC-WINDOWS-MSVC-NEXT:                     .wrapping_offset(([[V_12]] >> 3i32) as isize) as *mut u8,
-// I686-PC-WINDOWS-MSVC-NEXT:                     .wrapping_offset(([[V_11]] >> 3i32) as isize) as *mut u8,
-// AARCH64-PC-WINDOWS-MSVC-NEXT:                     .wrapping_offset(([[V_12]] >> 3i32) as isize) as *mut u8,
-// CHECK-NEXT:             )
-// X86_64-PC-WINDOWS-MSVC-NEXT:             .fetch_or(1u8 << (([[V_12]] as u8) & 7), core::sync::atomic::Ordering::SeqCst)
-// I686-PC-WINDOWS-MSVC-NEXT:             .fetch_or(1u8 << (([[V_11]] as u8) & 7), core::sync::atomic::Ordering::SeqCst)
-// AARCH64-PC-WINDOWS-MSVC-NEXT:             .fetch_or(1u8 << (([[V_12]] as u8) & 7), core::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_13]] >> (([[V_12]] as u8) & 7) & 1 != 0
-// I686-PC-WINDOWS-MSVC-NEXT:     if [[V_12]] >> (([[V_11]] as u8) & 7) & 1 != 0
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     if [[V_13]] >> (([[V_12]] as u8) & 7) & 1 != 0
 // CHECK-NEXT:         || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(flags)) }) != 9 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }

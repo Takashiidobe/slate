@@ -64,13 +64,9 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     if (unsafe { creal(product) }) == 0.3125f64 && (unsafe { cimag(product) }) == 0.0f64
+// CHECK-NEXT:     !((unsafe { creal(product) }) == 0.3125f64 && (unsafe { cimag(product) }) == 0.0f64
 // CHECK-NEXT:         && (unsafe { creal(quotient) }) == 0.6f64
-// CHECK-NEXT:         && (unsafe { cimag(quotient) }) == -0.8f64 {
-// CHECK-NEXT:         0
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         1
-// CHECK-NEXT:     }
+// CHECK-NEXT:         && (unsafe { cimag(quotient) }) == -0.8f64) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

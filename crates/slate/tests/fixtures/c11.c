@@ -924,8 +924,8 @@ int main(void) {
 // CHECK-NEXT:     limits_total = (true as i32) + (true as i32) + (true as i32)
 // CHECK-NEXT:         + ((1e-45f32 > 0.0f32) as i32) + ((5e-324f64 > 0.0f64) as i32)
 // CHECK-NEXT:         + ((LongDouble([1, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-// CHECK-NEXT:             > LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) as i32)
-// CHECK-NEXT:         + ((1i32 >= -1i32) as i32) + ((1i32 >= -1i32) as i32) + ((1i32 >= -1i32) as i32);
+// CHECK-NEXT:             > LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) as i32) + (true as i32)
+// CHECK-NEXT:         + (true as i32) + (true as i32);
 // CHECK-NEXT:     limits_total += 0;
 // CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(c11_never_flag)) }) != 0 {
 // CHECK-NEXT:         c11_never_return(99i32);

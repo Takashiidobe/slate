@@ -160,16 +160,13 @@ int main(void) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = aligned(row.0.as_mut_ptr() as *const (), 16u64) != 0
 // CHECK-NEXT:         && aligned(line.0.as_mut_ptr() as *const (), 64u64) != 0;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = [[V_0]] && aligned(block.0.as_mut_ptr() as *const (), 16u64) != 0;
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = [[V_1]]
-// CHECK-NEXT:         && aligned(core::ptr::addr_of_mut!(word.0) as *const (), 16u64) != 0;
-// CHECK-NEXT:     ok = [[V_2]] as i32;
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: bool = ok != 0
+// CHECK-NEXT:     ok = ([[V_1]] && aligned(core::ptr::addr_of_mut!(word.0) as *const (), 16u64) != 0)
+// CHECK-NEXT:         as i32;
+// CHECK-NEXT:     ok = (ok != 0
 // CHECK-NEXT:         && sum_vectors(row.0.as_mut_ptr() as *const u64, 4i32)
-// CHECK-NEXT:             == 6u64.wrapping_add(depth as u64);
-// CHECK-NEXT:     ok = [[V_3]] as i32;
+// CHECK-NEXT:             == 6u64.wrapping_add(depth as u64)) as i32;
 // CHECK-NEXT:     if depth > 0 {
-// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: bool = ok != 0 && locals(depth - 1) != 0;
-// CHECK-NEXT:         ok = [[V_4]] as i32;
+// CHECK-NEXT:         ok = (ok != 0 && locals(depth - 1) != 0) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ok + (tag2 as i32) - (tag as i32) + (marker as i32) - 7 + (line.0[0] as i32)
 // CHECK-NEXT:         + (block.0[0] as i32) - depth + (word.0 as i32) - 5
@@ -192,9 +189,9 @@ int main(void) {
 // CHECK-NEXT:                 );
 // CHECK-NEXT:                 let [[V_0]]: *mut u64 = (*[[SLATE_SLOT_0]]).as_mut_ptr().add(0);
 // CHECK-NEXT:                 *[[V_0]] = unsafe { *[[V_0]] }.wrapping_add([[V_1]]);
-// CHECK-NEXT:                 let [[V_5:__v[0-9]+]]: i32 = count + 1;
-// CHECK-NEXT:                 count = [[V_5]];
-// CHECK-NEXT:                 if [[V_5]] >= n {
+// CHECK-NEXT:                 let [[V_2:__v[0-9]+]]: i32 = count + 1;
+// CHECK-NEXT:                 count = [[V_2]];
+// CHECK-NEXT:                 if !([[V_2]] < n) {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }

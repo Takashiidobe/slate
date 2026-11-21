@@ -82,8 +82,8 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
 // CHECK-NEXT:         (nan == 0.0f64) as i32,
-// CHECK-NEXT:         if nan != 0.0f64 { 1i32 } else { 0i32 },
-// CHECK-NEXT:         if -0.0f64 != 0.0f64 { 1i32 } else { 0i32 }
+// CHECK-NEXT:         (nan != 0.0f64) as i32,
+// CHECK-NEXT:         (-0.0f64 != 0.0f64) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

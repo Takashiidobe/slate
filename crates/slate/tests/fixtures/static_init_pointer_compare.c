@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:         field {
 // CHECK-NEXT:             name: b"int\0".as_ptr() as *const i8,
-// CHECK-NEXT:             is_signed: (-1i32 < 1i32) as i32,
+// CHECK-NEXT:             is_signed: true as i32,
 // CHECK-NEXT:             size: 4i32,
 // CHECK-NEXT:         },
 // CHECK-NEXT:         field {

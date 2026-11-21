@@ -64,13 +64,13 @@ int main(void) {
 // CHECK-NEXT: //! { dg-options "-O2" }
 // CHECK-NEXT: macro_rules! HOLDER_BRANCH {
 // CHECK-NEXT:     ($h:expr) => {
-// CHECK-NEXT:         branch__const8(unsafe { core::ptr::addr_of_mut!((*$h).key_field) }, true)
+// CHECK-NEXT:         branch__const8(unsafe { core::ptr::addr_of_mut!((*$h).key_field) }, 1i32 != 0i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! KEY_BRANCH {
 // CHECK-NEXT:     ($k:expr) => {
-// CHECK-NEXT:         branch__const5($k, false)
+// CHECK-NEXT:         branch__const5($k, 0i32 != 0i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

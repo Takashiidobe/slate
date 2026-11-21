@@ -996,29 +996,28 @@ int main(void) {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), hit) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", [[V_4]] as i32);
-// CHECK-NEXT:         println!("{}", hit);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_8]]: bool = one != 0 || TWICE!(note(4i32)) != 0;
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), [[V_8]] as i32) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%d\n".as_ptr(),
+// CHECK-NEXT:                 (one != 0 || TWICE!(note(4i32)) != 0) as i32,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", [[V_8]] as i32);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_9]]: bool = one != 0 && TWICE!(note(5i32)) != 0;
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), [[V_9]] as i32) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%d\n".as_ptr(),
+// CHECK-NEXT:                 (one != 0 && TWICE!(note(5i32)) != 0) as i32,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
@@ -1030,23 +1029,28 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", [[V_9]] as i32);
+// CHECK-NEXT:         println!("{}", [[V_4]] as i32);
+// CHECK-NEXT:         println!("{}", hit);
+// CHECK-NEXT:         println!("{}", (one != 0 || TWICE!(note(4i32)) != 0) as i32);
+// CHECK-NEXT:         println!("{}", (one != 0 && TWICE!(note(5i32)) != 0) as i32);
 // CHECK-NEXT:         println!("{}", hit);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_10]]: bool = note(1i32) != 0 && note(0i32) != 0;
-// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: bool = note(0i32) != 0 || note(2i32) != 0;
+// CHECK-NEXT:     let [[V_8]]: bool = note(1i32) != 0 && note(0i32) != 0;
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(c"%d\n".as_ptr(), ([[V_10]] as i32) + ([[V_11]] as i32))
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%d\n".as_ptr(),
+// CHECK-NEXT:                 ([[V_8]] as i32) + ((note(0i32) != 0 || note(2i32) != 0) as i32),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", ([[V_10]] as i32) + ([[V_11]] as i32));
+// CHECK-NEXT:         println!("{}", ([[V_8]] as i32) + ((note(0i32) != 0 || note(2i32) != 0) as i32));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     show_trace(c"logic".as_ptr());
 // CHECK-NEXT: }

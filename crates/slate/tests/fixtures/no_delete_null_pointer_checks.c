@@ -84,7 +84,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn load_then_check(p: *mut i32) -> i32 {
 // CHECK-NEXT:     let value: i32 = unsafe { *p };
-// CHECK-NEXT:     if !(!::slate_support::opaque_is_null(p)) {
+// CHECK-NEXT:     if ::slate_support::opaque_is_null(p) {
 // CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value

@@ -29,7 +29,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ilog2 {
 // CHECK-NEXT:     ($n:expr) => {
-// CHECK-NEXT:         if true {
+// CHECK-NEXT:         if 1i32 != 0i32 {
 // CHECK-NEXT:             if ($n) < 2 { 0i32 } else { 63 - ((($n) as u64).leading_zeros() as i32) }
 // CHECK-NEXT:         } else if (core::mem::size_of::<u32>() as u64) <= 4 {
 // CHECK-NEXT:             __ilog2_u32($n)
@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ilog2__2 {
 // CHECK-NEXT:     ($n:expr) => {
-// CHECK-NEXT:         if false {
+// CHECK-NEXT:         if 0i32 != 0i32 {
 // CHECK-NEXT:             if ($n) < 2 { 0i32 } else { 63 - ($n.leading_zeros() as i32) }
 // CHECK-NEXT:         } else if (core::mem::size_of::<u64>() as u64) <= 4 {
 // CHECK-NEXT:             __ilog2_u32(($n) as u32)
@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! order_base_2 {
 // CHECK-NEXT:     ($n:expr) => {
-// CHECK-NEXT:         if true {
+// CHECK-NEXT:         if 1i32 != 0i32 {
 // CHECK-NEXT:             if ($n) == 0 || ($n) == 1 { 0i32 } else { ilog2!($n.wrapping_sub(1)) + 1 }
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             __order_base_2(($n) as u64)

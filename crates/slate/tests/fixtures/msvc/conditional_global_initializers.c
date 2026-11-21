@@ -115,7 +115,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! CHECK__2 {
 // CHECK-NEXT:     ($c:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             if ($c) == 0 {
+// CHECK-NEXT:             if !(($c) != 0) {
 // CHECK-NEXT:                 unsafe { abort() };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
@@ -429,9 +429,8 @@ int main(void) {
 // AARCH64-PC-WINDOWS-MSVC-NEXT: ];
 // CHECK-EMPTY:
 // CHECK-NEXT: fn same(p: ptrlen, s: *const i8) -> i32 {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = p.len == unsafe { strlen(s) }
-// CHECK-NEXT:         && (unsafe { memcmp(p.ptr, s as *const (), p.len) }) == 0;
-// CHECK-NEXT:     [[V_0]] as i32
+// CHECK-NEXT:     (p.len == unsafe { strlen(s) }
+// CHECK-NEXT:         && (unsafe { memcmp(p.ptr, s as *const (), p.len) }) == 0) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -461,11 +460,10 @@ int main(void) {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             / ((const { core::mem::size_of::<ptrlen>() }) as u64) == 3
 // CHECK-NEXT:     );
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: bool = same(unsafe { names.0[0] }, c"ping".as_ptr()) != 0
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: bool = same(unsafe { names.0[0] }, c"ping".as_ptr()) != 0
 // CHECK-NEXT:             && same(unsafe { names.0[1] }, c"query".as_ptr()) != 0;
-// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: bool = [[V_1]]
-// CHECK-NEXT:             && same(unsafe { names.0[2] }, c"session-bind@openssh.com".as_ptr()) != 0;
-// CHECK-NEXT:         if ![[V_2]] {
+// CHECK-NEXT:         if !([[V_0]]
+// CHECK-NEXT:             && same(unsafe { names.0[2] }, c"session-bind@openssh.com".as_ptr()) != 0) {
 // CHECK-NEXT:             unsafe { abort() };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
@@ -473,12 +471,10 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: bool = (unsafe { extra.0.hash })
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: bool = (unsafe { extra.0.hash })
 // CHECK-NEXT:             == unsafe { core::ptr::addr_of!(vt_a.0) }
 // CHECK-NEXT:             && (unsafe { unsafe { (*extra.0.hash).r#fn }.unwrap()(5i32) }) == 15;
-// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: bool = [[V_3]]
-// CHECK-NEXT:             && (unsafe { unsafe { extra.0.fallback }.unwrap()(5i32) }) == 12;
-// CHECK-NEXT:         if ![[V_4]] {
+// CHECK-NEXT:         if !([[V_1]] && (unsafe { unsafe { extra.0.fallback }.unwrap()(5i32) }) == 12) {
 // CHECK-NEXT:             unsafe { abort() };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {
@@ -486,9 +482,8 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: bool = (unsafe { strcmp(extra.0.alg, c"Ed25519".as_ptr()) }) == 0
-// CHECK-NEXT:             && same(unsafe { extra.0.prefix }, c"".as_ptr()) != 0;
-// CHECK-NEXT:         if ![[V_5]] {
+// CHECK-NEXT:         if !((unsafe { strcmp(extra.0.alg, c"Ed25519".as_ptr()) }) == 0
+// CHECK-NEXT:             && same(unsafe { extra.0.prefix }, c"".as_ptr()) != 0) {
 // CHECK-NEXT:             unsafe { abort() };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if true {

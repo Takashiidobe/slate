@@ -66,8 +66,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn both(p: *const i8) -> i32 {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = !p.is_null() && probe(p) != 0;
-// CHECK-NEXT:     [[V_0]] as i32
+// CHECK-NEXT:     (!p.is_null() && probe(p) != 0) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn either(p: *const i8, a: i32) -> i32 {

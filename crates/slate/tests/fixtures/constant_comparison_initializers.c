@@ -37,19 +37,19 @@ int main(void) {
 // CHECK-NEXT:     is_unsigned: bool,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut from_int: bool = 5i32 != 0i32;
+// CHECK-NEXT: static mut from_int: bool = true;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut from_zero: bool = 0i32 != 0i32;
+// CHECK-NEXT: static mut from_zero: bool = false;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut less: i32 = (1i32 < 2i32) as i32;
+// CHECK-NEXT: static mut less: i32 = true as i32;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut greater: i32 = (4294967295u32 > 2u32) as i32;
+// CHECK-NEXT: static mut greater: i32 = true as i32;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut equal: i32 = (3i32 == 3i32) as i32;
+// CHECK-NEXT: static mut equal: i32 = true as i32;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut both: i32 = (1i32 != 0i32 && 0i32 != 0i32) as i32;
+// CHECK-NEXT: static mut both: i32 = (true && false) as i32;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut either: i32 = (0i32 != 0i32 || 7i32 != 0i32) as i32;
+// CHECK-NEXT: static mut either: i32 = (false || true) as i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut float_order: i32 = (1.5f64 < 2.5f64) as i32;
 // CHECK-EMPTY:
@@ -63,7 +63,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]].kind = 2i32;
 // CHECK-NEXT:     [[T_0]].size = 4i32;
-// CHECK-NEXT:     [[T_0]].is_unsigned = 0i32 != 0i32;
+// CHECK-NEXT:     [[T_0]].is_unsigned = false;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
@@ -95,7 +95,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]].kind = 1i32;
 // CHECK-NEXT:     [[T_0]].size = 1i32;
-// CHECK-NEXT:     [[T_0]].is_unsigned = 1i32 != 0i32;
+// CHECK-NEXT:     [[T_0]].is_unsigned = true;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:

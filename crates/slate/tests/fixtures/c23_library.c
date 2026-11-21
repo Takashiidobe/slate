@@ -905,7 +905,7 @@ int main(void) {
 // CHECK-NEXT:         + ((1.7976931348623157e308f64 <= 1.7976931348623157e308f64) as i32)
 // CHECK-NEXT:         + ((LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127])
 // CHECK-NEXT:             <= LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 254, 127])) as i32)
-// CHECK-NEXT:         + ((1i32 >= -1i32) as i32) + ((1i32 >= -1i32) as i32) + ((1i32 >= -1i32) as i32)
+// CHECK-NEXT:         + (true as i32) + (true as i32) + (true as i32)
 // CHECK-NEXT:         + (((core::mem::size_of::<f32>() as u64) == (core::mem::size_of::<f32>() as u64))
 // CHECK-NEXT:             as i32)
 // CHECK-NEXT:         + (((core::mem::size_of::<f64>() as u64) == (core::mem::size_of::<f64>() as u64))

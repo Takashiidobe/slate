@@ -51,6 +51,10 @@ impl Visitor for Fold<'_> {
         if self.depth > 0 {
             return;
         }
+        if let Some(holds) = constant_comparison(value, self.macro_values) {
+            value.node.value = ValueKind::Constant(Number::Bool(holds));
+            return;
+        }
         let Some((width, signed)) = integer(&value.ty) else {
             return;
         };
@@ -79,6 +83,35 @@ impl Visitor for Fold<'_> {
             value.node.value = ValueKind::Constant(number(folded));
         }
     }
+}
+
+pub(super) fn constant_comparison(value: &Value, macro_values: &MacroValues) -> Option<bool> {
+    let ValueKind::Compare {
+        op,
+        left,
+        right,
+        exceptions: None,
+        reason,
+    } = &value.node.value
+    else {
+        return None;
+    };
+    if *reason == Some(ConversionReason::Explicit)
+        || integer(&left.ty).is_none()
+        || macro_values.contains_key(&left.node.id)
+        || macro_values.contains_key(&right.node.id)
+    {
+        return None;
+    }
+    let (left, right) = (constant(left)?, constant(right)?);
+    Some(match op {
+        CompareOp::Eq => left == right,
+        CompareOp::Ne => left != right,
+        CompareOp::Lt => left < right,
+        CompareOp::Le => left <= right,
+        CompareOp::Gt => left > right,
+        CompareOp::Ge => left >= right,
+    })
 }
 
 fn integer(ty: &Type) -> Option<(u32, bool)> {

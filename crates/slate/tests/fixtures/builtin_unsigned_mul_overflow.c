@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-NEXT:     ($T:ty, $MAX:expr) => {
 // CHECK-NEXT:         '__slate_label_0: loop {
 // CHECK-NEXT:             let mut r: $T = 0i32 as $T;
-// CHECK-NEXT:             let values: __SlateAlign16<{{\[\[}}u32; 2]; 4]> = __SlateAlign16(
+// CHECK-NEXT:             let values: __SlateAlign16<{{\[\[}}u64; 2]; 4]> = __SlateAlign16(
 // CHECK-NEXT:                 [
 // CHECK-NEXT:                     [0i32 as $T, $MAX],
 // CHECK-NEXT:                     [1i32 as $T, $MAX],
@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT:                     [$MAX, $MAX],
 // CHECK-NEXT:                 ],
 // CHECK-NEXT:             );
-// CHECK-NEXT:             '__slate_label_2: for i in 0i32 as $T..4i32 as $T {
+// CHECK-NEXT:             '__slate_label_2: for i in 0u32..4u32 {
 // CHECK-NEXT:                 let overflow: i32 = ({
 // CHECK-NEXT:                     let __t: i128 = values.0[i as usize][0] as i128;
 // CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: i128 = values.0[i as usize][1] as i128;
@@ -51,9 +51,7 @@ int main(void) {
 // CHECK-NEXT:                     __t.checked_mul([[T_0]]).is_none() || (([[T_1]] as $T) as i128) != [[T_1]]
 // CHECK-NEXT:                 }) as i32;
 // CHECK-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     slate_support::printf(c"%d %llu\n".as_ptr(), overflow, r as u64)
-// CHECK-NEXT:                 };
+// CHECK-NEXT:                 unsafe { slate_support::printf(c"%d %llu\n".as_ptr(), overflow, r) };
 // CHECK-NEXT:                 unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
@@ -67,7 +65,7 @@ int main(void) {
 // CHECK-NEXT:     ($T:ty, $MAX:expr) => {
 // CHECK-NEXT:         '__slate_label_0: loop {
 // CHECK-NEXT:             let mut r: $T = 0i32 as $T;
-// CHECK-NEXT:             let values: __SlateAlign16<{{\[\[}}u64; 2]; 4]> = __SlateAlign16(
+// CHECK-NEXT:             let values: __SlateAlign16<{{\[\[}}u32; 2]; 4]> = __SlateAlign16(
 // CHECK-NEXT:                 [
 // CHECK-NEXT:                     [0i32 as $T, $MAX],
 // CHECK-NEXT:                     [1i32 as $T, $MAX],
@@ -75,7 +73,7 @@ int main(void) {
 // CHECK-NEXT:                     [$MAX, $MAX],
 // CHECK-NEXT:                 ],
 // CHECK-NEXT:             );
-// CHECK-NEXT:             '__slate_label_2: for i in 0u32..4u32 {
+// CHECK-NEXT:             '__slate_label_2: for i in 0i32 as $T..4i32 as $T {
 // CHECK-NEXT:                 let overflow: i32 = ({
 // CHECK-NEXT:                     let __t: i128 = values.0[i as usize][0] as i128;
 // CHECK-NEXT:                     let [[T_0]]: i128 = values.0[i as usize][1] as i128;
@@ -86,7 +84,9 @@ int main(void) {
 // CHECK-NEXT:                     __t.checked_mul([[T_0]]).is_none() || (([[T_1]] as $T) as i128) != [[T_1]]
 // CHECK-NEXT:                 }) as i32;
 // CHECK-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:                 unsafe { slate_support::printf(c"%d %llu\n".as_ptr(), overflow, r) };
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     slate_support::printf(c"%d %llu\n".as_ptr(), overflow, r as u64)
+// CHECK-NEXT:                 };
 // CHECK-NEXT:                 unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
@@ -141,9 +141,9 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     TEST!(u32, 2147483647u32.wrapping_mul(2u32).wrapping_add(1));
+// CHECK-NEXT:     TEST__2!(u32, 2147483647u32.wrapping_mul(2u32).wrapping_add(1));
 // CHECK-NEXT:     TEST__3!(u64, 9223372036854775807u64.wrapping_mul(2u64).wrapping_add(1));
-// CHECK-NEXT:     TEST__2!(u64, 9223372036854775807u64.wrapping_mul(2u64).wrapping_add(1));
+// CHECK-NEXT:     TEST!(u64, 9223372036854775807u64.wrapping_mul(2u64).wrapping_add(1));
 // CHECK-NEXT:     let mut r: u32 = 0;
 // CHECK-NEXT:     let mut overflow: i32 = ({
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: i128 = 1 as i128;

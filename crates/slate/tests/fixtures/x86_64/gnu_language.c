@@ -360,7 +360,7 @@ int main(void) {
 // CHECK-NEXT:     ((((unsafe { (middle as *const u8).offset_from(begin as *const u8) }) as i64) == 3)
 // CHECK-NEXT:         as i32)
 // CHECK-NEXT:         + ((middle == ((unsafe { values.as_mut_ptr().add(3) }) as *mut ())) as i32)
-// CHECK-NEXT:         + (true as i32) + gnu_function_pointer()
+// CHECK-NEXT:         + ((1u64 == 1u64) as i32) + gnu_function_pointer()
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_numeric_types() -> i32 {

@@ -370,9 +370,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_bessel_extensions() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = (unsafe { j0(1.0f64) }) == unsafe { j0(1.0f64) }
-// CHECK-NEXT:         && (unsafe { j0(1.0f64) }) > 0.7f64;
-// CHECK-NEXT:     total += [[V_0]] as i32;
+// CHECK-NEXT:     total += ((unsafe { j0(1.0f64) }) == unsafe { j0(1.0f64) }
+// CHECK-NEXT:         && (unsafe { j0(1.0f64) }) > 0.7f64) as i32;
 // CHECK-NEXT:     total += ((unsafe { j1(1.0f64) }) > 0.4f64) as i32;
 // CHECK-NEXT:     total += ((unsafe { jn(2i32, 1.0f64) }) > 0.1f64) as i32;
 // CHECK-NEXT:     total += ((unsafe { y0(1.0f64) }) > 0.08f64) as i32;

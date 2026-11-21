@@ -338,7 +338,7 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%.18Lf\n".as_ptr(), acc) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     if y > x { 0 } else { 1 }
+// CHECK-NEXT:     !(y > x) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

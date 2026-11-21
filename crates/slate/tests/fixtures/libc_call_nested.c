@@ -84,7 +84,7 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn long_word() -> i32 {
-// CHECK-NEXT:     if ((unsafe { ("lengthy".len() as i32) as u64 }) as i32) > 4 { 1 } else { 0 }
+// CHECK-NEXT:     (((unsafe { ("lengthy".len() as i32) as u64 }) as i32) > 4) as i32
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn spans() -> i32 {
 // CHECK-NEXT:     ((unsafe {

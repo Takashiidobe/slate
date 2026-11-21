@@ -73,56 +73,46 @@ int main(void) {
 // CHECK-NEXT:     let mut n: i32 = 0;
 // CHECK-NEXT:     let mut b: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     let mut r1: i32 = 0;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = n > 5 && bump(&mut n, 1i32) != 0;
-// CHECK-NEXT:     r1 = [[V_0]] as i32;
-// CHECK-NEXT:     let mut r2: i32 = 0;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = n < 5 || bump(&mut n, 1i32) != 0;
-// CHECK-NEXT:     r2 = [[V_1]] as i32;
+// CHECK-NEXT:     let r1: i32 = (n > 5 && bump(&mut n, 1i32) != 0) as i32;
+// CHECK-NEXT:     let r2: i32 = (n < 5 || bump(&mut n, 1i32) != 0) as i32;
 // CHECK-NEXT:     let mut r3: i32 = 0;
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = if bump(&mut n, 0i32) != 0 {
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i32 = bump(&mut n, 7i32);
-// CHECK-NEXT:         b = [[V_3]];
-// CHECK-NEXT:         [[V_3]] != 0
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = if bump(&mut n, 0i32) != 0 {
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = bump(&mut n, 7i32);
+// CHECK-NEXT:         b = [[V_1]];
+// CHECK-NEXT:         [[V_1]] != 0
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         false
 // CHECK-NEXT:     };
-// CHECK-NEXT:     r3 = [[V_2]] as i32;
+// CHECK-NEXT:     r3 = [[V_0]] as i32;
 // CHECK-NEXT:     let mut r4: i32 = 0;
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: bool = if bump(&mut n, 0i32) != 0 {
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = if bump(&mut n, 0i32) != 0 {
 // CHECK-NEXT:         true
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = bump(&mut n, 9i32);
-// CHECK-NEXT:         b = [[V_5]];
-// CHECK-NEXT:         [[V_5]] != 0
+// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i32 = bump(&mut n, 9i32);
+// CHECK-NEXT:         b = [[V_3]];
+// CHECK-NEXT:         [[V_3]] != 0
 // CHECK-NEXT:     };
-// CHECK-NEXT:     r4 = [[V_4]] as i32;
+// CHECK-NEXT:     r4 = [[V_2]] as i32;
 // CHECK-NEXT:     let mut r5: i32 = 0;
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = i;
-// CHECK-NEXT:     i = [[V_6]] + 1;
-// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: bool = if [[V_6]] > 0 {
-// CHECK-NEXT:         let [[V_8:__v[0-9]+]]: i32 = i;
-// CHECK-NEXT:         i = [[V_8]] + 1;
-// CHECK-NEXT:         [[V_8]] > 0
+// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = i;
+// CHECK-NEXT:     i = [[V_4]] + 1;
+// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: bool = if [[V_4]] > 0 {
+// CHECK-NEXT:         let [[V_6:__v[0-9]+]]: i32 = i;
+// CHECK-NEXT:         i = [[V_6]] + 1;
+// CHECK-NEXT:         [[V_6]] > 0
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         false
 // CHECK-NEXT:     };
-// CHECK-NEXT:     r5 = [[V_7]] as i32;
+// CHECK-NEXT:     r5 = [[V_5]] as i32;
 // CHECK-NEXT:     println!("{} {} {} {} {} n={} b={} i={}", r1, r2, r3, r4, r5, n, b, i);
-// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: bool = bump(&mut n, 1i32) != 0 && bump(&mut n, 2i32) != 0;
-// CHECK-NEXT:     if [[V_9]] {
+// CHECK-NEXT:     if bump(&mut n, 1i32) != 0 && bump(&mut n, 2i32) != 0 {
 // CHECK-NEXT:         println!("both n={}", n);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: bool = bump(&mut n, 0i32) != 0 || bump(&mut n, 0i32) != 0;
-// CHECK-NEXT:     if [[V_10]] {
+// CHECK-NEXT:     if bump(&mut n, 0i32) != 0 || bump(&mut n, 0i32) != 0 {
 // CHECK-NEXT:         println!("unreachable");
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("n={}", n);
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let [[V_11:__v[0-9]+]]: bool = i < 10 && bump(&mut n, 1i32) != 0;
-// CHECK-NEXT:         if ![[V_11]] {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     while i < 10 && bump(&mut n, 1i32) != 0 {
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("i={} n={}", i, n);

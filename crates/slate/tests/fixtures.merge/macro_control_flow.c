@@ -476,7 +476,7 @@ int main(void) {
 // CHECK-NEXT:             CHECK!(a);
 // CHECK-NEXT:             let [[V_0]]: i32 = i + 1;
 // CHECK-NEXT:             i = [[V_0]];
-// CHECK-NEXT:             if [[V_0]] >= 2 {
+// CHECK-NEXT:             if !([[V_0]] < 2) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

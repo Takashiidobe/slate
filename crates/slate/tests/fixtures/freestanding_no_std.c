@@ -66,7 +66,7 @@ int main(void) {
 // CHECK-NEXT:         .is_null() {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { exit((if sum(values.as_slice()) == 8 { 0i32 } else { 1i32 }) as i32) };
+// CHECK-NEXT:     unsafe { exit(((sum(values.as_slice()) != 8) as i32) as i32) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}

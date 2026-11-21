@@ -79,7 +79,7 @@ int main(void) {
 // CHECK-NEXT:             raw,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = (unsafe {
+// CHECK-NEXT:     if (unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         wc.lpfnWndProc.unwrap()(core::ptr::null_mut::<()>(), 1u32, 2u64, 3i64)
 // I686-PC-WINDOWS-MSVC-NEXT:         wc.lpfnWndProc.unwrap()(core::ptr::null_mut::<()>(), 1u32, 2u32, 3i32)
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         wc.lpfnWndProc.unwrap()(core::ptr::null_mut::<()>(), 1u32, 2u64, 3i64)
@@ -87,8 +87,7 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { back.unwrap()(core::ptr::null_mut::<()>(), 1u32, 2u64, 3i64) })
 // I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { back.unwrap()(core::ptr::null_mut::<()>(), 1u32, 2u32, 3i32) })
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { back.unwrap()(core::ptr::null_mut::<()>(), 1u32, 2u64, 3i64) })
-// CHECK-NEXT:             != 6;
-// CHECK-NEXT:     if [[V_0]] {
+// CHECK-NEXT:             != 6 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

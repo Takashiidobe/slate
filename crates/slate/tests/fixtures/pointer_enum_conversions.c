@@ -83,7 +83,13 @@ int main(void) {
 // CHECK-NEXT:     color = (color as u32).wrapping_add(1) as u32;
 // CHECK-NEXT:     println!("{}", color as u32);
 // CHECK-NEXT:     println!("{} {}", flip(-3 as i32) as i32, ((flip(3i32) as i32) < 0) as i32);
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%u %d\n".as_ptr(), 4294967295u32, true as i32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%u %d\n".as_ptr(),
+// CHECK-NEXT:             4294967295u32,
+// CHECK-NEXT:             (4294967295u32 > 0u32) as i32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let wide: i64 = -3;
 // CHECK-NEXT:     let narrow: u8 = -3i32 as u8;

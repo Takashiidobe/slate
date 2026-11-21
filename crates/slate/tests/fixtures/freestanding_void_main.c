@@ -39,7 +39,7 @@ void main(void) {
 // CHECK-NEXT:     step(4i32);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d\n".as_ptr(), counter) };
 // CHECK-NEXT:     unsafe { fflush(slate_support::stdout()) };
-// CHECK-NEXT:     unsafe { exit((if counter == 7 { 0i32 } else { 1i32 }) as i32) };
+// CHECK-NEXT:     unsafe { exit(((counter != 7) as i32) as i32) };
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

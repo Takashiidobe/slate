@@ -35,7 +35,7 @@ int main(void) {
 // CHECK-NEXT:     if !unsafe { getenv(c"SLATE_NOSTDINC_UNSET".as_ptr()) }.is_null() {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { exit(if twice(21i32) == 42 { 0i32 } else { 1i32 }) };
+// CHECK-NEXT:     unsafe { exit((twice(21i32) != 42) as i32) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

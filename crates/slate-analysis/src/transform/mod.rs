@@ -1,7 +1,9 @@
 mod const_fold;
 mod inline_temporaries;
+mod truth_canonicalize;
 
 use slate_parser::ir::Module;
+pub use truth_canonicalize::negation;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Slot {
@@ -16,6 +18,11 @@ pub struct Pass {
 }
 
 pub static PASSES: &[Pass] = &[
+    Pass {
+        name: "truth-canonicalize",
+        slots: &[Slot::AfterMacroStrip],
+        run: truth_canonicalize::transform,
+    },
     Pass {
         name: "inline-temps",
         slots: &[Slot::BeforeMacroKeep, Slot::AfterMacroStrip],

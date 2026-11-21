@@ -1295,18 +1295,6 @@ int main(void) {
 // CHECK-NEXT: macro_rules! SHOW__2 {
 // CHECK-NEXT:     ($name:expr, $v:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut t_: core::simd::Simd<i64, 2> = $v;
-// CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 16i32);
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__3 {
-// CHECK-NEXT:     ($name:expr, $v:expr) => {
-// CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut t_: core::simd::Simd<f32, 8> = $v;
 // CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 32i32);
 // CHECK-NEXT:             if true {
@@ -1321,6 +1309,18 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut t_: core::simd::Simd<i64, 4> = $v;
 // CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 32i32);
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SHOW__3 {
+// CHECK-NEXT:     ($name:expr, $v:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut t_: core::simd::Simd<i64, 2> = $v;
+// CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 16i32);
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -1894,7 +1894,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__3!(
+// CHECK-NEXT:     SHOW__2!(
 // CHECK-NEXT:         c"gather3siv8sf".as_ptr() as *mut i8,
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             __slate_intrinsic_de7d192b04610b62(
@@ -1910,7 +1910,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__2!(
+// CHECK-NEXT:     SHOW__3!(
 // CHECK-NEXT:         c"gather3siv4si".as_ptr() as *mut i8,
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i64, 2>>(

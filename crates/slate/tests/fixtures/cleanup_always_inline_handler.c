@@ -80,7 +80,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         if n <= 2 {
+// CHECK-NEXT:         if !(n > 2) {
 // CHECK-NEXT:             core::ptr::write([[SLATE_SLOT_0]], n);
 // CHECK-NEXT:             __slate_cleanup_armed_0.set(true);
 // CHECK-NEXT:             released = released + 100;

@@ -25,7 +25,7 @@ int main(void) { return frame_address_is_plausible() ? 0 : 1; }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     if frame_address_is_plausible() != 0 { 0 } else { 1 }
+// CHECK-NEXT:     (frame_address_is_plausible() == 0) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

@@ -380,12 +380,9 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "cond {}",
-// CHECK-NEXT:         if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) })
-// CHECK-NEXT:             * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) } != 0.0f64 {
-// CHECK-NEXT:             1i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
+// CHECK-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) })
+// CHECK-NEXT:             * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) } != 0.0f64)
+// CHECK-NEXT:             as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) })
 // CHECK-NEXT:         * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) } != 0.0f64 {

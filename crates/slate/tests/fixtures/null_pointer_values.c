@@ -193,7 +193,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(c"%d %s\n".as_ptr(), length(head as *const Node), last_key)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     if entries.0[1].slot.is_null() { 0 } else { 1 }
+// CHECK-NEXT:     !entries.0[1].slot.is_null() as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
