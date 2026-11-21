@@ -1578,13 +1578,6 @@ pub(crate) fn analyze(
     reach(total, &mut copies, &mut raw);
 
     let class_of: Vec<u32> = (0..total as u32).map(|node| classes.find(node)).collect();
-    let units: Vec<Option<UnitId>> = (0..count as u32)
-        .map(|function| {
-            program
-                .function(FunctionId(function))
-                .map(|entry| entry.unit)
-        })
-        .collect();
     let class_borrow = |flags: u8| capability(flags, false, false).borrow();
     let seed_unproven = |covered: &HashSet<(usize, usize)>| {
         let mut unproven = vec![false; total];
@@ -1602,9 +1595,8 @@ pub(crate) fn analyze(
                 if !candidates[callee] {
                     continue;
                 }
-                let foreign = site.pinned || units[callee] != units[function];
                 for (index, &parameter) in &parameters[callee] {
-                    if foreign
+                    if site.pinned
                         || (site.unproven.contains(index) && !covered.contains(&(callee, *index)))
                     {
                         unproven[class_of[parameter as usize] as usize] = true;
@@ -1683,9 +1675,18 @@ pub(crate) fn analyze(
                 return false;
             };
             let site = &summary.calls[index];
-            if site.pinned || units[caller] != units[function] {
+            if site.pinned {
                 return false;
             }
+            let (Some(callee_entry), Some(caller_entry)) = (
+                program.function(FunctionId(function as u32)),
+                program.function(FunctionId(caller as u32)),
+            ) else {
+                return false;
+            };
+            let same = |source: &Type| {
+                program.same_type((caller_entry.unit, source), (callee_entry.unit, element))
+            };
             let caller_parameter = |binding: &BindingId| {
                 (!summary.written.contains(binding))
                     .then(|| summary.parameters.iter().position(|id| id == binding))
@@ -1698,7 +1699,7 @@ pub(crate) fn analyze(
                         element: source,
                     }),
                     Some(Shape::Constant(count)),
-                ) => extent == count && source == element,
+                ) => extent == count && same(source),
                 (
                     Some(Shape::Allocation {
                         pointer: binding,
@@ -1708,7 +1709,7 @@ pub(crate) fn analyze(
                     Some(Shape::Binding(passed)),
                 ) => {
                     count == passed
-                        && source == element
+                        && same(source)
                         && !summary.written.contains(binding)
                         && !summary.written.contains(count)
                 }
@@ -1846,6 +1847,42 @@ pub(crate) fn analyze(
                 },
                 reported,
             );
+        }
+    }
+    for (unit, entry) in program.units() {
+        for declaration in entry
+            .module
+            .functions
+            .iter()
+            .filter(|f| f.value.body.is_none())
+        {
+            let Some(function) = program.callee(unit, &Callee::Direct(declaration.value.id)) else {
+                continue;
+            };
+            let (Some(summary), Some(definition)) = (
+                summaries[function.0 as usize].as_ref(),
+                program.function(function),
+            ) else {
+                continue;
+            };
+            let Parameters::Prototype { fixed, .. } = &declaration.value.parameters else {
+                continue;
+            };
+            for (parameter, binding) in fixed.iter().zip(&summary.parameters) {
+                if let Some(&fact) = facts.bindings.get(&ProgramBinding {
+                    unit: definition.unit,
+                    binding: *binding,
+                }) && fact.role == PointerRole::Parameter
+                {
+                    facts.bindings.insert(
+                        ProgramBinding {
+                            unit,
+                            binding: parameter.value.id,
+                        },
+                        fact,
+                    );
+                }
+            }
         }
     }
     if let Some((summarize, joined)) = summarized {

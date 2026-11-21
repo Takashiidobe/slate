@@ -876,7 +876,6 @@ impl<'m> ModuleLowerer<'m> {
             module
                 .functions
                 .iter()
-                .filter(|function| function.value.body.is_some())
                 .filter_map(|function| {
                     let ir::Parameters::Prototype { fixed, .. } = &function.value.parameters else {
                         return None;

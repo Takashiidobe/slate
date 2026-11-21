@@ -126,9 +126,20 @@ to a representation (today only for shadow mode, through
   through its pointer; nullable propagates with the flow. Each flag is one
   reachability pass, so the join is linear. Unifying across calls instead
   merged every caller of a helper such as `sqlite3Malloc` into one class.
-- Candidates (functions whose signature may change): defined, not exported
-  (`lowerer::exports_symbol`, passed to `Program::new`), not `main`, not
-  variadic, address never taken. Arguments to any other callee escape.
+- Candidates (functions whose signature may change): defined, not `main`, not
+  variadic, address never taken, and not fixed. A function is fixed when
+  `lowerer::exports_symbol` (passed to `Program::new`) exports it, except in a
+  closed program (an executable project, `liftable_root`), where an export is
+  fixed only if its symbol is pinned: defined twice, the target of an
+  `alias`/`weakref`/`ifunc`, named in global asm, declared elsewhere with a
+  different name, arity or pointer-ness, or carrying `section`, `used`,
+  constructor/destructor, target features or a non-C calling convention.
+  Arguments to any other callee escape.
+- Cross-unit callers are ordinary call sites: a declaration resolved to a
+  candidate gets the definition's parameter facts, so its extern declaration
+  and its call sites lower with the same borrow and dropped length. Link must
+  then bind those calls through a Rust path; an extern declaration left with a
+  slice parameter is a panic, because `&[T]` has no C ABI.
 - Two arguments of one call that share a class or the same `&local` object
   alias; if either parameter is written, both escape.
 - Libc calls use the declaration's identity: `free` frees, `mem*`/`str*cpy`

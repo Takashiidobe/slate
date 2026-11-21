@@ -330,6 +330,7 @@ pub fn translate_units(
             .zip(units)
             .map(|(module, unit)| (&**module, &unit.files)),
         |module, function| lowerer::exports_symbol(&boundary, module, function),
+        liftable_root.is_some(),
     );
     let facts = slate_analysis::analyze(&program);
     let jobs: Vec<_> = units

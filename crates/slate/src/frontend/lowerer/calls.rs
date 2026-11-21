@@ -179,20 +179,35 @@ impl FunctionLowerer<'_, '_> {
         let mut evaluated = Vec::new();
         if !borrowed.is_empty() {
             let exclusive = borrowed.iter().any(|&(_, mutable)| mutable);
-            for (index, arg) in args.iter_mut().enumerate() {
-                let trivial = match arg {
+            let unborrowed = |name: &rust::Ident| {
+                !exclusive
+                    || borrowed
+                        .iter()
+                        .all(|&(index, _)| !args[index].reads_var(name.as_str()))
+            };
+            let trivial: Vec<bool> = args
+                .iter()
+                .map(|arg| match arg {
                     Expr::Value(_) => true,
-                    Expr::Var(_) => !exclusive,
-                    Expr::Cast { expr, .. } => {
-                        matches!(**expr, Expr::Value(_))
-                            || (!exclusive && matches!(**expr, Expr::Var(_)))
-                    }
+                    Expr::Var(name) => unborrowed(name),
+                    Expr::Cast { expr, .. } => match &**expr {
+                        Expr::Value(_) => true,
+                        Expr::Var(name) => unborrowed(name),
+                        #[expect(
+                            slate::sensitive_wildcard,
+                            reason = "any other cast operand may read an object a sibling argument borrows"
+                        )]
+                        _ => false,
+                    },
                     #[expect(
                         slate::sensitive_wildcard,
                         reason = "any other argument may read an object a sibling argument borrows"
                     )]
                     _ => false,
-                };
+                })
+                .collect();
+            for (index, arg) in args.iter_mut().enumerate() {
+                let trivial = trivial[index];
                 if borrowed.iter().any(|&(borrow, _)| borrow == index)
                     || kept.contains(&index)
                     || trivial

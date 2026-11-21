@@ -74,6 +74,20 @@ pub(in crate::backend) fn run(programs: &mut [Program], exports: &Exports) -> Op
     }
     timer.lap("passes");
     link::bind_calls(programs, &rust_bound, &c_bound, modules);
+    if crate::frontend::lowerer::ir_pointers() {
+        for program in programs.iter() {
+            for_each_extern_fn(&program.items, &mut |decl| {
+                let sliced = decl.params.iter().any(|param| {
+                    matches!(&param.ty, Type::Ref { inner, .. } if matches!(**inner, Type::Slice(_)))
+                });
+                assert!(
+                    !sliced,
+                    "IR pointer lift of `{}` gave it a slice parameter, but link did not bind its cross-unit calls",
+                    decl.name
+                );
+            });
+        }
+    }
     let hoisted = types.hoist(programs);
     timer.lap("link");
     hoisted

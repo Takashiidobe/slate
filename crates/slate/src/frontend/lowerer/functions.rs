@@ -527,17 +527,25 @@ impl FunctionLowerer<'_, '_> {
             trusted_headers: Default::default(),
             params: fixed
                 .iter()
-                .map(|parameter| {
+                .enumerate()
+                .filter(|(index, _)| {
+                    self.tables
+                        .length_parameter(function.value.id, *index)
+                        .is_none()
+                })
+                .map(|(index, parameter)| {
+                    let ty = match self.tables.parameter_borrow(function.value.id, index) {
+                        Some(borrow) => self.borrow_type(&parameter.ty, borrow),
+                        None => self.lower_c_type(
+                            &parameter.ty,
+                            self.tables.c_types.nodes.get(&parameter.id).copied(),
+                        ),
+                    };
                     Ok(FnParam {
                         comments: Vec::new(),
                         name: self.binding_name(parameter.value.id),
                         mutable: false,
-                        ty: self
-                            .lower_c_type(
-                                &parameter.ty,
-                                self.tables.c_types.nodes.get(&parameter.id).copied(),
-                            )
-                            .map_err(|e| e.used_at(Site::of(parameter)))?,
+                        ty: ty.map_err(|e| e.used_at(Site::of(parameter)))?,
                     })
                 })
                 .collect::<Result<Vec<_>>>()?,

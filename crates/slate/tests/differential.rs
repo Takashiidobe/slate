@@ -248,6 +248,11 @@ fn translate_fixture_project(
     };
     let output = std::process::Command::new(env!("CARGO_BIN_EXE_slate"))
         .env("SLATE_SYSROOTS", slate_parser::sysroot::root())
+        .envs(
+            sources
+                .iter()
+                .flat_map(|source| support::fixture_environment(source)),
+        )
         .arg("translate-project")
         .args(translate_args)
         .arg("--compile-commands")
