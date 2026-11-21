@@ -52,7 +52,7 @@ main (void)
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_u:[0-9]+]] u = union {
 // DEFAULT-NEXT:         field0 a: i32;
-// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 u: @type[[TYPE_u]];

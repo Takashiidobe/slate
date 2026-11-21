@@ -77,7 +77,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_packed_ushort:[0-9]+]] packed_ushort = struct {
 // DEFAULT-NEXT:         field0 ucs: u16;
-// DEFAULT-NEXT:     } [size=2, align=1, offsets=[0]];
+// DEFAULT-NEXT:     } [size=2, align=1, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_source:[0-9]+]] source = struct {
 // DEFAULT-NEXT:         field0 pos: i32;
 // DEFAULT-NEXT:         field1 length: i32;

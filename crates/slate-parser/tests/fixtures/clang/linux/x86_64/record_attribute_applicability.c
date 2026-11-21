@@ -140,11 +140,11 @@ int sizes(void) {
 // DEFAULT-NEXT:         field5 first_cold: i32;
 // DEFAULT-NEXT:         field6 second_cold: i32;
 // DEFAULT-NEXT:         field7 ms_member: i32;
-// DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 1, 8, 12, 16, 20, 24, 28]];
+// DEFAULT-NEXT:     } [size=32, align=8, offsets=[0, 1, 8, 12, 16, 20, 24, 28], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE_Packed:[0-9]+]] Packed = struct {
 // DEFAULT-NEXT:         field0 tag: i8;
 // DEFAULT-NEXT:         field1 value: i32;
-// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE_NotAUnion:[0-9]+]] NotAUnion = struct {
 // DEFAULT-NEXT:         field0 value: ptr<i32>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
@@ -196,11 +196,11 @@ int sizes(void) {
 // IR-WARN-NEXT:         field5 first_cold: i32;
 // IR-WARN-NEXT:         field6 second_cold: i32;
 // IR-WARN-NEXT:         field7 ms_member: i32;
-// IR-WARN-NEXT:     } [size=32, align=8, offsets=[0, 1, 8, 12, 16, 20, 24, 28]];
+// IR-WARN-NEXT:     } [size=32, align=8, offsets=[0, 1, 8, 12, 16, 20, 24, 28], underaligned=[1]];
 // IR-WARN-NEXT:     type @type[[TYPE_Packed:[0-9]+]] Packed = struct {
 // IR-WARN-NEXT:         field0 tag: i8;
 // IR-WARN-NEXT:         field1 value: i32;
-// IR-WARN-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// IR-WARN-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // IR-WARN-NEXT:     type @type[[TYPE_NotAUnion:[0-9]+]] NotAUnion = struct {
 // IR-WARN-NEXT:         field0 value: ptr<i32>;
 // IR-WARN-NEXT:     } [size=8, align=8, offsets=[0]];

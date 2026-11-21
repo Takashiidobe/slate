@@ -141,6 +141,45 @@ impl FunctionLowerer<'_, '_> {
         self.packed_record(&base.ty) || self.place_in_packed(base)
     }
 
+    pub(super) fn through_union(&self, place: &ir::Place) -> bool {
+        match &without_macro_holes(place).kind {
+            PlaceKind::Field { base, .. } => {
+                matches!(
+                    self.tables.resolve_type(&base.ty),
+                    ir::Type::Defined(id) if matches!(
+                        self.tables.types.get(id).map(|definition| &definition.kind),
+                        Some(ir::TypeDefinitionKind::Record { kind: ir::RecordKind::Union, .. })
+                    )
+                ) || self.through_union(base)
+            }
+            PlaceKind::ComplexPart { base, .. } => self.through_union(base),
+            _ => false,
+        }
+    }
+
+    pub(super) fn misaligned_in_rust(&mut self, place: &ir::Place) -> bool {
+        let (PlaceKind::Field { base, .. } | PlaceKind::ComplexPart { base, .. }) =
+            &without_macro_holes(place).kind
+        else {
+            return false;
+        };
+        let pack = match self.tables.resolve_type(&base.ty) {
+            ir::Type::Defined(id) if self.lower_type(&base.ty).is_ok() => {
+                match self.dependencies.records.get(&id.0) {
+                    Some(Record::Built(record)) => record.packed,
+                    _ => None,
+                }
+            }
+            _ => None,
+        };
+        let over = pack.is_some_and(|pack| {
+            self.tables
+                .storage_of(&place.ty)
+                .is_some_and(|(_, align)| align > u64::from(pack))
+        });
+        over || self.misaligned_in_rust(base)
+    }
+
     fn packed_record(&mut self, ty: &ir::Type) -> bool {
         if self.lower_type(ty).is_err() {
             return false;

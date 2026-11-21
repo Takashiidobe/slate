@@ -69,7 +69,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_TEXT:[0-9]+]] TEXT = i8;
 // DEFAULT-NEXT:     type @type[[TYPE_T_VALS:[0-9]+]] T_VALS = union {
 // DEFAULT-NEXT:         field0 id: ptr<i8> [c="TEXT *"];
-// DEFAULT-NEXT:     } [size=8, align=2, offsets=[0]];
+// DEFAULT-NEXT:     } [size=8, align=2, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_VALS:[0-9]+]] VALS = @type[[TYPE_T_VALS]];
 // DEFAULT-NEXT:     type @type[[TYPE_T_VAL:[0-9]+]] T_VAL = struct {
 // DEFAULT-NEXT:         field0 pos: i16 [c="COUNT"];

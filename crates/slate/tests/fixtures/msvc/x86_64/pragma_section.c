@@ -155,7 +155,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(".section .drectve,\"yni\"\n.ascii \" /section:.rdata,W\"");
 // CHECK-EMPTY:
-// CHECK-NEXT: fn characteristics(name: *const i8) -> u32 {
+// CHECK-NEXT: fn characteristics(name: &core::ffi::CStr) -> u32 {
 // CHECK-NEXT:     let base: *mut i8 = (unsafe { GetModuleHandleA(core::ptr::null::<i8>()) })
 // CHECK-NEXT:         as *mut i8;
 // CHECK-NEXT:     let nt: *mut _IMAGE_NT_HEADERS64 = (unsafe {
@@ -171,7 +171,7 @@ int main(void) {
 // CHECK-NEXT:             strncmp(
 // CHECK-NEXT:                 (((*section.offset(i as isize)).Name.as_mut_ptr() as *mut u8)
 // CHECK-NEXT:                     as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 name as *const core::ffi::c_char,
+// CHECK-NEXT:                 (name.as_ptr() as *const i8) as *const core::ffi::c_char,
 // CHECK-NEXT:                 8u64 as usize,
 // CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         }) == 0 {
@@ -183,7 +183,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let flags: u32 = characteristics(c".rdata".as_ptr());
+// CHECK-NEXT:     let flags: u32 = characteristics(c".rdata");
 // CHECK-NEXT:     if flags == 0 || flags & 2147483648 == 0 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }

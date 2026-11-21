@@ -10,5 +10,6 @@ double up(double value) { return __builtin_align_up(value, 8); }
 // SEMA:  1 │
 // SEMA:  2 │ double up(double value) { return __builtin_align_up(value, 8); }
 // SEMA:    ·                                  ────────────────────────────
+// SEMA:  3 │
 // SEMA:    ╰────
 // SLATE-FILECHECK-END SEMA

@@ -54,7 +54,7 @@ int bits_align = _Alignof(struct bits);
 // DEFAULT-NEXT:     type @type[[TYPE_pragma_four:[0-9]+]] pragma_four = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 d: f64;
-// DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4]];
+// DEFAULT-NEXT:     } [size=12, align=4, offsets=[0, 4], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE_reset:[0-9]+]] reset = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 d: f64;
@@ -102,11 +102,11 @@ int bits_align = _Alignof(struct bits);
 // BARE-NEXT:     type @type[[TYPE_pragma_four:[0-9]+]] pragma_four = struct {
 // BARE-NEXT:         field0 c: i8;
 // BARE-NEXT:         field1 d: f64;
-// BARE-NEXT:     } [size=9, align=1, offsets=[0, 1]];
+// BARE-NEXT:     } [size=9, align=1, offsets=[0, 1], underaligned=[1]];
 // BARE-NEXT:     type @type[[TYPE_reset:[0-9]+]] reset = struct {
 // BARE-NEXT:         field0 c: i8;
 // BARE-NEXT:         field1 d: f64;
-// BARE-NEXT:     } [size=9, align=1, offsets=[0, 1]];
+// BARE-NEXT:     } [size=9, align=1, offsets=[0, 1], underaligned=[1]];
 // BARE-NEXT:     type @type[[TYPE_bits:[0-9]+]] bits = struct {
 // BARE-NEXT:         field0 c: i8;
 // BARE-NEXT:         field1 x: i32 : 4;
@@ -146,15 +146,15 @@ int bits_align = _Alignof(struct bits);
 // TWO-NEXT:     type @type[[TYPE_user_aligned:[0-9]+]] user_aligned = struct {
 // TWO-NEXT:         field0 c: i8;
 // TWO-NEXT:         field1 i: i32;
-// TWO-NEXT:     } [size=6, align=2, offsets=[0, 2]];
+// TWO-NEXT:     } [size=6, align=2, offsets=[0, 2], underaligned=[1]];
 // TWO-NEXT:     type @type[[TYPE_pragma_four:[0-9]+]] pragma_four = struct {
 // TWO-NEXT:         field0 c: i8;
 // TWO-NEXT:         field1 d: f64;
-// TWO-NEXT:     } [size=12, align=4, offsets=[0, 4]];
+// TWO-NEXT:     } [size=12, align=4, offsets=[0, 4], underaligned=[1]];
 // TWO-NEXT:     type @type[[TYPE_reset:[0-9]+]] reset = struct {
 // TWO-NEXT:         field0 c: i8;
 // TWO-NEXT:         field1 d: f64;
-// TWO-NEXT:     } [size=10, align=2, offsets=[0, 2]];
+// TWO-NEXT:     } [size=10, align=2, offsets=[0, 2], underaligned=[1]];
 // TWO-NEXT:     type @type[[TYPE_bits:[0-9]+]] bits = struct {
 // TWO-NEXT:         field0 c: i8;
 // TWO-NEXT:         field1 x: i32 : 4;
@@ -194,15 +194,15 @@ int bits_align = _Alignof(struct bits);
 // BOTH-NEXT:     type @type[[TYPE_user_aligned:[0-9]+]] user_aligned = struct {
 // BOTH-NEXT:         field0 c: i8;
 // BOTH-NEXT:         field1 i: i32;
-// BOTH-NEXT:     } [size=6, align=2, offsets=[0, 2]];
+// BOTH-NEXT:     } [size=6, align=2, offsets=[0, 2], underaligned=[1]];
 // BOTH-NEXT:     type @type[[TYPE_pragma_four:[0-9]+]] pragma_four = struct {
 // BOTH-NEXT:         field0 c: i8;
 // BOTH-NEXT:         field1 d: f64;
-// BOTH-NEXT:     } [size=9, align=1, offsets=[0, 1]];
+// BOTH-NEXT:     } [size=9, align=1, offsets=[0, 1], underaligned=[1]];
 // BOTH-NEXT:     type @type[[TYPE_reset:[0-9]+]] reset = struct {
 // BOTH-NEXT:         field0 c: i8;
 // BOTH-NEXT:         field1 d: f64;
-// BOTH-NEXT:     } [size=9, align=1, offsets=[0, 1]];
+// BOTH-NEXT:     } [size=9, align=1, offsets=[0, 1], underaligned=[1]];
 // BOTH-NEXT:     type @type[[TYPE_bits:[0-9]+]] bits = struct {
 // BOTH-NEXT:         field0 c: i8;
 // BOTH-NEXT:         field1 x: i32 : 4;
@@ -246,7 +246,7 @@ int bits_align = _Alignof(struct bits);
 // NEGATED-NEXT:     type @type[[TYPE_pragma_four:[0-9]+]] pragma_four = struct {
 // NEGATED-NEXT:         field0 c: i8;
 // NEGATED-NEXT:         field1 d: f64;
-// NEGATED-NEXT:     } [size=12, align=4, offsets=[0, 4]];
+// NEGATED-NEXT:     } [size=12, align=4, offsets=[0, 4], underaligned=[1]];
 // NEGATED-NEXT:     type @type[[TYPE_reset:[0-9]+]] reset = struct {
 // NEGATED-NEXT:         field0 c: i8;
 // NEGATED-NEXT:         field1 d: f64;

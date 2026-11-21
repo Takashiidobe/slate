@@ -446,7 +446,7 @@ impl FunctionLowerer<'_, '_> {
                 _ => Err(unsupported_record(name, "layout")),
             };
         };
-        let pack = self.record_pack(fields, layout);
+        let pack = self.record_pack(name, fields, layout)?;
         let byte_layout = pack.is_some_and(|pack| {
             fields
                 .iter()
@@ -575,19 +575,42 @@ impl FunctionLowerer<'_, '_> {
 
     fn record_pack(
         &self,
+        name: &str,
         fields: &[slate_parser::ast::Span<ir::Field>],
         layout: &ir::RecordLayout,
-    ) -> Option<u64> {
-        fields
-            .iter()
-            .enumerate()
-            .filter(|(_, field)| field.bit_width.is_none())
-            .any(|(index, field)| {
-                self.tables.storage_of(&field.ty).is_some_and(|(_, align)| {
+    ) -> Result<Option<u64>> {
+        let mut raised = false;
+        for (index, field) in fields.iter().enumerate() {
+            let misplaced = field.bit_width.is_none()
+                && !layout.underaligned.get(index).copied().unwrap_or(false)
+                && self.tables.storage_of(&field.ty).is_some_and(|(_, align)| {
                     align > layout.align || !layout.offsets[index].is_multiple_of(align)
-                })
-            })
-            .then_some(layout.align)
+                });
+            if misplaced && !self.holds_x87(&field.ty) {
+                return Err(Invariant::AlignedFieldMisplaced(name.into(), index).into());
+            }
+            raised |= misplaced;
+        }
+        Ok((raised || layout.underaligned.contains(&true)).then_some(layout.align))
+    }
+
+    fn holds_x87(&self, ty: &ir::Type) -> bool {
+        match self.tables.resolve_type(ty) {
+            ir::Type::Array { element, .. } => self.holds_x87(element),
+            ir::Type::Numeric(ir::NumericType::Float(ir::FloatType::F80))
+            | ir::Type::Complex(ir::NumericType::Float(ir::FloatType::F80))
+            | ir::Type::Imaginary(ir::FloatType::F80) => true,
+            ir::Type::Defined(id) => matches!(
+                self.tables.types.get(id).map(|definition| &definition.kind),
+                Some(ir::TypeDefinitionKind::Record { fields: Some(fields), .. })
+                    if fields.iter().any(|field| self.holds_x87(&field.ty))
+            ),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "x87 long double is the one scalar whose Rust type is aligned above its C alignment; arrays and records propagate it"
+            )]
+            _ => false,
+        }
     }
 
     fn contains_raised_align(&self, ty: &ir::Type) -> bool {

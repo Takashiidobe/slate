@@ -54,13 +54,13 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 v16: i16;
-// DEFAULT-NEXT:     } [size=2, align=1, offsets=[0]];
+// DEFAULT-NEXT:     } [size=2, align=1, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_jint16_t:[0-9]+]] jint16_t = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE_node:[0-9]+]] node = struct {
 // DEFAULT-NEXT:         field0 magic: @type[[TYPE0]] [c="jint16_t"];
 // DEFAULT-NEXT:         field1 nodetype: @type[[TYPE0]] [c="jint16_t"];
 // DEFAULT-NEXT:         field2 totlen: i32;
-// DEFAULT-NEXT:     } [size=8, align=1, offsets=[0, 2, 4]];
+// DEFAULT-NEXT:     } [size=8, align=1, offsets=[0, 2, 4], underaligned=[2]];
 // DEFAULT-NEXT:     global %[[VALUE_node:[0-9]+]] node: @type[[TYPE_node]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_node_p:[0-9]+]] node_p: ptr<@type[[TYPE_node]]> [storage=static] = addr_of<ptr<@type[[TYPE_node]]>>(%[[VALUE_node]]) [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort(unprototyped) -> void [linkage=external] [noreturn];

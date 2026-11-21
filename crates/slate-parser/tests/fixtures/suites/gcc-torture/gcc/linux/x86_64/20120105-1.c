@@ -50,7 +50,7 @@ int main(void) {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:         field2 c: i32;
-// DEFAULT-NEXT:     } [size=12, align=1, offsets=[0, 4, 8]];
+// DEFAULT-NEXT:     } [size=12, align=1, offsets=[0, 4, 8], underaligned=[0, 1, 2]];
 // DEFAULT-NEXT:     global %[[VALUE_i:[0-9]+]] i: volatile i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE___builtin_memcpy:[0-9]+]] @__builtin_memcpy(%[[VALUE0:[0-9]+]] <unnamed>: ptr<void>, %[[VALUE1:[0-9]+]] <unnamed>: ptr<const void>, %[[VALUE2:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_extract:[0-9]+]] @extract(%[[VALUE_p:[0-9]+]] p: ptr<const i8>) -> i32 [linkage=internal] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {

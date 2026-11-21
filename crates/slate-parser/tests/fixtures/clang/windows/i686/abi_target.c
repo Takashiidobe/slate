@@ -129,7 +129,7 @@ void pass_vectors(v4sf, v2si, v4sf, v4sf, v2si);
 // IR-NEXT:     type @type[[TYPE_packed:[0-9]+]] packed = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 i: i32;
-// IR-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// IR-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // IR-NEXT:     type @type[[TYPE_int_or_float:[0-9]+]] int_or_float = union {
 // IR-NEXT:         field0 i: i32;
 // IR-NEXT:         field1 f: f32;

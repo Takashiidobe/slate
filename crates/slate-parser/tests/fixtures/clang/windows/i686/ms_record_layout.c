@@ -242,7 +242,7 @@ struct G8 { char c; int x[]; };
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:         field1 i: i32;
 // TARGET-NEXT:         field2 d: f64;
-// TARGET-NEXT:     } [size=13, align=1, offsets=[0, 1, 5]];
+// TARGET-NEXT:     } [size=13, align=1, offsets=[0, 1, 5], underaligned=[1, 2]];
 // TARGET-NEXT:     type @type[[TYPE_P2:[0-9]+]] P2 = struct {
 // TARGET-NEXT:         field0 a: i8 : 3;
 // TARGET-NEXT:         field1 b: i32 : 5;
@@ -251,7 +251,7 @@ struct G8 { char c; int x[]; };
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:         field1 i: i32;
 // TARGET-NEXT:         field2 d: f64;
-// TARGET-NEXT:     } [size=14, align=2, offsets=[0, 2, 6]];
+// TARGET-NEXT:     } [size=14, align=2, offsets=[0, 2, 6], underaligned=[1, 2]];
 // TARGET-NEXT:     type @type[[TYPE_P4:[0-9]+]] P4 = struct {
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:         field1 b: i32 : 5;
@@ -259,7 +259,7 @@ struct G8 { char c; int x[]; };
 // TARGET-NEXT:     type @type[[TYPE_P5:[0-9]+]] P5 = struct {
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:         field1 d: f64;
-// TARGET-NEXT:     } [size=12, align=4, offsets=[0, 4]];
+// TARGET-NEXT:     } [size=12, align=4, offsets=[0, 4], underaligned=[1]];
 // TARGET-NEXT:     type @type[[TYPE_P6:[0-9]+]] P6 = struct {
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:     } [size=1, align=1, offsets=[0]];
@@ -274,7 +274,7 @@ struct G8 { char c; int x[]; };
 // TARGET-NEXT:     type @type[[TYPE_K1:[0-9]+]] K1 = struct {
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:         field1 i: i32;
-// TARGET-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// TARGET-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // TARGET-NEXT:     type @type[[TYPE_K2:[0-9]+]] K2 = struct {
 // TARGET-NEXT:         field0 a: i8 : 3;
 // TARGET-NEXT:         field1 b: i32 : 5;
@@ -282,7 +282,7 @@ struct G8 { char c; int x[]; };
 // TARGET-NEXT:     type @type[[TYPE_K3:[0-9]+]] K3 = struct {
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:         field1 i: i32;
-// TARGET-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// TARGET-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // TARGET-NEXT:     type @type[[TYPE_A1:[0-9]+]] A1 = struct {
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:     } [size=16, align=16, offsets=[0]];
@@ -332,7 +332,7 @@ struct G8 { char c; int x[]; };
 // TARGET-NEXT:     type @type[[TYPE_A13:[0-9]+]] A13 = struct {
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:         field1 i: i32;
-// TARGET-NEXT:     } [size=8, align=4, offsets=[0, 1]];
+// TARGET-NEXT:     } [size=8, align=4, offsets=[0, 1], underaligned=[1]];
 // TARGET-NEXT:     type @type[[TYPE_E1:[0-9]+]] E1 = struct {
 // TARGET-NEXT:     } [size=4, align=1, offsets=[]];
 // TARGET-NEXT:     type @type[[TYPE_E2:[0-9]+]] E2 = struct {
@@ -438,7 +438,7 @@ struct G8 { char c; int x[]; };
 // TARGET-NEXT:     type @type[[TYPE_Inner2:[0-9]+]] Inner2 = struct {
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:         field1 i: i32;
-// TARGET-NEXT:     } [size=6, align=2, offsets=[0, 2]];
+// TARGET-NEXT:     } [size=6, align=2, offsets=[0, 2], underaligned=[1]];
 // TARGET-NEXT:     type @type[[TYPE_C12:[0-9]+]] C12 = struct {
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:         field1 i: @type[[TYPE_Inner2]];
@@ -446,7 +446,7 @@ struct G8 { char c; int x[]; };
 // TARGET-NEXT:     type @type[[TYPE_V1:[0-9]+]] V1 = union {
 // TARGET-NEXT:         field0 a: i32;
 // TARGET-NEXT:         field1 b: i8;
-// TARGET-NEXT:     } [size=4, align=1, offsets=[0, 0]];
+// TARGET-NEXT:     } [size=4, align=1, offsets=[0, 0], underaligned=[0]];
 // TARGET-NEXT:     type @type[[TYPE_V2:[0-9]+]] V2 = union {
 // TARGET-NEXT:         field0 a: i8;
 // TARGET-NEXT:         field1 b: i8;

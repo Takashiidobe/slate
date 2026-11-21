@@ -37,7 +37,7 @@ void g_329_3() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 f0: u32;
-// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     global %[[VALUE_g_251:[0-9]+]] g_251: @type[[TYPE0]] [storage=static] = aggregate<@type[[TYPE0]], zero_fill=false>(field0 = reinterpret<u32, reason=assign, fits=always>(const<i32>(6))) [linkage=internal];
 // DEFAULT-NEXT:     fn %[[VALUE_func_19:[0-9]+]] @func_19(unprototyped) -> i32 [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_g_329_3:[0-9]+]] @g_329_3() -> void [linkage=external] [fallthrough=ret_void] {

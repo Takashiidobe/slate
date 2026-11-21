@@ -83,11 +83,11 @@ main()
 // DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 one: i8;
 // DEFAULT-NEXT:         field1 two: i64;
-// DEFAULT-NEXT:     } [size=9, align=1, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=9, align=1, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE3:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 one: i8;
 // DEFAULT-NEXT:         field1 two: i64;
-// DEFAULT-NEXT:     } [size=10, align=2, offsets=[0, 2]];
+// DEFAULT-NEXT:     } [size=10, align=2, offsets=[0, 2], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE4:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 one: i8;
 // DEFAULT-NEXT:         field1 two: i64;

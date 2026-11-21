@@ -100,7 +100,7 @@ f9 (void)
 // DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i8;
-// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 4]];
+// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 4], underaligned=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_s2:[0-9]+]] s2 = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;

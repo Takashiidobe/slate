@@ -59,7 +59,7 @@ void f2(struct x *y) {
 // DEFAULT-NEXT:     type @type[[TYPE_x:[0-9]+]] x = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 f: complex<f32> [c="cf"];
-// DEFAULT-NEXT:     } [size=9, align=1, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=9, align=1, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_f2:[0-9]+]] @f2(%[[VALUE_y:[0-9]+]] y: ptr<@type[[TYPE_x]]>) -> void [linkage=external] [fallthrough=ret_void] {

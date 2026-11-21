@@ -205,7 +205,8 @@ field         = "field" digits ( c_identifier | "<anonymous>" ) ":"
 record_layout = "[size=" int ", align=" int ", offsets=" int_list
                 [ ", bit_offsets=" "[" opt_int { ", " opt_int } "]" ]
                 [ ", bit_units=" "[" [ unit { ", " unit } ] "]" ]
-                [ ", field_units=" "[" opt_int { ", " opt_int } "]" ] "]" ;
+                [ ", field_units=" "[" opt_int { ", " opt_int } "]" ]
+                [ ", underaligned=" int_list ] "]" ;
 unit          = "(" int ", " int ")" ;                        (* byte offset, size *)
 enumerators   = "{" { binding c_identifier "=" value { metadata } ";" } "}" ;
 ```
@@ -214,7 +215,8 @@ enumerators   = "{" { binding c_identifier "=" value { metadata } ";" } "}" ;
   that index. `: W` is a bit-field width.
 - `offsets` has one byte offset per field. `bit_offsets` and `field_units` are
   per field (`None` for ordinary fields); `bit_units` are the byte extents of
-  bit-field storage units.
+  bit-field storage units. `underaligned` lists the fields whose offset or
+  record alignment is below their type's alignment (omitted when none).
 - The enum's `: type` is its resolved underlying integer type.
 
 ## Globals

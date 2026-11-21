@@ -64,7 +64,7 @@ main()
 // DEFAULT-NEXT:     type @type[[TYPE_usb_interface_descriptor:[0-9]+]] usb_interface_descriptor = struct {
 // DEFAULT-NEXT:         field0 wMaxPacketSize: u16;
 // DEFAULT-NEXT:         field1 e: i8;
-// DEFAULT-NEXT:     } [size=3, align=1, offsets=[0, 2]];
+// DEFAULT-NEXT:     } [size=3, align=1, offsets=[0, 2], underaligned=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_usb_device:[0-9]+]] usb_device = struct {
 // DEFAULT-NEXT:         field0 devnum: i32;
 // DEFAULT-NEXT:         field1 if_desc: array<@type[[TYPE_usb_interface_descriptor]], 2>;

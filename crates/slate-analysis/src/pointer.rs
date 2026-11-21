@@ -115,6 +115,7 @@ struct CallSite {
     arguments: Vec<(usize, u32)>,
     objects: Vec<(usize, BindingId)>,
     unproven: Vec<usize>,
+    parts: Vec<usize>,
     pinned: bool,
     shapes: Vec<Shape>,
     literals: Vec<bool>,
@@ -188,6 +189,25 @@ struct Walker<'a, 'm> {
     reads: HashMap<BindingId, u32>,
     allocations: HashMap<BindingId, (BindingId, Type)>,
     leaked: HashSet<BindingId>,
+}
+
+fn part_address(value: &Value) -> bool {
+    match &peel_argument(value).node.value {
+        ValueKind::AddressOf(place) => matches!(
+            place.kind,
+            PlaceKind::Field { .. } | PlaceKind::ComplexPart { .. }
+        ),
+        ValueKind::Conditional {
+            then_value,
+            else_value,
+            ..
+        } => part_address(then_value) || part_address(else_value),
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "only addresses of fields and complex parts are borrows of a part of their object"
+        )]
+        _ => false,
+    }
 }
 
 fn peel_argument(value: &Value) -> &Value {
@@ -608,6 +628,12 @@ impl Walker<'_, '_> {
                 else_value,
                 ..
             } => self.proven(then_value) && self.proven(else_value),
+            ValueKind::AddressOf(
+                place @ Place {
+                    kind: PlaceKind::ComplexPart { .. } | PlaceKind::Field { .. },
+                    ..
+                },
+            ) => self.aligned_local_part(place),
             ValueKind::AddressOf(Place {
                 kind: PlaceKind::Binding(binding),
                 ..
@@ -626,6 +652,27 @@ impl Walker<'_, '_> {
             )]
             _ => false,
         }
+    }
+
+    fn aligned_local_part(&self, place: &Place) -> bool {
+        place.access.align.is_none()
+            && match &place.kind {
+                PlaceKind::Binding(binding) => self.automatic.contains(binding),
+                PlaceKind::ComplexPart { base, .. } => self.aligned_local_part(base),
+                PlaceKind::Field {
+                    base,
+                    index,
+                    bits: None,
+                } => {
+                    self.program.field_aligned(self.unit, &base.ty, *index)
+                        && self.aligned_local_part(base)
+                }
+                #[expect(
+                    slate::sensitive_wildcard,
+                    reason = "a borrow of a part is proven only along fields and complex parts of an automatic object"
+                )]
+                _ => false,
+            }
     }
 
     fn store(&mut self, place: &Place, value: &Value) {
@@ -944,6 +991,7 @@ impl Walker<'_, '_> {
                 arguments: Vec::new(),
                 objects: Vec::new(),
                 unproven: Vec::new(),
+                parts: Vec::new(),
                 pinned: self.macro_depth > 0,
                 shapes: arguments
                     .iter()
@@ -955,8 +1003,12 @@ impl Walker<'_, '_> {
                     .collect(),
             };
             for (index, argument) in arguments.iter().enumerate() {
-                if tracked_pointer(&argument.ty).is_some() && !self.proven(argument) {
-                    site.unproven.push(index);
+                if tracked_pointer(&argument.ty).is_some() {
+                    if !self.proven(argument) {
+                        site.unproven.push(index);
+                    } else if part_address(argument) {
+                        site.parts.push(index);
+                    }
                 }
                 let sources = self.sources(argument);
                 for (node, _) in sources.roots {
@@ -1862,8 +1914,10 @@ pub(crate) fn analyze(
                     continue;
                 }
                 for (index, &parameter) in &parameters[callee] {
+                    let class = class_of[parameter as usize] as usize;
                     if site.pinned
                         || (site.unproven.contains(index) && !covered.contains(&(callee, *index)))
+                        || (site.parts.contains(index) && class_flags[class] & OFFSET != 0)
                     {
                         unproven[class_of[parameter as usize] as usize] = true;
                     }

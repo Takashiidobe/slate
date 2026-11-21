@@ -136,6 +136,14 @@ and rebuilt from `len()`). Lowering reads `borrow` and `length` by default
   flow-insensitive, so `int *q = &x;` anywhere in the caller pins every
   `f(&x)`. A static array is a length proof only when it is `const`; a mutable
   static can be reached by name during the call (`slate-8ge7.16`).
+- `&x.a.b` and `&__real__ x` prove a borrow like `&x` when every field on the
+  path is a non-bit-field member that the IR layout does not mark
+  `underaligned` ([ir/types](ir/types.md#records)); the leak and alias checks
+  use the root object `x`, so `f(&s.a, &s.b)` aliases. A `char` in a packed
+  record lifts; an `int` under `packed` or `#pragma pack(2)` stays raw. A
+  part proof also needs the parameter's class to have no `offset`: C lets a
+  field pointer reach its enclosing object (`container_of`), which a Rust
+  borrow of the field cannot. Union fields borrow inside `unsafe`.
 - `raw` is per binding and flows forward along copies: a binding assigned a
   moved pointer (`p + 1`, `&p->f`), an opaque value (call to an unresolved
   function, a load from memory), or a non-candidate parameter cannot be a

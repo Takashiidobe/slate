@@ -156,7 +156,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(".section .drectve,\"yni\"\n.ascii \" /merge:.rdata=.text\"");
 // CHECK-EMPTY:
-// CHECK-NEXT: fn has_section(name: *const i8) -> i32 {
+// CHECK-NEXT: fn has_section(name: &core::ffi::CStr) -> i32 {
 // CHECK-NEXT:     let base: *mut i8 = (unsafe { GetModuleHandleA(core::ptr::null::<i8>()) })
 // CHECK-NEXT:         as *mut i8;
 // CHECK-NEXT:     let nt: *mut _IMAGE_NT_HEADERS64 = (unsafe {
@@ -172,7 +172,7 @@ int main(void) {
 // CHECK-NEXT:             strncmp(
 // CHECK-NEXT:                 (((*section.offset(i as isize)).Name.as_mut_ptr() as *mut u8)
 // CHECK-NEXT:                     as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 name as *const core::ffi::c_char,
+// CHECK-NEXT:                 (name.as_ptr() as *const i8) as *const core::ffi::c_char,
 // CHECK-NEXT:                 8u64 as usize,
 // CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         }) == 0 {
@@ -184,10 +184,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     if has_section(c".rdata".as_ptr()) != 0 {
+// CHECK-NEXT:     if has_section(c".rdata") != 0 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if has_section(c".text".as_ptr()) == 0 {
+// CHECK-NEXT:     if has_section(c".text") == 0 {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

@@ -47,6 +47,12 @@ pub struct RecordLayout {
     pub bit_units: Vec<BitFieldUnit>,
     #[debug(skip_if = all_none)]
     pub field_units: Vec<Option<usize>>,
+    #[debug(skip_if = none_set)]
+    pub underaligned: Vec<bool>,
+}
+
+fn none_set(values: &[bool]) -> bool {
+    !values.contains(&true)
 }
 
 fn all_none<T>(values: &[Option<T>]) -> bool {

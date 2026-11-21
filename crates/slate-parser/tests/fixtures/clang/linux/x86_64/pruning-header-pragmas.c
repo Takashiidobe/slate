@@ -32,7 +32,7 @@ double fused(double a, double b, double c) { return a * b + c; }
 // DEFAULT-NEXT:     type @type[[TYPE_packed:[0-9]+]] packed = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 i: i32;
-// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE_natural:[0-9]+]] natural = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 i: i32;

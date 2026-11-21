@@ -46,7 +46,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 i: i16;
-// DEFAULT-NEXT:     } [size=2, align=1, offsets=[0]];
+// DEFAULT-NEXT:     } [size=2, align=1, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     global %[[VALUE_x1:[0-9]+]] x1: i16 [storage=static] = truncate<i16, reason=assign, fits=always>(const<i32>(17)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_t:[0-9]+]] t: @type[[TYPE0]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];

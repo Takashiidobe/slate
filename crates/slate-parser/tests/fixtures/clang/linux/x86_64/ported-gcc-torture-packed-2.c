@@ -38,7 +38,7 @@ int main() {
 // DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 a: u16;
 // DEFAULT-NEXT:         field1 b: u64;
-// DEFAULT-NEXT:     } [size=10, align=2, offsets=[0, 2]];
+// DEFAULT-NEXT:     } [size=10, align=2, offsets=[0, 2], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE_s_2:[0-9]+]] s = @type[[TYPE_s]];
 // DEFAULT-NEXT:     global %[[VALUE_t:[0-9]+]] t: @type[[TYPE_s]] [storage=static] [linkage=external] [c="s"];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {

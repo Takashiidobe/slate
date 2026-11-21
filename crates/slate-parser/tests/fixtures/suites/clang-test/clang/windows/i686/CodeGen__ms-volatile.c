@@ -84,7 +84,7 @@ int test12(struct qux *p) {
 // DEFAULT-NEXT:     type @type[[TYPE_baz:[0-9]+]] baz = complex<f32>;
 // DEFAULT-NEXT:     type @type[[TYPE_qux:[0-9]+]] qux = struct {
 // DEFAULT-NEXT:         field0 f: volatile i32;
-// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     fn %[[VALUE_test1:[0-9]+]] @test1(%[[VALUE_p:[0-9]+]] p: ptr<@type[[TYPE_foo]]>, %[[VALUE_q:[0-9]+]] q: ptr<@type[[TYPE_foo]]>) -> void [linkage=external] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<@type[[TYPE_foo]]>(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_p]])), copy<@type[[TYPE_foo]], reason=assign>(read<@type[[TYPE_foo]]>(deref(read<ptr<@type[[TYPE_foo]]>>(%[[VALUE_q]])))));
 // DEFAULT-NEXT:     }

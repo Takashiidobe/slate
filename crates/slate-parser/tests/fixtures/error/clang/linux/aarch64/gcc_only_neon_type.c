@@ -11,5 +11,6 @@ typedef __Float64x1_t f64x1;
 // ERROR:  1 │
 // ERROR:  2 │ typedef __Float64x1_t f64x1;
 // ERROR:    · ────────────────────────────
+// ERROR:  3 │
 // ERROR:    ╰────
 // SLATE-FILECHECK-END ERROR

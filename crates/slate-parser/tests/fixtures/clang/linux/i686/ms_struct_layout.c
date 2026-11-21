@@ -79,11 +79,11 @@ struct MS L { char c; long double d; };
 // IR-NEXT:     type @type[[TYPE_E:[0-9]+]] E = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 x: i64;
-// IR-NEXT:     } [size=9, align=1, offsets=[0, 1]];
+// IR-NEXT:     } [size=9, align=1, offsets=[0, 1], underaligned=[1]];
 // IR-NEXT:     type @type[[TYPE_F:[0-9]+]] F = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 x: i64;
-// IR-NEXT:     } [size=10, align=2, offsets=[0, 2]];
+// IR-NEXT:     } [size=10, align=2, offsets=[0, 2], underaligned=[1]];
 // IR-NEXT:     type @type[[TYPE_G:[0-9]+]] G = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 x: i64;

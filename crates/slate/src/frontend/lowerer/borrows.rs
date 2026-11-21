@@ -402,14 +402,27 @@ impl FunctionLowerer<'_, '_> {
             }),
             ValueKind::AddressOf(
                 place @ ir::Place {
-                    kind: PlaceKind::Binding(_),
+                    kind:
+                        PlaceKind::Binding(_) | PlaceKind::ComplexPart { .. } | PlaceKind::Field { .. },
                     ..
                 },
             ) => {
-                let object = Expr::Ref {
+                if self.misaligned_in_rust(place) {
+                    return Err(Construct::Place {
+                        ir: place.to_string(),
+                    }
+                    .into());
+                }
+                let mut object = Expr::Ref {
                     mutable: target.mutable,
                     expr: Box::new(self.lower_place(place)?),
                 };
+                if self.through_union(place) {
+                    object = Expr::Unsafe(Box::new(rust::Block {
+                        stmts: Vec::new(),
+                        tail: Some(Box::new(object)),
+                    }));
+                }
                 Ok(if target.many {
                     one_element_slice(target.mutable, object)
                 } else {

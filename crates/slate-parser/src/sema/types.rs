@@ -4386,12 +4386,13 @@ impl TypeResolver {
         let mut bit_offsets = Vec::new();
         let mut unit_sizes = Vec::new();
         let mut field_alignments = Vec::new();
+        let mut naturals = Vec::new();
         let mut ms_unit = MsUnit::default();
         for (position, ((field, &c), &(field_packed, field_aligned))) in
             fields.iter().zip(field_types).zip(requests).enumerate()
         {
-            let storage = self.member_storage(kind, fields.len(), position, field)?;
-            let storage = self.typedef_storage(c, storage)?;
+            let member = self.member_storage(kind, fields.len(), position, field)?;
+            let storage = self.typedef_storage(c, member)?;
             required_align = required_align
                 .into_iter()
                 .chain(field_aligned)
@@ -4414,6 +4415,7 @@ impl TypeResolver {
                 )?;
                 aggregate_align = aggregate_align.max(align);
                 field_alignments.push(align);
+                naturals.push(None);
                 offsets.push(position / 8);
                 bit_offsets.push(Some(position));
                 continue;
@@ -4423,6 +4425,12 @@ impl TypeResolver {
                 .max(field_aligned.unwrap_or(1))
                 .min(max_field_alignment.unwrap_or(u64::MAX));
             field_alignments.push(align);
+            naturals.push(
+                field
+                    .bit_width
+                    .is_none()
+                    .then_some(u64::from(member.alignment_bytes)),
+            );
             if field.bit_width == Some(0)
                 && self.dialect.target().abi.zero_width_bitfield_aligns_record
             {
@@ -4498,6 +4506,7 @@ impl TypeResolver {
             }
         }
         let size = align_up(end_bits.div_ceil(8), aggregate_align)?;
+        let underaligned = underaligned_fields(&naturals, &offsets, aggregate_align);
         let (bit_units, field_units) =
             bit_field_units(kind, fields, &bit_offsets, &unit_sizes, ms_struct);
         Ok((
@@ -4509,6 +4518,7 @@ impl TypeResolver {
                 bit_offsets,
                 bit_units,
                 field_units,
+                underaligned,
             },
             field_alignments,
         ))
@@ -4644,6 +4654,7 @@ impl TypeResolver {
         let mut bit_offsets = Vec::new();
         let mut unit_sizes = Vec::new();
         let mut field_alignments = Vec::new();
+        let mut naturals = Vec::new();
         for (position, ((field, &c), &(field_packed, field_aligned))) in
             fields.iter().zip(field_types).zip(requests).enumerate()
         {
@@ -4673,6 +4684,12 @@ impl TypeResolver {
             }
             let field_alignment = field_alignment.max(field_required.unwrap_or(1));
             field_alignments.push(field_alignment);
+            naturals.push(
+                field
+                    .bit_width
+                    .is_none()
+                    .then_some(u64::from(storage.alignment_bytes)),
+            );
             let bit_offset = match field.bit_width {
                 None => {
                     after_bit_field = false;
@@ -4755,6 +4772,7 @@ impl TypeResolver {
         }
         let (bit_units, field_units) =
             bit_field_units(kind, fields, &bit_offsets, &unit_sizes, true);
+        let underaligned = underaligned_fields(&naturals, &offsets, alignment);
         Ok((
             RecordLayout {
                 size,
@@ -4764,6 +4782,7 @@ impl TypeResolver {
                 bit_offsets,
                 bit_units,
                 field_units,
+                underaligned,
             },
             field_alignments,
         ))
@@ -4964,6 +4983,16 @@ fn checked_bit_width(field: &Field, storage: StorageLayout) -> Result<u64, Resol
         }
     }
     Ok(unit_bits)
+}
+
+fn underaligned_fields(naturals: &[Option<u64>], offsets: &[u64], align: u64) -> Vec<bool> {
+    naturals
+        .iter()
+        .zip(offsets)
+        .map(|(natural, offset)| {
+            natural.is_some_and(|natural| natural > align || !offset.is_multiple_of(natural))
+        })
+        .collect()
 }
 
 fn bit_field_units(

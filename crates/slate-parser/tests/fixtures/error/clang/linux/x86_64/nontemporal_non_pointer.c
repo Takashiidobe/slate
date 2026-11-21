@@ -11,5 +11,6 @@ void store(int x) { __builtin_nontemporal_store(1, x); }
 // ERROR:  1 │
 // ERROR:  2 │ void store(int x) { __builtin_nontemporal_store(1, x); }
 // ERROR:    ·                     ─────────────────────────────────
+// ERROR:  3 │
 // ERROR:    ╰────
 // SLATE-FILECHECK-END ERROR

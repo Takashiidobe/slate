@@ -10,5 +10,6 @@ int (^callback)(int);
 // PARSE:  1 │
 // PARSE:  2 │ int (^callback)(int);
 // PARSE:    ·      ─
+// PARSE:  3 │
 // PARSE:    ╰────
 // SLATE-FILECHECK-END PARSE

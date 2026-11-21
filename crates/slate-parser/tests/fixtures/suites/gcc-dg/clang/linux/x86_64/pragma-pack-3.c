@@ -61,7 +61,7 @@ main ()
 // DEFAULT-NEXT:     type @type[[TYPE_T]] T = struct {
 // DEFAULT-NEXT:         field0 b: i8;
 // DEFAULT-NEXT:         field1 c: i32;
-// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE_S]] [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_main:[0-9]+]] @main(unprototyped) -> i32 [linkage=external] [fallthrough=ret_zero] {

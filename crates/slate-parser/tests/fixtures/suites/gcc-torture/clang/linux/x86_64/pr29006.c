@@ -38,7 +38,7 @@ int                                main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 x: u64;
-// DEFAULT-NEXT:     } [size=9, align=1, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=9, align=1, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_s]]>) -> void [linkage=external] [inline=never] [definition=emitted] [fallthrough=ret_void] {
 // DEFAULT-NEXT:         write<u64>(field1(deref(read<ptr<@type[[TYPE_s]]>>(%[[VALUE_s]]))), reinterpret<u64, reason=assign, fits=unknown>(widen<i64, reason=assign>(const<i32>(0))));
 // DEFAULT-NEXT:     }

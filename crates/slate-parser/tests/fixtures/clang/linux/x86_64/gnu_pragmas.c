@@ -86,7 +86,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_GNUPragmaPacked:[0-9]+]] GNUPragmaPacked = struct {
 // DEFAULT-NEXT:         field0 tag: u8;
 // DEFAULT-NEXT:         field1 value: u32;
-// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     global %[[VALUE_gnu_pragma_inner_macro:[0-9]+]] gnu_pragma_inner_macro: i32 [storage=static] = const<i32>(11) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_gnu_pragma_outer_macro:[0-9]+]] gnu_pragma_outer_macro: i32 [storage=static] = const<i32>(7) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 25> [storage=static] = code_units<array<i8, 25>>([37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 32, 37, 100, 10, 0]) [linkage=internal];

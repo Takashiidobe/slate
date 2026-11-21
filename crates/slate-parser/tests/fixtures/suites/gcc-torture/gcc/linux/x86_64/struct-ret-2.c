@@ -49,7 +49,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: u8;
 // DEFAULT-NEXT:         field1 b: u16;
-// DEFAULT-NEXT:     } [size=3, align=1, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=3, align=1, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE_three_byte_t:[0-9]+]] three_byte_t = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];

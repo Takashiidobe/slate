@@ -151,6 +151,18 @@ impl<'m> Program<'m> {
             && layout(left_definition) == layout(right_definition)
     }
 
+    pub fn field_aligned(&self, unit: UnitId, record: &ir::Type, index: usize) -> bool {
+        matches!(
+            self.definition(unit, record).map(|definition| &definition.kind),
+            Some(ir::TypeDefinitionKind::Record {
+                fields: Some(fields),
+                layout: Some(layout),
+                ..
+            }) if fields.get(index).is_some_and(|field| field.bit_width.is_none())
+                && layout.underaligned.get(index) == Some(&false)
+        )
+    }
+
     fn resolve<'t>(&'t self, unit: UnitId, mut ty: &'t ir::Type) -> &'t ir::Type {
         while let ir::Type::Defined(id) = ty
             && let Some(definition) = self.type_definition(unit, *id)

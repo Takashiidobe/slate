@@ -71,7 +71,7 @@ int main() {
 // DEFAULT-NEXT:     type @type[[TYPE_lock_chain1:[0-9]+]] lock_chain1 = struct {
 // DEFAULT-NEXT:         field0 x: i8;
 // DEFAULT-NEXT:         field1 base: u16;
-// DEFAULT-NEXT:     } [size=3, align=1, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=3, align=1, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     global %[[VALUE_test:[0-9]+]] test: array<@type[[TYPE_lock_chain]], 101> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_test1:[0-9]+]] test1: array<@type[[TYPE_lock_chain1]], 101> [storage=static] [align=16] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_foo:[0-9]+]] @foo(%[[VALUE_chain:[0-9]+]] chain: ptr<@type[[TYPE_lock_chain]]>) -> ptr<@type[[TYPE_lock_chain]]> [linkage=external] [inline=never] [definition=emitted] [fallthrough=ub_if_used] {

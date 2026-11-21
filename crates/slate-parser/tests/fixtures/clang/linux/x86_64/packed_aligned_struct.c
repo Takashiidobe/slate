@@ -53,7 +53,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_PackedAligned:[0-9]+]] PackedAligned = struct {
 // DEFAULT-NEXT:         field0 a: i8;
 // DEFAULT-NEXT:         field1 b: i32;
-// DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 7> [storage=static] = code_units<array<i8, 7>>([37, 100, 32, 37, 120, 10, 0]) [linkage=internal];

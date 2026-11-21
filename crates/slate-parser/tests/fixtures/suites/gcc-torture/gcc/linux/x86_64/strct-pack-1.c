@@ -52,7 +52,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 s: i16;
 // DEFAULT-NEXT:         field1 d: f64;
-// DEFAULT-NEXT:     } [size=10, align=2, offsets=[0, 2]];
+// DEFAULT-NEXT:     } [size=10, align=2, offsets=[0, 2], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE_TRIAL:[0-9]+]] TRIAL = @type[[TYPE0]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];

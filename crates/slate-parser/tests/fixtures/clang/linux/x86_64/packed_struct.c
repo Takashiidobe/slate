@@ -52,7 +52,7 @@ int main(void) {
 // DEFAULT-NEXT:         field0 a: i8;
 // DEFAULT-NEXT:         field1 b: i32;
 // DEFAULT-NEXT:         field2 c: i8;
-// DEFAULT-NEXT:     } [size=6, align=1, offsets=[0, 1, 5]];
+// DEFAULT-NEXT:     } [size=6, align=1, offsets=[0, 1, 5], underaligned=[1]];
 // DEFAULT-NEXT:     global %[[VALUE_str:[0-9]+]] .str[[VALUE_str]]: array<i8, 9> [storage=static] = code_units<array<i8, 9>>([37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_2:[0-9]+]] .str[[VALUE_str_2]]: array<i8, 13> [storage=static] = code_units<array<i8, 13>>([37, 122, 117, 32, 37, 122, 117, 32, 37, 122, 117, 10, 0]) [linkage=internal];
 // DEFAULT-NEXT:     global %[[VALUE_str_3:[0-9]+]] .str[[VALUE_str_3]]: array<i8, 10> [storage=static] = code_units<array<i8, 10>>([37, 100, 32, 37, 120, 32, 37, 100, 10, 0]) [linkage=internal];

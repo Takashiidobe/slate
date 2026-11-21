@@ -47,7 +47,7 @@ _Complex double complex_double(_Complex double value) { return value; }
 // IR-NEXT:     type @type[[TYPE_packed:[0-9]+]] packed = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 i: i32;
-// IR-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// IR-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // IR-NEXT:     fn %[[VALUE_empty:[0-9]+]] @empty(%[[VALUE_value:[0-9]+]] value: @type[[TYPE_empty]]) -> @type[[TYPE_empty]] [linkage=external] [abi=x86_cdecl(native_c) -> sret<align=1>] [fallthrough=ub_if_used] {
 // IR-NEXT:         return copy<@type[[TYPE_empty]], reason=return>(read<@type[[TYPE_empty]]>(%[[VALUE_value]]));
 // IR-NEXT:     }

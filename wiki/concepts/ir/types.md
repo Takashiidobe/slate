@@ -202,6 +202,16 @@ The shown type is concrete and target-resolved; the C type is metadata
   stay in the list; anonymous members print `<anonymous>`.
 - Layout records size, alignment, one byte offset per field, bit offsets for
   bit-fields, and byte extents of bit-field storage units.
+- `underaligned` marks each non-bit-field member whose offset is not a
+  multiple of its type's alignment, or whose type's alignment exceeds the
+  record's final alignment: `packed`, `#pragma pack(n)` below the type's
+  alignment, or a typedef with a reduced `aligned`. `struct { double a; }
+  __attribute__((packed, aligned))` marks nothing, since `a` sits at offset 0
+  of a 16-aligned record. An unmarked member is aligned for its type whenever
+  its record is, so an aligned reference may be formed along a path of
+  unmarked members. Lowering packs a record when a member is underaligned,
+  and also when x87 `long double`'s Rust type is aligned above C's (16 vs 8
+  under `-malign-double`, `slate-yar4.59`).
   `tools/check_record_layout.py` diffs each target's layout fixture against
   clang's record-layout dump.
 - ARM lets zero-width bit-fields raise record alignment, packed records

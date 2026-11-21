@@ -48,7 +48,7 @@ int hidden_function(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_packed_record:[0-9]+]] packed_record = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 i: i32;
-// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     fn %[[VALUE_pragma_adjacent:[0-9]+]] @pragma_adjacent() -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         ;
 // DEFAULT-NEXT:         return const<i32>(1);

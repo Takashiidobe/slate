@@ -317,7 +317,7 @@ _Static_assert(_Alignof(struct G8) == 4, "G8 align");
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:         field1 i: i32;
 // TARGET-NEXT:         field2 d: f64;
-// TARGET-NEXT:     } [size=13, align=1, offsets=[0, 1, 5]];
+// TARGET-NEXT:     } [size=13, align=1, offsets=[0, 1, 5], underaligned=[1, 2]];
 // TARGET-NEXT:     type @type[[TYPE_P2:[0-9]+]] P2 = struct {
 // TARGET-NEXT:         field0 a: i8 : 3;
 // TARGET-NEXT:         field1 b: i32 : 5;
@@ -331,7 +331,7 @@ _Static_assert(_Alignof(struct G8) == 4, "G8 align");
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:         field1 i: i32;
 // TARGET-NEXT:         field2 d: f64;
-// TARGET-NEXT:     } [size=14, align=2, offsets=[0, 2, 6]];
+// TARGET-NEXT:     } [size=14, align=2, offsets=[0, 2, 6], underaligned=[1, 2]];
 // TARGET-NEXT:     type @type[[TYPE_P4:[0-9]+]] P4 = struct {
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:         field1 b: i32 : 5;
@@ -339,7 +339,7 @@ _Static_assert(_Alignof(struct G8) == 4, "G8 align");
 // TARGET-NEXT:     type @type[[TYPE_P5:[0-9]+]] P5 = struct {
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:         field1 d: f64;
-// TARGET-NEXT:     } [size=12, align=4, offsets=[0, 4]];
+// TARGET-NEXT:     } [size=12, align=4, offsets=[0, 4], underaligned=[1]];
 // TARGET-NEXT:     type @type[[TYPE_P6:[0-9]+]] P6 = struct {
 // TARGET-NEXT:         field0 c: i8;
 // TARGET-NEXT:     } [size=1, align=1, offsets=[0]];

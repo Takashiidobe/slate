@@ -10,5 +10,6 @@ unsigned long size(char *p) { return __builtin_object_size(p, 4); }
 // SEMA:  1 │
 // SEMA:  2 │ unsigned long size(char *p) { return __builtin_object_size(p, 4); }
 // SEMA:    ·                                      ───────────────────────────
+// SEMA:  3 │
 // SEMA:    ╰────
 // SLATE-FILECHECK-END SEMA

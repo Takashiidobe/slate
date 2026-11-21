@@ -78,13 +78,13 @@ typedef struct p3 {
 // DEFAULT-NEXT:         field0 field1: i8;
 // DEFAULT-NEXT:         field1 field2: i16;
 // DEFAULT-NEXT:         field2 field3: i32;
-// DEFAULT-NEXT:     } [size=7, align=1, offsets=[0, 1, 3]];
+// DEFAULT-NEXT:     } [size=7, align=1, offsets=[0, 1, 3], underaligned=[1, 2]];
 // DEFAULT-NEXT:     type @type[[TYPE_p1_t1:[0-9]+]] p1_t1 = @type[[TYPE_p1]];
 // DEFAULT-NEXT:     type @type[[TYPE_p2:[0-9]+]] p2 = struct {
 // DEFAULT-NEXT:         field0 field1: i8;
 // DEFAULT-NEXT:         field1 field2: i16;
 // DEFAULT-NEXT:         field2 field3: i32;
-// DEFAULT-NEXT:     } [size=7, align=1, offsets=[0, 1, 3]];
+// DEFAULT-NEXT:     } [size=7, align=1, offsets=[0, 1, 3], underaligned=[1, 2]];
 // DEFAULT-NEXT:     type @type[[TYPE_p2_t1:[0-9]+]] p2_t1 = @type[[TYPE_p2]];
 // DEFAULT-NEXT:     type @type[[TYPE_u1_t1:[0-9]+]] u1_t1 = @type[[TYPE_u1]];
 // DEFAULT-NEXT:     type @type[[TYPE_u1_t2:[0-9]+]] u1_t2 = @type[[TYPE_u1]];

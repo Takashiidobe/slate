@@ -45,6 +45,6 @@ struct Trailing {
 // DEFAULT-NEXT:     type @type[[TYPE_mode_t:[0-9]+]] mode_t = i8;
 // DEFAULT-NEXT:     type @type[[TYPE_Trailing:[0-9]+]] Trailing = struct {
 // DEFAULT-NEXT:         field0 value: i32;
-// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

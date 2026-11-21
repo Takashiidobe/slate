@@ -28,6 +28,6 @@ _Static_assert(sizeof(struct s) == 9, "bare /Zp is /Zp1");
 // IR-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 d: f64;
-// IR-NEXT:     } [size=9, align=1, offsets=[0, 1]];
+// IR-NEXT:     } [size=9, align=1, offsets=[0, 1], underaligned=[1]];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

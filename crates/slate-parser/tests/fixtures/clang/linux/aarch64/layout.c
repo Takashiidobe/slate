@@ -91,7 +91,7 @@ struct __attribute__((packed)) PackedZeroWidth { char first; int :0; char last; 
 // TARGET-NEXT:     type @type[[TYPE_Packed:[0-9]+]] Packed = struct {
 // TARGET-NEXT:         field0 first: u8;
 // TARGET-NEXT:         field1 second: i32;
-// TARGET-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// TARGET-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // TARGET-NEXT:     type @type[[TYPE_PackedZeroWidth:[0-9]+]] PackedZeroWidth = struct {
 // TARGET-NEXT:         field0 first: u8;
 // TARGET-NEXT:         field1 <anonymous>: i32 : 0;

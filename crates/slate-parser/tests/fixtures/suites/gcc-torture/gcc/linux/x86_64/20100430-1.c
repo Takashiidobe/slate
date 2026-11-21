@@ -79,7 +79,7 @@ int main(void) {
 // DEFAULT-NEXT:         field1 cc22: u8;
 // DEFAULT-NEXT:         field2 ss: array<u16, 104>;
 // DEFAULT-NEXT:         field3 cc23: array<u8, 13>;
-// DEFAULT-NEXT:     } [size=223, align=1, offsets=[0, 1, 2, 210]];
+// DEFAULT-NEXT:     } [size=223, align=1, offsets=[0, 1, 2, 210], underaligned=[2]];
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 ii: i32;
 // DEFAULT-NEXT:         field1 buf: @type[[TYPE_packed_struct]];

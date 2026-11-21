@@ -296,7 +296,7 @@ sizeof(I1) +
 // DEFAULT-NEXT:         field4 b: i8 : 3;
 // DEFAULT-NEXT:         field5 d: i8 : 4;
 // DEFAULT-NEXT:         field6 y: i16;
-// DEFAULT-NEXT:     } [size=12, align=1, offsets=[0, 1, 5, 5, 9, 9, 10], bit_offsets=[None, Some(8), Some(40), Some(40), Some(72), Some(75), None], bit_units=[(1, 4), (5, 4), (9, 1)], field_units=[None, Some(0), None, Some(1), Some(2), Some(2), None]];
+// DEFAULT-NEXT:     } [size=12, align=1, offsets=[0, 1, 5, 5, 9, 9, 10], bit_offsets=[None, Some(8), Some(40), Some(40), Some(72), Some(75), None], bit_units=[(1, 4), (5, 4), (9, 1)], field_units=[None, Some(0), None, Some(1), Some(2), Some(2), None], underaligned=[6]];
 // DEFAULT-NEXT:     type @type[[TYPE_A1_2:[0-9]+]] A1 = @type[[TYPE_A1]];
 // DEFAULT-NEXT:     type @type[[TYPE_B1:[0-9]+]] B1 = struct {
 // DEFAULT-NEXT:         field0 x: i8;
@@ -325,7 +325,7 @@ sizeof(I1) +
 // DEFAULT-NEXT:         field2 b: i32 : 3;
 // DEFAULT-NEXT:         field3 <anonymous>: i64 : 0;
 // DEFAULT-NEXT:         field4 y: i16;
-// DEFAULT-NEXT:     } [size=8, align=1, offsets=[0, 0, 0, 0, 0], bit_offsets=[None, Some(0), Some(0), Some(0), None], bit_units=[(0, 8), (0, 4)], field_units=[None, Some(0), Some(1), None, None]];
+// DEFAULT-NEXT:     } [size=8, align=1, offsets=[0, 0, 0, 0, 0], bit_offsets=[None, Some(0), Some(0), Some(0), None], bit_units=[(0, 8), (0, 4)], field_units=[None, Some(0), Some(1), None, None], underaligned=[4]];
 // DEFAULT-NEXT:     type @type[[TYPE_E1_2:[0-9]+]] E1 = @type[[TYPE_E1]];
 // DEFAULT-NEXT:     type @type[[TYPE_F1:[0-9]+]] F1 = struct {
 // DEFAULT-NEXT:         field0 x: i8;
@@ -339,7 +339,7 @@ sizeof(I1) +
 // DEFAULT-NEXT:         field8 h: i16 : 11;
 // DEFAULT-NEXT:         field9 i: i16 : 11;
 // DEFAULT-NEXT:         field10 y: i16;
-// DEFAULT-NEXT:     } [size=15, align=1, offsets=[0, 1, 1, 2, 3, 3, 5, 7, 9, 11, 13], bit_offsets=[None, Some(8), Some(11), Some(16), Some(24), Some(30), Some(40), Some(56), Some(72), Some(88), None], bit_units=[(1, 1), (2, 1), (3, 2), (5, 2), (7, 2), (9, 2), (11, 2)], field_units=[None, Some(0), Some(0), Some(1), Some(2), Some(2), Some(3), Some(4), Some(5), Some(6), None]];
+// DEFAULT-NEXT:     } [size=15, align=1, offsets=[0, 1, 1, 2, 3, 3, 5, 7, 9, 11, 13], bit_offsets=[None, Some(8), Some(11), Some(16), Some(24), Some(30), Some(40), Some(56), Some(72), Some(88), None], bit_units=[(1, 1), (2, 1), (3, 2), (5, 2), (7, 2), (9, 2), (11, 2)], field_units=[None, Some(0), Some(0), Some(1), Some(2), Some(2), Some(3), Some(4), Some(5), Some(6), None], underaligned=[10]];
 // DEFAULT-NEXT:     type @type[[TYPE_F1_2:[0-9]+]] F1 = @type[[TYPE_F1]];
 // DEFAULT-NEXT:     type @type[[TYPE_G1:[0-9]+]] G1 = union {
 // DEFAULT-NEXT:         field0 x: i8;
@@ -347,7 +347,7 @@ sizeof(I1) +
 // DEFAULT-NEXT:         field2 <anonymous>: i32 : 0;
 // DEFAULT-NEXT:         field3 <anonymous>: i64 : 0;
 // DEFAULT-NEXT:         field4 y: i16;
-// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 0, 0, 0, 0], bit_offsets=[None, Some(0), Some(0), Some(0), None], bit_units=[(0, 4)], field_units=[None, Some(0), None, None, None]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 0, 0, 0, 0], bit_offsets=[None, Some(0), Some(0), Some(0), None], bit_units=[(0, 4)], field_units=[None, Some(0), None, None, None], underaligned=[4]];
 // DEFAULT-NEXT:     type @type[[TYPE_G1_2:[0-9]+]] G1 = @type[[TYPE_G1]];
 // DEFAULT-NEXT:     type @type[[TYPE_H1:[0-9]+]] H1 = struct {
 // DEFAULT-NEXT:         field0 a: u32 : 1;

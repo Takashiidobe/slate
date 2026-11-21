@@ -66,11 +66,11 @@ struct OpaqueHolder { enum Opaque value; };
 // DEFAULT-NEXT:     type @type[[TYPE_Packed:[0-9]+]] Packed = struct {
 // DEFAULT-NEXT:         field0 a: i8;
 // DEFAULT-NEXT:         field1 b: i32;
-// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE_PackedAligned:[0-9]+]] PackedAligned = struct {
 // DEFAULT-NEXT:         field0 a: i8;
 // DEFAULT-NEXT:         field1 b: i32;
-// DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=8, align=4, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE_AlignedField:[0-9]+]] AlignedField = struct {
 // DEFAULT-NEXT:         field0 a: i8;
 // DEFAULT-NEXT:         field1 b: i32;

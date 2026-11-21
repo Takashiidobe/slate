@@ -98,7 +98,7 @@ int main(void) {
 // DEFAULT-NEXT:         field2 c: u16;
 // DEFAULT-NEXT:         field3 Count: u64;
 // DEFAULT-NEXT:         field4 Count2: i64;
-// DEFAULT-NEXT:     } [size=22, align=1, offsets=[0, 2, 4, 6, 14]];
+// DEFAULT-NEXT:     } [size=22, align=1, offsets=[0, 2, 4, 6, 14], underaligned=[0, 1, 2, 3, 4]];
 // DEFAULT-NEXT:     type @type[[TYPE_Struct1:[0-9]+]] Struct1 = @type[[TYPE0]];
 // DEFAULT-NEXT:     type @type[[TYPE1:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: i16;
@@ -107,7 +107,7 @@ int main(void) {
 // DEFAULT-NEXT:         field3 d: u64;
 // DEFAULT-NEXT:         field4 e: i64;
 // DEFAULT-NEXT:         field5 f: i64;
-// DEFAULT-NEXT:     } [size=30, align=1, offsets=[0, 2, 4, 6, 14, 22]];
+// DEFAULT-NEXT:     } [size=30, align=1, offsets=[0, 2, 4, 6, 14, 22], underaligned=[0, 1, 2, 3, 4, 5]];
 // DEFAULT-NEXT:     type @type[[TYPE_Struct2:[0-9]+]] Struct2 = @type[[TYPE1]];
 // DEFAULT-NEXT:     type @type[[TYPE2:[0-9]+]] = union {
 // DEFAULT-NEXT:         field0 a: @type[[TYPE0]] [c="Struct1"];
@@ -117,7 +117,7 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE3:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 Count: i32;
 // DEFAULT-NEXT:         field1 List: array<@type[[TYPE2]], 0> [c="Union[0]"];
-// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 4]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 4], underaligned=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_Struct3:[0-9]+]] Struct3 = @type[[TYPE3]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE0:[0-9]+]] <unnamed>: u64) -> ptr<void> [linkage=external];

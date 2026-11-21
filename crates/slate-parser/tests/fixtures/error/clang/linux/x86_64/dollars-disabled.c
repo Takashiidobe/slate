@@ -10,5 +10,6 @@ int a$b;
 // PARSE:  1 │
 // PARSE:  2 │ int a$b;
 // PARSE:    ·      ─
+// PARSE:  3 │
 // PARSE:    ╰────
 // SLATE-FILECHECK-END PARSE

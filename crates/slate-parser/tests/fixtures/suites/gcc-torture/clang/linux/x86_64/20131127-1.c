@@ -63,7 +63,7 @@ int main(void) {
 // DEFAULT-NEXT:         field1 f1: i32;
 // DEFAULT-NEXT:         field2 f2: i32;
 // DEFAULT-NEXT:         field3 f3: i16;
-// DEFAULT-NEXT:     } [size=14, align=1, offsets=[0, 4, 8, 12]];
+// DEFAULT-NEXT:     } [size=14, align=1, offsets=[0, 4, 8, 12], underaligned=[0, 1, 2, 3]];
 // DEFAULT-NEXT:     global %[[VALUE_a:[0-9]+]] a: i16 [storage=static] = truncate<i16, reason=assign, fits=always>(const<i32>(1)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_b:[0-9]+]] b: @type[[TYPE_S0]] [storage=static] = aggregate<@type[[TYPE_S0]], zero_fill=true>(field0 = const<i32>(1)) [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: @type[[TYPE_S0]] [storage=static] [linkage=external];

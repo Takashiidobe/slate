@@ -1293,6 +1293,15 @@ impl fmt::Display for DisplayModule<'_> {
                         if layout.field_units.iter().any(Option::is_some) {
                             write!(f, ", field_units={:?}", layout.field_units)?;
                         }
+                        if layout.underaligned.contains(&true) {
+                            let fields: Vec<_> = layout
+                                .underaligned
+                                .iter()
+                                .enumerate()
+                                .filter_map(|(index, &under)| under.then_some(index))
+                                .collect();
+                            write!(f, ", underaligned={fields:?}")?;
+                        }
                         f.write_str("]")?;
                     }
                 }

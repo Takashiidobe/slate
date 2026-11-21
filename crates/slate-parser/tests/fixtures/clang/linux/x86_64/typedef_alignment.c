@@ -68,7 +68,7 @@ int locals(void) {
 // IR-NEXT:     type @type[[TYPE_holds_lowered:[0-9]+]] holds_lowered = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 value: i32 [c="lowered"];
-// IR-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// IR-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // IR-NEXT:     type @type[[TYPE_holds_chain:[0-9]+]] holds_chain = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 first: i32 [c="chained"];
@@ -77,7 +77,7 @@ int locals(void) {
 // IR-NEXT:     type @type[[TYPE_holds_array:[0-9]+]] holds_array = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 values: array<i64, 2> [c="packed_long[2]"];
-// IR-NEXT:     } [size=18, align=2, offsets=[0, 2]];
+// IR-NEXT:     } [size=18, align=2, offsets=[0, 2], underaligned=[1]];
 // IR-NEXT:     global %[[VALUE_global_raised:[0-9]+]] global_raised: i32 [storage=static] [align=16] [linkage=external] [c="raised"];
 // IR-NEXT:     global %[[VALUE_global_lowered:[0-9]+]] global_lowered: i32 [storage=static] [align=1] [linkage=external] [c="lowered"];
 // IR-NEXT:     global %[[VALUE_global_requested:[0-9]+]] global_requested: i64 [storage=static] [align=4] [linkage=external] [c="packed_long"];

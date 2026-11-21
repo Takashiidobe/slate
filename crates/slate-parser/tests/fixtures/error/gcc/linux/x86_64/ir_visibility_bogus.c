@@ -21,5 +21,6 @@ __attribute__((visibility("bogus"))) int bogus_visibility_fn(void) { return 0; }
 // DEFAULT:  2 │ int __attribute__((visibility("bogus"))) bogus_visibility = 1;
 // DEFAULT:  3 │ __attribute__((visibility("bogus"))) int bogus_visibility_fn(void) { return 0; }
 // DEFAULT:    · ────────────────────────────────────────────────────────────────────────────────
+// DEFAULT:  4 │
 // DEFAULT:    ╰────
 // SLATE-FILECHECK-END DEFAULT

@@ -89,7 +89,7 @@ void direct2indirect(void)
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_offset_v2:[0-9]+]] offset_v2 = struct {
 // DEFAULT-NEXT:         field0 v: i64;
-// DEFAULT-NEXT:     } [size=8, align=1, offsets=[0]];
+// DEFAULT-NEXT:     } [size=8, align=1, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_reiserfs_key:[0-9]+]] reiserfs_key = struct {
 // DEFAULT-NEXT:         field0 k_objectid: i32;
 // DEFAULT-NEXT:         field1 u: @type[[TYPE0:[0-9]+]];

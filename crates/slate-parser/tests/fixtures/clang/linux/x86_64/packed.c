@@ -36,10 +36,10 @@ union __attribute__((packed)) Pair {
 // DEFAULT-NEXT:     type @type[[TYPE_Packed:[0-9]+]] Packed = struct {
 // DEFAULT-NEXT:         field0 tag: i8;
 // DEFAULT-NEXT:         field1 value: i32;
-// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE_Pair:[0-9]+]] Pair = union {
 // DEFAULT-NEXT:         field0 left: i32;
 // DEFAULT-NEXT:         field1 right: i8;
-// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 0]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0, 0], underaligned=[0]];
 // DEFAULT-NEXT: }
 // SLATE-FILECHECK-END DEFAULT

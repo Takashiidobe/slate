@@ -37,7 +37,7 @@ int f(void) { __pragma(warning(suppress: 4100)) return 0; }
 // DEFAULT-NEXT:     type @type[[TYPE_packed:[0-9]+]] packed = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 i: i32;
-// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE_normal:[0-9]+]] normal = struct {
 // DEFAULT-NEXT:         field0 c: i8;
 // DEFAULT-NEXT:         field1 i: i32;

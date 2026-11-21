@@ -73,13 +73,13 @@ CHECK (offsetof (struct test_s4, d) == 12);
 // DEFAULT-NEXT:         field1 b: i16;
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:         field3 d: i8;
-// DEFAULT-NEXT:     } [size=11, align=1, offsets=[0, 4, 6, 10]];
+// DEFAULT-NEXT:     } [size=11, align=1, offsets=[0, 4, 6, 10], underaligned=[0, 1, 2]];
 // DEFAULT-NEXT:     type @type[[TYPE_test_sp3:[0-9]+]] test_sp3 = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i16;
 // DEFAULT-NEXT:         field2 c: i32;
 // DEFAULT-NEXT:         field3 d: i8;
-// DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8, 10, 14]];
+// DEFAULT-NEXT:     } [size=16, align=8, offsets=[0, 8, 10, 14], underaligned=[2]];
 // DEFAULT-NEXT:     type @type[[TYPE_test_s4:[0-9]+]] test_s4 = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i16;

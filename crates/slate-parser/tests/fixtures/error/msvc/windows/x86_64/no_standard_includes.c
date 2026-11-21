@@ -9,5 +9,6 @@
 // DEFAULT:    ╭─[tests/fixtures/error/msvc/windows/x86_64/no_standard_includes.c:1:10]
 // DEFAULT:  1 │ #include <stdio.h>
 // DEFAULT:    ·          ─────────
+// DEFAULT:  2 │
 // DEFAULT:    ╰────
 // SLATE-FILECHECK-END DEFAULT

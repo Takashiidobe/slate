@@ -9,5 +9,6 @@ _Static_assert(sizeof(int) == 4, "int");
 // PARSE:  1 │
 // PARSE:  2 │ _Static_assert(sizeof(int) == 4, "int");
 // PARSE:    · ──────────────
+// PARSE:  3 │
 // PARSE:    ╰────
 // SLATE-FILECHECK-END PARSE

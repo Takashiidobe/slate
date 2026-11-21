@@ -502,13 +502,13 @@ decl_common4;                 /* { dg-warning "ignoring attribute .nocommon. bec
 // DEFAULT-NEXT:     } [size=16, align=16, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_AlignedMemberPacked:[0-9]+]] AlignedMemberPacked = struct {
 // DEFAULT-NEXT:         field0 i: i32;
-// DEFAULT-NEXT:     } [size=4, align=2, offsets=[0]];
+// DEFAULT-NEXT:     } [size=4, align=2, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_PackedMemberAligned:[0-9]+]] PackedMemberAligned = struct {
 // DEFAULT-NEXT:         field0 i: i32;
-// DEFAULT-NEXT:     } [size=4, align=2, offsets=[0]];
+// DEFAULT-NEXT:     } [size=4, align=2, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_PackedPacked:[0-9]+]] PackedPacked = struct {
 // DEFAULT-NEXT:         field0 i: i32;
-// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     extern %[[VALUE_decl_common1:[0-9]+]] decl_common1: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     extern %[[VALUE_decl_common2:[0-9]+]] decl_common2: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     extern %[[VALUE_decl_common3:[0-9]+]] decl_common3: i32 [storage=static] [linkage=external];

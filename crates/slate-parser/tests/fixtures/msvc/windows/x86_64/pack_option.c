@@ -43,14 +43,14 @@ _Static_assert(sizeof(struct reset) == 10, "#pragma pack() restores the /Zp valu
 // IR-NEXT:         field1 i: i32;
 // IR-NEXT:         field2 h: i16;
 // IR-NEXT:         field3 d: f64;
-// IR-NEXT:     } [size=16, align=2, offsets=[0, 2, 6, 8]];
+// IR-NEXT:     } [size=16, align=2, offsets=[0, 2, 6, 8], underaligned=[1, 3]];
 // IR-NEXT:     type @type[[TYPE_pushed:[0-9]+]] pushed = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 d: f64;
-// IR-NEXT:     } [size=12, align=4, offsets=[0, 4]];
+// IR-NEXT:     } [size=12, align=4, offsets=[0, 4], underaligned=[1]];
 // IR-NEXT:     type @type[[TYPE_reset:[0-9]+]] reset = struct {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 d: f64;
-// IR-NEXT:     } [size=10, align=2, offsets=[0, 2]];
+// IR-NEXT:     } [size=10, align=2, offsets=[0, 2], underaligned=[1]];
 // IR-NEXT: }
 // SLATE-FILECHECK-END IR

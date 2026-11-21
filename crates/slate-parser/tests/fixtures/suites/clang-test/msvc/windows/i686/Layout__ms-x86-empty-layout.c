@@ -80,7 +80,7 @@ sizeof(struct EmptyPackedAligned8LongLongMemb)+
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_EmptyPackedAligned4LongLongMemb:[0-9]+]] EmptyPackedAligned4LongLongMemb = struct {
 // DEFAULT-NEXT:         field0 FlexArrayMemb: array<i64, 0>;
-// DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
+// DEFAULT-NEXT:     } [size=4, align=4, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE_EmptyPackedAligned8LongLongMemb:[0-9]+]] EmptyPackedAligned8LongLongMemb = struct {
 // DEFAULT-NEXT:         field0 FlexArrayMemb: array<i64, 0>;
 // DEFAULT-NEXT:     } [size=8, align=8, offsets=[0]];

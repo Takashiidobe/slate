@@ -66,7 +66,7 @@ int read_tail(union Tail *p) { return p->tail[1]; }
 // IR-NEXT:     type @type[[TYPE_Packed:[0-9]+]] Packed = union {
 // IR-NEXT:         field0 c: i8;
 // IR-NEXT:         field1 d: array<f64, incomplete>;
-// IR-NEXT:     } [size=1, align=1, offsets=[0, 0]];
+// IR-NEXT:     } [size=1, align=1, offsets=[0, 0], underaligned=[1]];
 // IR-NEXT:     global %[[VALUE_sizes:[0-9]+]] sizes: array<u64, 6> [storage=static] [align=16] = aggregate<array<u64, 6>, zero_fill=false>(index0 = reinterpret<u64>(size_of<u64, @type[[TYPE_Tail]]>(4) [c="__size_t"]), index1 = reinterpret<u64>(size_of<u64, @type[[TYPE_Lead]]>(4) [c="__size_t"]), index2 = reinterpret<u64>(size_of<u64, @type[[TYPE_Only]]>(0) [c="__size_t"]), index3 = reinterpret<u64>(size_of<u64, @type[[TYPE_Two]]>(4) [c="__size_t"]), index4 = reinterpret<u64>(size_of<u64, @type[[TYPE_Wide]]>(8) [c="__size_t"]), index5 = reinterpret<u64>(size_of<u64, @type[[TYPE_Packed]]>(1) [c="__size_t"])) [linkage=external];
 // IR-NEXT:     global %[[VALUE_aligns:[0-9]+]] aligns: array<u64, 2> [storage=static] [align=16] = aggregate<array<u64, 2>, zero_fill=false>(index0 = reinterpret<u64>(align_of<u64, @type[[TYPE_Tail]]>(4) [c="__size_t"]), index1 = reinterpret<u64>(align_of<u64, @type[[TYPE_Wide]]>(8) [c="__size_t"])) [linkage=external];
 // IR-NEXT:     global %[[VALUE_scalar:[0-9]+]] scalar: @type[[TYPE_Tail]] [storage=static] = aggregate<@type[[TYPE_Tail]], zero_fill=false>(field0 = const<i32>(5)) [linkage=external];

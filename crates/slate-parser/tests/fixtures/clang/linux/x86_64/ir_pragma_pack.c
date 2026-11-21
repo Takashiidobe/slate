@@ -75,7 +75,7 @@ struct Reset v12;
 // IR-NEXT:     type @type[[TYPE_AfterIgnoredPack:[0-9]+]] AfterIgnoredPack = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
-// IR-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// IR-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // IR-NEXT:     type @type[[TYPE_AfterZeroPack:[0-9]+]] AfterZeroPack = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
@@ -84,16 +84,16 @@ struct Reset v12;
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:         field2 c: i8;
-// IR-NEXT:     } [size=6, align=1, offsets=[0, 1, 5]];
+// IR-NEXT:     } [size=6, align=1, offsets=[0, 1, 5], underaligned=[1]];
 // IR-NEXT:     type @type[[TYPE_PackedButAligned:[0-9]+]] PackedButAligned = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
 // IR-NEXT:         field2 c: i8;
-// IR-NEXT:     } [size=16, align=16, offsets=[0, 1, 5]];
+// IR-NEXT:     } [size=16, align=16, offsets=[0, 1, 5], underaligned=[1]];
 // IR-NEXT:     type @type[[TYPE_NamedPushed:[0-9]+]] NamedPushed = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
-// IR-NEXT:     } [size=6, align=2, offsets=[0, 2]];
+// IR-NEXT:     } [size=6, align=2, offsets=[0, 2], underaligned=[1]];
 // IR-NEXT:     type @type[[TYPE_AfterNamedPop:[0-9]+]] AfterNamedPop = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
@@ -101,7 +101,7 @@ struct Reset v12;
 // IR-NEXT:     type @type[[TYPE_FieldPacked:[0-9]+]] FieldPacked = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
-// IR-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// IR-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // IR-NEXT:     type @type[[TYPE_Bitfields:[0-9]+]] Bitfields = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: u32 : 20;
@@ -119,7 +119,7 @@ struct Reset v12;
 // IR-NEXT:     type @type[[TYPE_Plain:[0-9]+]] Plain = union {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
-// IR-NEXT:     } [size=4, align=2, offsets=[0, 0]];
+// IR-NEXT:     } [size=4, align=2, offsets=[0, 0], underaligned=[1]];
 // IR-NEXT:     type @type[[TYPE_Bits:[0-9]+]] Bits = union {
 // IR-NEXT:         field0 a: u32 : 20;
 // IR-NEXT:         field1 c: i8;
@@ -131,7 +131,7 @@ struct Reset v12;
 // IR-NEXT:     type @type[[TYPE_InFunction:[0-9]+]] InFunction = struct {
 // IR-NEXT:         field0 a: i8;
 // IR-NEXT:         field1 b: i32;
-// IR-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// IR-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // IR-NEXT:     global %[[VALUE_v0:[0-9]+]] v0: @type[[TYPE_AfterIgnoredPack]] [storage=static] [linkage=external];
 // IR-NEXT:     global %[[VALUE_v1:[0-9]+]] v1: @type[[TYPE_AfterZeroPack]] [storage=static] [linkage=external];
 // IR-NEXT:     global %[[VALUE_v2:[0-9]+]] v2: @type[[TYPE_FieldAligned]] [storage=static] [linkage=external];

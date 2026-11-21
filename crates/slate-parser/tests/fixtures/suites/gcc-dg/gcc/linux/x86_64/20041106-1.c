@@ -59,7 +59,7 @@ int main ()
 // DEFAULT-NEXT:     type @type[[TYPE_size_t:[0-9]+]] size_t = u64;
 // DEFAULT-NEXT:     type @type[[TYPE_S:[0-9]+]] S = struct {
 // DEFAULT-NEXT:         field0 x: i64;
-// DEFAULT-NEXT:     } [size=8, align=1, offsets=[0]];
+// DEFAULT-NEXT:     } [size=8, align=1, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     global %[[VALUE_sink:[0-9]+]] sink: volatile i64 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     fn %[[VALUE_munmap:[0-9]+]] @munmap(%[[VALUE___addr:[0-9]+]] __addr: ptr<void>, %[[VALUE___len:[0-9]+]] __len: u64 [c="size_t"]) -> i32 [linkage=external] [c="int(void *, size_t)"];
 // DEFAULT-NEXT:     fn %[[VALUE_malloc:[0-9]+]] @malloc(%[[VALUE___size:[0-9]+]] __size: u64 [c="size_t"]) -> ptr<void> [linkage=external] [c="void *(size_t)"];

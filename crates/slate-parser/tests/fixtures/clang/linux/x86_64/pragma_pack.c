@@ -79,15 +79,15 @@ int main(void) {
 // DEFAULT-NEXT:     type @type[[TYPE_PackedTwo:[0-9]+]] PackedTwo = struct {
 // DEFAULT-NEXT:         field0 tag: u8;
 // DEFAULT-NEXT:         field1 value: u32;
-// DEFAULT-NEXT:     } [size=6, align=2, offsets=[0, 2]];
+// DEFAULT-NEXT:     } [size=6, align=2, offsets=[0, 2], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE_PackedOne:[0-9]+]] PackedOne = struct {
 // DEFAULT-NEXT:         field0 tag: u8;
 // DEFAULT-NEXT:         field1 value: u32;
-// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1]];
+// DEFAULT-NEXT:     } [size=5, align=1, offsets=[0, 1], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE_PackedTwoAgain:[0-9]+]] PackedTwoAgain = struct {
 // DEFAULT-NEXT:         field0 tag: u8;
 // DEFAULT-NEXT:         field1 value: u32;
-// DEFAULT-NEXT:     } [size=6, align=2, offsets=[0, 2]];
+// DEFAULT-NEXT:     } [size=6, align=2, offsets=[0, 2], underaligned=[1]];
 // DEFAULT-NEXT:     type @type[[TYPE_NaturalAfter:[0-9]+]] NaturalAfter = struct {
 // DEFAULT-NEXT:         field0 tag: u8;
 // DEFAULT-NEXT:         field1 value: u32;

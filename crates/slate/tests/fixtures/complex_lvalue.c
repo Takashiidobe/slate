@@ -22,11 +22,9 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: fn pick(p: *mut f64) -> f64 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p = *p + 5.0f64;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { *p }
+// CHECK-NEXT: fn pick(p: &mut f64) -> f64 {
+// CHECK-NEXT:     *p += 5.0f64;
+// CHECK-NEXT:     *p
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -36,8 +34,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     z.re = 7.0f64;
 // CHECK-NEXT:     z.im = 11.0f64;
-// CHECK-NEXT:     let r: f64 = pick(core::ptr::addr_of_mut!(z.re));
-// CHECK-NEXT:     let i: f64 = pick(core::ptr::addr_of_mut!(z.im));
+// CHECK-NEXT:     let r: f64 = pick(&mut z.re);
+// CHECK-NEXT:     let i: f64 = pick(&mut z.im);
 // CHECK-NEXT:     println!("{}", z.re as i32);
 // CHECK-NEXT:     println!("{}", z.im as i32);
 // CHECK-NEXT:     println!("{}", r as i32);

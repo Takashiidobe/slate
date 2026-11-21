@@ -13,5 +13,6 @@ unsigned long requested_alignment(void) { return __alignof__(requested); }
 // SEMANTIC:  3 │ extern struct rq requested __attribute__((aligned(64)));
 // SEMANTIC:  4 │ unsigned long requested_alignment(void) { return __alignof__(requested); }
 // SEMANTIC:    ·                                                  ──────────────────────
+// SEMANTIC:  5 │
 // SEMANTIC:    ╰────
 // SLATE-FILECHECK-END SEMANTIC

@@ -12,5 +12,6 @@ void store(struct S *p, struct S s) { __builtin_nontemporal_store(s, p); }
 // ERROR:  2 │ struct S { int x; };
 // ERROR:  3 │ void store(struct S *p, struct S s) { __builtin_nontemporal_store(s, p); }
 // ERROR:    ·                                       ─────────────────────────────────
+// ERROR:  4 │
 // ERROR:    ╰────
 // SLATE-FILECHECK-END ERROR

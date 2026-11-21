@@ -68,7 +68,7 @@ ASSERT (_Alignof (s.b) == 2);
 // DEFAULT-NEXT:     type @type[[TYPE0:[0-9]+]] = struct {
 // DEFAULT-NEXT:         field0 a: i32;
 // DEFAULT-NEXT:         field1 b: i32;
-// DEFAULT-NEXT:     } [size=8, align=2, offsets=[0, 4]];
+// DEFAULT-NEXT:     } [size=8, align=2, offsets=[0, 4], underaligned=[0, 1]];
 // DEFAULT-NEXT:     global %[[VALUE_c:[0-9]+]] c: i32 [storage=static] [linkage=external];
 // DEFAULT-NEXT:     global %[[VALUE_s:[0-9]+]] s: @type[[TYPE0]] [storage=static] [linkage=external];
 // DEFAULT-NEXT: }

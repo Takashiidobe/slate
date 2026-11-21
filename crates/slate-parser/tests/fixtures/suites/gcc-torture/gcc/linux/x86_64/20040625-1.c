@@ -50,7 +50,7 @@ int main() {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_s:[0-9]+]] s = struct {
 // DEFAULT-NEXT:         field0 next: ptr<@type[[TYPE_s]]>;
-// DEFAULT-NEXT:     } [size=8, align=1, offsets=[0]];
+// DEFAULT-NEXT:     } [size=8, align=1, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     fn %[[VALUE_abort:[0-9]+]] @abort() -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_exit:[0-9]+]] @exit(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> void [linkage=external] [noreturn];
 // DEFAULT-NEXT:     fn %[[VALUE_maybe_next:[0-9]+]] @maybe_next(%[[VALUE_s:[0-9]+]] s: ptr<@type[[TYPE_s]]>, %[[VALUE_t:[0-9]+]] t: i32) -> ptr<@type[[TYPE_s]]> [linkage=external] [fallthrough=ub_if_used] {

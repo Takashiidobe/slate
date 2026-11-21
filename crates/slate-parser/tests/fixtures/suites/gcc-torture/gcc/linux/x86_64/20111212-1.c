@@ -60,7 +60,7 @@ int main(void) {
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_event:[0-9]+]] event = struct {
 // DEFAULT-NEXT:         field0 sent: @type[[TYPE0:[0-9]+]];
-// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0]];
+// DEFAULT-NEXT:     } [size=4, align=1, offsets=[0], underaligned=[0]];
 // DEFAULT-NEXT:     type @type[[TYPE0]] = struct {
 // DEFAULT-NEXT:         field0 sec: u32;
 // DEFAULT-NEXT:     } [size=4, align=4, offsets=[0]];
