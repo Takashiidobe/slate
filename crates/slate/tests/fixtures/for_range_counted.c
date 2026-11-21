@@ -116,7 +116,7 @@ int main(void) {
 // CHECK-NEXT:     t
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn print_indices() {
-// CHECK-NEXT:     for k in 0..4u64 {
+// CHECK-NEXT:     for k in 0..(3u64 + 1) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%lu ".as_ptr(), k) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };

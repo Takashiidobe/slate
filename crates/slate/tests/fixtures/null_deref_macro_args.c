@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! STORE {
+// CHECK-NEXT: macro_rules! STORE__2 {
 // CHECK-NEXT:     ($p:expr, $i:expr, $v:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             if !$p.is_null() {
@@ -77,7 +77,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! STORE__2 {
+// CHECK-NEXT: macro_rules! STORE {
 // CHECK-NEXT:     ($p:expr, $i:expr, $v:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             if !$p.is_null() {

@@ -127,7 +127,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection",
 // CHECK-NEXT:             sym k1,
-// CHECK-NEXT:             const 1 as u8,
+// CHECK-NEXT:             const 1u8,
 // CHECK-NEXT:             label {
 // CHECK-NEXT:                 __slate_asm_target = true;
 // CHECK-NEXT:             },
@@ -148,7 +148,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection",
 // CHECK-NEXT:             sym k2,
-// CHECK-NEXT:             const 0 as u8,
+// CHECK-NEXT:             const 0u8,
 // CHECK-NEXT:             label {
 // CHECK-NEXT:                 __slate_asm_target = true;
 // CHECK-NEXT:             },
@@ -169,7 +169,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection",
 // CHECK-NEXT:             sym holder,
-// CHECK-NEXT:             const 1 as u8,
+// CHECK-NEXT:             const 1u8,
 // CHECK-NEXT:             label {
 // CHECK-NEXT:                 __slate_asm_target = true;
 // CHECK-NEXT:             },
@@ -191,7 +191,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movl ${1}, {0:e}",
 // CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             const 2 as i32,
+// CHECK-NEXT:             const 2i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         out = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
@@ -207,7 +207,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movl ${1}, {0:e}",
 // CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             const 8 as i32,
+// CHECK-NEXT:             const 8i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         out = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
@@ -259,7 +259,7 @@ int main(void) {
 // CHECK-NEXT:             core::arch::asm!(
 // CHECK-NEXT:                 "movl ${1}, {0:e}",
 // CHECK-NEXT:                 lateout(reg) [[T_0]],
-// CHECK-NEXT:                 const 259 as i32,
+// CHECK-NEXT:                 const 259i32,
 // CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:             );
 // CHECK-NEXT:             __out = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
@@ -273,7 +273,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movl ${1}, {0:e}",
 // CHECK-NEXT:             lateout(reg) [[T_1]],
-// CHECK-NEXT:             const 272 as i32,
+// CHECK-NEXT:             const 272i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         __out = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };

@@ -51,7 +51,7 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let x: u8 = 147;
 // CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16(
-// CHECK-NEXT:             [0u32, 1u32, 7u32, 8u32, 9u32, 255u32],
+// CHECK-NEXT:             [0u32, 1u32, (8i32 - 1i32) as u32, 8u32, (8i32 + 1i32) as u32, 255u32],
 // CHECK-NEXT:         );
 // CHECK-NEXT:         for i in counts.0.iter().copied() {
 // CHECK-NEXT:             let n: u32 = i;
@@ -74,7 +74,7 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let x: u16 = 37175;
 // CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16(
-// CHECK-NEXT:             [0u32, 1u32, 15u32, 16u32, 17u32, 255u32],
+// CHECK-NEXT:             [0u32, 1u32, (16i32 - 1i32) as u32, 16u32, (16i32 + 1i32) as u32, 255u32],
 // CHECK-NEXT:         );
 // CHECK-NEXT:         for i in counts.0.iter().copied() {
 // CHECK-NEXT:             let n: u32 = i;
@@ -97,7 +97,7 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let x: u32 = 2436344781;
 // CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16(
-// CHECK-NEXT:             [0u32, 1u32, 31u32, 32u32, 33u32, 255u32],
+// CHECK-NEXT:             [0u32, 1u32, (32i32 - 1i32) as u32, 32u32, (32i32 + 1i32) as u32, 255u32],
 // CHECK-NEXT:         );
 // CHECK-NEXT:         for i in counts.0.iter().copied() {
 // CHECK-NEXT:             let n: u32 = i;
@@ -120,7 +120,7 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let x: u64 = 10464021160185111365;
 // CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16(
-// CHECK-NEXT:             [0u32, 1u32, 63u32, 64u32, 65u32, 255u32],
+// CHECK-NEXT:             [0u32, 1u32, (64i32 - 1i32) as u32, 64u32, (64i32 + 1i32) as u32, 255u32],
 // CHECK-NEXT:         );
 // CHECK-NEXT:         for i in counts.0.iter().copied() {
 // CHECK-NEXT:             let n: u32 = i;

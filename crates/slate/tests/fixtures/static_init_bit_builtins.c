@@ -72,7 +72,10 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: static pll: pll_state = pll_state {
-// CHECK-NEXT:     ctrl: [4611u32, 1342177280u32],
+// CHECK-NEXT:     ctrl: [
+// CHECK-NEXT:         (18i32 as u32) << 9i32 - 1i32 & 65280u32 | (3i32 as u32) << 1i32 - 1i32 & 15u32,
+// CHECK-NEXT:         (5i32 as u32) << 29i32 - 1i32 & 4026531840u32,
+// CHECK-NEXT:     ],
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: static widths: __SlateAlign16<[i32; 5]> = __SlateAlign16(

@@ -115,7 +115,7 @@ int main(void) {
 // CHECK-NEXT: static mut table_whole: *mut [i32; 4] = unsafe { core::ptr::addr_of_mut!(table.0) };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut grid_row: *mut i32 = unsafe {
-// CHECK-NEXT:     core::ptr::addr_of_mut!(grid.0[1i32 as usize]) as *mut i32
+// CHECK-NEXT:     core::ptr::addr_of_mut!(grid.0[1]) as *mut i32
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut pair_right: *mut i32 = unsafe { core::ptr::addr_of_mut!(pair.right) };

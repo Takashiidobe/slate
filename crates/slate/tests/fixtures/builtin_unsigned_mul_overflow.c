@@ -106,13 +106,13 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     TEST__2!(u32, 4294967295u32);
-// CHECK-NEXT:     TEST!(u64, 18446744073709551615u64);
-// CHECK-NEXT:     TEST!(u64, 18446744073709551615u64);
+// CHECK-NEXT:     TEST__2!(u32, 2147483647u32.wrapping_mul(2u32).wrapping_add(1));
+// CHECK-NEXT:     TEST!(u64, 9223372036854775807u64.wrapping_mul(2u64).wrapping_add(1));
+// CHECK-NEXT:     TEST!(u64, 9223372036854775807u64.wrapping_mul(2u64).wrapping_add(1));
 // CHECK-NEXT:     let mut r: u32 = 0;
 // CHECK-NEXT:     let mut overflow: i32 = ({
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]]: i128 = 1u32 as i128;
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]]: i128 = 4294967295u32 as i128;
+// CHECK-NEXT:         let [[T_2:__t[0-9]+]]: i128 = 1 as i128;
+// CHECK-NEXT:         let [[T_3:__t[0-9]+]]: i128 = 4294967295 as i128;
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]]: i128 = [[T_2]].wrapping_mul([[T_3]]);
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *core::ptr::addr_of_mut!(r) = [[T_4]] as u32;

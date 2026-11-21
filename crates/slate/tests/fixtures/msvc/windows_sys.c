@@ -113,7 +113,8 @@ int main(void) { return 0; }
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = event.is_null() || (unsafe { SetEvent(event) }) == 0;
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = [[V_1]] || (unsafe { WaitForSingleObject(event, 0u32) }) != 0u32;
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: bool = [[V_1]]
+// CHECK-NEXT:         || (unsafe { WaitForSingleObject(event, 0u32) }) != 0u32.wrapping_add(0u32);
 // CHECK-NEXT:     if [[V_2]] {
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }

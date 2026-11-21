@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "addl ${1}, {0:e}\n\taddl $-4, {0:e}\n\taddl ${1}, {0:e}",
 // CHECK-NEXT:             inlateout(reg) result as u32 => [[T_0]],
-// CHECK-NEXT:             const 4 as i32,
+// CHECK-NEXT:             const 4i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "addl $5, {0:e}\n# {1}",
 // CHECK-NEXT:             inlateout(reg) only_negated as u32 => [[T_1]],
-// CHECK-NEXT:             const -5 as i32,
+// CHECK-NEXT:             const -5i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         only_negated = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };

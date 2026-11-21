@@ -205,7 +205,7 @@ int main(void) {
 // CHECK-NEXT:     let [[T_2]] = true;
 // CHECK-NEXT:     local.__slate_bits_2.__set_last([[T_2]]);
 // CHECK-NEXT:     local.after = -2;
-// CHECK-NEXT:     let assigned: i32 = 4i32;
+// CHECK-NEXT:     let assigned: i32 = 4;
 // CHECK-NEXT:     local.__slate_bits_0.__set_x(12u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

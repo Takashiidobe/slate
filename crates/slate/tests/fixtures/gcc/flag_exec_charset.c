@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT:         put_hex((text[i as usize] as u8) as u32);
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     put_hex(129u32);
+// CHECK-NEXT:     put_hex((-127i32 as u8) as u32);
 // CHECK-NEXT:     put_hex(37u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { putchar(10i32) };

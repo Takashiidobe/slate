@@ -482,7 +482,7 @@ int main(void) {
 // CHECK-NEXT:             core::ptr::addr_of_mut!(parser) as *const argp,
 // CHECK-NEXT:             3i32,
 // CHECK-NEXT:             arguments.0.as_mut_ptr() as *mut *mut i8,
-// CHECK-NEXT:             48u32,
+// CHECK-NEXT:             (32i32 | 16i32) as u32,
 // CHECK-NEXT:             core::ptr::null_mut::<i32>(),
 // CHECK-NEXT:             core::ptr::addr_of_mut!(parsed) as *mut (),
 // CHECK-NEXT:         )

@@ -102,7 +102,7 @@ int main(void) {
 // CHECK-NEXT:         }) as i32)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn parsed() -> i32 {
-// CHECK-NEXT:     3 + (unsafe { 12i32 }) * 2
+// CHECK-NEXT:     3 + (unsafe { 12i32 as i32 }) * 2
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn embedded(n: i32) -> i32 {
 // CHECK-NEXT:     ((unsafe {

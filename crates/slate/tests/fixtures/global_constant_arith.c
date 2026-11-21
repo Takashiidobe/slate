@@ -36,11 +36,11 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut wrapped: u32 = 1u32.wrapping_neg();
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut mixed: i32 = -15;
+// CHECK-NEXT: static mut mixed: i32 = (3i32 + 4i32) * -2i32 - 10i32 / 3i32 % 2i32;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut bits: i32 = 236;
+// CHECK-NEXT: static mut bits: i32 = (240i32 | 15i32) & !3i32 ^ 1i32 << 4i32;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut shifted: u32 = 1;
+// CHECK-NEXT: static mut shifted: u32 = 2147483648u32 >> 31i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut scaled: f64 = -2.5f64 * 4.0f64 + 1.0f64;
 // CHECK-EMPTY:
@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut sign: i8 = -97;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut table: [i32; 3] = [-1, -6, -3];
+// CHECK-NEXT: static mut table: [i32; 3] = [-1, -2i32 * 3i32, 7i32 - 10i32];
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]

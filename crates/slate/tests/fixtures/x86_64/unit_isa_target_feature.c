@@ -264,7 +264,7 @@ int main(void) {
 // CHECK-NEXT:                             _mm256_set1_epi32(-1i32),
 // CHECK-NEXT:                         )
 // CHECK-NEXT:                     },
-// CHECK-NEXT:                     const { (4 as i32) as i8 },
+// CHECK-NEXT:                     const { 4i8 },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )

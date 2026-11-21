@@ -117,7 +117,7 @@ int main(void) {
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     let _Result: i32 = unsafe {
 // CHECK-NEXT:         __stdio_common_vsprintf(
-// CHECK-NEXT:             *__local_stdio_printf_options() | 2u64,
+// CHECK-NEXT:             *__local_stdio_printf_options() | 1u64 << 1i32,
 // CHECK-NEXT:             _Buffer,
 // CHECK-NEXT:             _BufferCount,
 // CHECK-NEXT:             _Format,

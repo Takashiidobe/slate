@@ -262,7 +262,7 @@ int main(void) {
 // CHECK-NEXT:     let t1: i32 = tally();
 // CHECK-NEXT:     let t2: i32 = tally();
 // CHECK-NEXT:     println!("{} {} {}", t1, t2, counter());
-// CHECK-NEXT:     for i in 1..7i32 {
+// CHECK-NEXT:     for i in 1..(6i32 + 1) {
 // CHECK-NEXT:         history(i * 10);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let slots__0: *mut i32 = history(70i32);

@@ -86,36 +86,19 @@ int main() {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}",
-// CHECK-NEXT:         classify(<bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(1 as i128))
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{}", classify(<bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(1)));
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}",
 // CHECK-NEXT:         classify(
-// CHECK-NEXT:             <bitint::BInt<128, 2, 16, bitint::A8>>::from_bint(
-// CHECK-NEXT:                 <bitint::BInt<98, 2, 16, bitint::A8>>::from_u128(
-// CHECK-NEXT:                     99999999999999999999999999999,
-// CHECK-NEXT:                 ),
+// CHECK-NEXT:             <bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(
+// CHECK-NEXT:                 99999999999999999999999999999,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}",
-// CHECK-NEXT:         classify(<bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(4 as i128))
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}",
-// CHECK-NEXT:         classify(<bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(5 as i128))
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}",
-// CHECK-NEXT:         classify(<bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(6 as i128))
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}",
-// CHECK-NEXT:         classify(<bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(9 as i128))
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{}", classify(<bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(4)));
+// CHECK-NEXT:     println!("{}", classify(<bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(5)));
+// CHECK-NEXT:     println!("{}", classify(<bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(6)));
+// CHECK-NEXT:     println!("{}", classify(<bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(9)));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

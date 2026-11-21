@@ -1,6 +1,6 @@
 use foldhash::HashMap;
 
-use super::constant_index_casts::representable_literal;
+use super::representable::representable_literal;
 use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKindTag};
@@ -36,11 +36,11 @@ fn is_bool(expr: &Expr, vars: &VarTypes) -> bool {
     }
 }
 
-fn int_literal(expr: &Expr) -> Option<i128> {
+fn int_literal(expr: &Expr, pointer_width: u32) -> Option<i128> {
     match expr {
         Expr::Value(RustValue::TypedInt(value, _)) => Some(*value),
         Expr::Value(RustValue::TypedUInt(value, _)) => i128::try_from(*value).ok(),
-        _ => match representable_literal(expr)? {
+        _ => match representable_literal(expr, pointer_width)? {
             Expr::Value(RustValue::I64(value)) => Some(value as i128),
             Expr::Value(RustValue::I128(value)) => Some(value),
             Expr::Value(RustValue::U128(value)) => i128::try_from(value).ok(),
@@ -49,14 +49,14 @@ fn int_literal(expr: &Expr) -> Option<i128> {
     }
 }
 
-fn is_integral(expr: &Expr, vars: &VarTypes) -> bool {
+fn is_integral(expr: &Expr, vars: &VarTypes, pointer_width: u32) -> bool {
     match expr {
         Expr::Var(name) => matches!(vars.get(name), Some(Type::Prim(prim)) if is_int_prim(*prim)),
         Expr::Cast {
             ty: Type::Prim(prim),
             ..
         } => is_int_prim(*prim),
-        _ => int_literal(expr).is_some(),
+        _ => int_literal(expr, pointer_width).is_some(),
     }
 }
 
@@ -87,7 +87,7 @@ fn take(expr: &mut Expr) -> Expr {
     std::mem::replace(expr, Expr::Todo(String::new()))
 }
 
-fn bool_operand_of_zero_compare(expr: &Expr, vars: &VarTypes) -> Option<bool> {
+fn bool_operand_of_zero_compare(expr: &Expr, vars: &VarTypes, pointer_width: u32) -> Option<bool> {
     let Expr::Binary { op, lhs, rhs } = expr else {
         return None;
     };
@@ -96,7 +96,7 @@ fn bool_operand_of_zero_compare(expr: &Expr, vars: &VarTypes) -> Option<bool> {
         BinOp::Eq => true,
         _ => return None,
     };
-    if int_literal(rhs) != Some(0) {
+    if int_literal(rhs, pointer_width) != Some(0) {
         return None;
     }
     let Expr::Cast {
@@ -109,15 +109,16 @@ fn bool_operand_of_zero_compare(expr: &Expr, vars: &VarTypes) -> Option<bool> {
     (is_int_prim(*prim) && is_bool(inner, vars)).then_some(negated)
 }
 
-fn rewritable(expr: &Expr, vars: &VarTypes) -> bool {
+fn rewritable(expr: &Expr, vars: &VarTypes, pointer_width: u32) -> bool {
     match expr {
         Expr::Cast {
             expr: inner,
             ty: Type::Prim(Prim::Bool),
         } => matches!(**inner, Expr::Value(RustValue::Bool(_))),
         Expr::Binary { op, lhs, rhs } if is_comparison(*op) => {
-            bool_operand_of_zero_compare(expr, vars).is_some()
-                || (int_literal(lhs).is_some() && int_literal(rhs).is_some())
+            bool_operand_of_zero_compare(expr, vars, pointer_width).is_some()
+                || (int_literal(lhs, pointer_width).is_some()
+                    && int_literal(rhs, pointer_width).is_some())
         }
         Expr::Unary {
             op: UnaryOp::Not,
@@ -130,8 +131,8 @@ fn rewritable(expr: &Expr, vars: &VarTypes) -> bool {
             } => is_bool(innermost, vars),
             Expr::Binary { op, lhs, rhs } if is_comparison(*op) => {
                 matches!(op, BinOp::Eq | BinOp::Ne)
-                    || is_integral(lhs, vars)
-                    || is_integral(rhs, vars)
+                    || is_integral(lhs, vars, pointer_width)
+                    || is_integral(rhs, vars, pointer_width)
             }
             _ => false,
         },
@@ -139,14 +140,17 @@ fn rewritable(expr: &Expr, vars: &VarTypes) -> bool {
     }
 }
 
-fn rewrite_here(expr: &mut Expr, vars: &VarTypes) -> bool {
-    if !rewritable(expr, vars) {
+fn rewrite_here(expr: &mut Expr, vars: &VarTypes, pointer_width: u32) -> bool {
+    if !rewritable(expr, vars, pointer_width) {
         return false;
     }
     match take(expr) {
         Expr::Cast { expr: inner, .. } => *expr = *inner,
         Expr::Binary { op, lhs, rhs } => {
-            if let (Some(l), Some(r)) = (int_literal(&lhs), int_literal(&rhs)) {
+            if let (Some(l), Some(r)) = (
+                int_literal(&lhs, pointer_width),
+                int_literal(&rhs, pointer_width),
+            ) {
                 *expr = Expr::Value(RustValue::Bool(fold_literals(op, l, r)));
             } else {
                 let negated = bool_operand_of_zero_compare(
@@ -156,6 +160,7 @@ fn rewrite_here(expr: &mut Expr, vars: &VarTypes) -> bool {
                         rhs: rhs.clone(),
                     },
                     vars,
+                    pointer_width,
                 )
                 .unwrap_or(false);
                 let Expr::Cast { expr: inner, .. } = *lhs else {
@@ -198,7 +203,9 @@ fn read_var_types(arena: &FunctionOptimizer, id: NodeId) -> VarTypes {
         .collect()
 }
 
-pub(in crate::backend::engine) struct BoolSimplify;
+pub(in crate::backend::engine) struct BoolSimplify {
+    pub(super) pointer_width: u32,
+}
 
 impl NodeRule for BoolSimplify {
     fn name(&self) -> &'static str {
@@ -215,7 +222,7 @@ impl NodeRule for BoolSimplify {
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         let vars = read_var_types(arena, id);
-        let collapsible_here = |expr: &Expr| rewritable(expr, &vars);
+        let collapsible_here = |expr: &Expr| rewritable(expr, &vars, self.pointer_width);
         arena.get(id).is_some_and(|kind| {
             let mut found = false;
             walk::visit_kind_exprs(kind, |expr| {
@@ -227,7 +234,7 @@ impl NodeRule for BoolSimplify {
 
     fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let vars = read_var_types(arena, id);
-        let mut rewrite_here = |expr: &mut Expr| rewrite_here(expr, &vars);
+        let mut rewrite_here = |expr: &mut Expr| rewrite_here(expr, &vars, self.pointer_width);
         let Some(kind) = arena.get_mut(id) else {
             return false;
         };

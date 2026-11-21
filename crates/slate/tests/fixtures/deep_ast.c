@@ -24,21 +24,15 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! STEP_2__2 {
-// CHECK-NEXT:     ($value:expr) => {
-// CHECK-NEXT:         STEP_1!(($value) + 1)
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! STEP_2 {
 // CHECK-NEXT:     ($value:expr) => {
 // CHECK-NEXT:         STEP_1!(STEP_1!($value))
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! STEP_3__2 {
+// CHECK-NEXT: macro_rules! STEP_2__2 {
 // CHECK-NEXT:     ($value:expr) => {
-// CHECK-NEXT:         STEP_2!(STEP_2__2!($value))
+// CHECK-NEXT:         STEP_1!(($value) + 1)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -48,9 +42,9 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! STEP_4__2 {
+// CHECK-NEXT: macro_rules! STEP_3__2 {
 // CHECK-NEXT:     ($value:expr) => {
-// CHECK-NEXT:         STEP_3!(STEP_3__2!($value))
+// CHECK-NEXT:         STEP_2!(STEP_2__2!($value))
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -60,21 +54,27 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! STEP_5 {
+// CHECK-NEXT: macro_rules! STEP_4__2 {
 // CHECK-NEXT:     ($value:expr) => {
-// CHECK-NEXT:         STEP_4!(STEP_4__2!($value))
+// CHECK-NEXT:         STEP_3!(STEP_3__2!($value))
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! STEP_5__2 {
+// CHECK-NEXT: macro_rules! STEP_5 {
 // CHECK-NEXT:     ($value:expr) => {
 // CHECK-NEXT:         STEP_4!(STEP_4!($value))
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! STEP_5__2 {
+// CHECK-NEXT:     ($value:expr) => {
+// CHECK-NEXT:         STEP_4!(STEP_4__2!($value))
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! STEP_6 {
 // CHECK-NEXT:     ($value:expr) => {
-// CHECK-NEXT:         STEP_5__2!(STEP_5!($value))
+// CHECK-NEXT:         STEP_5!(STEP_5__2!($value))
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

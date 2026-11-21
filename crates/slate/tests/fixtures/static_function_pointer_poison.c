@@ -71,7 +71,7 @@ int main(void) {
 // CHECK-NEXT:     let [[T_1:__t[0-9]+]] = [[T_0]].as_mut_ptr();
 // CHECK-NEXT:     (*[[T_1]]).func = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn(u64, u64) -> u64>>(
-// CHECK-NEXT:             16045481047391005599u64 as *mut (),
+// CHECK-NEXT:             60319u64.wrapping_add(16045481047390945280u64) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (*[[T_1]]).gpl_only = 1i32;
@@ -103,7 +103,7 @@ int main(void) {
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
 // CHECK-NEXT:     *[[T_1]] = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn(u64, u64) -> u64>>(
-// CHECK-NEXT:             16045481047391005599u64 as *mut (),
+// CHECK-NEXT:             60319u64.wrapping_add(16045481047390945280u64) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]]
@@ -116,7 +116,7 @@ int main(void) {
 // CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(u64, u64) -> u64>, *mut ()>(
 // CHECK-NEXT:                 unsafe { (*p).func },
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }) == (16045481047391005599u64 as *mut ()) {
+// CHECK-NEXT:         }) == (60319u64.wrapping_add(16045481047390945280u64) as *mut ()) {
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 slate_support::printf(
@@ -151,7 +151,7 @@ int main(void) {
 // CHECK-NEXT:                         as *mut __SlateImage_poisoned_hook)
 // CHECK-NEXT:                 },
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }) == (16045481047391005599u64 as *mut ())) as i32
+// CHECK-NEXT:         }) == (60319u64.wrapping_add(16045481047390945280u64) as *mut ())) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(core::ptr::addr_of_mut!(poisoned_hook) as *mut __SlateImage_poisoned_hook) = Some(

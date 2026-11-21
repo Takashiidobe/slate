@@ -102,7 +102,7 @@ int main(void) {
 // CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let bits: core::simd::Simd<i64, 2> = core::simd::Simd::from_array(
-// CHECK-NEXT:         [4607182418800017408i64, -4611686018427387904i64],
+// CHECK-NEXT:         [4607182418800017408i64, 13835058055282163712u64 as i64],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let doubles: core::simd::Simd<f64, 2> = as_doubles(bits);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

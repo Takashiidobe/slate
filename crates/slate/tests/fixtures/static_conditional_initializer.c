@@ -39,8 +39,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static bittab: __SlateAlign16<[u32; 6]> = __SlateAlign16(
 // CHECK-NEXT:     [
-// CHECK-NEXT:         4294967295u32, 3221225474u32, 3221225487u32, 3003121664u32, 3271557121u32,
-// CHECK-NEXT:         3539992589u32,
+// CHECK-NEXT:         4294967295u32,
+// CHECK-NEXT:         64u32.wrapping_sub(192u32) << 23i32 | 2u32,
+// CHECK-NEXT:         64u32.wrapping_sub(192u32) << 23i32 | 15u32,
+// CHECK-NEXT:         4294967136u32 << 23i32 | 64u32.wrapping_sub(192u32) << 23i32 >> 6i32 | 0u32,
+// CHECK-NEXT:         64u32.wrapping_sub(192u32) << 23i32 | 64u32.wrapping_sub(192u32) << 23i32 >> 6i32
+// CHECK-NEXT:             | 1u32,
+// CHECK-NEXT:         64u32.wrapping_sub(160u32) << 23i32 | 64u32.wrapping_sub(192u32) << 23i32 >> 6i32
+// CHECK-NEXT:             | 13u32,
 // CHECK-NEXT:     ],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
@@ -66,7 +72,7 @@ int main(void) {
 // CHECK-NEXT: static values: [i16; 6] = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: [i16; 6] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]][0] = -1i16;
-// CHECK-NEXT:     [[T_0]][3] = -254i16;
+// CHECK-NEXT:     [[T_0]][3] = (-256i32 | 2i32) as i16;
 // CHECK-NEXT:     [[T_0]][5] = 100i16;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };

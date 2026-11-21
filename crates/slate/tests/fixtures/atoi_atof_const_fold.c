@@ -29,14 +29,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", unsafe { 42i32 });
-// CHECK-NEXT:     println!("{}", unsafe { 13i32 });
-// CHECK-NEXT:     println!("{}", unsafe { -7i32 });
-// CHECK-NEXT:     println!("{}", unsafe { 0i32 });
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), 1000000000000i64) };
+// CHECK-NEXT:     println!("{}", unsafe { 42i32 as i32 });
+// CHECK-NEXT:     println!("{}", unsafe { 13i32 as i32 });
+// CHECK-NEXT:     println!("{}", unsafe { -7i32 as i32 });
+// CHECK-NEXT:     println!("{}", unsafe { 0i32 as i32 });
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), 1000000000000i64 as i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), -9000000000000i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), -9000000000000i64 as i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.2f\n".as_ptr(), 3.14 as f64) };

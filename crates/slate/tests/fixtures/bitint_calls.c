@@ -196,9 +196,7 @@ int main(void) {
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
 // CHECK-NEXT:             mix100(
 // CHECK-NEXT:                     -5i16,
-// CHECK-NEXT:                     <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(
-// CHECK-NEXT:                         1000000000000 as i128,
-// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     <bitint::BInt<100, 2, 16, bitint::A8>>::from_u128(1000000000000),
 // CHECK-NEXT:                     -3i64,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .to_i128() as i64,
@@ -210,11 +208,7 @@ int main(void) {
 // CHECK-NEXT:                 <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(1 as i128),
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .shl_bits(100 as usize)
-// CHECK-NEXT:             .bitor_bits(
-// CHECK-NEXT:                 <bitint::BUint<128, 2, 16, bitint::A8>>::from_bint(
-// CHECK-NEXT:                     <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(5 as i128),
-// CHECK-NEXT:                 ),
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             .bitor_bits(<bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(5)),
 // CHECK-NEXT:         7i32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -265,7 +259,7 @@ int main(void) {
 // CHECK-NEXT:         -7i16,
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1 as i128)
 // CHECK-NEXT:             .shl_bits(80 as usize)
-// CHECK-NEXT:             .wrapping_sub(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1 as i128)),
+// CHECK-NEXT:             .wrapping_sub(<bitint::BInt<100, 2, 16, bitint::A8>>::from_u128(1)),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -286,12 +280,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
-// CHECK-NEXT:             fp
-// CHECK-NEXT:                     .unwrap()(
-// CHECK-NEXT:                     3i16,
-// CHECK-NEXT:                     <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(4 as i128),
-// CHECK-NEXT:                     5i64,
-// CHECK-NEXT:                 )
+// CHECK-NEXT:             fp.unwrap()(3i16, <bitint::BInt<100, 2, 16, bitint::A8>>::from_u128(4), 5i64)
 // CHECK-NEXT:                 .to_i128() as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -300,7 +289,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
-// CHECK-NEXT:             vsum(5i32, -3i32, 70000u32, -5000000000i64, 5u32, 99i64),
+// CHECK-NEXT:             vsum(
+// CHECK-NEXT:                 5i32,
+// CHECK-NEXT:                 ((-3 as i16) << 7 >> 7) as i32,
+// CHECK-NEXT:                 ((70000i32 << 15 >> 15) as u32) & 131071,
+// CHECK-NEXT:                 -5000000000i64,
+// CHECK-NEXT:                 ((5i32 << 15 >> 15) as u32) & 131071,
+// CHECK-NEXT:                 99i64,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

@@ -433,7 +433,7 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 1..5i32 {
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 1..(4i32 + 1) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             let [[T_4:__t[0-9]+]] = accumulate;
 // CHECK-NEXT:             unsafe {

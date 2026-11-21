@@ -668,7 +668,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ld heap grew: %d\n".as_ptr(),
 // CHECK-NEXT:             sum,
-// CHECK-NEXT:             (end > start.wrapping_add(1048576u64)) as i32,
+// CHECK-NEXT:             (end > start.wrapping_add((1i32 << 20i32) as u64)) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

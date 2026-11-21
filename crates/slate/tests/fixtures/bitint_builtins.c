@@ -951,14 +951,14 @@ int main(void) {
 // CHECK-NEXT:     s33(4294967295i64, 4294967295i64);
 // CHECK-NEXT:     s33(-4294967296i64, 1i64);
 // CHECK-NEXT:     s64(9223372036854775807i64, 1i64);
-// CHECK-NEXT:     s64(-9223372036854775808i64, 2i64);
+// CHECK-NEXT:     s64((-9223372036854775807i64 - 1i64) as i64, 2i64);
 // CHECK-NEXT:     s100(
-// CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(9223372036854775807 as i128),
-// CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(9223372036854775807 as i128),
+// CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_u128(9223372036854775807),
+// CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_u128(9223372036854775807),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     u100(
-// CHECK-NEXT:         <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(18446744073709551615 as u128),
-// CHECK-NEXT:         <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(18446744073709551615 as u128),
+// CHECK-NEXT:         <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(18446744073709551615),
+// CHECK-NEXT:         <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(18446744073709551615),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     s200(
 // CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(9223372036854775807 as i128),
@@ -983,8 +983,8 @@ int main(void) {
 // CHECK-NEXT:     s200_to_int(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(5 as i128), 6i32);
 // CHECK-NEXT:     int_to_s200(2147483647i32, 2147483647i64);
 // CHECK-NEXT:     b128(
-// CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(1 as i128),
-// CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(2 as i128),
+// CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(1),
+// CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(2),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     c_u5(0u8);
 // CHECK-NEXT:     c_u5(1u8);
@@ -992,14 +992,8 @@ int main(void) {
 // CHECK-NEXT:     c_u9(256u16);
 // CHECK-NEXT:     c_u33(8589934591u64);
 // CHECK-NEXT:     c_u64(9223372036854775808u64);
-// CHECK-NEXT:     c_u100(
-// CHECK-NEXT:         <bitint::BUint<100, 2, 16, bitint::A8>>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(0 as i128),
-// CHECK-NEXT:         ),
-// CHECK-NEXT:     );
-// CHECK-NEXT:     c_u100(
-// CHECK-NEXT:         <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(12345678901234567 as u128),
-// CHECK-NEXT:     );
+// CHECK-NEXT:     c_u100(<bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(0));
+// CHECK-NEXT:     c_u100(<bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(12345678901234567));
 // CHECK-NEXT:     c_u200(
 // CHECK-NEXT:         <bitint::BUint<200, 4, 32, bitint::A8>>::from_bint(
 // CHECK-NEXT:             <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128),
@@ -1008,7 +1002,7 @@ int main(void) {
 // CHECK-NEXT:     c_u200(<bitint::BUint<200, 4, 32, bitint::A8>>::from_u128(3000000000000 as u128));
 // CHECK-NEXT:     c_uint(40u32);
 // CHECK-NEXT:     sat_i(2147483647i32, 5i32);
-// CHECK-NEXT:     sat_i(-2147483648i32, 5i32);
+// CHECK-NEXT:     sat_i(-2147483647i32 - 1i32, 5i32);
 // CHECK-NEXT:     sat_s5(15i8, 5i8);
 // CHECK-NEXT:     sat_s5(-16i8, 5i8);
 // CHECK-NEXT:     sat_u5(30u8, 5u8);
@@ -1016,16 +1010,12 @@ int main(void) {
 // CHECK-NEXT:     sat_s9(255i16, 5i16);
 // CHECK-NEXT:     sat_s9(-256i16, 5i16);
 // CHECK-NEXT:     sat_s100(
-// CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(9223372036854775807 as i128),
-// CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(5 as i128),
+// CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_u128(9223372036854775807),
+// CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_u128(5),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     sat_u100(
-// CHECK-NEXT:         <bitint::BUint<100, 2, 16, bitint::A8>>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(3 as i128),
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         <bitint::BUint<100, 2, 16, bitint::A8>>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(5 as i128),
-// CHECK-NEXT:         ),
+// CHECK-NEXT:         <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(3),
+// CHECK-NEXT:         <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(5),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     sat_s200(
 // CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(-5 as i128),

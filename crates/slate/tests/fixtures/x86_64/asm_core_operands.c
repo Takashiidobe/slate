@@ -74,7 +74,7 @@ int main(void) {
 // CHECK-NEXT:             "movl {1:e}, {0:e}\n\taddl {2:e}, {0:e}",
 // CHECK-NEXT:             out(reg) [[T_3]],
 // CHECK-NEXT:             in(reg) tied as u32,
-// CHECK-NEXT:             in(reg) (1 as i32) as u32,
+// CHECK-NEXT:             in(reg) 1i32 as u32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         early = unsafe { core::mem::transmute::<u32, i32>([[T_3]] as u32) };
@@ -144,7 +144,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movl ${1}, {0:e}",
 // CHECK-NEXT:             lateout(reg) [[T_3]],
-// CHECK-NEXT:             const 7 as i32,
+// CHECK-NEXT:             const 7i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         constant = unsafe { core::mem::transmute::<u32, i32>([[T_3]] as u32) };

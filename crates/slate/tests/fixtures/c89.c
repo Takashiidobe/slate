@@ -514,7 +514,7 @@ int main(void) {
 // CHECK-NEXT:     let mut copied_value: i32 = 0;
 // CHECK-NEXT:     let mut source_value: i32 = 43;
 // CHECK-NEXT:     let mut arithmetic: i32 = 0;
-// CHECK-NEXT:     let mut bitwise: i32 = 33i32;
+// CHECK-NEXT:     let mut bitwise: i32 = (1i32 << 5i32 | 3) ^ 2;
 // CHECK-NEXT:     let mut logical: i32 = 0;
 // CHECK-NEXT:     let mut conditional: i32 = 0;
 // CHECK-NEXT:     let mut comma_value: i32 = 0;

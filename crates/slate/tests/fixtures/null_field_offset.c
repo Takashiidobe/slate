@@ -16,19 +16,19 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! OFFSET {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         24u64
+// CHECK-NEXT:         16u64
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! OFFSET__2 {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         16u64
+// CHECK-NEXT:         8u64
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! OFFSET__3 {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         8u64
+// CHECK-NEXT:         24u64
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -63,10 +63,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             OFFSET__3!(),
 // CHECK-NEXT:             OFFSET__2!(),
-// CHECK-NEXT:             20u64,
 // CHECK-NEXT:             OFFSET!(),
+// CHECK-NEXT:             20u64,
+// CHECK-NEXT:             OFFSET__3!(),
 // CHECK-NEXT:             OFFSET__4!(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

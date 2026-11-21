@@ -84,11 +84,16 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let top: u64 = 9223372036854775808u64;
+// CHECK-NEXT:     let top: u64 = 1u64 << 63i32;
 // CHECK-NEXT:     let neg: i64 = -5;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"%llu %lld %lld\n".as_ptr(), top, neg >> 1i32, -1i64)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%llu %lld %lld\n".as_ptr(),
+// CHECK-NEXT:             top,
+// CHECK-NEXT:             neg >> 1i32,
+// CHECK-NEXT:             -1i64 >> 63i32,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let uc: u8 = 128;

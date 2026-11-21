@@ -19,7 +19,7 @@ int main(void) { return frame_address_is_plausible() ? 0 : 1; }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn frame_address_is_plausible() -> i32 {
 // CHECK-NEXT:     let fp: *mut () = unsafe {
-// CHECK-NEXT:         __slate_intrinsic_2d7c29df8fdf6378(const { ((0 as i32) as u32) as i32 })
+// CHECK-NEXT:         __slate_intrinsic_2d7c29df8fdf6378(const { 0u32 as i32 })
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ((fp as u64) > 4096) as i32
 // CHECK-NEXT: }

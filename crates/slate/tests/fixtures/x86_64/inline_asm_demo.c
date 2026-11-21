@@ -52,8 +52,8 @@ int main(void) {
 // CHECK-NEXT:             out(reg) [[T_1]],
 // CHECK-NEXT:             lateout("ax") [[T_0]],
 // CHECK-NEXT:             lateout("cx") [[T_2]],
-// CHECK-NEXT:             in("ax") (7 as i32) as u32,
-// CHECK-NEXT:             in("cx") (0 as i32) as u32,
+// CHECK-NEXT:             in("ax") 7i32 as u32,
+// CHECK-NEXT:             in("cx") 0i32 as u32,
 // CHECK-NEXT:             out("dx") _,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );

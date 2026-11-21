@@ -278,7 +278,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut fa: f32 = 1.0000001f32;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut big: i64 = 9007199254740993;
+// CHECK-NEXT: static mut big: i64 = (1i64 << 53i32) + 1i64;
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut yes: i32 = 1;
 // CHECK-EMPTY:

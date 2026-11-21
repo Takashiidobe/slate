@@ -110,7 +110,7 @@ int main(void) {
 // CHECK-NEXT: static mut global_record: Record = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn member_sizes(record: &Record, trailing: &Trailing) -> u64 {
-// CHECK-NEXT:     10608u64
+// CHECK-NEXT:     10u64.wrapping_mul(1000u64).wrapping_add(6u64.wrapping_mul(100u64)).wrapping_add(8)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

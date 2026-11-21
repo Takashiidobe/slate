@@ -54,6 +54,18 @@ pub fn walk_body_with_macros<V: Visitor>(
     .statements(body);
 }
 
+pub fn walk_value_with_macros<V: Visitor>(
+    value: &mut Value,
+    macro_values: &MacroValues,
+    visitor: &mut V,
+) {
+    Walker {
+        visitor,
+        macro_values: Some(macro_values),
+    }
+    .value(value);
+}
+
 impl<V: Visitor> Walker<'_, V> {
     fn statements(&mut self, body: &mut Vec<Span<Statement>>) {
         let mut position = 0;

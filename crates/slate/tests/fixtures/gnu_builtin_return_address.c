@@ -26,10 +26,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn address_probe() -> i32 {
 // CHECK-NEXT:     let return_address: *mut () = unsafe {
-// CHECK-NEXT:         __slate_intrinsic_ded315013ea6523(const { ((0 as i32) as u32) as i32 })
+// CHECK-NEXT:         __slate_intrinsic_ded315013ea6523(const { 0u32 as i32 })
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let frame_address: *mut () = unsafe {
-// CHECK-NEXT:         __slate_intrinsic_2d7c29df8fdf6378(const { ((0 as i32) as u32) as i32 })
+// CHECK-NEXT:         __slate_intrinsic_2d7c29df8fdf6378(const { 0u32 as i32 })
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (!return_address.is_null() as i32) + (!frame_address.is_null() as i32)
 // CHECK-NEXT: }

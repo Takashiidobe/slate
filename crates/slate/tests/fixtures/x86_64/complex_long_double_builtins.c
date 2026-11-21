@@ -264,12 +264,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut gs: S = S {
 // CHECK-NEXT:     x: num_complex::Complex {
-// CHECK-NEXT:         re: 100u16,
-// CHECK-NEXT:         im: 200u16,
+// CHECK-NEXT:         re: (100i32 + 0i32) as u16,
+// CHECK-NEXT:         im: 200i32 as u16,
 // CHECK-NEXT:     },
 // CHECK-NEXT:     y: num_complex::Complex {
-// CHECK-NEXT:         re: 3i8,
-// CHECK-NEXT:         im: -4i8,
+// CHECK-NEXT:         re: (3i32 - 0i32) as i8,
+// CHECK-NEXT:         im: -4i32 as i8,
 // CHECK-NEXT:     },
 // CHECK-NEXT: };
 // CHECK-EMPTY:

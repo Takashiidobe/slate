@@ -73,12 +73,12 @@ int main(void) {
 // CHECK-NEXT:     t + 3
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn shifts(k: i32) -> u64 {
-// CHECK-NEXT:     let big: u64 = 1099511627776u64;
+// CHECK-NEXT:     let big: u64 = 1u64 << 40i32;
 // CHECK-NEXT:     let wide: i64 = 1i64 << k;
 // CHECK-NEXT:     big.wrapping_add(wide as u64)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn wraps(u: u32) -> u32 {
-// CHECK-NEXT:     let all: u32 = 4294967295u32;
+// CHECK-NEXT:     let all: u32 = -1i32 as u32;
 // CHECK-NEXT:     u.wrapping_add(all).wrapping_add(2)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn negatives(n: i32) -> i32 {

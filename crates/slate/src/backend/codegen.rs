@@ -11,7 +11,11 @@ fn expr_prec(expr: &Expr) -> Precedence {
     match expr {
         Expr::Range { .. } => Precedence::Range,
         Expr::Binary { op, .. } => op.precedence(),
-        Expr::Cast { .. } => Precedence::Cast,
+        Expr::Cast { expr, ty } => match suffixed_literal(expr, ty) {
+            Some(literal) if literal.starts_with('-') => Precedence::Prefix,
+            Some(_) => Precedence::Atom,
+            None => Precedence::Cast,
+        },
         Expr::Unary { .. } | Expr::Ref { .. } => Precedence::Prefix,
         Expr::Call { .. }
         | Expr::MethodCall { .. }
@@ -22,6 +26,38 @@ fn expr_prec(expr: &Expr) -> Precedence {
         | Expr::Index { .. } => Precedence::Call,
         _ => Precedence::Atom,
     }
+}
+
+fn suffixed_literal(expr: &Expr, ty: &Type) -> Option<String> {
+    let Type::Prim(prim) = ty else {
+        return None;
+    };
+    let (bits, signed) = match prim {
+        Prim::I8 => (8, true),
+        Prim::I16 => (16, true),
+        Prim::I32 => (32, true),
+        Prim::I64 => (64, true),
+        Prim::U8 => (8, false),
+        Prim::U16 => (16, false),
+        Prim::U32 => (32, false),
+        Prim::U64 => (64, false),
+        _ => return None,
+    };
+    let value = match expr {
+        Expr::Cast { expr, ty: inner } if inner == ty => return suffixed_literal(expr, ty),
+        Expr::Value(RustValue::I64(value)) => i128::from(*value),
+        Expr::Value(RustValue::I128(value)) => *value,
+        Expr::Value(RustValue::U128(value)) => i128::try_from(*value).ok()?,
+        _ => return None,
+    };
+    let (low, high) = if signed {
+        (-(1i128 << (bits - 1)), (1i128 << (bits - 1)) - 1)
+    } else {
+        (0, (1i128 << bits) - 1)
+    };
+    (low..=high)
+        .contains(&value)
+        .then(|| format!("{value}{}", prim.spelling()))
 }
 
 fn starts_with_brace_expr(expr: &Expr) -> bool {
@@ -117,6 +153,7 @@ fn macro_list_hole(expr: &Expr) -> Option<&str> {
 fn is_simple_literal(expr: &Expr) -> bool {
     match expr {
         Expr::Value(_) | Expr::Str(_) | Expr::HexFloat(_) => true,
+        Expr::Cast { expr, ty } => suffixed_literal(expr, ty).is_some(),
         Expr::Unary {
             op: UnaryOp::Neg,
             expr,
@@ -1639,6 +1676,9 @@ impl Codegen {
             Expr::ConstBlock(expr) => {
                 self.word("const ");
                 self.small_block(|this| this.expr(expr));
+            }
+            Expr::Cast { expr, ty } if let Some(literal) = suffixed_literal(expr, ty) => {
+                self.word(literal);
             }
             Expr::Cast { expr, ty } => self.binary_like(
                 |this| {

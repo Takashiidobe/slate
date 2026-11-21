@@ -116,66 +116,66 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .data$counter,\"dw\",discard,counter\n.globl counter\n.p2align 2\ncounter:\n.long {0}\n.text",
 // I686-PC-WINDOWS-MSVC-NEXT:     ".section .data$_counter,\"dw\",discard,_counter\n.globl _counter\n.p2align 2\n_counter:\n.long {0}\n.text",
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .data$counter,\"dw\",discard,counter\n.globl counter\n.p2align 2\ncounter:\n.long {0}\n.text",
-// CHECK-NEXT:     const 30 as i32,
+// CHECK-NEXT:     const 30i32,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$clsid,\"dr\",discard,clsid\n.globl clsid\n.p2align 2\nclsid:\n.long {0}\n.short {1}\n.short {2}\n.byte {3}\n.byte {4}\n.byte {5}\n.byte {6}\n.byte {7}\n.byte {8}\n.byte {9}\n.byte {10}\n.text",
 // I686-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$_clsid,\"dr\",discard,_clsid\n.globl _clsid\n.p2align 2\n_clsid:\n.long {0}\n.short {1}\n.short {2}\n.byte {3}\n.byte {4}\n.byte {5}\n.byte {6}\n.byte {7}\n.byte {8}\n.byte {9}\n.byte {10}\n.text",
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$clsid,\"dr\",discard,clsid\n.globl clsid\n.p2align 2\nclsid:\n.long {0}\n.short {1}\n.short {2}\n.byte {3}\n.byte {4}\n.byte {5}\n.byte {6}\n.byte {7}\n.byte {8}\n.byte {9}\n.byte {10}\n.text",
-// CHECK-NEXT:     const (1010256448 as i32) as u32,
-// CHECK-NEXT:     const (47844 as i32) as u16,
-// CHECK-NEXT:     const (4559 as i32) as u16,
-// CHECK-NEXT:     const (191 as i32) as u8,
-// CHECK-NEXT:     const (125 as i32) as u8,
-// CHECK-NEXT:     const (0 as i32) as u8,
-// CHECK-NEXT:     const (170 as i32) as u8,
-// CHECK-NEXT:     const (0 as i32) as u8,
-// CHECK-NEXT:     const (105 as i32) as u8,
-// CHECK-NEXT:     const (70 as i32) as u8,
-// CHECK-NEXT:     const (238 as i32) as u8,
+// CHECK-NEXT:     const 1010256448u32,
+// CHECK-NEXT:     const 47844u16,
+// CHECK-NEXT:     const 4559u16,
+// CHECK-NEXT:     const 191u8,
+// CHECK-NEXT:     const 125u8,
+// CHECK-NEXT:     const 0u8,
+// CHECK-NEXT:     const 170u8,
+// CHECK-NEXT:     const 0u8,
+// CHECK-NEXT:     const 105u8,
+// CHECK-NEXT:     const 70u8,
+// CHECK-NEXT:     const 238u8,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$max_buffers,\"dr\",discard,max_buffers\n.globl max_buffers\n.p2align 2\nmax_buffers:\n.long {0}\n.text",
 // I686-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$_max_buffers,\"dr\",discard,_max_buffers\n.globl _max_buffers\n.p2align 2\n_max_buffers:\n.long {0}\n.text",
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$max_buffers,\"dr\",discard,max_buffers\n.globl max_buffers\n.p2align 2\nmax_buffers:\n.long {0}\n.text",
-// CHECK-NEXT:     const (8 as i32) as u32,
+// CHECK-NEXT:     const 8u32,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .data$mixed,\"dw\",discard,mixed\n.globl mixed\n.p2align 3\nmixed:\n.byte {0}\n.zero 7\n.quad {1}\n.short {2}\n.short {3}\n.zero 4\n.text",
 // I686-PC-WINDOWS-MSVC-NEXT:     ".section .data$_mixed,\"dw\",discard,_mixed\n.globl _mixed\n.p2align 3\n_mixed:\n.byte {0}\n.zero 7\n.quad {1}\n.short {2}\n.short {3}\n.zero 4\n.text",
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .data$mixed,\"dw\",discard,mixed\n.globl mixed\n.p2align 3\nmixed:\n.byte {0}\n.zero 7\n.quad {1}\n.short {2}\n.short {3}\n.zero 4\n.text",
-// CHECK-NEXT:     const (109 as i32) as i8,
+// CHECK-NEXT:     const 109i8,
 // CHECK-NEXT:     const (-2.5f64).to_bits(),
-// CHECK-NEXT:     const -(7 as i32) as i16,
-// CHECK-NEXT:     const (300 as i32) as i16,
+// CHECK-NEXT:     const -7i16,
+// CHECK-NEXT:     const 300i16,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .data$word,\"dw\",discard,word\n.globl word\n.p2align 2\nword:\n.byte {0}\n.byte {1}\n.byte {2}\n.byte {3}\n.text",
 // I686-PC-WINDOWS-MSVC-NEXT:     ".section .data$_word,\"dw\",discard,_word\n.globl _word\n.p2align 2\n_word:\n.byte {0}\n.byte {1}\n.byte {2}\n.byte {3}\n.text",
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .data$word,\"dw\",discard,word\n.globl word\n.p2align 2\nword:\n.byte {0}\n.byte {1}\n.byte {2}\n.byte {3}\n.text",
-// CHECK-NEXT:     const (1 as i32) as u8,
-// CHECK-NEXT:     const (2 as i32) as u8,
-// CHECK-NEXT:     const (3 as i32) as u8,
-// CHECK-NEXT:     const (4 as i32) as u8,
+// CHECK-NEXT:     const 1u8,
+// CHECK-NEXT:     const 2u8,
+// CHECK-NEXT:     const 3u8,
+// CHECK-NEXT:     const 4u8,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .data$aligned,\"dw\",discard,aligned\n.globl aligned\n.p2align 5\naligned:\n.quad {0}\n.text",
 // I686-PC-WINDOWS-MSVC-NEXT:     ".section .data$_aligned,\"dw\",discard,_aligned\n.globl _aligned\n.p2align 5\n_aligned:\n.quad {0}\n.text",
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .data$aligned,\"dw\",discard,aligned\n.globl aligned\n.p2align 5\naligned:\n.quad {0}\n.text",
-// CHECK-NEXT:     const -(1 as i32) as i64,
+// CHECK-NEXT:     const -1i64,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // X86_64-PC-WINDOWS-MSVC-NEXT:     ".section .data$partial,\"dw\",discard,partial\n.globl partial\n.p2align 4\npartial:\n.long {0}\n.long {1}\n.zero 16\n.text",
 // I686-PC-WINDOWS-MSVC-NEXT:     ".section .data$_partial,\"dw\",discard,_partial\n.globl _partial\n.p2align 2\n_partial:\n.long {0}\n.long {1}\n.zero 16\n.text",
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .data$partial,\"dw\",discard,partial\n.globl partial\n.p2align 2\npartial:\n.long {0}\n.long {1}\n.zero 16\n.text",
-// CHECK-NEXT:     const 1 as i32,
-// CHECK-NEXT:     const 2 as i32,
+// CHECK-NEXT:     const 1i32,
+// CHECK-NEXT:     const 2i32,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(

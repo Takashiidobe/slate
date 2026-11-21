@@ -1,6 +1,6 @@
 use foldhash::HashMap;
 
-use super::constant_index_casts::representable_literal;
+use super::representable::{literal_within, representable_literal};
 use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKindTag};
@@ -40,7 +40,7 @@ fn is_unsigned(expr: &Expr, vars: &VarTypes) -> bool {
     }
 }
 
-fn unsigned_index(expr: &Expr, vars: &VarTypes) -> Option<Expr> {
+fn unsigned_index(expr: &Expr, vars: &VarTypes, pointer_width: u32) -> Option<Expr> {
     let Expr::Cast {
         expr: inner,
         ty: Type::Prim(Prim::Isize),
@@ -48,7 +48,9 @@ fn unsigned_index(expr: &Expr, vars: &VarTypes) -> Option<Expr> {
     else {
         return None;
     };
-    if let Some(literal) = representable_literal(inner) {
+    if let Some(literal) = representable_literal(inner, pointer_width)
+        && literal_within(&literal, Prim::Isize, pointer_width)
+    {
         return Some(literal);
     }
     if !is_unsigned(inner, vars) {
@@ -66,7 +68,11 @@ fn unsigned_index(expr: &Expr, vars: &VarTypes) -> Option<Expr> {
     })
 }
 
-fn rewrite_target(expr: &Expr, vars: &VarTypes) -> Option<(&'static str, Expr)> {
+fn rewrite_target(
+    expr: &Expr,
+    vars: &VarTypes,
+    pointer_width: u32,
+) -> Option<(&'static str, Expr)> {
     let Expr::MethodCall { method, args, .. } = expr else {
         return None;
     };
@@ -81,13 +87,13 @@ fn rewrite_target(expr: &Expr, vars: &VarTypes) -> Option<(&'static str, Expr)> 
         expr: negated,
     } = arg
     {
-        return unsigned_index(negated, vars).map(|index| ("sub", index));
+        return unsigned_index(negated, vars, pointer_width).map(|index| ("sub", index));
     }
-    unsigned_index(arg, vars).map(|index| ("add", index))
+    unsigned_index(arg, vars, pointer_width).map(|index| ("add", index))
 }
 
-fn rewrite_here(expr: &mut Expr, vars: &VarTypes) -> bool {
-    let Some((method, index)) = rewrite_target(expr, vars) else {
+fn rewrite_here(expr: &mut Expr, vars: &VarTypes, pointer_width: u32) -> bool {
+    let Some((method, index)) = rewrite_target(expr, vars, pointer_width) else {
         return false;
     };
     let Expr::MethodCall {
@@ -109,7 +115,9 @@ fn read_var_types(arena: &FunctionOptimizer, id: NodeId) -> VarTypes {
         .collect()
 }
 
-pub(in crate::backend::engine) struct PtrOffset;
+pub(in crate::backend::engine) struct PtrOffset {
+    pub(super) pointer_width: u32,
+}
 
 impl NodeRule for PtrOffset {
     fn name(&self) -> &'static str {
@@ -126,7 +134,8 @@ impl NodeRule for PtrOffset {
 
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         let vars = read_var_types(arena, id);
-        let collapsible_here = |expr: &Expr| rewrite_target(expr, &vars).is_some();
+        let collapsible_here =
+            |expr: &Expr| rewrite_target(expr, &vars, self.pointer_width).is_some();
         arena.get(id).is_some_and(|kind| {
             let mut found = false;
             walk::visit_kind_exprs(kind, |expr| {
@@ -138,7 +147,7 @@ impl NodeRule for PtrOffset {
 
     fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let vars = read_var_types(arena, id);
-        let mut rewrite_here = |expr: &mut Expr| rewrite_here(expr, &vars);
+        let mut rewrite_here = |expr: &mut Expr| rewrite_here(expr, &vars, self.pointer_width);
         let Some(kind) = arena.get_mut(id) else {
             return false;
         };

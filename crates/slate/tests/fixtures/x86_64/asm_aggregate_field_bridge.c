@@ -170,7 +170,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movw $0x2a00, {0:x}\n\tcmpb $1, {1:l}\n\tsete {0:l}",
 // CHECK-NEXT:             out(reg) [[T_4]],
-// CHECK-NEXT:             in(reg) (5 as i32) as u32,
+// CHECK-NEXT:             in(reg) 5i32 as u32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         set = unsafe {

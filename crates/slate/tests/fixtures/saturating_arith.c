@@ -50,11 +50,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let add_i: i32 = 2147483642i32.saturating_add(10i32);
+// CHECK-NEXT:     let add_i: i32 = (2147483647i32 - 5i32).saturating_add(10i32);
 // CHECK-NEXT:     println!("{}", add_i);
 // CHECK-NEXT:     let add_i_no_sat: i32 = 2i32.saturating_add(3i32);
 // CHECK-NEXT:     println!("{}", add_i_no_sat);
-// CHECK-NEXT:     let sub_s: i16 = (-32763i16).saturating_sub(10i16);
+// CHECK-NEXT:     let sub_s: i16 = ((-32767i32 - 1i32 + 5) as i16).saturating_sub(10i16);
 // CHECK-NEXT:     println!("{}", sub_s as i32);
 // CHECK-NEXT:     let sub_u: u32 = 5u32.saturating_sub(10u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -88,7 +88,7 @@ int main(void) {
 // CHECK-NEXT:             ) == 0) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let va: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
-// CHECK-NEXT:         [2147483647i32, 1i32, -2147483648i32, 0i32],
+// CHECK-NEXT:         [2147483647i32, 1i32, -2147483647i32 - 1i32, 0i32],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let vb: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:         [10i32, 1i32, -10i32, 0i32],

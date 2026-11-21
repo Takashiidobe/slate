@@ -62,6 +62,37 @@ impl Tables<'_> {
         (**array_element == *element && self.indexable_array(array)).then_some((array, amount))
     }
 
+    fn constant_index(&self, value: &ir::Value) -> Option<u128> {
+        if self.macro_values.contains_key(&value.node.id) {
+            return None;
+        }
+        let ir::Type::Numeric(ir::NumericType::Integer {
+            width,
+            signed,
+            bit_precise: false,
+        }) = self.resolve_type(&value.ty)
+        else {
+            return None;
+        };
+        let bound = u128::MAX >> (128 - width + u32::from(*signed));
+        let constant = if let ValueKind::Constant(Number::Integer(magnitude)) = &value.node.value {
+            u128::try_from(magnitude).ok()?
+        } else if let ValueKind::Convert {
+            kind:
+                ir::ConversionKind::Widen
+                | ir::ConversionKind::Truncate
+                | ir::ConversionKind::Reinterpret,
+            operand,
+            ..
+        } = &value.node.value
+        {
+            self.constant_index(operand)?
+        } else {
+            return None;
+        };
+        (constant <= bound).then_some(constant)
+    }
+
     fn indexable_array(&self, place: &ir::Place) -> bool {
         if self.variably_modified(&place.ty) {
             return false;
@@ -311,12 +342,24 @@ impl FunctionLowerer<'_, '_> {
             stmts: Vec::new(),
             tail: Some(Box::new(Expr::Index {
                 base: Box::new(vector),
-                index: Box::new(Expr::Cast {
-                    expr: Box::new(self.lower_value(index)?),
-                    ty: rust::Type::Prim(Prim::Usize),
-                }),
+                index: Box::new(self.lower_index(index)?),
             })),
         }))))
+    }
+
+    pub(super) fn lower_index(&mut self, index: &ir::Value) -> Result<Expr> {
+        let usize_bound = u128::MAX >> (128 - self.tables.target.pointer_width);
+        if let Some(constant) = self
+            .tables
+            .constant_index(index)
+            .filter(|constant| *constant <= usize_bound)
+        {
+            return Ok(Expr::Value(rust::RustValue::U128(constant)));
+        }
+        Ok(Expr::Cast {
+            expr: Box::new(self.lower_value(index)?),
+            ty: rust::Type::Prim(Prim::Usize),
+        })
     }
 
     pub(super) fn lower_lane_write(
@@ -330,10 +373,7 @@ impl FunctionLowerer<'_, '_> {
         let pointer = self.next_temp();
         let vector = self.next_temp();
         let operand = self.next_temp();
-        let index = Expr::Cast {
-            expr: Box::new(self.lower_value(index)?),
-            ty: rust::Type::Prim(Prim::Usize),
-        };
+        let index = self.lower_index(index)?;
         let pointer_var = || Expr::Var(pointer.as_str().into());
         Ok(Some(Stmt::Unsafe {
             body: rust::Block {
@@ -559,10 +599,7 @@ impl FunctionLowerer<'_, '_> {
         if let Some((array, index)) = tables.array_subscript(place) {
             return Ok(Expr::Index {
                 base: Box::new(self.lower_place(array)?),
-                index: Box::new(Expr::Cast {
-                    expr: Box::new(self.lower_value(index)?),
-                    ty: rust::Type::Prim(Prim::Usize),
-                }),
+                index: Box::new(self.lower_index(index)?),
             });
         }
         match place.kind {
@@ -593,10 +630,7 @@ impl FunctionLowerer<'_, '_> {
                 ref index,
             } => Ok(Expr::Index {
                 base: Box::new(self.lower_place(base)?),
-                index: Box::new(Expr::Cast {
-                    expr: Box::new(self.lower_value(index)?),
-                    ty: rust::Type::Prim(Prim::Usize),
-                }),
+                index: Box::new(self.lower_index(index)?),
             }),
             PlaceKind::Field {
                 ref base,

@@ -73,7 +73,7 @@ int main(void) {
 // CHECK-NEXT:             [7i32, -2i32],
 // CHECK-NEXT:             [-7i32, -2i32],
 // CHECK-NEXT:             [0i32, 5i32],
-// CHECK-NEXT:             [-2147483648i32, 2i32],
+// CHECK-NEXT:             [-2147483647i32 - 1i32, 2i32],
 // CHECK-NEXT:             [2147483647i32, -1i32],
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
@@ -91,8 +91,8 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mixed: u32 = 2147483644u32;
-// CHECK-NEXT:     let mixed_rem: u32 = 0u32;
+// CHECK-NEXT:     let mixed: u32 = 4294967289 / 2;
+// CHECK-NEXT:     let mixed_rem: u32 = 4294967289 % 3;
 // CHECK-NEXT:     let big: i64 = (-9223372036854775807 - 1) / 3;
 // CHECK-NEXT:     let big_rem: i64 = (-9223372036854775807 - 1) % 7;
 // CHECK-NEXT:     let ubig: u64 = 18446744073709551615 / 10;

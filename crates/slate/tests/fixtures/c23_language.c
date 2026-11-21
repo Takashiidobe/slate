@@ -223,25 +223,25 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! C23_TYPE_KIND {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         3i32
+// CHECK-NEXT:         4i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! C23_TYPE_KIND__2 {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         2i32
+// CHECK-NEXT:         1i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! C23_TYPE_KIND__3 {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         1i32
+// CHECK-NEXT:         2i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! C23_TYPE_KIND__4 {
 // CHECK-NEXT:     () => {
-// CHECK-NEXT:         4i32
+// CHECK-NEXT:         3i32
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -329,7 +329,7 @@ int main(void) {
 // CHECK-NEXT:     let same_type_value: i32 = 71;
 // CHECK-NEXT:     let unqualified_value: i32 = 79;
 // CHECK-NEXT:     let α: i32 = 5;
-// CHECK-NEXT:     let signed_precise: i32 = -12345i32;
+// CHECK-NEXT:     let signed_precise: i32 = -12345;
 // CHECK-NEXT:     let unsigned_precise: u32 = 100000;
 // CHECK-NEXT:     let binary_value: i32 = 165;
 // CHECK-NEXT:     let utf8_character: u8 = 90;
@@ -366,11 +366,11 @@ int main(void) {
 // CHECK-NEXT:         .wrapping_add((((wide_value as u64) == 8589934591) as i32) as u64)
 // CHECK-NEXT:         .wrapping_add(static_compound_value as u64)
 // CHECK-NEXT:         .wrapping_add(7)
-// CHECK-NEXT:         .wrapping_add(24u64)
-// CHECK-NEXT:         .wrapping_add(C23_TYPE_KIND__3!() as u64)
+// CHECK-NEXT:         .wrapping_add((11i32 + 13i32) as u64)
 // CHECK-NEXT:         .wrapping_add(C23_TYPE_KIND__2!() as u64)
-// CHECK-NEXT:         .wrapping_add(C23_TYPE_KIND!() as u64)
-// CHECK-NEXT:         .wrapping_add(C23_TYPE_KIND__4!() as u64) as i32;
+// CHECK-NEXT:         .wrapping_add(C23_TYPE_KIND__3!() as u64)
+// CHECK-NEXT:         .wrapping_add(C23_TYPE_KIND__4!() as u64)
+// CHECK-NEXT:         .wrapping_add(C23_TYPE_KIND!() as u64) as i32;
 // CHECK-NEXT:     let attribute_total: i32 = c23_nodiscard_value();
 // CHECK-NEXT:     let preprocessor_total: i32 = 23 + 29 + 1 + 1 + 0 + 0 + 0 + 0
 // CHECK-NEXT:         + ((unsafe { c23_embedded[0] }) as i32) + ((unsafe { c23_embedded[1] }) as i32)

@@ -110,7 +110,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "lea {0:r}, [{1}]",
 // CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             const 8 as i32,
+// CHECK-NEXT:             const 8i32,
 // CHECK-NEXT:             options(pure, nomem, nostack),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };

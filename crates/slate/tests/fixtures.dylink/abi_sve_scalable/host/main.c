@@ -50,8 +50,10 @@ int main(void) {
 // CHECK-NEXT: macro_rules! dl_open {
 // CHECK-NEXT:     ($path:expr) => {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             dlopen((($path) as *const u8) as *const core::ffi::c_char, 2i32 as i32)
-// CHECK-NEXT:                 as *mut ()
+// CHECK-NEXT:             dlopen(
+// CHECK-NEXT:                 (($path) as *const u8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 (2i32 | 0i32) as i32,
+// CHECK-NEXT:             ) as *mut ()
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

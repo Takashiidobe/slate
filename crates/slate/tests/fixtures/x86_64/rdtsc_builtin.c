@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let ticks: u64 = elapsed();
-// CHECK-NEXT:     println!("{}", (ticks > 0 && ticks < 1099511627776u64) as i32);
+// CHECK-NEXT:     println!("{}", (ticks > 0 && ticks < 1u64 << 40i32) as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn run() -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 0;
-// CHECK-NEXT:     for i in 0..4i32 {
+// CHECK-NEXT:     for i in 0..(3i32 + 1) {
 // CHECK-NEXT:         match i {
 // CHECK-NEXT:             0 => {
 // CHECK-NEXT:                 out += 1;

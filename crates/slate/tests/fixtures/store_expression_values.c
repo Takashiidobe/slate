@@ -169,7 +169,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut out: *mut i32 = buffer.0.as_mut_ptr() as *mut i32;
-// CHECK-NEXT:     for i in 1..4i32 {
+// CHECK-NEXT:     for i in 1..(3i32 + 1) {
 // CHECK-NEXT:         let [[V_8:__v[0-9]+]]: *mut i32 = out;
 // CHECK-NEXT:         out = unsafe { [[V_8]].add(1) };
 // CHECK-NEXT:         unsafe {
@@ -216,8 +216,8 @@ int main(void) {
 // CHECK-NEXT:         [[V_14]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     picked = [[V_12]];
-// CHECK-NEXT:     let narrow: u8 = 44u8;
-// CHECK-NEXT:     let widened: i32 = 45i32;
+// CHECK-NEXT:     let narrow: u8 = 44;
+// CHECK-NEXT:     let widened: i32 = 44 + 1;
 // CHECK-NEXT:     println!("{} {} {} {} {} {}", a, b, c, d, e, unsafe { calls });
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {} {}",

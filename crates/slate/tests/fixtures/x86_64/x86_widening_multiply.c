@@ -281,10 +281,10 @@ int main(void) {
 // CHECK-NEXT:     let mut wide_unsigned: __SlateAlign16<[u64; 4]> = __SlateAlign16([0u64; 4]);
 // CHECK-NEXT:     let mut wide_signed: __SlateAlign16<[u64; 4]> = __SlateAlign16([0u64; 4]);
 // CHECK-NEXT:     let a: core::simd::Simd<i64, 2> = unsafe {
-// CHECK-NEXT:         _mm_set_epi32(2147483647i32, -1985229329i32, 7i32, -15i32)
+// CHECK-NEXT:         _mm_set_epi32(2147483647i32, 2309737967u32 as i32, 7i32, 4294967281u32 as i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let b: core::simd::Simd<i64, 2> = unsafe {
-// CHECK-NEXT:         _mm_set_epi32(5i32, -559038737i32, 305419896i32, -2147483648i32)
+// CHECK-NEXT:         _mm_set_epi32(5i32, 3735928559u32 as i32, 305419896i32, 2147483648u32 as i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm_storeu_si128(
@@ -305,12 +305,27 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%llx %llx\n".as_ptr(), out.0[0], out.0[1]) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let x: __SlateAlign16<[i32; 8]> = __SlateAlign16(
-// CHECK-NEXT:         [-15i32, 7i32, -1985229329i32, 2147483647i32, -1i32, 3i32, -889275714i32, 1i32],
+// CHECK-NEXT:         [
+// CHECK-NEXT:             4294967281u32 as i32,
+// CHECK-NEXT:             7i32,
+// CHECK-NEXT:             2309737967u32 as i32,
+// CHECK-NEXT:             2147483647i32,
+// CHECK-NEXT:             4294967295u32 as i32,
+// CHECK-NEXT:             3i32,
+// CHECK-NEXT:             3405691582u32 as i32,
+// CHECK-NEXT:             1i32,
+// CHECK-NEXT:         ],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let y: __SlateAlign16<[i32; 8]> = __SlateAlign16(
 // CHECK-NEXT:         [
-// CHECK-NEXT:             -2147483648i32, 305419896i32, -559038737i32, 5i32, 65536i32, 9i32,
-// CHECK-NEXT:             195948557i32, 2i32,
+// CHECK-NEXT:             2147483648u32 as i32,
+// CHECK-NEXT:             305419896i32,
+// CHECK-NEXT:             3735928559u32 as i32,
+// CHECK-NEXT:             5i32,
+// CHECK-NEXT:             65536i32,
+// CHECK-NEXT:             9i32,
+// CHECK-NEXT:             195948557i32,
+// CHECK-NEXT:             2i32,
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {

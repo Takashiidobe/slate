@@ -473,7 +473,8 @@ int main(void) {
 // CHECK-NEXT:     )
 // CHECK-NEXT:     .shr_bits(4i32 as usize);
 // CHECK-EMPTY:
-// CHECK-NEXT: static g_small: i16 = (3i16.wrapping_shl((7i32 as usize) as u32) as i16) << 7 >> 7;
+// CHECK-NEXT: static g_small: i16 = (((3i32 as i16) << 7 >> 7).wrapping_shl((7i32 as usize) as u32)
+// CHECK-NEXT:     as i16) << 7 >> 7;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     s5(5i8, 2i32, 1u8);
@@ -488,30 +489,10 @@ int main(void) {
 // CHECK-NEXT:     u33(8589934591u64, 4i32, 1u8);
 // CHECK-NEXT:     s64(-9223372036854775807i64, 1i32, 2u8);
 // CHECK-NEXT:     u64(18446744073709551615u64, 5i32, 3u8);
-// CHECK-NEXT:     s100(
-// CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(-123456789 as i128),
-// CHECK-NEXT:         40i32,
-// CHECK-NEXT:         20u8,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     u100(
-// CHECK-NEXT:         <bitint::BUint<100, 2, 16, bitint::A8>>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(123456789 as i128),
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         40i32,
-// CHECK-NEXT:         20u8,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     s128(
-// CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(-123456789 as i128),
-// CHECK-NEXT:         70i32,
-// CHECK-NEXT:         3u8,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     u128(
-// CHECK-NEXT:         <bitint::BUint<128, 2, 16, bitint::A8>>::from_bint(
-// CHECK-NEXT:             <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(123456789 as i128),
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         70i32,
-// CHECK-NEXT:         3u8,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     s100(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(-123456789), 40i32, 20u8);
+// CHECK-NEXT:     u100(<bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(123456789), 40i32, 20u8);
+// CHECK-NEXT:     s128(<bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(-123456789), 70i32, 3u8);
+// CHECK-NEXT:     u128(<bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(123456789), 70i32, 3u8);
 // CHECK-NEXT:     s200(
 // CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(-123456789 as i128),
 // CHECK-NEXT:         130i32,

@@ -42,12 +42,12 @@ int main(void) {
 // CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(calls)) + 1,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { __slate_intrinsic_ded315013ea6523(const { ((0 as i32) as u32) as i32 }) }
+// CHECK-NEXT:     unsafe { __slate_intrinsic_ded315013ea6523(const { 0u32 as i32 }) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn inlined_site() -> *mut () {
-// CHECK-NEXT:     unsafe { __slate_intrinsic_ded315013ea6523(const { ((0 as i32) as u32) as i32 }) }
+// CHECK-NEXT:     unsafe { __slate_intrinsic_ded315013ea6523(const { 0u32 as i32 }) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

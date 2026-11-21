@@ -342,7 +342,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn per_iteration() {
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for n in 1..5i32 {
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for n in 1..(4i32 + 1) {
 // CHECK-NEXT:         let mut [[V_0]]: u64 = n as u64;
 // CHECK-NEXT:         let mut v: Vec<u64> = {
 // CHECK-NEXT:             let mut __slate_vla: Vec<u64> = Vec::with_capacity(

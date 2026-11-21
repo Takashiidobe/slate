@@ -38,10 +38,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[u64; 7]> = __SlateAlign16(
-// CHECK-NEXT:         [
-// CHECK-NEXT:             1u64, 2u64, 3u64, 2147483648u64, 4294967296u64, 9223372036854775808u64,
-// CHECK-NEXT:             18446744073709551615u64,
-// CHECK-NEXT:         ],
+// CHECK-NEXT:         [1u64, 2u64, 3u64, 2147483648u64, 4294967296u64, 9223372036854775808u64, !0u64],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)

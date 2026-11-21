@@ -1,3 +1,4 @@
+mod const_fold;
 mod inline_temporaries;
 
 use slate_parser::ir::Module;
@@ -14,11 +15,18 @@ pub struct Pass {
     run: fn(&mut Module),
 }
 
-pub static PASSES: &[Pass] = &[Pass {
-    name: "inline-temps",
-    slots: &[Slot::BeforeMacroKeep, Slot::AfterMacroStrip],
-    run: inline_temporaries::transform,
-}];
+pub static PASSES: &[Pass] = &[
+    Pass {
+        name: "inline-temps",
+        slots: &[Slot::BeforeMacroKeep, Slot::AfterMacroStrip],
+        run: inline_temporaries::transform,
+    },
+    Pass {
+        name: "const-fold",
+        slots: &[Slot::AfterMacroStrip],
+        run: const_fold::transform,
+    },
+];
 
 #[derive(Clone)]
 pub struct Passes(Vec<&'static Pass>);

@@ -86,7 +86,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u %d\n".as_ptr(), 4294967295u32, true as i32) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let wide: i64 = -3;
-// CHECK-NEXT:     let narrow: u8 = 253u8;
+// CHECK-NEXT:     let narrow: u8 = -3i32 as u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld %u\n".as_ptr(), wide, narrow as u32) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

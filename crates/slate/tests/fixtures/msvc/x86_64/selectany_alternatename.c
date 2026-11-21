@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // CHECK-NEXT:     ".section .data$_Avx2WmemEnabledWeakValue,\"dw\",discard,_Avx2WmemEnabledWeakValue\n.globl _Avx2WmemEnabledWeakValue\n.p2align 2\n_Avx2WmemEnabledWeakValue:\n.long {0}\n.section .drectve,\"yni\"\n.ascii \" /include:_Avx2WmemEnabledWeakValue\"\n.text",
-// CHECK-NEXT:     const 0 as i32,
+// CHECK-NEXT:     const 0i32,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: fn wmemcpy(_S1: *mut u16, _S2: *const u16, _N: u64) -> *mut u16 {
@@ -63,17 +63,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // CHECK-NEXT:     ".section .data$missing_flag_default,\"dw\",discard,missing_flag_default\n.globl missing_flag_default\n.p2align 2\nmissing_flag_default:\n.long {0}\n.section .drectve,\"yni\"\n.ascii \" /include:missing_flag_default\"\n.text",
-// CHECK-NEXT:     const 5 as i32,
+// CHECK-NEXT:     const 5i32,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // CHECK-NEXT:     ".section .data$present_flag_default,\"dw\",discard,present_flag_default\n.globl present_flag_default\n.p2align 2\npresent_flag_default:\n.long {0}\n.section .drectve,\"yni\"\n.ascii \" /include:present_flag_default\"\n.text",
-// CHECK-NEXT:     const 9 as i32,
+// CHECK-NEXT:     const 9i32,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
 // CHECK-NEXT:     ".section .data$kept_unreferenced,\"dw\",discard,kept_unreferenced\n.globl kept_unreferenced\n.p2align 2\nkept_unreferenced:\n.long {0}\n.section .drectve,\"yni\"\n.ascii \" /include:kept_unreferenced\"\n.text",
-// CHECK-NEXT:     const 3 as i32,
+// CHECK-NEXT:     const 3i32,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut present_flag: i32 = 1;

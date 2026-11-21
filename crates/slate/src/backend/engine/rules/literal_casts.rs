@@ -1,7 +1,7 @@
 use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{BinOp, Expr, Prim, RustValue, Type, UnaryOp};
+use crate::backend::rust_ast::{BinOp, Expr, Item, Prim, RustValue, Type, UnaryOp};
 
 const KINDS: &[NodeKindTag] = &[
     NodeKindTag::Let,
@@ -269,6 +269,39 @@ fn function_tail(arena: &FunctionOptimizer, id: NodeId) -> bool {
                 .first()
                 .and_then(|list| list.last().copied())
         }) == Some(id)
+}
+
+fn bare_static(expr: &mut Expr, ty: &Type) {
+    match (expr, ty) {
+        (Expr::ArrayLit(elems), Type::Array { elem, .. }) => {
+            for item in elems {
+                bare_static(item, elem);
+            }
+        }
+        (expr, Type::Prim(_)) => {
+            if let Expr::Cast {
+                expr: inner,
+                ty: cast,
+            } = &*expr
+                && cast == ty
+                && let Some(value) = literal_value(inner)
+                && fits(value, ty)
+            {
+                *expr = literal(value);
+            }
+        }
+        _ => {}
+    }
+}
+
+pub(in crate::backend::engine) fn bare_initializers(items: &mut [Item]) {
+    for item in items {
+        match item {
+            Item::Static { ty, init, .. } | Item::Const { ty, init, .. } => bare_static(init, ty),
+            Item::InlineMod { items, .. } => bare_initializers(items),
+            _ => {}
+        }
+    }
 }
 
 pub(in crate::backend::engine) struct LiteralCasts;

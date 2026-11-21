@@ -247,7 +247,7 @@ int main(void) {
 // CHECK-NEXT:     let t: Tiny = Tiny { c: [97, 98, 99] };
 // CHECK-NEXT:     let p: Pair = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Pair = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].a = 1099511627776i64;
+// CHECK-NEXT:         [[T_0]].a = 1i64 << 40i32;
 // CHECK-NEXT:         [[T_0]].b = -7i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };

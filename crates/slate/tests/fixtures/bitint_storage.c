@@ -155,9 +155,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: Mixed = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].tag = 3i8;
 // CHECK-NEXT:     [[T_0]].small = -7i16;
-// CHECK-NEXT:     [[T_0]].mid = <bitint::BUint<100, 2, 16, bitint::A8>>::from_bint(
-// CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(99i32 as i128),
-// CHECK-NEXT:     );
+// CHECK-NEXT:     [[T_0]].mid = <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(99);
 // CHECK-NEXT:     [[T_0]].gap = -2i16;
 // CHECK-NEXT:     [[T_0]].wide = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(5i32 as i128);
 // CHECK-NEXT:     [[T_0]]
@@ -165,7 +163,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut global_pair: __SlateAlign16<[bitint::BInt<128, 2, 16, bitint::A8>; 2]> = __SlateAlign16(
 // CHECK-NEXT:     [
-// CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(-1i32 as i128),
+// CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(-1),
 // CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(
 // CHECK-NEXT:             170141183460469231731687303715884105727,
 // CHECK-NEXT:         ),
@@ -187,12 +185,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let seven: u8 = 44u8;
-// CHECK-NEXT:     let mut nine: i16 = -212i16;
-// CHECK-NEXT:     let seventeen: i32 = -12345i32;
-// CHECK-NEXT:     let bit: u8 = 1u8;
-// CHECK-NEXT:     let two: i8 = -2i8;
-// CHECK-NEXT:     let mut forty: i64 = -123456789012i64;
+// CHECK-NEXT:     let seven: u8 = (((300i32 as i8) << 1 >> 1) as u8) & 127;
+// CHECK-NEXT:     let mut nine: i16 = 300i16 << 7 >> 7;
+// CHECK-NEXT:     let seventeen: i32 = -12345;
+// CHECK-NEXT:     let bit: u8 = 1;
+// CHECK-NEXT:     let two: i8 = -2;
+// CHECK-NEXT:     let mut forty: i64 = -123456789012i64 << 24 >> 24;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -209,13 +207,13 @@ int main(void) {
 // CHECK-NEXT:     dump(c"nine".as_ptr(), core::ptr::addr_of_mut!(nine) as *const (), 2u64);
 // CHECK-NEXT:     dump(c"forty".as_ptr(), core::ptr::addr_of_mut!(forty) as *const (), 8u64);
 // CHECK-NEXT:     let mut sixty_five: bitint::BInt<65, 2, 16, bitint::A8> = <bitint::BInt<65, 2, 16, bitint::A8>>::from_i128(
-// CHECK-NEXT:         -3 as i128,
+// CHECK-NEXT:         -3,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut unsigned_sixty_five: bitint::BUint<65, 2, 16, bitint::A8> = <bitint::BUint<65, 2, 16, bitint::A8>>::from_bint(
 // CHECK-NEXT:         <bitint::BInt<65, 2, 16, bitint::A8>>::from_i128(-3 as i128),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut one_twenty_eight: bitint::BInt<128, 2, 16, bitint::A8> = <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(
-// CHECK-NEXT:         ((1311768467463790320i64.wrapping_neg() as i64) << 2 >> 2) as i128,
+// CHECK-NEXT:         -1311768467463790320,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut wide: bitint::BInt<200, 4, 32, bitint::A8> = widen(sixty_five);
 // CHECK-NEXT:     let mut mid: bitint::BUint<100, 2, 16, bitint::A8> = narrow(

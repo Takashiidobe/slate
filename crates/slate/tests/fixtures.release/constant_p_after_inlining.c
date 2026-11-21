@@ -159,7 +159,7 @@ int main(void) {
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn mark__const1(n: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!("# mark ${0}", const 1 as i32, options(nostack, att_syntax));
+// CHECK-NEXT:         core::arch::asm!("# mark ${0}", const 1i32, options(nostack, att_syntax));
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

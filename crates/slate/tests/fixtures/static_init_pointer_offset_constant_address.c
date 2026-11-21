@@ -70,7 +70,7 @@ int main(void) {
 // CHECK-NEXT:     }) as *mut ()) as *mut list_head,
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut skb_next: *mut () = 16045481047390947328u64 as *mut ();
+// CHECK-NEXT: static mut skb_next: *mut () = 2048u64.wrapping_add(16045481047390945280u64) as *mut ();
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut char_offset: *mut i8 = (4096i32 as *mut i8).wrapping_offset(32i32 as isize);
 // CHECK-EMPTY:

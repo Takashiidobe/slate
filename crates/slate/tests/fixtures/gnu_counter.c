@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut macro_one: i32 = 1;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut pair: i32 = 23;
+// CHECK-NEXT: static mut pair: i32 = 2i32 * 10i32 + 3i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let local_four: i32 = 4;

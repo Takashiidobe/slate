@@ -65,13 +65,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut top: u32 = 4294967295u32;
+// CHECK-NEXT:     let mut top: u32 = 2147483647u32.wrapping_mul(2u32).wrapping_add(1);
 // CHECK-NEXT:     let mut zero: u32 = 0;
-// CHECK-NEXT:     let mut big: u64 = 18446744073709551615u64;
+// CHECK-NEXT:     let mut big: u64 = 9223372036854775807u64.wrapping_mul(2u64).wrapping_add(1);
 // CHECK-NEXT:     top = top.wrapping_add(5);
 // CHECK-NEXT:     zero = zero.wrapping_sub(3);
 // CHECK-NEXT:     big = big.wrapping_mul(3);
-// CHECK-NEXT:     let mut counter: u32 = 4294967295u32;
+// CHECK-NEXT:     let mut counter: u32 = 2147483647u32.wrapping_mul(2u32).wrapping_add(1);
 // CHECK-NEXT:     counter = counter.wrapping_add(1);
 // CHECK-NEXT:     let negated: u32 = top.wrapping_neg();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -136,8 +136,8 @@ int main(void) {
 // CHECK-NEXT:         [[T_9]].checked_sub([[T_10]]).is_none() || (([[T_11]] as u32) as i128) != [[T_11]]
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     let e: i32 = ({
-// CHECK-NEXT:         let [[T_12:__t[0-9]+]]: i128 = 4294967295u32 as i128;
-// CHECK-NEXT:         let [[T_13:__t[0-9]+]]: i128 = 4294967295u32 as i128;
+// CHECK-NEXT:         let [[T_12:__t[0-9]+]]: i128 = 2147483647u32.wrapping_mul(2u32).wrapping_add(1) as i128;
+// CHECK-NEXT:         let [[T_13:__t[0-9]+]]: i128 = 2147483647u32.wrapping_mul(2u32).wrapping_add(1) as i128;
 // CHECK-NEXT:         let [[T_14:__t[0-9]+]]: i128 = [[T_12]].wrapping_mul([[T_13]]);
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *core::ptr::addr_of_mut!(ll_out) = [[T_14]] as i64;
@@ -145,7 +145,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_12]].checked_mul([[T_13]]).is_none() || (([[T_14]] as i64) as i128) != [[T_14]]
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     let f: i32 = ({
-// CHECK-NEXT:         let [[T_15:__t[0-9]+]]: i128 = -9223372036854775808i64 as i128;
+// CHECK-NEXT:         let [[T_15:__t[0-9]+]]: i128 = (-9223372036854775807i64 - 1i64) as i128;
 // CHECK-NEXT:         let [[T_16:__t[0-9]+]]: i128 = -1 as i128;
 // CHECK-NEXT:         let [[T_17:__t[0-9]+]]: i128 = [[T_15]].wrapping_mul([[T_16]]);
 // CHECK-NEXT:         unsafe {
@@ -181,7 +181,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     if {
-// CHECK-NEXT:         let [[T_21:__t[0-9]+]]: i128 = 18446744073709551615u64 as i128;
+// CHECK-NEXT:         let [[T_21:__t[0-9]+]]: i128 = 9223372036854775807u64.wrapping_mul(2u64).wrapping_add(1)
+// CHECK-NEXT:             as i128;
 // CHECK-NEXT:         let [[T_22:__t[0-9]+]]: i128 = 2 as i128;
 // CHECK-NEXT:         let [[T_23:__t[0-9]+]]: i128 = [[T_21]].wrapping_add([[T_22]]);
 // CHECK-NEXT:         unsafe {

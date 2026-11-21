@@ -215,8 +215,22 @@ int main(void) {
 // CHECK-NEXT:             *{
 // CHECK-NEXT:                 [[SLATE_COMPOUND_0]].0 = __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9 {
 // CHECK-NEXT:                     b: [
-// CHECK-NEXT:                         120u8, 86u8, 52u8, 18u8, 188u8, 154u8, 240u8, 222u8, 1, 2, 3, 4,
-// CHECK-NEXT:                         5, 6, 7, 8,
+// CHECK-NEXT:                         (305419896i32 & 255i32) as u8,
+// CHECK-NEXT:                         (305419896i32 >> 8i32 & 255) as u8,
+// CHECK-NEXT:                         (305419896i32 >> 16i32 & 255) as u8,
+// CHECK-NEXT:                         (305419896i32 >> 24i32 & 255) as u8,
+// CHECK-NEXT:                         (39612i32 & 255i32) as u8,
+// CHECK-NEXT:                         (39612i32 >> 8i32 & 255) as u8,
+// CHECK-NEXT:                         (57072i32 & 255i32) as u8,
+// CHECK-NEXT:                         (57072i32 >> 8i32 & 255) as u8,
+// CHECK-NEXT:                         1,
+// CHECK-NEXT:                         2,
+// CHECK-NEXT:                         3,
+// CHECK-NEXT:                         4,
+// CHECK-NEXT:                         5,
+// CHECK-NEXT:                         6,
+// CHECK-NEXT:                         7,
+// CHECK-NEXT:                         8,
 // CHECK-NEXT:                     ],
 // CHECK-NEXT:                 };
 // CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]].0)
@@ -231,8 +245,22 @@ int main(void) {
 // CHECK-NEXT:                 *{
 // CHECK-NEXT:                     [[SLATE_COMPOUND_1]].0 = __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9 {
 // CHECK-NEXT:                         b: [
-// CHECK-NEXT:                             120u8, 86u8, 52u8, 18u8, 188u8, 154u8, 240u8, 222u8, 1, 2, 3,
-// CHECK-NEXT:                             4, 5, 6, 7, 8,
+// CHECK-NEXT:                             (305419896i32 & 255i32) as u8,
+// CHECK-NEXT:                             (305419896i32 >> 8i32 & 255) as u8,
+// CHECK-NEXT:                             (305419896i32 >> 16i32 & 255) as u8,
+// CHECK-NEXT:                             (305419896i32 >> 24i32 & 255) as u8,
+// CHECK-NEXT:                             (39612i32 & 255i32) as u8,
+// CHECK-NEXT:                             (39612i32 >> 8i32 & 255) as u8,
+// CHECK-NEXT:                             (57072i32 & 255i32) as u8,
+// CHECK-NEXT:                             (57072i32 >> 8i32 & 255) as u8,
+// CHECK-NEXT:                             1,
+// CHECK-NEXT:                             2,
+// CHECK-NEXT:                             3,
+// CHECK-NEXT:                             4,
+// CHECK-NEXT:                             5,
+// CHECK-NEXT:                             6,
+// CHECK-NEXT:                             7,
+// CHECK-NEXT:                             8,
 // CHECK-NEXT:                         ],
 // CHECK-NEXT:                     };
 // CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]].0)
@@ -246,14 +274,14 @@ int main(void) {
 // CHECK-NEXT:                     [[SLATE_COMPOUND_2]].0 = __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9 {
 // CHECK-NEXT:                         b: {
 // CHECK-NEXT:                             let mut [[T_0]]: [u8; 16] = core::mem::zeroed();
-// CHECK-NEXT:                             [[T_0]][0] = 120u8;
-// CHECK-NEXT:                             [[T_0]][1] = 86u8;
-// CHECK-NEXT:                             [[T_0]][2] = 52u8;
-// CHECK-NEXT:                             [[T_0]][3] = 18u8;
-// CHECK-NEXT:                             [[T_0]][4] = 0u8;
-// CHECK-NEXT:                             [[T_0]][5] = 0u8;
-// CHECK-NEXT:                             [[T_0]][6] = 0u8;
-// CHECK-NEXT:                             [[T_0]][7] = 0u8;
+// CHECK-NEXT:                             [[T_0]][0] = (305419896i32 & 255i32) as u8;
+// CHECK-NEXT:                             [[T_0]][1] = (305419896i32 >> 8i32 & 255) as u8;
+// CHECK-NEXT:                             [[T_0]][2] = (305419896i32 >> 16i32 & 255) as u8;
+// CHECK-NEXT:                             [[T_0]][3] = (305419896i32 >> 24i32 & 255) as u8;
+// CHECK-NEXT:                             [[T_0]][4] = (0i32 & 255i32) as u8;
+// CHECK-NEXT:                             [[T_0]][5] = (0i32 >> 8i32 & 255) as u8;
+// CHECK-NEXT:                             [[T_0]][6] = (0i32 & 255i32) as u8;
+// CHECK-NEXT:                             [[T_0]][7] = (0i32 >> 8i32 & 255) as u8;
 // CHECK-NEXT:                             [[T_0]][8] = 0u8;
 // CHECK-NEXT:                             [[T_0]]
 // CHECK-NEXT:                         },

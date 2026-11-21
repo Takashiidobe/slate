@@ -73,7 +73,7 @@ int main(void) {
 // CHECK-NEXT:         [0i32, -1i32, 1i32, 255i32, -256i32, 1073741824i32],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let wide: __SlateAlign16<[i64; 4]> = __SlateAlign16(
-// CHECK-NEXT:         [0i64, -1i64, 1099511627776i64, -1099511627776i64],
+// CHECK-NEXT:         [0i64, -1i64, 1i64 << 40i32, -(1i64 << 40i32)],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..6i32 {
 // CHECK-NEXT:         println!(

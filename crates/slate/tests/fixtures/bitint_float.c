@@ -267,12 +267,12 @@ int main(void) {
 // CHECK-NEXT:     s33(4294967295i64, 123456789.9f64, -77.7f32);
 // CHECK-NEXT:     s64(-9223372036854775807i64, 4e18f64, -4e18f32);
 // CHECK-NEXT:     s100(
-// CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(123456789012345 as i128),
+// CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_u128(123456789012345),
 // CHECK-NEXT:         1e25f64,
 // CHECK-NEXT:         -1e25f32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     s128(
-// CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(-123456789012345 as i128),
+// CHECK-NEXT:         <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(-123456789012345),
 // CHECK-NEXT:         1e30f64,
 // CHECK-NEXT:         -1e30f32,
 // CHECK-NEXT:     );

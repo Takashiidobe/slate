@@ -73,9 +73,7 @@ int main(void) {
 // CHECK-NEXT:                     core::mem::zeroed()
 // CHECK-NEXT:                 };
 // CHECK-NEXT:                 [[T_1]].prefix = 2i32;
-// CHECK-NEXT:                 [[T_1]].value = <bitint::BInt<65, 2, 16, bitint::A8>>::from_i128(
-// CHECK-NEXT:                     333i32 as i128,
-// CHECK-NEXT:                 );
+// CHECK-NEXT:                 [[T_1]].value = <bitint::BInt<65, 2, 16, bitint::A8>>::from_u128(333);
 // CHECK-NEXT:                 [[T_1]]
 // CHECK-NEXT:             };
 // CHECK-NEXT:             [[T_0]].tail = 4i16;
@@ -89,9 +87,7 @@ int main(void) {
 // CHECK-NEXT:                     core::mem::zeroed()
 // CHECK-NEXT:                 };
 // CHECK-NEXT:                 [[T_3]].prefix = 6i32;
-// CHECK-NEXT:                 [[T_3]].value = <bitint::BInt<65, 2, 16, bitint::A8>>::from_i128(
-// CHECK-NEXT:                     777i32 as i128,
-// CHECK-NEXT:                 );
+// CHECK-NEXT:                 [[T_3]].value = <bitint::BInt<65, 2, 16, bitint::A8>>::from_u128(777);
 // CHECK-NEXT:                 [[T_3]]
 // CHECK-NEXT:             };
 // CHECK-NEXT:             [[T_2]].tail = 8i16;

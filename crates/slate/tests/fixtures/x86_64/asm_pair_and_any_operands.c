@@ -131,7 +131,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "\n# {0:e}\n# {1}\n# {2}",
 // CHECK-NEXT:             in(reg) x as u32,
-// CHECK-NEXT:             const 5 as i32,
+// CHECK-NEXT:             const 5i32,
 // CHECK-NEXT:             in(reg) (big as *const __SlateRecord_asm_pair_and_any_operands_c_3)
 // CHECK-NEXT:                 as *mut __SlateRecord_asm_pair_and_any_operands_c_3,
 // CHECK-NEXT:             options(nostack, att_syntax),
@@ -152,7 +152,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let a: u128 = pair_out();
-// CHECK-NEXT:     let b: u128 = pair_inout((4 as u128) << 64i32 | (18446744073709551615u64 as u128));
+// CHECK-NEXT:     let b: u128 = pair_inout((4 as u128) << 64i32 | (!0u64 as u128));
 // CHECK-NEXT:     let big: __SlateRecord_asm_pair_and_any_operands_c_3 = __SlateRecord_asm_pair_and_any_operands_c_3 {
 // CHECK-NEXT:         a: 1,
 // CHECK-NEXT:         b: 2,

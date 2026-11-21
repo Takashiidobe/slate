@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:         field {
 // CHECK-NEXT:             name: (b"u32\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:             is_signed: (4294967295u32 < 1u32) as i32,
+// CHECK-NEXT:             is_signed: ((-1i32 as u32) < (1i32 as u32)) as i32,
 // CHECK-NEXT:             size: 4i32,
 // CHECK-NEXT:         },
 // CHECK-NEXT:         field {

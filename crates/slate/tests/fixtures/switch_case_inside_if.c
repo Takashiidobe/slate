@@ -91,12 +91,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     for status in -1..14i32 {
+// CHECK-NEXT:     for status in -1..(13i32 + 1) {
 // CHECK-NEXT:         print!("{}:{},{} ", status, lookup(status, 0i32), lookup(status, 1i32));
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
-// CHECK-NEXT:     for x in 0..5i32 {
+// CHECK-NEXT:     for x in 0..(4i32 + 1) {
 // CHECK-NEXT:         print!("{}:{},{} ", x, skip_into_else(x, 1i32), skip_into_else(x, -1i32));
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }

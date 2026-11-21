@@ -4,6 +4,7 @@
 - [Boundary](#boundary)
 - [Where a rewrite belongs](#where-a-rewrite-belongs)
 - [Transform stage](#transform-stage)
+  - [Const-fold](#const-fold)
 - [Keys](#keys)
 - [Call resolution](#call-resolution)
 - [Scaling rule](#scaling-rule)
@@ -99,6 +100,32 @@ names the passes, the C is the input, and the generated block checks every
 function body with `CHECK-LABEL`. Test: `transform_filecheck` in the `slate`
 profile; regenerate with `crates/slate/tools/update_filecheck.py`, which turns
 binding and type numbers into FileCheck variables.
+
+### Const-fold
+
+`const-fold` (`transform/const_fold.rs`, `slate-8ge7.24.4`) runs in
+`Slot::AfterMacroStrip` only. It folds the conversions the C source does not
+spell and nothing else:
+
+- `widen`, `truncate` or `reinterpret` with any reason but `explicit`, over an
+  integer constant, becomes `const<T>` with C's conversion (wrap to `T`'s width,
+  two's complement for signed `T`); `char c = 200` is `const<i8>(-56)`.
+- `neg` of a constant with a signed type becomes a negative constant, since C
+  has no negative literal; `-1` is `const<i32>(-1)`.
+- Arithmetic, comparisons and shifts on constants stay as written (`60 * 60`,
+  `1 << 18`, `FE_ALL_EXCEPT`'s `|` chain): rustc folds them, and the output
+  keeps the C's meaning. Explicit casts stay; a no-op one is
+  `slate-8ge7.24.5`'s.
+- Values inside a kept expansion or a `Module::macro_values` region, and
+  conversions of a macro-valued constant, are left alone.
+
+The folded node keeps the conversion's `NodeId`. Lowering spells
+`const<T>` as `Cast(literal, T)`; codegen prints a literal cast to a plain
+integer type it fits as a suffixed literal (`97i8`), `literal_casts` drops the
+suffix where the context types it (`let c: i8 = 97`), and
+`literal_casts::bare_initializers` does the same for a static whose declared
+type is `T`. A constant array index or lane is written bare by
+`FunctionLowerer::lower_index` when it fits the target's `usize`.
 
 ## Keys
 

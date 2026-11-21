@@ -162,7 +162,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn r_u5() {
-// CHECK-NEXT:     let x: u8 = 21u8;
+// CHECK-NEXT:     let x: u8 = 21;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while (i as u64)
 // CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
@@ -185,7 +185,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn r_u9() {
-// CHECK-NEXT:     let x: u16 = 421u16;
+// CHECK-NEXT:     let x: u16 = 421;
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_0]]: while (i as u64)
 // CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
@@ -257,9 +257,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .shl_bits(99 as usize)
 // CHECK-NEXT:         .bitor_bits(
-// CHECK-NEXT:             <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(
-// CHECK-NEXT:                 1311768467294899695 as u128,
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(1311768467294899695),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
@@ -293,11 +291,7 @@ int main(void) {
 // CHECK-NEXT:             3735928559 as u128,
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .shl_bits(90 as usize)
-// CHECK-NEXT:         .bitor_bits(
-// CHECK-NEXT:             <bitint::BUint<128, 2, 16, bitint::A8>>::from_bint(
-// CHECK-NEXT:                 <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(7 as i128),
-// CHECK-NEXT:             ),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         .bitor_bits(<bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(7));
 // CHECK-NEXT:     let mut i: u32 = 0;
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)

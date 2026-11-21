@@ -29,18 +29,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ilog2 {
 // CHECK-NEXT:     ($n:expr) => {
-// CHECK-NEXT:         if false {
-// CHECK-NEXT:             if ($n) < 2 { 0i32 } else { 63 - ($n.leading_zeros() as i32) }
-// CHECK-NEXT:         } else if (core::mem::size_of::<u64>() as u64) <= 4 {
-// CHECK-NEXT:             __ilog2_u32(($n) as u32)
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             __ilog2_u64($n)
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! ilog2__2 {
-// CHECK-NEXT:     ($n:expr) => {
 // CHECK-NEXT:         if true {
 // CHECK-NEXT:             if ($n) < 2 { 0i32 } else { 63 - ((($n) as u64).leading_zeros() as i32) }
 // CHECK-NEXT:         } else if (core::mem::size_of::<u32>() as u64) <= 4 {
@@ -51,10 +39,22 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! ilog2__2 {
+// CHECK-NEXT:     ($n:expr) => {
+// CHECK-NEXT:         if false {
+// CHECK-NEXT:             if ($n) < 2 { 0i32 } else { 63 - ($n.leading_zeros() as i32) }
+// CHECK-NEXT:         } else if (core::mem::size_of::<u64>() as u64) <= 4 {
+// CHECK-NEXT:             __ilog2_u32(($n) as u32)
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             __ilog2_u64($n)
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! order_base_2 {
 // CHECK-NEXT:     ($n:expr) => {
 // CHECK-NEXT:         if true {
-// CHECK-NEXT:             if ($n) == 0 || ($n) == 1 { 0i32 } else { ilog2__2!($n.wrapping_sub(1)) + 1 }
+// CHECK-NEXT:             if ($n) == 0 || ($n) == 1 { 0i32 } else { ilog2!($n.wrapping_sub(1)) + 1 }
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             __order_base_2(($n) as u64)
 // CHECK-NEXT:         }
@@ -70,7 +70,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __order_base_2(n: u64) -> i32 {
-// CHECK-NEXT:     if n > 1 { ilog2!(n.wrapping_sub(1)) + 1 } else { 0 }
+// CHECK-NEXT:     if n > 1 { ilog2__2!(n.wrapping_sub(1)) + 1 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn nr_cpus_bits() -> i32 {
@@ -80,7 +80,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "mov ${1}, {0:e}",
 // CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             const 6 as i32,
+// CHECK-NEXT:             const 6i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
@@ -96,7 +96,7 @@ int main(void) {
 // CHECK-NEXT:             "mov {1:e}, {0:e}\n# {2}",
 // CHECK-NEXT:             lateout(reg) [[T_0]],
 // CHECK-NEXT:             in(reg) (x.count_ones() as i32) as u32,
-// CHECK-NEXT:             const 4 as i32,
+// CHECK-NEXT:             const 4i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };

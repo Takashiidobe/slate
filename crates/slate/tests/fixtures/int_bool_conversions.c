@@ -109,7 +109,7 @@ int main(void) {
 // CHECK-NEXT:         to_bool(-7i32) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {}", to_bool_u8(0u8) as i32, to_bool_u8(200u8) as i32);
-// CHECK-NEXT:     println!("{} {}", to_bool_ll(1099511627776i64) as i32, to_bool_ll(0i64) as i32);
+// CHECK-NEXT:     println!("{} {}", to_bool_ll(1i64 << 40i32) as i32, to_bool_ll(0i64) as i32);
 // CHECK-NEXT:     let mut b: bool = true;
 // CHECK-NEXT:     println!("{} {}", b as i32, from_bool(b));
 // CHECK-NEXT:     b = to_bool(0i32);

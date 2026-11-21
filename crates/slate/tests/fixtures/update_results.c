@@ -125,7 +125,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut u: u32 = 4294967295u32;
+// CHECK-NEXT:     let mut u: u32 = 2147483647u32.wrapping_mul(2u32).wrapping_add(1);
 // CHECK-NEXT:     let mut before: u32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u32 = u;
 // CHECK-NEXT:     u = [[V_0]].wrapping_add(1);

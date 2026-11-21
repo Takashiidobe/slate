@@ -31,7 +31,7 @@ int main(void) {
 // CHECK-NEXT:             let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:             core::arch::asm!(
 // CHECK-NEXT:                 "testl {0:e}, {0:e}\n\tjz {1}",
-// CHECK-NEXT:                 in(reg) (0 as i32) as u32,
+// CHECK-NEXT:                 in(reg) 0i32 as u32,
 // CHECK-NEXT:                 label {
 // CHECK-NEXT:                     __slate_asm_target = true;
 // CHECK-NEXT:                 },
@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT:         let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "testl {0:e}, {0:e}\n\tjz {1}",
-// CHECK-NEXT:             in(reg) (9 as i32) as u32,
+// CHECK-NEXT:             in(reg) 9i32 as u32,
 // CHECK-NEXT:             label {
 // CHECK-NEXT:                 __slate_asm_target = true;
 // CHECK-NEXT:             },

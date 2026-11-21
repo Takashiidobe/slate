@@ -119,15 +119,15 @@ int main(void) {
 // CHECK-NEXT:             if [[T_1]] == 0 { 0i32 } else { ([[T_1]].trailing_zeros() as i32) + 1 }
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_2:__t[0-9]+]] = -2147483648i32;
+// CHECK-NEXT:             let [[T_2:__t[0-9]+]] = -2147483647i32 - 1i32;
 // CHECK-NEXT:             if [[T_2]] == 0 { 0i32 } else { ([[T_2]].trailing_zeros() as i32) + 1 }
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_3:__t[0-9]+]] = 1048576i64;
+// CHECK-NEXT:             let [[T_3:__t[0-9]+]] = 1i64 << 20i32;
 // CHECK-NEXT:             if [[T_3]] == 0 { 0i32 } else { ([[T_3]].trailing_zeros() as i32) + 1 }
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_4:__t[0-9]+]] = 1099511627776i64;
+// CHECK-NEXT:             let [[T_4:__t[0-9]+]] = 1i64 << 40i32;
 // CHECK-NEXT:             if [[T_4]] == 0 { 0i32 } else { ([[T_4]].trailing_zeros() as i32) + 1 }
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {

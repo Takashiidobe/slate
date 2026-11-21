@@ -97,7 +97,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "leaq {1}, {0:r}",
 // CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             const 8 as i32,
+// CHECK-NEXT:             const 8i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };

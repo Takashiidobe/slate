@@ -3,8 +3,6 @@ mod bool_simplify;
 mod bool_ternary;
 mod branch_init;
 mod compound_assign;
-pub(super) mod const_fold;
-mod constant_index_casts;
 mod cstr_literal;
 mod dead_store;
 mod for_range;
@@ -12,7 +10,7 @@ mod getenv_var;
 mod inline_temps;
 mod label_elide;
 mod libc_call;
-mod literal_casts;
+pub(super) mod literal_casts;
 mod loop_to_while;
 mod nested_unsafe;
 mod null_compare;
@@ -23,6 +21,7 @@ mod ptr_offset;
 mod pure_stmts;
 mod raw_ptr_alias;
 mod remove_mut;
+mod representable;
 mod return_cleanup;
 mod singleton_scopes;
 mod slot_promote;
@@ -74,10 +73,13 @@ pub(super) fn registry(
         Box::new(inline_temps::InlineConstArgTemps),
         Box::new(inline_temps::AsmOutputTempFold),
         Box::new(peel_casts::PeelCasts),
-        Box::new(constant_index_casts::ConstantIndexCasts),
         Box::new(null_compare::NullCompare),
-        Box::new(ptr_offset::PtrOffset),
-        Box::new(bool_simplify::BoolSimplify),
+        Box::new(ptr_offset::PtrOffset {
+            pointer_width: target.pointer_width,
+        }),
+        Box::new(bool_simplify::BoolSimplify {
+            pointer_width: target.pointer_width,
+        }),
         Box::new(pattern_range::MatchRangeFold),
         Box::new(cstr_literal::CStrLiteral {
             c_char: if slate_parser::target_info::TargetInfo::for_triple(&target.triple)
@@ -105,10 +107,7 @@ pub(super) fn registry(
 }
 
 pub(super) fn late_registry() -> Vec<Box<dyn NodeRule>> {
-    vec![
-        Box::new(literal_casts::LiteralCasts),
-        Box::new(const_fold::ConstFold),
-    ]
+    vec![Box::new(literal_casts::LiteralCasts)]
 }
 
 pub(super) fn unsafe_registry() -> Vec<Box<dyn NodeRule>> {

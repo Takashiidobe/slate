@@ -1164,10 +1164,7 @@ impl FunctionLowerer<'_, '_> {
             }
             ValueKind::Lane { vector, index } => Expr::Index {
                 base: Box::new(self.lower_value(vector)?),
-                index: Box::new(Expr::Cast {
-                    expr: Box::new(self.lower_value(index)?),
-                    ty: rust::Type::Prim(Prim::Usize),
-                }),
+                index: Box::new(self.lower_index(index)?),
             },
             ValueKind::Convert { .. }
                 if self.in_static_initializer

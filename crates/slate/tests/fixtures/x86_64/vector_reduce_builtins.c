@@ -1171,7 +1171,7 @@ int main(void) {
 // CHECK-NEXT:                             zero,
 // CHECK-NEXT:                         )
 // CHECK-NEXT:                     },
-// CHECK-NEXT:                     const { 234 as i32 },
+// CHECK-NEXT:                     const { 234i32 },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )

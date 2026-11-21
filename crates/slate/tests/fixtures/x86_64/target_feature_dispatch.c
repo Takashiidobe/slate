@@ -444,7 +444,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn popcount_scalar(words: &[u64], count: u64) -> i64 {
+// CHECK-NEXT: fn popcount_scalar(words: &[u64]) -> i64 {
+// CHECK-NEXT:     let count: u64 = words.len() as u64;
 // CHECK-NEXT:     let mut bits: i64 = 0;
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         let mut word: u64 = words[i as usize];
@@ -457,7 +458,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "popcnt")]
-// CHECK-NEXT: unsafe fn popcount_hw(words: &[u64], count: u64) -> i64 {
+// CHECK-NEXT: unsafe fn popcount_hw(words: &[u64]) -> i64 {
+// CHECK-NEXT:     let count: u64 = words.len() as u64;
 // CHECK-NEXT:     let mut bits: i64 = 0;
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         bits += (words[i as usize].count_ones() as i32) as i64;
@@ -591,9 +593,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut bits: i64 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i64 = if std::arch::is_x86_feature_detected!("popcnt") {
-// CHECK-NEXT:         unsafe { popcount_hw(words.0.as_slice(), 37u64) }
+// CHECK-NEXT:         unsafe { popcount_hw(words.0.as_slice()) }
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         popcount_scalar(words.0.as_slice(), 37u64)
+// CHECK-NEXT:         popcount_scalar(words.0.as_slice())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     bits = [[V_0]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -601,7 +603,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"bits %lld %lld\n".as_ptr(),
 // CHECK-NEXT:             bits,
-// CHECK-NEXT:             popcount_scalar(words.0.as_slice(), 37u64),
+// CHECK-NEXT:             popcount_scalar(words.0.as_slice()),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

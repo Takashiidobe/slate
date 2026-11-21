@@ -353,9 +353,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_7]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     m.__slate_bits_0.__set_tag(-9i32);
-// CHECK-NEXT:     let [[T_8:__t[0-9]+]] = <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(
-// CHECK-NEXT:         -123456789012345 as i128,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let [[T_8:__t[0-9]+]] = <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(-123456789012345);
 // CHECK-NEXT:     m.__slate_bits_0.__set_mid([[T_8]]);
 // CHECK-NEXT:     m.__slate_bits_0.__set_flag(1u8);
 // CHECK-NEXT:     let [[T_9:__t[0-9]+]] = <bitint::BUint<200, 4, 32, bitint::A8>>::from_u128(
@@ -372,37 +370,33 @@ int main(void) {
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     m.__slate_bits_0.__set_top([[T_11]]);
-// CHECK-NEXT:     let [[T_12:__t[0-9]+]] = -50i8;
-// CHECK-NEXT:     m.__slate_bits_1.__set_small([[T_12]]);
+// CHECK-NEXT:     m.__slate_bits_1.__set_small(-50i8);
 // CHECK-NEXT:     dump(&m);
 // CHECK-NEXT:     let mut copy: Mixed = m;
-// CHECK-NEXT:     let [[T_13:__t[0-9]+]] = copy.__slate_bits_0
+// CHECK-NEXT:     let [[T_12:__t[0-9]+]] = copy.__slate_bits_0
 // CHECK-NEXT:         .__get_mid()
-// CHECK-NEXT:         .wrapping_add(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1 as i128));
-// CHECK-NEXT:     copy.__slate_bits_0.__set_mid([[T_13]]);
-// CHECK-NEXT:     let [[T_14:__t[0-9]+]] = copy.__slate_bits_0
+// CHECK-NEXT:         .wrapping_add(<bitint::BInt<100, 2, 16, bitint::A8>>::from_u128(1));
+// CHECK-NEXT:     copy.__slate_bits_0.__set_mid([[T_12]]);
+// CHECK-NEXT:     let [[T_13:__t[0-9]+]] = copy.__slate_bits_0
 // CHECK-NEXT:         .__get_top()
 // CHECK-NEXT:         .wrapping_sub(
 // CHECK-NEXT:             <bitint::BUint<200, 4, 32, bitint::A8>>::from_bint(
 // CHECK-NEXT:                 <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(5 as i128),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         );
-// CHECK-NEXT:     copy.__slate_bits_0.__set_top([[T_14]]);
-// CHECK-NEXT:     let [[T_15:__t[0-9]+]] = 63i8;
-// CHECK-NEXT:     copy.__slate_bits_1.__set_small([[T_15]]);
+// CHECK-NEXT:     copy.__slate_bits_0.__set_top([[T_13]]);
+// CHECK-NEXT:     copy.__slate_bits_1.__set_small(63i8);
 // CHECK-NEXT:     dump(&copy);
 // CHECK-NEXT:     dump(&m);
 // CHECK-NEXT:     let mut n: Narrow = {
-// CHECK-NEXT:         let mut [[T_16:__t[0-9]+]]: Narrow = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_16]].__slate_bits_0
-// CHECK-NEXT:             .__set_x(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(-4 as i128));
-// CHECK-NEXT:         [[T_16]].__slate_bits_0
+// CHECK-NEXT:         let mut [[T_14:__t[0-9]+]]: Narrow = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         [[T_14]].__slate_bits_0
+// CHECK-NEXT:             .__set_x(<bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(-4));
+// CHECK-NEXT:         [[T_14]].__slate_bits_0
 // CHECK-NEXT:             .__set_y(
-// CHECK-NEXT:                 <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(
-// CHECK-NEXT:                     18364758544493064720 as u128,
-// CHECK-NEXT:                 ),
+// CHECK-NEXT:                 <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(18364758544493064720),
 // CHECK-NEXT:             );
-// CHECK-NEXT:         [[T_16]]
+// CHECK-NEXT:         [[T_14]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -413,16 +407,12 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let [[T_17:__t[0-9]+]] = <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(3 as i128);
-// CHECK-NEXT:     n.__slate_bits_0.__set_x([[T_17]]);
-// CHECK-NEXT:     let [[T_18:__t[0-9]+]] = n.__slate_bits_0
+// CHECK-NEXT:     let [[T_15:__t[0-9]+]] = <bitint::BInt<100, 2, 16, bitint::A8>>::from_u128(3);
+// CHECK-NEXT:     n.__slate_bits_0.__set_x([[T_15]]);
+// CHECK-NEXT:     let [[T_16:__t[0-9]+]] = n.__slate_bits_0
 // CHECK-NEXT:         .__get_y()
-// CHECK-NEXT:         .wrapping_add(
-// CHECK-NEXT:             <bitint::BUint<100, 2, 16, bitint::A8>>::from_bint(
-// CHECK-NEXT:                 <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1 as i128),
-// CHECK-NEXT:             ),
-// CHECK-NEXT:         );
-// CHECK-NEXT:     n.__slate_bits_0.__set_y([[T_18]]);
+// CHECK-NEXT:         .wrapping_add(<bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(1));
+// CHECK-NEXT:     n.__slate_bits_0.__set_y([[T_16]]);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

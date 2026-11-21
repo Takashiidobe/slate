@@ -127,7 +127,7 @@ int main(void) {
 // CHECK-NEXT:     ],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: static tail_offset: u64 = 16usize as u64;
+// CHECK-NEXT: static tail_offset: u64 = 16;
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut narrow_offset: u32 = (6usize as u64) as u32;
 // CHECK-EMPTY:

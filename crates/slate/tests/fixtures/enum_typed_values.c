@@ -62,9 +62,9 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut favorite: u32 = 5;
+// CHECK-NEXT: static mut favorite: u32 = 5u32;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut levels: [i32; 3] = [-3, -2, 7];
+// CHECK-NEXT: static mut levels: [i32; 3] = [-3i32, -2i32, 7i32];
 // CHECK-EMPTY:
 // CHECK-NEXT: fn next(color: u32) -> u32 {
 // CHECK-NEXT:     if (color as u32) == 0 {

@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT:     let copy: i32 = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(qualified)) };
 // CHECK-NEXT:     let preserved: i32 = 12;
 // CHECK-NEXT:     let pointer: *mut i32 = core::ptr::null_mut::<i32>();
-// CHECK-NEXT:     let narrow: u8 = 100u8;
+// CHECK-NEXT:     let narrow: u8 = 100;
 // CHECK-NEXT:     let unqualified: i32 = 1;
 // CHECK-NEXT:     let still_qualified: i32 = 1;
 // CHECK-NEXT:     println!(

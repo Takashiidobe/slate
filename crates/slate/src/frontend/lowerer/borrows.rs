@@ -220,10 +220,7 @@ impl FunctionLowerer<'_, '_> {
             }));
         }
         let index = match index {
-            Some(amount) => Expr::Cast {
-                expr: Box::new(self.lower_value(&amount)?),
-                ty: rust::Type::Prim(Prim::Usize),
-            },
+            Some(amount) => self.lower_index(&amount)?,
             None => Expr::Value(rust::RustValue::Usize(0)),
         };
         Ok(Some(Expr::Index {

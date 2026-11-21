@@ -372,19 +372,60 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT: static picks: __SlateConst<[*const u32; 2]> = __SlateConst(
 // AARCH64-PC-WINDOWS-MSVC-NEXT: static picks: __SlateConst<[*const u32; 2]> = __SlateConst(
 // CHECK-NEXT:     [
-// CHECK-NEXT:         unsafe { core::ptr::addr_of!(operators.0[3i32 as usize].r#type) },
-// CHECK-NEXT:         unsafe { core::ptr::addr_of!(operators.0[1i32 as usize].r#type) },
+// CHECK-NEXT:         unsafe { core::ptr::addr_of!(operators.0[3].r#type) },
+// CHECK-NEXT:         unsafe { core::ptr::addr_of!(operators.0[1].r#type) },
 // CHECK-NEXT:     ],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: static valid_bitmap: __SlateAlign16<[u32; 8]> = __SlateAlign16(
-// X86_64-PC-WINDOWS-MSVC-NEXT:     [2148532230u32, 262145u32, 1073741824u32, 16u32, 0u32, 0u32, 0u32, 2147483648u32],
+// X86_64-PC-WINDOWS-MSVC-NEXT:     [
+// X86_64-PC-WINDOWS-MSVC-NEXT:         0u32 | 1u32 << 1i32 - 32i32 * 0i32 | 1u32 << 2i32 - 32i32 * 0i32
+// X86_64-PC-WINDOWS-MSVC-NEXT:             | 1u32 << 20i32 - 32i32 * 0i32 | 1u32 << 31i32 - 32i32 * 0i32 | 0u32 | 0u32
+// X86_64-PC-WINDOWS-MSVC-NEXT:             | 0u32 | 0u32 | 0u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:         0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 1u32 << 32i32 - 32i32 * 1i32
+// X86_64-PC-WINDOWS-MSVC-NEXT:             | 1u32 << 50i32 - 32i32 * 1i32 | 0u32 | 0u32 | 0u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:         0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 1u32 << 94i32 - 32i32 * 2i32
+// X86_64-PC-WINDOWS-MSVC-NEXT:             | 0u32 | 0u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:         0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32
+// X86_64-PC-WINDOWS-MSVC-NEXT:             | 1u32 << 100i32 - 32i32 * 3i32 | 0u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:         0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:         0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:         0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:         0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32
+// X86_64-PC-WINDOWS-MSVC-NEXT:             | 1u32 << 255i32 - 32i32 * 7i32,
+// X86_64-PC-WINDOWS-MSVC-NEXT:     ],
 // X86_64-PC-WINDOWS-MSVC-NEXT: );
 // I686-PC-WINDOWS-MSVC-NEXT: static valid_bitmap: [u32; 8] = [
-// I686-PC-WINDOWS-MSVC-NEXT:     2148532230, 262145, 1073741824, 16, 0, 0, 0, 2147483648,
+// I686-PC-WINDOWS-MSVC-NEXT:     0u32 | 1u32 << 1i32 - 32i32 * 0i32 | 1u32 << 2i32 - 32i32 * 0i32
+// I686-PC-WINDOWS-MSVC-NEXT:         | 1u32 << 20i32 - 32i32 * 0i32 | 1u32 << 31i32 - 32i32 * 0i32 | 0u32 | 0u32
+// I686-PC-WINDOWS-MSVC-NEXT:         | 0u32 | 0u32 | 0u32,
+// I686-PC-WINDOWS-MSVC-NEXT:     0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 1u32 << 32i32 - 32i32 * 1i32
+// I686-PC-WINDOWS-MSVC-NEXT:         | 1u32 << 50i32 - 32i32 * 1i32 | 0u32 | 0u32 | 0u32,
+// I686-PC-WINDOWS-MSVC-NEXT:     0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 1u32 << 94i32 - 32i32 * 2i32 | 0u32
+// I686-PC-WINDOWS-MSVC-NEXT:         | 0u32,
+// I686-PC-WINDOWS-MSVC-NEXT:     0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 1u32 << 100i32 - 32i32 * 3i32
+// I686-PC-WINDOWS-MSVC-NEXT:         | 0u32,
+// I686-PC-WINDOWS-MSVC-NEXT:     0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32,
+// I686-PC-WINDOWS-MSVC-NEXT:     0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32,
+// I686-PC-WINDOWS-MSVC-NEXT:     0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32,
+// I686-PC-WINDOWS-MSVC-NEXT:     0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32
+// I686-PC-WINDOWS-MSVC-NEXT:         | 1u32 << 255i32 - 32i32 * 7i32,
 // I686-PC-WINDOWS-MSVC-NEXT: ];
 // AARCH64-PC-WINDOWS-MSVC-NEXT: static valid_bitmap: [u32; 8] = [
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     2148532230, 262145, 1073741824, 16, 0, 0, 0, 2147483648,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     0u32 | 1u32 << 1i32 - 32i32 * 0i32 | 1u32 << 2i32 - 32i32 * 0i32
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         | 1u32 << 20i32 - 32i32 * 0i32 | 1u32 << 31i32 - 32i32 * 0i32 | 0u32 | 0u32
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         | 0u32 | 0u32 | 0u32,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 1u32 << 32i32 - 32i32 * 1i32
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         | 1u32 << 50i32 - 32i32 * 1i32 | 0u32 | 0u32 | 0u32,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 1u32 << 94i32 - 32i32 * 2i32 | 0u32
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         | 0u32,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 1u32 << 100i32 - 32i32 * 3i32
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         | 0u32,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32,
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32 | 0u32
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         | 1u32 << 255i32 - 32i32 * 7i32,
 // AARCH64-PC-WINDOWS-MSVC-NEXT: ];
 // CHECK-EMPTY:
 // CHECK-NEXT: fn same(p: ptrlen, s: *const i8) -> i32 {

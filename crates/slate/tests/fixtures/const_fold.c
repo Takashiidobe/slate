@@ -34,16 +34,16 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn flags(f: u32) -> u32 {
-// CHECK-NEXT:     f & 50331648u32
+// CHECK-NEXT:     f & ((16777216i32 | 33554432i32) as u32)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn bit(i: u32) -> i32 {
-// CHECK-NEXT:     1i32 << (i & 7u32)
+// CHECK-NEXT:     1i32 << (i & ((8i32 - 1i32) as u32))
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn big() -> u64 {
-// CHECK-NEXT:     3968u64
+// CHECK-NEXT:     ((512 - 3i32 * 4i32) / 8 * 8 / 1 * 8) as u64
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn wrapped() -> u8 {
-// CHECK-NEXT:     4u8
+// CHECK-NEXT:     (250i32 + 10i32) as u8
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn overflowing(n: i32) -> i32 {
 // CHECK-NEXT:     n + (2147483647 - 2147483646 + 1)

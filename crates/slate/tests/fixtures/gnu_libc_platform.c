@@ -480,10 +480,30 @@ int main(void) {
 // CHECK-NEXT:         fnmatch(
 // CHECK-NEXT:             c"file-+(one|two).c".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             c"file-two.c".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             32i32 as i32,
+// CHECK-NEXT:             (1i32 << 5i32) as i32,
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }) == 0) as i32;
-// CHECK-NEXT:     unsafe { re_set_syntax(242428u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         re_set_syntax(
+// CHECK-NEXT:             1u64 << 1i32 << 1i32 | 1u64 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                 | 1u64 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                 | 1u64 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                     << 1i32
+// CHECK-NEXT:                 | 1u64 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                     << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                 | 1u64 << 1i32 << 1i32 << 1i32 | 1u64 << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                 | 1u64 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                     << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                 | 1u64 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                     << 1i32 << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                 | 1u64 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                     << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                 | 1u64 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                 | 1u64 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                     << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32 << 1i32
+// CHECK-NEXT:                     << 1i32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let error: *const i8 = unsafe {
 // CHECK-NEXT:         re_compile_pattern(
 // CHECK-NEXT:             c"sl(a|e)te".as_ptr(),

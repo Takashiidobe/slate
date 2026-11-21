@@ -269,7 +269,9 @@ int main(void) {
 // CHECK-NEXT:                 as usize,
 // CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     }) as *mut List;
-// CHECK-NEXT:     let bytes: *mut Bytes = (unsafe { malloc(25u64 as usize) as *mut () }) as *mut Bytes;
+// CHECK-NEXT:     let bytes: *mut Bytes = (unsafe {
+// CHECK-NEXT:         malloc(16u64.wrapping_add(9u64) as usize) as *mut ()
+// CHECK-NEXT:     }) as *mut Bytes;
 // CHECK-NEXT:     let wide: *mut Wide = (unsafe {
 // CHECK-NEXT:         malloc(
 // CHECK-NEXT:             16u64

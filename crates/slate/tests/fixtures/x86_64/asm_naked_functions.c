@@ -46,11 +46,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(naked)]
 // CHECK-NEXT: extern "C-unwind" fn forty_two() -> i32 {
-// CHECK-NEXT:     core::arch::naked_asm!(
-// CHECK-NEXT:         "movl ${0}, %eax\n\tret",
-// CHECK-NEXT:         const 42 as i32,
-// CHECK-NEXT:         options(att_syntax),
-// CHECK-NEXT:     );
+// CHECK-NEXT:     core::arch::naked_asm!("movl ${0}, %eax\n\tret", const 42i32, options(att_syntax));
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(naked)]

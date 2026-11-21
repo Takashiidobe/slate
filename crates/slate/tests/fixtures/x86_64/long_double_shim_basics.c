@@ -332,7 +332,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), root * root) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut acc: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-// CHECK-NEXT:     for k in 1..11i32 {
+// CHECK-NEXT:     for k in 1..(10i32 + 1) {
 // CHECK-NEXT:         acc += LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]) / __slate_f80_from_i32(k);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

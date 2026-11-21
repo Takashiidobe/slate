@@ -46,7 +46,7 @@ int main(void) {
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut middle: *const i32 = unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:     .wrapping_offset(2i32 as isize) as *const i32;
+// CHECK-NEXT:     .wrapping_offset(((8i32 - 2i32) / 3i32) as isize) as *const i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
@@ -54,7 +54,7 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut end: *const i32 = unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:     .wrapping_offset(5i32 as isize) as *const i32;
+// CHECK-NEXT:     .wrapping_offset((2i32 * 3i32 - 1i32) as isize) as *const i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn twice(x: i32) -> i32 {
 // CHECK-NEXT:     x * 2
@@ -73,7 +73,7 @@ int main(void) {
 // CHECK-NEXT:     [
 // CHECK-NEXT:         Entry {
 // CHECK-NEXT:             value: unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:                 .wrapping_offset(1i32 as isize) as *const i32,
+// CHECK-NEXT:                 .wrapping_offset((7i32 - 6i32) as isize) as *const i32,
 // CHECK-NEXT:             callback: Some(twice),
 // CHECK-NEXT:             opaque: unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *mut ()>(
@@ -84,7 +84,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:         Entry {
 // CHECK-NEXT:             value: unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:                 .wrapping_offset(3i32 as isize) as *const i32,
+// CHECK-NEXT:                 .wrapping_offset((1i32 + 2i32) as isize) as *const i32,
 // CHECK-NEXT:             callback: unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // CHECK-NEXT:                     abs as *const (),
@@ -116,7 +116,7 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [Entry; 2] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = Entry {
 // CHECK-NEXT:             value: unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:                 .wrapping_offset(3i32 as isize) as *const i32,
+// CHECK-NEXT:                 .wrapping_offset((9i32 / 3i32) as isize) as *const i32,
 // CHECK-NEXT:             callback: Some(twice),
 // CHECK-NEXT:             opaque: unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *mut ()>(
@@ -128,7 +128,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
 // CHECK-NEXT:     tail: unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
-// CHECK-NEXT:         .wrapping_offset(4i32 as isize) as *const i32,
+// CHECK-NEXT:         .wrapping_offset((1i32 << 2i32) as isize) as *const i32,
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

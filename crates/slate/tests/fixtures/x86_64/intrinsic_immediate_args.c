@@ -17,9 +17,7 @@ int main(void) { return 0; }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "rtm")]
 // CHECK-NEXT: unsafe fn abort_transaction() {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __slate_intrinsic_75bfe883d88838c4(const { ((3 as i32) + (4 as i32)) as i8 })
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { __slate_intrinsic_75bfe883d88838c4(const { (3i32 + 4i32) as i8 }) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

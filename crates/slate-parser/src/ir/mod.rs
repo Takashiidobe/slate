@@ -7,7 +7,7 @@ mod declarations;
 mod macro_strip;
 pub use macro_strip::{strip_all_macro_structure, strip_all_macro_structure_in_value};
 mod visit;
-pub use visit::{Visitor, walk_body, walk_body_with_macros, walk_value};
+pub use visit::{Visitor, walk_body, walk_body_with_macros, walk_value, walk_value_with_macros};
 mod module;
 mod module_print;
 mod names;

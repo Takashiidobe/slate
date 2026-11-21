@@ -428,7 +428,7 @@ again:
 // CHECK-NEXT:             ((*{
 // CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = mallinfo2();
 // CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:             }).uordblks > start.wrapping_add(1048576u64)) as i32,
+// CHECK-NEXT:             }).uordblks > start.wrapping_add((1i32 << 20i32) as u64)) as i32,
 // CHECK-NEXT:         );
 // CHECK-NEXT:         fflush(core::ptr::null_mut());
 // CHECK-NEXT:         return 0;

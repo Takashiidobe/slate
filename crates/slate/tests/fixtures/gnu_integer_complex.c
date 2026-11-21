@@ -17,7 +17,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut global_value: num_complex::Complex<i32> = num_complex::Complex {
-// CHECK-NEXT:     re: 17i32,
+// CHECK-NEXT:     re: 17i32 + 0i32,
 // CHECK-NEXT:     im: 19i32,
 // CHECK-NEXT: };
 // CHECK-EMPTY:

@@ -85,7 +85,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     for i in -8..9i32 {
+// CHECK-NEXT:     for i in -8..(8i32 + 1) {
 // CHECK-NEXT:         print!("{} ", classify(i));
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }

@@ -106,7 +106,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.1f %.1f\n".as_ptr(),
 // CHECK-NEXT:             9223372036854775807i64 as f64,
-// CHECK-NEXT:             18446744073709551615u64 as f64,
+// CHECK-NEXT:             9223372036854775807u64.wrapping_mul(2u64).wrapping_add(1) as f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -124,7 +124,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.1f %.1f\n".as_ptr(),
 // CHECK-NEXT:             4294967295u32 as f64,
-// CHECK-NEXT:             -2147483648i32 as f64,
+// CHECK-NEXT:             (-2147483647i32 - 1i32) as f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

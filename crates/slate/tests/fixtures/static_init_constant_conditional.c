@@ -67,9 +67,14 @@ int main(void) {
 // CHECK-NEXT:     search_length: u64,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static descriptor: [u8; 4] = [18, 7, 66, 9];
+// CHECK-NEXT: static descriptor: [u8; 4] = [
+// CHECK-NEXT:     18,
+// CHECK-NEXT:     ((7i32 / 10i32 << 4i32) + 7i32 % 10i32) as u8,
+// CHECK-NEXT:     ((42i32 / 10i32 << 4i32) + 42i32 % 10i32) as u8,
+// CHECK-NEXT:     9,
+// CHECK-NEXT: ];
 // CHECK-EMPTY:
-// CHECK-NEXT: static log_sizes: [i32; 3] = [0, 6, 12];
+// CHECK-NEXT: static log_sizes: [i32; 3] = [0, 63i32 - 57i32, 63i32 - 51i32];
 // CHECK-EMPTY:
 // CHECK-NEXT: static headers: __SlateAlign16<[header; 2]> = __SlateAlign16(
 // CHECK-NEXT:     [

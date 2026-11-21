@@ -105,7 +105,7 @@ pub(in crate::backend) fn apply_local(
     for item in &mut program.items {
         apply_item(item, &passes);
     }
-    rules::const_fold::fold_initializers(&mut program.items);
+    rules::literal_casts::bare_initializers(&mut program.items);
     prelude::inject(program, target);
     let place_parameters = macro_templates::finish_holes(program);
     if program.runtime.has_std() {

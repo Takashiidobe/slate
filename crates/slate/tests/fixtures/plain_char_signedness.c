@@ -18,7 +18,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     let c: i8 = -56i8;
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:     let c: i8 = 200i32 as i8;
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     let c: u8 = 200;
 // CHECK-NEXT:     println!("{} {}", is_negative(c), c as i32);
 // CHECK-NEXT:     0
