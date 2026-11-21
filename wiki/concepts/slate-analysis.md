@@ -2,6 +2,7 @@
 
 <!-- toc -->
 - [Boundary](#boundary)
+- [Where a rewrite belongs](#where-a-rewrite-belongs)
 - [Keys](#keys)
 - [Call resolution](#call-resolution)
 - [Scaling rule](#scaling-rule)
@@ -9,6 +10,7 @@
 - [Effect summaries](#effect-summaries)
 - [Def-use](#def-use)
   - [Counted loops](#counted-loops)
+  - [Inline temporaries](#inline-temporaries)
 - [Shadow mode](#shadow-mode)
 - [Related](#related)
 <!-- /toc -->
@@ -43,6 +45,25 @@ ir::Module per unit -> Program (one target) -> analyze -> Facts
   for the program.
 - C semantics the checker needs stay in slate-parser's sema. Facts that only
   idiomization needs move here (`slate-8ge7.8`): `counted_loops` was the first.
+
+## Where a rewrite belongs
+
+The transform stage (`slate-8ge7.24`) puts IR -> IR canonicalizations ahead of
+the facts: analyses the transforms need, then transforms, then the fact
+analyses once, then lowering. The goal is a simpler lowerer, not optimization:
+every transform leaves IR a C programmer could have written. Decide by what
+the rewrite's precondition reads:
+
+| Precondition | Place | Examples |
+| --- | --- | --- |
+| C meaning only, and the result is still C | IR transform | const-fold, cast and truth canonicalization, dead code, decl-init |
+| C meaning, but the result is a Rust form | fact; lowering picks the form | pointer capability, counted loops, `mut`, libc callees |
+| One IR node already decides the spelling | lowering emits it directly | `+=`, `while`, `.add()`, `.is_null()`, `c""` |
+| The Rust form the lowerer chose | Rust rule after lowering | `unsafe` scoping, `MaybeUninit` slots, Rust scopes |
+
+A rule never sits half in each layer: port it whole or leave it. The
+2026-11-21 triage of `backend/engine/rules` (`slate-8ge7.24.3`) assigns each
+rule a place and a port bead.
 
 ## Keys
 
