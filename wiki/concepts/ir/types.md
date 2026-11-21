@@ -209,9 +209,11 @@ The shown type is concrete and target-resolved; the C type is metadata
   __attribute__((packed, aligned))` marks nothing, since `a` sits at offset 0
   of a 16-aligned record. An unmarked member is aligned for its type whenever
   its record is, so an aligned reference may be formed along a path of
-  unmarked members. Lowering packs a record when a member is underaligned,
-  and also when x87 `long double`'s Rust type is aligned above C's (16 vs 8
-  under `-malign-double`, `slate-yar4.59`).
+  unmarked members. Lowering packs a record exactly when a member is
+  underaligned; any other Rust/C mismatch is an invalid-IR error. x87 `long
+  double` lowers to a per-unit `LongDouble` aligned to the target's C
+  alignment (8 under clang `-malign-double` on x86_64), so it never forces
+  packing.
   `tools/check_record_layout.py` diffs each target's layout fixture against
   clang's record-layout dump.
 - ARM lets zero-width bit-fields raise record alignment, packed records

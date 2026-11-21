@@ -245,15 +245,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: // { dg-options "-malign-double" }
-// CHECK-NEXT: #[repr(C, packed(8))]
+// CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct extended {
 // CHECK-NEXT:     c: i8,
-// CHECK-NEXT:     x: core::mem::MaybeUninit<[u64; 2]>,
+// CHECK-NEXT:     x: LongDouble,
 // CHECK-NEXT:     tail: i32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[repr(C, packed(8))]
+// CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct complex_extended {
 // CHECK-NEXT:     c: i8,
@@ -268,10 +268,7 @@ int main(void) {
 // CHECK-NEXT:     let mut e: extended = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: extended = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].c = 1i8;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (core::ptr::addr_of_mut!([[T_0]].x) as *mut LongDouble)
-// CHECK-NEXT:                 .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]));
-// CHECK-NEXT:         }
+// CHECK-NEXT:         [[T_0]].x = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]);
 // CHECK-NEXT:         [[T_0]].tail = 3i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
@@ -302,7 +299,7 @@ int main(void) {
 // CHECK-NEXT:             core::mem::align_of::<extended>() as u64,
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(e) as *const (),
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(e.x) as *mut LongDouble) as *const (),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(e.x) as *const (),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(e) as *const (),
@@ -322,36 +319,25 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(c"%zu %zu\n".as_ptr(), 8u64, core::mem::size_of::<LongDouble>() as u64)
+// CHECK-NEXT:         printf(
+// CHECK-NEXT:             c"%zu %zu\n".as_ptr(),
+// CHECK-NEXT:             core::mem::align_of::<LongDouble>() as u64,
+// CHECK-NEXT:             core::mem::size_of::<LongDouble>() as u64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %g %d %d %g %g\n".as_ptr(),
 // CHECK-NEXT:             e.c as i32,
-// CHECK-NEXT:             __slate_f80_to_f64(
-// CHECK-NEXT:                 (core::ptr::addr_of!(e.x) as *const LongDouble).read_unaligned(),
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             __slate_f80_to_f64(e.x),
 // CHECK-NEXT:             e.tail,
 // CHECK-NEXT:             z.c as i32,
 // CHECK-NEXT:             __slate_f80_to_f64(z.z.re),
 // CHECK-NEXT:             __slate_f80_to_f64(z.z.im),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: LongDouble = unsafe {
-// CHECK-NEXT:         (core::ptr::addr_of!(e.x) as *const LongDouble).read_unaligned()
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (core::ptr::addr_of_mut!(e.x) as *mut LongDouble)
-// CHECK-NEXT:             .write_unaligned([[V_0]] + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]));
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%g\n".as_ptr(),
-// CHECK-NEXT:             __slate_f80_to_f64(
-// CHECK-NEXT:                 (core::ptr::addr_of!(e.x) as *const LongDouble).read_unaligned(),
-// CHECK-NEXT:             ),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     e.x += LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
+// CHECK-NEXT:     unsafe { printf(c"%g\n".as_ptr(), __slate_f80_to_f64(e.x)) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
