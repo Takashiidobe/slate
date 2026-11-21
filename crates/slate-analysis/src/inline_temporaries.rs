@@ -30,9 +30,6 @@ pub(crate) fn analyze(
         return;
     };
     let def_use = DefUse::of(body);
-    if !def_use.ordered() {
-        return;
-    }
     let mut locals = HashSet::new();
     if let Parameters::Prototype { fixed, .. } = &function.parameters {
         locals.extend(

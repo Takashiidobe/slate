@@ -25,7 +25,6 @@ pub(crate) struct DefUse {
     cases: Vec<(u32, BindingId)>,
     labels: Vec<u32>,
     opaque: Vec<u32>,
-    ordered: bool,
     position: u32,
     next: u32,
 }
@@ -39,7 +38,6 @@ impl DefUse {
             cases: Vec::new(),
             labels: Vec::new(),
             opaque: Vec::new(),
-            ordered: true,
             position: 0,
             next: 0,
         };
@@ -51,10 +49,6 @@ impl DefUse {
         self.uses
             .get(&binding)
             .is_some_and(|uses| uses.iter().any(|(_, access)| *access == Access::Escape))
-    }
-
-    pub fn ordered(&self) -> bool {
-        self.ordered
     }
 
     pub fn single_read(&self, binding: BindingId) -> bool {
@@ -129,12 +123,9 @@ impl DefUse {
             | Statement::Return(None)
             | Statement::Break(_)
             | Statement::Continue(_)
-            | Statement::SehLeave(_) => {}
-            Statement::Goto(_) => self.ordered = false,
-            Statement::ComputedGoto(value) => {
-                self.ordered = false;
-                self.value(value);
-            }
+            | Statement::SehLeave(_)
+            | Statement::Goto(_) => {}
+            Statement::ComputedGoto(value) => self.value(value),
             Statement::Temporary {
                 ty, initializer, ..
             } => {
@@ -255,7 +246,6 @@ impl DefUse {
             }
             Statement::Label { body, .. } => {
                 self.labels.push(self.position);
-                self.ordered = false;
                 self.statements(body);
             }
             Statement::SehTry { body, handler, .. } => {
@@ -485,8 +475,8 @@ impl DefUse {
                     self.statements(body);
                 }
             }
-            ValueKind::LabelAddress(_) => self.ordered = false,
-            ValueKind::Fence { .. }
+            ValueKind::LabelAddress(_)
+            | ValueKind::Fence { .. }
             | ValueKind::OldValue
             | ValueKind::Constant(_)
             | ValueKind::LayoutQuery { .. }

@@ -25,8 +25,7 @@ int main(void) {
 // CHECK-NEXT:         match labels.0[*position as usize] as usize {
 // CHECK-NEXT:             4 => {
 // CHECK-NEXT:                 loop {
-// CHECK-NEXT:                     let [[V_0:__v[0-9]+]]: *mut i32 = position;
-// CHECK-NEXT:                     position = [[V_0]].add(1);
+// CHECK-NEXT:                     position = position.add(1);
 // CHECK-NEXT:                     match labels.0[*position as usize] as usize {
 // CHECK-NEXT:                         4 => {}
 // CHECK-NEXT:                         5 => {

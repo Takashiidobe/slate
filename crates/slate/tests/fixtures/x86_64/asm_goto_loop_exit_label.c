@@ -80,8 +80,7 @@ int main(void) {
 // CHECK-NEXT:                 if __slate_asm_target {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     let [[V_0:__v[0-9]+]]: u64 = *[[SLATE_SLOT_0]];
-// CHECK-NEXT:                     *[[SLATE_SLOT_0]] = [[V_0]].wrapping_add(1);
+// CHECK-NEXT:                     *[[SLATE_SLOT_0]] = (*[[SLATE_SLOT_0]]).wrapping_add(1);
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:             region_end();

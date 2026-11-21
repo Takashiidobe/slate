@@ -186,13 +186,12 @@ int main(void) {
 // CHECK-NEXT:             if aligned((*[[SLATE_SLOT_0]]).as_mut_ptr() as *const (), 16u64) == 0 {
 // CHECK-NEXT:                 return -1;
 // CHECK-NEXT:             } else {
-// CHECK-NEXT:                 let [[V_4]]: u64 = sum_vectors(
+// CHECK-NEXT:                 let [[V_1]]: u64 = sum_vectors(
 // CHECK-NEXT:                     (*[[SLATE_SLOT_0]]).as_mut_ptr() as *const u64,
 // CHECK-NEXT:                     2i32,
 // CHECK-NEXT:                 );
-// CHECK-NEXT:                 let [[V_3]]: *mut u64 = ((*[[SLATE_SLOT_0]]).as_mut_ptr() as *mut u64).add(0);
-// CHECK-NEXT:                 let [[V_2]]: u64 = *[[V_3]];
-// CHECK-NEXT:                 *[[V_3]] = [[V_2]].wrapping_add([[V_4]]);
+// CHECK-NEXT:                 let [[V_0]]: *mut u64 = ((*[[SLATE_SLOT_0]]).as_mut_ptr() as *mut u64).add(0);
+// CHECK-NEXT:                 *[[V_0]] = unsafe { *[[V_0]] }.wrapping_add([[V_1]]);
 // CHECK-NEXT:                 let [[V_5:__v[0-9]+]]: i32 = count + 1;
 // CHECK-NEXT:                 count = [[V_5]];
 // CHECK-NEXT:                 if [[V_5]] >= n {

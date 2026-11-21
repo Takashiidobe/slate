@@ -799,6 +799,14 @@ impl FunctionLowerer<'_, '_> {
         cleanups.sort_by_key(|variable| variable.id.0);
         cleanups.dedup_by_key(|variable| variable.id);
         let (entry, blocks) = graph.blocks(entry);
+        for node in blocks.iter().flatten() {
+            if let Node::Statement(statement, _) = node {
+                self.record_inlined(&statement.value);
+            }
+        }
+        graph
+            .locals
+            .retain(|(id, ..)| !self.inlined.contains_key(id));
         self.dispatching = true;
         for (id, ty, _) in &graph.locals {
             if graph.byref.contains(id) {
@@ -913,7 +921,9 @@ impl FunctionLowerer<'_, '_> {
                         diverted = true;
                     }
                     if !diverted {
-                        last_local = declared_local(&statement.value).map(|(id, _)| id);
+                        last_local = declared_local(&statement.value)
+                            .map(|(id, _)| id)
+                            .filter(|id| !self.inlined.contains_key(id));
                     }
                     if let Some(id) = last_local.filter(|_| !diverted) {
                         let start = body
@@ -941,6 +951,7 @@ impl FunctionLowerer<'_, '_> {
                     Node::Jump(next) => jump(next),
                     Node::Statement(statement, next) => {
                         let mut body = match declared_local(&statement.value) {
+                            Some((id, _)) if self.inlined.contains_key(&id) => Vec::new(),
                             Some(_)
                                 if let ir::Statement::Let(variable) = &statement.value
                                     && variable.byref =>

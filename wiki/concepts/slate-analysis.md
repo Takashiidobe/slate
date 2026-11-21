@@ -236,10 +236,11 @@ benchmark showed no analysis that SSA would make asymptotically cheaper.
 - Each loop and switch records its body's range, so "inside this loop" is a
   range test. Labels, asm, SEH `__try` and OpenMP regions, and every `case` with
   its switch's position, are recorded to reject unstructured regions.
-- `ordered` is false when the function has a `goto`, a computed goto, a label
-  or a label address. Position order is execution order only for ordered
-  functions; queries that need order (`slate-8ge7.9` inline_temps) must treat
-  an unordered function as having every use overlap.
+- Position order is execution order only within a range with no label, case,
+  or jump in it. There is no function-wide order or CFG (`slate-8ge7.22`): an
+  ordering query proves its range is straight-line (`structured`, or a sibling
+  scan that rejects labels, cases and jumps), so gotos elsewhere in the
+  function cannot enter or leave it.
 
 ### Counted loops
 
@@ -260,7 +261,7 @@ clones of IR values, so a macro body keeps its `macro_arg` holes; the
 `__v<n>`) that lowering does not declare, lowering its initializer at the one
 read instead. A temporary qualifies when all of these hold:
 
-- the function is `ordered`; the temporary has an initializer, is not
+- the temporary has an initializer, is not
   `unsequenced`, has the initializer's type, has exactly one `Read`, and no
   record field type captures it;
 - the read is in one of the next 32 sibling statements (or the list's tail
@@ -275,9 +276,11 @@ read instead. A temporary qualifies when all of these hold:
 
 Lowering records the initializer in `FunctionLowerer::inlined`, emits no
 statement (so engine rules like `structure_dispatch` see the same shape), and
-substitutes it at the `Read`. Temporaries the lowerer itself makes (`__t<n>`)
-are not covered (`slate-8ge7.9.2`); the engine's `inline_temps::late` still
-folds those and the temporaries of unordered functions (`slate-8ge7.22`).
+substitutes it at the `Read`. The goto state machine (`lower_dispatch`) records
+every inlined temporary before lowering any block, because block order is not
+source order, and gives them no slot. Temporaries the lowerer itself makes
+(`__t<n>`) are not covered (`slate-8ge7.9.2`); the engine's
+`inline_temps::late` still folds those.
 
 ## Shadow mode
 

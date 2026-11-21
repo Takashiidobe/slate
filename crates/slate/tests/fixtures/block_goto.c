@@ -418,8 +418,7 @@ again:
 // CHECK-NEXT:         sum = 0;
 // CHECK-NEXT:         i = 0;
 // CHECK-NEXT:         while i < 1000 {
-// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: i32 = redeclare(100i32);
-// CHECK-NEXT:             sum += [[V_1]] as i64;
+// CHECK-NEXT:             sum += redeclare(100i32) as i64;
 // CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -447,12 +446,12 @@ again:
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_0_captures>(__block)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let n: *mut __slate_blocks::Byref<i32> = __captures.c0;
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = unsafe { *__slate_blocks::value(n) };
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = [[V_2]] + 1;
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = unsafe { *__slate_blocks::value(n) };
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = [[V_1]] + 1;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_blocks::value(n) = [[V_3]];
+// CHECK-NEXT:         *__slate_blocks::value(n) = [[V_2]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_3]]
+// CHECK-NEXT:     [[V_2]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static __slate_block_0_descriptor: __slate_blocks::Descriptor = __slate_blocks::descriptor::<__slate_block_0_captures>(
@@ -465,12 +464,12 @@ again:
 // CHECK-NEXT:     c0: *mut __slate_blocks::Byref<*mut core::ffi::c_void>,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "C-unwind" fn __slate_block_1(__block: *mut core::ffi::c_void, [[V_4:__v[0-9]+]]: i32) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn __slate_block_1(__block: *mut core::ffi::c_void, [[V_3:__v[0-9]+]]: i32) -> i32 {
 // CHECK-NEXT:     let __captures: __slate_block_1_captures = unsafe {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_1_captures>(__block)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let depth: *mut __slate_blocks::Byref<*mut core::ffi::c_void> = __captures.c0;
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = if [[V_4]] != 0 {
+// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = if [[V_3]] != 0 {
 // CHECK-NEXT:         (unsafe {
 // CHECK-NEXT:             let [[T_0]] = *__slate_blocks::value(depth);
 // CHECK-NEXT:             unsafe {
@@ -478,12 +477,12 @@ again:
 // CHECK-NEXT:                         __slate_blocks::invoke([[T_0]]),
 // CHECK-NEXT:                     )
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 .unwrap()([[T_0]], [[V_4]] - 1)
+// CHECK-NEXT:                 .unwrap()([[T_0]], [[V_3]] - 1)
 // CHECK-NEXT:         }) + 1
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         0
 // CHECK-NEXT:     };
-// CHECK-NEXT:     [[V_5]]
+// CHECK-NEXT:     [[V_4]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static __slate_block_1_descriptor: __slate_blocks::Descriptor = __slate_blocks::descriptor::<__slate_block_1_captures>(
@@ -501,12 +500,12 @@ again:
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_2_captures>(__block)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let n: *mut __slate_blocks::Byref<i32> = __captures.c0;
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = unsafe { *__slate_blocks::value(n) };
-// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = [[V_6]] + 1;
+// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = unsafe { *__slate_blocks::value(n) };
+// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = [[V_5]] + 1;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_blocks::value(n) = [[V_7]];
+// CHECK-NEXT:         *__slate_blocks::value(n) = [[V_6]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_7]]
+// CHECK-NEXT:     [[V_6]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static __slate_block_2_descriptor: __slate_blocks::Descriptor = __slate_blocks::descriptor::<__slate_block_2_captures>(

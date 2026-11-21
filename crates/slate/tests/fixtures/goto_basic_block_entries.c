@@ -132,9 +132,7 @@ int main(void) {
 // CHECK-NEXT:                             break;
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                     }
-// CHECK-NEXT:                     let [[V_1:__v[0-9]+]]: i32 = sum
-// CHECK-NEXT:                         + core::ptr::read_volatile(core::ptr::addr_of!(observed));
-// CHECK-NEXT:                     sum = [[V_1]];
+// CHECK-NEXT:                     sum += core::ptr::read_volatile(core::ptr::addr_of!(observed));
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 steps += 1;
 // CHECK-NEXT:                 i += 1;

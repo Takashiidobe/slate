@@ -292,9 +292,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn with_goto__add(__slate_capture_2: *mut i32, v: i32) {
+// CHECK-NEXT: fn with_goto__add(__slate_capture_1: *mut i32, v: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_capture_2 = *__slate_capture_2 + v;
+// CHECK-NEXT:         *__slate_capture_1 = *__slate_capture_1 + v;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

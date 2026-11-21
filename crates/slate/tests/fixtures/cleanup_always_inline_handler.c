@@ -70,21 +70,21 @@ int main(void) {
 // CHECK-NEXT: fn skipped(n: i32) -> i32 {
 // CHECK-NEXT:     let mut held: core::mem::MaybeUninit<i32> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut i32 = core::ptr::addr_of_mut!(held) as *mut i32;
-// CHECK-NEXT:     let __slate_cleanup_ptr_2 = [[SLATE_SLOT_0]];
-// CHECK-NEXT:     let __slate_cleanup_armed_2 = core::cell::Cell::new(false);
-// CHECK-NEXT:     let __slate_cleanup_2 = ::slate_support::Guard(
+// CHECK-NEXT:     let __slate_cleanup_ptr_0 = [[SLATE_SLOT_0]];
+// CHECK-NEXT:     let __slate_cleanup_armed_0 = core::cell::Cell::new(false);
+// CHECK-NEXT:     let __slate_cleanup_0 = ::slate_support::Guard(
 // CHECK-NEXT:         &mut || {
-// CHECK-NEXT:             if __slate_cleanup_armed_2.get() {
-// CHECK-NEXT:                 unsafe { unlock(__slate_cleanup_ptr_2 as *mut _) };
+// CHECK-NEXT:             if __slate_cleanup_armed_0.get() {
+// CHECK-NEXT:                 unsafe { unlock(__slate_cleanup_ptr_0 as *mut _) };
 // CHECK-NEXT:             }
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         if n <= 2 {
 // CHECK-NEXT:             core::ptr::write([[SLATE_SLOT_0]], n);
-// CHECK-NEXT:             __slate_cleanup_armed_2.set(true);
+// CHECK-NEXT:             __slate_cleanup_armed_0.set(true);
 // CHECK-NEXT:             released = released + 100;
-// CHECK-NEXT:             __slate_cleanup_armed_2.set(false);
+// CHECK-NEXT:             __slate_cleanup_armed_0.set(false);
 // CHECK-NEXT:             unlock([[SLATE_SLOT_0]] as *mut _);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         return released;
