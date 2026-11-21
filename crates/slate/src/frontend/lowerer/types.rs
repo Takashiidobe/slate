@@ -317,13 +317,19 @@ impl FunctionLowerer<'_, '_> {
                 query,
                 amount: rust::TargetAmount(amount),
             };
-            return Ok(Expr::Cast {
-                expr: Box::new(if self.const_layout {
-                    Expr::ConstBlock(Box::new(query))
-                } else {
-                    query
-                }),
-                ty: self.lower_value_type(value)?,
+            let query = if self.const_layout {
+                Expr::ConstBlock(Box::new(query))
+            } else {
+                query
+            };
+            let ty = self.lower_value_type(value)?;
+            return Ok(if ty == rust::Type::Prim(rust::Prim::Usize) {
+                query
+            } else {
+                Expr::Cast {
+                    expr: Box::new(query),
+                    ty,
+                }
             });
         }
         let mut literal = self.lower_number(&ir::Number::Integer(amount.into()), &value.ty)?;

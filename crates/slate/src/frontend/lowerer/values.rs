@@ -41,6 +41,26 @@ pub(super) fn odd_width(ty: &ir::Type) -> Option<(u32, bool, Prim)> {
     Some((width, signed, container))
 }
 
+fn thin_pointer(ty: &rust::Type) -> bool {
+    matches!(
+        ty,
+        rust::Type::Ptr { inner, .. } if !matches!(
+            **inner,
+            rust::Type::Slice(_) | rust::Type::Str | rust::Type::VaList | rust::Type::Variadic
+        )
+    )
+}
+
+fn integer_prim(ty: &rust::Type) -> bool {
+    matches!(
+        ty,
+        rust::Type::Prim(prim) if !matches!(
+            prim.resolved(),
+            Prim::Bool | Prim::F16 | Prim::F32 | Prim::F64 | Prim::F128
+        )
+    )
+}
+
 pub(super) fn bit_count_method(builtin: &str) -> Option<&'static str> {
     match builtin {
         "__builtin_clz" | "__builtin_clzl" | "__builtin_clzll" | "__builtin_clzg" => {
@@ -1294,8 +1314,10 @@ impl FunctionLowerer<'_, '_> {
             ValueKind::Convert {
                 kind: ir::ConversionKind::Reinterpret,
                 operand,
+                reason,
                 ..
-            } if operand.ty == value.ty
+            } if *reason != ir::ConversionReason::Explicit
+                && operand.ty == value.ty
                 && self.lower_value_type(operand)? == self.lower_value_type(value)? =>
             {
                 self.lower_value(operand)?
@@ -1316,7 +1338,39 @@ impl FunctionLowerer<'_, '_> {
                     Some((_, _, container)) => rust::Type::Prim(container),
                     None => self.lower_type(&operand.ty)?,
                 };
-                let expr = self.lower_value(operand)?;
+                let mut expr = self.lower_value(operand)?;
+                if *kind == ir::ConversionKind::PointerCast
+                    && matches!(operand.node.value, ValueKind::ArrayDecay { .. })
+                    && !self.tables.macro_values.contains_key(&operand.node.id)
+                    && let Expr::Cast { ty: decayed, .. } = &mut expr
+                    && thin_pointer(decayed)
+                {
+                    let target = self.lower_value_type(value)?;
+                    if thin_pointer(&target) {
+                        *decayed = target;
+                        return Ok(expr);
+                    }
+                }
+                if matches!(
+                    kind,
+                    ir::ConversionKind::Widen
+                        | ir::ConversionKind::Truncate
+                        | ir::ConversionKind::Reinterpret
+                ) && matches!(operand.node.value, ValueKind::LayoutQuery { .. })
+                    && !self.tables.macro_values.contains_key(&operand.node.id)
+                    && odd_width(self.tables.resolve_type(&value.ty)).is_none()
+                    && let Expr::Cast {
+                        expr: query,
+                        ty: queried,
+                    } = &mut expr
+                    && matches!(**query, Expr::LayoutQuery { .. } | Expr::ConstBlock(_))
+                {
+                    let target = self.lower_value_type(value)?;
+                    if integer_prim(queried) && integer_prim(&target) {
+                        *queried = target;
+                        return Ok(expr);
+                    }
+                }
                 if odd_width(self.tables.resolve_type(&value.ty)).is_none() {
                     return Ok(convert_function_pointer(
                         from,
@@ -1333,40 +1387,48 @@ impl FunctionLowerer<'_, '_> {
                 };
                 let Some(bytes) = bytes else {
                     let array = self.lower_place(place)?;
-                    let decayed = Expr::Cast {
-                        expr: Box::new(
-                            if self.tables.place_is_static(place)
-                                || self.place_in_packed(place)
-                                || matches!(
-                                    self.tables.resolve_type(&place.ty),
-                                    ir::Type::Array { length: None, .. }
-                                )
-                            {
-                                Expr::AddrOf {
-                                    mutable: !matches!(
-                                        self.tables.resolve_type(&value.ty),
-                                        ir::Type::Pointer { is_const: true, .. }
-                                    ),
-                                    expr: Box::new(array),
-                                }
-                            } else {
-                                Expr::MethodCall {
-                                    recv: Box::new(array),
-                                    method: if self.shared_root(place)
-                                        || matches!(
-                                            value.ty,
-                                            ir::Type::Pointer { is_const: true, .. }
-                                        ) {
-                                        "as_ptr"
-                                    } else {
-                                        "as_mut_ptr"
-                                    }
-                                    .into(),
-                                    args: Vec::new(),
-                                }
-                            },
-                        ),
-                        ty: self.lower_value_type(value)?,
+                    let ty = self.lower_value_type(value)?;
+                    let decayed = if self.tables.place_is_static(place)
+                        || self.place_in_packed(place)
+                        || matches!(
+                            self.tables.resolve_type(&place.ty),
+                            ir::Type::Array { length: None, .. }
+                        ) {
+                        Expr::Cast {
+                            expr: Box::new(Expr::AddrOf {
+                                mutable: !matches!(
+                                    self.tables.resolve_type(&value.ty),
+                                    ir::Type::Pointer { is_const: true, .. }
+                                ),
+                                expr: Box::new(array),
+                            }),
+                            ty,
+                        }
+                    } else {
+                        let mutable = !self.shared_root(place)
+                            && !matches!(value.ty, ir::Type::Pointer { is_const: true, .. });
+                        let element = match self.tables.resolve_type(&place.ty) {
+                            ir::Type::Array { element, .. } => self.lower_type(element).ok(),
+                            _ => None,
+                        };
+                        let pointer = Expr::MethodCall {
+                            recv: Box::new(array),
+                            method: if mutable { "as_mut_ptr" } else { "as_ptr" }.into(),
+                            args: Vec::new(),
+                        };
+                        if element.is_some_and(|element| {
+                            ty == rust::Type::Ptr {
+                                mutable,
+                                inner: Box::new(element),
+                            }
+                        }) {
+                            pointer
+                        } else {
+                            Expr::Cast {
+                                expr: Box::new(pointer),
+                                ty,
+                            }
+                        }
                     };
                     return Ok(if self.place_is_unsafe(place) {
                         Expr::Unsafe(Box::new(rust::Block {

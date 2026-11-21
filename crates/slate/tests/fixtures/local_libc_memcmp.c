@@ -38,8 +38,8 @@ int main(void) {
 // CHECK-NEXT:         sb += b[i as usize] as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let order: i32 = unsafe {
-// CHECK-NEXT:         a[0usize..(3u64 as usize) as usize].cmp(&b[0usize..(3u64 as usize) as usize])
-// CHECK-NEXT:             as i32
+// CHECK-NEXT:         (a[0usize..(3u64 as usize) as usize].cmp(&b[0usize..(3u64 as usize) as usize])
+// CHECK-NEXT:             as i32) as i32
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let sign: i32 = ((order > 0) as i32) - ((order < 0) as i32);
 // CHECK-NEXT:     sign * 1000 + (sa - sb)

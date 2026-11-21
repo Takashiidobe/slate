@@ -418,8 +418,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn recursive_alloca(depth: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
-// CHECK-NEXT:     let cell: *mut i32 = (__slate_alloca::alloca(core::mem::size_of::<i32>(), 16usize)
-// CHECK-NEXT:         as *mut ()) as *mut i32;
+// CHECK-NEXT:     let cell: *mut i32 = (__slate_alloca::alloca(
+// CHECK-NEXT:         (core::mem::size_of::<i32>() as u64) as usize,
+// CHECK-NEXT:         16usize,
+// CHECK-NEXT:     ) as *mut ()) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *cell = depth;
 // CHECK-NEXT:     }
@@ -474,7 +476,7 @@ int main(void) {
 // CHECK-NEXT:     let __slate_printf_arg0 = branch_alloca(2i32, argv.as_mut_ptr() as *const i32, 5i32);
 // CHECK-NEXT:     let __slate_printf_arg1 = branch_alloca(2i32, argv.as_mut_ptr() as *const i32, 1i32);
 // CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);
-// CHECK-NEXT:     let __slate_printf_arg0 = ternary_alloca(scratch.as_mut_ptr() as *mut i8, 8i32);
+// CHECK-NEXT:     let __slate_printf_arg0 = ternary_alloca(scratch.as_mut_ptr(), 8i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         __slate_printf_arg0,

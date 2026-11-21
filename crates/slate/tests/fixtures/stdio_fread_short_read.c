@@ -78,9 +78,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let n: u64 = unsafe { fread(buf.0.as_mut_ptr() as *mut (), 4u64, 4u64, g) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"%zu %s\n".as_ptr(), n, buf.0.as_mut_ptr() as *mut i8)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%zu %s\n".as_ptr(), n, buf.0.as_mut_ptr()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     unsafe { slate_support::fclose(g) };
 // CHECK-NEXT:     unsafe {

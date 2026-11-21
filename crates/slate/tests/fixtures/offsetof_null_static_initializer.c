@@ -100,28 +100,28 @@ int main(void) {
 // CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_0]].offset = (4usize as u64) as u16;
 // CHECK-NEXT:             [[T_0]].flags = 1u16;
-// CHECK-NEXT:             [[T_0]].name = (b"all\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:             [[T_0]].name = b"all\0".as_ptr() as *const i8;
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].offset = (5usize as u64) as u16;
 // CHECK-NEXT:             [[T_1]].flags = 0u16;
-// CHECK-NEXT:             [[T_1]].name = (b"error\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:             [[T_1]].name = b"error\0".as_ptr() as *const i8;
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_2]].offset = (10usize as u64) as u16;
 // CHECK-NEXT:             [[T_2]].flags = 0u16;
-// CHECK-NEXT:             [[T_2]].name = (b"nested\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:             [[T_2]].name = b"nested\0".as_ptr() as *const i8;
 // CHECK-NEXT:             [[T_2]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_3:__t[0-9]+]]: FlagDef = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_3]].offset = (16usize as u64) as u16;
 // CHECK-NEXT:             [[T_3]].flags = 2u16;
-// CHECK-NEXT:             [[T_3]].name = (b"tail\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:             [[T_3]].name = b"tail\0".as_ptr() as *const i8;
 // CHECK-NEXT:             [[T_3]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ],

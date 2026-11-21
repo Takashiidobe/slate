@@ -28,7 +28,7 @@ int main(void) {
 // CHECK-NEXT:     let fmt: *const i8 = c"%d-%d".as_ptr();
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         sprintf(
-// CHECK-NEXT:             (buf.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             buf.0.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:             fmt as *const core::ffi::c_char,
 // CHECK-NEXT:             3i32,
 // CHECK-NEXT:             4i32,

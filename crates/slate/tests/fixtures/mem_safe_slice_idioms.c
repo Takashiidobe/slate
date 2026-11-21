@@ -74,8 +74,8 @@ int main(void) {
 // CHECK-NEXT:     let mut src_e: [u8; 8] = [9, 9, 9, 9, 9, 9, 9, 9];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((src_e.as_mut_ptr() as *mut u8).add(2) as *const ())
-// CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((src_e.as_mut_ptr().add(2) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             ((dst_e.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (4u64 as usize) as usize,
 // CHECK-NEXT:         )

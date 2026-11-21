@@ -28,8 +28,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0i32..10i32 {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i64 = mix(i, -i as i16, 1000000000 * (i as i64));
-// CHECK-NEXT:         total += [[V_0]];
+// CHECK-NEXT:         total += mix(i, -i as i16, 1000000000 * (i as i64));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), total) };

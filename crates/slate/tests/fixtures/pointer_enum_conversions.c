@@ -67,7 +67,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn from_int(value: i32) -> u32 {
-// CHECK-NEXT:     value as u32
+// CHECK-NEXT:     (value as u32) as u32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn flip(value: i32) -> i32 {
@@ -82,7 +82,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", (color as u32) as i32);
 // CHECK-NEXT:     color = (color as u32).wrapping_add(1) as u32;
 // CHECK-NEXT:     println!("{}", color as u32);
-// CHECK-NEXT:     println!("{} {}", flip(-3i32) as i32, ((flip(3i32) as i32) < 0) as i32);
+// CHECK-NEXT:     println!("{} {}", flip(-3 as i32) as i32, ((flip(3i32) as i32) < 0) as i32);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u %d\n".as_ptr(), 4294967295u32, true as i32) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let wide: i64 = -3;
@@ -93,22 +93,20 @@ int main(void) {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16(
 // CHECK-NEXT:         [10i32, 20i32, 30i32, 40i32],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let p: *mut i32 = values.0.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:     let p: *mut i32 = values.0.as_mut_ptr();
 // CHECK-NEXT:     let address: u64 = p as u64;
 // CHECK-NEXT:     let back: *mut i32 = address as *mut i32;
 // CHECK-NEXT:     println!("{} {}", (back == p) as i32, unsafe { *back });
 // CHECK-NEXT:     println!("{}", ((unsafe { p.add(3) }) as u64).wrapping_sub(address) as i32);
 // CHECK-NEXT:     let signed_address: i64 = (unsafe { p.add(2) }) as i64;
 // CHECK-NEXT:     println!("{}", unsafe { *(signed_address as *mut i32) });
-// CHECK-NEXT:     let opaque: *mut () = (unsafe { (values.0.as_mut_ptr() as *mut i32).add(1) })
-// CHECK-NEXT:         as *mut ();
+// CHECK-NEXT:     let opaque: *mut () = (unsafe { values.0.as_mut_ptr().add(1) }) as *mut ();
 // CHECK-NEXT:     let read_only: *const i32 = opaque as *const i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(read_only as *mut i32) = *(read_only as *mut i32) + 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", values.0[1]);
-// CHECK-NEXT:     let bytes: *mut u8 = (unsafe { (values.0.as_mut_ptr() as *mut i32).add(0) })
-// CHECK-NEXT:         as *mut u8;
+// CHECK-NEXT:     let bytes: *mut u8 = (unsafe { values.0.as_mut_ptr().add(0) }) as *mut u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

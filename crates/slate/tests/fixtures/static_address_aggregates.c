@@ -80,7 +80,7 @@ int main(void) {
 // CHECK-NEXT:                     Some(twice),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
-// CHECK-NEXT:             name: (b"twice\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:             name: b"twice\0".as_ptr() as *const i8,
 // CHECK-NEXT:         },
 // CHECK-NEXT:         Entry {
 // CHECK-NEXT:             value: unsafe { core::ptr::addr_of_mut!(values.0) as *mut i32 }
@@ -99,7 +99,7 @@ int main(void) {
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
-// CHECK-NEXT:             name: (b"abs\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:             name: b"abs\0".as_ptr() as *const i8,
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ],
 // CHECK-NEXT: );
@@ -123,7 +123,7 @@ int main(void) {
 // CHECK-NEXT:                     Some(twice),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
-// CHECK-NEXT:             name: (b"group\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:             name: b"group\0".as_ptr() as *const i8,
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
@@ -152,10 +152,10 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %ld %d %d %s %d %d %d %d %d %d\n".as_ptr(),
 // CHECK-NEXT:             *middle,
-// CHECK-NEXT:             unsafe { end }
+// CHECK-NEXT:             (unsafe { end }
 // CHECK-NEXT:                 .offset_from(
 // CHECK-NEXT:                     (core::ptr::addr_of_mut!(values.0) as *mut i32) as *const i32,
-// CHECK-NEXT:                 ) as i64,
+// CHECK-NEXT:                 ) as i64) as i64,
 // CHECK-NEXT:             *entries.0[0].value,
 // CHECK-NEXT:             *entries.0[1].value,
 // CHECK-NEXT:             entries.0[0].name,

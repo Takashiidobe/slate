@@ -190,7 +190,7 @@ int main(void) {
 // CHECK-NEXT:                     (*[[SLATE_SLOT_0]]).as_mut_ptr() as *const u64,
 // CHECK-NEXT:                     2i32,
 // CHECK-NEXT:                 );
-// CHECK-NEXT:                 let [[V_0]]: *mut u64 = ((*[[SLATE_SLOT_0]]).as_mut_ptr() as *mut u64).add(0);
+// CHECK-NEXT:                 let [[V_0]]: *mut u64 = (*[[SLATE_SLOT_0]]).as_mut_ptr().add(0);
 // CHECK-NEXT:                 *[[V_0]] = unsafe { *[[V_0]] }.wrapping_add([[V_1]]);
 // CHECK-NEXT:                 let [[V_5:__v[0-9]+]]: i32 = count + 1;
 // CHECK-NEXT:                 count = [[V_5]];
@@ -245,7 +245,7 @@ int main(void) {
 // CHECK-NEXT:             sum_vectors(
 // CHECK-NEXT:                 (core::ptr::addr_of_mut!(table.0[5]) as *mut u64) as *const u64,
 // CHECK-NEXT:                 64i32,
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             ) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -256,7 +256,7 @@ int main(void) {
 // CHECK-NEXT:             sum_vectors(
 // CHECK-NEXT:                 (core::ptr::addr_of_mut!(small.0) as *mut u64) as *const u64,
 // CHECK-NEXT:                 2i32,
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             ) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

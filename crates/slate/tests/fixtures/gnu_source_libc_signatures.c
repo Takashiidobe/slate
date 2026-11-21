@@ -178,7 +178,7 @@ int main(void) {
 // CHECK-NEXT:     let message: *mut i8 = unsafe {
 // CHECK-NEXT:         strerror_r(
 // CHECK-NEXT:             slate_support::ENOENT as i32,
-// CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             buffer.0.as_mut_ptr(),
 // CHECK-NEXT:             core::mem::size_of::<[i8; 128]>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -202,7 +202,7 @@ int main(void) {
 // CHECK-NEXT:         "setitimer: {}",
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             setitimer(
-// CHECK-NEXT:                 (slate_support::ITIMER_REAL as i32) as u32,
+// CHECK-NEXT:                 ((slate_support::ITIMER_REAL as i32) as u32) as u32,
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(timer) as *const slate_support::itimerval,
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(old),
 // CHECK-NEXT:             )
@@ -212,10 +212,10 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"getitimer: %d %ld\n".as_ptr(),
 // CHECK-NEXT:             getitimer(
-// CHECK-NEXT:                 (slate_support::ITIMER_REAL as i32) as u32,
+// CHECK-NEXT:                 ((slate_support::ITIMER_REAL as i32) as u32) as u32,
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(old),
 // CHECK-NEXT:             ),
-// CHECK-NEXT:             old.it_value.tv_sec,
+// CHECK-NEXT:             old.it_value.tv_sec as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -223,7 +223,7 @@ int main(void) {
 // CHECK-NEXT:         "getrlimit: {}",
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             getrlimit(
-// CHECK-NEXT:                 (slate_support::RLIMIT_NOFILE as i32) as u32,
+// CHECK-NEXT:                 ((slate_support::RLIMIT_NOFILE as i32) as u32) as u32,
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(limit),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }
@@ -232,7 +232,7 @@ int main(void) {
 // CHECK-NEXT:         "setrlimit: {}",
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             setrlimit(
-// CHECK-NEXT:                 (slate_support::RLIMIT_NOFILE as i32) as u32,
+// CHECK-NEXT:                 ((slate_support::RLIMIT_NOFILE as i32) as u32) as u32,
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(limit) as *const slate_support::rlimit,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }
@@ -240,21 +240,24 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "getrusage: {}",
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             getrusage(slate_support::RUSAGE_SELF as i32, core::ptr::addr_of_mut!(usage))
+// CHECK-NEXT:             getrusage(
+// CHECK-NEXT:                 (slate_support::RUSAGE_SELF as i32) as i32,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(usage),
+// CHECK-NEXT:             )
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *slate_support::errno_location() = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { getpriority((slate_support::PRIO_PROCESS as i32) as u32, 0u32) };
+// CHECK-NEXT:     unsafe { getpriority(((slate_support::PRIO_PROCESS as i32) as u32) as u32, 0u32) };
 // CHECK-NEXT:     println!("getpriority errno: {}", unsafe { *slate_support::errno_location() });
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "setpriority: {}",
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             setpriority(
-// CHECK-NEXT:                 (slate_support::PRIO_PROCESS as i32) as u32,
+// CHECK-NEXT:                 ((slate_support::PRIO_PROCESS as i32) as u32) as u32,
 // CHECK-NEXT:                 0u32,
-// CHECK-NEXT:                 getpriority((slate_support::PRIO_PROCESS as i32) as u32, 0u32),
+// CHECK-NEXT:                 getpriority(((slate_support::PRIO_PROCESS as i32) as u32) as u32, 0u32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );

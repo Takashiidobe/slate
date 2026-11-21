@@ -72,7 +72,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "stp xzr, {1:x}, [{0:x}]",
 // CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(pair),
-// CHECK-NEXT:             in(reg) (11 as i64) as u64,
+// CHECK-NEXT:             in(reg) 11i64 as u64,
 // CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
@@ -85,7 +85,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "add {0:x}, {1:x}, xzr",
 // CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) (5 as i64) as u64,
+// CHECK-NEXT:             in(reg) 5i64 as u64,
 // CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         sum = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };

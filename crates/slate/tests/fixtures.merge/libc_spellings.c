@@ -77,7 +77,7 @@ int main(void) {
 // CHECK-NEXT:   duplicated fn:hand_written: 2 variants
 // CHECK-NEXT:   spliced fn:classify: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
-// CHECK-NEXT: unit libc_spellings_address: 37 items, 35 gated, 2 duplicated functions
+// CHECK-NEXT: unit libc_spellings_address: 36 items, 34 gated, 2 duplicated functions
 // CHECK-NEXT:   duplicated fn:isdigit: 2 variants
 // CHECK-NEXT:   duplicated fn:isgraph: 2 variants
 // CHECK-NEXT:   spliced fn:count_digits: 6 variants
@@ -88,8 +88,6 @@ int main(void) {
 // CHECK-NEXT: file libc_spellings_address.rs
 // CHECK-NEXT: #[cfg(any(target_os = "macos", target_os = "freebsd"))]
 // CHECK-NEXT: use core::ffi::c_char;
-// CHECK-NEXT: #[cfg(any(target_os = "macos", target_os = "freebsd"))]
-// CHECK-NEXT: use core::ffi::c_long;
 // CHECK-NEXT: #[cfg(any(target_os = "macos", target_os = "freebsd"))]
 // CHECK-NEXT: use core::ffi::c_ulong;
 // CHECK-NEXT: #[cfg(target_os = "freebsd")]
@@ -249,12 +247,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "macos")]
 // CHECK-NEXT: extern "C-unwind" fn isdigit(_c: i32) -> i32 {
-// CHECK-NEXT:     __isctype(_c, (1024 as c_ulong))
+// CHECK-NEXT:     __isctype(_c, 1024 as c_ulong)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "macos")]
 // CHECK-NEXT: fn __isctype(_c: i32, _f: c_ulong) -> i32 {
-// CHECK-NEXT:     if _c < 0 || _c >= 256i32 {
+// CHECK-NEXT:     if _c < 0 || _c >= 1i32 << 8i32 {
 // CHECK-NEXT:         0
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         (((unsafe { _DefaultRuneLocale.__runetype[_c as usize] }) as c_ulong) & _f != 0)
@@ -280,7 +278,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "macos")]
 // CHECK-NEXT: fn isgraph(_c: i32) -> i32 {
-// CHECK-NEXT:     __istype(_c, (2048 as c_ulong))
+// CHECK-NEXT:     __istype(_c, 2048 as c_ulong)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "macos")]
@@ -339,7 +337,7 @@ int main(void) {
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ) + unsafe { *(__error() as *mut i32) }
-// CHECK-NEXT:             + if __sbistype(97i32, (2048 as c_ulong)) != 0 { 1 } else { 0 }
+// CHECK-NEXT:             + if __sbistype(97i32, 2048 as c_ulong) != 0 { 1 } else { 0 }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_env = "gnu")]
 // CHECK-NEXT:     {
@@ -369,7 +367,7 @@ int main(void) {
 // CHECK-NEXT:             + if (if false {
 // CHECK-NEXT:                 unsafe { isgraph(97i32 as i32) as i32 }
 // CHECK-NEXT:             } else {
-// CHECK-NEXT:                 (64u32 < 94) as i32
+// CHECK-NEXT:                 (97u32.wrapping_sub(33u32) < 94) as i32
 // CHECK-NEXT:             }) != 0 {
 // CHECK-NEXT:                 1
 // CHECK-NEXT:             } else {

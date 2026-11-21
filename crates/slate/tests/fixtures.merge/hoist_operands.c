@@ -149,7 +149,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         number() + in_cast() + repeated(295i32) - 3 * 295
-// CHECK-NEXT:             + (same_type_everywhere((2 as c_long)) as i32) - 4
+// CHECK-NEXT:             + (same_type_everywhere(2 as c_long) as i32) - 4
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(windows, feature = "alpha"))]
 // CHECK-NEXT:     {
@@ -160,7 +160,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         number() + in_cast() + repeated(387i32) - 3 * 387
-// CHECK-NEXT:             + (same_type_everywhere((2 as c_long)) as i32) - 4
+// CHECK-NEXT:             + (same_type_everywhere(2 as c_long) as i32) - 4
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -170,8 +170,8 @@ int main(void) {
 // CHECK-NEXT:     while i < ((unsafe { (*nt).FileHeader.NumberOfSections }) as i32) {
 // CHECK-NEXT:         if (unsafe {
 // CHECK-NEXT:             strncmp(
-// CHECK-NEXT:                 (((*section.offset(i as isize)).Name.as_mut_ptr() as *mut u8)
-// CHECK-NEXT:                     as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 ((*section.offset(i as isize)).Name.as_mut_ptr() as *const i8)
+// CHECK-NEXT:                     as *const core::ffi::c_char,
 // CHECK-NEXT:                 (name.as_ptr() as *const i8) as *const core::ffi::c_char,
 // CHECK-NEXT:                 8u32 as usize,
 // CHECK-NEXT:             ) as i32

@@ -1429,7 +1429,7 @@ int main(void) {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 16>, core::simd::Simd<i64, 8>>(
 // CHECK-NEXT:             core::simd::Simd::load_select_ptr(
-// CHECK-NEXT:                 __P as *const i32,
+// CHECK-NEXT:                 (__P as *const i32) as *const i32,
 // CHECK-NEXT:                 core::simd::Mask::<i32, 16>::from_bitmask((__U as u16) as u64),
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i32, 16>>(
@@ -1450,7 +1450,7 @@ int main(void) {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 16>, core::simd::Simd<i64, 8>>(
 // CHECK-NEXT:             core::simd::Simd::load_select_ptr(
-// CHECK-NEXT:                 __P as *const i32,
+// CHECK-NEXT:                 (__P as *const i32) as *const i32,
 // CHECK-NEXT:                 core::simd::Mask::<i32, 16>::from_bitmask((__U as u16) as u64),
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i32, 16>>(
@@ -1502,7 +1502,7 @@ int main(void) {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<i64, 4>>(
 // CHECK-NEXT:             core::simd::Simd::load_select_ptr(
-// CHECK-NEXT:                 __P as *const i32,
+// CHECK-NEXT:                 (__P as *const core::simd::Simd<i32, 8>) as *const i32,
 // CHECK-NEXT:                 core::simd::Mask::<i32, 8>::from_bitmask((__U as u8) as u64),
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
@@ -1520,8 +1520,8 @@ int main(void) {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i8, 64>, core::simd::Simd<i64, 8>>(
 // CHECK-NEXT:             core::simd::Simd::load_select_ptr(
-// CHECK-NEXT:                 __P as *const i8,
-// CHECK-NEXT:                 core::simd::Mask::<i8, 64>::from_bitmask(__U as u64),
+// CHECK-NEXT:                 (__P as *const core::simd::Simd<i8, 64>) as *const i8,
+// CHECK-NEXT:                 core::simd::Mask::<i8, 64>::from_bitmask((__U as u64) as u64),
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i8, 64>>(
 // CHECK-NEXT:                         unsafe { _mm512_setzero_si512() },
@@ -1535,7 +1535,7 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_movepi8_mask(__A: core::simd::Simd<i64, 8>) -> u64 {
-// CHECK-NEXT:     core::simd::cmp::SimdPartialOrd::simd_lt(
+// CHECK-NEXT:     (core::simd::cmp::SimdPartialOrd::simd_lt(
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i8, 64>>(
 // CHECK-NEXT:                     __A,
@@ -1543,7 +1543,7 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:             core::simd::Simd::<i8, 64>::default(),
 // CHECK-NEXT:         )
-// CHECK-NEXT:         .to_bitmask() as u64
+// CHECK-NEXT:         .to_bitmask() as u64) as u64
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
@@ -1552,7 +1552,7 @@ int main(void) {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i8, 64>, core::simd::Simd<i64, 8>>(
 // CHECK-NEXT:             core::simd::Select::select(
-// CHECK-NEXT:                 core::simd::Mask::<i8, 64>::from_bitmask(__A as u64),
+// CHECK-NEXT:                 core::simd::Mask::<i8, 64>::from_bitmask((__A as u64) as u64),
 // CHECK-NEXT:                 core::simd::Simd::splat(-1i8),
 // CHECK-NEXT:                 core::simd::Simd::splat(0i8),
 // CHECK-NEXT:             ),
@@ -1577,7 +1577,7 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512vl,avx512dq")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_movepi32_mask(__A: core::simd::Simd<i64, 2>) -> u8 {
-// CHECK-NEXT:     core::simd::cmp::SimdPartialOrd::simd_lt(
+// CHECK-NEXT:     (core::simd::cmp::SimdPartialOrd::simd_lt(
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
 // CHECK-NEXT:                     __A,
@@ -1585,7 +1585,7 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:             core::simd::Simd::<i32, 4>::default(),
 // CHECK-NEXT:         )
-// CHECK-NEXT:         .to_bitmask() as u8
+// CHECK-NEXT:         .to_bitmask() as u8) as u8
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn show(name: *const i8, data: *const (), bytes: i32) {
@@ -2893,7 +2893,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"cmp512_lt %04x\n".as_ptr(),
-// CHECK-NEXT:             (core::simd::cmp::SimdPartialOrd::simd_lt(
+// CHECK-NEXT:             ((core::simd::cmp::SimdPartialOrd::simd_lt(
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_0]] = a.to_array();
 // CHECK-NEXT:                         let [[T_1]] = b.to_array();
@@ -2906,7 +2906,7 @@ int main(void) {
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                     core::simd::Simd::<i32, 16>::default(),
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .to_bitmask() as u16) as u32,
+// CHECK-NEXT:                 .to_bitmask() as u16) as u16) as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -2916,7 +2916,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"cmp512_unord %04x\n".as_ptr(),
-// CHECK-NEXT:             (core::simd::cmp::SimdPartialOrd::simd_lt(
+// CHECK-NEXT:             ((core::simd::cmp::SimdPartialOrd::simd_lt(
 // CHECK-NEXT:                     ({
 // CHECK-NEXT:                         let [[T_3]] = [[V_0]].to_array();
 // CHECK-NEXT:                         let [[T_4]] = [[V_0]].to_array();
@@ -2939,7 +2939,7 @@ int main(void) {
 // CHECK-NEXT:                         },
 // CHECK-NEXT:                     core::simd::Simd::<i32, 16>::default(),
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .to_bitmask() as u16) as u32,
+// CHECK-NEXT:                 .to_bitmask() as u16) as u16) as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -2947,7 +2947,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"cmp512_nle %04x\n".as_ptr(),
-// CHECK-NEXT:             (core::simd::cmp::SimdPartialOrd::simd_lt(
+// CHECK-NEXT:             ((core::simd::cmp::SimdPartialOrd::simd_lt(
 // CHECK-NEXT:                     !{
 // CHECK-NEXT:                         let [[T_9]] = a.to_array();
 // CHECK-NEXT:                         let [[T_10]] = b.to_array();
@@ -2960,7 +2960,7 @@ int main(void) {
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                     core::simd::Simd::<i32, 16>::default(),
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .to_bitmask() as u16) as u32,
+// CHECK-NEXT:                 .to_bitmask() as u16) as u16) as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -2968,7 +2968,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"mask_cmp512_eq %04x\n".as_ptr(),
-// CHECK-NEXT:             ((core::simd::cmp::SimdPartialOrd::simd_lt(
+// CHECK-NEXT:             (((core::simd::cmp::SimdPartialOrd::simd_lt(
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_12]] = a.to_array();
 // CHECK-NEXT:                         let [[T_13]] = b.to_array();
@@ -2981,7 +2981,7 @@ int main(void) {
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                     core::simd::Simd::<i32, 16>::default(),
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .to_bitmask() as u16) & 23130) as u32,
+// CHECK-NEXT:                 .to_bitmask() as u16) & 23130) as u16) as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -3009,7 +3009,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"movepi8_mask %016llx\n".as_ptr(), _mm512_movepi8_mask(v))
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"movepi8_mask %016llx\n".as_ptr(),
+// CHECK-NEXT:             _mm512_movepi8_mask(v) as u64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

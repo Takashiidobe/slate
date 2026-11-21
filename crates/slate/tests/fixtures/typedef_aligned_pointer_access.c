@@ -111,28 +111,28 @@ int main(void) {
 // CHECK-NEXT:             ((core::mem::size_of::<[i8; 64]>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     store((unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(1) }) as *mut i32, 42i32);
+// CHECK-NEXT:     store((unsafe { buffer.0.as_mut_ptr().add(1) }) as *mut i32, 42i32);
 // CHECK-NEXT:     let __slate_printf_arg0 = load(
-// CHECK-NEXT:         (unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(1) }) as *mut i32,
+// CHECK-NEXT:         (unsafe { buffer.0.as_mut_ptr().add(1) }) as *mut i32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
-// CHECK-NEXT:     set((unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(3) }) as *mut S);
+// CHECK-NEXT:     set((unsafe { buffer.0.as_mut_ptr().add(3) }) as *mut S);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
-// CHECK-NEXT:             sum((buffer.0.as_mut_ptr() as *mut i8).add(3) as *mut S),
+// CHECK-NEXT:             sum(buffer.0.as_mut_ptr().add(3) as *mut S),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     put((unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(17) }) as *mut W, 1i32, 5i64);
-// CHECK-NEXT:     put((unsafe { (buffer.0.as_mut_ptr() as *mut i8).add(17) }) as *mut W, 0i32, 4i64);
+// CHECK-NEXT:     put((unsafe { buffer.0.as_mut_ptr().add(17) }) as *mut W, 1i32, 5i64);
+// CHECK-NEXT:     put((unsafe { buffer.0.as_mut_ptr().add(17) }) as *mut W, 0i32, 4i64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld %lld\n".as_ptr(),
-// CHECK-NEXT:             lane((buffer.0.as_mut_ptr() as *mut i8).add(17) as *mut W, 0i32),
-// CHECK-NEXT:             lane((buffer.0.as_mut_ptr() as *mut i8).add(17) as *mut W, 1i32),
+// CHECK-NEXT:             lane(buffer.0.as_mut_ptr().add(17) as *mut W, 0i32),
+// CHECK-NEXT:             lane(buffer.0.as_mut_ptr().add(17) as *mut W, 1i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

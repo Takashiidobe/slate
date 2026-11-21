@@ -142,12 +142,12 @@ int main(void) {
 // CHECK-NEXT: static mut spin: lock = {
 // CHECK-NEXT:     let mut [[T_0]]: lock = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].raw = 1u32;
-// CHECK-NEXT:     [[T_0]].name = (b"spin\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:     [[T_0]].name = b"spin\0".as_ptr() as *const i8;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut tracepoint: tracepoint = tracepoint {
-// CHECK-NEXT:     name: (b"tp\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:     name: b"tp\0".as_ptr() as *const i8,
 // CHECK-NEXT:     key: key_false {
 // CHECK-NEXT:         key: {
 // CHECK-NEXT:             let mut [[T_0]]: key = unsafe { core::mem::zeroed() };
@@ -166,13 +166,13 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_0]]: lock = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_0]].raw = 1u32;
-// CHECK-NEXT:             [[T_0]].name = (b"a\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:             [[T_0]].name = b"a\0".as_ptr() as *const i8;
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: lock = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].raw = 1u32;
-// CHECK-NEXT:             [[T_1]].name = (b"b\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:             [[T_1]].name = b"b\0".as_ptr() as *const i8;
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ],
@@ -198,7 +198,7 @@ int main(void) {
 // CHECK-NEXT:     lock: {
 // CHECK-NEXT:         let mut [[T_0]]: lock = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].raw = 2u32;
-// CHECK-NEXT:         [[T_0]].name = (b"rs\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:         [[T_0]].name = b"rs\0".as_ptr() as *const i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
 // CHECK-NEXT:     interval: 10i32,
@@ -235,7 +235,7 @@ int main(void) {
 // CHECK-NEXT: static mut __slate_compound_spin_address_0: lock = {
 // CHECK-NEXT:     let mut [[T_0]]: lock = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].raw = 9u32;
-// CHECK-NEXT:     [[T_0]].name = (b"addr\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:     [[T_0]].name = b"addr\0".as_ptr() as *const i8;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:

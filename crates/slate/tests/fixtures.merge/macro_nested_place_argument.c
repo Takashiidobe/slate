@@ -99,13 +99,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%c %c\n".as_ptr(),
-// CHECK-NEXT:             *lookup(core::ptr::addr_of_mut!(plain) as *const view, (2 as c_long), 0i32)
+// CHECK-NEXT:             *lookup(core::ptr::addr_of_mut!(plain) as *const view, 2 as c_long, 0i32)
 // CHECK-NEXT:                 as i32,
-// CHECK-NEXT:             *lookup(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(indirect) as *const view,
-// CHECK-NEXT:                 (1 as c_long),
-// CHECK-NEXT:                 0i32,
-// CHECK-NEXT:             ) as i32,
+// CHECK-NEXT:             *lookup(core::ptr::addr_of_mut!(indirect) as *const view, 1 as c_long, 0i32)
+// CHECK-NEXT:                 as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

@@ -115,86 +115,6 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__6 {
-// CHECK-NEXT:     ($name:expr, $value:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut shown: core::simd::Simd<u32, 4> = $value;
-// CHECK-NEXT:             show_bytes(
-// CHECK-NEXT:                 ($name) as *const u8,
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
-// CHECK-NEXT:                 16u64,
-// CHECK-NEXT:             );
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__3 {
-// CHECK-NEXT:     ($name:expr, $value:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut shown: core::simd::Simd<f64, 2> = $value;
-// CHECK-NEXT:             show_bytes(
-// CHECK-NEXT:                 ($name) as *const u8,
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
-// CHECK-NEXT:                 16u64,
-// CHECK-NEXT:             );
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__7 {
-// CHECK-NEXT:     ($name:expr, $value:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut shown: core::simd::Simd<i16, 8> = $value;
-// CHECK-NEXT:             show_bytes(
-// CHECK-NEXT:                 ($name) as *const u8,
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
-// CHECK-NEXT:                 16u64,
-// CHECK-NEXT:             );
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__11 {
-// CHECK-NEXT:     ($name:expr, $value:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut shown: core::simd::Simd<u8, 8> = $value;
-// CHECK-NEXT:             show_bytes(
-// CHECK-NEXT:                 ($name) as *const u8,
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
-// CHECK-NEXT:                 8u64,
-// CHECK-NEXT:             );
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW {
-// CHECK-NEXT:     ($name:expr, $value:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut shown: core::simd::Simd<f32, 4> = $value;
-// CHECK-NEXT:             show_bytes(
-// CHECK-NEXT:                 ($name) as *const u8,
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
-// CHECK-NEXT:                 16u64,
-// CHECK-NEXT:             );
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SHOW__8 {
 // CHECK-NEXT:     ($name:expr, $value:expr) => {
 // CHECK-NEXT:         loop {
@@ -203,38 +123,6 @@ int main(void) {
 // CHECK-NEXT:                 ($name) as *const u8,
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
 // CHECK-NEXT:                 16u64,
-// CHECK-NEXT:             );
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__4 {
-// CHECK-NEXT:     ($name:expr, $value:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut shown: core::simd::Simd<i64, 2> = $value;
-// CHECK-NEXT:             show_bytes(
-// CHECK-NEXT:                 ($name) as *const u8,
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
-// CHECK-NEXT:                 16u64,
-// CHECK-NEXT:             );
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__12 {
-// CHECK-NEXT:     ($name:expr, $value:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut shown: core::simd::Simd<u16, 4> = $value;
-// CHECK-NEXT:             show_bytes(
-// CHECK-NEXT:                 ($name) as *const u8,
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
-// CHECK-NEXT:                 8u64,
 // CHECK-NEXT:             );
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
@@ -259,10 +147,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__5 {
+// CHECK-NEXT: macro_rules! SHOW__6 {
 // CHECK-NEXT:     ($name:expr, $value:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut shown: core::simd::Simd<u64, 2> = $value;
+// CHECK-NEXT:             let mut shown: core::simd::Simd<i16, 8> = $value;
 // CHECK-NEXT:             show_bytes(
 // CHECK-NEXT:                 ($name) as *const u8,
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
@@ -275,7 +163,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__13 {
+// CHECK-NEXT: macro_rules! SHOW__11 {
 // CHECK-NEXT:     ($name:expr, $value:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut shown: core::simd::Simd<i8, 8> = $value;
@@ -307,10 +195,90 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__2 {
+// CHECK-NEXT: macro_rules! SHOW__3 {
 // CHECK-NEXT:     ($name:expr, $value:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut shown: core::simd::Simd<i32, 4> = $value;
+// CHECK-NEXT:             let mut shown: core::simd::Simd<i64, 2> = $value;
+// CHECK-NEXT:             show_bytes(
+// CHECK-NEXT:                 ($name) as *const u8,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
+// CHECK-NEXT:                 16u64,
+// CHECK-NEXT:             );
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SHOW {
+// CHECK-NEXT:     ($name:expr, $value:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut shown: core::simd::Simd<f32, 4> = $value;
+// CHECK-NEXT:             show_bytes(
+// CHECK-NEXT:                 ($name) as *const u8,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
+// CHECK-NEXT:                 16u64,
+// CHECK-NEXT:             );
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SHOW__12 {
+// CHECK-NEXT:     ($name:expr, $value:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut shown: core::simd::Simd<i16, 4> = $value;
+// CHECK-NEXT:             show_bytes(
+// CHECK-NEXT:                 ($name) as *const u8,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
+// CHECK-NEXT:                 8u64,
+// CHECK-NEXT:             );
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SHOW__13 {
+// CHECK-NEXT:     ($name:expr, $value:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut shown: core::simd::Simd<u8, 8> = $value;
+// CHECK-NEXT:             show_bytes(
+// CHECK-NEXT:                 ($name) as *const u8,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
+// CHECK-NEXT:                 8u64,
+// CHECK-NEXT:             );
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SHOW__4 {
+// CHECK-NEXT:     ($name:expr, $value:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut shown: core::simd::Simd<u64, 2> = $value;
+// CHECK-NEXT:             show_bytes(
+// CHECK-NEXT:                 ($name) as *const u8,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
+// CHECK-NEXT:                 16u64,
+// CHECK-NEXT:             );
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SHOW__7 {
+// CHECK-NEXT:     ($name:expr, $value:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut shown: core::simd::Simd<u32, 4> = $value;
 // CHECK-NEXT:             show_bytes(
 // CHECK-NEXT:                 ($name) as *const u8,
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
@@ -339,10 +307,42 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SHOW__5 {
+// CHECK-NEXT:     ($name:expr, $value:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut shown: core::simd::Simd<f64, 2> = $value;
+// CHECK-NEXT:             show_bytes(
+// CHECK-NEXT:                 ($name) as *const u8,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
+// CHECK-NEXT:                 16u64,
+// CHECK-NEXT:             );
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! SHOW__2 {
+// CHECK-NEXT:     ($name:expr, $value:expr) => {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             let mut shown: core::simd::Simd<i32, 4> = $value;
+// CHECK-NEXT:             show_bytes(
+// CHECK-NEXT:                 ($name) as *const u8,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
+// CHECK-NEXT:                 16u64,
+// CHECK-NEXT:             );
+// CHECK-NEXT:             if true {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SHOW__15 {
 // CHECK-NEXT:     ($name:expr, $value:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut shown: core::simd::Simd<i16, 4> = $value;
+// CHECK-NEXT:             let mut shown: core::simd::Simd<u16, 4> = $value;
 // CHECK-NEXT:             show_bytes(
 // CHECK-NEXT:                 ($name) as *const u8,
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(shown) as *const (),
@@ -1706,13 +1706,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut u16_in: [u16; 4] = [65535, 0, 32768, 9];
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut s32_in: [i32; 4] = [-2147483648, 2147483647, -1, 70000];
+// CHECK-NEXT: static mut s32_in: [i32; 4] = [-2147483647i32 - 1i32, 2147483647, -1, 70000];
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut u32_in: [u32; 4] = [4294967295, 0, 1, 3000000000];
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut s64_in: [i64; 2] = [-9223372036854775808i64, 81985529216486895];
+// CHECK-NEXT: static mut s64_in: [i64; 2] = [-9223372036854775807i64 - 1i64, 81985529216486895];
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut u64_in: [u64; 2] = [18446744073709551615u64, 9223372043297226753u64];
+// CHECK-NEXT: static mut u64_in: [u64; 2] = [18446744073709551615, 9223372043297226753];
 // CHECK-EMPTY:
 // CHECK-NEXT: fn show_bytes(name: *const u8, data: *const (), size: u64) {
 // CHECK-NEXT:     let bytes: *const u8 = data as *const u8;
@@ -1747,7 +1747,8 @@ int main(void) {
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<f32, 4>, core::simd::Simd<i8, 16>>(
 // CHECK-NEXT:                         unsafe {
-// CHECK-NEXT:                             (nan_bits.as_mut_ptr() as *mut core::simd::Simd<f32, 4>)
+// CHECK-NEXT:                             ((nan_bits.as_mut_ptr() as *const ())
+// CHECK-NEXT:                                     as *mut core::simd::Simd<f32, 4>)
 // CHECK-NEXT:                                 .read_unaligned()
 // CHECK-NEXT:                         },
 // CHECK-NEXT:                     )
@@ -1799,23 +1800,23 @@ int main(void) {
 // CHECK-NEXT:         SHOW!(c"vrndaq_f32".as_ptr() as *mut u8, unsafe { vrndaq_f32(v) });
 // CHECK-NEXT:         SHOW!(c"vrndxq_f32".as_ptr() as *mut u8, unsafe { vrndxq_f32(v) });
 // CHECK-NEXT:         SHOW!(c"vrndiq_f32".as_ptr() as *mut u8, unsafe { vrndiq_f32(v) });
-// CHECK-NEXT:         SHOW__3!(c"vrndq_f64".as_ptr() as *mut u8, unsafe { vrndq_f64(d) });
-// CHECK-NEXT:         SHOW__3!(c"vrndmq_f64".as_ptr() as *mut u8, unsafe { vrndmq_f64(d) });
-// CHECK-NEXT:         SHOW__3!(c"vrndnq_f64".as_ptr() as *mut u8, unsafe { vrndnq_f64(d) });
-// CHECK-NEXT:         SHOW__3!(c"vrndpq_f64".as_ptr() as *mut u8, unsafe { vrndpq_f64(d) });
+// CHECK-NEXT:         SHOW__5!(c"vrndq_f64".as_ptr() as *mut u8, unsafe { vrndq_f64(d) });
+// CHECK-NEXT:         SHOW__5!(c"vrndmq_f64".as_ptr() as *mut u8, unsafe { vrndmq_f64(d) });
+// CHECK-NEXT:         SHOW__5!(c"vrndnq_f64".as_ptr() as *mut u8, unsafe { vrndnq_f64(d) });
+// CHECK-NEXT:         SHOW__5!(c"vrndpq_f64".as_ptr() as *mut u8, unsafe { vrndpq_f64(d) });
 // CHECK-NEXT:         SHOW__10!(c"vrnd_f32".as_ptr() as *mut u8, unsafe { vrnd_f32(vget_low_f32(v)) });
 // CHECK-NEXT:         SHOW__10!(
 // CHECK-NEXT:             c"vrndn_f32".as_ptr() as *mut u8,
 // CHECK-NEXT:             unsafe { vrndn_f32(vget_high_f32(v)) }
 // CHECK-NEXT:         );
 // CHECK-NEXT:         SHOW__2!(c"vcvtnq_s32_f32".as_ptr() as *mut u8, unsafe { vcvtnq_s32_f32(v) });
-// CHECK-NEXT:         SHOW__6!(c"vcvtnq_u32_f32".as_ptr() as *mut u8, unsafe { vcvtnq_u32_f32(v) });
+// CHECK-NEXT:         SHOW__7!(c"vcvtnq_u32_f32".as_ptr() as *mut u8, unsafe { vcvtnq_u32_f32(v) });
 // CHECK-NEXT:         SHOW__2!(c"vcvtmq_s32_f32".as_ptr() as *mut u8, unsafe { vcvtmq_s32_f32(v) });
-// CHECK-NEXT:         SHOW__6!(c"vcvtpq_u32_f32".as_ptr() as *mut u8, unsafe { vcvtpq_u32_f32(v) });
+// CHECK-NEXT:         SHOW__7!(c"vcvtpq_u32_f32".as_ptr() as *mut u8, unsafe { vcvtpq_u32_f32(v) });
 // CHECK-NEXT:         SHOW__2!(c"vcvtaq_s32_f32".as_ptr() as *mut u8, unsafe { vcvtaq_s32_f32(v) });
-// CHECK-NEXT:         SHOW__4!(c"vcvtnq_s64_f64".as_ptr() as *mut u8, unsafe { vcvtnq_s64_f64(d) });
-// CHECK-NEXT:         SHOW__5!(c"vcvtnq_u64_f64".as_ptr() as *mut u8, unsafe { vcvtnq_u64_f64(d) });
-// CHECK-NEXT:         SHOW__4!(c"vcvtmq_s64_f64".as_ptr() as *mut u8, unsafe { vcvtmq_s64_f64(d) });
+// CHECK-NEXT:         SHOW__3!(c"vcvtnq_s64_f64".as_ptr() as *mut u8, unsafe { vcvtnq_s64_f64(d) });
+// CHECK-NEXT:         SHOW__4!(c"vcvtnq_u64_f64".as_ptr() as *mut u8, unsafe { vcvtnq_u64_f64(d) });
+// CHECK-NEXT:         SHOW__3!(c"vcvtmq_s64_f64".as_ptr() as *mut u8, unsafe { vcvtmq_s64_f64(d) });
 // CHECK-NEXT:         SHOW__9!(
 // CHECK-NEXT:             c"vcvtn_s32_f32".as_ptr() as *mut u8,
 // CHECK-NEXT:             unsafe { vcvtn_s32_f32(vget_low_f32(v)) }
@@ -1827,7 +1828,7 @@ int main(void) {
 // CHECK-NEXT:         c"vcvtnq_s32 special".as_ptr() as *mut u8,
 // CHECK-NEXT:         unsafe { vcvtnq_s32_f32(special) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__6!(
+// CHECK-NEXT:     SHOW__7!(
 // CHECK-NEXT:         c"vcvtnq_u32 special".as_ptr() as *mut u8,
 // CHECK-NEXT:         unsafe { vcvtnq_u32_f32(special) }
 // CHECK-NEXT:     );
@@ -1956,7 +1957,7 @@ int main(void) {
 // CHECK-NEXT:         [[V_6]] = __ret;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let u64: core::simd::Simd<u64, 2> = [[V_6]];
-// CHECK-NEXT:     SHOW__7!(c"vmovl_s8".as_ptr() as *mut u8, unsafe { vmovl_s8(s8) });
+// CHECK-NEXT:     SHOW__6!(c"vmovl_s8".as_ptr() as *mut u8, unsafe { vmovl_s8(s8) });
 // CHECK-NEXT:     SHOW__8!(c"vmovl_u8".as_ptr() as *mut u8, unsafe { vmovl_u8(u8) });
 // CHECK-NEXT:     SHOW__2!(c"vmovl_s16".as_ptr() as *mut u8, unsafe { vmovl_s16(vget_low_s16(s16)) });
 // CHECK-NEXT:     loop {
@@ -1986,22 +1987,22 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     SHOW__4!(c"vmovl_s32".as_ptr() as *mut u8, unsafe { vmovl_s32(vget_high_s32(s32)) });
-// CHECK-NEXT:     SHOW__5!(c"vmovl_u32".as_ptr() as *mut u8, unsafe { vmovl_u32(vget_low_u32(u32)) });
-// CHECK-NEXT:     SHOW__13!(c"vmovn_s16".as_ptr() as *mut u8, unsafe { vmovn_s16(s16) });
-// CHECK-NEXT:     SHOW__11!(
+// CHECK-NEXT:     SHOW__3!(c"vmovl_s32".as_ptr() as *mut u8, unsafe { vmovl_s32(vget_high_s32(s32)) });
+// CHECK-NEXT:     SHOW__4!(c"vmovl_u32".as_ptr() as *mut u8, unsafe { vmovl_u32(vget_low_u32(u32)) });
+// CHECK-NEXT:     SHOW__11!(c"vmovn_s16".as_ptr() as *mut u8, unsafe { vmovn_s16(s16) });
+// CHECK-NEXT:     SHOW__13!(
 // CHECK-NEXT:         c"vmovn_u16".as_ptr() as *mut u8,
 // CHECK-NEXT:         unsafe { vmovn_u16(vreinterpretq_u16_s16(s16)) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__15!(c"vmovn_s32".as_ptr() as *mut u8, unsafe { vmovn_s32(s32) });
-// CHECK-NEXT:     SHOW__12!(c"vmovn_u32".as_ptr() as *mut u8, unsafe { vmovn_u32(u32) });
+// CHECK-NEXT:     SHOW__12!(c"vmovn_s32".as_ptr() as *mut u8, unsafe { vmovn_s32(s32) });
+// CHECK-NEXT:     SHOW__15!(c"vmovn_u32".as_ptr() as *mut u8, unsafe { vmovn_u32(u32) });
 // CHECK-NEXT:     SHOW__9!(c"vmovn_s64".as_ptr() as *mut u8, unsafe { vmovn_s64(s64) });
 // CHECK-NEXT:     SHOW__14!(c"vmovn_u64".as_ptr() as *mut u8, unsafe { vmovn_u64(u64) });
-// CHECK-NEXT:     SHOW__7!(
+// CHECK-NEXT:     SHOW__6!(
 // CHECK-NEXT:         c"vmovn_high_s32".as_ptr() as *mut u8,
 // CHECK-NEXT:         unsafe { vmovn_high_s32(vmovn_s32(s32), s32) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__7!(c"vmull_s8".as_ptr() as *mut u8, unsafe { vmull_s8(s8, vrev64_s8(s8)) });
+// CHECK-NEXT:     SHOW__6!(c"vmull_s8".as_ptr() as *mut u8, unsafe { vmull_s8(s8, vrev64_s8(s8)) });
 // CHECK-NEXT:     SHOW__8!(c"vmull_u8".as_ptr() as *mut u8, unsafe { vmull_u8(u8, u8) });
 // CHECK-NEXT:     SHOW__2!(
 // CHECK-NEXT:         c"vmull_s16".as_ptr() as *mut u8,
@@ -2051,15 +2052,15 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     SHOW__4!(
+// CHECK-NEXT:     SHOW__3!(
 // CHECK-NEXT:         c"vmull_s32".as_ptr() as *mut u8,
 // CHECK-NEXT:         unsafe { vmull_s32(vget_low_s32(s32), vget_low_s32(s32)) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__5!(
+// CHECK-NEXT:     SHOW__4!(
 // CHECK-NEXT:         c"vmull_u32".as_ptr() as *mut u8,
 // CHECK-NEXT:         unsafe { vmull_u32(vget_low_u32(u32), vget_high_u32(u32)) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__5!(c"vmull_high_u32".as_ptr() as *mut u8, unsafe { vmull_high_u32(u32, u32) });
+// CHECK-NEXT:     SHOW__4!(c"vmull_high_u32".as_ptr() as *mut u8, unsafe { vmull_high_u32(u32, u32) });
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

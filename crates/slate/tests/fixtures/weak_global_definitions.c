@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT: static mut banner_proto: proto = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: proto = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     [[T_0]].id = 7i32;
-// CHECK-NEXT:     [[T_0]].name = (b"banner\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:     [[T_0]].name = b"banner\0".as_ptr() as *const i8;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:

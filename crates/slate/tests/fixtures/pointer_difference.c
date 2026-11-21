@@ -16,8 +16,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
-// CHECK-NEXT:     let p: *mut i32 = unsafe { (values.0.as_mut_ptr() as *mut i32).add(1) };
-// CHECK-NEXT:     let q: *mut i32 = unsafe { (values.0.as_mut_ptr() as *mut i32).add(3) };
+// CHECK-NEXT:     let p: *mut i32 = unsafe { values.0.as_mut_ptr().add(1) };
+// CHECK-NEXT:     let q: *mut i32 = unsafe { values.0.as_mut_ptr().add(3) };
 // CHECK-NEXT:     ((unsafe { q.offset_from(p as *mut i32) }) as i64) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:

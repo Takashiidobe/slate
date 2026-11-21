@@ -196,11 +196,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: // { dg-options "-m128bit-long-double" }
-// CHECK-NEXT: #[repr(C, align(16))]
+// CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct holder {
 // CHECK-NEXT:     c: i8,
-// CHECK-NEXT:     __slate_pad_1: [u8; 15],
 // CHECK-NEXT:     value: LongDouble,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -214,7 +213,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %zu\n".as_ptr(),
-// CHECK-NEXT:             16u32,
+// CHECK-NEXT:             core::mem::size_of::<LongDouble>() as u32,
 // CHECK-NEXT:             core::mem::size_of::<holder>() as u32,
 // CHECK-NEXT:             core::mem::offset_of!(holder, value) as u32,
 // CHECK-NEXT:         )

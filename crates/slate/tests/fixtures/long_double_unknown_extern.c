@@ -227,7 +227,7 @@ int main(void) {
 // CHECK-NEXT:         __slate_qgcvt__rpi8_f80_i32_pi8(
 // CHECK-NEXT:             -value / __slate_f80_from_i32(4i32),
 // CHECK-NEXT:             8i32,
-// CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             buffer.0.as_mut_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -237,7 +237,7 @@ int main(void) {
 // CHECK-NEXT:             digits,
 // CHECK-NEXT:             decpt,
 // CHECK-NEXT:             sign,
-// CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             buffer.0.as_mut_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

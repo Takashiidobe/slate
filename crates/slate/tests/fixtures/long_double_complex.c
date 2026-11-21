@@ -192,11 +192,9 @@ int main(void) {
 // CHECK-NEXT:     print_lc(c"add_assign".as_ptr(), c);
 // CHECK-NEXT:     c -= b;
 // CHECK-NEXT:     print_lc(c"sub_assign".as_ptr(), c);
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: num_complex::Complex<f128> = c;
-// CHECK-NEXT:     c = [[V_0]].c_mul(b, false);
+// CHECK-NEXT:     c = c.c_mul(b, false);
 // CHECK-NEXT:     print_lc(c"mul_assign".as_ptr(), c);
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: num_complex::Complex<f128> = c;
-// CHECK-NEXT:     c = [[V_1]].c_div(b, false);
+// CHECK-NEXT:     c = c.c_div(b, false);
 // CHECK-NEXT:     print_lc(c"div_assign".as_ptr(), c);
 // CHECK-NEXT:     if a != a {
 // CHECK-NEXT:         unsafe { abort() };
@@ -237,38 +235,26 @@ int main(void) {
 // CHECK-NEXT:     if real_part != 3f128 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let zd: num_complex::Complex<f64> = {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = nonzero_imag;
-// CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: [[T_0]].re as f64,
-// CHECK-NEXT:             im: [[T_0]].im as f64,
-// CHECK-NEXT:         }
+// CHECK-NEXT:     let zd: num_complex::Complex<f64> = num_complex::Complex {
+// CHECK-NEXT:         re: nonzero_imag.re as f64,
+// CHECK-NEXT:         im: nonzero_imag.im as f64,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"to_double_complex".as_ptr(),
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = zd;
-// CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_1]].re as f128,
-// CHECK-NEXT:                 im: [[T_1]].im as f128,
-// CHECK-NEXT:             }
+// CHECK-NEXT:         num_complex::Complex {
+// CHECK-NEXT:             re: zd.re as f128,
+// CHECK-NEXT:             im: zd.im as f128,
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let zf: num_complex::Complex<f32> = {
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = nonzero_imag;
-// CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: [[T_2]].re as f32,
-// CHECK-NEXT:             im: [[T_2]].im as f32,
-// CHECK-NEXT:         }
+// CHECK-NEXT:     let zf: num_complex::Complex<f32> = num_complex::Complex {
+// CHECK-NEXT:         re: nonzero_imag.re as f32,
+// CHECK-NEXT:         im: nonzero_imag.im as f32,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     print_lc(
 // CHECK-NEXT:         c"to_float_complex".as_ptr(),
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_3:__t[0-9]+]] = zf;
-// CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_3]].re as f128,
-// CHECK-NEXT:                 im: [[T_3]].im as f128,
-// CHECK-NEXT:             }
+// CHECK-NEXT:         num_complex::Complex {
+// CHECK-NEXT:             re: zf.re as f128,
+// CHECK-NEXT:             im: zf.im as f128,
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let dd: f64 = 6.0f64;
@@ -276,12 +262,9 @@ int main(void) {
 // CHECK-NEXT:         re: dd,
 // CHECK-NEXT:         im: 0.0,
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let widened: num_complex::Complex<f128> = {
-// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = from_double;
-// CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: [[T_4]].re as f128,
-// CHECK-NEXT:             im: [[T_4]].im as f128,
-// CHECK-NEXT:         }
+// CHECK-NEXT:     let widened: num_complex::Complex<f128> = num_complex::Complex {
+// CHECK-NEXT:         re: from_double.re as f128,
+// CHECK-NEXT:         im: from_double.im as f128,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     print_lc(c"from_double_complex".as_ptr(), widened);
 // CHECK-NEXT:     let i32: i32 = 7;

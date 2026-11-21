@@ -35,8 +35,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut data: [u8; 4] = [65, 66, 67, 0];
 // CHECK-NEXT:     let mut b: buffer = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     b.start = data.as_mut_ptr() as *mut u8;
-// CHECK-NEXT:     b.end = unsafe { (data.as_mut_ptr() as *mut u8).add(3) };
+// CHECK-NEXT:     b.start = data.as_mut_ptr();
+// CHECK-NEXT:     b.end = unsafe { data.as_mut_ptr().add(3) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

@@ -62,9 +62,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%ld\n".as_ptr(),
-// CHECK-NEXT:             d_hash(20480u64)
+// CHECK-NEXT:             (d_hash(20480u64)
 // CHECK-NEXT:                 .offset_from((core::ptr::addr_of_mut!(table.0) as *mut u64) as *mut u64)
-// CHECK-NEXT:                 as i64,
+// CHECK-NEXT:                 as i64) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0

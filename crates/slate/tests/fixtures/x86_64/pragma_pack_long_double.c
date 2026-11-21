@@ -221,7 +221,8 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn offset(base: *const (), field: *const ()) -> u32 {
-// CHECK-NEXT:     ((unsafe { (field as *const i8).offset_from(base as *const i8) }) as i64) as u32
+// CHECK-NEXT:     ((unsafe { (field as *const i8).offset_from((base as *const i8) as *const i8) })
+// CHECK-NEXT:         as i64) as u32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -273,7 +274,8 @@ int main(void) {
 // CHECK-NEXT:             core::mem::align_of::<extended>() as u64,
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(e) as *const (),
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(e.x) as *mut LongDouble) as *const (),
+// CHECK-NEXT:                 ((core::ptr::addr_of_mut!(e.x) as *mut LongDouble) as *mut LongDouble)
+// CHECK-NEXT:                     as *const (),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(e) as *const (),
@@ -285,11 +287,12 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%u %u\n".as_ptr(),
 // CHECK-NEXT:             offset(
-// CHECK-NEXT:                 (list.0.as_mut_ptr() as *mut extended).add(0) as *const (),
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(list.0[1].x) as *mut LongDouble) as *const (),
+// CHECK-NEXT:                 list.0.as_mut_ptr().add(0) as *const (),
+// CHECK-NEXT:                 ((core::ptr::addr_of_mut!(list.0[1].x) as *mut LongDouble)
+// CHECK-NEXT:                     as *mut LongDouble) as *const (),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             offset(
-// CHECK-NEXT:                 (list.0.as_mut_ptr() as *mut extended).add(0) as *const (),
+// CHECK-NEXT:                 list.0.as_mut_ptr().add(0) as *const (),
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(list.0[1].tail) as *const (),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )

@@ -120,8 +120,7 @@ int main(void) {
 // CHECK-NEXT:     let mut buf: [u8; 6] = [1, 2, 7, 4, 64, 0];
 // CHECK-NEXT:     let mut n: u32 = 6;
 // CHECK-NEXT:     let r: *const u8 = unsafe {
-// CHECK-NEXT:         unsafe { drv.fixup }
-// CHECK-NEXT:             .unwrap()(1i32, buf.as_mut_ptr() as *mut u8, core::ptr::addr_of_mut!(n))
+// CHECK-NEXT:         unsafe { drv.fixup }.unwrap()(1i32, buf.as_mut_ptr(), core::ptr::addr_of_mut!(n))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",

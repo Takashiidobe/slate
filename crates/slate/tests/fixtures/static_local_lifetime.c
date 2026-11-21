@@ -222,9 +222,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static names: __SlateAlign16<[*const i8; 3]> = __SlateAlign16(
 // CHECK-NEXT:     [
-// CHECK-NEXT:         (b"zero\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         (b"one\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         (b"two\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         b"zero\0".as_ptr() as *const i8,
+// CHECK-NEXT:         b"one\0".as_ptr() as *const i8,
+// CHECK-NEXT:         b"two\0".as_ptr() as *const i8,
 // CHECK-NEXT:     ],
 // CHECK-NEXT: );
 // CHECK-EMPTY:

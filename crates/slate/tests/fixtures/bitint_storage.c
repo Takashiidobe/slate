@@ -190,7 +190,7 @@ int main(void) {
 // CHECK-NEXT:     let seventeen: i32 = -12345;
 // CHECK-NEXT:     let bit: u8 = 1;
 // CHECK-NEXT:     let two: i8 = -2;
-// CHECK-NEXT:     let mut forty: i64 = -123456789012i64 << 24 >> 24;
+// CHECK-NEXT:     let mut forty: i64 = (-123456789012 as i64) << 24 >> 24;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

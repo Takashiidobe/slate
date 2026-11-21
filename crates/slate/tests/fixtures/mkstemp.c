@@ -23,9 +23,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut path: [i8; 13] = [115, 108, 97, 116, 101, 45, 88, 88, 88, 88, 88, 88, 0];
-// CHECK-NEXT:     let fd: i32 = unsafe {
-// CHECK-NEXT:         mkstemp((path.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char) as i32
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let fd: i32 = unsafe { mkstemp(path.as_mut_ptr() as *mut core::ffi::c_char) as i32 };
 // CHECK-NEXT:     println!("{}", (fd >= 0) as i32);
 // CHECK-NEXT:     if fd >= 0 {
 // CHECK-NEXT:         unsafe { close(fd as i32) as i32 };

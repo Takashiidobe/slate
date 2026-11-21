@@ -168,7 +168,7 @@ int main(void) {
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut out: *mut i32 = buffer.0.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:     let mut out: *mut i32 = buffer.0.as_mut_ptr();
 // CHECK-NEXT:     for i in 1..(3i32 + 1) {
 // CHECK-NEXT:         let [[V_8:__v[0-9]+]]: *mut i32 = out;
 // CHECK-NEXT:         out = unsafe { [[V_8]].add(1) };

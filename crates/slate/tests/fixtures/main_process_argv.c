@@ -86,11 +86,7 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:     unsafe { close(fd as i32) as i32 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(
-// CHECK-NEXT:             c"%d %s\n".as_ptr(),
-// CHECK-NEXT:             (n > 0) as i32,
-// CHECK-NEXT:             buf.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         slate_support::printf(c"%d %s\n".as_ptr(), (n > 0) as i32, buf.0.as_mut_ptr())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(

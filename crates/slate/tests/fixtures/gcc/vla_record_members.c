@@ -417,7 +417,7 @@ int main(void) {
 // CHECK-NEXT:             (15u64.wrapping_add([[V_0]].wrapping_mul(4)) / 8).wrapping_mul(8),
 // CHECK-NEXT:             (*h).id,
 // CHECK-NEXT:             *last,
-// CHECK-NEXT:             ((last as *mut i8).offset_from(h as *mut i8) as i64) as u64,
+// CHECK-NEXT:             ((last as *mut i8).offset_from((h as *mut i8) as *mut i8) as i64) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

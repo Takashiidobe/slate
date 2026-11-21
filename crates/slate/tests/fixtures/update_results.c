@@ -190,7 +190,7 @@ int main(void) {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16(
 // CHECK-NEXT:         [0i32, 10i32, 20i32, 30i32, 40i32],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut p: *mut i32 = values.0.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:     let mut p: *mut i32 = values.0.as_mut_ptr();
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: *mut i32 = p;
 // CHECK-NEXT:     p = unsafe { [[V_9]].add(1) };
 // CHECK-NEXT:     let at_p: i32 = unsafe { *p };
@@ -221,9 +221,7 @@ int main(void) {
 // CHECK-NEXT:     let mut r: i32 = 0;
 // CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = i;
 // CHECK-NEXT:     i = [[V_14]] + 1;
-// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: *mut i32 = unsafe {
-// CHECK-NEXT:         (values.0.as_mut_ptr() as *mut i32).offset([[V_14]] as isize)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: *mut i32 = unsafe { values.0.as_mut_ptr().offset([[V_14]] as isize) };
 // CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = unsafe { *[[V_15]] };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_15]] = [[V_16]] + 1;
@@ -232,9 +230,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {} {}", r, i, values.0[1]);
 // CHECK-NEXT:     let [[V_17:__v[0-9]+]]: i32 = i;
 // CHECK-NEXT:     i = [[V_17]] - 1;
-// CHECK-NEXT:     let [[V_18:__v[0-9]+]]: *mut i32 = unsafe {
-// CHECK-NEXT:         (values.0.as_mut_ptr() as *mut i32).offset([[V_17]] as isize)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let [[V_18:__v[0-9]+]]: *mut i32 = unsafe { values.0.as_mut_ptr().offset([[V_17]] as isize) };
 // CHECK-NEXT:     let [[V_19:__v[0-9]+]]: i32 = (unsafe { *[[V_18]] }) + 1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_18]] = [[V_19]];
@@ -242,11 +238,11 @@ int main(void) {
 // CHECK-NEXT:     r = [[V_19]];
 // CHECK-NEXT:     println!("{} {} {}", r, i, values.0[2]);
 // CHECK-NEXT:     let mut slots: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32, 0i32, 0i32, 0i32]);
-// CHECK-NEXT:     let [[V_20:__v[0-9]+]]: *mut i32 = next_slot(slots.0.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     let [[V_20:__v[0-9]+]]: *mut i32 = next_slot(slots.0.as_mut_ptr());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_20]] = *[[V_20]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_21:__v[0-9]+]]: *mut i32 = next_slot(slots.0.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     let [[V_21:__v[0-9]+]]: *mut i32 = next_slot(slots.0.as_mut_ptr());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_21]] = *[[V_21]] + 1;
 // CHECK-NEXT:     }

@@ -27,7 +27,7 @@ int main(void) {
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         sprintf(
-// CHECK-NEXT:             (buf.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             buf.0.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:             c"%d-%d".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             3i32,
 // CHECK-NEXT:             4i32,

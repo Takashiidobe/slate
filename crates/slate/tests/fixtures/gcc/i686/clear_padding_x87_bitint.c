@@ -429,7 +429,7 @@ int main(void) {
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(two_and_half) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             (((core::ptr::addr_of_mut!(z) as *mut i8)
-// CHECK-NEXT:                 .offset(core::mem::size_of::<LongDouble>() as isize) as *mut ())
+// CHECK-NEXT:                 .add((core::mem::size_of::<LongDouble>() as u32) as usize) as *mut ())
 // CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (10u32 as usize) as usize,
 // CHECK-NEXT:         )

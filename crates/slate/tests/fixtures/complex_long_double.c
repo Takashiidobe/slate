@@ -164,12 +164,9 @@ int main(void) {
 // CHECK-NEXT:     show(c"rsub".as_ptr(), 2f128 - negzero);
 // CHECK-NEXT:     show(c"rmul".as_ptr(), negzero * 3f128);
 // CHECK-NEXT:     show(c"rdivz".as_ptr(), negzero / 4f128);
-// CHECK-NEXT:     let narrowed: num_complex::Complex<f64> = {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = a;
-// CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: [[T_0]].re as f64,
-// CHECK-NEXT:             im: [[T_0]].im as f64,
-// CHECK-NEXT:         }
+// CHECK-NEXT:     let narrowed: num_complex::Complex<f64> = num_complex::Complex {
+// CHECK-NEXT:         re: a.re as f64,
+// CHECK-NEXT:         im: a.im as f64,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -183,12 +180,9 @@ int main(void) {
 // CHECK-NEXT:     f.im = 8.0f32;
 // CHECK-NEXT:     show(
 // CHECK-NEXT:         c"widen".as_ptr(),
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = f;
-// CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_1]].re as f128,
-// CHECK-NEXT:                 im: [[T_1]].im as f128,
-// CHECK-NEXT:             }
+// CHECK-NEXT:         num_complex::Complex {
+// CHECK-NEXT:             re: f.re as f128,
+// CHECK-NEXT:             im: f.im as f128,
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show(
@@ -200,11 +194,9 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut acc: num_complex::Complex<f128> = a;
 // CHECK-NEXT:     acc += b;
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: num_complex::Complex<f128> = acc;
-// CHECK-NEXT:     acc = [[V_0]].c_mul(b, false);
+// CHECK-NEXT:     acc = acc.c_mul(b, false);
 // CHECK-NEXT:     acc -= 1i32 as f128;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: num_complex::Complex<f128> = acc / 2f128;
-// CHECK-NEXT:     acc = [[V_1]];
+// CHECK-NEXT:     acc /= 2f128;
 // CHECK-NEXT:     show(c"acc".as_ptr(), acc);
 // CHECK-NEXT:     let p: *mut num_complex::Complex<f128> = core::ptr::addr_of_mut!(acc);
 // CHECK-NEXT:     unsafe {

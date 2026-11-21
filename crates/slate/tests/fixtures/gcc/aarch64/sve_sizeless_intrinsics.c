@@ -61,9 +61,7 @@ int main(void) {
 // CHECK-NEXT:     a: core::arch::aarch64::svint32_t,
 // CHECK-NEXT:     b: core::arch::aarch64::svint32_t,
 // CHECK-NEXT: ) -> core::arch::aarch64::svint32_t {
-// CHECK-NEXT:     return unsafe {
-// CHECK-NEXT:         core::arch::aarch64::svext_s32::<{ ((1 as i32) as u64) as i32 }>(a, b)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     return unsafe { core::arch::aarch64::svext_s32::<{ (1u64) as i32 }>(a, b) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,crc,lse,sve,fcma")]
@@ -91,26 +89,25 @@ int main(void) {
 // CHECK-NEXT:                 core::arch::aarch64::svwhilelt_b32_s32(i, 64i32)
 // CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::arch::aarch64::svprfb::<{ unsafe { core::mem::transmute::<i32, core::arch::aarch64::svprfop>(((0 as i32) as u32) as i32) } }, _>(
+// CHECK-NEXT:                 core::arch::aarch64::svprfb::<{ unsafe { core::mem::transmute::<i32, core::arch::aarch64::svprfop>((0u32) as i32) } }, _>(
 // CHECK-NEXT:                     pg,
-// CHECK-NEXT:                     (r#in.as_mut_ptr() as *mut i32).offset(i as isize) as *const (),
+// CHECK-NEXT:                     r#in.as_mut_ptr().offset(i as isize) as *const (),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
 // CHECK-NEXT:             let v: core::arch::aarch64::svint32_t = unsafe {
 // CHECK-NEXT:                 core::arch::aarch64::svld1_s32(
 // CHECK-NEXT:                     pg,
-// CHECK-NEXT:                     (r#in.as_mut_ptr() as *mut i32).offset(i as isize) as *const i32,
+// CHECK-NEXT:                     r#in.as_mut_ptr().offset(i as isize) as *const i32,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::arch::aarch64::svst1_s32(
 // CHECK-NEXT:                     pg,
-// CHECK-NEXT:                     (out.as_mut_ptr() as *mut i32).offset(i as isize),
+// CHECK-NEXT:                     out.as_mut_ptr().offset(i as isize),
 // CHECK-NEXT:                     scaled_sum(pg, v, core::arch::aarch64::svdup_n_s32(1i32)),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = i;
-// CHECK-NEXT:             i = [[V_0]] + ((unsafe { core::arch::aarch64::svcntw() }) as i32);
+// CHECK-NEXT:             i += (unsafe { core::arch::aarch64::svcntw() }) as i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..64i32 {
@@ -129,7 +126,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let first4: i64 = unsafe {
 // CHECK-NEXT:         core::arch::aarch64::svaddv_s32(
-// CHECK-NEXT:             core::arch::aarch64::svptrue_pat_b32::<{ unsafe { core::mem::transmute::<i32, core::arch::aarch64::svpattern>(((4 as i32) as u32) as i32) } }>(),
+// CHECK-NEXT:             core::arch::aarch64::svptrue_pat_b32::<{ unsafe { core::mem::transmute::<i32, core::arch::aarch64::svpattern>((4u32) as i32) } }>(),
 // CHECK-NEXT:             rotated,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

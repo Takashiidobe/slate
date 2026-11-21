@@ -93,7 +93,7 @@ int main(void) {
 // CHECK-NEXT:         parser.read_handler
 // CHECK-NEXT:             .unwrap()(
 // CHECK-NEXT:             parser.read_handler_data,
-// CHECK-NEXT:             buffer.as_mut_ptr() as *mut u8,
+// CHECK-NEXT:             buffer.as_mut_ptr(),
 // CHECK-NEXT:             3u64,
 // CHECK-NEXT:             core::ptr::addr_of_mut!(size_read),
 // CHECK-NEXT:         )

@@ -274,9 +274,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*[[V_0]]).val = (*[[V_0]]).val + left.val;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut Tree = right.parent;
+// CHECK-NEXT:     let [[V_1]]: *mut Tree = right.parent;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_2]]).val = (*[[V_2]]).val + right.val;
+// CHECK-NEXT:         (*[[V_1]]).val = (*[[V_1]]).val + right.val;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     root.val + left.val + right.val
 // CHECK-NEXT: }
@@ -293,7 +293,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         buf.data[i as usize] = (97 + i) as i8;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     buf.cursor = unsafe { (buf.data.as_mut_ptr() as *mut i8).add(3) };
+// CHECK-NEXT:     buf.cursor = unsafe { buf.data.as_mut_ptr().add(3) };
 // CHECK-NEXT:     let [[V_1]]: *mut i8 = buf.cursor;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_1]] = ((*[[V_1]] as i32) + 1) as i8;
@@ -320,8 +320,8 @@ int main(void) {
 // CHECK-NEXT:         [1i32, 2i32, 3i32, 4i32, 5i32],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     reverse_in_place(
-// CHECK-NEXT:         unsafe { (values.0.as_mut_ptr() as *mut i32).add(0) },
-// CHECK-NEXT:         unsafe { (values.0.as_mut_ptr() as *mut i32).add(4) },
+// CHECK-NEXT:         unsafe { values.0.as_mut_ptr().add(0) },
+// CHECK-NEXT:         unsafe { values.0.as_mut_ptr().add(4) },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     values.0[0] * 10000 + values.0[1] * 1000 + values.0[2] * 100 + values.0[3] * 10
 // CHECK-NEXT:         + values.0[4]

@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:     let mut buf: [i8; 8] = [0i8; 8];
 // CHECK-NEXT:     let mut out: u32 = 0;
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (unsafe { (buf.as_mut_ptr() as *mut i8).add(4) }) as *const i8;
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (unsafe { buf.as_mut_ptr().add(4) }) as *const i8;
 // CHECK-NEXT:         use_params(&p, &mut out, buf.as_slice(), [[T_0]])
 // CHECK-NEXT:     };
 // CHECK-NEXT:     out as i32

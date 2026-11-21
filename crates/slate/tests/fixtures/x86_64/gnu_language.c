@@ -289,10 +289,10 @@ int main(void) {
 // CHECK-NEXT:     let gnu_dollar_dollar: i32 = 29;
 // CHECK-NEXT:     let mut side_effect: i32 = 0;
 // CHECK-NEXT:     let mut omitted: i32 = 0;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = side_effect + 1;
-// CHECK-NEXT:     side_effect = [[V_1]];
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = [[V_1]];
-// CHECK-NEXT:     omitted = if [[V_2]] != 0 { [[V_2]] } else { 31 };
+// CHECK-NEXT:     let [[V_0]]: i32 = side_effect + 1;
+// CHECK-NEXT:     side_effect = [[V_0]];
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = [[V_0]];
+// CHECK-NEXT:     omitted = if [[V_1]] != 0 { [[V_1]] } else { 31 };
 // CHECK-NEXT:     let inferred: i32 = 37;
 // CHECK-NEXT:     let same_type: i32 = 41;
 // CHECK-NEXT:     let raw: *const i8 = c"gnu\\n".as_ptr();
@@ -323,10 +323,10 @@ int main(void) {
 // CHECK-NEXT:         + range_values.0[3] + range_values.0[5] + old_array[1] + old_record.first
 // CHECK-NEXT:         + old_record.second;
 // CHECK-NEXT:     let mut spelling_total: i32 = 0;
-// CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: i32;
+// CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: i32;
 // CHECK-NEXT:     let value: i32 = 67;
-// CHECK-NEXT:     [[V_3]] = value;
-// CHECK-NEXT:     spelling_total = [[V_3]]
+// CHECK-NEXT:     [[V_2]] = value;
+// CHECK-NEXT:     spelling_total = [[V_2]]
 // CHECK-NEXT:         + (((core::mem::align_of::<i64>() as u64)
 // CHECK-NEXT:             >= (core::mem::align_of::<i32>() as u64)) as i32) + (true as i32)
 // CHECK-NEXT:         + ((((unsafe { *raw.add(0) }) as i32) == 103) as i32)
@@ -359,8 +359,8 @@ int main(void) {
 // CHECK-NEXT:     let middle: *mut () = (unsafe { (begin as *const u8).add(3) }) as *mut ();
 // CHECK-NEXT:     ((((unsafe { (middle as *const u8).offset_from(begin as *const u8) }) as i64) == 3)
 // CHECK-NEXT:         as i32)
-// CHECK-NEXT:         + ((middle == ((unsafe { (values.as_mut_ptr() as *mut u8).add(3) }) as *mut ()))
-// CHECK-NEXT:             as i32) + (true as i32) + gnu_function_pointer()
+// CHECK-NEXT:         + ((middle == ((unsafe { values.as_mut_ptr().add(3) }) as *mut ())) as i32)
+// CHECK-NEXT:         + (true as i32) + gnu_function_pointer()
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_numeric_types() -> i32 {

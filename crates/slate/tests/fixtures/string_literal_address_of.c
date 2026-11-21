@@ -135,7 +135,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %s %s %zu\n".as_ptr(),
 // CHECK-NEXT:             *(core::ptr::addr_of_mut!(plain) as *mut __SlateImage_plain) as *const i8,
-// CHECK-NEXT:             (*whole).as_ptr() as *const i8,
+// CHECK-NEXT:             (*whole).as_ptr(),
 // CHECK-NEXT:             local as *const i8,
 // CHECK-NEXT:             core::mem::size_of::<[i8; 6]>() as u64,
 // CHECK-NEXT:         )

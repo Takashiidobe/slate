@@ -99,15 +99,8 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let registry: *mut registry = unsafe { registry_new() };
 // CHECK-NEXT:     for i in 0i32..3i32 {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             shape_move((shapes.0.as_mut_ptr() as *mut shape).offset(i as isize), i, 1i32)
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             registry_add(
-// CHECK-NEXT:                 registry,
-// CHECK-NEXT:                 (shapes.0.as_mut_ptr() as *mut shape).offset(i as isize),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { shape_move(shapes.0.as_mut_ptr().offset(i as isize), i, 1i32) };
+// CHECK-NEXT:         unsafe { registry_add(registry, shapes.0.as_mut_ptr().offset(i as isize)) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let tag: __SlateRecord_shapes_h_18 = {
 // CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: __SlateRecord_shapes_h_18 = unsafe { core::mem::zeroed() };

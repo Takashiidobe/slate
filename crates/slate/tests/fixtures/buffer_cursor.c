@@ -26,9 +26,9 @@ int main(void) {
 // CHECK-NEXT:         values.0[i as usize] = i + unsafe { getchar() as i32 };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut c: cursor = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     c.ptr = unsafe { (values.0.as_mut_ptr() as *mut i32).add(1) };
+// CHECK-NEXT:     c.ptr = unsafe { values.0.as_mut_ptr().add(1) };
 // CHECK-NEXT:     let mut d: cursor = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     d.ptr = unsafe { (values.0.as_mut_ptr() as *mut i32).add(3) };
+// CHECK-NEXT:     d.ptr = unsafe { values.0.as_mut_ptr().add(3) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

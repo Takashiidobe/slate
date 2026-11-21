@@ -76,7 +76,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_pointer_width = "64", unix))]
 // CHECK-NEXT: static crossing: __SlateAlignLargeArray<[c_long; 3]> = __SlateAlignLargeArray(
-// CHECK-NEXT:     [(1 as c_long), (2 as c_long), (3 as c_long)],
+// CHECK-NEXT:     [1 as c_long, 2 as c_long, 3 as c_long],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(any(target_arch = "x86", windows))]
@@ -198,7 +198,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         local.0[i as usize] = seed + i;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let escaped: *mut i32 = local.0.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:     let escaped: *mut i32 = local.0.as_mut_ptr();
 // CHECK-NEXT:     (unsafe { *escaped.add(3) }) + local.0[7]
 // CHECK-NEXT: }
 // CHECK-EMPTY:

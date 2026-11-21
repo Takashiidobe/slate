@@ -291,8 +291,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             source.0.as_mut_ptr() as *const u8,
-// CHECK-NEXT:             second.0.as_mut_ptr() as *mut u8,
+// CHECK-NEXT:             (source.0.as_mut_ptr() as *const ()) as *const u8,
+// CHECK-NEXT:             (second.0.as_mut_ptr() as *mut ()) as *mut u8,
 // CHECK-NEXT:             8 as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -305,25 +305,23 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin_memmove(
-// CHECK-NEXT:             (third.0.as_mut_ptr() as *mut u8).add(2) as *mut (),
+// CHECK-NEXT:             third.0.as_mut_ptr().add(2) as *mut (),
 // CHECK-NEXT:             third.0.as_mut_ptr() as *const (),
 // CHECK-NEXT:             8u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __builtin_bzero((second.0.as_mut_ptr() as *mut u8).add(8) as *mut (), 8u64)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { __builtin_bzero(second.0.as_mut_ptr().add(8) as *mut (), 8u64) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin___memcpy_chk(
-// CHECK-NEXT:             (first.0.as_mut_ptr() as *mut u8).add(8) as *mut (),
-// CHECK-NEXT:             (source.0.as_mut_ptr() as *mut u8).add(8) as *const (),
+// CHECK-NEXT:             first.0.as_mut_ptr().add(8) as *mut (),
+// CHECK-NEXT:             source.0.as_mut_ptr().add(8) as *const (),
 // CHECK-NEXT:             8u64,
 // CHECK-NEXT:             (core::mem::size_of::<[u8; 32]>() as u64).wrapping_sub(8),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin___memmove_chk(
-// CHECK-NEXT:             (second.0.as_mut_ptr() as *mut u8).add(1) as *mut (),
+// CHECK-NEXT:             second.0.as_mut_ptr().add(1) as *mut (),
 // CHECK-NEXT:             second.0.as_mut_ptr() as *const (),
 // CHECK-NEXT:             7u64,
 // CHECK-NEXT:             (core::mem::size_of::<[u8; 32]>() as u64).wrapping_sub(1),
@@ -331,13 +329,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin___memset_chk(
-// CHECK-NEXT:             (second.0.as_mut_ptr() as *mut u8).add(16) as *mut (),
+// CHECK-NEXT:             second.0.as_mut_ptr().add(16) as *mut (),
 // CHECK-NEXT:             9i32,
 // CHECK-NEXT:             4u64,
 // CHECK-NEXT:             (core::mem::size_of::<[u8; 32]>() as u64).wrapping_sub(16),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     ((end == ((unsafe { (first.0.as_mut_ptr() as *mut u8).add(8) }) as *mut ())) as i32)
+// CHECK-NEXT:     ((end == ((unsafe { first.0.as_mut_ptr().add(8) }) as *mut ())) as i32)
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             __builtin_memcmp(
 // CHECK-NEXT:                 first.0.as_mut_ptr() as *const (),
@@ -354,7 +352,7 @@ int main(void) {
 // CHECK-NEXT:         }) == 0) as i32)
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             __builtin_memchr(first.0.as_mut_ptr() as *const (), 104i32, 16u64)
-// CHECK-NEXT:         }) == ((unsafe { (first.0.as_mut_ptr() as *mut u8).add(7) }) as *mut ())) as i32)
+// CHECK-NEXT:         }) == ((unsafe { first.0.as_mut_ptr().add(7) }) as *mut ())) as i32)
 // CHECK-NEXT:         + (((third.0[2] as i32) == 97) as i32) + (((third.0[9] as i32) == 104) as i32)
 // CHECK-NEXT:         + (second.0[0] as i32) + (second.0[1] as i32) + (second.0[16] as i32)
 // CHECK-NEXT:         + (second.0[19] as i32)
@@ -379,42 +377,38 @@ int main(void) {
 // CHECK-NEXT:             [[T_2]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { __builtin_strcpy(first.0.as_mut_ptr() as *mut i8, c"gnu".as_ptr()) };
+// CHECK-NEXT:     unsafe { __builtin_strcpy(first.0.as_mut_ptr(), c"gnu".as_ptr()) };
 // CHECK-NEXT:     let end: *mut i8 = unsafe {
-// CHECK-NEXT:         __builtin_stpcpy((first.0.as_mut_ptr() as *mut i8).add(3), c"builtins".as_ptr())
+// CHECK-NEXT:         __builtin_stpcpy(first.0.as_mut_ptr().add(3), c"builtins".as_ptr())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __builtin_strncpy(
-// CHECK-NEXT:             second.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             first.0.as_mut_ptr() as *const i8,
-// CHECK-NEXT:             6u64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         __builtin_strncpy(second.0.as_mut_ptr(), first.0.as_mut_ptr() as *const i8, 6u64)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { __builtin_strcpy(third.0.as_mut_ptr() as *mut i8, c"memory".as_ptr()) };
-// CHECK-NEXT:     unsafe { __builtin_strcat(third.0.as_mut_ptr() as *mut i8, c"-ok".as_ptr()) };
+// CHECK-NEXT:     unsafe { __builtin_strcpy(third.0.as_mut_ptr(), c"memory".as_ptr()) };
+// CHECK-NEXT:     unsafe { __builtin_strcat(third.0.as_mut_ptr(), c"-ok".as_ptr()) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin___strcpy_chk(
-// CHECK-NEXT:             second.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             second.0.as_mut_ptr(),
 // CHECK-NEXT:             c"clang".as_ptr(),
 // CHECK-NEXT:             core::mem::size_of::<[i8; 64]>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin___stpcpy_chk(
-// CHECK-NEXT:             (second.0.as_mut_ptr() as *mut i8).add(5),
+// CHECK-NEXT:             second.0.as_mut_ptr().add(5),
 // CHECK-NEXT:             c"-head".as_ptr(),
 // CHECK-NEXT:             (core::mem::size_of::<[i8; 64]>() as u64).wrapping_sub(5),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin___strcat_chk(
-// CHECK-NEXT:             second.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             second.0.as_mut_ptr(),
 // CHECK-NEXT:             c"-gnu".as_ptr(),
 // CHECK-NEXT:             core::mem::size_of::<[i8; 64]>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ((unsafe { __builtin_strlen(first.0.as_mut_ptr() as *const i8) }) as i32)
-// CHECK-NEXT:         + ((end == unsafe { (first.0.as_mut_ptr() as *mut i8).add(11) }) as i32)
+// CHECK-NEXT:         + ((end == unsafe { first.0.as_mut_ptr().add(11) }) as i32)
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             __builtin_strcmp(third.0.as_mut_ptr() as *const i8, c"memory-ok".as_ptr())
 // CHECK-NEXT:         }) == 0) as i32)
@@ -426,12 +420,12 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) == 0) as i32)
 // CHECK-NEXT:         + (((unsafe { __builtin_strchr(second.0.as_mut_ptr() as *const i8, 45i32) })
-// CHECK-NEXT:             == unsafe { (second.0.as_mut_ptr() as *mut i8).add(5) }) as i32)
+// CHECK-NEXT:             == unsafe { second.0.as_mut_ptr().add(5) }) as i32)
 // CHECK-NEXT:         + (((unsafe { __builtin_strrchr(second.0.as_mut_ptr() as *const i8, 45i32) })
-// CHECK-NEXT:             == unsafe { (second.0.as_mut_ptr() as *mut i8).add(10) }) as i32)
+// CHECK-NEXT:             == unsafe { second.0.as_mut_ptr().add(10) }) as i32)
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             __builtin_strstr(second.0.as_mut_ptr() as *const i8, c"head".as_ptr())
-// CHECK-NEXT:         }) == unsafe { (second.0.as_mut_ptr() as *mut i8).add(6) }) as i32)
+// CHECK-NEXT:         }) == unsafe { second.0.as_mut_ptr().add(6) }) as i32)
 // CHECK-NEXT:         + ((unsafe {
 // CHECK-NEXT:             __builtin_strspn(second.0.as_mut_ptr() as *const i8, c"clang".as_ptr())
 // CHECK-NEXT:         }) as i32)
@@ -440,7 +434,7 @@ int main(void) {
 // CHECK-NEXT:         }) as i32)
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             __builtin_strpbrk(second.0.as_mut_ptr() as *const i8, c"-g".as_ptr())
-// CHECK-NEXT:         }) == unsafe { (second.0.as_mut_ptr() as *mut i8).add(4) }) as i32)
+// CHECK-NEXT:         }) == unsafe { second.0.as_mut_ptr().add(4) }) as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

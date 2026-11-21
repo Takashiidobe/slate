@@ -63,7 +63,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             pthread_create(
-// CHECK-NEXT:                 (threads.0.as_mut_ptr() as *mut u64).offset(i as isize),
+// CHECK-NEXT:                 threads.0.as_mut_ptr().offset(i as isize),
 // CHECK-NEXT:                 core::ptr::null::<slate_support::pthread_attr_t>(),
 // CHECK-NEXT:                 Some(worker),
 // CHECK-NEXT:                 core::ptr::null_mut::<()>(),

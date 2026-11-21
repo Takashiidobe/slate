@@ -94,13 +94,13 @@ int main(void) {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_1]].value = 1i32;
-// CHECK-NEXT:             [[T_1]].next = unsafe { (ring.0.as_mut_ptr() as *mut node).add(1) };
+// CHECK-NEXT:             [[T_1]].next = unsafe { ring.0.as_mut_ptr().add(1) };
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             [[T_2]].value = 2i32;
-// CHECK-NEXT:             [[T_2]].next = unsafe { (ring.0.as_mut_ptr() as *mut node).add(0) };
+// CHECK-NEXT:             [[T_2]].next = unsafe { ring.0.as_mut_ptr().add(0) };
 // CHECK-NEXT:             [[T_2]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ];
@@ -119,7 +119,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), flags[0]) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut data: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32, 1i32, 2i32, 3i32]);
-// CHECK-NEXT:     let mut p: *mut i32 = data.0.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:     let mut p: *mut i32 = data.0.as_mut_ptr();
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let _ = advance(p) as *const ();

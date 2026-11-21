@@ -131,22 +131,20 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,crc,lse,neon")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vcgtq_f16(
-// CHECK-NEXT:     __p0: core::simd::Simd<f16, 8>,
-// CHECK-NEXT:     __p1: core::simd::Simd<f16, 8>,
+// CHECK-NEXT:     mut __p0: core::simd::Simd<f16, 8>,
+// CHECK-NEXT:     mut __p1: core::simd::Simd<f16, 8>,
 // CHECK-NEXT: ) -> core::simd::Simd<u16, 8> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<u16, 8> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<u16, 8>>(
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let [[T_0:__t[0-9]+]]: core::simd::Simd<f16, 8> = __p0;
-// CHECK-NEXT:                 let [[T_1:__t[0-9]+]] = [[T_0]].to_array();
-// CHECK-NEXT:                 let [[T_2:__t[0-9]+]]: core::simd::Simd<f16, 8> = __p1;
-// CHECK-NEXT:                 let [[T_3:__t[0-9]+]] = [[T_2]].to_array();
-// CHECK-NEXT:                 let [[T_4:__t[0-9]+]]: core::simd::Simd<i16, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                 let [[T_0:__t[0-9]+]] = __p0.to_array();
+// CHECK-NEXT:                 let [[T_1:__t[0-9]+]] = __p1.to_array();
+// CHECK-NEXT:                 let [[T_2:__t[0-9]+]]: core::simd::Simd<i16, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
-// CHECK-NEXT:                         |__lane| -(([[T_1]][__lane] > [[T_3]][__lane]) as i16),
+// CHECK-NEXT:                         |__lane| -(([[T_0]][__lane] > [[T_1]][__lane]) as i16),
 // CHECK-NEXT:                     ),
 // CHECK-NEXT:                 );
-// CHECK-NEXT:                 [[T_4]]
+// CHECK-NEXT:                 [[T_2]]
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -510,7 +508,7 @@ int main(void) {
 // CHECK-NEXT: unsafe fn show(name: *const u8, __s1: core::simd::Simd<f16, 8>) {
 // CHECK-NEXT:     let mut out: [f16; 8] = [0 as f16; 8];
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (out.as_mut_ptr() as *mut core::simd::Simd<f16, 8>)
+// CHECK-NEXT:         ((out.as_mut_ptr() as *mut ()) as *mut core::simd::Simd<f16, 8>)
 // CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<f16, 8>>(
@@ -559,7 +557,8 @@ int main(void) {
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<f16, 8>, core::simd::Simd<i8, 16>>(
 // CHECK-NEXT:                         unsafe {
-// CHECK-NEXT:                             (r#in.as_mut_ptr() as *mut core::simd::Simd<f16, 8>)
+// CHECK-NEXT:                             ((r#in.as_mut_ptr() as *const ())
+// CHECK-NEXT:                                     as *mut core::simd::Simd<f16, 8>)
 // CHECK-NEXT:                                 .read_unaligned()
 // CHECK-NEXT:                         },
 // CHECK-NEXT:                     )
@@ -670,33 +669,33 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut __ret: u16 = 0;
 // CHECK-NEXT:         let __s0: core::simd::Simd<u16, 8> = g;
-// CHECK-NEXT:         __ret = unsafe {
+// CHECK-NEXT:         __ret = (unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<u16, 8>, core::simd::Simd<i16, 8>>(
 // CHECK-NEXT:                 __s0,
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }[0] as u16;
+// CHECK-NEXT:         }[0] as u16) as u16;
 // CHECK-NEXT:         [[V_8]] = __ret;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_9:__v[0-9]+]]: u16;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut __ret: u16 = 0;
 // CHECK-NEXT:         let __s0: core::simd::Simd<u16, 8> = g;
-// CHECK-NEXT:         __ret = unsafe {
+// CHECK-NEXT:         __ret = (unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<u16, 8>, core::simd::Simd<i16, 8>>(
 // CHECK-NEXT:                 __s0,
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }[4] as u16;
+// CHECK-NEXT:         }[4] as u16) as u16;
 // CHECK-NEXT:         [[V_9]] = __ret;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_10:__v[0-9]+]]: u16;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut __ret: u16 = 0;
 // CHECK-NEXT:         let __s0: core::simd::Simd<u16, 8> = g;
-// CHECK-NEXT:         __ret = unsafe {
+// CHECK-NEXT:         __ret = (unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<u16, 8>, core::simd::Simd<i16, 8>>(
 // CHECK-NEXT:                 __s0,
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }[6] as u16;
+// CHECK-NEXT:         }[6] as u16) as u16;
 // CHECK-NEXT:         [[V_10]] = __ret;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -896,9 +895,9 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_26:__v[0-9]+]]: u16;
 // CHECK-NEXT:     let mut __ret: u16 = 0;
 // CHECK-NEXT:     let __s0: core::simd::Simd<u16, 8> = unsafe { vreinterpretq_u16_f16(add(a, b)) };
-// CHECK-NEXT:     __ret = unsafe {
+// CHECK-NEXT:     __ret = (unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<u16, 8>, core::simd::Simd<i16, 8>>(__s0)
-// CHECK-NEXT:     }[0] as u16;
+// CHECK-NEXT:     }[0] as u16) as u16;
 // CHECK-NEXT:     [[V_26]] = __ret;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"bits %04x\n".as_ptr(), [[V_26]] as i32) };

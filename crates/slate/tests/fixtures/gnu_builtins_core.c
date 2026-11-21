@@ -182,15 +182,15 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [u8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let assumed: *mut () = storage.0.as_mut_ptr() as *mut ();
+// CHECK-NEXT:     let assumed: *mut () = (storage.0.as_mut_ptr() as *const ()) as *mut ();
 // CHECK-NEXT:     let likely: i32 = 29;
 // CHECK-NEXT:     let probable: i32 = 31;
 // CHECK-NEXT:     unsafe { core::hint::assert_unchecked((storage.0[0] as i32) == 0) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_intrinsic_7eb885185d29c159(
-// CHECK-NEXT:             code.as_mut_ptr() as *mut (),
+// CHECK-NEXT:             (code.as_mut_ptr() as *mut i8) as *mut (),
 // CHECK-NEXT:             (code.as_mut_ptr() as *mut i8)
-// CHECK-NEXT:                 .offset(core::mem::size_of::<[u8; 8]>() as isize) as *mut (),
+// CHECK-NEXT:                 .add((core::mem::size_of::<[u8; 8]>() as u64) as usize) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(gnu_builtin_never)) })

@@ -52,9 +52,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut words: __SlateAlign16<[*const i8; 3]> = __SlateAlign16(
 // CHECK-NEXT:     [
-// CHECK-NEXT:         (b"zero\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         (b"one\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         (b"two\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         b"zero\0".as_ptr() as *const i8,
+// CHECK-NEXT:         b"one\0".as_ptr() as *const i8,
+// CHECK-NEXT:         b"two\0".as_ptr() as *const i8,
 // CHECK-NEXT:     ],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
@@ -90,7 +90,7 @@ int main(void) {
 // CHECK-NEXT:             core::ptr::addr_of!(label) as *const i8,
 // CHECK-NEXT:             core::ptr::addr_of_mut!(grid[0]) as *mut i8,
 // CHECK-NEXT:             core::ptr::addr_of_mut!(grid[1]) as *mut i8,
-// CHECK-NEXT:             local.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             local.as_mut_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

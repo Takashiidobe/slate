@@ -742,7 +742,7 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let wide: c_long = MIN!((5000000000 as c_long), (7000000000 as c_long));
+// CHECK-NEXT:     let wide: c_long = MIN!(5000000000 as c_long, 7000000000 as c_long);
 // CHECK-NEXT:     let small: u8 = 200;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -896,7 +896,7 @@ int main(void) {
 // CHECK-NEXT:                 c"%d %d %d\n".as_ptr(),
 // CHECK-NEXT:                 shifted,
 // CHECK-NEXT:                 global_size,
-// CHECK-NEXT:                 WIDE_MIN!((100 as c_ulong), unsafe { global_size }) as i32,
+// CHECK-NEXT:                 WIDE_MIN!(100 as c_ulong, unsafe { global_size }) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -907,7 +907,7 @@ int main(void) {
 // CHECK-NEXT:             "{} {} {}",
 // CHECK-NEXT:             shifted,
 // CHECK-NEXT:             unsafe { global_size },
-// CHECK-NEXT:             WIDE_MIN!((100 as c_ulong), unsafe { global_size }) as i32
+// CHECK-NEXT:             WIDE_MIN!(100 as c_ulong, unsafe { global_size }) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -1179,7 +1179,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*pointer).count = 30;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_2]]: *mut holder = unsafe { (many.0.as_mut_ptr() as *mut holder).add(2) };
+// CHECK-NEXT:     let [[V_2]]: *mut holder = unsafe { many.0.as_mut_ptr().add(2) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*[[V_2]]).count = (*[[V_2]]).count + 1;
 // CHECK-NEXT:     }
@@ -1303,9 +1303,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut cursor: *mut i32 = unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut global_size: i32 = 8;
+// CHECK-NEXT: static mut global_size: i32 = 1i32 << 3i32;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut kept_static: i32 = 4;
+// CHECK-NEXT: static mut kept_static: i32 = 1i32 << 2i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut table: __SlateAlignLargeArray<[i32; 5]> = __SlateAlignLargeArray(
 // CHECK-NEXT:     [5i32, 7i32, 11i32, 13i32, 17i32],

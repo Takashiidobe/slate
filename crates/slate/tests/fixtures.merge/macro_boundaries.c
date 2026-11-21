@@ -118,7 +118,7 @@ int main(void) {
 // CHECK-NEXT:     let mut state: i32 = 0;
 // CHECK-NEXT:     ASSERT!(a == b, c"a and b differ".as_ptr() as *mut c_char);
 // CHECK-NEXT:     ASSERT!(a + 1 == b + 1, c"still differ".as_ptr() as *mut c_char);
-// CHECK-NEXT:     ASSERT!(7i32 == 7, c"folded".as_ptr() as *mut c_char);
+// CHECK-NEXT:     ASSERT!((1i32 << 3i32) - 1 == 7, c"folded".as_ptr() as *mut c_char);
 // CHECK-NEXT:     ASSERT!(
 // CHECK-NEXT:         next_id(core::ptr::addr_of_mut!(state)) == 1,
 // CHECK-NEXT:         c"side effect".as_ptr() as *mut c_char

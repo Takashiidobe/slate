@@ -5,6 +5,8 @@
 - [Where a rewrite belongs](#where-a-rewrite-belongs)
 - [Transform stage](#transform-stage)
   - [Const-fold](#const-fold)
+  - [Casts are lowering, not a
+    transform](#casts-are-lowering-not-a-transform)
 - [Keys](#keys)
 - [Call resolution](#call-resolution)
 - [Scaling rule](#scaling-rule)
@@ -58,7 +60,7 @@ the rewrite's precondition reads:
 
 | Precondition | Place | Examples |
 | --- | --- | --- |
-| C meaning only, and the result is still C | IR transform | const-fold, cast and truth canonicalization, dead code, decl-init |
+| C meaning only, and the result is still C | IR transform | const-fold, truth canonicalization, dead code, decl-init |
 | C meaning, but the result is a Rust form | fact; lowering picks the form | pointer capability, counted loops, `mut`, libc callees |
 | One IR node already decides the spelling | lowering emits it directly | `+=`, `while`, `.add()`, `.is_null()`, `c""` |
 | The Rust form the lowerer chose | Rust rule after lowering | `unsafe` scoping, `MaybeUninit` slots, Rust scopes |
@@ -114,8 +116,8 @@ spell and nothing else:
   has no negative literal; `-1` is `const<i32>(-1)`.
 - Arithmetic, comparisons and shifts on constants stay as written (`60 * 60`,
   `1 << 18`, `FE_ALL_EXCEPT`'s `|` chain): rustc folds them, and the output
-  keeps the C's meaning. Explicit casts stay; a no-op one is
-  `slate-8ge7.24.5`'s.
+  keeps the C's meaning. Explicit casts stay, no-op ones included (see
+  [Casts are lowering](#casts-are-lowering-not-a-transform)).
 - Values inside a kept expansion or a `Module::macro_values` region, and
   conversions of a macro-valued constant, are left alone.
 
@@ -126,6 +128,32 @@ suffix where the context types it (`let c: i8 = 97`), and
 `literal_casts::bare_initializers` does the same for a static whose declared
 type is `T`. A constant array index or lane is written bare by
 `FunctionLowerer::lower_index` when it fits the target's `usize`.
+
+### Casts are lowering, not a transform
+
+`slate-8ge7.24.5` planned a `cast-canonicalize` transform to replace the Rust
+rule `peel_casts`. Measured on the 3067-fixture corpus it has nothing to do:
+
+- An implicit `pointer_cast` of an implicit `pointer_cast` never occurs; sema
+  emits one conversion per C conversion. 5.7k of `peel_casts`' ~7k fires were
+  casts the lowerer itself added (`b"x".as_ptr() as *mut i8` under a C
+  `const char *` conversion, `buf.as_mut_ptr() as *mut i8`).
+- Whether an implicit same-type conversion can go depends on its Rust
+  spelling. `long f(int v) { return v; }` is `i32 -> i32` on LLP64, but under
+  `--merge` the result lowers as `c_long`, and dropping the cast on one target
+  splits the function per target. Only the lowerer sees that, so the
+  implicit same-type `reinterpret` arm in `lower_value_node` stays, keyed on
+  the lowered types.
+
+Lowering emits each cast once instead: array decay is `buf.as_mut_ptr()` with
+no `as *mut T` when the method already returns the C pointer type; a C pointer
+conversion of an array decay retargets the decay's cast (`b"x".as_ptr() as
+*const i8`); an integer conversion of a layout query retargets the query's cast
+(`size_of::<T>() as i32`, exact for any `usize`), and a query of type `usize`
+has no cast. Explicit conversions stay, same-type ones included: `(size_t)n` is
+`u64 -> u64` on LP64 but not on i686 or LLP64, and `--merge` lifts one spelling
+across targets. `(int *)(char *)v` keeps both casts, and float or
+narrow-then-widen pairs were never collapsed.
 
 ## Keys
 

@@ -200,7 +200,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn offset(base: *const (), field: *const ()) -> u32 {
-// CHECK-NEXT:     ((unsafe { (field as *const i8).offset_from(base as *const i8) }) as i32) as u32
+// CHECK-NEXT:     ((unsafe { (field as *const i8).offset_from((base as *const i8) as *const i8) })
+// CHECK-NEXT:         as i32) as u32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn dump(name: *const i8, object: *const (), size: u32) {
@@ -333,11 +334,11 @@ int main(void) {
 // CHECK-NEXT:             core::mem::size_of::<arrays>() as u32,
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(a) as *const (),
-// CHECK-NEXT:                 (a.d.as_mut_ptr() as *mut f64).add(0) as *const (),
+// CHECK-NEXT:                 a.d.as_mut_ptr().add(0) as *const (),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(a) as *const (),
-// CHECK-NEXT:                 (a.d.as_mut_ptr() as *mut f64).add(1) as *const (),
+// CHECK-NEXT:                 a.d.as_mut_ptr().add(1) as *const (),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             offset(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(a) as *const (),
@@ -431,11 +432,11 @@ int main(void) {
 // CHECK-NEXT:             c"list %zu %u %u\n".as_ptr(),
 // CHECK-NEXT:             core::mem::size_of::<[wide; 3]>() as u32,
 // CHECK-NEXT:             offset(
-// CHECK-NEXT:                 (list.as_mut_ptr() as *mut wide).add(0) as *const (),
-// CHECK-NEXT:                 (list.as_mut_ptr() as *mut wide).add(1) as *const (),
+// CHECK-NEXT:                 list.as_mut_ptr().add(0) as *const (),
+// CHECK-NEXT:                 list.as_mut_ptr().add(1) as *const (),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             offset(
-// CHECK-NEXT:                 (list.as_mut_ptr() as *mut wide).add(0) as *const (),
+// CHECK-NEXT:                 list.as_mut_ptr().add(0) as *const (),
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(list[2].l) as *const (),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )

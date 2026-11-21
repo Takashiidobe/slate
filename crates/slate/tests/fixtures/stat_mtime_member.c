@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), info.st_mtime) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), info.st_mtime as i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

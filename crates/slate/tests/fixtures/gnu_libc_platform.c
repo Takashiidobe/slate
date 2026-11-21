@@ -370,7 +370,7 @@ int main(void) {
 // CHECK-NEXT:     let canonical: *mut i8 = unsafe { canonicalize_file_name(c".".as_ptr()) };
 // CHECK-NEXT:     total += !unsafe {
 // CHECK-NEXT:             getcwd(
-// CHECK-NEXT:                 (current.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:                 current.0.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:                 (core::mem::size_of::<[i8; 4096]>() as u64) as usize,
 // CHECK-NEXT:             ) as *mut i8
 // CHECK-NEXT:         }
@@ -394,7 +394,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: *mut i8;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let __old: *const i8 = c"slate".as_ptr();
-// CHECK-NEXT:         let __len: u64 = unsafe { "slate".len() as u64 }.wrapping_add(1);
+// CHECK-NEXT:         let __len: u64 = unsafe { ("slate".len() as u64) as u64 }.wrapping_add(1);
 // CHECK-NEXT:         let __new: *mut i8 = (__slate_alloca::alloca(__len as usize, 16usize) as *mut ())
 // CHECK-NEXT:             as *mut i8;
 // CHECK-NEXT:         [[V_0]] = (unsafe {
@@ -571,8 +571,7 @@ int main(void) {
 // CHECK-NEXT:     total += ((unsafe { arc4random_uniform(1u32) }) == 0) as i32;
 // CHECK-NEXT:     total += ((unsafe { get_nprocs() }) > 0) as i32;
 // CHECK-NEXT:     total += ((unsafe { get_phys_pages() }) > 0) as i32;
-// CHECK-NEXT:     total += ((unsafe { backtrace(frames.0.as_mut_ptr() as *mut *mut (), 8i32) }) > 0)
-// CHECK-NEXT:         as i32;
+// CHECK-NEXT:     total += ((unsafe { backtrace(frames.0.as_mut_ptr(), 8i32) }) > 0) as i32;
 // CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         dladdr(
 // CHECK-NEXT:             (unsafe {

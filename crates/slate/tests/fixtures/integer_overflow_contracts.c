@@ -91,7 +91,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %llu\n".as_ptr(),
 // CHECK-NEXT:             scale(2147483649u32, 6u32),
-// CHECK-NEXT:             mix(42u64),
+// CHECK-NEXT:             mix(42u64) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

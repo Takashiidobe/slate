@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn middle(items: *mut [u32; 3]) -> u32 {
-// CHECK-NEXT:     unsafe { *((*items).as_mut_ptr() as *mut u32).add(1) }
+// CHECK-NEXT:     unsafe { *(*items).as_mut_ptr().add(1) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

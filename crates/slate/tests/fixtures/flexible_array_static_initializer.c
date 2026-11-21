@@ -143,8 +143,8 @@ int main(void) {
 // CHECK-NEXT:             (core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(tail)
 // CHECK-NEXT:                     as *mut Tail)).name) as *mut i8)
 // CHECK-NEXT:                 .offset_from(
-// CHECK-NEXT:                     core::ptr::addr_of_mut!(*(core::ptr::addr_of_mut!(tail)
-// CHECK-NEXT:                         as *mut Tail)) as *mut i8,
+// CHECK-NEXT:                     (core::ptr::addr_of_mut!(*(core::ptr::addr_of_mut!(tail)
+// CHECK-NEXT:                         as *mut Tail)) as *mut i8) as *mut i8,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:         }) as i64) as i32
 // CHECK-NEXT:     );

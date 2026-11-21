@@ -122,7 +122,7 @@ int main(void) {
 // CHECK-NEXT:             1i32 as i32,
 // CHECK-NEXT:             (slate_support::SOCK_STREAM as i32) as i32,
 // CHECK-NEXT:             0i32 as i32,
-// CHECK-NEXT:             (pair.as_mut_ptr() as *mut i32) as *mut i32,
+// CHECK-NEXT:             pair.as_mut_ptr() as *mut i32,
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }) != 0 {
 // CHECK-NEXT:         return 1;
@@ -135,7 +135,7 @@ int main(void) {
 // CHECK-NEXT:             ((core::mem::size_of::<slate_support::msghdr>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     send_message.msg_iov = out.0.as_mut_ptr() as *mut slate_support::iovec;
+// CHECK-NEXT:     send_message.msg_iov = out.0.as_mut_ptr();
 // CHECK-NEXT:     send_message.msg_iovlen = 2u64 as _;
 // CHECK-NEXT:     if (unsafe {
 // CHECK-NEXT:         sendmsg(
@@ -155,7 +155,7 @@ int main(void) {
 // CHECK-NEXT:             ((core::mem::size_of::<slate_support::msghdr>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     receive_message.msg_iov = r#in.0.as_mut_ptr() as *mut slate_support::iovec;
+// CHECK-NEXT:     receive_message.msg_iov = r#in.0.as_mut_ptr();
 // CHECK-NEXT:     receive_message.msg_iovlen = 2u64 as _;
 // CHECK-NEXT:     if (unsafe {
 // CHECK-NEXT:         recvmsg(
@@ -172,8 +172,8 @@ int main(void) {
 // CHECK-NEXT:             c"%zu %zu %s%s %d\n".as_ptr(),
 // CHECK-NEXT:             total_length(out.0.as_mut_ptr() as *const slate_support::iovec, 2i32),
 // CHECK-NEXT:             total_length(r#in.0.as_mut_ptr() as *const slate_support::iovec, 2i32),
-// CHECK-NEXT:             a.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             b.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             a.as_mut_ptr(),
+// CHECK-NEXT:             b.as_mut_ptr(),
 // CHECK-NEXT:             (receive_message.msg_iovlen as u64) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

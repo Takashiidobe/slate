@@ -33,7 +33,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "leal {1}, {0:e}",
 // CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             const 8 as i32,
+// CHECK-NEXT:             const 8i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
@@ -63,7 +63,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ld %d\n".as_ptr(),
 // CHECK-NEXT:             immediate_address(),
-// CHECK-NEXT:             through_register((values.as_mut_ptr() as *mut i32).add(1)),
+// CHECK-NEXT:             through_register(values.as_mut_ptr().add(1)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

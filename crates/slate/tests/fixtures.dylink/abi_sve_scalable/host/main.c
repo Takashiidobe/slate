@@ -136,7 +136,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::aarch64::svst1_s32(
 // CHECK-NEXT:             core::arch::aarch64::svptrue_b32(),
-// CHECK-NEXT:             lanes.as_mut_ptr() as *mut i32,
+// CHECK-NEXT:             lanes.as_mut_ptr(),
 // CHECK-NEXT:             r,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -163,7 +163,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::aarch64::svst1_f64(
 // CHECK-NEXT:             core::arch::aarch64::svptrue_b64(),
-// CHECK-NEXT:             out.as_mut_ptr() as *mut f64,
+// CHECK-NEXT:             out.as_mut_ptr(),
 // CHECK-NEXT:             scaled,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

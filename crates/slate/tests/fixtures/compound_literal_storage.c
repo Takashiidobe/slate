@@ -133,7 +133,7 @@ int main(void) {
 // CHECK-NEXT:                     [[SLATE_COMPOUND_2]] = [1i32, 2i32, 3i32, copied.y];
 // CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
 // CHECK-NEXT:                 })
-// CHECK-NEXT:                 .as_mut_ptr() as *mut i32
+// CHECK-NEXT:                 .as_mut_ptr()
 // CHECK-NEXT:         }) as *const i32,
 // CHECK-NEXT:         4i32,
 // CHECK-NEXT:     );

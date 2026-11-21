@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT:         __slate_intrinsic_7eb885185d29c159(
 // CHECK-NEXT:             (core::ptr::addr_of_mut!(code) as *mut u8) as *mut (),
 // CHECK-NEXT:             (core::ptr::addr_of_mut!(code) as *mut u8)
-// CHECK-NEXT:                 .offset(core::mem::size_of::<[u8; 64]>() as isize) as *mut (),
+// CHECK-NEXT:                 .add((core::mem::size_of::<[u8; 64]>() as u64) as usize) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {

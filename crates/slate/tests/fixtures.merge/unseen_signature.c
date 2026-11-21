@@ -86,7 +86,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(windows, feature = "alpha", feature = "beta", not(feature = "gamma")))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), widen((1 as c_long)) as i32) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), widen(1 as c_long) as i32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
@@ -98,7 +98,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(unix, feature = "alpha", feature = "beta", not(feature = "gamma")))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", (unsafe { widen((1 as c_long)) }) as i32);
+// CHECK-NEXT:         println!("{}", (unsafe { widen(1 as c_long) }) as i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

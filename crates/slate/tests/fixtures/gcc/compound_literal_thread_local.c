@@ -143,8 +143,8 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {} {} {} {} {}", a, b, c, worker_result, created, joined);
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = (unsafe { *pair_a().add(0) }) + unsafe { *pair_b().add(1) };
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = unsafe { (*point()).y };
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = unsafe { (*point()).x };
-// CHECK-NEXT:     println!("{} {} {} {}", unsafe { *counter() }, [[V_5]], [[V_4]], [[V_3]]);
+// CHECK-NEXT:     let [[V_0]]: i32 = unsafe { (*point()).x };
+// CHECK-NEXT:     println!("{} {} {} {}", unsafe { *counter() }, [[V_0]], [[V_4]], [[V_3]]);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -346,7 +346,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{}", length_of(c"direct".as_ptr()));
 // CHECK-NEXT:     }
-// CHECK-NEXT:     CALL_SUM!(numbers.as_mut_ptr() as *mut i32, 3i32);
+// CHECK-NEXT:     CALL_SUM!(numbers.as_mut_ptr(), 3i32);
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]

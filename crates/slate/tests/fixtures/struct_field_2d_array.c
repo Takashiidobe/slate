@@ -80,27 +80,23 @@ int main(void) {
 // CHECK-NEXT: fn fill(t: *mut table) {
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *((*((*t).rows.as_mut_ptr() as *mut [i8; 3]).offset(i as isize)).as_mut_ptr()
-// CHECK-NEXT:                     as *mut i8)
-// CHECK-NEXT:                 .add(0) = (97 + i) as i8;
+// CHECK-NEXT:             *(*(*t).rows.as_mut_ptr().offset(i as isize)).as_mut_ptr().add(0) = (97 + i)
+// CHECK-NEXT:                 as i8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *((*((*t).rows.as_mut_ptr() as *mut [i8; 3]).offset(i as isize)).as_mut_ptr()
-// CHECK-NEXT:                     as *mut i8)
-// CHECK-NEXT:                 .add(1) = (48 + i) as i8;
+// CHECK-NEXT:             *(*(*t).rows.as_mut_ptr().offset(i as isize)).as_mut_ptr().add(1) = (48 + i)
+// CHECK-NEXT:                 as i8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *((*((*t).rows.as_mut_ptr() as *mut [i8; 3]).offset(i as isize)).as_mut_ptr()
-// CHECK-NEXT:                     as *mut i8)
-// CHECK-NEXT:                 .add(2) = 0;
+// CHECK-NEXT:             *(*(*t).rows.as_mut_ptr().offset(i as isize)).as_mut_ptr().add(2) = 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fill_via_ptr(t: *mut table, i: i32) {
-// CHECK-NEXT:     let row: *mut [i8; 3] = unsafe { (*t).rows.as_mut_ptr() as *mut [i8; 3] };
+// CHECK-NEXT:     let row: *mut [i8; 3] = unsafe { (*t).rows.as_mut_ptr() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *((*row.offset(i as isize).add(0)).as_mut_ptr() as *mut i8).add(0) = 88;
+// CHECK-NEXT:         *(*row.offset(i as isize).add(0)).as_mut_ptr().add(0) = 88;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -109,11 +105,10 @@ int main(void) {
 // CHECK-NEXT:         for j in 0i32..3i32 {
 // CHECK-NEXT:             for k in 0i32..4i32 {
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *((*((*((*c).v.as_mut_ptr() as *mut {{\[\[}}i32; 4]; 3])
-// CHECK-NEXT:                                         .offset(i as isize))
-// CHECK-NEXT:                                     .as_mut_ptr() as *mut [i32; 4])
-// CHECK-NEXT:                                 .offset(j as isize))
-// CHECK-NEXT:                             .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:                     *(*(*(*c).v.as_mut_ptr().offset(i as isize))
+// CHECK-NEXT:                             .as_mut_ptr()
+// CHECK-NEXT:                             .offset(j as isize))
+// CHECK-NEXT:                         .as_mut_ptr()
 // CHECK-NEXT:                         .offset(k as isize) = i * 100 + j * 10 + k;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
@@ -124,14 +119,12 @@ int main(void) {
 // CHECK-NEXT: fn sum_cube_via_ptr(c: &[cube]) -> i32 {
 // CHECK-NEXT:     let plane: *mut [i32; 4] = unsafe {
 // CHECK-NEXT:         (*(c[0usize].v.as_ptr() as *mut {{\[\[}}i32; 4]; 3]).add(1)).as_mut_ptr()
-// CHECK-NEXT:             as *mut [i32; 4]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for j in 0i32..3i32 {
 // CHECK-NEXT:         for k in 0i32..4i32 {
 // CHECK-NEXT:             total += unsafe {
-// CHECK-NEXT:                 *((*plane.offset(j as isize).add(0)).as_mut_ptr() as *mut i32)
-// CHECK-NEXT:                     .offset(k as isize)
+// CHECK-NEXT:                 *(*plane.offset(j as isize).add(0)).as_mut_ptr().offset(k as isize)
 // CHECK-NEXT:             };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -145,10 +138,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s\n".as_ptr(),
-// CHECK-NEXT:                 t.rows[i as usize].as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             )
+// CHECK-NEXT:             slate_support::printf(c"%s\n".as_ptr(), t.rows[i as usize].as_mut_ptr())
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }

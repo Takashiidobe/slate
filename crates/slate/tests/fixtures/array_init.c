@@ -48,15 +48,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", sum);
 // CHECK-NEXT:     println!("{} {}", partial.0[1], partial.0[3]);
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%s\n".as_ptr(), s.as_mut_ptr() as *mut i8) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s\n".as_ptr(), s.as_mut_ptr()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(
-// CHECK-NEXT:             c"%s %d\n".as_ptr(),
-// CHECK-NEXT:             padded.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             padded[4] as i32,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         slate_support::printf(c"%s %d\n".as_ptr(), padded.as_mut_ptr(), padded[4] as i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0

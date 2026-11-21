@@ -123,7 +123,7 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn owner_tag(d: *mut f64) -> i8 {
 // CHECK-NEXT:     let owner: *mut inner = (unsafe {
-// CHECK-NEXT:         (d as *mut i8).offset(-(core::mem::offset_of!(inner, d) as isize))
+// CHECK-NEXT:         (d as *mut i8).sub((core::mem::offset_of!(inner, d) as u64) as usize)
 // CHECK-NEXT:     }) as *mut inner;
 // CHECK-NEXT:     (97 + unsafe { (*owner).x }) as i8
 // CHECK: {{^}}}

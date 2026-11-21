@@ -27,7 +27,7 @@ char *entry_name(struct dirent *entry) { return entry->d_name; }
 // X86_64-APPLE-DARWIN-NEXT: #[unsafe(no_mangle)]
 // X86_64-APPLE-DARWIN-NEXT: extern "C-unwind" fn entry_name(entry: *mut dirent) -> *mut i8 {
 // AARCH64-APPLE-DARWIN-NEXT: extern "C-unwind" fn entry_name(entry: *mut slate_support::dirent) -> *mut i8 {
-// CHECK-NEXT:     unsafe { (*entry).d_name.as_mut_ptr() as *mut i8 }
+// CHECK-NEXT:     unsafe { (*entry).d_name.as_mut_ptr() }
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

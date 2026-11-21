@@ -745,7 +745,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"pairs[599]".as_ptr(),
-// CHECK-NEXT:         (unsafe { (pairs.0.as_mut_ptr() as *mut pair).add(599) }) as *const (),
+// CHECK-NEXT:         (unsafe { pairs.0.as_mut_ptr().add(599) }) as *const (),
 // CHECK-NEXT:         core::mem::size_of::<pair>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let raw: *const u8 = core::ptr::addr_of_mut!(pad) as *const u8;

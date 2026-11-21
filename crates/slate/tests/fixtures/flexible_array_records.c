@@ -285,28 +285,29 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (((unsafe {
 // CHECK-NEXT:         ((core::ptr::addr_of_mut!((*list).entries) as *mut Entry) as *mut i8)
-// CHECK-NEXT:             .offset_from(list as *mut i8)
+// CHECK-NEXT:             .offset_from((list as *mut i8) as *mut i8)
 // CHECK-NEXT:     }) as i64) as u64) != 8 {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (((unsafe {
 // CHECK-NEXT:         ((core::ptr::addr_of_mut!((*bytes).bytes) as *mut u8) as *mut i8)
-// CHECK-NEXT:             .offset_from(bytes as *mut i8)
+// CHECK-NEXT:             .offset_from((bytes as *mut i8) as *mut i8)
 // CHECK-NEXT:     }) as i64) as u64) != 12 {
 // CHECK-NEXT:         return 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (((unsafe {
 // CHECK-NEXT:         ((core::ptr::addr_of_mut!((*wide).values) as *mut LongDouble) as *mut i8)
-// CHECK-NEXT:             .offset_from(wide as *mut i8)
+// CHECK-NEXT:             .offset_from((wide as *mut i8) as *mut i8)
 // CHECK-NEXT:     }) as i64) as u64) != 16 {
 // CHECK-NEXT:         return 4;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (((unsafe { (bytes.add(1) as *mut i8).offset_from(bytes as *mut i8) }) as i64)
-// CHECK-NEXT:         as u64) != 16 {
+// CHECK-NEXT:     if (((unsafe {
+// CHECK-NEXT:         (bytes.add(1) as *mut i8).offset_from((bytes as *mut i8) as *mut i8)
+// CHECK-NEXT:     }) as i64) as u64) != 16 {
 // CHECK-NEXT:         return 5;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (((unsafe { (wide.add(1) as *mut i8).offset_from(wide as *mut i8) }) as i64)
-// CHECK-NEXT:         as u64) != 16 {
+// CHECK-NEXT:     if (((unsafe { (wide.add(1) as *mut i8).offset_from((wide as *mut i8) as *mut i8) })
+// CHECK-NEXT:         as i64) as u64) != 16 {
 // CHECK-NEXT:         return 6;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {

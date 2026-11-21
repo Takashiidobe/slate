@@ -23,7 +23,7 @@ int main(void) {
 // CHECK-NEXT:     let p: *mut [i32; 5] = core::ptr::addr_of_mut!(src.0);
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..5i32 {
-// CHECK-NEXT:         sum += unsafe { *((*p).as_mut_ptr() as *mut i32).offset(i as isize) };
+// CHECK-NEXT:         sum += unsafe { *(*p).as_mut_ptr().offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", sum);
 // CHECK-NEXT:     0

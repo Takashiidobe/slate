@@ -42,8 +42,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_bytes(
-// CHECK-NEXT:             (((dst.0.as_mut_ptr() as *mut i8).add(5) as *mut ())
-// CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             ((dst.0.as_mut_ptr().add(5) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (65i32 as i32) as u8,
 // CHECK-NEXT:             (3u64 as usize) as usize,
 // CHECK-NEXT:         )
@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%s\n".as_ptr(), moved.0.as_mut_ptr() as *mut i8) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s\n".as_ptr(), moved.0.as_mut_ptr()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

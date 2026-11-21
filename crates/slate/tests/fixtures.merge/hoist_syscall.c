@@ -27,10 +27,10 @@ int main(void) {
 // CHECK-NEXT: compile_error!("this crate was not translated for this target");
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_arch = "aarch64")]
-// CHECK-NEXT: const __SLATE_HOIST___slate_main: i32 = 69i32;
+// CHECK-NEXT: const __SLATE_HOIST___slate_main: i32 = 69;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_arch = "x86_64")]
-// CHECK-NEXT: const __SLATE_HOIST___slate_main: i32 = 295i32;
+// CHECK-NEXT: const __SLATE_HOIST___slate_main: i32 = 295;
 // CHECK-EMPTY:
 // CHECK-NEXT: // merge-second-target: linux-aarch64 aarch64-unknown-linux-gnu clang
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{}", __SLATE_HOIST___slate_main);
+// CHECK-NEXT:     println!("{}", __SLATE_HOIST___slate_main as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

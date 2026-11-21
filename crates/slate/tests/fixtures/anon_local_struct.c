@@ -68,9 +68,9 @@ int main(void) {
 // CHECK-NEXT:         end: core::ptr::null_mut::<i32>(),
 // CHECK-NEXT:         pointer: core::ptr::null_mut::<i32>(),
 // CHECK-NEXT:     };
-// CHECK-NEXT:     buf.start = storage.0.as_mut_ptr() as *mut i32;
-// CHECK-NEXT:     buf.pointer = storage.0.as_mut_ptr() as *mut i32;
-// CHECK-NEXT:     buf.end = unsafe { (storage.0.as_mut_ptr() as *mut i32).add(4) };
+// CHECK-NEXT:     buf.start = storage.0.as_mut_ptr();
+// CHECK-NEXT:     buf.pointer = storage.0.as_mut_ptr();
+// CHECK-NEXT:     buf.end = unsafe { storage.0.as_mut_ptr().add(4) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *buf.pointer = point.x + point.y;
 // CHECK-NEXT:     }
@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ld\n".as_ptr(),
-// CHECK-NEXT:             buf.pointer.offset_from(buf.start as *mut i32) as i64,
+// CHECK-NEXT:             (buf.pointer.offset_from(buf.start as *mut i32) as i64) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -91,7 +91,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ld\n".as_ptr(),
-// CHECK-NEXT:             buf.end.offset_from(buf.start as *mut i32) as i64,
+// CHECK-NEXT:             (buf.end.offset_from(buf.start as *mut i32) as i64) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

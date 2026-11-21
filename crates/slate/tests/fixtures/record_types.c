@@ -138,9 +138,9 @@ int main(void) {
 // CHECK-NEXT:     let mut first: Node = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     first.value = 1;
 // CHECK-NEXT:     first.next = core::ptr::addr_of_mut!(second);
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut Node = unsafe { (*first.next).next };
+// CHECK-NEXT:     let [[V_0]]: *mut Node = unsafe { (*first.next).next };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_1]]).value = (*[[V_1]]).value + 4;
+// CHECK-NEXT:         (*[[V_0]]).value = (*[[V_0]]).value + 4;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", sum_list(core::ptr::addr_of_mut!(first), 3i32));
 // CHECK-NEXT:     0

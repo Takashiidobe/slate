@@ -222,15 +222,17 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d\n".as_ptr(),
-// CHECK-NEXT:             (core::ptr::addr_of_mut!(h.value) as *mut i8)
-// CHECK-NEXT:                 .offset_from(core::ptr::addr_of_mut!(h) as *mut i8) as i32,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(h.value) as *mut i8)
+// CHECK-NEXT:                 .offset_from((core::ptr::addr_of_mut!(h) as *mut i8) as *mut i8) as i32)
+// CHECK-NEXT:                 as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d\n".as_ptr(),
-// CHECK-NEXT:             ((two.as_mut_ptr() as *mut holder).add(1) as *mut i8)
-// CHECK-NEXT:                 .offset_from((two.as_mut_ptr() as *mut holder).add(0) as *mut i8) as i32,
+// CHECK-NEXT:             ((two.as_mut_ptr().add(1) as *mut i8)
+// CHECK-NEXT:                 .offset_from((two.as_mut_ptr().add(0) as *mut i8) as *mut i8) as i32)
+// CHECK-NEXT:                 as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { printf(c"%g\n".as_ptr(), __slate_f80_to_f64(h.value)) };

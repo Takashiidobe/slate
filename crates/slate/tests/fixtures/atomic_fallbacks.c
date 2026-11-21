@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16(
 // CHECK-NEXT:         [10i32, 20i32, 30i32, 40i32],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut p: *mut i32 = values.0.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:     let mut p: *mut i32 = values.0.as_mut_ptr();
 // CHECK-NEXT:     let old_p: *mut i32 = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicPtr::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(p) as *mut *mut i32,
@@ -81,7 +81,7 @@ int main(void) {
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(p) as *mut *mut i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .swap(
-// CHECK-NEXT:                 (values.0.as_mut_ptr() as *mut i32).add(1) as *mut i32,
+// CHECK-NEXT:                 values.0.as_mut_ptr().add(1) as *mut i32,
 // CHECK-NEXT:                 core::sync::atomic::Ordering::Release,
 // CHECK-NEXT:             ) as *mut i32
 // CHECK-NEXT:     };

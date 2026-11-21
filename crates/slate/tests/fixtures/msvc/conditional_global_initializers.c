@@ -170,7 +170,7 @@ int main(void) {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_0:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_0]].text = ptrlen {
-// CHECK-NEXT:                 ptr: (b"(\0".as_ptr() as *mut i8) as *const (),
+// CHECK-NEXT:                 ptr: b"(\0".as_ptr() as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             };
 // X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_0]].r#type = 0u32;
@@ -191,7 +191,7 @@ int main(void) {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_1:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_1]].text = ptrlen {
-// CHECK-NEXT:                 ptr: (b")\0".as_ptr() as *mut i8) as *const (),
+// CHECK-NEXT:                 ptr: b")\0".as_ptr() as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             };
 // X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_1]].r#type = 1u32;
@@ -212,7 +212,7 @@ int main(void) {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_2:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_2]].text = ptrlen {
-// CHECK-NEXT:                 ptr: (b"&&\0".as_ptr() as *mut i8) as *const (),
+// CHECK-NEXT:                 ptr: b"&&\0".as_ptr() as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 3]>() as u64).wrapping_sub(1u64),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             };
 // X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_2]].r#type = 2u32;
@@ -233,7 +233,7 @@ int main(void) {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_3:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_3]].text = ptrlen {
-// CHECK-NEXT:                 ptr: (b"||\0".as_ptr() as *mut i8) as *const (),
+// CHECK-NEXT:                 ptr: b"||\0".as_ptr() as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 3]>() as u64).wrapping_sub(1u64),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             };
 // X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_3]].r#type = 3u32;
@@ -254,7 +254,7 @@ int main(void) {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             let mut [[T_4:__t[0-9]+]]: op = unsafe { core::mem::zeroed() };
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             [[T_4]].text = ptrlen {
-// CHECK-NEXT:                 ptr: (b"!\0".as_ptr() as *mut i8) as *const (),
+// CHECK-NEXT:                 ptr: b"!\0".as_ptr() as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 len: (core::mem::size_of::<[i8; 2]>() as u64).wrapping_sub(1u64),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             };
 // X86_64-PC-WINDOWS-MSVC-NEXT:             [[T_4]].r#type = 4u32;
@@ -275,19 +275,19 @@ int main(void) {
 // AARCH64-PC-WINDOWS-MSVC-NEXT: static names: __SlateConst<[ptrlen; 3]> = __SlateConst(
 // CHECK-NEXT:     [
 // CHECK-NEXT:         ptrlen {
-// CHECK-NEXT:             ptr: (b"ping\0".as_ptr() as *mut i8) as *const (),
+// CHECK-NEXT:             ptr: b"ping\0".as_ptr() as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
 // I686-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 5]>() as u32).wrapping_sub(1u32),
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
 // CHECK-NEXT:         },
 // CHECK-NEXT:         ptrlen {
-// CHECK-NEXT:             ptr: (b"query\0".as_ptr() as *mut i8) as *const (),
+// CHECK-NEXT:             ptr: b"query\0".as_ptr() as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 6]>() as u64).wrapping_sub(1u64),
 // I686-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 6]>() as u32).wrapping_sub(1u32),
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 6]>() as u64).wrapping_sub(1u64),
 // CHECK-NEXT:         },
 // CHECK-NEXT:         ptrlen {
-// CHECK-NEXT:             ptr: (b"session-bind@openssh.com\0".as_ptr() as *mut i8) as *const (),
+// CHECK-NEXT:             ptr: b"session-bind@openssh.com\0".as_ptr() as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 25]>() as u64).wrapping_sub(1u64),
 // I686-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 25]>() as u32).wrapping_sub(1u32),
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 25]>() as u64).wrapping_sub(1u64),
@@ -323,14 +323,14 @@ int main(void) {
 // CHECK-NEXT: static vt_a: __SlateConst<hash_vt> = __SlateConst(
 // CHECK-NEXT:     hash_vt {
 // CHECK-NEXT:         r#fn: Some(hash_a),
-// CHECK-NEXT:         desc: (b"a\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         desc: b"a\0".as_ptr() as *const i8,
 // CHECK-NEXT:     },
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: static vt_b: __SlateConst<hash_vt> = __SlateConst(
 // CHECK-NEXT:     hash_vt {
 // CHECK-NEXT:         r#fn: Some(hash_b),
-// CHECK-NEXT:         desc: (b"b\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         desc: b"b\0".as_ptr() as *const i8,
 // CHECK-NEXT:     },
 // CHECK-NEXT: );
 // CHECK-EMPTY:
@@ -347,9 +347,9 @@ int main(void) {
 // CHECK-NEXT:     sign_extra {
 // CHECK-NEXT:         hash: unsafe { core::ptr::addr_of!(vt_a.0) },
 // CHECK-NEXT:         fallback: Some(hash_b),
-// CHECK-NEXT:         alg: (b"Ed25519\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         alg: b"Ed25519\0".as_ptr() as *const i8,
 // CHECK-NEXT:         prefix: ptrlen {
-// CHECK-NEXT:             ptr: (b"\0".as_ptr() as *mut i8) as *const (),
+// CHECK-NEXT:             ptr: b"\0".as_ptr() as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 1]>() as u64).wrapping_sub(1u64),
 // I686-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 1]>() as u32).wrapping_sub(1u32),
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 1]>() as u64).wrapping_sub(1u64),
@@ -441,7 +441,13 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT:         / (core::mem::size_of::<op>() as u32)) {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[op; 5]>() as u64)
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         / (core::mem::size_of::<op>() as u64)) {
-// CHECK-NEXT:         CHECK!(((unsafe { operators.0[i as usize].r#type }) as u32) == (i as u32));
+// CHECK-NEXT:         CHECK!(
+// X86_64-PC-WINDOWS-MSVC-NEXT:             ((unsafe { operators.0[i as usize].r#type }) as u32)
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 == (((i as u32) as u32) as u32)
+// I686-PC-WINDOWS-MSVC-NEXT:             ((unsafe { operators.0[i as usize].r#type }) as u32) == ((i as u32) as u32)
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             ((unsafe { operators.0[i as usize].r#type }) as u32)
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 == (((i as u32) as u32) as u32)
+// CHECK-NEXT:         );
 // CHECK-NEXT:         CHECK__2!(
 // CHECK-NEXT:             same(unsafe { operators.0[i as usize].text }, unsafe { texts.0[i as usize] })
 // CHECK-NEXT:         );
@@ -552,11 +558,11 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT: static texts: __SlateConst<[*const i8; 5]> = __SlateConst(
 // AARCH64-PC-WINDOWS-MSVC-NEXT: static texts: __SlateConst<[*const i8; 5]> = __SlateConst(
 // CHECK-NEXT:     [
-// CHECK-NEXT:         (b"(\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         (b")\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         (b"&&\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         (b"||\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         (b"!\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         b"(\0".as_ptr() as *const i8,
+// CHECK-NEXT:         b")\0".as_ptr() as *const i8,
+// CHECK-NEXT:         b"&&\0".as_ptr() as *const i8,
+// CHECK-NEXT:         b"||\0".as_ptr() as *const i8,
+// CHECK-NEXT:         b"!\0".as_ptr() as *const i8,
 // CHECK-NEXT:     ],
 // CHECK-NEXT: );
 // CHECK-EMPTY:

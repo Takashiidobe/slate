@@ -334,37 +334,37 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kand(__A: u16, __B: u16) -> u16 {
-// CHECK-NEXT:     __A & __B
+// CHECK-NEXT:     (__A & __B) as u16
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kandn(__A: u16, __B: u16) -> u16 {
-// CHECK-NEXT:     !__A & __B
+// CHECK-NEXT:     (!__A & __B) as u16
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kor(__A: u16, __B: u16) -> u16 {
-// CHECK-NEXT:     __A | __B
+// CHECK-NEXT:     (__A | __B) as u16
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kunpackb(__A: u16, __B: u16) -> u16 {
-// CHECK-NEXT:     __A << 8u16 | __B & 255
+// CHECK-NEXT:     (__A << 8u16 | __B & 255) as u16
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kxnor(__A: u16, __B: u16) -> u16 {
-// CHECK-NEXT:     !(__A ^ __B)
+// CHECK-NEXT:     !(__A ^ __B) as u16
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kxor(__A: u16, __B: u16) -> u16 {
-// CHECK-NEXT:     __A ^ __B
+// CHECK-NEXT:     (__A ^ __B) as u16
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
@@ -382,13 +382,13 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _cvtu64_mask64(__A: u64) -> u64 {
-// CHECK-NEXT:     __A
+// CHECK-NEXT:     (__A as u64) as u64
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _load_mask32(__A: &u32) -> u32 {
-// CHECK-NEXT:     *__A
+// CHECK-NEXT:     *__A as u32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
@@ -400,19 +400,19 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kunpackd(__A: u64, __B: u64) -> u64 {
-// CHECK-NEXT:     __A << 32u64 | __B & 4294967295
+// CHECK-NEXT:     (__A << 32u64 | __B & 4294967295) as u64
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_kunpackw(__A: u32, __B: u32) -> u32 {
-// CHECK-NEXT:     __A << 16u32 | __B & 65535
+// CHECK-NEXT:     (__A << 16u32 | __B & 65535) as u32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512dq")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _kadd_mask16(__A: u16, __B: u16) -> u16 {
-// CHECK-NEXT:     __A.wrapping_add(__B)
+// CHECK-NEXT:     __A.wrapping_add(__B) as u16
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512dq")]
@@ -614,17 +614,22 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"kunpackw %08x\n".as_ptr(),
-// CHECK-NEXT:             _mm512_kunpackw(c, c ^ 1431677610),
+// CHECK-NEXT:             _mm512_kunpackw(c, c ^ 1431677610) as u32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"kunpackd %016llx\n".as_ptr(), _mm512_kunpackd(d, !d))
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"kunpackd %016llx\n".as_ptr(),
+// CHECK-NEXT:             _mm512_kunpackd(d, !d) as u64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"knot64 %016llx\n".as_ptr(), _knot_mask64(d)) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"knot64 %016llx\n".as_ptr(), _knot_mask64(d) as u64)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let loaded: u32 = unsafe { _load_mask32(&c) };
 // CHECK-NEXT:     {
@@ -636,27 +641,39 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"kmov %08x %016llx %02x\n".as_ptr(),
 // CHECK-NEXT:             _cvtmask32_u32(loaded),
-// CHECK-NEXT:             d,
+// CHECK-NEXT:             d as u64,
 // CHECK-NEXT:             _cvtmask8_u32(seed as u8),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"kshiftli16 %04x\n".as_ptr(), (a << 3u16) as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"kshiftli16 %04x\n".as_ptr(), ((a << 3u16) as u16) as u32)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"kshiftri32 %08x\n".as_ptr(), c >> 7u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"kshiftri32 %08x\n".as_ptr(), ((c >> 7u32) as u32) as u32)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"kshiftri32_wide %08x\n".as_ptr(), 0u32) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"kshiftli8 %02x\n".as_ptr(), ((seed as u8) << 5u8) as u32)
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"kshiftli8 %02x\n".as_ptr(),
+// CHECK-NEXT:             (((seed as u8) << 5u8) as u8) as u32,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"kshiftri64 %016llx\n".as_ptr(), d >> 61u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"kshiftri64 %016llx\n".as_ptr(),
+// CHECK-NEXT:             ((d >> 61u64) as u64) as u64,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

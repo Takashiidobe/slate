@@ -293,7 +293,7 @@ int main(void) {
 // CHECK-NEXT:                 5i32,
 // CHECK-NEXT:                 ((-3 as i16) << 7 >> 7) as i32,
 // CHECK-NEXT:                 ((70000i32 << 15 >> 15) as u32) & 131071,
-// CHECK-NEXT:                 -5000000000i64,
+// CHECK-NEXT:                 -5000000000 as i64,
 // CHECK-NEXT:                 ((5i32 << 15 >> 15) as u32) & 131071,
 // CHECK-NEXT:                 99i64,
 // CHECK-NEXT:             ),

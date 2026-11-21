@@ -247,10 +247,12 @@ int main(void) {
 // CHECK-NEXT:                 );
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if ((unsafe {
-// CHECK-NEXT:             unsafe { (*__o1).next_free }.offset_from((*__o1).chunk as *mut i8)
+// CHECK-NEXT:             unsafe { (*__o1).next_free }
+// CHECK-NEXT:                 .offset_from(((*__o1).chunk as *mut i8) as *mut i8)
 // CHECK-NEXT:         }) as i64)
 // CHECK-NEXT:             > ((unsafe {
-// CHECK-NEXT:                 unsafe { (*__o1).chunk_limit }.offset_from((*__o1).chunk as *mut i8)
+// CHECK-NEXT:                 unsafe { (*__o1).chunk_limit }
+// CHECK-NEXT:                     .offset_from(((*__o1).chunk as *mut i8) as *mut i8)
 // CHECK-NEXT:             }) as i64) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 (*__o1).next_free = (*__o1).chunk_limit;
@@ -319,10 +321,12 @@ int main(void) {
 // CHECK-NEXT:                     & (!(*__o1).alignment_mask as i64)) as isize,
 // CHECK-NEXT:             );
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if ((unsafe { unsafe { (*__o1).next_free }.offset_from((*__o1).chunk as *mut i8) })
-// CHECK-NEXT:         as i64)
+// CHECK-NEXT:     if ((unsafe {
+// CHECK-NEXT:         unsafe { (*__o1).next_free }.offset_from(((*__o1).chunk as *mut i8) as *mut i8)
+// CHECK-NEXT:     }) as i64)
 // CHECK-NEXT:         > ((unsafe {
-// CHECK-NEXT:             unsafe { (*__o1).chunk_limit }.offset_from((*__o1).chunk as *mut i8)
+// CHECK-NEXT:             unsafe { (*__o1).chunk_limit }
+// CHECK-NEXT:                 .offset_from(((*__o1).chunk as *mut i8) as *mut i8)
 // CHECK-NEXT:         }) as i64) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (*__o1).next_free = (*__o1).chunk_limit;

@@ -74,7 +74,7 @@ int main(void) {
 // CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(partial_count)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *mut u8;
-// CHECK-NEXT:     let offset_base: *mut u8 = unsafe { (buf.as_mut_ptr() as *mut u8).add(2) };
+// CHECK-NEXT:     let offset_base: *mut u8 = unsafe { buf.as_mut_ptr().add(2) };
 // CHECK-NEXT:     let offset: *mut u8 = (unsafe {
 // CHECK-NEXT:         __builtin_memchr(offset_base as *const (), needle, 2u64)
 // CHECK-NEXT:     }) as *mut u8;
@@ -89,15 +89,15 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ld %d %d %ld %d %d %ld %ld %ld\n".as_ptr(),
-// CHECK-NEXT:             hit.offset_from(buf.as_mut_ptr() as *mut u8) as i64,
+// CHECK-NEXT:             (hit.offset_from(buf.as_mut_ptr() as *mut u8) as i64) as i64,
 // CHECK-NEXT:             miss.is_null() as i32,
 // CHECK-NEXT:             zero.is_null() as i32,
-// CHECK-NEXT:             nul_after.offset_from(word.as_mut_ptr() as *mut i8) as i64,
+// CHECK-NEXT:             (nul_after.offset_from(word.as_mut_ptr() as *mut i8) as i64) as i64,
 // CHECK-NEXT:             nul_equal.is_null() as i32,
 // CHECK-NEXT:             nul_before.is_null() as i32,
-// CHECK-NEXT:             partial.offset_from(buf.as_mut_ptr() as *mut u8) as i64,
-// CHECK-NEXT:             offset.offset_from(offset_base as *mut u8) as i64,
-// CHECK-NEXT:             const_hit.offset_from(cbuf.as_ptr() as *const u8) as i64,
+// CHECK-NEXT:             (partial.offset_from(buf.as_mut_ptr() as *mut u8) as i64) as i64,
+// CHECK-NEXT:             (offset.offset_from(offset_base as *mut u8) as i64) as i64,
+// CHECK-NEXT:             (const_hit.offset_from(cbuf.as_ptr() as *const u8) as i64) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

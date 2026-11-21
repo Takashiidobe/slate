@@ -121,7 +121,7 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn aliased() -> i32 {
 // CHECK-NEXT:     let mut a: [i32; 3] = [1, 2, 3];
-// CHECK-NEXT:     let q: *mut i32 = a.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:     let q: *mut i32 = a.as_mut_ptr();
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         s += a[i as usize];

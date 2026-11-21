@@ -380,7 +380,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static pointer: __SlateConst<pointer_or_int> = __SlateConst(
 // CHECK-NEXT:     pointer_or_int {
-// CHECK-NEXT:         text: (b"text\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         text: b"text\0".as_ptr() as *const i8,
 // CHECK-NEXT:     },
 // CHECK-NEXT: );
 // CHECK-EMPTY:
@@ -502,7 +502,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %d\n".as_ptr(),
-// CHECK-NEXT:             local_array.text.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             local_array.text.as_mut_ptr(),
 // CHECK-NEXT:             zero_after(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(local_array) as *const (),
 // CHECK-NEXT:                 2u64,

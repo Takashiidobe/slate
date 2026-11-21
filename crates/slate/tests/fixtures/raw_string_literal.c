@@ -55,10 +55,10 @@ second)";
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %d\n".as_ptr(),
-// CHECK-NEXT:             "gnu\\n".len() as u64,
+// CHECK-NEXT:             ("gnu\\n".len() as u64) as u64,
 // CHECK-NEXT:             core::mem::size_of::<[i8; 3]>() as u64,
 // CHECK-NEXT:             wcslen(wide as *const i32) as u64,
-// CHECK-NEXT:             *wide.add(1),
+// CHECK-NEXT:             *wide.add(1) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

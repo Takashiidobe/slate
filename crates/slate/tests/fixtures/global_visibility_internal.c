@@ -30,9 +30,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static typenames: __SlateAlign16<[*const i8; 3]> = __SlateAlign16(
 // CHECK-NEXT:     [
-// CHECK-NEXT:         (b"nil\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         (b"boolean\0".as_ptr() as *mut i8) as *const i8,
-// CHECK-NEXT:         (b"number\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:         b"nil\0".as_ptr() as *const i8,
+// CHECK-NEXT:         b"boolean\0".as_ptr() as *const i8,
+// CHECK-NEXT:         b"number\0".as_ptr() as *const i8,
 // CHECK-NEXT:     ],
 // CHECK-NEXT: );
 // CHECK-EMPTY:

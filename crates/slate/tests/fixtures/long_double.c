@@ -563,8 +563,8 @@ int main(void) {
 // CHECK-NEXT:             u16 as i32,
 // CHECK-NEXT:             i32,
 // CHECK-NEXT:             u32,
-// CHECK-NEXT:             i64,
-// CHECK-NEXT:             u64,
+// CHECK-NEXT:             i64 as i64,
+// CHECK-NEXT:             u64 as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

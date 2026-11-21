@@ -912,7 +912,7 @@ int main(void) {
 // CHECK-NEXT:             c"ureduce %u %u %lld\n".as_ptr(),
 // CHECK-NEXT:             __slate_intrinsic_29954df4ca6da281(u),
 // CHECK-NEXT:             __slate_intrinsic_fd617c98b499a8ae(u),
-// CHECK-NEXT:             __slate_intrinsic_6b1441a4f890a44b(d),
+// CHECK-NEXT:             __slate_intrinsic_6b1441a4f890a44b(d) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

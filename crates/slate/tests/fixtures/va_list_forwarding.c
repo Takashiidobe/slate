@@ -246,7 +246,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let rendered: i32 = unsafe {
 // CHECK-NEXT:         render(
-// CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             buffer.0.as_mut_ptr(),
 // CHECK-NEXT:             core::mem::size_of::<[i8; 64]>() as u64,
 // CHECK-NEXT:             c"[%d|%s|%c]".as_ptr(),
 // CHECK-NEXT:             7i32,
@@ -260,7 +260,7 @@ int main(void) {
 // CHECK-NEXT:             c"%d %d %s\n".as_ptr(),
 // CHECK-NEXT:             written,
 // CHECK-NEXT:             rendered,
-// CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             buffer.0.as_mut_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

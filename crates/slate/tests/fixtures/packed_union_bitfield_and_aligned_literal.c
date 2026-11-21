@@ -381,9 +381,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_14]].[[SLATE_ANON_0]].__slate_bits_0.__set_active_low([[T_12]]);
 // CHECK-NEXT:         [[T_13]].write_unaligned([[T_14]]);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut unaligned_msg = unsafe {
-// CHECK-NEXT:         (packed.as_mut_ptr() as *mut unaligned_msg).add(1)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut unaligned_msg = unsafe { packed.as_mut_ptr().add(1) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_15:__t[0-9]+]] = ((({
 // CHECK-NEXT:             let [[T_16:__t[0-9]+]] = (core::ptr::addr_of!((*[[V_0]]).data.[[SLATE_ANON_0]])

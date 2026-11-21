@@ -46,11 +46,7 @@ int main(void) {
 // CHECK-NEXT:             jb_top = [[V_0]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             longjmp(
-// CHECK-NEXT:                 (*unsafe { jb_stack }.offset([[V_0]] as isize)).as_mut_ptr()
-// CHECK-NEXT:                     as *mut __jmp_buf_tag,
-// CHECK-NEXT:                 $v,
-// CHECK-NEXT:             )
+// CHECK-NEXT:             longjmp((*unsafe { jb_stack }.offset([[V_0]] as isize)).as_mut_ptr(), $v)
 // CHECK-NEXT:         };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -92,12 +88,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         jb_top = [[V_1]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe {
-// CHECK-NEXT:         _setjmp(
-// CHECK-NEXT:             (*unsafe { jb_stack }.offset([[V_1]] as isize)).as_mut_ptr()
-// CHECK-NEXT:                 as *mut __jmp_buf_tag,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     }) == 0 {
+// CHECK-NEXT:     if (unsafe { _setjmp((*unsafe { jb_stack }.offset([[V_1]] as isize)).as_mut_ptr()) })
+// CHECK-NEXT:         == 0 {
 // CHECK-NEXT:         inner(fail);
 // CHECK-NEXT:         println!("case {}: no exception", id);
 // CHECK-NEXT:     } else {

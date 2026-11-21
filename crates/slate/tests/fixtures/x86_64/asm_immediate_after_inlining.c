@@ -236,11 +236,14 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%td %td %td\n".as_ptr(),
 // CHECK-NEXT:             key_address__const1(core::ptr::addr_of_mut!(k1), true)
-// CHECK-NEXT:                 .offset_from(core::ptr::addr_of_mut!(k1) as *const i8) as i64,
+// CHECK-NEXT:                 .offset_from((core::ptr::addr_of_mut!(k1) as *const i8) as *const i8)
+// CHECK-NEXT:                 as i64,
 // CHECK-NEXT:             key_address__const2(core::ptr::addr_of_mut!(k2), false)
-// CHECK-NEXT:                 .offset_from(core::ptr::addr_of_mut!(k2) as *const i8) as i64,
+// CHECK-NEXT:                 .offset_from((core::ptr::addr_of_mut!(k2) as *const i8) as *const i8)
+// CHECK-NEXT:                 as i64,
 // CHECK-NEXT:             outer__const3(core::ptr::addr_of_mut!(k2))
-// CHECK-NEXT:                 .offset_from(core::ptr::addr_of_mut!(k2) as *const i8) as i64,
+// CHECK-NEXT:                 .offset_from((core::ptr::addr_of_mut!(k2) as *const i8) as *const i8)
+// CHECK-NEXT:                 as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

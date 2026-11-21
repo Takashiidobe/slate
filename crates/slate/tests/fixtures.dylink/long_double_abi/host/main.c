@@ -388,7 +388,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     dump(c"box.x".as_ptr(), r#box.x);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"box.tail %u\n".as_ptr(), r#box.tail) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"box.tail %u\n".as_ptr(), r#box.tail as u32) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     dump(
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         c"call".as_ptr(),

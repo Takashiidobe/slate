@@ -40,13 +40,14 @@ int main(void) {
 // CHECK-NEXT: static bittab: __SlateAlign16<[u32; 6]> = __SlateAlign16(
 // CHECK-NEXT:     [
 // CHECK-NEXT:         4294967295u32,
-// CHECK-NEXT:         64u32.wrapping_sub(192u32) << 23i32 | 2u32,
-// CHECK-NEXT:         64u32.wrapping_sub(192u32) << 23i32 | 15u32,
-// CHECK-NEXT:         4294967136u32 << 23i32 | 64u32.wrapping_sub(192u32) << 23i32 >> 6i32 | 0u32,
-// CHECK-NEXT:         64u32.wrapping_sub(192u32) << 23i32 | 64u32.wrapping_sub(192u32) << 23i32 >> 6i32
-// CHECK-NEXT:             | 1u32,
-// CHECK-NEXT:         64u32.wrapping_sub(160u32) << 23i32 | 64u32.wrapping_sub(192u32) << 23i32 >> 6i32
-// CHECK-NEXT:             | 13u32,
+// CHECK-NEXT:         ((64u32.wrapping_sub(192u32) << 23i32) as u32) | 2u32,
+// CHECK-NEXT:         ((64u32.wrapping_sub(192u32) << 23i32) as u32) | 15u32,
+// CHECK-NEXT:         ((4294967136u32 << 23i32) as u32)
+// CHECK-NEXT:             | ((64u32.wrapping_sub(192u32) << 23i32) as u32) >> 6i32 | 0u32,
+// CHECK-NEXT:         ((64u32.wrapping_sub(192u32) << 23i32) as u32)
+// CHECK-NEXT:             | ((64u32.wrapping_sub(192u32) << 23i32) as u32) >> 6i32 | 1u32,
+// CHECK-NEXT:         ((64u32.wrapping_sub(160u32) << 23i32) as u32)
+// CHECK-NEXT:             | ((64u32.wrapping_sub(192u32) << 23i32) as u32) >> 6i32 | 13u32,
 // CHECK-NEXT:     ],
 // CHECK-NEXT: );
 // CHECK-EMPTY:

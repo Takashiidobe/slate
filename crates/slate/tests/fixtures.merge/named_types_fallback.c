@@ -78,7 +78,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             printf(
 // CHECK-NEXT:                 (c"%d %zu\n".as_ptr() as *const c_char) as *const core::ffi::c_char,
-// CHECK-NEXT:                 shift((97 as c_char)) as i32,
+// CHECK-NEXT:                 shift(97 as c_char) as i32,
 // CHECK-NEXT:                 count(c"abc".as_ptr() as *const c_char),
 // CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         };
@@ -88,7 +88,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %zu\n".as_ptr(),
-// CHECK-NEXT:                 shift((97 as c_char)) as i32,
+// CHECK-NEXT:                 shift(97 as c_char) as i32,
 // CHECK-NEXT:                 count(c"abc".as_ptr()),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };

@@ -57,7 +57,7 @@ int main(void) {
 // CHECK-NEXT:         as *mut ();
 // CHECK-NEXT:     let end: *mut () = (unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!(bytes.0) as *mut u8)
-// CHECK-NEXT:             .offset(core::mem::size_of::<[u8; 16]>() as isize)
+// CHECK-NEXT:             .add((core::mem::size_of::<[u8; 16]>() as u64) as usize)
 // CHECK-NEXT:     }) as *mut ();
 // CHECK-NEXT:     let middle: *const () = ((unsafe { (start as *const u8).add(5) }) as *mut ())
 // CHECK-NEXT:         as *const ();
@@ -71,8 +71,9 @@ int main(void) {
 // CHECK-NEXT:         as i64;
 // CHECK-NEXT:     let back: i64 = (unsafe { (start as *const u8).offset_from(end as *const u8) })
 // CHECK-NEXT:         as i64;
-// CHECK-NEXT:     let offset: i64 = (unsafe { (middle as *const u8).offset_from(start as *const u8) })
-// CHECK-NEXT:         as i64;
+// CHECK-NEXT:     let offset: i64 = (unsafe {
+// CHECK-NEXT:         (middle as *const u8).offset_from((start as *const ()) as *const u8)
+// CHECK-NEXT:     }) as i64;
 // CHECK-NEXT:     let position: i64 = (unsafe {
 // CHECK-NEXT:         (cursor as *const u8).offset_from(start as *const u8)
 // CHECK-NEXT:     }) as i64;

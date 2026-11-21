@@ -789,11 +789,11 @@ int main(void) {
 // CHECK-NEXT:     evaluation_total = c11_evaluation_step(2i32) + c11_evaluation_step(3i32)
 // CHECK-NEXT:         + unsafe { c11_evaluation_total };
 // CHECK-NEXT:     temporary_total = unsafe {
-// CHECK-NEXT:         *((*{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = c11_make_temporary(43i32);
-// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:                 }).values
-// CHECK-NEXT:                 .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:         *(*{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = c11_make_temporary(43i32);
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:             }).values
+// CHECK-NEXT:             .as_mut_ptr()
 // CHECK-NEXT:             .add(1)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -865,7 +865,7 @@ int main(void) {
 // CHECK-NEXT:     }) as i32)
 // CHECK-NEXT:         + ((unsafe {
 // CHECK-NEXT:             c16rtomb(
-// CHECK-NEXT:                 multibyte16.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:                 multibyte16.0.as_mut_ptr(),
 // CHECK-NEXT:                 65u16,
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(utf16_state),
 // CHECK-NEXT:             )
@@ -880,7 +880,7 @@ int main(void) {
 // CHECK-NEXT:         }) as i32)
 // CHECK-NEXT:         + ((unsafe {
 // CHECK-NEXT:             c32rtomb(
-// CHECK-NEXT:                 multibyte32.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:                 multibyte32.0.as_mut_ptr(),
 // CHECK-NEXT:                 66u32,
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(utf32_state),
 // CHECK-NEXT:             )

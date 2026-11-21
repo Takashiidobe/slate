@@ -117,18 +117,17 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].tail = 42i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let scaled: core::simd::Simd<i32, 16> = unsafe { scale(h.vector, 3i32) };
+// CHECK-NEXT:     let mut scaled: core::simd::Simd<i32, 16> = unsafe { scale(h.vector, 3i32) };
 // CHECK-NEXT:     let plain: core::simd::Simd<i32, 16> = unsafe { as_gnu(scaled) };
 // CHECK-NEXT:     let mask: core::simd::Simd<i32, 16> = {
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]]: core::simd::Simd<i32, 16> = scaled;
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = [[T_1]].to_array();
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]]: core::simd::Simd<i32, 16> = (unsafe { counters })
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = scaled.to_array();
+// CHECK-NEXT:         let [[T_2:__t[0-9]+]]: core::simd::Simd<i32, 16> = (unsafe { counters })
 // CHECK-NEXT:             * core::simd::Simd::splat(3i32);
-// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = [[T_3]].to_array();
-// CHECK-NEXT:         let [[T_5:__t[0-9]+]]: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
-// CHECK-NEXT:             core::array::from_fn(|__lane| -(([[T_2]][__lane] > [[T_4]][__lane]) as i32)),
+// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = [[T_2]].to_array();
+// CHECK-NEXT:         let [[T_4:__t[0-9]+]]: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:             core::array::from_fn(|__lane| -(([[T_1]][__lane] > [[T_3]][__lane]) as i32)),
 // CHECK-NEXT:         );
-// CHECK-NEXT:         [[T_5]]
+// CHECK-NEXT:         [[T_4]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let doubles: core::simd::Simd<f64, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:         [1.0f64, 3.0f64, 5.0f64, 7.0f64, 9.0f64, 11.0f64, 13.0f64, 15.0f64],

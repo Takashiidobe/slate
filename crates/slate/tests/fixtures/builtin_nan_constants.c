@@ -114,10 +114,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%016llx %016llx %016llx %016llx\n".as_ptr(),
-// CHECK-NEXT:             bits_d(quiet_d),
-// CHECK-NEXT:             bits_d(quiet_payload_d),
-// CHECK-NEXT:             bits_d(signaling_d),
-// CHECK-NEXT:             bits_d(signaling_payload_d),
+// CHECK-NEXT:             bits_d(quiet_d) as u64,
+// CHECK-NEXT:             bits_d(quiet_payload_d) as u64,
+// CHECK-NEXT:             bits_d(signaling_d) as u64,
+// CHECK-NEXT:             bits_d(signaling_payload_d) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -125,8 +125,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%016llx %016llx\n".as_ptr(),
-// CHECK-NEXT:             bits_d(table.0[0]),
-// CHECK-NEXT:             bits_d(table.0[1]),
+// CHECK-NEXT:             bits_d(table.0[0]) as u64,
+// CHECK-NEXT:             bits_d(table.0[1]) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

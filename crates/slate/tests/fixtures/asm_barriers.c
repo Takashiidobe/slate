@@ -231,7 +231,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %llu\n".as_ptr(),
 // CHECK-NEXT:             value_barrier(7u32),
-// CHECK-NEXT:             value_barrier_memory(41u64),
+// CHECK-NEXT:             value_barrier_memory(41u64) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

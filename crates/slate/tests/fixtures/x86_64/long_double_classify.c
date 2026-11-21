@@ -432,23 +432,14 @@ int main(void) {
 // CHECK-NEXT:         let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:         let mut n: i32 = 0;
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = if ok != 0 {
-// CHECK-NEXT:             ld2string(
-// CHECK-NEXT:                 out.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:                 core::mem::size_of::<[i8; 64]>() as u64,
-// CHECK-NEXT:                 d,
-// CHECK-NEXT:             )
+// CHECK-NEXT:             ld2string(out.0.as_mut_ptr(), core::mem::size_of::<[i8; 64]>() as u64, d)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             0
 // CHECK-NEXT:         };
 // CHECK-NEXT:         n = [[V_0]];
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%d %.*s\n".as_ptr(),
-// CHECK-NEXT:                 ok,
-// CHECK-NEXT:                 n,
-// CHECK-NEXT:                 out.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             )
+// CHECK-NEXT:             slate_support::printf(c"%d %.*s\n".as_ptr(), ok, n, out.0.as_mut_ptr())
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
@@ -470,18 +461,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     let n: i32 = ld2string(
-// CHECK-NEXT:         out.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:         out.0.as_mut_ptr(),
 // CHECK-NEXT:         core::mem::size_of::<[i8; 64]>() as u64,
 // CHECK-NEXT:         acc,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(
-// CHECK-NEXT:             c"%d %.*s\n".as_ptr(),
-// CHECK-NEXT:             accepted,
-// CHECK-NEXT:             n,
-// CHECK-NEXT:             out.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         slate_support::printf(c"%d %.*s\n".as_ptr(), accepted, n, out.0.as_mut_ptr())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0

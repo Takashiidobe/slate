@@ -105,8 +105,8 @@ int main(void) {
 // CHECK-NEXT:             mixed_rem,
 // CHECK-NEXT:             big,
 // CHECK-NEXT:             big_rem,
-// CHECK-NEXT:             ubig,
-// CHECK-NEXT:             ubig_rem,
+// CHECK-NEXT:             ubig as u64,
+// CHECK-NEXT:             ubig_rem as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

@@ -46,8 +46,8 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let a: *mut u8 = ints.as_mut_ptr() as *mut u8;
-// CHECK-NEXT:     let f: *mut u8 = floats.as_mut_ptr() as *mut u8;
+// CHECK-NEXT:     let a: *mut u8 = (ints.as_mut_ptr() as *mut [i32; 0]) as *mut u8;
+// CHECK-NEXT:     let f: *mut u8 = (floats.as_mut_ptr() as *mut [f32; 0]) as *mut u8;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%02x %02x %02x %02x\n".as_ptr(),

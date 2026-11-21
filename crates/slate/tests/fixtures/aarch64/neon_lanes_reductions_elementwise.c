@@ -1579,8 +1579,8 @@ int main(void) {
 // CHECK-NEXT: ];
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut s32_in: {{\[\[}}i32; 4]; 2] = [
-// CHECK-NEXT:     [-2147483648, 2147483647, -1, 7],
-// CHECK-NEXT:     [-5, 2147483647, -2147483648, 7],
+// CHECK-NEXT:     [-2147483647i32 - 1i32, 2147483647, -1, 7],
+// CHECK-NEXT:     [-5, 2147483647, -2147483647i32 - 1i32, 7],
 // CHECK-NEXT: ];
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut u32_in: {{\[\[}}u32; 4]; 2] = [
@@ -1588,7 +1588,7 @@ int main(void) {
 // CHECK-NEXT:     [1, 4294967295, 2, 1294967296],
 // CHECK-NEXT: ];
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut u64_in: {{\[\[}}u64; 2]; 2] = {{\[\[}}18446744073709551615u64, 5], [7, 10]];
+// CHECK-NEXT: static mut u64_in: {{\[\[}}u64; 2]; 2] = {{\[\[}}18446744073709551615, 5], [7, 10]];
 // CHECK-EMPTY:
 // CHECK-NEXT: fn show_f32(name: *const u8, mut v: core::simd::Simd<f32, 4>) {
 // CHECK-NEXT:     let mut bits: [u32; 4] = [0u32; 4];
@@ -1626,7 +1626,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"%s %016llx %016llx\n".as_ptr(), name, bits[0], bits[1])
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%s %016llx %016llx\n".as_ptr(),
+// CHECK-NEXT:             name,
+// CHECK-NEXT:             bits[0] as u64,
+// CHECK-NEXT:             bits[1] as u64,
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
@@ -1674,7 +1679,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%s %016llx\n".as_ptr(), name, bits) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s %016llx\n".as_ptr(), name, bits as u64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -1916,11 +1921,11 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut __ret: u16 = 0;
 // CHECK-NEXT:         let __s0: core::simd::Simd<u16, 8> = wa;
-// CHECK-NEXT:         __ret = unsafe {
+// CHECK-NEXT:         __ret = (unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<u16, 8>, core::simd::Simd<i16, 8>>(
 // CHECK-NEXT:                 __s0,
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }[0] as u16;
+// CHECK-NEXT:         }[0] as u16) as u16;
 // CHECK-NEXT:         [[V_4]] = __ret;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -1942,11 +1947,11 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut __ret: u64 = 0;
 // CHECK-NEXT:         let __s0: core::simd::Simd<u64, 2> = qa;
-// CHECK-NEXT:         __ret = unsafe {
+// CHECK-NEXT:         __ret = (unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<u64, 2>, core::simd::Simd<i64, 2>>(
 // CHECK-NEXT:                 __s0,
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }[0] as u64;
+// CHECK-NEXT:         }[0] as u64) as u64;
 // CHECK-NEXT:         [[V_6]] = __ret;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_7:__v[0-9]+]]: i64;
@@ -1961,14 +1966,16 @@ int main(void) {
 // CHECK-NEXT:         [[V_7]] = __ret;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"lane_u64 %llu %lld\n".as_ptr(), [[V_6]], [[V_7]]) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"lane_u64 %llu %lld\n".as_ptr(), [[V_6]] as u64, [[V_7]] as i64)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut [[V_8:__v[0-9]+]]: u32;
 // CHECK-NEXT:     let mut __ret: u32 = 0;
 // CHECK-NEXT:     let __s0: core::simd::Simd<u32, 4> = ja;
-// CHECK-NEXT:     __ret = unsafe {
+// CHECK-NEXT:     __ret = (unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<u32, 4>, core::simd::Simd<i32, 4>>(__s0)
-// CHECK-NEXT:     }[3] as u32;
+// CHECK-NEXT:     }[3] as u32) as u32;
 // CHECK-NEXT:     [[V_8]] = __ret;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"lane_u32 %u\n".as_ptr(), [[V_8]]) };
@@ -1983,7 +1990,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"addv_u32 %u\n".as_ptr(), vaddvq_u32(ja)) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"addv_u64 %llu\n".as_ptr(), vaddvq_u64(qa)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"addv_u64 %llu\n".as_ptr(), vaddvq_u64(qa) as u64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"addlv_u8 %u\n".as_ptr(), vaddlvq_u8(ua) as i32) };

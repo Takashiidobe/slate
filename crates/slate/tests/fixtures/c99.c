@@ -269,27 +269,15 @@ int main(void) {
 // CHECK-NEXT:             };
 // CHECK-NEXT:     let double_complex: num_complex::Complex<f64> = 3.0f64
 // CHECK-NEXT:         + 4.0f64
-// CHECK-NEXT:             * {
-// CHECK-NEXT:                 let [[T_0:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:                     re: 0.0f32,
-// CHECK-NEXT:                     im: 1.0f32,
-// CHECK-NEXT:                 };
-// CHECK-NEXT:                 num_complex::Complex {
-// CHECK-NEXT:                     re: [[T_0]].re as f64,
-// CHECK-NEXT:                     im: [[T_0]].im as f64,
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             * num_complex::Complex {
+// CHECK-NEXT:                 re: 0.0f32 as f64,
+// CHECK-NEXT:                 im: 1.0f32 as f64,
 // CHECK-NEXT:             };
 // CHECK-NEXT:     let long_double_complex: num_complex::Complex<f128> = 5f128
 // CHECK-NEXT:         + 6f128
-// CHECK-NEXT:             * {
-// CHECK-NEXT:                 let [[T_1:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:                     re: 0.0f32,
-// CHECK-NEXT:                     im: 1.0f32,
-// CHECK-NEXT:                 };
-// CHECK-NEXT:                 num_complex::Complex {
-// CHECK-NEXT:                     re: [[T_1]].re as f128,
-// CHECK-NEXT:                     im: [[T_1]].im as f128,
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             * num_complex::Complex {
+// CHECK-NEXT:                 re: 0.0f32 as f128,
+// CHECK-NEXT:                 im: 1.0f32 as f128,
 // CHECK-NEXT:             };
 // CHECK-NEXT:     let enhanced_arithmetic: i32 = (boolean_value as i32)
 // CHECK-NEXT:         + ((signed_long_long == -9000000000) as i32)
@@ -304,28 +292,16 @@ int main(void) {
 // CHECK-NEXT:         + ((double_complex
 // CHECK-NEXT:             == 3.0f64
 // CHECK-NEXT:                 + 4.0f64
-// CHECK-NEXT:                     * {
-// CHECK-NEXT:                         let [[T_2:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:                             re: 0.0f32,
-// CHECK-NEXT:                             im: 1.0f32,
-// CHECK-NEXT:                         };
-// CHECK-NEXT:                         num_complex::Complex {
-// CHECK-NEXT:                             re: [[T_2]].re as f64,
-// CHECK-NEXT:                             im: [[T_2]].im as f64,
-// CHECK-NEXT:                         }
+// CHECK-NEXT:                     * num_complex::Complex {
+// CHECK-NEXT:                         re: 0.0f32 as f64,
+// CHECK-NEXT:                         im: 1.0f32 as f64,
 // CHECK-NEXT:                     }) as i32)
 // CHECK-NEXT:         + ((long_double_complex
 // CHECK-NEXT:             == 5f128
 // CHECK-NEXT:                 + 6f128
-// CHECK-NEXT:                     * {
-// CHECK-NEXT:                         let [[T_3:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:                             re: 0.0f32,
-// CHECK-NEXT:                             im: 1.0f32,
-// CHECK-NEXT:                         };
-// CHECK-NEXT:                         num_complex::Complex {
-// CHECK-NEXT:                             re: [[T_3]].re as f128,
-// CHECK-NEXT:                             im: [[T_3]].im as f128,
-// CHECK-NEXT:                         }
+// CHECK-NEXT:                     * num_complex::Complex {
+// CHECK-NEXT:                         re: 0.0f32 as f128,
+// CHECK-NEXT:                         im: 1.0f32 as f128,
 // CHECK-NEXT:                     }) as i32);
 // CHECK-NEXT:     let mut flexible_total: i32 = 0;
 // CHECK-NEXT:     let flexible: *mut C99Flexible = (unsafe {
@@ -347,34 +323,33 @@ int main(void) {
 // CHECK-NEXT:                 *(core::ptr::addr_of_mut!((*flexible).values) as *mut i32)
 // CHECK-NEXT:                     .add(index as usize) = (index as i32) + 1;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = flexible_total
-// CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     *(core::ptr::addr_of_mut!((*flexible).values) as *mut i32)
-// CHECK-NEXT:                         .add(index as usize)
-// CHECK-NEXT:                 };
-// CHECK-NEXT:             flexible_total = [[V_0]];
+// CHECK-NEXT:             flexible_total += unsafe {
+// CHECK-NEXT:                 *(core::ptr::addr_of_mut!((*flexible).values) as *mut i32)
+// CHECK-NEXT:                     .add(index as usize)
+// CHECK-NEXT:             };
 // CHECK-NEXT:             index = index.wrapping_add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { free((flexible as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     let length: i32 = 3;
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: u64 = length as u64;
+// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64 = length as u64;
 // CHECK-NEXT:     let mut variable_length_array: Vec<i32> = {
-// CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_1]] as usize);
+// CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_0]] as usize);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_1]] as usize);
+// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_0]] as usize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for index in 0..length {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *(variable_length_array.as_mut_ptr() as *mut i32).offset(index as isize) = index
-// CHECK-NEXT:                 + 4;
+// CHECK-NEXT:             *((variable_length_array.as_mut_ptr() as *mut [i32; 0]) as *mut i32)
+// CHECK-NEXT:                 .offset(index as isize) = index + 4;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let vm_total: i32 = c99_vm_sum(
 // CHECK-NEXT:         length,
-// CHECK-NEXT:         variable_length_array.as_mut_ptr() as *mut [i32; 0],
+// CHECK-NEXT:         ((variable_length_array.as_mut_ptr() as *mut [i32; 0]) as *mut [i32; 0])
+// CHECK-NEXT:             as *mut [i32; 0],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let initializer_seed: i32 = 19;
 // CHECK-NEXT:     let nonconstant_initializer: C99Pair = C99Pair {
@@ -383,10 +358,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let designated_initializer: C99Pair = C99Pair { first: 22, second: 23 };
 // CHECK-NEXT:     let designated_array: [i32; 4] = {
-// CHECK-NEXT:         let mut [[T_4:__t[0-9]+]]: [i32; 4] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_4]][0] = 27i32;
-// CHECK-NEXT:         [[T_4]][2] = 29i32;
-// CHECK-NEXT:         [[T_4]]
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i32; 4] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         [[T_0]][0] = 27i32;
+// CHECK-NEXT:         [[T_0]][2] = 29i32;
+// CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let const_value: i32 = 31;
 // CHECK-NEXT:     let idempotent_const_value: i32 = const_value;
@@ -404,11 +379,11 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let compound_array_value: i32 = unsafe {
-// CHECK-NEXT:         *((*{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_1]] = [51i32, 53i32];
-// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
-// CHECK-NEXT:                 })
-// CHECK-NEXT:                 .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:         *(*{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_1]] = [51i32, 53i32];
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:             })
+// CHECK-NEXT:             .as_mut_ptr()
 // CHECK-NEXT:             .add(1)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let signed_quotient: i32 = -7 / 3;
@@ -427,8 +402,8 @@ int main(void) {
 // CHECK-NEXT:         1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32, 1i32,
 // CHECK-NEXT:         1i32, 1i32, 1i32, 1i32, 1i32, 1i32,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let fenv_clear: i32 = unsafe { feclearexcept(31i32) };
-// CHECK-NEXT:     let fenv_flags: i32 = unsafe { fetestexcept(31i32) };
+// CHECK-NEXT:     let fenv_clear: i32 = unsafe { feclearexcept(1i32 | 2i32 | 4 | 8 | 16) };
+// CHECK-NEXT:     let fenv_flags: i32 = unsafe { fetestexcept(1i32 | 2i32 | 4 | 8 | 16) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -463,8 +438,8 @@ int main(void) {
 // CHECK-NEXT:             fenv_clear,
 // CHECK-NEXT:             fenv_flags,
 // CHECK-NEXT:             c99_restrict_sum(
-// CHECK-NEXT:                 (qualified_values.as_mut_ptr() as *mut i32).add(0) as *const i32,
-// CHECK-NEXT:                 (qualified_values.as_mut_ptr() as *mut i32).add(1) as *const i32,
+// CHECK-NEXT:                 qualified_values.as_mut_ptr().add(0) as *const i32,
+// CHECK-NEXT:                 qualified_values.as_mut_ptr().add(1) as *const i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

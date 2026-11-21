@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "add {0}, {0}, #{1}",
 // CHECK-NEXT:             inlateout(reg) value as u32 => [[T_0]],
-// CHECK-NEXT:             const 1 as i32,
+// CHECK-NEXT:             const 1i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "add {0}, {0}, #{1}",
 // CHECK-NEXT:             inlateout(reg) value as u32 => [[T_0]],
-// CHECK-NEXT:             const 32 as i32,
+// CHECK-NEXT:             const 32i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };

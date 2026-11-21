@@ -297,7 +297,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             pthread_create(
-// CHECK-NEXT:                 (threads.0.as_mut_ptr() as *mut u64).offset(i as isize),
+// CHECK-NEXT:                 threads.0.as_mut_ptr().offset(i as isize),
 // CHECK-NEXT:                 core::ptr::null::<slate_support::pthread_attr_t>(),
 // CHECK-NEXT:                 Some(worker),
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(set) as *mut (),
@@ -324,7 +324,7 @@ int main(void) {
 // CHECK-NEXT:                     core::ptr::addr_of!(used_memory) as *mut u64,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .load(core::sync::atomic::Ordering::SeqCst),
-// CHECK-NEXT:             plain_counter,
+// CHECK-NEXT:             plain_counter as u64,
 // CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of!(threads_done) as *mut i32,
 // CHECK-NEXT:                 )
@@ -571,7 +571,7 @@ int main(void) {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16(
 // CHECK-NEXT:         [10i32, 20i32, 30i32, 40i32],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut cursor: *mut i32 = values.0.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:     let mut cursor: *mut i32 = values.0.as_mut_ptr();
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicPtr::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(cursor) as *mut *mut i32,
@@ -657,11 +657,11 @@ int main(void) {
 // CHECK-NEXT:             first,
 // CHECK-NEXT:             second,
 // CHECK-NEXT:             strong as i32,
-// CHECK-NEXT:             seen,
+// CHECK-NEXT:             seen as u64,
 // CHECK-NEXT:             core::sync::atomic::AtomicU64::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of!(slot) as *mut u64,
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .load(core::sync::atomic::Ordering::SeqCst),
+// CHECK-NEXT:                 .load(core::sync::atomic::Ordering::SeqCst) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

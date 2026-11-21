@@ -98,10 +98,10 @@ int main(void) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = wmemcpy(
-// CHECK-NEXT:         target.as_mut_ptr() as *mut u16,
+// CHECK-NEXT:         target.as_mut_ptr(),
 // CHECK-NEXT:         source.as_mut_ptr() as *const u16,
 // CHECK-NEXT:         5u64,
-// CHECK-NEXT:     ) != (target.as_mut_ptr() as *mut u16)
+// CHECK-NEXT:     ) != target.as_mut_ptr()
 // CHECK-NEXT:         || (unsafe {
 // CHECK-NEXT:             wcscmp(
 // CHECK-NEXT:                 target.as_mut_ptr() as *const u16,

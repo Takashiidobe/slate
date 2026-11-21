@@ -354,9 +354,9 @@ int main(void) {
 // CHECK-NEXT:     let mut flag: [i8; 3] = [45, 102, 0];
 // CHECK-NEXT:     let mut arguments: __SlateAlign16<[*mut i8; 4]> = __SlateAlign16(
 // CHECK-NEXT:         [
-// CHECK-NEXT:             program.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             number.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             flag.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             program.as_mut_ptr(),
+// CHECK-NEXT:             number.as_mut_ptr(),
+// CHECK-NEXT:             flag.as_mut_ptr(),
 // CHECK-NEXT:             core::ptr::null_mut::<i8>(),
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
@@ -471,9 +471,9 @@ int main(void) {
 // CHECK-NEXT:     let mut item: [i8; 5] = [105, 116, 101, 109, 0];
 // CHECK-NEXT:     let mut arguments: __SlateAlign16<[*mut i8; 4]> = __SlateAlign16(
 // CHECK-NEXT:         [
-// CHECK-NEXT:             program.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             option.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             item.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             program.as_mut_ptr(),
+// CHECK-NEXT:             option.as_mut_ptr(),
+// CHECK-NEXT:             item.as_mut_ptr(),
 // CHECK-NEXT:             core::ptr::null_mut::<i8>(),
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
@@ -481,7 +481,7 @@ int main(void) {
 // CHECK-NEXT:         argp_parse(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(parser) as *const argp,
 // CHECK-NEXT:             3i32,
-// CHECK-NEXT:             arguments.0.as_mut_ptr() as *mut *mut i8,
+// CHECK-NEXT:             arguments.0.as_mut_ptr(),
 // CHECK-NEXT:             (32i32 | 16i32) as u32,
 // CHECK-NEXT:             core::ptr::null_mut::<i32>(),
 // CHECK-NEXT:             core::ptr::addr_of_mut!(parsed) as *mut (),
@@ -549,7 +549,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total += !unsafe {
 // CHECK-NEXT:             tfind(
-// CHECK-NEXT:                 (values.0.as_mut_ptr() as *mut i32).add(2) as *const (),
+// CHECK-NEXT:                 values.0.as_mut_ptr().add(2) as *const (),
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(tree) as *const *mut (),
 // CHECK-NEXT:                 Some(gnu_compare_entries),
 // CHECK-NEXT:             )

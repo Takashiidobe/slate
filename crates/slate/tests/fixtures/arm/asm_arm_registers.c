@@ -174,8 +174,8 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "add {0}, {0}, #{1} @ {1} #{2}",
 // CHECK-NEXT:             inlateout(reg) value as u32 => [[T_0]],
-// CHECK-NEXT:             const 255 as i32,
-// CHECK-NEXT:             const 4 as i32,
+// CHECK-NEXT:             const 255i32,
+// CHECK-NEXT:             const 4i32,
 // CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
@@ -196,7 +196,7 @@ int main(void) {
 // CHECK-NEXT:             in(sreg) unsafe { core::mem::transmute::<f32, u32>(f) },
 // CHECK-NEXT:             in(dreg_low16) unsafe { core::mem::transmute::<f64, u64>(d) },
 // CHECK-NEXT:             in(reg) core::ptr::addr_of!(value),
-// CHECK-NEXT:             const 3 as i32,
+// CHECK-NEXT:             const 3i32,
 // CHECK-NEXT:             options(pure, readonly, nostack, preserves_flags),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };

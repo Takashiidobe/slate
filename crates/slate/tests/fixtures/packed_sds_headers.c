@@ -319,7 +319,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((init.as_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             (((init.as_ptr() as *const i8) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             ((s as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (len.wrapping_add(1) as usize) as usize,
 // CHECK-NEXT:         )
@@ -484,7 +485,7 @@ int main(void) {
 // CHECK-NEXT:         let mut i: i32 = 1;
 // CHECK-NEXT:         while i <= 3 {
 // CHECK-NEXT:             let header: *mut payloadHeader = (unsafe {
-// CHECK-NEXT:                 (buffer.0.as_mut_ptr() as *mut u8).add(used as usize)
+// CHECK-NEXT:                 buffer.0.as_mut_ptr().add(used as usize)
 // CHECK-NEXT:             }) as *mut payloadHeader;
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 (*header).payload_len = (i * 100) as u64;
@@ -509,8 +510,8 @@ int main(void) {
 // CHECK-NEXT:             let mut header: payloadHeader = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:                     (((buffer.0.as_mut_ptr() as *mut u8).add(offset as usize)
-// CHECK-NEXT:                         as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:                     ((buffer.0.as_mut_ptr().add(offset as usize) as *const ())
+// CHECK-NEXT:                         as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:                     ((core::ptr::addr_of_mut!(header) as *mut ())
 // CHECK-NEXT:                         as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:                     ((core::mem::size_of::<payloadHeader>() as u64) as usize) as usize,
@@ -565,8 +566,8 @@ int main(void) {
 // CHECK-NEXT:             holder.header.payload_len,
 // CHECK-NEXT:             holder.header.payload_type as i32,
 // CHECK-NEXT:             holder.events[1].data.fd,
-// CHECK-NEXT:             holder.events[0].data.u64,
-// CHECK-NEXT:             copy.data.u64,
+// CHECK-NEXT:             holder.events[0].data.u64 as u64,
+// CHECK-NEXT:             copy.data.u64 as u64,
 // CHECK-NEXT:             holder.tail as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -586,7 +587,7 @@ int main(void) {
 // CHECK-NEXT:             c"%c %x %llx\n".as_ptr(),
 // CHECK-NEXT:             two.tag as i32,
 // CHECK-NEXT:             two.value,
-// CHECK-NEXT:             two.wide,
+// CHECK-NEXT:             two.wide as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

@@ -38,9 +38,9 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_intrinsic_7eb885185d29c159(
-// CHECK-NEXT:             buffer.0.as_mut_ptr() as *mut (),
+// CHECK-NEXT:             (buffer.0.as_mut_ptr() as *mut i8) as *mut (),
 // CHECK-NEXT:             (buffer.0.as_mut_ptr() as *mut i8)
-// CHECK-NEXT:                 .offset(core::mem::size_of::<[u8; 16]>() as isize) as *mut (),
+// CHECK-NEXT:                 .add((core::mem::size_of::<[u8; 16]>() as u64) as usize) as *mut (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {}", !first.is_null() as i32, (first == second) as i32);

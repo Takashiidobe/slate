@@ -123,7 +123,8 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         u.c = 1i8;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             let [[T_0:__t[0-9]+]]: *mut u8 = (core::ptr::addr_of_mut!(u) as *mut _) as *mut u8;
+// CHECK-NEXT:             let [[T_0:__t[0-9]+]]: *mut u8 = ((core::ptr::addr_of_mut!(u) as *mut _) as *mut u8)
+// CHECK-NEXT:                 as *mut u8;
 // CHECK-NEXT:         };
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut p: padded = unsafe { core::mem::zeroed() };
@@ -131,7 +132,8 @@ int main(void) {
 // CHECK-NEXT:         p.c = 2i8;
 // CHECK-NEXT:         p.i = 3i32;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             let [[T_1:__t[0-9]+]]: *mut u8 = (core::ptr::addr_of_mut!(p) as *mut _) as *mut u8;
+// CHECK-NEXT:             let [[T_1:__t[0-9]+]]: *mut u8 = ((core::ptr::addr_of_mut!(p) as *mut _) as *mut u8)
+// CHECK-NEXT:                 as *mut u8;
 // CHECK-NEXT:             [[T_1]].add(1usize).write_bytes(0u8, 3usize);
 // CHECK-NEXT:         };
 // CHECK-NEXT:     };
@@ -181,7 +183,8 @@ int main(void) {
 // CHECK-NEXT:         ap.0.c = 9i8;
 // CHECK-NEXT:         ap.0.i = 10i32;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             let [[T_2:__t[0-9]+]]: *mut u8 = (core::ptr::addr_of_mut!(ap.0) as *mut _) as *mut u8;
+// CHECK-NEXT:             let [[T_2:__t[0-9]+]]: *mut u8 = ((core::ptr::addr_of_mut!(ap.0) as *mut _) as *mut u8)
+// CHECK-NEXT:                 as *mut u8;
 // CHECK-NEXT:             [[T_2]].add(1usize).write_bytes(0u8, 3usize);
 // CHECK-NEXT:         };
 // CHECK-NEXT:     };
@@ -215,8 +218,8 @@ int main(void) {
 // CHECK-NEXT:             [[SLATE_COMPOUND_0]].rows[1].c = 7i8;
 // CHECK-NEXT:             [[SLATE_COMPOUND_0]].rows[1].i = 8i32;
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let [[T_3:__t[0-9]+]]: *mut u8 = (core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:                     as *mut _) as *mut u8;
+// CHECK-NEXT:                 let [[T_3:__t[0-9]+]]: *mut u8 = ((core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                     as *mut _) as *mut u8) as *mut u8;
 // CHECK-NEXT:                 [[T_3]].add(1usize).write_bytes(0u8, 7usize);
 // CHECK-NEXT:                 [[T_3]].add(17usize).write_bytes(0u8, 3usize);
 // CHECK-NEXT:                 [[T_3]].add(25usize).write_bytes(0u8, 3usize);
@@ -253,7 +256,8 @@ int main(void) {
 // CHECK-NEXT:         n.rows[1].c = 7i8;
 // CHECK-NEXT:         n.rows[1].i = 8i32;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             let [[T_4:__t[0-9]+]]: *mut u8 = (core::ptr::addr_of_mut!(n) as *mut _) as *mut u8;
+// CHECK-NEXT:             let [[T_4:__t[0-9]+]]: *mut u8 = ((core::ptr::addr_of_mut!(n) as *mut _) as *mut u8)
+// CHECK-NEXT:                 as *mut u8;
 // CHECK-NEXT:             [[T_4]].add(1usize).write_bytes(0u8, 7usize);
 // CHECK-NEXT:             [[T_4]].add(17usize).write_bytes(0u8, 3usize);
 // CHECK-NEXT:             [[T_4]].add(25usize).write_bytes(0u8, 3usize);

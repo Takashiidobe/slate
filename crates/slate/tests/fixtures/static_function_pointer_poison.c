@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (*[[T_1]]).gpl_only = 1i32;
-// CHECK-NEXT:     (*[[T_1]]).name = (b"tail\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:     (*[[T_1]]).name = b"tail\0".as_ptr() as *const i8;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut [[T_0]]: proto = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].func = Some(add);
-// CHECK-NEXT:         [[T_0]].name = (b"add\0".as_ptr() as *mut i8) as *const i8;
+// CHECK-NEXT:         [[T_0]].name = b"add\0".as_ptr() as *const i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
 // CHECK-NEXT: );

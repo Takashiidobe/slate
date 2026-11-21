@@ -625,7 +625,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         add
 // CHECK-NEXT:             .unwrap()(
-// CHECK-NEXT:             out.0.as_mut_ptr() as *mut i32,
+// CHECK-NEXT:             out.0.as_mut_ptr(),
 // CHECK-NEXT:             a.0.as_mut_ptr() as *const i32,
 // CHECK-NEXT:             b.0.as_mut_ptr() as *const i32,
 // CHECK-NEXT:             45u64,

@@ -99,11 +99,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let write16: u64 = unsafe {
-// CHECK-NEXT:         c16rtomb(
-// CHECK-NEXT:             multibyte16.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             65u16,
-// CHECK-NEXT:             core::ptr::addr_of_mut!(state16),
-// CHECK-NEXT:         )
+// CHECK-NEXT:         c16rtomb(multibyte16.as_mut_ptr(), 65u16, core::ptr::addr_of_mut!(state16))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let read32: u64 = unsafe {
 // CHECK-NEXT:         mbrtoc32(
@@ -114,11 +110,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let write32: u64 = unsafe {
-// CHECK-NEXT:         c32rtomb(
-// CHECK-NEXT:             multibyte32.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             66u32,
-// CHECK-NEXT:             core::ptr::addr_of_mut!(state32),
-// CHECK-NEXT:         )
+// CHECK-NEXT:         c32rtomb(multibyte32.as_mut_ptr(), 66u32, core::ptr::addr_of_mut!(state32))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -130,7 +122,7 @@ int main(void) {
 // CHECK-NEXT:             multibyte16[0] as i32,
 // CHECK-NEXT:             read32,
 // CHECK-NEXT:             write32,
-// CHECK-NEXT:             converted32,
+// CHECK-NEXT:             converted32 as u32,
 // CHECK-NEXT:             multibyte32[0] as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

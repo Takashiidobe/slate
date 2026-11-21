@@ -66,7 +66,7 @@ int main(void) {
 // CHECK-NEXT:     let mut copy: [i8; 8] = [0i8; 8];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin_strncpy(
-// CHECK-NEXT:             copy.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             copy.as_mut_ptr(),
 // CHECK-NEXT:             buffer as *const i8,
 // CHECK-NEXT:             core::mem::size_of::<[i8; 8]>() as u64,
 // CHECK-NEXT:         )
@@ -74,19 +74,19 @@ int main(void) {
 // CHECK-NEXT:     let mut formatted: __SlateAlign16<[i8; 32]> = __SlateAlign16([0i8; 32]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin_sprintf(
-// CHECK-NEXT:             formatted.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             formatted.0.as_mut_ptr(),
 // CHECK-NEXT:             c"%s-%d".as_ptr(),
-// CHECK-NEXT:             copy.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             copy.as_mut_ptr(),
 // CHECK-NEXT:             __builtin_strlen(buffer as *const i8) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut bounded: [i8; 4] = [0i8; 4];
 // CHECK-NEXT:     let wanted: i32 = unsafe {
 // CHECK-NEXT:         __builtin_snprintf(
-// CHECK-NEXT:             bounded.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             bounded.as_mut_ptr(),
 // CHECK-NEXT:             core::mem::size_of::<[i8; 4]>() as u64,
 // CHECK-NEXT:             c"%s".as_ptr(),
-// CHECK-NEXT:             formatted.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             formatted.0.as_mut_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let found: *const i8 = (unsafe {
@@ -100,8 +100,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin_printf(
 // CHECK-NEXT:             c"%s %s %d %d %td\n".as_ptr(),
-// CHECK-NEXT:             formatted.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             bounded.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             formatted.0.as_mut_ptr(),
+// CHECK-NEXT:             bounded.as_mut_ptr(),
 // CHECK-NEXT:             wanted,
 // CHECK-NEXT:             __builtin_strcmp(buffer as *const i8, c"slate".as_ptr()),
 // CHECK-NEXT:             found.offset_from(formatted.0.as_mut_ptr() as *const i8) as i64,

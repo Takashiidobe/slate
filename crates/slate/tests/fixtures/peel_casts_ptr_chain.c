@@ -12,7 +12,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buf: [i8; 8] = [0i8; 8];
-// CHECK-NEXT:     let p: *mut i8 = buf.as_mut_ptr() as *mut i8;
+// CHECK-NEXT:     let p: *mut i8 = buf.as_mut_ptr();
 // CHECK-NEXT:     unsafe { buf[0usize..8usize].fill((0i32 as i32) as i8) };
 // CHECK-NEXT:     (unsafe { *p.add(0) }) as i32
 // CHECK: {{^}}}

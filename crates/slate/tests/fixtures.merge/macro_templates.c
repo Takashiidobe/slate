@@ -81,7 +81,6 @@ int main(void) {
 // CHECK-NEXT:   units/macro_templates_helper.c: [] 1 compiled
 // CHECK-NEXT: total: 4 compiles across 2 targets
 // CHECK-NEXT: unit macro_templates: 41 items, 23 gated, 0 duplicated functions
-// CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit macro_templates_helper: 10 items, 5 gated, 0 duplicated functions
 // CHECK-NEXT: macros: 15 function-like, 15 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   macro AFTER: 4 lifted, inline:
@@ -386,9 +385,6 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let local: i32 = 1;
 // CHECK-NEXT:     let byte: u8 = 200;
-// CHECK-NEXT:     #[cfg(unix)]
-// CHECK-NEXT:     let wide: c_long = (8589934592 as c_long);
-// CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let wide: c_long = (1 as c_long) << 33i32;
 // CHECK-NEXT:     let value: i32 = next();
 // CHECK-NEXT:     let mut s: state = state {

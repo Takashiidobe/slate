@@ -86,11 +86,11 @@ int main(void) {
 // CHECK-NEXT:         total += ((word.count_ones() as i32) * 100 + (word.trailing_zeros() as i32))
 // CHECK-NEXT:             as i64;
 // CHECK-NEXT:         if likely!(word & 1) != 0 {
-// CHECK-NEXT:             total += ((word >> 32i32).count_ones() as i32) as i64;
+// CHECK-NEXT:             total += (((word >> 32i32) as u64).count_ones() as i32) as i64;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         total += ((((word as u32) | 2147483648).trailing_zeros() as i32)
 // CHECK-NEXT:             + ((word as u32).count_ones() as i32)) as i64;
-// CHECK-NEXT:         total += (word.trailing_zeros() as i32) as i64;
+// CHECK-NEXT:         total += ((word as u64).trailing_zeros() as i32) as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

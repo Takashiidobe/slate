@@ -334,7 +334,7 @@ int main(void) {
 // CHECK-NEXT:     [4, 9],
 // CHECK-NEXT:     [-1, 1],
 // CHECK-NEXT:     [1, -1],
-// CHECK-NEXT:     [-2147483648, 1],
+// CHECK-NEXT:     [-2147483647i32 - 1i32, 1],
 // CHECK-NEXT:     [2147483647, -1],
 // CHECK-NEXT:     [0, 0],
 // CHECK-NEXT: ];

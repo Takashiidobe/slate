@@ -111,8 +111,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut byte: i8 = 120;
 // CHECK-NEXT:     let mut descriptors: [i32; 2] = [0i32; 2];
-// CHECK-NEXT:     if (unsafe { pipe((descriptors.as_mut_ptr() as *mut i32) as *mut i32) as i32 })
-// CHECK-NEXT:         != 0 {
+// CHECK-NEXT:     if (unsafe { pipe(descriptors.as_mut_ptr() as *mut i32) as i32 }) != 0 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let written: i64 = unsafe {
@@ -142,10 +141,10 @@ int main(void) {
 // CHECK-NEXT:             (process_id.unwrap()() == (getpid() as i32)) as i32,
 // CHECK-NEXT:             optind,
 // CHECK-NEXT:             ((slate_support::EINVAL as i32) != (slate_support::O_RDONLY as i32)) as i32,
-// CHECK-NEXT:             written,
-// CHECK-NEXT:             received,
+// CHECK-NEXT:             written as i64,
+// CHECK-NEXT:             received as i64,
 // CHECK-NEXT:             result as i32,
-// CHECK-NEXT:             limit_value(4u64),
+// CHECK-NEXT:             limit_value(4u64) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

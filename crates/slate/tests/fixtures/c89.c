@@ -535,7 +535,7 @@ int main(void) {
 // CHECK-NEXT:     array.0[1] = 2;
 // CHECK-NEXT:     array.0[2] = 3;
 // CHECK-NEXT:     array.0[3] = 4;
-// CHECK-NEXT:     let pointer: *mut i32 = array.0.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:     let pointer: *mut i32 = array.0.as_mut_ptr();
 // CHECK-NEXT:     let const_pointer: *const i32 = pointer as *const i32;
 // CHECK-NEXT:     c89_store(
 // CHECK-NEXT:         core::ptr::addr_of_mut!(copied_value) as *mut (),
@@ -567,7 +567,7 @@ int main(void) {
 // CHECK-NEXT:         float_value as i32,
 // CHECK-NEXT:         double_value as i32,
 // CHECK-NEXT:         __slate_f80_to_i32(long_double_value),
-// CHECK-NEXT:         wide_character,
+// CHECK-NEXT:         wide_character as i32,
 // CHECK-NEXT:         color as u32,
 // CHECK-NEXT:         point.x + point.y,
 // CHECK-NEXT:         bits.__slate_bits_0.__get_low() as i32,

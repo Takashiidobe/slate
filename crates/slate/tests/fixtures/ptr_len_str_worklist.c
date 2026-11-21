@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut bytes: [u8; 4] = [97, 98, 99, 0];
-// CHECK-NEXT:     let score: i32 = forward_text(bytes.as_ptr() as *const u8, 3i32);
+// CHECK-NEXT:     let score: i32 = forward_text(bytes.as_ptr(), 3i32);
 // CHECK-NEXT:     println!("{}", score);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

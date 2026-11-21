@@ -141,7 +141,7 @@ int main(void) {
 // CHECK-NEXT:     let mut repeated: [i8; 5] = [97, 98, 99, 97, 0];
 // CHECK-NEXT:     let mut obscured: [i8; 4] = [103, 110, 117, 0];
 // CHECK-NEXT:     let mut tokens: [i8; 6] = [97, 58, 58, 98, 99, 0];
-// CHECK-NEXT:     let mut cursor: *mut i8 = tokens.as_mut_ptr() as *mut i8;
+// CHECK-NEXT:     let mut cursor: *mut i8 = tokens.as_mut_ptr();
 // CHECK-NEXT:     let end: *mut i8 = (unsafe {
 // CHECK-NEXT:         mempcpy(
 // CHECK-NEXT:             (destination.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
@@ -227,9 +227,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total += ((unsafe { argz_count(argz as *const i8, length) }) == 3) as i32;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         argz_extract(argz as *const i8, length, arguments.0.as_mut_ptr() as *mut *mut i8)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { argz_extract(argz as *const i8, length, arguments.0.as_mut_ptr()) };
 // CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         strcmp(
 // CHECK-NEXT:             (arguments.0[1] as *const i8) as *const core::ffi::c_char,

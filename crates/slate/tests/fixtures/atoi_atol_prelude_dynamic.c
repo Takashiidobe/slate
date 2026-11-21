@@ -39,19 +39,19 @@ int main(void) {
 // CHECK-NEXT:     let mut c: __SlateAlign16<[i8; 32]> = __SlateAlign16([0i8; 32]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         strcpy(
-// CHECK-NEXT:             (a.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             a.0.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:             c"  -42abc".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:         ) as *mut i8
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         strcpy(
-// CHECK-NEXT:             (b.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             b.0.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:             c"+1000000000000zzz".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:         ) as *mut i8
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         strcpy(
-// CHECK-NEXT:             (c.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             c.0.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:             c"9000000000000".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:         ) as *mut i8
 // CHECK-NEXT:     };

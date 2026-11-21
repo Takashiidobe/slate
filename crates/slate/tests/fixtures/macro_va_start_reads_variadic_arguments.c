@@ -88,20 +88,9 @@ int main(void) { char b[64]; fmt(b, "%d-%s", 7, "x"); printf("%d %s\n", sum(3, 1
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut b: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
+// CHECK-NEXT:     unsafe { fmt(b.0.as_mut_ptr(), c"%d-%s".as_ptr(), 7i32, c"x".as_ptr() as *mut i8) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         fmt(
-// CHECK-NEXT:             b.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             c"%d-%s".as_ptr(),
-// CHECK-NEXT:             7i32,
-// CHECK-NEXT:             c"x".as_ptr() as *mut i8,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %s\n".as_ptr(),
-// CHECK-NEXT:             sum(3i32, 1i32, 2i32, 3i32),
-// CHECK-NEXT:             b.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         printf(c"%d %s\n".as_ptr(), sum(3i32, 1i32, 2i32, 3i32), b.0.as_mut_ptr())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -39,12 +39,11 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fill(c: *mut cursor, mut n: u8) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*c).p = (*c).buf.as_mut_ptr() as *mut u8;
+// CHECK-NEXT:         (*c).p = (*c).buf.as_mut_ptr();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     while (unsafe { (*c).p })
 // CHECK-NEXT:         < unsafe {
-// CHECK-NEXT:             ((*c).buf.as_mut_ptr() as *mut u8)
-// CHECK-NEXT:                 .offset(core::mem::size_of::<[u8; 8]>() as isize)
+// CHECK-NEXT:             (*c).buf.as_mut_ptr().add((core::mem::size_of::<[u8; 8]>() as u64) as usize)
 // CHECK-NEXT:         } {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *(*c).p = n;

@@ -166,7 +166,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             ((buffer as *const ()) as *const core::ffi::c_void) as *const u8,
-// CHECK-NEXT:             ((((*(state as *mut GNUCookie)).bytes.as_mut_ptr() as *mut i8)
+// CHECK-NEXT:             (((*(state as *mut GNUCookie)).bytes
+// CHECK-NEXT:                 .as_mut_ptr()
 // CHECK-NEXT:                 .offset((*(state as *mut GNUCookie)).length as isize) as *mut ())
 // CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (size as usize) as usize,
@@ -327,11 +328,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let arguments: u64 = unsafe {
-// CHECK-NEXT:         parse_printf_format(
-// CHECK-NEXT:             c"%2$d %1$s".as_ptr(),
-// CHECK-NEXT:             4u64,
-// CHECK-NEXT:             types.0.as_mut_ptr() as *mut i32,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         parse_printf_format(c"%2$d %1$s".as_ptr(), 4u64, types.0.as_mut_ptr())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (arguments == 2 && types.0[0] & !65280 == 3 && types.0[1] & !65280 == 0) as i32
 // CHECK-NEXT: }

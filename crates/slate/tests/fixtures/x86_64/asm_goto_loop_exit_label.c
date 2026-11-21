@@ -95,9 +95,9 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]][0] = 0i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let left: u64 = fill_until_fault(buf.as_mut_ptr() as *mut i8, 8u64, 5u64);
-// CHECK-NEXT:     let none: u64 = fill_until_fault(buf.as_mut_ptr() as *mut i8, 0u64, 0u64);
-// CHECK-NEXT:     let all: u64 = fill_until_fault(buf.as_mut_ptr() as *mut i8, 3u64, 99u64);
+// CHECK-NEXT:     let left: u64 = fill_until_fault(buf.as_mut_ptr(), 8u64, 5u64);
+// CHECK-NEXT:     let none: u64 = fill_until_fault(buf.as_mut_ptr(), 0u64, 0u64);
+// CHECK-NEXT:     let all: u64 = fill_until_fault(buf.as_mut_ptr(), 3u64, 99u64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

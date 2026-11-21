@@ -192,7 +192,7 @@ int main(void) {
 // CHECK-NEXT: static mut holder: pair = pair {
 // CHECK-NEXT:     left: 1i32,
 // CHECK-NEXT:     right: 2i32,
-// CHECK-NEXT:     wide: (3 as c_long),
+// CHECK-NEXT:     wide: 3 as c_long,
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

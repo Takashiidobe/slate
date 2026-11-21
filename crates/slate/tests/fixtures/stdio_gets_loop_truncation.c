@@ -77,13 +77,7 @@ int main(void) {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut line: [i8; 8] = [0i8; 8];
-// CHECK-NEXT:     while !unsafe {
-// CHECK-NEXT:             fgets(
-// CHECK-NEXT:                 line.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:                 core::mem::size_of::<[i8; 8]>() as i32,
-// CHECK-NEXT:                 g,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }
+// CHECK-NEXT:     while !unsafe { fgets(line.as_mut_ptr(), core::mem::size_of::<[i8; 8]>() as i32, g) }
 // CHECK-NEXT:         .is_null() {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {

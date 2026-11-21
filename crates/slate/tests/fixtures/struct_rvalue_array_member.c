@@ -87,11 +87,11 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
 // CHECK-NEXT:         total += unsafe {
-// CHECK-NEXT:             *((*{
-// CHECK-NEXT:                         [[SLATE_COMPOUND_0]] = make(i);
-// CHECK-NEXT:                         core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:                     }).a
-// CHECK-NEXT:                     .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:             *(*{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = make(i);
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
+// CHECK-NEXT:                 }).a
+// CHECK-NEXT:                 .as_mut_ptr()
 // CHECK-NEXT:                 .offset((i + 1) as isize)
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
@@ -99,43 +99,43 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %c\n".as_ptr(),
-// CHECK-NEXT:             *((*{
-// CHECK-NEXT:                         [[SLATE_COMPOUND_1]] = make(3i32);
-// CHECK-NEXT:                         core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
-// CHECK-NEXT:                     }).a
-// CHECK-NEXT:                     .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:             *(*{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_1]] = make(3i32);
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:                 }).a
+// CHECK-NEXT:                 .as_mut_ptr()
 // CHECK-NEXT:                 .add(5),
 // CHECK-NEXT:             total,
-// CHECK-NEXT:             *((*{
-// CHECK-NEXT:                         [[SLATE_COMPOUND_2]] = make(4i32);
-// CHECK-NEXT:                         core::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
-// CHECK-NEXT:                     }).tag
-// CHECK-NEXT:                     .as_mut_ptr() as *mut i8)
+// CHECK-NEXT:             *(*{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_2]] = make(4i32);
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
+// CHECK-NEXT:                 }).tag
+// CHECK-NEXT:                 .as_mut_ptr()
 // CHECK-NEXT:                 .add(0) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let __slate_printf_arg0 = unsafe {
-// CHECK-NEXT:         *((*{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_3]] = summed(3i32, 7i32, 8i32, 9i32);
-// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_3]])
-// CHECK-NEXT:                 }).a
-// CHECK-NEXT:                 .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:         *(*{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_3]] = summed(3i32, 7i32, 8i32, 9i32);
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_3]])
+// CHECK-NEXT:             }).a
+// CHECK-NEXT:             .as_mut_ptr()
 // CHECK-NEXT:             .add(2)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let __slate_printf_arg1 = unsafe {
-// CHECK-NEXT:         *((*{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_5]] = make(
-// CHECK-NEXT:                         *((*{
-// CHECK-NEXT:                                     [[SLATE_COMPOUND_4]] = make(2i32);
-// CHECK-NEXT:                                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_4]])
-// CHECK-NEXT:                                 }).a
-// CHECK-NEXT:                                 .as_mut_ptr() as *mut i32)
-// CHECK-NEXT:                             .add(3),
-// CHECK-NEXT:                     );
-// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_5]])
-// CHECK-NEXT:                 }).a
-// CHECK-NEXT:                 .as_mut_ptr() as *mut i32)
+// CHECK-NEXT:         *(*{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_5]] = make(
+// CHECK-NEXT:                     *(*{
+// CHECK-NEXT:                             [[SLATE_COMPOUND_4]] = make(2i32);
+// CHECK-NEXT:                             core::ptr::addr_of_mut!([[SLATE_COMPOUND_4]])
+// CHECK-NEXT:                         }).a
+// CHECK-NEXT:                         .as_mut_ptr()
+// CHECK-NEXT:                         .add(3),
+// CHECK-NEXT:                 );
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_5]])
+// CHECK-NEXT:             }).a
+// CHECK-NEXT:             .as_mut_ptr()
 // CHECK-NEXT:             .add(2)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);

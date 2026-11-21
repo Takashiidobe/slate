@@ -159,9 +159,9 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %d %d\n".as_ptr(),
-// CHECK-NEXT:                 find(core::ptr::addr_of_mut!(a), 2u32, (30 as c_ulong)),
-// CHECK-NEXT:                 find(core::ptr::addr_of_mut!(a), 1u32, (20 as c_ulong)),
-// CHECK-NEXT:                 find(core::ptr::addr_of_mut!(a), 9u32, (99 as c_ulong)),
+// CHECK-NEXT:                 find(core::ptr::addr_of_mut!(a), 2u32, 30 as c_ulong),
+// CHECK-NEXT:                 find(core::ptr::addr_of_mut!(a), 1u32, 20 as c_ulong),
+// CHECK-NEXT:                 find(core::ptr::addr_of_mut!(a), 9u32, 99 as c_ulong),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -170,7 +170,7 @@ int main(void) {
 // CHECK-NEXT:     let mut c: ent = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: ent = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].hash = 2u32;
-// CHECK-NEXT:         [[T_0]].key = (30 as c_ulong);
+// CHECK-NEXT:         [[T_0]].key = 30 as c_ulong;
 // CHECK-NEXT:         [[T_0]].next = core::ptr::null_mut::<ent>();
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
@@ -178,7 +178,7 @@ int main(void) {
 // CHECK-NEXT:     let mut b: ent = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: ent = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].hash = 1u32;
-// CHECK-NEXT:         [[T_1]].key = (20 as c_ulong);
+// CHECK-NEXT:         [[T_1]].key = 20 as c_ulong;
 // CHECK-NEXT:         [[T_1]].next = core::ptr::addr_of_mut!(c);
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
@@ -186,7 +186,7 @@ int main(void) {
 // CHECK-NEXT:     let mut a: ent = {
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: ent = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]].hash = 0u32;
-// CHECK-NEXT:         [[T_2]].key = (10 as c_ulong);
+// CHECK-NEXT:         [[T_2]].key = 10 as c_ulong;
 // CHECK-NEXT:         [[T_2]].next = core::ptr::addr_of_mut!(b);
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
@@ -194,9 +194,9 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {}",
-// CHECK-NEXT:             find(core::ptr::addr_of_mut!(a), 2u32, (30 as c_ulong)),
-// CHECK-NEXT:             find(core::ptr::addr_of_mut!(a), 1u32, (20 as c_ulong)),
-// CHECK-NEXT:             find(core::ptr::addr_of_mut!(a), 9u32, (99 as c_ulong))
+// CHECK-NEXT:             find(core::ptr::addr_of_mut!(a), 2u32, 30 as c_ulong),
+// CHECK-NEXT:             find(core::ptr::addr_of_mut!(a), 1u32, 20 as c_ulong),
+// CHECK-NEXT:             find(core::ptr::addr_of_mut!(a), 9u32, 99 as c_ulong)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

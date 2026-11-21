@@ -21,12 +21,12 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut greeting: [i8; 4] = [104, -61, -87, 0];
 // CHECK-NEXT:     let mut mutate: [i8; 4] = [97, 98, 99, 0];
-// CHECK-NEXT:     let p: *mut i8 = mutate.as_mut_ptr() as *mut i8;
+// CHECK-NEXT:     let p: *mut i8 = mutate.as_mut_ptr();
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p = 90;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%s\n".as_ptr(), greeting.as_mut_ptr() as *mut i8) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s\n".as_ptr(), greeting.as_mut_ptr()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%c\n".as_ptr(), mutate[0] as i32) };

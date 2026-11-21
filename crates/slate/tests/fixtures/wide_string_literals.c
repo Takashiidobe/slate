@@ -71,7 +71,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ls %zu\n".as_ptr(),
-// CHECK-NEXT:             buf.0.as_mut_ptr() as *mut i32,
+// CHECK-NEXT:             buf.0.as_mut_ptr(),
 // CHECK-NEXT:             core::mem::size_of::<[i32; 4]>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

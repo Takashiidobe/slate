@@ -130,8 +130,8 @@ int main(void) {
 // CHECK-NEXT:                     c"%u %u %llu %llu\n".as_ptr(),
 // CHECK-NEXT:                     64i32,
 // CHECK-NEXT:                     n,
-// CHECK-NEXT:                     x.rotate_left((n as u64) as u32),
-// CHECK-NEXT:                     x.rotate_right((n as u64) as u32),
+// CHECK-NEXT:                     x.rotate_left((n as u64) as u32) as u64,
+// CHECK-NEXT:                     x.rotate_right((n as u64) as u32) as u64,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };

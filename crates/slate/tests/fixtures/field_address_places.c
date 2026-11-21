@@ -111,7 +111,7 @@ int main(void) {
 // CHECK-NEXT:     if which == 1 {
 // CHECK-NEXT:         return unsafe { core::ptr::addr_of_mut!((*outer).inner.value) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { ((*outer).items.as_mut_ptr() as *mut i32).offset((which - 2) as isize) }
+// CHECK-NEXT:     unsafe { (*outer).items.as_mut_ptr().offset((which - 2) as isize) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn inner_of(outer: *mut Outer) -> *mut Inner {
@@ -141,7 +141,7 @@ int main(void) {
 // CHECK-NEXT:     local.link = core::ptr::addr_of_mut!(spare);
 // CHECK-NEXT:     bump(core::ptr::addr_of_mut!(local.id), 5i32);
 // CHECK-NEXT:     bump(core::ptr::addr_of_mut!(local.inner.value), 3i32);
-// CHECK-NEXT:     bump(unsafe { (local.items.as_mut_ptr() as *mut i32).add(2) }, 100i32);
+// CHECK-NEXT:     bump(unsafe { local.items.as_mut_ptr().add(2) }, 100i32);
 // CHECK-NEXT:     scale(core::ptr::addr_of_mut!(local.inner.weight), 4.0f64);
 // CHECK-NEXT:     bump(unsafe { core::ptr::addr_of_mut!((*local.link).value) }, 9i32);
 // CHECK-NEXT:     scale(unsafe { core::ptr::addr_of_mut!((*local.link).weight) }, 8.0f64);

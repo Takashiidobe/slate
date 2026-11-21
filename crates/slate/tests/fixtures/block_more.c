@@ -778,8 +778,7 @@ int main(void) {
 // CHECK-NEXT:     let r#box: *mut __slate_blocks::Byref<__SlateRecord_block_more_c_59> = __captures.c0;
 // CHECK-NEXT:     for [[V_6]] in 0i32..3i32 {
 // CHECK-NEXT:         let [[V_5]]: *mut i32 = unsafe {
-// CHECK-NEXT:             ((*__slate_blocks::value(r#box)).v.as_mut_ptr() as *mut i32)
-// CHECK-NEXT:                 .offset([[V_6]] as isize)
+// CHECK-NEXT:             (*__slate_blocks::value(r#box)).v.as_mut_ptr().offset([[V_6]] as isize)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *[[V_5]] = *[[V_5]] + 10;

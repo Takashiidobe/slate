@@ -244,7 +244,9 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < n {
-// CHECK-NEXT:         total += unsafe { *(values.as_mut_ptr() as *mut i32).offset(i as isize) };
+// CHECK-NEXT:         total += unsafe {
+// CHECK-NEXT:             *((values.as_mut_ptr() as *mut [i32; 0]) as *mut i32).offset(i as isize)
+// CHECK-NEXT:         };
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total

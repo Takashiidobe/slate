@@ -216,9 +216,7 @@ int main(void) {
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         let x: LongDouble = unsafe {
-// CHECK-NEXT:             core::ptr::read_volatile(
-// CHECK-NEXT:                 (values.as_mut_ptr() as *mut LongDouble).offset(i as isize),
-// CHECK-NEXT:             )
+// CHECK-NEXT:             core::ptr::read_volatile(values.as_mut_ptr().offset(i as isize))
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {

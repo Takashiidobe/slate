@@ -86,9 +86,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..9i32 {
 // CHECK-NEXT:         let x: f64 = unsafe {
-// CHECK-NEXT:             core::ptr::read_volatile(
-// CHECK-NEXT:                 (values.0.as_mut_ptr() as *mut f64).offset(i as isize),
-// CHECK-NEXT:             )
+// CHECK-NEXT:             core::ptr::read_volatile(values.0.as_mut_ptr().offset(i as isize))
 // CHECK-NEXT:         };
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{}{}{}{}{} {}",
@@ -126,9 +124,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..6i32 {
 // CHECK-NEXT:         let x: f32 = unsafe {
-// CHECK-NEXT:             core::ptr::read_volatile(
-// CHECK-NEXT:                 (small.0.as_mut_ptr() as *mut f32).offset(i as isize),
-// CHECK-NEXT:             )
+// CHECK-NEXT:             core::ptr::read_volatile(small.0.as_mut_ptr().offset(i as isize))
 // CHECK-NEXT:         };
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{}{}{}{}{} {}",

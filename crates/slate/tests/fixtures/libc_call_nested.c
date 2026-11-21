@@ -70,13 +70,14 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn count_alpha() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     total += ((unsafe { "alpha".cmp("alpha") as i32 }) == 0) as i32;
-// CHECK-NEXT:     total += ((unsafe { "beta".cmp("alpha") as i32 }) == 0) as i32;
+// CHECK-NEXT:     total += ((unsafe { ("alpha".cmp("alpha") as i32) as i32 }) == 0) as i32;
+// CHECK-NEXT:     total += ((unsafe { ("beta".cmp("alpha") as i32) as i32 }) == 0) as i32;
 // CHECK-NEXT:     total
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn same_prefix() -> i32 {
 // CHECK-NEXT:     if (unsafe {
-// CHECK-NEXT:         "abx".as_bytes()[0usize..2usize].cmp(&"aby".as_bytes()[0usize..2usize]) as i32
+// CHECK-NEXT:         ("abx".as_bytes()[0usize..2usize].cmp(&"aby".as_bytes()[0usize..2usize]) as i32)
+// CHECK-NEXT:             as i32
 // CHECK-NEXT:     }) == 0 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
@@ -125,7 +126,7 @@ int main(void) {
 // CHECK-NEXT:             ) as i32) as u64
 // CHECK-NEXT:     }) as i32)
 // CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             "ab\u{0}cd"
+// CHECK-NEXT:             ("ab\u{0}cd"
 // CHECK-NEXT:                     .as_bytes()[0usize.."ab\u{0}cd"
 // CHECK-NEXT:                     .as_bytes()
 // CHECK-NEXT:                     .iter()
@@ -136,7 +137,7 @@ int main(void) {
 // CHECK-NEXT:                     &"abz"
 // CHECK-NEXT:                         .as_bytes()[0usize..(((n as u64) as usize) as usize).min(3usize)
 // CHECK-NEXT:                         as usize],
-// CHECK-NEXT:                 ) as i32
+// CHECK-NEXT:                 ) as i32) as i32
 // CHECK-NEXT:         }) == 0) as i32)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn effectful() -> i32 {

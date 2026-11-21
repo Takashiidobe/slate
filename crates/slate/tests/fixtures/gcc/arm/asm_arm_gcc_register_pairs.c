@@ -107,9 +107,9 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "mov {0}, #15\n\tmovw r2, #9029\n\tadd {0}, {0}, r2\n\tldr r2, [{3}]\n\tadd {0}, {0}, r2\n\t@ #{4} {4}\n@ {1}\n@ {2}",
 // CHECK-NEXT:             out(reg) [[T_0]],
-// CHECK-NEXT:             const -16 as i32,
-// CHECK-NEXT:             const 74565 as i32,
-// CHECK-NEXT:             in(reg) pointer as *const i32,
+// CHECK-NEXT:             const -16i32,
+// CHECK-NEXT:             const 74565i32,
+// CHECK-NEXT:             in(reg) (pointer as *const i32) as *mut i32,
 // CHECK-NEXT:             sym counter,
 // CHECK-NEXT:             out("r2") _,
 // CHECK-NEXT:             options(pure, readonly, nostack, preserves_flags),
@@ -120,7 +120,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut value: i32 = 7;
+// CHECK-NEXT:     let value: i32 = 7;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%llx\n".as_ptr(), add64(4294967295u64, 4294967297u64))
@@ -135,11 +135,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         modifiers(unsafe { &(*core::ptr::addr_of_mut!(value)) }),
-// CHECK-NEXT:         unsafe { counter }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {}", modifiers(&value), unsafe { counter });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

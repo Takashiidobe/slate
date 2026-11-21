@@ -120,7 +120,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         add_arrays(
-// CHECK-NEXT:             out.as_mut_ptr() as *mut i64,
+// CHECK-NEXT:             out.as_mut_ptr(),
 // CHECK-NEXT:             left.as_mut_ptr() as *const i64,
 // CHECK-NEXT:             right.as_mut_ptr() as *const i64,
 // CHECK-NEXT:             11i64,

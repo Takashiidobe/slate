@@ -65,26 +65,26 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         strcpy(
-// CHECK-NEXT:             (copy.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             copy.0.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:             c"abc".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:         ) as *mut i8
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         strcat(
-// CHECK-NEXT:             (append.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             append.0.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:             c"bar".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:         ) as *mut i8
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         strncpy(
-// CHECK-NEXT:             (trunc_copy.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             trunc_copy.0.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:             c"abcdef".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             3u64 as usize,
 // CHECK-NEXT:         ) as *mut i8
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         strncat(
-// CHECK-NEXT:             (trunc_append.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             trunc_append.0.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:             c"suffix".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             3u64 as usize,
 // CHECK-NEXT:         ) as *mut i8
@@ -93,10 +93,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %s %s %s %zu\n".as_ptr(),
-// CHECK-NEXT:             copy.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             append.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             trunc_copy.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             trunc_append.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             copy.0.as_mut_ptr(),
+// CHECK-NEXT:             append.0.as_mut_ptr(),
+// CHECK-NEXT:             trunc_copy.0.as_mut_ptr(),
+// CHECK-NEXT:             trunc_append.0.as_mut_ptr(),
 // CHECK-NEXT:             strlen(
 // CHECK-NEXT:                 (trunc_append.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
 // CHECK-NEXT:             ) as u64,

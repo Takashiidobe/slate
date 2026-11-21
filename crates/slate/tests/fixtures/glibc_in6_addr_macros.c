@@ -82,23 +82,19 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let __a: *const in6_addr = unsafe { core::ptr::addr_of!((*address).sin6_addr) };
-// CHECK-NEXT:         [[V_0]] = (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(0) })
-// CHECK-NEXT:             == 0
-// CHECK-NEXT:             && (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(1) })
-// CHECK-NEXT:                 == 0
-// CHECK-NEXT:             && (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(2) })
-// CHECK-NEXT:                 == 0
-// CHECK-NEXT:             && (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(3) })
-// CHECK-NEXT:                 == 0;
+// CHECK-NEXT:         [[V_0]] = (unsafe { *(*__a).__in6_u.__u6_addr32.as_ptr().add(0) }) == 0
+// CHECK-NEXT:             && (unsafe { *(*__a).__in6_u.__u6_addr32.as_ptr().add(1) }) == 0
+// CHECK-NEXT:             && (unsafe { *(*__a).__in6_u.__u6_addr32.as_ptr().add(2) }) == 0
+// CHECK-NEXT:             && (unsafe { *(*__a).__in6_u.__u6_addr32.as_ptr().add(3) }) == 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if [[V_0]] {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bool;
 // CHECK-NEXT:     let __a: *const in6_addr = unsafe { core::ptr::addr_of!((*address).sin6_addr) };
-// CHECK-NEXT:     [[V_1]] = (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(0) }) == 0
-// CHECK-NEXT:         && (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(1) }) == 0
-// CHECK-NEXT:         && (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(2) })
+// CHECK-NEXT:     [[V_1]] = (unsafe { *(*__a).__in6_u.__u6_addr32.as_ptr().add(0) }) == 0
+// CHECK-NEXT:         && (unsafe { *(*__a).__in6_u.__u6_addr32.as_ptr().add(1) }) == 0
+// CHECK-NEXT:         && (unsafe { *(*__a).__in6_u.__u6_addr32.as_ptr().add(2) })
 // CHECK-NEXT:             == unsafe { htonl(65535u32) };
 // CHECK-NEXT:     if [[V_1]] {
 // CHECK-NEXT:         return 4;

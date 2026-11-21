@@ -65,10 +65,10 @@ int main(void) {
 // CHECK-NEXT:     let mut h: [i8; 2] = [72, 0];
 // CHECK-NEXT:     let mut s: [i8; 2] = [83, 0];
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         e.data.tag.handle = h.as_mut_ptr() as *mut i8;
+// CHECK-NEXT:         e.data.tag.handle = h.as_mut_ptr();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         e.data.tag.suffix = s.as_mut_ptr() as *mut i8;
+// CHECK-NEXT:         e.data.tag.suffix = s.as_mut_ptr();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

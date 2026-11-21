@@ -594,7 +594,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: [i8; 8] = [97, 0, 0, 0, 0, 0, 0, 0];
 // CHECK-NEXT:     let mut b: [i8; 8] = [98, 0, 0, 0, 0, 0, 0, 0];
-// CHECK-NEXT:     let mut end: *mut i8 = a.as_mut_ptr() as *mut i8;
+// CHECK-NEXT:     let mut end: *mut i8 = a.as_mut_ptr();
 // CHECK-NEXT:     let count: u64 = 1;
 // CHECK-NEXT:     let number: i32 = 1;
 // CHECK-NEXT:     let real: f64 = 1.0f64;
@@ -626,7 +626,7 @@ int main(void) {
 // CHECK-NEXT:             b.as_mut_ptr() as *const (),
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         a.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:         a.as_mut_ptr(),
 // CHECK-NEXT:         6i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     CHECK__4!(
@@ -635,7 +635,7 @@ int main(void) {
 // CHECK-NEXT:             b.as_mut_ptr() as *const (),
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         a.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:         a.as_mut_ptr(),
 // CHECK-NEXT:         7i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     CHECK__4!(
@@ -644,7 +644,7 @@ int main(void) {
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(number)) },
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         a.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:         a.as_mut_ptr(),
 // CHECK-NEXT:         8i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     CHECK!(
@@ -658,32 +658,24 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     CHECK__2!(strlen(a.as_mut_ptr() as *const i8), 5i32, 10i32);
 // CHECK-NEXT:     CHECK__2!(unsafe { strlen_call.unwrap()(a.as_mut_ptr() as *const i8) }, 5i32, 10i32);
-// CHECK-NEXT:     CHECK!(
-// CHECK-NEXT:         strcpy(a.as_mut_ptr() as *mut i8, b.as_mut_ptr() as *const i8),
-// CHECK-NEXT:         a.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:         11i32
-// CHECK-NEXT:     );
-// CHECK-NEXT:     CHECK!(
-// CHECK-NEXT:         strcat(a.as_mut_ptr() as *mut i8, b.as_mut_ptr() as *const i8),
-// CHECK-NEXT:         a.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:         12i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(strcpy(a.as_mut_ptr(), b.as_mut_ptr() as *const i8), a.as_mut_ptr(), 11i32);
+// CHECK-NEXT:     CHECK!(strcat(a.as_mut_ptr(), b.as_mut_ptr() as *const i8), a.as_mut_ptr(), 12i32);
 // CHECK-NEXT:     CHECK!(
 // CHECK-NEXT:         strncpy(
-// CHECK-NEXT:             a.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             a.as_mut_ptr(),
 // CHECK-NEXT:             b.as_mut_ptr() as *const i8,
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         a.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:         a.as_mut_ptr(),
 // CHECK-NEXT:         13i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     CHECK!(
 // CHECK-NEXT:         strncat(
-// CHECK-NEXT:             a.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             a.as_mut_ptr(),
 // CHECK-NEXT:             b.as_mut_ptr() as *const i8,
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         a.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:         a.as_mut_ptr(),
 // CHECK-NEXT:         14i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     CHECK!(
@@ -780,7 +772,7 @@ int main(void) {
 // CHECK-NEXT:     CHECK!(fputs(a.as_mut_ptr() as *const i8, stream), 54i32, 32i32);
 // CHECK-NEXT:     CHECK!(
 // CHECK-NEXT:         fgets(
-// CHECK-NEXT:             a.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             a.as_mut_ptr(),
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(number)) },
 // CHECK-NEXT:             stream,
 // CHECK-NEXT:         ),

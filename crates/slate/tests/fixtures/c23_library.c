@@ -562,11 +562,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let output_size: u64 = unsafe {
-// CHECK-NEXT:         c8rtomb(
-// CHECK-NEXT:             output.0.as_mut_ptr() as *mut i8,
-// CHECK-NEXT:             character,
-// CHECK-NEXT:             core::ptr::addr_of_mut!(output_state),
-// CHECK-NEXT:         )
+// CHECK-NEXT:         c8rtomb(output.0.as_mut_ptr(), character, core::ptr::addr_of_mut!(output_state))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut atomic_character: u8 = character;
 // CHECK-NEXT:     unsafe {
@@ -605,7 +601,7 @@ int main(void) {
 // CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = (stop
-// CHECK-NEXT:         == ((unsafe { (destination.as_mut_ptr() as *mut i8).add(3) }) as *mut ())
+// CHECK-NEXT:         == ((unsafe { destination.as_mut_ptr().add(3) }) as *mut ())
 // CHECK-NEXT:         && (destination[2] as i32) == 99) as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         memset_explicit(
@@ -741,7 +737,7 @@ int main(void) {
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         strftime(
-// CHECK-NEXT:             (month.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             month.0.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:             (core::mem::size_of::<[i8; 32]>() as u64) as usize,
 // CHECK-NEXT:             c"%OB".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             (core::ptr::addr_of_mut!(utc) as *const slate_support::tm)
@@ -756,7 +752,7 @@ int main(void) {
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         wcsftime(
-// CHECK-NEXT:             wide_month.0.as_mut_ptr() as *mut i32,
+// CHECK-NEXT:             wide_month.0.as_mut_ptr(),
 // CHECK-NEXT:             32u64,
 // CHECK-NEXT:             (core::ptr::addr_of_mut!(__slate_str281) as *mut i32) as *const i32,
 // CHECK-NEXT:             core::ptr::addr_of_mut!(utc) as *const slate_support::tm,
@@ -827,7 +823,7 @@ int main(void) {
 // CHECK-NEXT:     let mut fast_value: u64 = 0;
 // CHECK-NEXT:     let written: i32 = unsafe {
 // CHECK-NEXT:         snprintf(
-// CHECK-NEXT:             (output.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             output.0.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:             (core::mem::size_of::<[i8; 64]>() as u64) as usize,
 // CHECK-NEXT:             c"%b %w16u %wf16u".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             13u32,
@@ -846,7 +842,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let floating_written: i32 = (unsafe {
 // CHECK-NEXT:         strfromf(
-// CHECK-NEXT:             float_output.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             float_output.0.as_mut_ptr(),
 // CHECK-NEXT:             core::mem::size_of::<[i8; 16]>() as u64,
 // CHECK-NEXT:             c"%.1f".as_ptr(),
 // CHECK-NEXT:             1.5f32,
@@ -854,7 +850,7 @@ int main(void) {
 // CHECK-NEXT:     })
 // CHECK-NEXT:         + unsafe {
 // CHECK-NEXT:             strfromd(
-// CHECK-NEXT:                 double_output.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:                 double_output.0.as_mut_ptr(),
 // CHECK-NEXT:                 core::mem::size_of::<[i8; 16]>() as u64,
 // CHECK-NEXT:                 c"%.1f".as_ptr(),
 // CHECK-NEXT:                 2.5f64,
@@ -862,7 +858,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         + unsafe {
 // CHECK-NEXT:             __slate_strfroml__ri32_pi8_u64_pi8_f80(
-// CHECK-NEXT:                 long_double_output.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:                 long_double_output.0.as_mut_ptr(),
 // CHECK-NEXT:                 core::mem::size_of::<[i8; 16]>() as u64,
 // CHECK-NEXT:                 c"%.1f".as_ptr(),
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 64]),

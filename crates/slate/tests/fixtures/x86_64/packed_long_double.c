@@ -361,8 +361,8 @@ int main(void) {
 // CHECK-NEXT:     let mut copy: LongDouble = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(p.l) as *mut LongDouble) as *const ())
-// CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((((core::ptr::addr_of_mut!(p.l) as *mut LongDouble) as *mut LongDouble)
+// CHECK-NEXT:                 as *const ()) as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(copy) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             ((core::mem::size_of::<LongDouble>() as u64) as usize) as usize,

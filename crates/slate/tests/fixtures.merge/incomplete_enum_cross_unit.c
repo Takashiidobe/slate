@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg_attr(unix, unsafe(link_section = ".text.slate_distinct.incomplete_enum_modes.access_for"))]
 // CHECK-NEXT: extern "C-unwind" fn access_for(flags: i32) -> u32 {
-// CHECK-NEXT:     (if flags & 1 != 0 { 3i32 } else { 1i32 }) as u32
+// CHECK-NEXT:     ((if flags & 1 != 0 { 3i32 } else { 1i32 }) as u32) as u32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg_attr(unix, unsafe(link_section = ".text.slate_distinct.incomplete_enum_modes.mode_valid"))]
@@ -126,7 +126,7 @@ int main(void) {
 // CHECK-NEXT:     },
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut pending_access: u32 = 2;
+// CHECK-NEXT: static mut pending_access: u32 = 2u32;
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
 // CHECK-EMPTY:

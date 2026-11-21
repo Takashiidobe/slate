@@ -82,13 +82,13 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: [i32; 3] = [4, 5, 6];
 // CHECK-NEXT:     let mut sequence: sequence = sequence {
-// CHECK-NEXT:         items: values.as_mut_ptr() as *mut i32,
+// CHECK-NEXT:         items: values.as_mut_ptr(),
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let seq: *mut sequence = core::ptr::addr_of_mut!(sequence);
 // CHECK-NEXT:     let mut state: cursor = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: cursor = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].index = 0i32;
-// CHECK-NEXT:         [[T_0]].items = values.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:         [[T_0]].items = values.as_mut_ptr();
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let it: *mut cursor = core::ptr::addr_of_mut!(state);

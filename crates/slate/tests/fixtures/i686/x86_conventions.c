@@ -158,9 +158,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"%lld\n".as_ptr(), fast_wide(1i32, 1099511627776i64))
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), fast_wide(1i32, 1i64 << 40i32)) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

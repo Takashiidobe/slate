@@ -113,7 +113,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s %d %d %d %u\n".as_ptr(),
-// CHECK-NEXT:             dst.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             dst.as_mut_ptr(),
 // CHECK-NEXT:             x,
 // CHECK-NEXT:             counter,
 // CHECK-NEXT:             ds,

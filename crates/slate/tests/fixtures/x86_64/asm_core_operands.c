@@ -157,7 +157,7 @@ int main(void) {
 // CHECK-NEXT:             x,
 // CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(y)),
 // CHECK-NEXT:             constant,
-// CHECK-NEXT:             p.offset_from(core::ptr::addr_of_mut!(x) as *mut i32) as i64,
+// CHECK-NEXT:             (p.offset_from(core::ptr::addr_of_mut!(x) as *mut i32) as i64) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

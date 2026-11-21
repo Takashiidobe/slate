@@ -155,7 +155,7 @@ int main(void) {
 // CHECK-NEXT:     let mut table: __SlateAlignLargeArray<[i32; 4]> = __SlateAlignLargeArray(
 // CHECK-NEXT:         [1i32, 2i32, 3i32, 4i32],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut cursor: *mut i32 = unsafe { (table.0.as_mut_ptr() as *mut i32).add(1) };
+// CHECK-NEXT:     let mut cursor: *mut i32 = unsafe { table.0.as_mut_ptr().add(1) };
 // CHECK-NEXT:     let mut pair: pair = pair { left: 1, right: 2 };
 // CHECK-NEXT:     let scale: i32 = 2;
 // CHECK-NEXT:     DROP!(4i32, hold, bits);
@@ -240,7 +240,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! DECAY_FIRST {
 // CHECK-NEXT:     ($table:expr) => {
-// CHECK-NEXT:         unsafe { *($table.as_mut_ptr() as *mut i32) }
+// CHECK-NEXT:         unsafe { *$table.as_mut_ptr() }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

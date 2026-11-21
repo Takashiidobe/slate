@@ -51,9 +51,9 @@ int main(void) {
 // CHECK-NEXT:     let mut y: [i8; 4] = [97, 98, 100, 0];
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
-// CHECK-NEXT:         cmp_texts(x.as_ptr() as *const i8, 3i32, y.as_ptr() as *const i8, 3i32),
-// CHECK-NEXT:         cmp_texts(y.as_ptr() as *const i8, 3i32, x.as_ptr() as *const i8, 3i32),
-// CHECK-NEXT:         cmp_texts(x.as_ptr() as *const i8, 3i32, x.as_ptr() as *const i8, 3i32)
+// CHECK-NEXT:         cmp_texts(x.as_ptr(), 3i32, y.as_ptr(), 3i32),
+// CHECK-NEXT:         cmp_texts(y.as_ptr(), 3i32, x.as_ptr(), 3i32),
+// CHECK-NEXT:         cmp_texts(x.as_ptr(), 3i32, x.as_ptr(), 3i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -26,16 +26,14 @@ int main(void) {
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         sprintf(
-// CHECK-NEXT:             (buf.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             buf.0.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:             c"%d-%d".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             3i32,
 // CHECK-NEXT:             4i32,
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"value: %s\n".as_ptr(), buf.0.as_mut_ptr() as *mut i8)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"value: %s\n".as_ptr(), buf.0.as_mut_ptr()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

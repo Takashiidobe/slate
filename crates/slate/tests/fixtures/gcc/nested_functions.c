@@ -214,7 +214,7 @@ int main(void) {
 // CHECK-NEXT: fn aggregates() -> i32 {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
 // CHECK-NEXT:     let mut p: point = point { x: 5, y: 6 };
-// CHECK-NEXT:     let mut cursor: *mut i32 = unsafe { (values.0.as_mut_ptr() as *mut i32).add(1) };
+// CHECK-NEXT:     let mut cursor: *mut i32 = unsafe { values.0.as_mut_ptr().add(1) };
 // CHECK-NEXT:     aggregates__touch(
 // CHECK-NEXT:         core::ptr::addr_of_mut!(values.0),
 // CHECK-NEXT:         core::ptr::addr_of_mut!(p),
@@ -228,9 +228,7 @@ int main(void) {
 // CHECK-NEXT:     __slate_capture_1: *mut point,
 // CHECK-NEXT:     __slate_capture_2: *mut *mut i32,
 // CHECK-NEXT: ) {
-// CHECK-NEXT:     let [[V_0]]: *mut i32 = unsafe {
-// CHECK-NEXT:         ((*__slate_capture_0).as_mut_ptr() as *mut i32).add(3)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let [[V_0]]: *mut i32 = unsafe { (*__slate_capture_0).as_mut_ptr().add(3) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] = *[[V_0]] + (*__slate_capture_1).x;
 // CHECK-NEXT:     }
@@ -259,7 +257,8 @@ int main(void) {
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < n {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *(data.as_mut_ptr() as *mut i32).offset(i as isize) = i * i;
+// CHECK-NEXT:             *((data.as_mut_ptr() as *mut [i32; 0]) as *mut i32).offset(i as isize) = i
+// CHECK-NEXT:                 * i;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }

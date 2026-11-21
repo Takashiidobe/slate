@@ -33,12 +33,12 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign32<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn first_word(p: *mut ()) -> *mut () {
-// CHECK-NEXT:     let q: *mut () = p as *mut ();
+// CHECK-NEXT:     let q: *mut () = (p as *const ()) as *mut ();
 // CHECK-NEXT:     q
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn first_word_offset(p: *mut (), off: u64) -> *mut () {
-// CHECK-NEXT:     let q: *mut () = p as *mut ();
+// CHECK-NEXT:     let q: *mut () = (p as *const ()) as *mut ();
 // CHECK-NEXT:     q
 // CHECK-NEXT: }
 // CHECK-EMPTY:

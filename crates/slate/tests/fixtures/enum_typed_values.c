@@ -100,7 +100,7 @@ int main(void) {
 // CHECK-NEXT:     lamp.state = flip(lamp.state);
 // CHECK-NEXT:     lamp.color = next(lamp.color);
 // CHECK-NEXT:     let mut size: u8 = lamp.size;
-// CHECK-NEXT:     size = (((size as u8) as i32) + 3) as u8;
+// CHECK-NEXT:     size = ((((size as u8) as i32) + 3) as u8) as u8;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}",
 // CHECK-NEXT:         sum,

@@ -86,7 +86,7 @@ int main(void) {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i64, 2>>(
 // CHECK-NEXT:             core::simd::Simd::load_select_ptr(
-// CHECK-NEXT:                 __P as *const i32,
+// CHECK-NEXT:                 (__P as *const core::simd::Simd<i32, 4>) as *const i32,
 // CHECK-NEXT:                 core::simd::Mask::<i32, 4>::from_bitmask((__U as u8) as u64),
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
@@ -113,7 +113,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut out: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = data.0.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = data.0.as_mut_ptr();
 // CHECK-NEXT:         unsafe { masked_load_probe([[T_0]], 5u32, &mut out.0[0usize]) }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {} {}", out.0[0], out.0[1], out.0[2], out.0[3]);

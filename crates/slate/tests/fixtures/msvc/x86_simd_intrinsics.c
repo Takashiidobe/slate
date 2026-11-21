@@ -297,25 +297,13 @@ int main(void) {
 // I686-PC-WINDOWS-MSVC-NEXT: fn check_cpuid() {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     let mut basic: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
 // X86_64-PC-WINDOWS-MSVC-NEXT:     let mut extended: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
-// X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe { __cpuid((basic.0.as_mut_ptr() as *mut i32) as *mut i32, 0i32 as i32) };
+// X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe { __cpuid(basic.0.as_mut_ptr() as *mut i32, 0i32 as i32) };
+// X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe { __cpuidex(extended.0.as_mut_ptr() as *mut i32, 0i32 as i32, 0i32 as i32) };
+// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_0:__v[0-9]+]]: bool = basic.0[0] <= 0
 // I686-PC-WINDOWS-MSVC-NEXT:     let mut basic: [i32; 4] = [0i32; 4];
 // I686-PC-WINDOWS-MSVC-NEXT:     let mut extended: [i32; 4] = [0i32; 4];
-// I686-PC-WINDOWS-MSVC-NEXT:     unsafe { __cpuid((basic.as_mut_ptr() as *mut i32) as *mut i32, 0i32 as i32) };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe {
-// I686-PC-WINDOWS-MSVC-NEXT:     unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         __cpuidex(
-// I686-PC-WINDOWS-MSVC-NEXT:         __cpuidex(
-// X86_64-PC-WINDOWS-MSVC-NEXT:             (extended.0.as_mut_ptr() as *mut i32) as *mut i32,
-// I686-PC-WINDOWS-MSVC-NEXT:             (extended.as_mut_ptr() as *mut i32) as *mut i32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             0i32 as i32,
-// I686-PC-WINDOWS-MSVC-NEXT:             0i32 as i32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             0i32 as i32,
-// I686-PC-WINDOWS-MSVC-NEXT:             0i32 as i32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:         )
-// I686-PC-WINDOWS-MSVC-NEXT:         )
-// X86_64-PC-WINDOWS-MSVC-NEXT:     };
-// I686-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_0:__v[0-9]+]]: bool = basic.0[0] <= 0
+// I686-PC-WINDOWS-MSVC-NEXT:     unsafe { __cpuid(basic.as_mut_ptr() as *mut i32, 0i32 as i32) };
+// I686-PC-WINDOWS-MSVC-NEXT:     unsafe { __cpuidex(extended.as_mut_ptr() as *mut i32, 0i32 as i32, 0i32 as i32) };
 // I686-PC-WINDOWS-MSVC-NEXT:     let [[V_0:__v[0-9]+]]: bool = basic[0] <= 0
 // X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe {
@@ -344,18 +332,10 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT: fn has_feature(leaf: i32, reg: i32, bit: i32) -> i32 {
 // I686-PC-WINDOWS-MSVC-NEXT: fn has_feature(leaf: i32, reg: i32, bit: i32) -> i32 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     let mut regs: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
-// I686-PC-WINDOWS-MSVC-NEXT:     let mut regs: [i32; 4] = [0i32; 4];
-// X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe {
-// I686-PC-WINDOWS-MSVC-NEXT:     unsafe {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         __cpuidex(
-// X86_64-PC-WINDOWS-MSVC-NEXT:             (regs.0.as_mut_ptr() as *mut i32) as *mut i32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             leaf as i32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             0i32 as i32,
-// X86_64-PC-WINDOWS-MSVC-NEXT:         )
-// I686-PC-WINDOWS-MSVC-NEXT:         __cpuidex((regs.as_mut_ptr() as *mut i32) as *mut i32, leaf as i32, 0i32 as i32)
-// X86_64-PC-WINDOWS-MSVC-NEXT:     };
-// I686-PC-WINDOWS-MSVC-NEXT:     };
+// X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe { __cpuidex(regs.0.as_mut_ptr() as *mut i32, leaf as i32, 0i32 as i32) };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     regs.0[reg as usize] >> bit & 1
+// I686-PC-WINDOWS-MSVC-NEXT:     let mut regs: [i32; 4] = [0i32; 4];
+// I686-PC-WINDOWS-MSVC-NEXT:     unsafe { __cpuidex(regs.as_mut_ptr() as *mut i32, leaf as i32, 0i32 as i32) };
 // I686-PC-WINDOWS-MSVC-NEXT:     regs[reg as usize] >> bit & 1
 // X86_64-PC-WINDOWS-MSVC-NEXT: }
 // I686-PC-WINDOWS-MSVC-NEXT: }

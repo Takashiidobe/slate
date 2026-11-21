@@ -47,10 +47,14 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for index in 0..length {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *(values.as_mut_ptr() as *mut i32).offset(index as isize) = index + 3;
+// CHECK-NEXT:             *((values.as_mut_ptr() as *mut [i32; 0]) as *mut i32)
+// CHECK-NEXT:                 .offset(index as isize) = index + 3;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     result = sum_vla(length, values.as_mut_ptr() as *mut [i32; 0]);
+// CHECK-NEXT:     result = sum_vla(
+// CHECK-NEXT:         length,
+// CHECK-NEXT:         ((values.as_mut_ptr() as *mut [i32; 0]) as *mut [i32; 0]) as *mut [i32; 0],
+// CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", result + 1);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

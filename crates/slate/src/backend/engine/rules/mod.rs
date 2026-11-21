@@ -16,7 +16,6 @@ mod nested_unsafe;
 mod null_compare;
 mod param_spills;
 mod pattern_range;
-mod peel_casts;
 mod ptr_offset;
 mod pure_stmts;
 mod raw_ptr_alias;
@@ -72,7 +71,6 @@ pub(super) fn registry(
         Box::new(inline_temps::LateInlineTemps),
         Box::new(inline_temps::InlineConstArgTemps),
         Box::new(inline_temps::AsmOutputTempFold),
-        Box::new(peel_casts::PeelCasts),
         Box::new(null_compare::NullCompare),
         Box::new(ptr_offset::PtrOffset {
             pointer_width: target.pointer_width,

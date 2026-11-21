@@ -80,11 +80,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d\n".as_ptr(),
-// CHECK-NEXT:             ((pair.as_mut_ptr() as *mut widening).add(1) as *mut i8)
-// CHECK-NEXT:                 .offset_from((pair.as_mut_ptr() as *mut widening).add(0) as *mut i8)
+// CHECK-NEXT:             ((pair.as_mut_ptr().add(1) as *mut i8)
+// CHECK-NEXT:                 .offset_from((pair.as_mut_ptr().add(0) as *mut i8) as *mut i8) as i32)
 // CHECK-NEXT:                 as i32,
-// CHECK-NEXT:             core::ptr::addr_of_mut!(pair[0].tail)
-// CHECK-NEXT:                 .offset_from((pair.as_mut_ptr() as *mut widening).add(0) as *mut i8)
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(pair[0].tail)
+// CHECK-NEXT:                 .offset_from((pair.as_mut_ptr().add(0) as *mut i8) as *mut i8) as i32)
 // CHECK-NEXT:                 as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

@@ -14,7 +14,7 @@ int main(void) {
 // CHECK-NEXT:     let mut buf: [i8; 4] = [0i8; 4];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         sprintf(
-// CHECK-NEXT:             (buf.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             buf.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:             c"%d".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             7i32,
 // CHECK-NEXT:         ) as i32

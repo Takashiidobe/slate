@@ -309,7 +309,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut fa: f32 = 1.0000001f32;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut big: i64 = 9007199254740993;
+// CHECK-NEXT: static mut big: i64 = (1i64 << 53i32) + 1i64;
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut yes: i32 = 1;
 // CHECK-EMPTY:
@@ -365,9 +365,8 @@ int main(void) {
 // CHECK-NEXT:     let mut compound: f64 = 1e308f64;
 // CHECK-NEXT:     let as_double: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
 // CHECK-NEXT:         as f64;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: f64 = compound;
 // CHECK-NEXT:     compound = __slate_f80_to_f64(
-// CHECK-NEXT:         __slate_f80_from_f64([[V_0]])
+// CHECK-NEXT:         __slate_f80_from_f64(compound)
 // CHECK-NEXT:             * __slate_f80_from_f64(
 // CHECK-NEXT:                 unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) },
 // CHECK-NEXT:             ),
@@ -573,8 +572,8 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: LongDouble;
-// CHECK-NEXT:     [[V_1]] = __slate_f80_from_f64(
+// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: LongDouble;
+// CHECK-NEXT:     [[V_0]] = __slate_f80_from_f64(
 // CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) },
 // CHECK-NEXT:     )
 // CHECK-NEXT:         * __slate_f80_from_f64(
@@ -585,7 +584,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"stmt %g\n".as_ptr(),
 // CHECK-NEXT:             __slate_f80_to_f64(
-// CHECK-NEXT:                 [[V_1]]
+// CHECK-NEXT:                 [[V_0]]
 // CHECK-NEXT:                     / __slate_f80_from_f64(
 // CHECK-NEXT:                         core::ptr::read_volatile(core::ptr::addr_of!(ten)),
 // CHECK-NEXT:                     ),
@@ -620,7 +619,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: f64 = __slate_f80_to_f64(
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: f64 = __slate_f80_to_f64(
 // CHECK-NEXT:         __slate_f80_from_f64(
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) },
 // CHECK-NEXT:         )
@@ -628,7 +627,7 @@ int main(void) {
 // CHECK-NEXT:                 unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) },
 // CHECK-NEXT:             ),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     assigned = [[V_2]];
+// CHECK-NEXT:     assigned = [[V_1]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -636,7 +635,7 @@ int main(void) {
 // CHECK-NEXT:             compound,
 // CHECK-NEXT:             stored,
 // CHECK-NEXT:             __slate_f80_to_f64(
-// CHECK-NEXT:                 __slate_f80_from_f64([[V_2]])
+// CHECK-NEXT:                 __slate_f80_from_f64([[V_1]])
 // CHECK-NEXT:                     / __slate_f80_from_f64(
 // CHECK-NEXT:                         core::ptr::read_volatile(core::ptr::addr_of!(ten)),
 // CHECK-NEXT:                     ),
@@ -749,64 +748,24 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let z: num_complex::Complex<f64> = {
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = {
-// CHECK-NEXT:             let [[T_2:__t[0-9]+]] = __slate_f80_from_f64(1e308f64);
-// CHECK-NEXT:             let [[T_3:__t[0-9]+]] = {
-// CHECK-NEXT:                 let [[T_4:__t[0-9]+]] = __slate_f80_from_f64(1e308f64);
-// CHECK-NEXT:                 let [[T_5:__t[0-9]+]] = {
-// CHECK-NEXT:                     let [[T_6:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:                         re: 0.0f64,
-// CHECK-NEXT:                         im: 1.0f64,
-// CHECK-NEXT:                     };
-// CHECK-NEXT:                     num_complex::Complex {
-// CHECK-NEXT:                         re: __slate_f80_from_f64([[T_6]].re),
-// CHECK-NEXT:                         im: __slate_f80_from_f64([[T_6]].im),
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 };
-// CHECK-NEXT:                 num_complex::Complex {
-// CHECK-NEXT:                     re: [[T_4]] * [[T_5]].re,
-// CHECK-NEXT:                     im: [[T_4]] * [[T_5]].im,
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             };
-// CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_2]] + [[T_3]].re,
-// CHECK-NEXT:                 im: [[T_3]].im,
-// CHECK-NEXT:             }
-// CHECK-NEXT:         };
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = __slate_f80_from_f64(1e308f64);
 // CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: __slate_f80_to_f64([[T_1]].re),
-// CHECK-NEXT:             im: __slate_f80_to_f64([[T_1]].im),
+// CHECK-NEXT:             re: __slate_f80_to_f64(
+// CHECK-NEXT:                 __slate_f80_from_f64(1e308f64) + [[T_1]] * __slate_f80_from_f64(0.0f64),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             im: __slate_f80_to_f64([[T_1]] * __slate_f80_from_f64(1.0f64)),
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let zz: num_complex::Complex<f64> = {
-// CHECK-NEXT:         let [[T_7:__t[0-9]+]] = {
-// CHECK-NEXT:             let [[T_8:__t[0-9]+]] = {
-// CHECK-NEXT:                 let [[T_9:__t[0-9]+]] = {
-// CHECK-NEXT:                     let [[T_10:__t[0-9]+]] = z;
-// CHECK-NEXT:                     num_complex::Complex {
-// CHECK-NEXT:                         re: __slate_f80_from_f64([[T_10]].re),
-// CHECK-NEXT:                         im: __slate_f80_from_f64([[T_10]].im),
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 };
-// CHECK-NEXT:                 let [[T_11:__t[0-9]+]] = __slate_f80_from_f64(
-// CHECK-NEXT:                     unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) },
-// CHECK-NEXT:                 );
-// CHECK-NEXT:                 num_complex::Complex {
-// CHECK-NEXT:                     re: [[T_9]].re * [[T_11]],
-// CHECK-NEXT:                     im: [[T_9]].im * [[T_11]],
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             };
-// CHECK-NEXT:             let [[T_12:__t[0-9]+]] = __slate_f80_from_f64(
-// CHECK-NEXT:                 unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) },
-// CHECK-NEXT:             );
-// CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_8]].re / [[T_12]],
-// CHECK-NEXT:                 im: [[T_8]].im / [[T_12]],
-// CHECK-NEXT:             }
-// CHECK-NEXT:         };
+// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = __slate_f80_from_f64(
+// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) },
+// CHECK-NEXT:         );
+// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = __slate_f80_from_f64(
+// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) },
+// CHECK-NEXT:         );
 // CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: __slate_f80_to_f64([[T_7]].re),
-// CHECK-NEXT:             im: __slate_f80_to_f64([[T_7]].im),
+// CHECK-NEXT:             re: __slate_f80_to_f64(__slate_f80_from_f64(z.re) * [[T_2]] / [[T_3]]),
+// CHECK-NEXT:             im: __slate_f80_to_f64(__slate_f80_from_f64(z.im) * [[T_2]] / [[T_3]]),
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

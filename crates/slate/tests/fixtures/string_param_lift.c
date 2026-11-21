@@ -64,8 +64,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut digits: [i8; 3] = [52, 50, 0];
 // CHECK-NEXT:     let mut word: [i8; 6] = [104, 101, 108, 108, 111, 0];
-// CHECK-NEXT:     let __slate_printf_arg0 = forward_num(digits.as_mut_ptr() as *mut i8);
-// CHECK-NEXT:     let __slate_printf_arg1 = text_len(word.as_mut_ptr() as *mut i8);
+// CHECK-NEXT:     let __slate_printf_arg0 = forward_num(digits.as_mut_ptr());
+// CHECK-NEXT:     let __slate_printf_arg1 = text_len(word.as_mut_ptr());
 // CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

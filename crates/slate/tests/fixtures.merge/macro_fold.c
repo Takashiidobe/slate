@@ -428,7 +428,7 @@ int main(void) {
 // CHECK-NEXT:     let a_value: i32 = 9;
 // CHECK-NEXT:     let mut buffer: [c_char; 4] = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 4] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]][0] = (0 as c_char);
+// CHECK-NEXT:         [[T_0]][0] = 0 as c_char;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut cursor: *mut c_char = buffer.as_mut_ptr() as *mut c_char;

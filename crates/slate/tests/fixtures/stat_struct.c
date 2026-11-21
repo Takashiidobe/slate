@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-NEXT:         stat(c"/dev/null".as_ptr(), core::ptr::addr_of_mut!(info))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%d %lld\n".as_ptr(), result, info.st_size) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%d %lld\n".as_ptr(), result, info.st_size as i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

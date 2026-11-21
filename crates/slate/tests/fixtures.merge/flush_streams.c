@@ -113,8 +113,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         fwrite(
 // CHECK-NEXT:             b"written\n\0".as_ptr() as *const (),
-// CHECK-NEXT:             (1 as size_t),
-// CHECK-NEXT:             (8 as size_t),
+// CHECK-NEXT:             1 as size_t,
+// CHECK-NEXT:             8 as size_t,
 // CHECK-NEXT:             slate_support::stderr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

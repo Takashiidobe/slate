@@ -59,9 +59,8 @@ int main(void) {
 // CHECK-NEXT:         let scale: i32 = unsafe {
 // CHECK-NEXT:             __slate_i386_va::arg::<_, i32>(core::ptr::addr_of_mut!(ap))
 // CHECK-NEXT:         };
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: f128 = (scale as f128)
+// CHECK-NEXT:         total += (scale as f128)
 // CHECK-NEXT:             * unsafe { __slate_i386_va::arg::<_, f128>(core::ptr::addr_of_mut!(ap)) };
-// CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

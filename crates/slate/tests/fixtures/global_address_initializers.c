@@ -155,12 +155,12 @@ int main(void) {
 // CHECK-NEXT: static mut cursors: __SlateAlign16<[Cursor; 2]> = __SlateAlign16(
 // CHECK-NEXT:     [
 // CHECK-NEXT:         Cursor {
-// CHECK-NEXT:             label: (b"counter\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:             label: b"counter\0".as_ptr() as *const i8,
 // CHECK-NEXT:             value: unsafe { core::ptr::addr_of_mut!(counter) },
 // CHECK-NEXT:             pair: unsafe { core::ptr::addr_of_mut!(pair) },
 // CHECK-NEXT:         },
 // CHECK-NEXT:         Cursor {
-// CHECK-NEXT:             label: (b"table\0".as_ptr() as *mut i8) as *const i8,
+// CHECK-NEXT:             label: b"table\0".as_ptr() as *const i8,
 // CHECK-NEXT:             value: unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 }
 // CHECK-NEXT:                 .wrapping_offset(3i32 as isize),
 // CHECK-NEXT:             pair: core::ptr::null_mut::<Pair>(),
@@ -181,7 +181,7 @@ int main(void) {
 // CHECK-NEXT:         *[[V_1]] = *[[V_1]] + 20;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *((*table_whole).as_mut_ptr() as *mut i32).add(3) = 40;
+// CHECK-NEXT:         *(*table_whole).as_mut_ptr().add(3) = 40;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *unsafe { grid_row }.add(2) = 60;

@@ -45,9 +45,7 @@ int main(void) {
 // CHECK-NEXT:         < (core::mem::size_of::<[u64; 7]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<u64>() as u64) {
 // CHECK-NEXT:         let __slate_printf_arg0 = unsafe {
-// CHECK-NEXT:                 core::ptr::read_volatile(
-// CHECK-NEXT:                     (values.0.as_mut_ptr() as *mut u64).add(i as usize),
-// CHECK-NEXT:                 )
+// CHECK-NEXT:                 core::ptr::read_volatile(values.0.as_mut_ptr().add(i as usize))
 // CHECK-NEXT:             }
 // CHECK-NEXT:             .leading_zeros() as i32;
 // CHECK-NEXT:         print!("{} ", __slate_printf_arg0);

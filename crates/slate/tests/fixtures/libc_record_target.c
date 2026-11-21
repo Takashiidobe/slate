@@ -35,7 +35,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         strcpy(
-// CHECK-NEXT:             (entry.d_name.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
+// CHECK-NEXT:             entry.d_name.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:             c"slate".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:         ) as *mut i8
 // CHECK-NEXT:     };
@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lu %s\n".as_ptr(),
 // CHECK-NEXT:             entry_size(core::ptr::addr_of_mut!(entry)),
-// CHECK-NEXT:             entry.d_name.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:             entry.d_name.as_mut_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

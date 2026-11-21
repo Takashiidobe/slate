@@ -27,9 +27,8 @@ char *entry_name(struct dirent *entry) { return entry->d_name; }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // X86_64-UNKNOWN-FREEBSD-NEXT: extern "C-unwind" fn entry_name(entry: *mut dirent) -> *mut i8 {
-// X86_64-UNKNOWN-FREEBSD-NEXT:     unsafe { (*entry).d_name.as_mut_ptr() as *mut i8 }
 // AARCH64-UNKNOWN-FREEBSD-NEXT: extern "C-unwind" fn entry_name(entry: *mut dirent) -> *mut u8 {
-// AARCH64-UNKNOWN-FREEBSD-NEXT:     unsafe { (*entry).d_name.as_mut_ptr() as *mut u8 }
+// CHECK-NEXT:     unsafe { (*entry).d_name.as_mut_ptr() }
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

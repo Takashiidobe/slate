@@ -262,7 +262,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn offset(base: *const (), field: *const ()) -> u32 {
-// CHECK-NEXT:     ((unsafe { (field as *const i8).offset_from(base as *const i8) }) as i32) as u32
+// CHECK-NEXT:     ((unsafe { (field as *const i8).offset_from((base as *const i8) as *const i8) })
+// CHECK-NEXT:         as i32) as u32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -283,16 +284,10 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     e.z = {
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]);
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = num_complex::Complex {
-// CHECK-NEXT:             re: LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-// CHECK-NEXT:             im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
-// CHECK-NEXT:         };
-// CHECK-NEXT:         num_complex::Complex {
-// CHECK-NEXT:             re: [[T_2]] + [[T_3]].re,
-// CHECK-NEXT:             im: [[T_3]].im,
-// CHECK-NEXT:         }
+// CHECK-NEXT:     e.z = num_complex::Complex {
+// CHECK-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63])
+// CHECK-NEXT:             + LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+// CHECK-NEXT:         im: LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 1, 64]),
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u32 = offset(
 // CHECK-NEXT:         core::ptr::addr_of_mut!(w) as *const (),

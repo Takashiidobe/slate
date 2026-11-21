@@ -471,7 +471,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn value_of(value: *mut i32) -> i32 {
 // CHECK-NEXT:     let owner: *mut Inner = (unsafe {
-// CHECK-NEXT:         (value as *mut i8).offset(-(core::mem::offset_of!(Inner, value) as isize))
+// CHECK-NEXT:         (value as *mut i8).sub((core::mem::offset_of!(Inner, value) as u64) as usize)
 // CHECK-NEXT:     }) as *mut Inner;
 // CHECK-NEXT:     ((unsafe { (*owner).tag }) as i32) + unsafe { (*owner).value }
 // CHECK-NEXT: }

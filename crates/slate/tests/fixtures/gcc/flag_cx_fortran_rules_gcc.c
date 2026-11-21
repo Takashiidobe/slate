@@ -260,29 +260,39 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             * num_complex::Complex {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 re: 0.0f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 im: 1.0f64,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             };
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:     show(c"big".as_ptr(), z.c_div_improved(z));
 // I686-UNKNOWN-LINUX-GNU-NEXT:     let z: num_complex::Complex<f64> = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:         let [[T_0:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_1:__t[0-9]+]] = __slate_f80_from_f64(
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) },
-// I686-UNKNOWN-LINUX-GNU-NEXT:             );
-// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_2:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_3:__t[0-9]+]] = __slate_f80_from_f64(
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) },
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 let [[T_4:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_5:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: 0.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: 1.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: __slate_f80_from_f64([[T_5]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: __slate_f80_from_f64([[T_5]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 };
+// I686-UNKNOWN-LINUX-GNU-NEXT:         let [[T_0:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) },
+// I686-UNKNOWN-LINUX-GNU-NEXT:         );
+// I686-UNKNOWN-LINUX-GNU-NEXT:         let [[T_1:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) },
+// I686-UNKNOWN-LINUX-GNU-NEXT:         );
+// I686-UNKNOWN-LINUX-GNU-NEXT:         num_complex::Complex {
+// I686-UNKNOWN-LINUX-GNU-NEXT:             re: __slate_f80_to_f64([[T_0]] + [[T_1]] * __slate_f80_from_f64(0.0f64)),
+// I686-UNKNOWN-LINUX-GNU-NEXT:             im: __slate_f80_to_f64([[T_1]] * __slate_f80_from_f64(1.0f64)),
+// I686-UNKNOWN-LINUX-GNU-NEXT:         }
+// I686-UNKNOWN-LINUX-GNU-NEXT:     };
+// I686-UNKNOWN-LINUX-GNU-NEXT:     show(
+// I686-UNKNOWN-LINUX-GNU-NEXT:         c"big".as_ptr(),
+// I686-UNKNOWN-LINUX-GNU-NEXT:         {
+// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_2:__t[0-9]+]] = __slate_cf80_div_improved(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     re: [[T_3]] * [[T_4]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     im: [[T_3]] * [[T_4]].im,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 }
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     re: __slate_f80_from_f64(z.re),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     im: __slate_f80_from_f64(z.im),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 },
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 num_complex::Complex {
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     re: __slate_f80_from_f64(z.re),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     im: __slate_f80_from_f64(z.im),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 },
+// I686-UNKNOWN-LINUX-GNU-NEXT:             );
+// I686-UNKNOWN-LINUX-GNU-NEXT:             num_complex::Complex {
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: __slate_f80_to_f64([[T_2]].re),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: __slate_f80_to_f64([[T_2]].im),
+// I686-UNKNOWN-LINUX-GNU-NEXT:             }
+// I686-UNKNOWN-LINUX-GNU-NEXT:         },
+// I686-UNKNOWN-LINUX-GNU-NEXT:     );
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     let mut z: num_complex::Complex<f64> = (unsafe {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(big))
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     })
@@ -290,43 +300,7 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:             * num_complex::Complex {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 re: 0.0f64,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 im: 1.0f64,
-// CHECK-NEXT:             };
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     show(c"big".as_ptr(), z.c_div_improved(z));
-// I686-UNKNOWN-LINUX-GNU-NEXT:             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: [[T_1]] + [[T_2]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: [[T_2]].im,
-// I686-UNKNOWN-LINUX-GNU-NEXT:             }
-// I686-UNKNOWN-LINUX-GNU-NEXT:         };
-// I686-UNKNOWN-LINUX-GNU-NEXT:         num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:             re: __slate_f80_to_f64([[T_0]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:             im: __slate_f80_to_f64([[T_0]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:         }
-// I686-UNKNOWN-LINUX-GNU-NEXT:     };
-// I686-UNKNOWN-LINUX-GNU-NEXT:     show(
-// I686-UNKNOWN-LINUX-GNU-NEXT:         c"big".as_ptr(),
-// I686-UNKNOWN-LINUX-GNU-NEXT:         {
-// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_6:__t[0-9]+]] = __slate_cf80_div_improved(
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_7:__t[0-9]+]] = z;
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: __slate_f80_from_f64([[T_7]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: __slate_f80_from_f64([[T_7]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 },
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_8:__t[0-9]+]] = z;
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: __slate_f80_from_f64([[T_8]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: __slate_f80_from_f64([[T_8]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 },
-// I686-UNKNOWN-LINUX-GNU-NEXT:             );
-// I686-UNKNOWN-LINUX-GNU-NEXT:             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: __slate_f80_to_f64([[T_6]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: __slate_f80_to_f64([[T_6]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:             }
-// I686-UNKNOWN-LINUX-GNU-NEXT:         },
-// I686-UNKNOWN-LINUX-GNU-NEXT:     );
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:             };
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     show(c"big".as_ptr(), z.c_div_improved(z));
 // CHECK-NEXT:     show(
 // CHECK-NEXT:         c"small".as_ptr(),
@@ -343,47 +317,24 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     },
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             ),
 // I686-UNKNOWN-LINUX-GNU-NEXT:         {
-// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_9:__t[0-9]+]] = __slate_cf80_div_improved(
+// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_3:__t[0-9]+]] = __slate_cf80_div_improved(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_10:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_4:__t[0-9]+]] = __slate_f80_from_f64(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_11:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_12:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: 0.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: 2.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: __slate_f80_from_f64([[T_12]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: __slate_f80_from_f64([[T_12]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     };
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_10]] + [[T_11]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_11]].im,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_4]] + __slate_f80_from_f64(0.0f64),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: __slate_f80_from_f64(2.0f64),
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     }
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 },
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_13:__t[0-9]+]] = __slate_f80_from_f64(3.0f64);
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_14:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_15:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: 0.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: 4.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: __slate_f80_from_f64([[T_15]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: __slate_f80_from_f64([[T_15]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_13]] + [[T_14]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_14]].im,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     }
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 num_complex::Complex {
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     re: __slate_f80_from_f64(3.0f64) + __slate_f80_from_f64(0.0f64),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     im: __slate_f80_from_f64(4.0f64),
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 },
 // I686-UNKNOWN-LINUX-GNU-NEXT:             );
 // I686-UNKNOWN-LINUX-GNU-NEXT:             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: __slate_f80_to_f64([[T_9]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: __slate_f80_to_f64([[T_9]].im),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: __slate_f80_to_f64([[T_3]].re),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: __slate_f80_to_f64([[T_3]].im),
 // I686-UNKNOWN-LINUX-GNU-NEXT:             }
 // I686-UNKNOWN-LINUX-GNU-NEXT:         },
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
@@ -414,47 +365,24 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     },
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             ),
 // I686-UNKNOWN-LINUX-GNU-NEXT:         {
-// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_16:__t[0-9]+]] = __slate_cf80_div_improved(
+// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_5:__t[0-9]+]] = __slate_cf80_div_improved(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_17:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_6:__t[0-9]+]] = __slate_f80_from_f64(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_18:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_19:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: 0.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: 2.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: __slate_f80_from_f64([[T_19]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: __slate_f80_from_f64([[T_19]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     };
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_17]] + [[T_18]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_18]].im,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_6]] + __slate_f80_from_f64(0.0f64),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: __slate_f80_from_f64(2.0f64),
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     }
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 },
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_20:__t[0-9]+]] = __slate_f80_from_f64(4.0f64);
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_21:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_22:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: 0.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: 3.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: __slate_f80_from_f64([[T_22]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: __slate_f80_from_f64([[T_22]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_20]] + [[T_21]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_21]].im,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     }
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 num_complex::Complex {
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     re: __slate_f80_from_f64(4.0f64) + __slate_f80_from_f64(0.0f64),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     im: __slate_f80_from_f64(3.0f64),
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 },
 // I686-UNKNOWN-LINUX-GNU-NEXT:             );
 // I686-UNKNOWN-LINUX-GNU-NEXT:             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: __slate_f80_to_f64([[T_16]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: __slate_f80_to_f64([[T_16]].im),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: __slate_f80_to_f64([[T_5]].re),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: __slate_f80_to_f64([[T_5]].im),
 // I686-UNKNOWN-LINUX-GNU-NEXT:             }
 // I686-UNKNOWN-LINUX-GNU-NEXT:         },
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
@@ -485,47 +413,24 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                     },
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             ),
 // I686-UNKNOWN-LINUX-GNU-NEXT:         {
-// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_23:__t[0-9]+]] = __slate_cf80_div_improved(
+// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_7:__t[0-9]+]] = __slate_cf80_div_improved(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_24:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_8:__t[0-9]+]] = __slate_f80_from_f64(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_25:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_26:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: 0.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: 2.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: __slate_f80_from_f64([[T_26]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: __slate_f80_from_f64([[T_26]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     };
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_24]] + [[T_25]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_25]].im,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_8]] + __slate_f80_from_f64(0.0f64),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: __slate_f80_from_f64(2.0f64),
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     }
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 },
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_27:__t[0-9]+]] = __slate_f80_from_f64(3.0f64);
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_28:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_29:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: 0.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: 3.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: __slate_f80_from_f64([[T_29]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: __slate_f80_from_f64([[T_29]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_27]] - [[T_28]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: -[[T_28]].im,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     }
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 num_complex::Complex {
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     re: __slate_f80_from_f64(3.0f64) - __slate_f80_from_f64(0.0f64),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     im: -__slate_f80_from_f64(3.0f64),
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 },
 // I686-UNKNOWN-LINUX-GNU-NEXT:             );
 // I686-UNKNOWN-LINUX-GNU-NEXT:             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: __slate_f80_to_f64([[T_23]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: __slate_f80_to_f64([[T_23]].im),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: __slate_f80_to_f64([[T_7]].re),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: __slate_f80_to_f64([[T_7]].im),
 // I686-UNKNOWN-LINUX-GNU-NEXT:             }
 // I686-UNKNOWN-LINUX-GNU-NEXT:         },
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
@@ -558,69 +463,35 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                         },
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             ),
 // I686-UNKNOWN-LINUX-GNU-NEXT:         {
-// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_30:__t[0-9]+]] = __slate_cf80_div_improved(
+// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_9:__t[0-9]+]] = __slate_cf80_div_improved(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_31:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_10:__t[0-9]+]] = __slate_f80_from_f64(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_32:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_33:__t[0-9]+]] = __slate_f80_from_f64(
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_34:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             let [[T_35:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 re: 0.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 im: 1.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 re: __slate_f80_from_f64([[T_35]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 im: __slate_f80_from_f64([[T_35]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: [[T_33]] * [[T_34]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: [[T_33]] * [[T_34]].im,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     };
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_11:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     );
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_31]] + [[T_32]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_32]].im,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_10]] + [[T_11]] * __slate_f80_from_f64(0.0f64),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_11]] * __slate_f80_from_f64(1.0f64),
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     }
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 },
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_36:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_12:__t[0-9]+]] = __slate_f80_from_f64(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(zero)) },
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_37:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_38:__t[0-9]+]] = __slate_f80_from_f64(
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 core::ptr::read_volatile(core::ptr::addr_of!(zero))
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             },
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_39:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             let [[T_40:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 re: 0.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 im: 1.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 re: __slate_f80_from_f64([[T_40]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 im: __slate_f80_from_f64([[T_40]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: [[T_38]] * [[T_39]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: [[T_38]] * [[T_39]].im,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     };
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_13:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(zero)) },
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     );
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_36]] + [[T_37]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_37]].im,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_12]] + [[T_13]] * __slate_f80_from_f64(0.0f64),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_13]] * __slate_f80_from_f64(1.0f64),
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     }
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 },
 // I686-UNKNOWN-LINUX-GNU-NEXT:             );
 // I686-UNKNOWN-LINUX-GNU-NEXT:             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: __slate_f80_to_f64([[T_30]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: __slate_f80_to_f64([[T_30]].im),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: __slate_f80_to_f64([[T_9]].re),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: __slate_f80_to_f64([[T_9]].im),
 // I686-UNKNOWN-LINUX-GNU-NEXT:             }
 // I686-UNKNOWN-LINUX-GNU-NEXT:         },
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
@@ -655,67 +526,35 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                         },
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             ),
 // I686-UNKNOWN-LINUX-GNU-NEXT:         {
-// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_41:__t[0-9]+]] = __slate_cf80_div_improved(
+// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_14:__t[0-9]+]] = __slate_cf80_div_improved(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_42:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_15:__t[0-9]+]] = __slate_f80_from_f64(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) },
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_43:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_44:__t[0-9]+]] = __slate_f80_from_f64(
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_45:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             let [[T_46:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 re: 0.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 im: 1.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 re: __slate_f80_from_f64([[T_46]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 im: __slate_f80_from_f64([[T_46]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: [[T_44]] * [[T_45]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: [[T_44]] * [[T_45]].im,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     };
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_16:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     );
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_42]] + [[T_43]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_43]].im,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_15]] + [[T_16]] * __slate_f80_from_f64(0.0f64),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_16]] * __slate_f80_from_f64(1.0f64),
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     }
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 },
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_47:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_17:__t[0-9]+]] = __slate_f80_from_f64(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_48:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_49:__t[0-9]+]] = __slate_f80_from_f64(
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_50:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             let [[T_51:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 re: 0.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 im: 1.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 re: __slate_f80_from_f64([[T_51]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 im: __slate_f80_from_f64([[T_51]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: [[T_49]] * [[T_50]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: [[T_49]] * [[T_50]].im,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     };
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_18:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     );
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_47]] + [[T_48]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_48]].im,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_17]] + [[T_18]] * __slate_f80_from_f64(0.0f64),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_18]] * __slate_f80_from_f64(1.0f64),
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     }
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 },
 // I686-UNKNOWN-LINUX-GNU-NEXT:             );
 // I686-UNKNOWN-LINUX-GNU-NEXT:             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: __slate_f80_to_f64([[T_41]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: __slate_f80_to_f64([[T_41]].im),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: __slate_f80_to_f64([[T_14]].re),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: __slate_f80_to_f64([[T_14]].im),
 // I686-UNKNOWN-LINUX-GNU-NEXT:             }
 // I686-UNKNOWN-LINUX-GNU-NEXT:         },
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) })
@@ -751,69 +590,35 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 true,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             ),
 // I686-UNKNOWN-LINUX-GNU-NEXT:         {
-// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_52:__t[0-9]+]] = __slate_cf80_mul_basic(
+// I686-UNKNOWN-LINUX-GNU-NEXT:             let [[T_19:__t[0-9]+]] = __slate_cf80_mul_basic(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_53:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_20:__t[0-9]+]] = __slate_f80_from_f64(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) },
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_54:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_55:__t[0-9]+]] = __slate_f80_from_f64(
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) },
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_56:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             let [[T_57:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 re: 0.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 im: 1.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 re: __slate_f80_from_f64([[T_57]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 im: __slate_f80_from_f64([[T_57]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: [[T_55]] * [[T_56]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: [[T_55]] * [[T_56]].im,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     };
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_21:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) },
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     );
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_53]] + [[T_54]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_54]].im,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_20]] + [[T_21]] * __slate_f80_from_f64(0.0f64),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_21]] * __slate_f80_from_f64(1.0f64),
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     }
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 },
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_58:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_22:__t[0-9]+]] = __slate_f80_from_f64(
 // I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_59:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_60:__t[0-9]+]] = __slate_f80_from_f64(
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             unsafe {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 core::ptr::read_volatile(core::ptr::addr_of!(zero))
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             },
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         );
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         let [[T_61:__t[0-9]+]] = {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             let [[T_62:__t[0-9]+]] = num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 re: 0.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 im: 1.0f64,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 re: __slate_f80_from_f64([[T_62]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                                 im: __slate_f80_from_f64([[T_62]].im),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         };
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             re: [[T_60]] * [[T_61]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                             im: [[T_60]] * [[T_61]].im,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         }
-// I686-UNKNOWN-LINUX-GNU-NEXT:                     };
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     let [[T_23:__t[0-9]+]] = __slate_f80_from_f64(
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(zero)) },
+// I686-UNKNOWN-LINUX-GNU-NEXT:                     );
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_58]] + [[T_59]].re,
-// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_59]].im,
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         re: [[T_22]] + [[T_23]] * __slate_f80_from_f64(0.0f64),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                         im: [[T_23]] * __slate_f80_from_f64(1.0f64),
 // I686-UNKNOWN-LINUX-GNU-NEXT:                     }
 // I686-UNKNOWN-LINUX-GNU-NEXT:                 },
 // I686-UNKNOWN-LINUX-GNU-NEXT:             );
 // I686-UNKNOWN-LINUX-GNU-NEXT:             num_complex::Complex {
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: __slate_f80_to_f64([[T_52]].re),
-// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: __slate_f80_to_f64([[T_52]].im),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 re: __slate_f80_to_f64([[T_19]].re),
+// I686-UNKNOWN-LINUX-GNU-NEXT:                 im: __slate_f80_to_f64([[T_19]].im),
 // I686-UNKNOWN-LINUX-GNU-NEXT:             }
 // I686-UNKNOWN-LINUX-GNU-NEXT:         },
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(inf)) })

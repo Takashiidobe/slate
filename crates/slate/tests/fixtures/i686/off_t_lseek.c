@@ -85,8 +85,8 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %ld %ld %c\n".as_ptr(),
 // CHECK-NEXT:             core::mem::size_of::<i32>() as u32,
-// CHECK-NEXT:             end,
-// CHECK-NEXT:             mid,
+// CHECK-NEXT:             end as i32,
+// CHECK-NEXT:             mid as i32,
 // CHECK-NEXT:             c as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

@@ -150,7 +150,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! TWICE {
 // CHECK-NEXT:     ($c:expr) => {
-// CHECK-NEXT:         if ($c) != 0 { ($c) + 1 } else { (0 as c_long) }
+// CHECK-NEXT:         if ($c) != 0 { ($c) + 1 } else { 0 as c_long }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
