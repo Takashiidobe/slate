@@ -24,6 +24,7 @@ pub(crate) fn record_captures(module: &Module) -> HashSet<BindingId> {
 pub(crate) fn analyze(
     function: &Function,
     record_captures: &HashSet<BindingId>,
+    macro_values: &MacroValues,
     inlined: &mut HashSet<BindingId>,
 ) {
     let Some(body) = &function.body else {
@@ -45,6 +46,7 @@ pub(crate) fn analyze(
         def_use: &def_use,
         locals: &locals,
         record_captures,
+        macro_values,
     };
     context.statements(body, inlined);
 }
@@ -178,6 +180,7 @@ struct Context<'a> {
     def_use: &'a DefUse,
     locals: &'a HashSet<BindingId>,
     record_captures: &'a HashSet<BindingId>,
+    macro_values: &'a MacroValues,
 }
 
 impl Context<'_> {
@@ -550,7 +553,11 @@ impl<'c, 'a> Scan<'c, 'a> {
     }
 
     fn value(&mut self, value: &Value) {
-        deep(|| self.value_kind(&value.node.value));
+        if self.context.macro_values.contains_key(&value.node.id) {
+            self.nested(|scan| deep(|| scan.value_kind(&value.node.value)));
+        } else {
+            deep(|| self.value_kind(&value.node.value));
+        }
     }
 
     fn value_kind(&mut self, kind: &ValueKind) {
@@ -691,11 +698,7 @@ impl<'c, 'a> Scan<'c, 'a> {
             | ValueKind::Unary { operand, .. }
             | ValueKind::FloatClass { operand, .. }
             | ValueKind::Convert { operand, .. } => self.value(operand),
-            ValueKind::MacroArg { value: operand, .. } => {
-                self.nested(|scan| scan.value(operand));
-            }
-            ValueKind::StatementExpression(evaluation)
-            | ValueKind::MacroExpansion { evaluation, .. } => {
+            ValueKind::StatementExpression(evaluation) => {
                 self.nested(|scan| scan.evaluation(evaluation));
             }
             ValueKind::Block(block) => {

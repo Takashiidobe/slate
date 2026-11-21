@@ -46,7 +46,7 @@ int sum(const int *a, int n) {
 // IR-NEXT:         for %[[VALUE0:[0-9]+]]
 // IR-NEXT:             init:
 // IR-NEXT:                 let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
-// IR-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), macro_value<i32>(#[[#NODE0:]], statements=0, const<i32>(10) [macro=LIMIT#0 body]) [macro=LIMIT#0 body])
+// IR-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), const<i32>(10) [macro_value="#[[#NODE0:]]"] [macro=LIMIT#0 body])
 // IR-NEXT:             increment: {
 // IR-NEXT:                 let %[[VALUE1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i]]);
 // IR-NEXT:                 let %[[VALUE2:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE1]]), const<i32>(1));
@@ -60,7 +60,7 @@ int sum(const int *a, int n) {
 // IR-NEXT:         for %[[VALUE5:[0-9]+]]
 // IR-NEXT:             init:
 // IR-NEXT:                 let %[[VALUE_i_2:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
-// IR-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i_2]]), macro_value<i32>(#[[#NODE1:]], statements=0, mul<i32>(macro_arg<i32>(#{{[0-9]+}}, 0, read<i32>(%[[VALUE_n]]) [macro=TWICE#1 arg0]) [macro=TWICE#1 arg0], const<i32>(2) [macro=TWICE#1 body]) [macro=TWICE#1 body]) [macro=TWICE#1 body])
+// IR-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i_2]]), mul<i32>(read<i32>(%[[VALUE_n]]) [macro_arg="#[[#NODE1:]].0"] [macro=TWICE#1 arg0], const<i32>(2) [macro=TWICE#1 body]) [macro_value="#{{[0-9]+}}"] [macro=TWICE#1 body])
 // IR-NEXT:             increment: {
 // IR-NEXT:                 let %[[VALUE6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_2]]);
 // IR-NEXT:                 let %[[VALUE7:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE6]]), const<i32>(1));
@@ -74,7 +74,7 @@ int sum(const int *a, int n) {
 // IR-NEXT:         for %[[VALUE10:[0-9]+]]
 // IR-NEXT:             init:
 // IR-NEXT:                 let %[[VALUE_i_3:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
-// IR-NEXT:             condition: macro_value<bool>(#[[#NODE2:]], statements=0, lt<i32>(macro_arg<i32>(#{{[0-9]+}}, 0, read<i32>(%[[VALUE_i_3]]) [macro=BELOW#2 arg0]) [macro=BELOW#2 arg0], macro_arg<i32>(#{{[0-9]+}}, 1, read<i32>(%[[VALUE_n]]) [macro=BELOW#2 arg1]) [macro=BELOW#2 arg1]) [macro=BELOW#2 body]) [macro=BELOW#2 body]
+// IR-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i_3]]) [macro_arg="#[[#NODE2:]].0"] [macro=BELOW#2 arg0], read<i32>(%[[VALUE_n]]) [macro_arg="#{{[0-9]+}}.1"] [macro=BELOW#2 arg1]) [macro_value="#{{[0-9]+}}"] [macro=BELOW#2 body]
 // IR-NEXT:             increment: {
 // IR-NEXT:                 let %[[VALUE11:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_3]]);
 // IR-NEXT:                 let %[[VALUE12:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE11]]), const<i32>(1));
@@ -88,7 +88,7 @@ int sum(const int *a, int n) {
 // IR-NEXT:         for %[[VALUE15:[0-9]+]]
 // IR-NEXT:             init:
 // IR-NEXT:                 let %[[VALUE_i_4:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
-// IR-NEXT:             condition: le<i32>(read<i32>(%[[VALUE_i_4]]), macro_value<i32>(#[[#NODE3:]], statements=0, mul<i32>(macro_arg<i32>(#{{[0-9]+}}, 0, const<i32>(4) [macro=TWICE#3 arg0]) [macro=TWICE#3 arg0], const<i32>(2) [macro=TWICE#3 body]) [macro=TWICE#3 body]) [macro=TWICE#3 body])
+// IR-NEXT:             condition: le<i32>(read<i32>(%[[VALUE_i_4]]), mul<i32>(const<i32>(4) [macro_arg="#[[#NODE3:]].0"] [macro=TWICE#3 arg0], const<i32>(2) [macro=TWICE#3 body]) [macro_value="#{{[0-9]+}}"] [macro=TWICE#3 body])
 // IR-NEXT:             increment: {
 // IR-NEXT:                 let %[[VALUE16:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_i_4]]);
 // IR-NEXT:                 let %[[VALUE17:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE16]]), const<i32>(1));

@@ -497,10 +497,6 @@ impl Lowerer {
 
     pub(super) fn symbol(&self, value: &Value) -> Option<AsmSymbol> {
         match &value.node.value {
-            ValueKind::MacroArg { value, .. } => self.symbol(value),
-            ValueKind::MacroExpansion { evaluation, .. } if evaluation.statements.is_empty() => {
-                self.symbol(&evaluation.value)
-            }
             ValueKind::AddressOf(place)
             | ValueKind::ArrayDecay { place, .. }
             | ValueKind::FunctionDecay { place } => self.symbol_place(place),

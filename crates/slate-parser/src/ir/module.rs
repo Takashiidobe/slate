@@ -26,12 +26,32 @@ pub struct Module {
     pub macro_rejections: HashMap<MacroExpansionId, &'static str>,
     pub macro_hidden_arguments: HashMap<MacroExpansionId, Vec<BindingId>>,
     pub macro_written_casts: HashMap<NodeId, WrittenCast>,
+    pub macro_values: MacroValues,
     pub zero_init_padding_bits: crate::compiler_options::ZeroInitPaddingBits,
     pub alloca: AllocaLayout,
     pub hosted: bool,
     pub nostdinc: bool,
     pub null_pointer_is_valid: bool,
     pub machine: MachineCodegen,
+}
+
+pub type MacroValues = HashMap<NodeId, Vec<MacroWrap>>;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum MacroWrap {
+    Value(MacroExpansionId),
+    Argument {
+        expansion: MacroExpansionId,
+        argument: usize,
+    },
+}
+
+impl MacroWrap {
+    pub fn expansion(self) -> MacroExpansionId {
+        match self {
+            Self::Value(expansion) | Self::Argument { expansion, .. } => expansion,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -474,6 +494,7 @@ impl Module {
             macro_rejections: HashMap::new(),
             macro_hidden_arguments: HashMap::new(),
             macro_written_casts: HashMap::new(),
+            macro_values: MacroValues::new(),
             zero_init_padding_bits: crate::compiler_options::ZeroInitPaddingBits::Standard,
             alloca: AllocaLayout {
                 padding: 0,

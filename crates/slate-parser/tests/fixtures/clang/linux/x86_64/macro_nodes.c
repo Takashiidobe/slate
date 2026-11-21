@@ -85,7 +85,7 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:     global %[[VALUE_global:[0-9]+]] global: i32 [storage=static] [linkage=external];
 // IR-NEXT:     fn %[[VALUE_callee:[0-9]+]] @callee(%[[VALUE_value:[0-9]+]] value: i32) -> i32 [linkage=external];
 // IR-NEXT:     fn %[[VALUE_use:[0-9]+]] @use(%[[VALUE_pair:[0-9]+]] pair: ptr<@type[[TYPE_pair]]>, %[[VALUE_i:[0-9]+]] i: i32, %[[VALUE_j:[0-9]+]] j: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_results:[0-9]+]] results: i32 [storage=automatic] = macro_value<i32>(#[[#NODE0:]], statements=0, mul<i32>(macro_arg<i32>(#{{[0-9]+}}, 0, read<i32>(%[[VALUE_i]]) [macro=TIMES2#1 arg0]) [macro=TIMES2#1 arg0], const<i32>(2) [macro=TIMES2#1 body]) [macro=TIMES2#1 body]) [macro=TIMES2#1 body];
+// IR-NEXT:         let %[[VALUE_results:[0-9]+]] results: i32 [storage=automatic] = mul<i32>(read<i32>(%[[VALUE_i]]) [macro_arg="#[[#NODE0:]].0"] [macro=TIMES2#1 arg0], const<i32>(2) [macro=TIMES2#1 body]) [macro_value="#{{[0-9]+}}"] [macro=TIMES2#1 body];
 // IR-NEXT:         let %[[VALUE0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
 // IR-NEXT:         let %[[VALUE1:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE0]]), add<i32>(read<i32>(%[[VALUE_i]]) [macro=TIMES2#2 arg0], mul<i32>(read<i32>(%[[VALUE_j]]) [macro=TIMES2#2 arg0], const<i32>(2) [macro=TIMES2#2 body]) [macro=TIMES2#2 body]) [macro=TIMES2#2 body]);
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE1]]));
@@ -93,10 +93,10 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:         let %[[VALUE3:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE2]]), add<i32>(mul<i32>(const<i32>(3), read<i32>(%[[VALUE_i]]) [macro=PLUS#3 arg0]), read<i32>(%[[VALUE_j]]) [macro=PLUS#3 arg1]));
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE3]]));
 // IR-NEXT:         let %[[VALUE4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
-// IR-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE4]]), macro_value<i32>(#[[#NODE1:]], statements=0, add<i32>(macro_arg<i32>(#{{[0-9]+}}, 0, add<i32>(read<i32>(%[[VALUE_i]]) [macro=ADD_ONE#4 arg0], read<i32>(%[[VALUE_j]]) [macro=ADD_ONE#4 arg0]) [macro=ADD_ONE#4 arg0]) [macro=ADD_ONE#4 arg0], const<i32>(1) [macro=ADD_ONE#4 body]) [macro=ADD_ONE#4 body]) [macro=ADD_ONE#4 body]);
+// IR-NEXT:         let %[[VALUE5:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE4]]), add<i32>(add<i32>(read<i32>(%[[VALUE_i]]) [macro=ADD_ONE#4 arg0], read<i32>(%[[VALUE_j]]) [macro=ADD_ONE#4 arg0]) [macro_arg="#[[#NODE1:]].0"] [macro=ADD_ONE#4 arg0], const<i32>(1) [macro=ADD_ONE#4 body]) [macro_value="#{{[0-9]+}}"] [macro=ADD_ONE#4 body]);
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE5]]));
 // IR-NEXT:         macro_body #[[#NODE2:]] {
-// IR-NEXT:             write<i32>(deref(macro_arg<ptr<i32>>(#[[#NODE2]], 0, addr_of<ptr<i32>>(%[[VALUE_results]]))), macro_arg<i32>(#[[#NODE2]], 1, read<i32>(%[[VALUE_i]]) [macro=SET#5 arg1]) [macro=SET#5 arg1]) [macro=SET#5 body];
+// IR-NEXT:             write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE_results]])), read<i32>(%[[VALUE_i]]) [macro_arg="#[[#NODE2]].1"] [macro=SET#5 arg1]) [macro=SET#5 body];
 // IR-NEXT:         }
 // IR-NEXT:         macro_body #[[#NODE3:]] { [macro=SETS#6 body]
 // IR-NEXT:             write<i32>(macro_arg(#[[#NODE3]], 0, %[[VALUE_i]]), const<i32>(1) [macro=SETS#6 body]) [macro=SETS#6 body];
@@ -118,16 +118,16 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:             while ne<i32>(const<i32>(0) [macro=WRAP#9 body], const<i32>(0) [macro=WRAP#9 body]) [macro=WRAP#9 body];
 // IR-NEXT:         }
 // IR-NEXT:         let %[[VALUE7:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
-// IR-NEXT:         let %[[VALUE8:[0-9]+]]: i32 [synthetic] = truncate<i32>(add<i64>(widen<i64>(read<i32>(%[[VALUE7]])), macro_value<i64>(#[[#NODE6:]], statements=0, widen<i64>(macro_arg<i32>(#{{[0-9]+}}, 1, read<i32>(%[[VALUE_i]]) [macro=CAST#10 arg1]) [macro=CAST#10 arg1]) [macro_cast="i64"] [macro=CAST#10 body]) [macro=CAST#10 body]));
+// IR-NEXT:         let %[[VALUE8:[0-9]+]]: i32 [synthetic] = truncate<i32>(add<i64>(widen<i64>(read<i32>(%[[VALUE7]])), widen<i64>(read<i32>(%[[VALUE_i]]) [macro_arg="#[[#NODE6:]].1"] [macro=CAST#10 arg1]) [macro_cast="i64"] [macro_value="#{{[0-9]+}}"] [macro=CAST#10 body]));
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE8]]));
 // IR-NEXT:         let %[[VALUE9:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
-// IR-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE9]]), from_bool<i32>(ne<ptr<i8>>(macro_value<ptr<i8>>(#[[#NODE7:]], statements=0, int_to_ptr<ptr<i8>>(macro_arg<i32>(#{{[0-9]+}}, 1, read<i32>(%[[VALUE_i]]) [macro=CAST#11 arg1]) [macro=CAST#11 arg1]) [macro=CAST#11 body]) [macro=CAST#11 body], null<ptr<i8>>)));
+// IR-NEXT:         let %[[VALUE10:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE9]]), from_bool<i32>(ne<ptr<i8>>(int_to_ptr<ptr<i8>>(read<i32>(%[[VALUE_i]]) [macro_arg="#[[#NODE7:]].1"] [macro=CAST#11 arg1]) [macro_value="#{{[0-9]+}}"] [macro=CAST#11 body], null<ptr<i8>>)));
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE10]]));
 // IR-NEXT:         macro_body #[[#NODE8:]] {
 // IR-NEXT:             do %[[VALUE11:[0-9]+]]
 // IR-NEXT:                 { [macro=LOCAL#12 body]
-// IR-NEXT:                     let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic] = macro_arg<i32>(#[[#NODE8]], 1, read<i32>(%[[VALUE_i]]) [macro=LOCAL#12 arg1]) [macro=LOCAL#12 arg1] [macro=LOCAL#12 body];
-// IR-NEXT:                     write<i32>(macro_arg(#[[#NODE8]], 1, %[[VALUE_i]]), macro_arg<i32>(#[[#NODE8]], 2, read<i32>(%[[VALUE_j]]) [macro=LOCAL#12 arg2]) [macro=LOCAL#12 arg2]) [macro=LOCAL#12 body];
+// IR-NEXT:                     let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic] = read<i32>(%[[VALUE_i]]) [macro_arg="#[[#NODE8]].1"] [macro=LOCAL#12 arg1] [macro=LOCAL#12 body];
+// IR-NEXT:                     write<i32>(macro_arg(#[[#NODE8]], 1, %[[VALUE_i]]), read<i32>(%[[VALUE_j]]) [macro_arg="#[[#NODE8]].2"] [macro=LOCAL#12 arg2]) [macro=LOCAL#12 body];
 // IR-NEXT:                     write<i32>(macro_arg(#[[#NODE8]], 2, %[[VALUE_j]]), read<i32>(%[[VALUE_t]]) [macro=LOCAL#12 body]) [macro=LOCAL#12 body];
 // IR-NEXT:                 }
 // IR-NEXT:             while ne<i32>(const<i32>(0) [macro=LOCAL#12 body], const<i32>(0) [macro=LOCAL#12 body]) [macro=LOCAL#12 body];
@@ -135,8 +135,8 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:         macro_body #[[#NODE9:]] {
 // IR-NEXT:             do %[[VALUE12:[0-9]+]]
 // IR-NEXT:                 { [macro=LOCAL#13 body]
-// IR-NEXT:                     let %[[VALUE_t_2:[0-9]+]] t: u64 [storage=automatic] = reinterpret<u64>(widen<i64>(macro_arg<i32>(#[[#NODE9]], 1, read<i32>(%[[VALUE_i]]) [macro=LOCAL#13 arg1]) [macro=LOCAL#13 arg1]) [macro=LOCAL#13 arg1]) [macro=LOCAL#13 arg1] [macro=LOCAL#13 body];
-// IR-NEXT:                     write<i32>(macro_arg(#[[#NODE9]], 1, %[[VALUE_i]]), macro_arg<i32>(#[[#NODE9]], 2, read<i32>(%[[VALUE_j]]) [macro=LOCAL#13 arg2]) [macro=LOCAL#13 arg2]) [macro=LOCAL#13 body];
+// IR-NEXT:                     let %[[VALUE_t_2:[0-9]+]] t: u64 [storage=automatic] = reinterpret<u64>(widen<i64>(read<i32>(%[[VALUE_i]]) [macro_arg="#[[#NODE9]].1"] [macro=LOCAL#13 arg1]) [macro=LOCAL#13 arg1]) [macro=LOCAL#13 arg1] [macro=LOCAL#13 body];
+// IR-NEXT:                     write<i32>(macro_arg(#[[#NODE9]], 1, %[[VALUE_i]]), read<i32>(%[[VALUE_j]]) [macro_arg="#[[#NODE9]].2"] [macro=LOCAL#13 arg2]) [macro=LOCAL#13 body];
 // IR-NEXT:                     write<i32>(macro_arg(#[[#NODE9]], 2, %[[VALUE_j]]), reinterpret<i32>(truncate<u32>(read<u64>(%[[VALUE_t_2]]) [macro=LOCAL#13 body]) [macro=LOCAL#13 body]) [macro=LOCAL#13 body]) [macro=LOCAL#13 body];
 // IR-NEXT:                 }
 // IR-NEXT:             while ne<i32>(const<i32>(0) [macro=LOCAL#13 body], const<i32>(0) [macro=LOCAL#13 body]) [macro=LOCAL#13 body];
@@ -144,33 +144,33 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:         macro_body #[[#NODE10:]] {
 // IR-NEXT:             do %[[VALUE13:[0-9]+]]
 // IR-NEXT:                 { [macro=CONST_LOCAL#14 body]
-// IR-NEXT:                     let %[[VALUE_t_3:[0-9]+]] t: i32 [storage=automatic] [const] = macro_arg<i32>(#[[#NODE10]], 1, read<i32>(%[[VALUE_i]]) [macro=CONST_LOCAL#14 arg1]) [macro=CONST_LOCAL#14 arg1] [macro=CONST_LOCAL#14 body];
+// IR-NEXT:                     let %[[VALUE_t_3:[0-9]+]] t: i32 [storage=automatic] [const] = read<i32>(%[[VALUE_i]]) [macro_arg="#[[#NODE10]].1"] [macro=CONST_LOCAL#14 arg1] [macro=CONST_LOCAL#14 body];
 // IR-NEXT:                     read<i32>(%[[VALUE_t_3]]) [macro=CONST_LOCAL#14 body] [macro=CONST_LOCAL#14 body];
 // IR-NEXT:                 }
 // IR-NEXT:             while ne<i32>(const<i32>(0) [macro=CONST_LOCAL#14 body], const<i32>(0) [macro=CONST_LOCAL#14 body]) [macro=CONST_LOCAL#14 body];
 // IR-NEXT:         }
 // IR-NEXT:         let %[[VALUE14:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
-// IR-NEXT:         let %[[VALUE15:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE14]]), macro_value<i32>(#[[#NODE11:]], statements=0, read<i32>(field0(deref(macro_arg<ptr<@type[[TYPE_pair]]>>(#{{[0-9]+}}, 0, read<ptr<@type[[TYPE_pair]]>>(%[[VALUE_pair]]))))) [macro=FIELD#15 body]) [macro=FIELD#15 body]);
+// IR-NEXT:         let %[[VALUE15:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE14]]), read<i32>(field0(deref(read<ptr<@type[[TYPE_pair]]>>(%[[VALUE_pair]])))) [macro_value="#[[#NODE11:]]"] [macro=FIELD#15 body]);
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE15]]));
-// IR-NEXT:         let %[[VALUE16:[0-9]+]]: i32 [synthetic] = macro_value<i32>(#[[#NODE12:]], statements=0, call<i32>(%[[VALUE_callee]], macro_arg<i32>(#{{[0-9]+}}, 1, read<i32>(%[[VALUE_i]]) [macro=CALL#16 arg1]) [macro=CALL#16 arg1]) [macro=CALL#16 body]) [macro=CALL#16 body];
+// IR-NEXT:         let %[[VALUE16:[0-9]+]]: i32 [synthetic] = call<i32>(%[[VALUE_callee]], read<i32>(%[[VALUE_i]]) [macro_arg="#[[#NODE12:]].1"] [macro=CALL#16 arg1]) [macro_value="#{{[0-9]+}}"] [macro=CALL#16 body];
 // IR-NEXT:         let %[[VALUE17:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
 // IR-NEXT:         let %[[VALUE18:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE17]]), read<i32>(%[[VALUE16]]));
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE18]]));
 // IR-NEXT:         write<i32>(%[[VALUE_results]], const<i32>(1) [macro=STATEMENT#17 arg0]) [macro=STATEMENT#17 arg0];
 // IR-NEXT:         ;
 // IR-NEXT:         let %[[VALUE19:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
-// IR-NEXT:         let %[[VALUE20:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE19]]), macro_value<i32>(#[[#NODE13:]], statements=0, add<i32>(macro_arg<i32>(#{{[0-9]+}}, 0, read<i32>(%[[VALUE_i]]) [macro=TWICE#18 arg0]) [macro=TWICE#18 arg0], macro_arg<i32>(#{{[0-9]+}}, 0, read<i32>(%[[VALUE_i]]) [macro=TWICE#18 arg0]) [macro=TWICE#18 arg0]) [macro=TWICE#18 body]) [macro=TWICE#18 body]);
+// IR-NEXT:         let %[[VALUE20:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE19]]), add<i32>(read<i32>(%[[VALUE_i]]) [macro_arg="#[[#NODE13:]].0"] [macro=TWICE#18 arg0], read<i32>(%[[VALUE_i]]) [macro_arg="#{{[0-9]+}}.0"] [macro=TWICE#18 arg0]) [macro_value="#{{[0-9]+}}"] [macro=TWICE#18 body]);
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE20]]));
 // IR-NEXT:         let %[[VALUE21:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
-// IR-NEXT:         let %[[VALUE22:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE21]]), macro_value<i32>(#[[#NODE14:]], statements=0, macro_value<i32>(#[[#NODE15:]], statements=0, add<i32>(macro_arg<i32>(#{{[0-9]+}}, 0, macro_arg<i32>(#{{[0-9]+}}, 0, add<i32>(read<i32>(%[[VALUE_i]]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0], read<i32>(%[[VALUE_j]]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0], const<i32>(1) [macro=ADD_ONE#20 body] [macro=OUTER#19 body]) [macro=ADD_ONE#20 body] [macro=OUTER#19 body]) [macro=ADD_ONE#20 body] [macro=OUTER#19 body]) [macro=ADD_ONE#20 body] [macro=OUTER#19 body]);
+// IR-NEXT:         let %[[VALUE22:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE21]]), add<i32>(add<i32>(read<i32>(%[[VALUE_i]]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0], read<i32>(%[[VALUE_j]]) [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0]) [macro_arg="#[[#NODE14:]].0"] [macro_arg="#[[#NODE15:]].0"] [macro=ADD_ONE#20 arg0] [macro=OUTER#19 arg0], const<i32>(1) [macro=ADD_ONE#20 body] [macro=OUTER#19 body]) [macro_value="#{{[0-9]+}}"] [macro_value="#{{[0-9]+}}"] [macro=ADD_ONE#20 body] [macro=OUTER#19 body]);
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE22]]));
-// IR-NEXT:         let %[[VALUE23:[0-9]+]]: i32 [synthetic] = macro_value<i32>(#[[#NODE16:]], statements=0, call<i32>(%[[VALUE_callee]], macro_arg<i32>(#{{[0-9]+}}, 0, read<i32>(%[[VALUE_i]]) [macro=TRACE#21 arg0]) [macro=TRACE#21 arg0]) [macro=TRACE#21 body]) [macro=TRACE#21 body];
+// IR-NEXT:         let %[[VALUE23:[0-9]+]]: i32 [synthetic] = call<i32>(%[[VALUE_callee]], read<i32>(%[[VALUE_i]]) [macro_arg="#[[#NODE16:]].0"] [macro=TRACE#21 arg0]) [macro_value="#{{[0-9]+}}"] [macro=TRACE#21 body];
 // IR-NEXT:         let %[[VALUE24:[0-9]+]]: i32 [synthetic] = read<i32>(%[[VALUE_results]]);
 // IR-NEXT:         let %[[VALUE25:[0-9]+]]: i32 [synthetic] = add<i32>(read<i32>(%[[VALUE24]]), read<i32>(%[[VALUE23]]));
 // IR-NEXT:         write<i32>(%[[VALUE_results]], read<i32>(%[[VALUE25]]));
 // IR-NEXT:         macro_body #[[#NODE17:]] { [macro=SET_DOUBLE#22 body]
 // IR-NEXT:             { [macro=SET_DOUBLE#22 body]
-// IR-NEXT:                 write<i32>(deref(macro_arg<ptr<i32>>(#[[#NODE17]], 0, addr_of<ptr<i32>>(%[[VALUE_results]]))), mul<i32>(macro_arg<i32>(#[[#NODE17]], 1, read<i32>(%[[VALUE_i]]) [macro=SET_DOUBLE#22 arg1]) [macro=SET_DOUBLE#22 arg1], const<i32>(2) [macro=SET_DOUBLE#22 body]) [macro=SET_DOUBLE#22 body]) [macro=SET_DOUBLE#22 body];
+// IR-NEXT:                 write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE_results]])), mul<i32>(read<i32>(%[[VALUE_i]]) [macro_arg="#[[#NODE17]].1"] [macro=SET_DOUBLE#22 arg1], const<i32>(2) [macro=SET_DOUBLE#22 body]) [macro=SET_DOUBLE#22 body]) [macro=SET_DOUBLE#22 body];
 // IR-NEXT:             }
 // IR-NEXT:         }
 // IR-NEXT:         ;
@@ -178,7 +178,7 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:             write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE_results]])), add<i32>(read<i32>(%[[VALUE_i]]) [macro=SET_DOUBLE#23 arg1], mul<i32>(read<i32>(%[[VALUE_j]]) [macro=SET_DOUBLE#23 arg1], const<i32>(2) [macro=SET_DOUBLE#23 body]) [macro=SET_DOUBLE#23 body]) [macro=SET_DOUBLE#23 body]) [macro=SET_DOUBLE#23 body];
 // IR-NEXT:         }
 // IR-NEXT:         ;
-// IR-NEXT:         return add<i32>(read<i32>(%[[VALUE_results]]), macro_value<i32>(#[[#NODE18:]], statements=0, const<i32>(3) [macro=COUNT#24 body]) [macro=COUNT#24 body]);
+// IR-NEXT:         return add<i32>(read<i32>(%[[VALUE_results]]), const<i32>(3) [macro_value="#[[#NODE18:]]"] [macro=COUNT#24 body]);
 // IR-NEXT:     }
 // IR-NEXT:     macro_definition #[[#NODE19:]] DECLARE(name) [defined=7:19] = "int name";
 // IR-NEXT:     macro_definition #[[#NODE0]] TIMES2(x) [defined=7:1] = "x * 2";

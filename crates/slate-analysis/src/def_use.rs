@@ -466,10 +466,8 @@ impl DefUse {
             ValueKind::Copy { operand, .. }
             | ValueKind::Unary { operand, .. }
             | ValueKind::FloatClass { operand, .. }
-            | ValueKind::MacroArg { value: operand, .. }
             | ValueKind::Convert { operand, .. } => self.value(operand),
-            ValueKind::StatementExpression(evaluation)
-            | ValueKind::MacroExpansion { evaluation, .. } => self.evaluation(evaluation),
+            ValueKind::StatementExpression(evaluation) => self.evaluation(evaluation),
             ValueKind::Block(block) => {
                 if let Some(body) = &block.function.body {
                     self.statements(body);

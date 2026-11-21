@@ -24,6 +24,11 @@ pub(super) fn normalize(
         .filter(|function| function.value.name.starts_with("__builtin_stdc_"))
         .map(|function| function.value.id)
         .collect();
+    hoister.macro_roots = module
+        .macro_values
+        .iter()
+        .map(|(id, wraps)| (*id, wraps.iter().map(|wrap| wrap.expansion()).collect()))
+        .collect();
     hoister.c_nodes = std::mem::take(&mut module.c_types.nodes);
     hoister.c_bindings = std::mem::take(&mut module.c_types.bindings);
     for function in &mut module.functions {

@@ -44,7 +44,7 @@ int use(int value) {
 // IR-NEXT:     fn %[[VALUE_use:[0-9]+]] @use(%[[VALUE_value_2:[0-9]+]] value: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // IR-NEXT:         macro_body #[[#NODE0:]] { [macro=LEAF#0 body]
 // IR-NEXT:             { [macro=LEAF#0 body]
-// IR-NEXT:                 call<void>(%[[VALUE_sink]], macro_arg<i32>(#[[#NODE0]], 0, read<i32>(%[[VALUE_value_2]]) [macro=LEAF#0 arg0]) [macro=LEAF#0 arg0]) [macro=LEAF#0 body] [macro=LEAF#0 body];
+// IR-NEXT:                 call<void>(%[[VALUE_sink]], read<i32>(%[[VALUE_value_2]]) [macro_arg="#[[#NODE0]].0"] [macro=LEAF#0 arg0]) [macro=LEAF#0 body] [macro=LEAF#0 body];
 // IR-NEXT:             }
 // IR-NEXT:         }
 // IR-NEXT:         ;
@@ -53,17 +53,17 @@ int use(int value) {
 // IR-NEXT:                 { [macro=MIDDLE#2 body] [macro=OUTER#1 body]
 // IR-NEXT:                     macro_body #[[#NODE3:]] { [macro=LEAF#3 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body]
 // IR-NEXT:                         { [macro=LEAF#3 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body]
-// IR-NEXT:                             call<void>(%[[VALUE_sink]], macro_arg<i32>(#[[#NODE3]], 0, add<i32>(macro_arg<i32>(#[[#NODE2]], 0, add<i32>(macro_arg<i32>(#[[#NODE1]], 0, read<i32>(%[[VALUE_value_2]]) [macro=LEAF#3 arg0] [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg0]) [macro=LEAF#3 arg0] [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg0], macro_arg<i32>(#[[#NODE1]], 1, const<i32>(4) [macro=LEAF#3 arg0] [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg1]) [macro=LEAF#3 arg0] [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg1]) [macro=LEAF#3 arg0] [macro=MIDDLE#2 arg0] [macro=OUTER#1 body]) [macro=LEAF#3 arg0] [macro=MIDDLE#2 arg0] [macro=OUTER#1 body], const<i32>(1) [macro=LEAF#3 arg0] [macro=MIDDLE#2 body] [macro=OUTER#1 body]) [macro=LEAF#3 arg0] [macro=MIDDLE#2 body] [macro=OUTER#1 body]) [macro=LEAF#3 arg0] [macro=MIDDLE#2 body] [macro=OUTER#1 body]) [macro=LEAF#3 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body] [macro=LEAF#3 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body];
+// IR-NEXT:                             call<void>(%[[VALUE_sink]], add<i32>(add<i32>(read<i32>(%[[VALUE_value_2]]) [macro_arg="#[[#NODE1]].0"] [macro=LEAF#3 arg0] [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg0], const<i32>(4) [macro_arg="#[[#NODE1]].1"] [macro=LEAF#3 arg0] [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg1]) [macro_arg="#[[#NODE2]].0"] [macro=LEAF#3 arg0] [macro=MIDDLE#2 arg0] [macro=OUTER#1 body], const<i32>(1) [macro=LEAF#3 arg0] [macro=MIDDLE#2 body] [macro=OUTER#1 body]) [macro_arg="#[[#NODE3]].0"] [macro=LEAF#3 arg0] [macro=MIDDLE#2 body] [macro=OUTER#1 body]) [macro=LEAF#3 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body] [macro=LEAF#3 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body];
 // IR-NEXT:                         }
 // IR-NEXT:                     }
 // IR-NEXT:                      [macro=MIDDLE#2 body] [macro=OUTER#1 body];
 // IR-NEXT:                     macro_body #[[#NODE4:]] { [macro=LEAF#4 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body]
 // IR-NEXT:                         { [macro=LEAF#4 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body]
-// IR-NEXT:                             call<void>(%[[VALUE_sink]], macro_arg<i32>(#[[#NODE4]], 0, const<i32>(2) [macro=LEAF#4 arg0] [macro=MIDDLE#2 body] [macro=OUTER#1 body]) [macro=LEAF#4 arg0] [macro=MIDDLE#2 body] [macro=OUTER#1 body]) [macro=LEAF#4 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body] [macro=LEAF#4 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body];
+// IR-NEXT:                             call<void>(%[[VALUE_sink]], const<i32>(2) [macro_arg="#[[#NODE4]].0"] [macro=LEAF#4 arg0] [macro=MIDDLE#2 body] [macro=OUTER#1 body]) [macro=LEAF#4 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body] [macro=LEAF#4 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body];
 // IR-NEXT:                         }
 // IR-NEXT:                     }
 // IR-NEXT:                      [macro=MIDDLE#2 body] [macro=OUTER#1 body];
-// IR-NEXT:                     call<void>(%[[VALUE_sink]], macro_arg<i32>(#[[#NODE2]], 0, add<i32>(macro_arg<i32>(#[[#NODE1]], 0, read<i32>(%[[VALUE_value_2]]) [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg0]) [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg0], macro_arg<i32>(#[[#NODE1]], 1, const<i32>(4) [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg1]) [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg1]) [macro=MIDDLE#2 arg0] [macro=OUTER#1 body]) [macro=MIDDLE#2 arg0] [macro=OUTER#1 body]) [macro=MIDDLE#2 body] [macro=OUTER#1 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body];
+// IR-NEXT:                     call<void>(%[[VALUE_sink]], add<i32>(read<i32>(%[[VALUE_value_2]]) [macro_arg="#[[#NODE1]].0"] [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg0], const<i32>(4) [macro_arg="#[[#NODE1]].1"] [macro=MIDDLE#2 arg0] [macro=OUTER#1 arg1]) [macro_arg="#[[#NODE2]].0"] [macro=MIDDLE#2 arg0] [macro=OUTER#1 body]) [macro=MIDDLE#2 body] [macro=OUTER#1 body] [macro=MIDDLE#2 body] [macro=OUTER#1 body];
 // IR-NEXT:                 }
 // IR-NEXT:             }
 // IR-NEXT:         }
@@ -75,7 +75,7 @@ int use(int value) {
 // IR-NEXT:         macro_body #[[#NODE5:]] { [macro=LEAF#7 body] [macro=OBJECT#6 body]
 // IR-NEXT:             macro_body #[[#NODE6:]] { [macro=LEAF#7 body] [macro=OBJECT#6 body]
 // IR-NEXT:                 { [macro=LEAF#7 body] [macro=OBJECT#6 body]
-// IR-NEXT:                     call<void>(%[[VALUE_sink]], macro_arg<i32>(#[[#NODE6]], 0, const<i32>(3) [macro=LEAF#7 arg0] [macro=OBJECT#6 body]) [macro=LEAF#7 arg0] [macro=OBJECT#6 body]) [macro=LEAF#7 body] [macro=OBJECT#6 body] [macro=LEAF#7 body] [macro=OBJECT#6 body];
+// IR-NEXT:                     call<void>(%[[VALUE_sink]], const<i32>(3) [macro_arg="#[[#NODE6]].0"] [macro=LEAF#7 arg0] [macro=OBJECT#6 body]) [macro=LEAF#7 body] [macro=OBJECT#6 body] [macro=LEAF#7 body] [macro=OBJECT#6 body];
 // IR-NEXT:                 }
 // IR-NEXT:             }
 // IR-NEXT:         }

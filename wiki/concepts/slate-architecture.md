@@ -123,8 +123,10 @@ report.
   enclosing template's own local or parameter. Defining the macro inside each
   function was rejected because it gives up sharing across functions, units and
   targets.
-- **Value templates**: a `ValueKind::MacroExpansion` lowers to an `Expr::Macro`
-  in value position. While the rules run its body ends in `Stmt::Return(value)`,
+- **Value templates**: a value with a `MacroWrap::Value` in
+  `Module::macro_values` lowers to an `Expr::Macro` in value position. The
+  lowerer peels a node's wraps outermost first (`peeled_macro_wraps`), so the
+  template lowers the same node without the wrap it is building. While the rules run its body ends in `Stmt::Return(value)`,
   and `Item::MacroRules::value` tells that marker from a real `return` ending a
   statement template; codegen prints the marker as the expression, or a block
   ending in it.

@@ -1381,7 +1381,7 @@ impl Lowerer {
         let hole = (matches!(kind, CastKind::Identity | CastKind::Arithmetic)
             && reason == ConversionReason::Explicit
             && is_plain_integer(&value.value.ty))
-        .then(|| written_cast_hole(&value.value))
+        .then(|| written_cast_hole(&value.value, &self.module.macro_values))
         .flatten();
         let converted = Operand {
             value: self.emit_cast(kind, value, c, reason)?,
@@ -1777,23 +1777,17 @@ impl Lowerer {
         }
     }
 
-    fn macro_value_holes(&mut self, e: &Expr, mut lowered: Operand) -> Operand {
+    fn macro_value_holes(&mut self, e: &Expr, lowered: Operand) -> Operand {
         for hole in self.macro_structure.holes(e.id) {
             if self.open_macros.contains(&hole.expansion) {
-                let ty = lowered.value.ty.clone();
-                let c = lowered.c;
-                lowered = Operand {
-                    c,
-                    value: Value {
-                        ty,
-                        node: e.derive(ValueKind::MacroArg {
-                            expansion: hole.expansion,
-                            argument: hole.argument,
-                            value: Box::new(lowered.value),
-                        }),
-                    },
-                };
-                self.types.record_operand_c_type(&lowered);
+                self.module
+                    .macro_values
+                    .entry(lowered.value.node.id)
+                    .or_default()
+                    .push(MacroWrap::Argument {
+                        expansion: hole.expansion,
+                        argument: hole.argument,
+                    });
             }
         }
         lowered
@@ -2287,17 +2281,13 @@ impl Lowerer {
         if !self.types.ctypes.is_function(signature) {
             return Err(ResolveError::Internal("non-function callee"));
         }
-        let mut designator = &value.node.value;
-        while let ValueKind::MacroArg { value: inner, .. } = designator {
-            designator = &inner.node.value;
-        }
         if let ValueKind::FunctionDecay {
             place:
                 Place {
                     kind: PlaceKind::Binding(id),
                     ..
                 },
-        } = designator
+        } = &value.node.value
         {
             return Ok((Callee::Direct(*id), signature));
         }
@@ -2739,36 +2729,15 @@ impl Lowerer {
         let lowered = self.lower_expr(e);
         let opened = self.open_macros.split_off(open);
         self.macro_value_hole = enclosing_hole;
-        let mut lowered = self.finish_expr(e, lowered.map_err(|error| error.at(e.expansion))?)?;
-        for expansion in opened.into_iter().rev() {
-            lowered = self.macro_value_expansion(e, expansion, lowered);
+        let lowered = self.finish_expr(e, lowered.map_err(|error| error.at(e.expansion))?)?;
+        if !opened.is_empty() {
+            self.module
+                .macro_values
+                .entry(lowered.value.node.id)
+                .or_default()
+                .extend(opened.into_iter().rev().map(MacroWrap::Value));
         }
         Ok(self.macro_value_holes(e, lowered))
-    }
-
-    fn macro_value_expansion(
-        &mut self,
-        e: &Expr,
-        expansion: crate::ast::MacroExpansionId,
-        lowered: Operand,
-    ) -> Operand {
-        let ty = lowered.value.ty.clone();
-        let c = lowered.c;
-        let wrapped = Operand {
-            c,
-            value: Value {
-                ty,
-                node: e.derive(ValueKind::MacroExpansion {
-                    expansion,
-                    evaluation: Box::new(Evaluation {
-                        statements: Vec::new(),
-                        value: lowered.value,
-                    }),
-                }),
-            },
-        };
-        self.types.record_operand_c_type(&wrapped);
-        wrapped
     }
 
     fn is_binary_chain(&self, e: &Expr) -> bool {
@@ -3877,9 +3846,17 @@ fn is_plain_integer(ty: &Type) -> bool {
     )
 }
 
-fn written_cast_hole(value: &Value) -> Option<(crate::ast::MacroExpansionId, NodeId)> {
+fn written_cast_hole(
+    value: &Value,
+    macro_values: &MacroValues,
+) -> Option<(crate::ast::MacroExpansionId, NodeId)> {
+    if let Some(MacroWrap::Argument { expansion, .. }) = macro_values
+        .get(&value.node.id)
+        .and_then(|wraps| wraps.last())
+    {
+        return Some((*expansion, value.node.id));
+    }
     match &value.node.value {
-        ValueKind::MacroArg { expansion, .. } => Some((*expansion, value.node.id)),
         ValueKind::Read { place, .. } => match &place.kind {
             PlaceKind::MacroArg { expansion, .. } => Some((*expansion, value.node.id)),
             #[expect(

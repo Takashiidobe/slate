@@ -8,7 +8,7 @@ pub(super) fn without_macro_holes(mut place: &ir::Place) -> &ir::Place {
 }
 
 fn is_null_constant(value: &ir::Value) -> bool {
-    match &value.without_macro_structure().node.value {
+    match &value.node.value {
         ValueKind::Null => true,
         ValueKind::Convert { operand, .. } => is_null_constant(operand),
         #[expect(

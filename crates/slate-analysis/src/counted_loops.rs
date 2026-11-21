@@ -143,7 +143,7 @@ fn recognize(
     }
     let ValueKind::Compare {
         op, left, right, ..
-    } = &condition.value.without_macro_structure().node.value
+    } = &condition.value.node.value
     else {
         return None;
     };
@@ -189,14 +189,14 @@ fn recognize(
 
 fn reads(value: &Value, id: BindingId) -> bool {
     matches!(
-        &value.without_macro_structure().node.value,
+        &value.node.value,
         ValueKind::Read { place, ordering: None }
             if matches!(place.without_macro_holes().kind, PlaceKind::Binding(read) if read == id)
     )
 }
 
 fn invariant(value: &Value, reads: &mut HashSet<BindingId>) -> bool {
-    match &value.without_macro_structure().node.value {
+    match &value.node.value {
         ValueKind::Constant(_) | ValueKind::LayoutQuery { .. } => true,
         ValueKind::Copy { operand, .. }
         | ValueKind::Convert { operand, .. }
@@ -292,7 +292,7 @@ fn integer_range(ty: &Type) -> Option<(BigInt, BigInt)> {
 }
 
 fn integer_constant(value: &Value) -> Option<BigInt> {
-    let constant = match &value.without_macro_structure().node.value {
+    let constant = match &value.node.value {
         ValueKind::Constant(Number::Integer(value)) => BigInt::from(value.clone()),
         ValueKind::Constant(Number::SignedInteger(value)) => value.clone(),
         ValueKind::LayoutQuery { amount, .. } => BigInt::from(*amount),

@@ -295,6 +295,20 @@ impl DisplayModule<'_> {
                     .or_default()
                     .push(("macro_cast".into(), cast.ty.to_string()));
             }
+            for (id, wraps) in &self.module.macro_values {
+                let entries = table.entry(*id).or_default();
+                for wrap in wraps {
+                    entries.push(match wrap {
+                        super::MacroWrap::Value(expansion) => {
+                            ("macro_value".into(), format!("#{}", expansion.0))
+                        }
+                        super::MacroWrap::Argument {
+                            expansion,
+                            argument,
+                        } => ("macro_arg".into(), format!("#{}.{argument}", expansion.0)),
+                    });
+                }
+            }
         }
         table
     }

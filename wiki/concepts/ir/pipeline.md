@@ -140,24 +140,31 @@ and the [cover table](../preprocessor.md#macro-invocations) before lowering:
 - `Statement::MacroExpansion { expansion, body }` wraps the statements an
   expansion covers. Nested expansions nest. It is not a scope: a `let` in `body`
   stays visible to later statements.
-- `ValueKind::MacroArg` and `PlaceKind::MacroArg { expansion, argument, .. }`
-  mark one argument occurrence inside its open expansion. Lvalue and rvalue
-  occurrences share the mechanism. A conversion the argument needs is applied by
-  the parent after the hole closes, so `ADD_ONE(c)` on a `u8` has its `widen`
-  outside. An explicit integer cast whose operand is a hole lowers as it would
-  without macros (`widen`, `truncate`, `reinterpret`, or nothing for an
-  identity cast). `Module::macro_written_casts` records it, keyed by the
-  cast's result node and naming the hole node, so that a template writes one
-  `$x as T` for every site (`--show-macros` prints `[macro_cast="T"]`).
-  When an argument is passed down to a nested macro the inner hole
-  wraps the outer one. Slate's `--merge` also wraps caller locals a kept body
-  uses: an `argument` past the definition's parameters indexes
-  `Module::macro_hidden_arguments[expansion]`.
-- `ValueKind::MacroExpansion { expansion, evaluation }` wraps an expansion that
-  covers one expression below statement level, read as a value in function code
-  (`int k = M(i);`). It is not used for an expression the program writes to or
-  takes the address of, a constant context (`case`, array size, `sizeof`,
-  `static` initializer) or asm operands.
+- Value holes and value expansions are not nodes. `Module::macro_values` maps a
+  value's `NodeId` to its `MacroWrap`s, innermost first:
+  `MacroWrap::Argument { expansion, argument }` marks one argument occurrence
+  inside its open expansion, and `MacroWrap::Value(expansion)` marks an
+  expansion that covers one expression below statement level, read as a value
+  in function code (`int k = M(i);`). A value expansion is not used for an
+  expression the program writes to or takes the address of, a constant context
+  (`case`, array size, `sizeof`, `static` initializer) or asm operands. On one
+  node, the argument wraps sit outside the value wraps. `--show-macros` prints
+  them as `[macro_value="#E"]` and `[macro_arg="#E.k"]` metadata. A walk sees
+  them only through `ir::walk_body_with_macros`, which calls
+  `Visitor::macro_value` and opens the expansion or hole around the value.
+- `PlaceKind::MacroArg { expansion, argument, .. }` is still a node: it marks an
+  lvalue occurrence (`ir::Place` has no `NodeId`). A conversion the argument
+  needs is applied by the parent after the hole closes, so `ADD_ONE(c)` on a
+  `u8` has its `widen` outside. An explicit integer cast whose operand is a
+  hole lowers as it would without macros (`widen`, `truncate`, `reinterpret`,
+  or nothing for an identity cast). `Module::macro_written_casts` records it,
+  keyed by the cast's result node and naming the hole node, so that a template
+  writes one `$x as T` for every site (`--show-macros` prints
+  `[macro_cast="T"]`). An identity cast names its own node, and the cast sits
+  outside that node's wraps. When an argument is passed down to a nested macro
+  the inner hole wraps the outer one. Slate's `--merge` also wraps caller
+  locals a kept body uses: an `argument` past the definition's parameters
+  indexes `Module::macro_hidden_arguments[expansion]`.
 - A callee argument gets a hole unless it names a function: that call stays
   `Callee::Direct`, with the name in the body. Each argument of a `f args` list
   gets its own hole. A type or name argument gets no hole.
@@ -171,21 +178,18 @@ and the [cover table](../preprocessor.md#macro-invocations) before lowering:
   `static` or `extern` declaration, or when a value expansion's only tokens are
   its own argument (`#define ID(x) x`).
 
-Hoisting ignores macro structure: effects hoist out of a hole and out of a
-`MacroExpansion` value into the enclosing `body` or `evaluation`, exactly as
-without structure, so a value expansion's `evaluation.statements` is always
-empty after normalization. An expansion whose value hoisted statements
-(`r += NEXT()` with `*cursor++`, `GT_OFF(x)` with a call under `&&`) is split:
-`effects_statements::normalize` records it in `Module::macro_rejections` as
-`hoist_split_region`, and it stays inline. An analysis that matches on
-value shape must look through these forms with `Value::without_macro_structure()`
-(`MacroArg`, and a `MacroExpansion` without hoisted statements);
-`ValueKind` is `#[slate::sensitive]`, so a catch-all that skips them is
-reported. Slate's lowerer mostly does not look through them.
+Hoisting ignores macro structure: the value tree is the one built without it,
+so effects hoist exactly as without structure. An expansion whose value hoisted
+statements, or whose root value was replaced (`r += NEXT()` with `*cursor++`,
+`GT_OFF(x)` with a call under `&&`), is split: `effects_statements::normalize`
+records it in `Module::macro_rejections` as `hoist_split_region`, and it stays
+inline. Analyses match on value shape directly; one that must not reach into
+macro code (`inline_temporaries`, the pointer analysis's pinned calls) reads
+`Module::macro_values`.
 
 Slate's frontend (`crates/slate/src/frontend.rs`, `lower_parsed`) builds with
 structure on in every mode; `slate-parser ir` builds it only with
-`--show-macros`. Removing the wrappers from the value tree is `slate-8ge7.2`.
+`--show-macros`.
 
 Invariant: sema makes no value decision because a node is a hole or an
 expansion. Stripping every expansion must give the IR built without structure,

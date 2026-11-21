@@ -323,7 +323,7 @@ impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_typed_function_address(&mut self, value: &ir::Value) -> Result<Expr> {
         let lowered = self.lower_value(value)?;
         let names_function_item = matches!(&lowered, Expr::Call { func, .. } if matches!(&**func, Expr::Var(name) if name.as_str() == "Some"));
-        if !names_function_item && !matches!(value.node.value, ValueKind::MacroArg { .. }) {
+        if !names_function_item && self.outer_macro_argument(value).is_none() {
             return Ok(lowered);
         }
         Ok(Expr::Block(Box::new(rust::Block {

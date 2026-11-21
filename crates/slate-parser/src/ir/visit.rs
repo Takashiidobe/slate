@@ -15,7 +15,7 @@ pub trait Visitor {
     fn enter_place_hole(&mut self, _expansion: MacroExpansionId, _place: &Place) {}
     fn leave_place_hole(&mut self, _expansion: MacroExpansionId) {}
     fn binding(&mut self, _binding: BindingId) {}
-    fn unwrapped_value(&mut self, _wrapper: crate::ast::NodeId, _inner: crate::ast::NodeId) {}
+    fn macro_value(&mut self, _wrap: MacroWrap, _value: &Value) {}
     fn rewrite_place(&mut self, _place: &mut Place) {}
     fn rewrite_value(&mut self, _value: &mut Value) {}
     fn rewrite_statement(&mut self, _statement: &mut Statement) {}
@@ -23,14 +23,35 @@ pub trait Visitor {
 
 struct Walker<'a, V> {
     visitor: &'a mut V,
+    macro_values: Option<&'a MacroValues>,
 }
 
 pub fn walk_body<V: Visitor>(body: &mut Vec<Span<Statement>>, visitor: &mut V) {
-    Walker { visitor }.statements(body);
+    Walker {
+        visitor,
+        macro_values: None,
+    }
+    .statements(body);
 }
 
 pub fn walk_value<V: Visitor>(value: &mut Value, visitor: &mut V) {
-    Walker { visitor }.value(value);
+    Walker {
+        visitor,
+        macro_values: None,
+    }
+    .value(value);
+}
+
+pub fn walk_body_with_macros<V: Visitor>(
+    body: &mut Vec<Span<Statement>>,
+    macro_values: &MacroValues,
+    visitor: &mut V,
+) {
+    Walker {
+        visitor,
+        macro_values: Some(macro_values),
+    }
+    .statements(body);
 }
 
 impl<V: Visitor> Walker<'_, V> {
@@ -284,39 +305,29 @@ impl<V: Visitor> Walker<'_, V> {
     }
 
     fn value(&mut self, value: &mut Value) {
+        let wraps = self
+            .macro_values
+            .and_then(|table| table.get(&value.node.id))
+            .map_or(&[][..], Vec::as_slice);
+        for wrap in wraps.iter().rev() {
+            self.visitor.macro_value(*wrap, value);
+            match *wrap {
+                MacroWrap::Value(expansion) => self.visitor.enter_expansion(expansion),
+                MacroWrap::Argument { expansion, .. } => self.visitor.enter_value_hole(expansion),
+            }
+        }
         crate::sema::deep(|| self.value_kind(value));
+        for wrap in wraps {
+            match *wrap {
+                MacroWrap::Value(expansion) => self.visitor.leave_expansion(expansion),
+                MacroWrap::Argument { expansion, .. } => self.visitor.leave_value_hole(expansion),
+            }
+        }
     }
 
     fn value_kind(&mut self, whole: &mut Value) {
         self.visitor.value_kind(&whole.node.value);
         match &mut whole.node.value {
-            ValueKind::MacroArg {
-                expansion, value, ..
-            } => {
-                let expansion = *expansion;
-                let keep = self.visitor.keep(expansion);
-                self.visitor.enter_value_hole(expansion);
-                self.value(value);
-                self.visitor.leave_value_hole(expansion);
-                if !keep {
-                    self.visitor.unwrapped_value(whole.node.id, value.node.id);
-                    *whole = value.as_ref().clone();
-                }
-            }
-            ValueKind::MacroExpansion {
-                expansion,
-                evaluation,
-            } => {
-                let expansion = *expansion;
-                self.visitor.enter_expansion(expansion);
-                self.evaluation(evaluation);
-                self.visitor.leave_expansion(expansion);
-                if !self.visitor.keep(expansion) && evaluation.statements.is_empty() {
-                    self.visitor
-                        .unwrapped_value(whole.node.id, evaluation.value.node.id);
-                    *whole = evaluation.value.clone();
-                }
-            }
             ValueKind::Read { place, ordering } => {
                 self.place(place);
                 self.ordering(ordering);

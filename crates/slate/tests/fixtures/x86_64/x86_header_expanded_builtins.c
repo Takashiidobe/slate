@@ -146,7 +146,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__7 {
+// CHECK-NEXT: macro_rules! SHOW__6 {
 // CHECK-NEXT:     ($name:expr, $v:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut t_: core::simd::Simd<f64, 4> = $v;
@@ -158,39 +158,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__8 {
-// CHECK-NEXT:     ($name:expr, $v:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut t_: core::simd::Simd<i64, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             unsafe { _mm256_setzero_si256() };
-// CHECK-NEXT:             t_ = $v;
-// CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 64i32);
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__9 {
+// CHECK-NEXT: macro_rules! SHOW__7 {
 // CHECK-NEXT:     ($name:expr, $v:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut t_: core::simd::Simd<f32, 8> = $v;
-// CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 32i32);
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__6 {
-// CHECK-NEXT:     ($name:expr, $v:expr, $a:expr, $b:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             $a;
-// CHECK-NEXT:             $b;
-// CHECK-NEXT:             t_ = $v;
 // CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 32i32);
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
@@ -1926,8 +1897,8 @@ int main(void) {
 // CHECK-NEXT:     let mut i: core::simd::Simd<i64, 4> = unsafe {
 // CHECK-NEXT:         _mm256_loadu_si256(ia as *const core::simd::Simd<i64, 4>)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     SHOW__9!(c"sqrt256_ps".as_ptr() as *mut i8, unsafe { _mm256_sqrt_ps(a) });
-// CHECK-NEXT:     SHOW__7!(c"sqrt256_pd".as_ptr() as *mut i8, unsafe { _mm256_sqrt_pd(c) });
+// CHECK-NEXT:     SHOW__7!(c"sqrt256_ps".as_ptr() as *mut i8, unsafe { _mm256_sqrt_ps(a) });
+// CHECK-NEXT:     SHOW__6!(c"sqrt256_pd".as_ptr() as *mut i8, unsafe { _mm256_sqrt_pd(c) });
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         t_ = unsafe {
@@ -2205,16 +2176,18 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     SHOW__6!(
-// CHECK-NEXT:         c"cmp_ps_11".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 core::simd::Simd::splat(0i32),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:         a,
-// CHECK-NEXT:         b
-// CHECK-NEXT:     );
+// CHECK-NEXT:         };
+// CHECK-NEXT:         show(c"cmp_ps_11".as_ptr(), core::ptr::addr_of_mut!(t_) as *const (), 32i32);
+// CHECK-NEXT:         if true {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_11:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         let mut [[V_8:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
@@ -2300,16 +2273,18 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     SHOW__6!(
-// CHECK-NEXT:         c"cmp_ps_15".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 !core::simd::Simd::splat(0i32),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:         a,
-// CHECK-NEXT:         b
-// CHECK-NEXT:     );
+// CHECK-NEXT:         };
+// CHECK-NEXT:         show(c"cmp_ps_15".as_ptr(), core::ptr::addr_of_mut!(t_) as *const (), 32i32);
+// CHECK-NEXT:         if true {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_14:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         t_ = unsafe {
@@ -2587,16 +2562,18 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     SHOW__6!(
-// CHECK-NEXT:         c"cmp_ps_27".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 core::simd::Simd::splat(0i32),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:         a,
-// CHECK-NEXT:         b
-// CHECK-NEXT:     );
+// CHECK-NEXT:         };
+// CHECK-NEXT:         show(c"cmp_ps_27".as_ptr(), core::ptr::addr_of_mut!(t_) as *const (), 32i32);
+// CHECK-NEXT:         if true {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_25:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         let mut [[V_16:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
@@ -2682,16 +2659,18 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     SHOW__6!(
-// CHECK-NEXT:         c"cmp_ps_31".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 !core::simd::Simd::splat(0i32),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:         a,
-// CHECK-NEXT:         b
-// CHECK-NEXT:     );
+// CHECK-NEXT:         };
+// CHECK-NEXT:         show(c"cmp_ps_31".as_ptr(), core::ptr::addr_of_mut!(t_) as *const (), 32i32);
+// CHECK-NEXT:         if true {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_28:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f64, 4> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         t_ = unsafe {
@@ -2745,7 +2724,7 @@ int main(void) {
 // CHECK-NEXT:         c"permute4x64_epi64".as_ptr() as *mut i8,
 // CHECK-NEXT:         core::simd::simd_swizzle!(i, [3, 2, 1, 0])
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__7!(
+// CHECK-NEXT:     SHOW__6!(
 // CHECK-NEXT:         c"permute4x64_pd".as_ptr() as *mut i8,
 // CHECK-NEXT:         core::simd::simd_swizzle!(c, [2, 3, 0, 1])
 // CHECK-NEXT:     );
@@ -2789,7 +2768,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__7!(
+// CHECK-NEXT:     SHOW__6!(
 // CHECK-NEXT:         c"blend256_pd".as_ptr() as *mut i8,
 // CHECK-NEXT:         core::simd::simd_swizzle!(c, unsafe { _mm256_set1_pd(9.0f64) }, [4, 1, 6, 3])
 // CHECK-NEXT:     );
@@ -3054,17 +3033,22 @@ int main(void) {
 // CHECK-NEXT:         c"undef512_mov".as_ptr() as *mut i8,
 // CHECK-NEXT:         unsafe { _mm512_mask_mov_epi32(undef, 65535u16, v) }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__8!(
-// CHECK-NEXT:         c"cast256_512".as_ptr() as *mut i8,
-// CHECK-NEXT:         core::simd::simd_swizzle!(
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         let mut t_: core::simd::Simd<i64, 8> = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         unsafe { _mm256_setzero_si256() };
+// CHECK-NEXT:         t_ = core::simd::simd_swizzle!(
 // CHECK-NEXT:             unsafe { _mm512_castsi256_si512(_mm512_castsi512_si256(v)) },
 // CHECK-NEXT:             core::simd::simd_swizzle!(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(v, [4, 5, 6, 7]),
 // CHECK-NEXT:                 [0, 1, 2, 3, 0, 0, 0, 0]
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             [0, 1, 2, 3, 8, 9, 10, 11]
-// CHECK-NEXT:         )
-// CHECK-NEXT:     );
+// CHECK-NEXT:         );
+// CHECK-NEXT:         show(c"cast256_512".as_ptr(), core::ptr::addr_of_mut!(t_) as *const (), 64i32);
+// CHECK-NEXT:         if true {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

@@ -96,49 +96,73 @@ impl FunctionLowerer<'_, '_> {
         Ok(Stmt::Scope { body })
     }
 
-    pub(super) fn lower_macro_value_site(
+    fn pending_macro_wraps(&self, id: NodeId) -> &[ir::MacroWrap] {
+        if self.macro_template_check {
+            return &[];
+        }
+        let Some(wraps) = self.tables.macro_values.get(&id) else {
+            return &[];
+        };
+        let peeled = self.peeled_macro_wraps.get(&id).copied().unwrap_or(0);
+        &wraps[..wraps.len().saturating_sub(peeled)]
+    }
+
+    pub(super) fn outer_macro_argument(
+        &self,
+        value: &ir::Value,
+    ) -> Option<(MacroExpansionId, usize)> {
+        match self.pending_macro_wraps(value.node.id).last()? {
+            ir::MacroWrap::Argument {
+                expansion,
+                argument,
+            } => Some((*expansion, *argument)),
+            ir::MacroWrap::Value(_) => None,
+        }
+    }
+
+    fn with_peeled_wrap<T>(&mut self, id: NodeId, lower: impl FnOnce(&mut Self) -> T) -> T {
+        *self.peeled_macro_wraps.entry(id).or_default() += 1;
+        let lowered = lower(self);
+        if let Some(peeled) = self.peeled_macro_wraps.get_mut(&id) {
+            *peeled -= 1;
+            if *peeled == 0 {
+                self.peeled_macro_wraps.remove(&id);
+            }
+        }
+        lowered
+    }
+
+    pub(super) fn lower_macro_wrap(&mut self, value: &ir::Value) -> Option<Result<Expr>> {
+        let wrap = *self.pending_macro_wraps(value.node.id).last()?;
+        Some(self.with_peeled_wrap(value.node.id, |this| match wrap {
+            ir::MacroWrap::Value(expansion) => this.lower_macro_value_site(expansion, value),
+            ir::MacroWrap::Argument {
+                expansion,
+                argument,
+            } => this.lower_macro_hole(expansion, argument, value),
+        }))
+    }
+
+    fn lower_macro_value_site(
         &mut self,
         expansion: MacroExpansionId,
-        evaluation: &ir::Evaluation,
+        value: &ir::Value,
     ) -> Result<Expr> {
-        if evaluation.statements.is_empty()
-            && let Some(constant) = self.support_constant(expansion, &evaluation.value)
-        {
+        if let Some(constant) = self.support_constant(expansion, value) {
             self.dependencies.macro_expansions_seen.insert(expansion);
             return constant;
         }
-        if self.macro_template_check {
-            let stmts = self.lower_statement_list(&evaluation.statements)?;
-            let value = self.lower_value(&evaluation.value)?;
-            if stmts.is_empty() {
-                return Ok(value);
-            }
-            return Ok(Expr::Block(Box::new(rust::Block {
-                stmts,
-                tail: Some(Box::new(value)),
-            })));
-        }
         self.open_macro_site(expansion);
-        let lowered = self
-            .lower_statement_list(&evaluation.statements)
-            .and_then(|stmts| Ok((stmts, self.lower_value(&evaluation.value)?)));
+        let lowered = self.lower_value(value);
         let site = self.close_macro_site();
-        let (mut template, value) = lowered?;
-        template.retain(|stmt| !matches!(stmt, Stmt::Comment(_)));
-        template.push(Stmt::Return(Some(value)));
+        let template = vec![Stmt::Return(Some(lowered?))];
         self.finish_macro_site(
             expansion,
             site,
             template,
             true,
             |this, template, params, args| {
-                this.check_macro_template(
-                    &evaluation.statements,
-                    Some(&evaluation.value),
-                    template,
-                    params,
-                    args,
-                )
+                this.check_macro_template(&[], Some(value), template, params, args)
             },
         )
     }
@@ -360,12 +384,10 @@ impl FunctionLowerer<'_, '_> {
         if self.written_cast_operand == Some(value.node.id) {
             return None;
         }
-        let casts = if self.macro_template_check {
-            &self.checked_written_casts
-        } else {
-            self.tables.macro_written_casts
-        };
-        let operand = written_cast_operand(value, casts.get(&value.node.id)?.operand)?;
+        let operand = written_cast_operand(
+            value,
+            self.tables.macro_written_casts.get(&value.node.id)?.operand,
+        )?;
         let outer = self.written_cast_operand.replace(operand.node.id);
         let lowered = self.lower_value(operand);
         self.written_cast_operand = outer;
@@ -383,7 +405,7 @@ impl FunctionLowerer<'_, '_> {
             operand,
             ..
         } = &value.node.value
-            && implicit_truthiness_hole(operand).is_some()
+            && self.implicit_truthiness_hole(operand).is_some()
         {
             self.negated_macro_conditions.insert(operand.node.id);
             return None;
@@ -391,11 +413,12 @@ impl FunctionLowerer<'_, '_> {
         if self.negated_macro_conditions.contains(&value.node.id) {
             return None;
         }
-        let (expansion, argument) = match vararg_promoted_hole(value) {
-            Some(found) if self.is_call_list_argument(found.0, found.1) => found,
+        let (hole, expansion, argument) = match self.vararg_promoted_hole(value) {
+            Some(found) if self.is_call_list_argument(found.1, found.2) => found,
             Some(_) => return None,
-            None => implicit_truthiness_hole(value)
-                .filter(|found| self.is_single_use_argument(found.0, found.1))?,
+            None => self
+                .implicit_truthiness_hole(value)
+                .filter(|found| self.is_single_use_argument(found.1, found.2))?,
         };
         if !self
             .macro_sites
@@ -404,9 +427,56 @@ impl FunctionLowerer<'_, '_> {
         {
             return None;
         }
-        let mut promoted = value.clone();
-        strip_promoted_hole(&mut promoted);
-        Some(self.lower_macro_hole(expansion, argument, &promoted))
+        Some(self.with_peeled_wrap(hole, |this| {
+            this.lower_macro_hole(expansion, argument, value)
+        }))
+    }
+
+    fn vararg_promoted_hole(&self, value: &ir::Value) -> Option<(NodeId, MacroExpansionId, usize)> {
+        let (ir::ValueKind::Convert {
+            operand,
+            reason: ir::ConversionReason::Vararg,
+            ..
+        }
+        | ir::ValueKind::Copy {
+            operand,
+            reason: ir::ConversionReason::Vararg,
+        }) = &value.node.value
+        else {
+            return None;
+        };
+        match self.outer_macro_argument(operand) {
+            Some((expansion, argument)) => Some((operand.node.id, expansion, argument)),
+            None => self.vararg_promoted_hole(operand),
+        }
+    }
+
+    fn implicit_truthiness_hole(
+        &self,
+        value: &ir::Value,
+    ) -> Option<(NodeId, MacroExpansionId, usize)> {
+        let ir::ValueKind::Compare {
+            op: ir::CompareOp::Ne,
+            left,
+            right,
+            ..
+        } = &value.node.value
+        else {
+            return None;
+        };
+        let (expansion, argument) = self.outer_macro_argument(left)?;
+        let derived_from_argument = value
+            .node
+            .macro_nesting
+            .as_deref()
+            .and_then(|nesting| nesting.iter().find(|link| link.expansion == expansion))
+            .is_some_and(|link| link.argument == Some(argument));
+        (derived_from_argument
+            && matches!(
+                right.node.value,
+                ir::ValueKind::Constant(_) | ir::ValueKind::Null
+            ))
+        .then_some((left.node.id, expansion, argument))
     }
 
     pub(super) fn lower_macro_hole(
@@ -486,27 +556,11 @@ impl FunctionLowerer<'_, '_> {
             return Ok(());
         }
         let mut inline_body = body.to_vec();
-        let mut unwrapped = ir::strip_all_macro_structure(&mut inline_body);
+        ir::strip_all_macro_structure(&mut inline_body);
         let mut result = result.cloned();
         if let Some(result) = &mut result {
-            unwrapped.extend(ir::strip_all_macro_structure_in_value(result));
+            ir::strip_all_macro_structure_in_value(result);
         }
-        let unwrapped: HashMap<NodeId, NodeId> = unwrapped.into_iter().collect();
-        let remap = |id: NodeId| unwrapped.get(&id).copied().unwrap_or(id);
-        self.checked_written_casts = self
-            .tables
-            .macro_written_casts
-            .iter()
-            .map(|(id, cast)| {
-                (
-                    remap(*id),
-                    ir::WrittenCast {
-                        operand: remap(cast.operand),
-                        ..cast.clone()
-                    },
-                )
-            })
-            .collect();
         let outer = std::mem::replace(&mut self.macro_template_check, true);
         let lowered = self
             .lower_statement_list(&inline_body)
@@ -517,7 +571,6 @@ impl FunctionLowerer<'_, '_> {
                 Ok(stmts)
             });
         self.macro_template_check = outer;
-        self.checked_written_casts.clear();
         let mut separately: Vec<Stmt> = lowered?
             .into_iter()
             .filter(|stmt| !matches!(stmt, Stmt::Comment(_)))
@@ -556,73 +609,5 @@ fn written_cast_operand(value: &ir::Value, operand: NodeId) -> Option<&ir::Value
             reason = "sema builds a written integer cast only from conversions over its operand"
         )]
         _ => None,
-    }
-}
-
-fn vararg_promoted_hole(value: &ir::Value) -> Option<(MacroExpansionId, usize)> {
-    let (ir::ValueKind::Convert {
-        operand,
-        reason: ir::ConversionReason::Vararg,
-        ..
-    }
-    | ir::ValueKind::Copy {
-        operand,
-        reason: ir::ConversionReason::Vararg,
-    }) = &value.node.value
-    else {
-        return None;
-    };
-    match &operand.node.value {
-        ir::ValueKind::MacroArg {
-            expansion,
-            argument,
-            ..
-        } => Some((*expansion, *argument)),
-        _ => vararg_promoted_hole(operand),
-    }
-}
-
-fn implicit_truthiness_hole(value: &ir::Value) -> Option<(MacroExpansionId, usize)> {
-    let ir::ValueKind::Compare {
-        op: ir::CompareOp::Ne,
-        left,
-        right,
-        ..
-    } = &value.node.value
-    else {
-        return None;
-    };
-    let ir::ValueKind::MacroArg {
-        expansion,
-        argument,
-        ..
-    } = &left.node.value
-    else {
-        return None;
-    };
-    let derived_from_argument = value
-        .node
-        .macro_nesting
-        .as_deref()
-        .and_then(|nesting| nesting.iter().find(|link| link.expansion == *expansion))
-        .is_some_and(|link| link.argument == Some(*argument));
-    (derived_from_argument
-        && matches!(
-            right.node.value,
-            ir::ValueKind::Constant(_) | ir::ValueKind::Null
-        ))
-    .then_some((*expansion, *argument))
-}
-
-fn strip_promoted_hole(value: &mut ir::Value) {
-    let (ir::ValueKind::Convert { operand, .. }
-    | ir::ValueKind::Copy { operand, .. }
-    | ir::ValueKind::Compare { left: operand, .. }) = &mut value.node.value
-    else {
-        return;
-    };
-    match &operand.node.value {
-        ir::ValueKind::MacroArg { value: inner, .. } => **operand = (**inner).clone(),
-        _ => strip_promoted_hole(operand),
     }
 }

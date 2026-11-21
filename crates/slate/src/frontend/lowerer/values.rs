@@ -439,6 +439,18 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_value_node(&mut self, value: &ir::Value) -> Result<Expr> {
+        if self
+            .tables
+            .macro_written_casts
+            .get(&value.node.id)
+            .is_some_and(|cast| cast.operand == value.node.id)
+            && let Some(cast) = self.lower_written_cast(value)
+        {
+            return cast;
+        }
+        if let Some(wrapped) = self.lower_macro_wrap(value) {
+            return wrapped;
+        }
         if let ValueKind::Read {
             place:
                 ir::Place {
@@ -456,21 +468,6 @@ impl FunctionLowerer<'_, '_> {
         }
         if let Some(promoted) = self.lower_promoted_hole(value) {
             return promoted;
-        }
-        if let ValueKind::MacroArg {
-            expansion,
-            argument,
-            value: inner,
-        } = &value.node.value
-        {
-            return self.lower_macro_hole(*expansion, *argument, inner);
-        }
-        if let ValueKind::MacroExpansion {
-            expansion,
-            evaluation,
-        } = &value.node.value
-        {
-            return self.lower_macro_value_site(*expansion, evaluation);
         }
         if let Some(stream) = self.lower_stdio_stream(value) {
             return Ok(stream);
@@ -1652,10 +1649,7 @@ impl FunctionLowerer<'_, '_> {
             ValueKind::Compare {
                 op, left, right, ..
             } => {
-                let is_decay = |mut operand: &ir::Value| {
-                    while let ValueKind::MacroArg { value, .. } = &operand.node.value {
-                        operand = value;
-                    }
+                let is_decay = |operand: &ir::Value| {
                     matches!(operand.node.value, ValueKind::FunctionDecay { .. })
                 };
                 let is_null = |operand: &ir::Value| matches!(operand.node.value, ValueKind::Null);

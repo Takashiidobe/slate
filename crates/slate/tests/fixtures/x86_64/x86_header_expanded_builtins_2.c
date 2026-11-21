@@ -119,29 +119,6 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__7 {
-// CHECK-NEXT:     ($name:expr, $v:expr, $x:expr, $y:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut t_: core::simd::Simd<i64, 2> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     $x,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     $y,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             t_ = $v;
-// CHECK-NEXT:             show(($name) as *const i8, core::ptr::addr_of_mut!(t_) as *const (), 16i32);
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SHOW__3 {
 // CHECK-NEXT:     ($name:expr, $v:expr) => {
 // CHECK-NEXT:         loop {
@@ -214,7 +191,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SHOW__8 {
+// CHECK-NEXT: macro_rules! SHOW__7 {
 // CHECK-NEXT:     ($name:expr, $v:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut t_: core::simd::Simd<i64, 8> = $v;
@@ -964,16 +941,18 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     SHOW__7!(
-// CHECK-NEXT:         c"alignr32".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         let mut t_: core::simd::Simd<i64, 2> = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
 // CHECK-NEXT:                 core::simd::Simd::splat(0i8),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:         x,
-// CHECK-NEXT:         y
-// CHECK-NEXT:     );
+// CHECK-NEXT:         };
+// CHECK-NEXT:         show(c"alignr32".as_ptr(), core::ptr::addr_of_mut!(t_) as *const (), 16i32);
+// CHECK-NEXT:         if true {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
 // CHECK-NEXT:     SHOW!(
 // CHECK-NEXT:         c"round_near".as_ptr() as *mut i8,
 // CHECK-NEXT:         unsafe {
@@ -1440,7 +1419,7 @@ int main(void) {
 // CHECK-NEXT:             _mm512_set1_epi32(63i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     SHOW__8!(
+// CHECK-NEXT:     SHOW__7!(
 // CHECK-NEXT:         c"gather_epi32".as_ptr() as *mut i8,
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 16>, core::simd::Simd<i64, 8>>(

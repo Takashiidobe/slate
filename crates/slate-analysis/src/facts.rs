@@ -107,7 +107,12 @@ pub fn analyze(program: &Program<'_>) -> Facts {
             let mut temporaries = HashSet::new();
             let captures = inline_temporaries::record_captures(program_unit.module);
             for function in &program_unit.module.functions {
-                inline_temporaries::analyze(&function.value, &captures, &mut temporaries);
+                inline_temporaries::analyze(
+                    &function.value,
+                    &captures,
+                    &program_unit.module.macro_values,
+                    &mut temporaries,
+                );
             }
             temporaries
         })

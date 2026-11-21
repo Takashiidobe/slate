@@ -7,7 +7,7 @@ mod declarations;
 mod macro_strip;
 pub use macro_strip::{strip_all_macro_structure, strip_all_macro_structure_in_value};
 mod visit;
-pub use visit::{Visitor, walk_body, walk_value};
+pub use visit::{Visitor, walk_body, walk_body_with_macros, walk_value};
 mod module;
 mod module_print;
 mod names;
@@ -33,10 +33,10 @@ pub use declarations::{
 };
 pub use module::{
     AllocaLayout, Comment, Deallocator, DllStorage, Evaluation, Fallthrough, Function,
-    FunctionSemantics, Inlining, Linkage, MachineCodegen, MemoryEffects, Metadata, Module,
-    NestedCapture, NestedFunction, OmpFor, OmpLoop, OmpParallel, OmpPrivate, OmpSchedule,
-    OmpScheduleKind, OmpScheduleModifier, OmpShared, SehHandler, SehIntrinsic, Statement,
-    SymbolAttributes, TargetFeature, TlsModel, Visibility, WrittenCast,
+    FunctionSemantics, Inlining, Linkage, MachineCodegen, MacroValues, MacroWrap, MemoryEffects,
+    Metadata, Module, NestedCapture, NestedFunction, OmpFor, OmpLoop, OmpParallel, OmpPrivate,
+    OmpSchedule, OmpScheduleKind, OmpScheduleModifier, OmpShared, SehHandler, SehIntrinsic,
+    Statement, SymbolAttributes, TargetFeature, TlsModel, Visibility, WrittenCast,
 };
 
 pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};
@@ -172,15 +172,6 @@ pub enum ValueKind {
     },
     StatementExpression(Box<Evaluation>),
     Block(Box<BlockLiteral>),
-    MacroExpansion {
-        expansion: crate::ast::MacroExpansionId,
-        evaluation: Box<Evaluation>,
-    },
-    MacroArg {
-        expansion: crate::ast::MacroExpansionId,
-        argument: usize,
-        value: Box<Value>,
-    },
     Capture {
         id: BindingId,
         extent: Box<Value>,
@@ -310,25 +301,6 @@ impl DisplayValue<'_> {
 }
 
 impl Value {
-    pub fn without_macro_structure(&self) -> &Value {
-        let mut value = self;
-        loop {
-            value = match &value.node.value {
-                ValueKind::MacroArg { value, .. } => value,
-                ValueKind::MacroExpansion { evaluation, .. }
-                    if evaluation.statements.is_empty() =>
-                {
-                    &evaluation.value
-                }
-                #[expect(
-                    slate::sensitive_wildcard,
-                    reason = "MacroArg and MacroExpansion are the only macro wrappers; an expansion with hoisted statements is not transparent"
-                )]
-                _ => return value,
-            };
-        }
-    }
-
     pub fn display(&self, show_spans: bool) -> DisplayValue<'_> {
         DisplayValue {
             value: self,
@@ -359,33 +331,6 @@ impl Value {
         compact: bool,
     ) -> fmt::Result {
         match &self.node.value {
-            ValueKind::MacroExpansion {
-                expansion,
-                evaluation,
-            } => write!(
-                f,
-                "macro_value<{}>(#{}, statements={}, {})",
-                self.ty,
-                expansion.0,
-                evaluation.statements.len(),
-                evaluation
-                    .value
-                    .display_metadata(show_spans, metadata)
-                    .with_compact(compact)
-            ),
-            ValueKind::MacroArg {
-                expansion,
-                argument,
-                value,
-            } => write!(
-                f,
-                "macro_arg<{}>(#{}, {argument}, {})",
-                self.ty,
-                expansion.0,
-                value
-                    .display_metadata(show_spans, metadata)
-                    .with_compact(compact)
-            ),
             ValueKind::Copy { operand, reason } => write!(
                 f,
                 "copy<{}, reason={}>({})",

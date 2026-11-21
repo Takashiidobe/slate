@@ -2118,7 +2118,7 @@ where
     F: Float,
     Single: FloatConvert<F>,
 {
-    match &value.without_macro_structure().node.value {
+    match &value.node.value {
         ValueKind::Constant(Number::FloatBits(bits)) => Some(F::from_bits(*bits)),
         ValueKind::Unary {
             op: UnaryArithOp::Neg,
@@ -2129,7 +2129,7 @@ where
             kind: ConversionKind::IntToFloat,
             operand,
             ..
-        } => match &operand.without_macro_structure().node.value {
+        } => match &operand.node.value {
             ValueKind::Constant(Number::Integer(integer)) => {
                 Some(F::from_u128(u128::try_from(integer).ok()?).value)
             }
@@ -2144,7 +2144,7 @@ where
             kind: ConversionKind::FloatWiden,
             operand,
             ..
-        } => match (&operand.ty, &operand.without_macro_structure().node.value) {
+        } => match (&operand.ty, &operand.node.value) {
             (Type::Numeric(SINGLE), ValueKind::Constant(Number::FloatBits(bits))) => {
                 Some(Single::from_bits(*bits).convert(&mut false).value)
             }
@@ -2241,10 +2241,6 @@ pub(super) fn conversion(
 
 pub(super) fn integer_fits(value: &Value, width: u32, signed: bool) -> Fits {
     match &value.node.value {
-        ValueKind::MacroArg { value, .. } => integer_fits(value, width, signed),
-        ValueKind::MacroExpansion { evaluation, .. } => {
-            integer_fits(&evaluation.value, width, signed)
-        }
         ValueKind::Constant(Number::Integer(value)) if fits_rank(value, width, signed) => {
             Fits::Always
         }

@@ -70,7 +70,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! KEY_BRANCH {
 // CHECK-NEXT:     ($k:expr) => {
-// CHECK-NEXT:         branch__const9($k, false)
+// CHECK-NEXT:         branch__const5($k, false)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -170,27 +170,6 @@ int main(void) {
 // CHECK-NEXT:             "jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection",
 // CHECK-NEXT:             sym holder,
 // CHECK-NEXT:             const 1 as u8,
-// CHECK-NEXT:             label {
-// CHECK-NEXT:                 __slate_asm_target = true;
-// CHECK-NEXT:             },
-// CHECK-NEXT:             options(nostack, att_syntax),
-// CHECK-NEXT:         );
-// CHECK-NEXT:         if __slate_asm_target {
-// CHECK-NEXT:             return 1;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             return 0;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[inline(always)]
-// CHECK-NEXT: fn branch__const9(key: *mut key, likely: bool) -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection",
-// CHECK-NEXT:             sym k2,
-// CHECK-NEXT:             const 0 as u8,
 // CHECK-NEXT:             label {
 // CHECK-NEXT:                 __slate_asm_target = true;
 // CHECK-NEXT:             },

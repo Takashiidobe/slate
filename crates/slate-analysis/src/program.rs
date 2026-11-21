@@ -117,6 +117,10 @@ impl<'m> Program<'m> {
             .map(|(index, entry)| (FunctionId(index as u32), *entry))
     }
 
+    pub fn unit(&self, id: UnitId) -> ProgramUnit<'m> {
+        self.units[id.0 as usize]
+    }
+
     pub fn function(&self, id: FunctionId) -> Option<FunctionEntry<'m>> {
         self.functions.get(id.0 as usize).copied()
     }

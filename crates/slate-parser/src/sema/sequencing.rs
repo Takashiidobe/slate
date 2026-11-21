@@ -41,10 +41,7 @@ fn overlaps(left: &Location, right: &Location) -> bool {
 /// lvalue to compare and is never reported.
 fn pointee(value: &Value) -> Option<Root> {
     match &value.node.value {
-        ValueKind::Copy { operand, .. }
-        | ValueKind::Convert { operand, .. }
-        | ValueKind::MacroArg { value: operand, .. } => pointee(operand),
-        ValueKind::MacroExpansion { evaluation, .. } => pointee(&evaluation.value),
+        ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. } => pointee(operand),
 
         ValueKind::ArrayDecay {
             place:
@@ -115,8 +112,6 @@ fn walk(value: &Value, found: &mut Touches) {
 
 fn walk_value(value: &Value, found: &mut Touches) {
     match &value.node.value {
-        ValueKind::MacroArg { value, .. } => walk(value, found),
-        ValueKind::MacroExpansion { evaluation, .. } => walk(&evaluation.value, found),
         ValueKind::Store { place, value, .. } => {
             walk_place(place, true, found);
             walk(value, found);
@@ -252,10 +247,9 @@ fn walk_place(place: &Place, write: bool, found: &mut Touches) {
 /// The constant a subscript adds, if it is one.
 fn constant_index(value: &Value) -> Option<i128> {
     match &value.node.value {
-        ValueKind::Copy { operand, .. }
-        | ValueKind::Convert { operand, .. }
-        | ValueKind::MacroArg { value: operand, .. } => constant_index(operand),
-        ValueKind::MacroExpansion { evaluation, .. } => constant_index(&evaluation.value),
+        ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. } => {
+            constant_index(operand)
+        }
         ValueKind::Constant(Number::Integer(value)) => i128::try_from(value.clone()).ok(),
         ValueKind::Constant(Number::SignedInteger(value)) => i128::try_from(value.clone()).ok(),
         ValueKind::LayoutQuery { amount, .. } => Some(i128::from(*amount)),
@@ -272,11 +266,8 @@ fn offset_root<'a>(
     amounts: &mut Vec<&'a Value>,
 ) -> Option<Root> {
     match &value.node.value {
-        ValueKind::Copy { operand, .. }
-        | ValueKind::Convert { operand, .. }
-        | ValueKind::MacroArg { value: operand, .. } => offset_root(operand, path, amounts),
-        ValueKind::MacroExpansion { evaluation, .. } => {
-            offset_root(&evaluation.value, path, amounts)
+        ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. } => {
+            offset_root(operand, path, amounts)
         }
         ValueKind::PointerOffset {
             pointer, amount, ..

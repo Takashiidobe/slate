@@ -38,11 +38,11 @@ double third(void) {
 // IR-NEXT:         storage d128 [size=16, align=16];
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_rounded_once:[0-9]+]] @rounded_once() -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_r:[0-9]+]] r: f64 [storage=automatic] = macro_value<f64>(#[[#NODE0:]], statements=0, const<f64>(1.0000000000000002) [macro=ADD#0 body]) [macro=ADD#0 body];
+// IR-NEXT:         let %[[VALUE_r:[0-9]+]] r: f64 [storage=automatic] = const<f64>(1.0000000000000002) [macro_value="#[[#NODE0:]]"] [macro=ADD#0 body];
 // IR-NEXT:         return read<f64>(%[[VALUE_r]]);
 // IR-NEXT:     }
 // IR-NEXT:     fn %[[VALUE_third:[0-9]+]] @third() -> f64 [linkage=external] [fallthrough=ub_if_used] {
-// IR-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: f64 [storage=automatic] = macro_value<f64>(#[[#NODE1:]], statements=0, const<f64>(0.3333333333333333) [macro=DIV#1 body]) [macro=DIV#1 body];
+// IR-NEXT:         let %[[VALUE_r_2:[0-9]+]] r: f64 [storage=automatic] = const<f64>(0.3333333333333333) [macro_value="#[[#NODE1:]]"] [macro=DIV#1 body];
 // IR-NEXT:         return read<f64>(%[[VALUE_r_2]]);
 // IR-NEXT:     }
 // IR-NEXT:     macro_definition #[[#NODE0]] ADD(a, b) [defined=7:1] = "( ( a ) + ( b ) )";

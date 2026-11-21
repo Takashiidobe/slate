@@ -593,8 +593,6 @@ core       = "const<" type ">(" constant ")"
            | "code_units<" type ">(" int_list ")"
            | "aggregate<" type ", zero_fill=" bool ">(" [ member { ", " member } ] ")"
            | "copy<" type ", reason=" reason ">(" value ")"
-           | "macro_arg<" type ">(#" digits ", " digits ", " value ")"
-           | "macro_value<" type ">(#" digits ", statements=" digits ", " value ")"
            | "read<" type access [ ordering ] ">(" place ")"
            | "store<" type access [ ordering ] ">(" place ", " value ")"
            | "update<" type ", result=" ( "old" | "new" ) access [ ordering ]
@@ -806,10 +804,11 @@ macro_cover      = "expr" | "callee" | "call_arguments" | "statements" | "decl"
 range            = digits "+" digits ;
 ```
 
-- `macro_body`, `macro_value` and `macro_arg` appear only with `--show-macros`;
-  their first number is the `macro_expansion`, a `macro_arg`'s second is the
-  argument index, and a `macro_value` prints only the count of its hoisted
-  statements ([macro invocations](ir/pipeline.md#macro-invocations)).
+- `macro_body` and the place `macro_arg` appear only with `--show-macros`;
+  their first number is the `macro_expansion` and a `macro_arg`'s second is the
+  argument index. A value hole or value expansion is metadata on the value:
+  `[macro_value="#E"]` and `[macro_arg="#E.k"]`, innermost first
+  ([macro invocations](ir/pipeline.md#macro-invocations)).
 
 - `macro_site`, `macro_definition` and `macro_expansion` print only with
   `--show-macros`. A statement or value prints one `macro_site` for each

@@ -8,7 +8,7 @@ pub(super) fn has_effects(value: &Value) -> bool {
 }
 
 fn is_constant(value: &Value) -> bool {
-    match &value.without_macro_structure().node.value {
+    match &value.node.value {
         ValueKind::Constant(_) | ValueKind::LayoutQuery { .. } | ValueKind::Null => true,
         ValueKind::Convert { operand, .. } => is_constant(operand),
         #[expect(
@@ -20,7 +20,7 @@ fn is_constant(value: &Value) -> bool {
 }
 
 fn is_null_constant(value: &Value) -> bool {
-    match &value.without_macro_structure().node.value {
+    match &value.node.value {
         ValueKind::Null => true,
         ValueKind::Convert { operand, .. } => is_null_constant(operand),
         #[expect(
@@ -106,6 +106,7 @@ pub(super) struct Hoister {
     inlined: HashMap<BindingId, Value>,
     pub(super) c_nodes: HashMap<crate::ast::NodeId, super::ctype::QualType>,
     pub(super) c_bindings: HashMap<BindingId, super::ctype::QualType>,
+    pub(super) macro_roots: HashMap<crate::ast::NodeId, Vec<crate::ast::MacroExpansionId>>,
     pub(super) split_expansions: HashSet<crate::ast::MacroExpansionId>,
 }
 
@@ -127,6 +128,7 @@ impl Hoister {
             inlined: HashMap::new(),
             c_nodes: HashMap::new(),
             c_bindings: HashMap::new(),
+            macro_roots: HashMap::new(),
             split_expansions: HashSet::new(),
         }
     }
@@ -224,6 +226,26 @@ impl Hoister {
     }
 
     pub(super) fn discard(
+        &mut self,
+        value: Value,
+        span: Option<Span<()>>,
+        out: &mut Vec<Span<Statement>>,
+    ) -> Result<(), ResolveError> {
+        let root = value.node.id;
+        let expansions = self.macro_roots.get(&root).cloned();
+        let before = out.len();
+        self.discard_value(value, span, out)?;
+        if let Some(expansions) = expansions {
+            let intact = out.len() == before + 1
+                && matches!(&out[before].value, Statement::Expression(value) if value.node.id == root);
+            if !intact {
+                self.split_expansions.extend(expansions);
+            }
+        }
+        Ok(())
+    }
+
+    fn discard_value(
         &mut self,
         value: Value,
         span: Option<Span<()>>,
@@ -496,7 +518,15 @@ impl Hoister {
         value: Value,
         out: &mut Vec<Span<Statement>>,
     ) -> Result<Value, ResolveError> {
-        super::deep(|| self.hoist_value(value, out))
+        let expansions = self.macro_roots.get(&value.node.id).cloned();
+        let before = out.len();
+        let hoisted = super::deep(|| self.hoist_value(value, out))?;
+        if let Some(expansions) = expansions
+            && (out.len() > before || !self.macro_roots.contains_key(&hoisted.node.id))
+        {
+            self.split_expansions.extend(expansions);
+        }
+        Ok(hoisted)
     }
 
     fn hoist_value(
@@ -511,34 +541,6 @@ impl Hoister {
             node: source.derive(ValueKind::Void),
         };
         let kind = match value.node.value {
-            ValueKind::MacroArg {
-                expansion,
-                argument,
-                value,
-            } => ValueKind::MacroArg {
-                expansion,
-                argument,
-                value: Box::new(self.value(*value, out)?),
-            },
-            ValueKind::MacroExpansion {
-                expansion,
-                evaluation,
-            } => {
-                let before = out.len();
-                let statements = self.statements(evaluation.statements)?;
-                out.extend(statements);
-                let value = self.value(evaluation.value, out)?;
-                if out.len() > before {
-                    self.split_expansions.insert(expansion);
-                }
-                ValueKind::MacroExpansion {
-                    expansion,
-                    evaluation: Box::new(Evaluation {
-                        statements: Vec::new(),
-                        value,
-                    }),
-                }
-            }
             ValueKind::Store {
                 place,
                 value,
@@ -1055,10 +1057,6 @@ impl Hoister {
 
     fn effects(&self, value: &Value) -> bool {
         match &value.node.value {
-            ValueKind::MacroArg { value, .. } => self.effects(value),
-            ValueKind::MacroExpansion { evaluation, .. } => {
-                !evaluation.statements.is_empty() || self.effects(&evaluation.value)
-            }
             ValueKind::Call {
                 callee: Callee::Direct(id),
                 arguments,

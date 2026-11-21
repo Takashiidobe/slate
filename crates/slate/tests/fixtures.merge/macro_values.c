@@ -243,9 +243,8 @@ int main(void) {
 // CHECK-NEXT:   spliced fn:positions: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 23 function-like, 12 lifted at least once (expansions counted per distinct compile)
-// CHECK-NEXT:   inline hoist_split_region: 32
+// CHECK-NEXT:   inline hoist_split_region: 40
 // CHECK-NEXT:   inline no_statement_region: 16
-// CHECK-NEXT:   inline argument_split_across_holes: 8
 // CHECK-NEXT:   inline inside_argument: 8
 // CHECK-NEXT:   inline compound_literal_or_temporary: 4
 // CHECK-NEXT:   macro ADDRESS_OF_LITERAL: 0 lifted, inline: compound_literal_or_temporary 2
@@ -260,8 +259,8 @@ int main(void) {
 // CHECK-NEXT:   macro FIELD_OF: 2 lifted, inline: no_statement_region 2
 // CHECK-NEXT:   macro HOLDER: 0 lifted, inline: compound_literal_or_temporary 2
 // CHECK-NEXT:   macro LOCAL_READ: 2 lifted, inline:
-// CHECK-NEXT:   macro MAX: 20 lifted, inline: argument_split_across_holes 2, inside_argument 4, no_statement_region 2
-// CHECK-NEXT:   macro MIN: 22 lifted, inline: argument_split_across_holes 6, hoist_split_region 2, inside_argument 2, no_statement_region 2
+// CHECK-NEXT:   macro MAX: 20 lifted, inline: hoist_split_region 2, inside_argument 4, no_statement_region 2
+// CHECK-NEXT:   macro MIN: 22 lifted, inline: hoist_split_region 8, inside_argument 2, no_statement_region 2
 // CHECK-NEXT:   macro NEXT: 0 lifted, inline: hoist_split_region 2
 // CHECK-NEXT:   macro NEXT_FROM: 0 lifted, inline: hoist_split_region 6
 // CHECK-NEXT:   macro NOTHING: 0 lifted, inline: hoist_split_region 4

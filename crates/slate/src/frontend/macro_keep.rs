@@ -2,7 +2,8 @@ use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 
 use slate_parser::ast::{MacroCover, MacroDefinition, MacroExpansionId, MacroInvocations};
 use slate_parser::ir::{
-    BindingId, Module, Place, PlaceKind, Statement, Type, ValueKind, Visitor, walk_body,
+    BindingId, MacroWrap, Module, Place, PlaceKind, Statement, Type, Value, ValueKind, Visitor,
+    walk_body_with_macros,
 };
 
 use crate::backend::rust_ast::is_valid_macro_template_base;
@@ -138,21 +139,18 @@ impl Visitor for Survey<'_> {
         if matches!(kind, ValueKind::Block(_)) {
             self.reserve_storage();
         }
-        if let ValueKind::MacroArg {
-            expansion,
-            argument,
-            value,
-        } = kind
-        {
-            self.argument_value(*expansion, *argument, value.display(false).to_string());
-        }
-        if let ValueKind::MacroExpansion {
-            expansion,
-            evaluation,
-        } = kind
-            && evaluation.value.ty == Type::Void
-        {
-            self.reject(*expansion, "void_value");
+    }
+
+    fn macro_value(&mut self, wrap: MacroWrap, value: &Value) {
+        match wrap {
+            MacroWrap::Argument {
+                expansion,
+                argument,
+            } => self.argument_value(expansion, argument, value.display(false).to_string()),
+            MacroWrap::Value(expansion) if value.ty == Type::Void => {
+                self.reject(expansion, "void_value")
+            }
+            MacroWrap::Value(_) => {}
         }
     }
 
@@ -412,7 +410,7 @@ pub(super) fn pass_caller_locals(module: &mut Module) {
             declared: HashMap::new(),
             hidden: std::mem::take(&mut hidden),
         };
-        walk_body(body, &mut locals);
+        walk_body_with_macros(body, &module.macro_values, &mut locals);
         hidden = locals.hidden;
     }
     module.macro_hidden_arguments = hidden;
@@ -438,7 +436,7 @@ pub(super) fn kept_expansions(module: &mut Module) -> HashSet<MacroExpansionId> 
             reserves_storage: HashSet::new(),
             argument_values: HashMap::new(),
         };
-        walk_body(body, &mut survey);
+        walk_body_with_macros(body, &module.macro_values, &mut survey);
         if survey.has_jump {
             for expansion in std::mem::take(&mut survey.reserves_storage) {
                 survey.reject(expansion, "storage_in_dispatch_function");

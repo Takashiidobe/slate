@@ -5,8 +5,9 @@ use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use rayon::prelude::*;
 use slate_parser::ast::{NodeId, Span};
 use slate_parser::ir::{
-    self, BindingId, Callee, CompareOp, ConversionKind, Evaluation, NumericType, Parameters, Place,
-    PlaceKind, SehHandler, Statement, StorageDuration, Type, Value, ValueKind, Visitor,
+    self, BindingId, Callee, CompareOp, ConversionKind, Evaluation, MacroValues, MacroWrap,
+    NumericType, Parameters, Place, PlaceKind, SehHandler, Statement, StorageDuration, Type, Value,
+    ValueKind, Visitor,
 };
 
 const STACK_RED_ZONE: usize = 512 << 10;
@@ -188,6 +189,7 @@ struct Walker<'a, 'm> {
     address_taken: Vec<FunctionId>,
     automatic: HashSet<BindingId>,
     macro_depth: u32,
+    macro_values: &'m MacroValues,
     written: HashSet<BindingId>,
     reads: HashMap<BindingId, u32>,
     allocations: HashMap<BindingId, (BindingId, Type)>,
@@ -373,12 +375,7 @@ impl Walker<'_, '_> {
                 self.collect_sources(else_value, moved, out);
             }
             ValueKind::Sequence { right, .. } => self.collect_sources(right, moved, out),
-            ValueKind::MacroArg { value, .. } | ValueKind::Store { value, .. } => {
-                self.collect_sources(value, moved, out)
-            }
-            ValueKind::MacroExpansion { evaluation, .. } => {
-                self.collect_sources(&evaluation.value, moved, out)
-            }
+            ValueKind::Store { value, .. } => self.collect_sources(value, moved, out),
             ValueKind::StatementExpression(evaluation) => {
                 self.collect_sources(&evaluation.value, moved, out)
             }
@@ -791,7 +788,25 @@ impl Walker<'_, '_> {
     }
 
     fn value(&mut self, value: &Value) {
-        stacker::maybe_grow(STACK_RED_ZONE, STACK_GROWTH, || self.value_kind(value))
+        let wraps = self.macro_values.get(&value.node.id);
+        let expansions = wraps.map_or(0, |wraps| {
+            wraps
+                .iter()
+                .filter(|wrap| matches!(wrap, MacroWrap::Value(_)))
+                .count() as u32
+        });
+        self.macro_depth += expansions;
+        stacker::maybe_grow(STACK_RED_ZONE, STACK_GROWTH, || self.value_kind(value));
+        self.macro_depth -= expansions;
+        if wraps.is_some_and(|wraps| {
+            wraps
+                .iter()
+                .any(|wrap| matches!(wrap, MacroWrap::Argument { .. }))
+        }) {
+            let mut named = Named(Vec::new());
+            ir::walk_value(&mut value.clone(), &mut named);
+            self.macro_mentions(named);
+        }
     }
 
     fn value_kind(&mut self, value: &Value) {
@@ -912,17 +927,6 @@ impl Walker<'_, '_> {
                 self.place(source, Use::Read);
             }
             ValueKind::StatementExpression(evaluation) => self.evaluation(evaluation),
-            ValueKind::MacroExpansion { evaluation, .. } => {
-                self.macro_depth += 1;
-                self.evaluation(evaluation);
-                self.macro_depth -= 1;
-            }
-            ValueKind::MacroArg { value, .. } => {
-                self.value(value);
-                let mut named = Named(Vec::new());
-                ir::walk_value(&mut (**value).clone(), &mut named);
-                self.macro_mentions(named);
-            }
             ValueKind::Block(literal) => {
                 for capture in &literal.captures {
                     if let Some(node) = self.node(capture.id) {
@@ -1464,6 +1468,7 @@ fn summarize(
         address_taken: Vec::new(),
         automatic: HashSet::new(),
         macro_depth: 0,
+        macro_values: &program.unit(entry.unit).module.macro_values,
         written: HashSet::new(),
         reads: HashMap::new(),
         allocations: HashMap::new(),
