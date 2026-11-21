@@ -102,8 +102,12 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u16 = unsafe { (state.counters.as_mut_ptr() as *mut u16).add(2) };
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u16 = unsafe { core::ptr::read_volatile([[V_0]]) };
-// CHECK-NEXT:     unsafe { core::ptr::write_volatile([[V_0]], (([[V_1]] as i32) + 23) as u16) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::ptr::write_volatile(
+// CHECK-NEXT:             [[V_0]],
+// CHECK-NEXT:             ((core::ptr::read_volatile([[V_0]]) as i32) + 23) as u16,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { core::ptr::write_volatile(state.pointer, 11i32) };
 // CHECK-NEXT:     let view: *const Interrupt = core::ptr::addr_of_mut!(interrupt) as *const Interrupt;
 // CHECK-NEXT:     unsafe { core::ptr::write_volatile(core::ptr::addr_of_mut!(interrupt.flag), 9i32) };

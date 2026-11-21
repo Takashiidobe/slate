@@ -218,7 +218,7 @@ int main(void) {
 // CHECK-NEXT:     let mut arguments: __SlateAlign16<[*mut i8; 6]> = __SlateAlign16([0 as *mut i8; 6]);
 // CHECK-NEXT:     let mut replacements: u32 = 0;
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_0]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         argz_create_sep(
 // CHECK-NEXT:             c"one:two:three".as_ptr(),
 // CHECK-NEXT:             58i32,
@@ -226,29 +226,24 @@ int main(void) {
 // CHECK-NEXT:             core::ptr::addr_of_mut!(length),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
-// CHECK-NEXT:     total += [[V_0]];
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_1]] + (((unsafe { argz_count(argz as *const i8, length) }) == 3) as i32);
+// CHECK-NEXT:     total += ((unsafe { argz_count(argz as *const i8, length) }) == 3) as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         argz_extract(argz as *const i8, length, arguments.0.as_mut_ptr() as *mut *mut i8)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_2]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (arguments.0[1] as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"two".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32);
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         strcmp(
+// CHECK-NEXT:             (arguments.0[1] as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:             c"two".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0) as i32;
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         argz_add(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(argz),
 // CHECK-NEXT:             core::ptr::addr_of_mut!(length),
 // CHECK-NEXT:             c"four".as_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
-// CHECK-NEXT:     total += [[V_3]];
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         argz_replace(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(argz),
 // CHECK-NEXT:             core::ptr::addr_of_mut!(length),
@@ -257,19 +252,15 @@ int main(void) {
 // CHECK-NEXT:             core::ptr::addr_of_mut!(replacements),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
-// CHECK-NEXT:     total += [[V_4]];
 // CHECK-NEXT:     total += (replacements == 1) as i32;
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_5]] + (((unsafe { argz_count(argz as *const i8, length) }) == 4) as i32);
+// CHECK-NEXT:     total += ((unsafe { argz_count(argz as *const i8, length) }) == 4) as i32;
 // CHECK-NEXT:     unsafe { argz_stringify(argz, length, 44i32) };
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_6]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (argz as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"one,two,THREE,four".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32);
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         strcmp(
+// CHECK-NEXT:             (argz as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:             c"one,two,THREE,four".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     unsafe { free((argz as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -278,7 +269,7 @@ int main(void) {
 // CHECK-NEXT:     let mut envz: *mut i8 = core::ptr::null_mut::<i8>();
 // CHECK-NEXT:     let mut length: u64 = 0;
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_0]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         envz_add(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(envz),
 // CHECK-NEXT:             core::ptr::addr_of_mut!(length),
@@ -286,8 +277,7 @@ int main(void) {
 // CHECK-NEXT:             c"one".as_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
-// CHECK-NEXT:     total += [[V_0]];
-// CHECK-NEXT:     let [[V_1]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         envz_add(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(envz),
 // CHECK-NEXT:             core::ptr::addr_of_mut!(length),
@@ -295,20 +285,15 @@ int main(void) {
 // CHECK-NEXT:             core::ptr::null::<i8>(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
-// CHECK-NEXT:     total += [[V_1]];
-// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_7]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (envz_get(envz as *const i8, length, c"ALPHA".as_ptr()) as *const i8)
-// CHECK-NEXT:                     as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"one".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32);
-// CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_8]]
-// CHECK-NEXT:         + (!unsafe { envz_entry(envz as *const i8, length, c"BETA".as_ptr()) }.is_null()
-// CHECK-NEXT:             as i32);
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         strcmp(
+// CHECK-NEXT:             (envz_get(envz as *const i8, length, c"ALPHA".as_ptr()) as *const i8)
+// CHECK-NEXT:                 as *const core::ffi::c_char,
+// CHECK-NEXT:             c"one".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0) as i32;
+// CHECK-NEXT:     total += !unsafe { envz_entry(envz as *const i8, length, c"BETA".as_ptr()) }
+// CHECK-NEXT:         .is_null() as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         envz_remove(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(envz),
@@ -316,10 +301,8 @@ int main(void) {
 // CHECK-NEXT:             c"ALPHA".as_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_4]]: i32 = total;
-// CHECK-NEXT:     total = [[V_4]]
-// CHECK-NEXT:         + (unsafe { envz_get(envz as *const i8, length, c"ALPHA".as_ptr()) }.is_null()
-// CHECK-NEXT:             as i32);
+// CHECK-NEXT:     total += unsafe { envz_get(envz as *const i8, length, c"ALPHA".as_ptr()) }.is_null()
+// CHECK-NEXT:         as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         envz_strip(core::ptr::addr_of_mut!(envz), core::ptr::addr_of_mut!(length))
 // CHECK-NEXT:     };

@@ -45,8 +45,7 @@ int main(void) {
 // CHECK-NEXT:     w.value = -1234567890123456789;
 // CHECK-NEXT:     w.uvalue = 12345678901234567890;
 // CHECK-NEXT:     w.value += 1;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u128 = w.uvalue;
-// CHECK-NEXT:     w.uvalue = [[V_0]].wrapping_mul(2);
+// CHECK-NEXT:     w.uvalue = w.uvalue.wrapping_mul(2);
 // CHECK-NEXT:     println!("{}", w.tag);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%llu\n".as_ptr(), (w.value >> 64i32) as u64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

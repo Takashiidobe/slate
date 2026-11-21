@@ -191,8 +191,7 @@ int main(void) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = aligned_to(a as *mut (), 8u64) != 0
 // CHECK-NEXT:         && aligned_to(b as *mut (), 64u64) != 0;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = [[V_0]] && aligned_to(c as *mut (), 4096u64) != 0;
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = [[V_1]] as i32;
-// CHECK-NEXT:     ok &= [[V_2]];
+// CHECK-NEXT:     ok &= [[V_1]] as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_bytes(
 // CHECK-NEXT:             ((small as *mut ()) as *mut core::ffi::c_void) as *mut u8,
@@ -261,9 +260,8 @@ int main(void) {
 // CHECK-NEXT:                 (1100000u64 as usize) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         let [[V_0]]: i32 = aligned_to(p as *mut (), 256u64)
-// CHECK-NEXT:             * ((unsafe { *p.add(1099999) }) as i32);
-// CHECK-NEXT:         total += [[V_0]] as i64;
+// CHECK-NEXT:         total += (aligned_to(p as *mut (), 256u64)
+// CHECK-NEXT:             * ((unsafe { *p.add(1099999) }) as i32)) as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

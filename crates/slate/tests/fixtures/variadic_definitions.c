@@ -108,8 +108,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: f64 = 0i32 as f64;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: f64 = unsafe { ap.next_arg::<f64>() };
-// CHECK-NEXT:         total += [[V_0]];
+// CHECK-NEXT:         total += unsafe { ap.next_arg::<f64>() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let letter: i32 = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:     let small: i32 = unsafe { ap.next_arg::<i32>() };
@@ -147,8 +146,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..pairs {
-// CHECK-NEXT:         let [[V_0]]: i32 = next_pair(&mut ap);
-// CHECK-NEXT:         total += [[V_0]];
+// CHECK-NEXT:         total += next_pair(&mut ap);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -162,13 +160,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = count;
-// CHECK-NEXT:         count = [[V_1]] - 1;
-// CHECK-NEXT:         if [[V_1]] <= 0 {
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = count;
+// CHECK-NEXT:         count = [[V_0]] - 1;
+// CHECK-NEXT:         if [[V_0]] <= 0 {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_0]]: i64 = unsafe { ap.next_arg::<i64>() };
-// CHECK-NEXT:         total += [[V_0]];
+// CHECK-NEXT:         total += unsafe { ap.next_arg::<i64>() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

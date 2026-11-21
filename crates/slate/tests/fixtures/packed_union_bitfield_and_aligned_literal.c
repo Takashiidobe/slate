@@ -356,19 +356,17 @@ int main(void) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut unaligned_msg = unsafe {
 // CHECK-NEXT:         (packed.as_mut_ptr() as *mut unaligned_msg).add(1)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u32 = unsafe {
-// CHECK-NEXT:         let [[T_15:__t[0-9]+]] = (core::ptr::addr_of!((*[[V_0]]).data.[[SLATE_ANON_0]])
-// CHECK-NEXT:                 as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
-// CHECK-NEXT:             .read_unaligned();
-// CHECK-NEXT:         [[T_15]].[[SLATE_ANON_0]].__slate_bits_0.__get_vector()
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u32 = (([[V_1]] as i32) + 1) as u32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_16:__t[0-9]+]] = [[V_2]];
+// CHECK-NEXT:         let [[T_15:__t[0-9]+]] = ((({
+// CHECK-NEXT:             let [[T_16:__t[0-9]+]] = (core::ptr::addr_of!((*[[V_0]]).data.[[SLATE_ANON_0]])
+// CHECK-NEXT:                     as *const __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25)
+// CHECK-NEXT:                 .read_unaligned();
+// CHECK-NEXT:             [[T_16]].[[SLATE_ANON_0]].__slate_bits_0.__get_vector()
+// CHECK-NEXT:         }) as i32) + 1) as u32;
 // CHECK-NEXT:         let [[T_17:__t[0-9]+]] = core::ptr::addr_of_mut!((*[[V_0]]).data.[[SLATE_ANON_0]])
 // CHECK-NEXT:             as *mut __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25;
 // CHECK-NEXT:         let mut [[T_18:__t[0-9]+]] = [[T_17]].read_unaligned();
-// CHECK-NEXT:         [[T_18]].[[SLATE_ANON_0]].__slate_bits_0.__set_vector([[T_16]]);
+// CHECK-NEXT:         [[T_18]].[[SLATE_ANON_0]].__slate_bits_0.__set_vector([[T_15]]);
 // CHECK-NEXT:         [[T_17]].write_unaligned([[T_18]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

@@ -36,9 +36,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn update(items: *mut u32) -> u32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u32 = unsafe { items.add(0) };
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u32 = unsafe { *[[V_0]] };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = [[V_1]].wrapping_add(10);
+// CHECK-NEXT:         *[[V_0]] = unsafe { *[[V_0]] }.wrapping_add(10);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { *items.add(0) }.wrapping_add(unsafe { *items.add(2) })
 // CHECK-NEXT: }

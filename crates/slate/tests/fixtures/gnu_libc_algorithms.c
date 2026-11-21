@@ -317,15 +317,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if key == 0 {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { (*arguments).positional };
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = [[V_0]]
-// CHECK-NEXT:             + (((unsafe {
-// CHECK-NEXT:                 strcmp(
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             (*arguments).positional = [[V_0]]
+// CHECK-NEXT:                 + (((strcmp(
 // CHECK-NEXT:                     (argument as *const i8) as *const core::ffi::c_char,
 // CHECK-NEXT:                     c"item".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:                 ) as i32
-// CHECK-NEXT:             }) == 0) as i32);
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*arguments).positional = [[V_1]];
+// CHECK-NEXT:                 ) as i32) == 0) as i32);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
@@ -401,7 +398,7 @@ int main(void) {
 // CHECK-NEXT:         opterr = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i32 = unsafe {
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = unsafe {
 // CHECK-NEXT:             getopt_long(
 // CHECK-NEXT:                 3i32 as i32,
 // CHECK-NEXT:                 (arguments.0.as_mut_ptr() as *const *mut i8)
@@ -412,8 +409,8 @@ int main(void) {
 // CHECK-NEXT:                 core::ptr::null_mut::<i32>() as *mut i32,
 // CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         };
-// CHECK-NEXT:         option = [[V_2]];
-// CHECK-NEXT:         if [[V_2]] == -1 {
+// CHECK-NEXT:         option = [[V_1]];
+// CHECK-NEXT:         if [[V_1]] == -1 {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if option == 110 {
@@ -527,15 +524,13 @@ int main(void) {
 // CHECK-NEXT:             core::ptr::addr_of_mut!(table),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) != 0) as i32;
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_3]]
-// CHECK-NEXT:         + ((!found.is_null()
-// CHECK-NEXT:             && (unsafe {
-// CHECK-NEXT:                 strcmp(
-// CHECK-NEXT:                     ((*found).data as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                     c"24".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:                 ) as i32
-// CHECK-NEXT:             }) == 0) as i32);
+// CHECK-NEXT:     total += (!found.is_null()
+// CHECK-NEXT:         && (unsafe {
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 ((*found).data as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"24".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         }) == 0) as i32;
 // CHECK-NEXT:     unsafe { hdestroy_r(core::ptr::addr_of_mut!(table)) };
 // CHECK-NEXT:     for index in 0u64..4u64 {
 // CHECK-NEXT:         let value: *mut i32 = (unsafe {
@@ -552,7 +547,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = !unsafe {
+// CHECK-NEXT:     total += !unsafe {
 // CHECK-NEXT:             tfind(
 // CHECK-NEXT:                 (values.0.as_mut_ptr() as *mut i32).add(2) as *const (),
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(tree) as *const *mut (),
@@ -560,7 +555,6 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }
 // CHECK-NEXT:         .is_null() as i32;
-// CHECK-NEXT:     total += [[V_4]];
 // CHECK-NEXT:     unsafe { tdestroy(tree, Some(gnu_free_entry)) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

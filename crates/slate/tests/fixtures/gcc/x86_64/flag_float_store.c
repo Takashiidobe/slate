@@ -365,9 +365,8 @@ int main(void) {
 // CHECK-NEXT:     let mut compound: f64 = 1e308f64;
 // CHECK-NEXT:     let as_double: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
 // CHECK-NEXT:         as f64;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: f64 = compound;
 // CHECK-NEXT:     compound = __slate_f80_to_f64(
-// CHECK-NEXT:         __slate_f80_from_f64([[V_0]])
+// CHECK-NEXT:         __slate_f80_from_f64(compound)
 // CHECK-NEXT:             * __slate_f80_from_f64(
 // CHECK-NEXT:                 unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) },
 // CHECK-NEXT:             ),
@@ -612,8 +611,8 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: f64;
-// CHECK-NEXT:     [[V_1]] = __slate_f80_to_f64(
+// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: f64;
+// CHECK-NEXT:     [[V_0]] = __slate_f80_to_f64(
 // CHECK-NEXT:         __slate_f80_from_f64(
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) },
 // CHECK-NEXT:         )
@@ -626,7 +625,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"stmt %g\n".as_ptr(),
 // CHECK-NEXT:             __slate_f80_to_f64(
-// CHECK-NEXT:                 __slate_f80_from_f64([[V_1]])
+// CHECK-NEXT:                 __slate_f80_from_f64([[V_0]])
 // CHECK-NEXT:                     / __slate_f80_from_f64(
 // CHECK-NEXT:                         core::ptr::read_volatile(core::ptr::addr_of!(ten)),
 // CHECK-NEXT:                     ),
@@ -683,7 +682,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: f64 = __slate_f80_to_f64(
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: f64 = __slate_f80_to_f64(
 // CHECK-NEXT:         __slate_f80_from_f64(
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) },
 // CHECK-NEXT:         )
@@ -691,7 +690,7 @@ int main(void) {
 // CHECK-NEXT:                 unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) },
 // CHECK-NEXT:             ),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     assigned = [[V_2]];
+// CHECK-NEXT:     assigned = [[V_1]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -699,7 +698,7 @@ int main(void) {
 // CHECK-NEXT:             compound,
 // CHECK-NEXT:             stored,
 // CHECK-NEXT:             __slate_f80_to_f64(
-// CHECK-NEXT:                 __slate_f80_from_f64([[V_2]])
+// CHECK-NEXT:                 __slate_f80_from_f64([[V_1]])
 // CHECK-NEXT:                     / __slate_f80_from_f64(
 // CHECK-NEXT:                         core::ptr::read_volatile(core::ptr::addr_of!(ten)),
 // CHECK-NEXT:                     ),

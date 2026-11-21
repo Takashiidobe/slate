@@ -64,8 +64,7 @@ int main(void) {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     while (unsafe { *s }) != 0 {
 // CHECK-NEXT:         sum += (unsafe { *s }) as i32;
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *const i8 = s;
-// CHECK-NEXT:         s = unsafe { [[V_0]].add(1) };
+// CHECK-NEXT:         s = unsafe { s.add(1) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }

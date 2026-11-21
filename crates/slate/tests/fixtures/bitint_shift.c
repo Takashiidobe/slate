@@ -74,10 +74,8 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     a = a.shl_bits(i as usize);
 // CHECK-NEXT:     a = a.shr_bits(u as usize);
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bitint::BUint<129, 3, 24, bitint::A8> = a;
-// CHECK-NEXT:     a = [[V_0]].shl_bits(l as usize);
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bitint::BUint<129, 3, 24, bitint::A8> = a;
-// CHECK-NEXT:     a = [[V_1]].shr_bits((s as i32) as usize);
+// CHECK-NEXT:     a = a.shl_bits(l as usize);
+// CHECK-NEXT:     a = a.shr_bits((s as i32) as usize);
 // CHECK-NEXT:     a = a.shl_bits(ull as usize);
 // CHECK-NEXT:     a = a
 // CHECK-NEXT:         .wrapping_add(

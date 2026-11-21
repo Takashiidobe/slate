@@ -228,9 +228,11 @@ benchmark showed no analysis that SSA would make asymptotically cheaper.
 
 - Positions number statements in pre-order, so a statement's subtree is a
   contiguous range. Each use records its binding, its position, and its access:
-  `Read`, `Write` (assignment target, initializer, update), or `Escape` (address
+  `Read`, `Write` (assignment target, initializer, update), `Escape` (address
   taken, place operand, asm operand, OpenMP clause, nested-function capture,
-  `cleanup`). An update (`x += 1`, compare-exchange) is both a read and a write.
+  `cleanup`), or `Capture` (a VLA extent named by a type). An update (`x += 1`,
+  compare-exchange) is both a read and a write. `single_read(b)` is true when
+  `b`'s only use is one `Read`.
 - Each loop and switch records its body's range, so "inside this loop" is a
   range test. Labels, asm, SEH `__try` and OpenMP regions, and every `case` with
   its switch's position, are recorded to reject unstructured regions.
@@ -246,6 +248,36 @@ benchmark showed no analysis that SSA would make asymptotically cheaper.
 for a `for` whose index provably runs over `start..end`. The conditions are in
 [ir/control-flow](ir/control-flow.md#counted-loops). It used to be a sema pass
 that wrote `counted:` into the IR; the IR no longer carries it.
+
+Lowering reads `start` and `end` from the fact, not from the `for`. They are
+clones of IR values, so a macro body keeps its `macro_arg` holes; the
+`SLATE_CHECK_MACRO_TEMPLATES` self-check strips them before lowering.
+
+### Inline temporaries
+
+`inline_temporaries::analyze` (`slate-8ge7.9.1`) produces
+`UnitFacts::inline_temporary(id)`: an IR `Statement::Temporary` (printed
+`__v<n>`) that lowering does not declare, lowering its initializer at the one
+read instead. A temporary qualifies when all of these hold:
+
+- the function is `ordered`; the temporary has an initializer, is not
+  `unsequenced`, has the initializer's type, has exactly one `Read`, and no
+  record field type captures it;
+- the read is in one of the next 32 sibling statements (or the list's tail
+  value), in that sibling's own values (not a nested body), and not inside a
+  macro argument, statement expression, or address-of;
+- no sibling in between is control flow or opaque (labels, cases,
+  break/continue/goto, asm, SEH, OpenMP, fences), and the producer's effect
+  summary does not conflict with what runs between it and the read, or with
+  what runs before the read inside the consuming statement. A call, intrinsic
+  or compare-exchange that contains the read counts as running after it.
+- an effectful producer is never moved under a `&&`/`||` rhs or a `?:` arm.
+
+Lowering records the initializer in `FunctionLowerer::inlined`, emits no
+statement (so engine rules like `structure_dispatch` see the same shape), and
+substitutes it at the `Read`. Temporaries the lowerer itself makes (`__t<n>`)
+are not covered (`slate-8ge7.9.2`); the engine's `inline_temps::late` still
+folds those and the temporaries of unordered functions (`slate-8ge7.22`).
 
 ## Shadow mode
 

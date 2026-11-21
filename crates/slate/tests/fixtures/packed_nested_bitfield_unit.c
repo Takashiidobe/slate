@@ -126,13 +126,12 @@ int main(void) {
 // CHECK-NEXT: use slate_support::free;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn mark(a: *mut alt, bit: u32) {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u32 = unsafe {
+// CHECK-NEXT:     let [[T_0]] = (((unsafe {
 // CHECK-NEXT:         core::ptr::read_unaligned(
 // CHECK-NEXT:                 core::ptr::addr_of!((*a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .__get_flags()
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let [[T_0]] = (([[V_0]] as i32) as u32) | bit;
+// CHECK-NEXT:     }) as i32) as u32) | bit;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut [[T_1]] = core::ptr::read_unaligned(
 // CHECK-NEXT:             core::ptr::addr_of_mut!((*a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),

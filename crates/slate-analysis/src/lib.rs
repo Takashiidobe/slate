@@ -14,6 +14,7 @@ mod def_use;
 mod effects;
 mod facts;
 mod identity;
+mod inline_temporaries;
 mod pointer;
 mod program;
 

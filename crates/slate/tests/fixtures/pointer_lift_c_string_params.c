@@ -77,8 +77,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn skips(mut word: *const i8) -> i32 {
 // CHECK-NEXT:     while ((unsafe { *word }) as i32) == 32 {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *const i8 = word;
-// CHECK-NEXT:         word = unsafe { [[V_0]].add(1) };
+// CHECK-NEXT:         word = unsafe { word.add(1) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { strlen(word as *const core::ffi::c_char) as u64 }) as i32
 // CHECK-NEXT: }

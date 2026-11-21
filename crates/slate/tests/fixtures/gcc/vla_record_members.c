@@ -246,18 +246,16 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for r in 0..rows {
 // CHECK-NEXT:         for c in 0..cols {
-// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:             total = [[V_2]]
-// CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     *(((&raw mut (*(g.as_mut_ptr()
-// CHECK-NEXT:                                 as *mut __SlateRecord_vla_record_members_c_25)).cells
-// CHECK-NEXT:                                 as *mut {{\[\[}}i32; 0]; 0]) as *mut [i32; 0])
-// CHECK-NEXT:                             .byte_offset(
-// CHECK-NEXT:                                 (r as isize)
-// CHECK-NEXT:                                     * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize),
-// CHECK-NEXT:                             ) as *mut i32)
-// CHECK-NEXT:                         .offset(c as isize)
-// CHECK-NEXT:                 };
+// CHECK-NEXT:             total += unsafe {
+// CHECK-NEXT:                 *(((&raw mut (*(g.as_mut_ptr()
+// CHECK-NEXT:                             as *mut __SlateRecord_vla_record_members_c_25)).cells
+// CHECK-NEXT:                             as *mut {{\[\[}}i32; 0]; 0]) as *mut [i32; 0])
+// CHECK-NEXT:                         .byte_offset(
+// CHECK-NEXT:                             (r as isize)
+// CHECK-NEXT:                                 * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                         ) as *mut i32)
+// CHECK-NEXT:                     .offset(c as isize)
+// CHECK-NEXT:             };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

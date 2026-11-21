@@ -156,23 +156,21 @@ int main(void) {
 // CHECK-NEXT:         values.0[1] = 50;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u32 = unsafe { values_tail };
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u32 = unsafe { *[[V_0]] };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = [[V_1]].wrapping_add(600);
+// CHECK-NEXT:         *[[V_0]] = unsafe { *[[V_0]] }.wrapping_add(600);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut f64 = unsafe {
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut f64 = unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!(weights.0) as *mut f64).add(0)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: f64 = (unsafe { *[[V_2]] }) * 4.0f64;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_2]] = [[V_3]];
+// CHECK-NEXT:         *[[V_1]] = *[[V_1]] * 4.0f64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         origin.0.y = 80;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: *mut Point = unsafe { origin_ptr };
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut Point = unsafe { origin_ptr };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_4]]).x = (*[[V_4]]).x + 1;
+// CHECK-NEXT:         (*[[V_2]]).x = (*[[V_2]]).x + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         page.0[3] = 112;
@@ -180,9 +178,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         small.0 = 115;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: *mut i32 = unsafe { counter_ptr };
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut i32 = unsafe { counter_ptr };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_5]] = *[[V_5]] * 2;
+// CHECK-NEXT:         *[[V_3]] = *[[V_3]] * 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bump();
 // CHECK-NEXT:     println!(

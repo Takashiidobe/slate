@@ -230,10 +230,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: LongDouble = __slate_f80_from_i32(0i32);
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: LongDouble = unsafe {
-// CHECK-NEXT:             __slate_f80_va_arg(core::ptr::addr_of_mut!(ap))
-// CHECK-NEXT:         };
-// CHECK-NEXT:         total += [[V_0]];
+// CHECK-NEXT:         total += unsafe { __slate_f80_va_arg(core::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     __slate_f80_to_i32(total * __slate_f80_from_i32(4i32))
 // CHECK-NEXT: }

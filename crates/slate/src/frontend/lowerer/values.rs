@@ -439,6 +439,18 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_value_node(&mut self, value: &ir::Value) -> Result<Expr> {
+        if let ValueKind::Read {
+            place:
+                ir::Place {
+                    kind: PlaceKind::Binding(id),
+                    ..
+                },
+            ordering: None,
+        } = &value.node.value
+            && let Some(initializer) = self.inlined.get(id).cloned()
+        {
+            return self.lower_value(&initializer);
+        }
         if let Some(promoted) = self.lower_promoted_hole(value) {
             return promoted;
         }

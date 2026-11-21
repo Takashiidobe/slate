@@ -349,7 +349,7 @@ int main(void) {
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpeq_ss(
 // CHECK-NEXT:     mut [[V_0:__v[0-9]+]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_1:__v[0-9]+]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
@@ -358,7 +358,7 @@ int main(void) {
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: core::simd::Simd<f32, 4> = [[V_0]];
 // CHECK-NEXT:                     let [[T_1:__t[0-9]+]] = [[T_0]].to_array();
-// CHECK-NEXT:                     let [[T_2:__t[0-9]+]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                     let [[T_2:__t[0-9]+]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                     let [[T_3:__t[0-9]+]] = [[T_2]].to_array();
 // CHECK-NEXT:                     let [[T_4:__t[0-9]+]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -376,15 +376,15 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpeq_ps(
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
+// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:                 let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                 let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                 let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
@@ -401,7 +401,7 @@ int main(void) {
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmplt_ss(
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
@@ -410,7 +410,7 @@ int main(void) {
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
 // CHECK-NEXT:                     let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                     let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                     let [[T_2]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                     let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                     let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -428,15 +428,15 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmplt_ps(
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
+// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:                 let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                 let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                 let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
@@ -453,7 +453,7 @@ int main(void) {
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmple_ss(
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
@@ -462,7 +462,7 @@ int main(void) {
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
 // CHECK-NEXT:                     let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                     let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                     let [[T_2]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                     let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                     let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -480,15 +480,15 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmple_ps(
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
+// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:                 let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                 let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                 let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
@@ -507,7 +507,6 @@ int main(void) {
 // CHECK-NEXT:     mut __a: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
-// CHECK-NEXT:     let [[V_1]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         __a,
 // CHECK-NEXT:         core::simd::simd_swizzle!(
@@ -517,7 +516,7 @@ int main(void) {
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
 // CHECK-NEXT:                         let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                         let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                         let [[T_2]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:                         let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                         let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
@@ -537,15 +536,15 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpgt_ps(
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
+// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                 let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:                 let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                 let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
@@ -561,15 +560,15 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpge_ps(
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
+// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                 let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:                 let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                 let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
@@ -586,7 +585,7 @@ int main(void) {
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpneq_ss(
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
@@ -595,7 +594,7 @@ int main(void) {
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
 // CHECK-NEXT:                     let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                     let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                     let [[T_2]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                     let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                     let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -613,15 +612,15 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpneq_ps(
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
+// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:                 let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                 let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                 let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
@@ -638,7 +637,7 @@ int main(void) {
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpnlt_ss(
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
@@ -647,7 +646,7 @@ int main(void) {
 // CHECK-NEXT:                 !{
 // CHECK-NEXT:                     let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
 // CHECK-NEXT:                     let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                     let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                     let [[T_2]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                     let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                     let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -665,15 +664,15 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpnlt_ps(
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:             !{
-// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
+// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:                 let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                 let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                 let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
@@ -689,15 +688,15 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpnle_ps(
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:             !{
-// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
+// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:                 let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                 let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                 let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
@@ -713,15 +712,15 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpngt_ps(
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:             !{
-// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
+// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                 let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:                 let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                 let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
@@ -737,15 +736,15 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpnge_ps(
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:             !{
-// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = [[V_0]];
+// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:                 let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = [[V_1]];
+// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:                 let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                 let [[T_4]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
@@ -762,7 +761,7 @@ int main(void) {
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpord_ss(
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     [[V_1:__v[0-9]+]]: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
@@ -928,15 +927,15 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpeq_pd(
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f64, 2>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     __a: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     __b: core::simd::Simd<f64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<f64, 2>>(
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f64, 2> = [[V_0]];
+// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f64, 2> = __a;
 // CHECK-NEXT:                 let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f64, 2> = [[V_1]];
+// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f64, 2> = __b;
 // CHECK-NEXT:                 let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                 let [[T_4]]: core::simd::Simd<i64, 2> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
@@ -952,15 +951,15 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmplt_pd(
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f64, 2>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     __a: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     __b: core::simd::Simd<f64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<f64, 2>>(
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f64, 2> = [[V_0]];
+// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f64, 2> = __a;
 // CHECK-NEXT:                 let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f64, 2> = [[V_1]];
+// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f64, 2> = __b;
 // CHECK-NEXT:                 let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                 let [[T_4]]: core::simd::Simd<i64, 2> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
@@ -1048,15 +1047,15 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpneq_pd(
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f64, 2>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     __a: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     __b: core::simd::Simd<f64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<f64, 2>>(
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f64, 2> = [[V_0]];
+// CHECK-NEXT:                 let [[T_0]]: core::simd::Simd<f64, 2> = __a;
 // CHECK-NEXT:                 let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f64, 2> = [[V_1]];
+// CHECK-NEXT:                 let [[T_2]]: core::simd::Simd<f64, 2> = __b;
 // CHECK-NEXT:                 let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                 let [[T_4]]: core::simd::Simd<i64, 2> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
@@ -1073,7 +1072,7 @@ int main(void) {
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmplt_sd(
 // CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f64, 2>,
-// CHECK-NEXT:     [[V_1]]: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     __b: core::simd::Simd<f64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
@@ -1082,7 +1081,7 @@ int main(void) {
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     let [[T_0]]: core::simd::Simd<f64, 2> = [[V_0]];
 // CHECK-NEXT:                     let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                     let [[T_2]]: core::simd::Simd<f64, 2> = [[V_1]];
+// CHECK-NEXT:                     let [[T_2]]: core::simd::Simd<f64, 2> = __b;
 // CHECK-NEXT:                     let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                     let [[T_4]]: core::simd::Simd<i64, 2> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -1999,14 +1998,12 @@ int main(void) {
 // CHECK-NEXT:     SHOW__7!(c"sqrt256_pd".as_ptr() as *mut i8, unsafe { _mm256_sqrt_pd(c) });
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_0]]: core::simd::Simd<f32, 8> = [[V_2]];
+// CHECK-NEXT:                     let [[T_0]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                     let [[T_2]]: core::simd::Simd<f32, 8> = [[V_3]];
+// CHECK-NEXT:                     let [[T_2]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                     let [[T_4]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2024,14 +2021,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_5]]: core::simd::Simd<f32, 8> = [[V_4]];
+// CHECK-NEXT:                     let [[T_5]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_6]] = [[T_5]].to_array();
-// CHECK-NEXT:                     let [[T_7]]: core::simd::Simd<f32, 8> = [[V_5]];
+// CHECK-NEXT:                     let [[T_7]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_8]] = [[T_7]].to_array();
 // CHECK-NEXT:                     let [[T_9]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2049,14 +2044,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_2:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_6:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_7:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_10:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_6]];
+// CHECK-NEXT:                     let [[T_10:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_11:__t[0-9]+]] = [[T_10]].to_array();
-// CHECK-NEXT:                     let [[T_12:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_7]];
+// CHECK-NEXT:                     let [[T_12:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_13:__t[0-9]+]] = [[T_12]].to_array();
 // CHECK-NEXT:                     let [[T_14:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2074,14 +2067,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_3:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_8:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_9:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 ({
-// CHECK-NEXT:                     let [[T_15:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_8]];
+// CHECK-NEXT:                     let [[T_15:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_2]];
 // CHECK-NEXT:                     let [[T_16:__t[0-9]+]] = [[T_15]].to_array();
-// CHECK-NEXT:                     let [[T_17:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_8]];
+// CHECK-NEXT:                     let [[T_17:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_2]];
 // CHECK-NEXT:                     let [[T_18:__t[0-9]+]] = [[T_17]].to_array();
 // CHECK-NEXT:                     let [[T_19:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2091,9 +2084,9 @@ int main(void) {
 // CHECK-NEXT:                     [[T_19]]
 // CHECK-NEXT:                 })
 // CHECK-NEXT:                     | {
-// CHECK-NEXT:                         let [[T_20:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_9]];
+// CHECK-NEXT:                         let [[T_20:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_3]];
 // CHECK-NEXT:                         let [[T_21:__t[0-9]+]] = [[T_20]].to_array();
-// CHECK-NEXT:                         let [[T_22:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_9]];
+// CHECK-NEXT:                         let [[T_22:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_3]];
 // CHECK-NEXT:                         let [[T_23:__t[0-9]+]] = [[T_22]].to_array();
 // CHECK-NEXT:                         let [[T_24:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
@@ -2111,14 +2104,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_4:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_10:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_11:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_25:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_10]];
+// CHECK-NEXT:                     let [[T_25:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_26:__t[0-9]+]] = [[T_25]].to_array();
-// CHECK-NEXT:                     let [[T_27:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_11]];
+// CHECK-NEXT:                     let [[T_27:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_28:__t[0-9]+]] = [[T_27]].to_array();
 // CHECK-NEXT:                     let [[T_29:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2136,14 +2127,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_5:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_12:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_13:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 !{
-// CHECK-NEXT:                     let [[T_30:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_12]];
+// CHECK-NEXT:                     let [[T_30:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_31:__t[0-9]+]] = [[T_30]].to_array();
-// CHECK-NEXT:                     let [[T_32:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_13]];
+// CHECK-NEXT:                     let [[T_32:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_33:__t[0-9]+]] = [[T_32]].to_array();
 // CHECK-NEXT:                     let [[T_34:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2161,14 +2150,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_6:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_14:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_15:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 !{
-// CHECK-NEXT:                     let [[T_35:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_14]];
+// CHECK-NEXT:                     let [[T_35:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_36:__t[0-9]+]] = [[T_35]].to_array();
-// CHECK-NEXT:                     let [[T_37:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_15]];
+// CHECK-NEXT:                     let [[T_37:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_38:__t[0-9]+]] = [[T_37]].to_array();
 // CHECK-NEXT:                     let [[T_39:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2186,14 +2173,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_7:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_16:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_17:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 ({
-// CHECK-NEXT:                     let [[T_40:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_16]];
+// CHECK-NEXT:                     let [[T_40:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_4]];
 // CHECK-NEXT:                     let [[T_41:__t[0-9]+]] = [[T_40]].to_array();
-// CHECK-NEXT:                     let [[T_42:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_16]];
+// CHECK-NEXT:                     let [[T_42:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_4]];
 // CHECK-NEXT:                     let [[T_43:__t[0-9]+]] = [[T_42]].to_array();
 // CHECK-NEXT:                     let [[T_44:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2203,9 +2190,9 @@ int main(void) {
 // CHECK-NEXT:                     [[T_44]]
 // CHECK-NEXT:                 })
 // CHECK-NEXT:                     & {
-// CHECK-NEXT:                         let [[T_45:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_17]];
+// CHECK-NEXT:                         let [[T_45:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_5]];
 // CHECK-NEXT:                         let [[T_46:__t[0-9]+]] = [[T_45]].to_array();
-// CHECK-NEXT:                         let [[T_47:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_17]];
+// CHECK-NEXT:                         let [[T_47:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_5]];
 // CHECK-NEXT:                         let [[T_48:__t[0-9]+]] = [[T_47]].to_array();
 // CHECK-NEXT:                         let [[T_49:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
@@ -2223,14 +2210,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_8:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_18:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_19:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:         let [[V_6:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:         let [[V_7:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 ({
-// CHECK-NEXT:                     let [[T_50:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_18]];
+// CHECK-NEXT:                     let [[T_50:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_6]];
 // CHECK-NEXT:                     let [[T_51:__t[0-9]+]] = [[T_50]].to_array();
-// CHECK-NEXT:                     let [[T_52:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_19]];
+// CHECK-NEXT:                     let [[T_52:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_7]];
 // CHECK-NEXT:                     let [[T_53:__t[0-9]+]] = [[T_52]].to_array();
 // CHECK-NEXT:                     let [[T_54:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2240,9 +2227,9 @@ int main(void) {
 // CHECK-NEXT:                     [[T_54]]
 // CHECK-NEXT:                 })
 // CHECK-NEXT:                     | (({
-// CHECK-NEXT:                         let [[T_55:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_18]];
+// CHECK-NEXT:                         let [[T_55:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_6]];
 // CHECK-NEXT:                         let [[T_56:__t[0-9]+]] = [[T_55]].to_array();
-// CHECK-NEXT:                         let [[T_57:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_18]];
+// CHECK-NEXT:                         let [[T_57:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_6]];
 // CHECK-NEXT:                         let [[T_58:__t[0-9]+]] = [[T_57]].to_array();
 // CHECK-NEXT:                         let [[T_59:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
@@ -2252,9 +2239,9 @@ int main(void) {
 // CHECK-NEXT:                         [[T_59]]
 // CHECK-NEXT:                     })
 // CHECK-NEXT:                         | {
-// CHECK-NEXT:                             let [[T_60:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_19]];
+// CHECK-NEXT:                             let [[T_60:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_7]];
 // CHECK-NEXT:                             let [[T_61:__t[0-9]+]] = [[T_60]].to_array();
-// CHECK-NEXT:                             let [[T_62:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_19]];
+// CHECK-NEXT:                             let [[T_62:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_7]];
 // CHECK-NEXT:                             let [[T_63:__t[0-9]+]] = [[T_62]].to_array();
 // CHECK-NEXT:                             let [[T_64:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                 core::array::from_fn(
@@ -2272,14 +2259,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_9:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_20:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_21:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 !{
-// CHECK-NEXT:                     let [[T_65:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_20]];
+// CHECK-NEXT:                     let [[T_65:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_66:__t[0-9]+]] = [[T_65]].to_array();
-// CHECK-NEXT:                     let [[T_67:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_21]];
+// CHECK-NEXT:                     let [[T_67:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_68:__t[0-9]+]] = [[T_67]].to_array();
 // CHECK-NEXT:                     let [[T_69:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2297,14 +2282,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_10:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_22:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_23:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 !{
-// CHECK-NEXT:                     let [[T_70:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_22]];
+// CHECK-NEXT:                     let [[T_70:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_71:__t[0-9]+]] = [[T_70]].to_array();
-// CHECK-NEXT:                     let [[T_72:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_23]];
+// CHECK-NEXT:                     let [[T_72:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_73:__t[0-9]+]] = [[T_72]].to_array();
 // CHECK-NEXT:                     let [[T_74:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2332,14 +2315,14 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     '[[SLATE_BREAK_11:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_24:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_25:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:         let [[V_8:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:         let [[V_9:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 ({
-// CHECK-NEXT:                     let [[T_75:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_24]];
+// CHECK-NEXT:                     let [[T_75:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_8]];
 // CHECK-NEXT:                     let [[T_76:__t[0-9]+]] = [[T_75]].to_array();
-// CHECK-NEXT:                     let [[T_77:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_25]];
+// CHECK-NEXT:                     let [[T_77:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_9]];
 // CHECK-NEXT:                     let [[T_78:__t[0-9]+]] = [[T_77]].to_array();
 // CHECK-NEXT:                     let [[T_79:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2349,9 +2332,9 @@ int main(void) {
 // CHECK-NEXT:                     [[T_79]]
 // CHECK-NEXT:                 })
 // CHECK-NEXT:                     & (({
-// CHECK-NEXT:                         let [[T_80:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_24]];
+// CHECK-NEXT:                         let [[T_80:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_8]];
 // CHECK-NEXT:                         let [[T_81:__t[0-9]+]] = [[T_80]].to_array();
-// CHECK-NEXT:                         let [[T_82:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_24]];
+// CHECK-NEXT:                         let [[T_82:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_8]];
 // CHECK-NEXT:                         let [[T_83:__t[0-9]+]] = [[T_82]].to_array();
 // CHECK-NEXT:                         let [[T_84:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
@@ -2361,9 +2344,9 @@ int main(void) {
 // CHECK-NEXT:                         [[T_84]]
 // CHECK-NEXT:                     })
 // CHECK-NEXT:                         & {
-// CHECK-NEXT:                             let [[T_85:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_25]];
+// CHECK-NEXT:                             let [[T_85:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_9]];
 // CHECK-NEXT:                             let [[T_86:__t[0-9]+]] = [[T_85]].to_array();
-// CHECK-NEXT:                             let [[T_87:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_25]];
+// CHECK-NEXT:                             let [[T_87:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_9]];
 // CHECK-NEXT:                             let [[T_88:__t[0-9]+]] = [[T_87]].to_array();
 // CHECK-NEXT:                             let [[T_89:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                 core::array::from_fn(
@@ -2381,14 +2364,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_12:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_26:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_27:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_90:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_26]];
+// CHECK-NEXT:                     let [[T_90:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_91:__t[0-9]+]] = [[T_90]].to_array();
-// CHECK-NEXT:                     let [[T_92:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_27]];
+// CHECK-NEXT:                     let [[T_92:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_93:__t[0-9]+]] = [[T_92]].to_array();
 // CHECK-NEXT:                     let [[T_94:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2406,14 +2387,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_13:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_28:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_29:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_95:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_28]];
+// CHECK-NEXT:                     let [[T_95:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_96:__t[0-9]+]] = [[T_95]].to_array();
-// CHECK-NEXT:                     let [[T_97:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_29]];
+// CHECK-NEXT:                     let [[T_97:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_98:__t[0-9]+]] = [[T_97]].to_array();
 // CHECK-NEXT:                     let [[T_99:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2441,14 +2420,12 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     '[[SLATE_BREAK_14:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_30:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_31:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_100:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_30]];
+// CHECK-NEXT:                     let [[T_100:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_101:__t[0-9]+]] = [[T_100]].to_array();
-// CHECK-NEXT:                     let [[T_102:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_31]];
+// CHECK-NEXT:                     let [[T_102:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_103:__t[0-9]+]] = [[T_102]].to_array();
 // CHECK-NEXT:                     let [[T_104:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2466,14 +2443,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_15:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_32:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_33:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_105:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_32]];
+// CHECK-NEXT:                     let [[T_105:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_106:__t[0-9]+]] = [[T_105]].to_array();
-// CHECK-NEXT:                     let [[T_107:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_33]];
+// CHECK-NEXT:                     let [[T_107:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_108:__t[0-9]+]] = [[T_107]].to_array();
 // CHECK-NEXT:                     let [[T_109:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2491,14 +2466,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_16:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_34:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_35:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_110:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_34]];
+// CHECK-NEXT:                     let [[T_110:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_111:__t[0-9]+]] = [[T_110]].to_array();
-// CHECK-NEXT:                     let [[T_112:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_35]];
+// CHECK-NEXT:                     let [[T_112:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_113:__t[0-9]+]] = [[T_112]].to_array();
 // CHECK-NEXT:                     let [[T_114:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2516,14 +2489,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_17:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_36:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_37:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:         let [[V_10:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:         let [[V_11:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 ({
-// CHECK-NEXT:                     let [[T_115:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_36]];
+// CHECK-NEXT:                     let [[T_115:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_10]];
 // CHECK-NEXT:                     let [[T_116:__t[0-9]+]] = [[T_115]].to_array();
-// CHECK-NEXT:                     let [[T_117:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_36]];
+// CHECK-NEXT:                     let [[T_117:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_10]];
 // CHECK-NEXT:                     let [[T_118:__t[0-9]+]] = [[T_117]].to_array();
 // CHECK-NEXT:                     let [[T_119:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2533,9 +2506,9 @@ int main(void) {
 // CHECK-NEXT:                     [[T_119]]
 // CHECK-NEXT:                 })
 // CHECK-NEXT:                     | {
-// CHECK-NEXT:                         let [[T_120:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_37]];
+// CHECK-NEXT:                         let [[T_120:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_11]];
 // CHECK-NEXT:                         let [[T_121:__t[0-9]+]] = [[T_120]].to_array();
-// CHECK-NEXT:                         let [[T_122:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_37]];
+// CHECK-NEXT:                         let [[T_122:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_11]];
 // CHECK-NEXT:                         let [[T_123:__t[0-9]+]] = [[T_122]].to_array();
 // CHECK-NEXT:                         let [[T_124:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
@@ -2553,14 +2526,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_18:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_38:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_39:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_125:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_38]];
+// CHECK-NEXT:                     let [[T_125:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_126:__t[0-9]+]] = [[T_125]].to_array();
-// CHECK-NEXT:                     let [[T_127:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_39]];
+// CHECK-NEXT:                     let [[T_127:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_128:__t[0-9]+]] = [[T_127]].to_array();
 // CHECK-NEXT:                     let [[T_129:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2578,14 +2549,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_19:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_40:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_41:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 !{
-// CHECK-NEXT:                     let [[T_130:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_40]];
+// CHECK-NEXT:                     let [[T_130:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_131:__t[0-9]+]] = [[T_130]].to_array();
-// CHECK-NEXT:                     let [[T_132:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_41]];
+// CHECK-NEXT:                     let [[T_132:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_133:__t[0-9]+]] = [[T_132]].to_array();
 // CHECK-NEXT:                     let [[T_134:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2603,14 +2572,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_20:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_42:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_43:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 !{
-// CHECK-NEXT:                     let [[T_135:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_42]];
+// CHECK-NEXT:                     let [[T_135:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_136:__t[0-9]+]] = [[T_135]].to_array();
-// CHECK-NEXT:                     let [[T_137:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_43]];
+// CHECK-NEXT:                     let [[T_137:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_138:__t[0-9]+]] = [[T_137]].to_array();
 // CHECK-NEXT:                     let [[T_139:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2628,14 +2595,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_21:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_44:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_45:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:         let [[V_12:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:         let [[V_13:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 ({
-// CHECK-NEXT:                     let [[T_140:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_44]];
+// CHECK-NEXT:                     let [[T_140:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_12]];
 // CHECK-NEXT:                     let [[T_141:__t[0-9]+]] = [[T_140]].to_array();
-// CHECK-NEXT:                     let [[T_142:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_44]];
+// CHECK-NEXT:                     let [[T_142:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_12]];
 // CHECK-NEXT:                     let [[T_143:__t[0-9]+]] = [[T_142]].to_array();
 // CHECK-NEXT:                     let [[T_144:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2645,9 +2612,9 @@ int main(void) {
 // CHECK-NEXT:                     [[T_144]]
 // CHECK-NEXT:                 })
 // CHECK-NEXT:                     & {
-// CHECK-NEXT:                         let [[T_145:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_45]];
+// CHECK-NEXT:                         let [[T_145:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_13]];
 // CHECK-NEXT:                         let [[T_146:__t[0-9]+]] = [[T_145]].to_array();
-// CHECK-NEXT:                         let [[T_147:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_45]];
+// CHECK-NEXT:                         let [[T_147:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_13]];
 // CHECK-NEXT:                         let [[T_148:__t[0-9]+]] = [[T_147]].to_array();
 // CHECK-NEXT:                         let [[T_149:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
@@ -2665,14 +2632,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_22:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_46:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_47:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:         let [[V_14:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:         let [[V_15:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 ({
-// CHECK-NEXT:                     let [[T_150:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_46]];
+// CHECK-NEXT:                     let [[T_150:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_14]];
 // CHECK-NEXT:                     let [[T_151:__t[0-9]+]] = [[T_150]].to_array();
-// CHECK-NEXT:                     let [[T_152:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_47]];
+// CHECK-NEXT:                     let [[T_152:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_15]];
 // CHECK-NEXT:                     let [[T_153:__t[0-9]+]] = [[T_152]].to_array();
 // CHECK-NEXT:                     let [[T_154:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2682,9 +2649,9 @@ int main(void) {
 // CHECK-NEXT:                     [[T_154]]
 // CHECK-NEXT:                 })
 // CHECK-NEXT:                     | (({
-// CHECK-NEXT:                         let [[T_155:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_46]];
+// CHECK-NEXT:                         let [[T_155:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_14]];
 // CHECK-NEXT:                         let [[T_156:__t[0-9]+]] = [[T_155]].to_array();
-// CHECK-NEXT:                         let [[T_157:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_46]];
+// CHECK-NEXT:                         let [[T_157:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_14]];
 // CHECK-NEXT:                         let [[T_158:__t[0-9]+]] = [[T_157]].to_array();
 // CHECK-NEXT:                         let [[T_159:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
@@ -2694,9 +2661,9 @@ int main(void) {
 // CHECK-NEXT:                         [[T_159]]
 // CHECK-NEXT:                     })
 // CHECK-NEXT:                         | {
-// CHECK-NEXT:                             let [[T_160:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_47]];
+// CHECK-NEXT:                             let [[T_160:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_15]];
 // CHECK-NEXT:                             let [[T_161:__t[0-9]+]] = [[T_160]].to_array();
-// CHECK-NEXT:                             let [[T_162:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_47]];
+// CHECK-NEXT:                             let [[T_162:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_15]];
 // CHECK-NEXT:                             let [[T_163:__t[0-9]+]] = [[T_162]].to_array();
 // CHECK-NEXT:                             let [[T_164:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                 core::array::from_fn(
@@ -2714,14 +2681,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_23:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_48:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_49:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 !{
-// CHECK-NEXT:                     let [[T_165:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_48]];
+// CHECK-NEXT:                     let [[T_165:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_166:__t[0-9]+]] = [[T_165]].to_array();
-// CHECK-NEXT:                     let [[T_167:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_49]];
+// CHECK-NEXT:                     let [[T_167:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_168:__t[0-9]+]] = [[T_167]].to_array();
 // CHECK-NEXT:                     let [[T_169:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2739,14 +2704,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_24:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_50:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_51:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 !{
-// CHECK-NEXT:                     let [[T_170:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_50]];
+// CHECK-NEXT:                     let [[T_170:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_171:__t[0-9]+]] = [[T_170]].to_array();
-// CHECK-NEXT:                     let [[T_172:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_51]];
+// CHECK-NEXT:                     let [[T_172:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_173:__t[0-9]+]] = [[T_172]].to_array();
 // CHECK-NEXT:                     let [[T_174:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2774,14 +2737,14 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     '[[SLATE_BREAK_25:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_52:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_53:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:         let [[V_16:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:         let [[V_17:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 ({
-// CHECK-NEXT:                     let [[T_175:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_52]];
+// CHECK-NEXT:                     let [[T_175:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_16]];
 // CHECK-NEXT:                     let [[T_176:__t[0-9]+]] = [[T_175]].to_array();
-// CHECK-NEXT:                     let [[T_177:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_53]];
+// CHECK-NEXT:                     let [[T_177:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_17]];
 // CHECK-NEXT:                     let [[T_178:__t[0-9]+]] = [[T_177]].to_array();
 // CHECK-NEXT:                     let [[T_179:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2791,9 +2754,9 @@ int main(void) {
 // CHECK-NEXT:                     [[T_179]]
 // CHECK-NEXT:                 })
 // CHECK-NEXT:                     & (({
-// CHECK-NEXT:                         let [[T_180:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_52]];
+// CHECK-NEXT:                         let [[T_180:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_16]];
 // CHECK-NEXT:                         let [[T_181:__t[0-9]+]] = [[T_180]].to_array();
-// CHECK-NEXT:                         let [[T_182:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_52]];
+// CHECK-NEXT:                         let [[T_182:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_16]];
 // CHECK-NEXT:                         let [[T_183:__t[0-9]+]] = [[T_182]].to_array();
 // CHECK-NEXT:                         let [[T_184:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
@@ -2803,9 +2766,9 @@ int main(void) {
 // CHECK-NEXT:                         [[T_184]]
 // CHECK-NEXT:                     })
 // CHECK-NEXT:                         & {
-// CHECK-NEXT:                             let [[T_185:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_53]];
+// CHECK-NEXT:                             let [[T_185:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_17]];
 // CHECK-NEXT:                             let [[T_186:__t[0-9]+]] = [[T_185]].to_array();
-// CHECK-NEXT:                             let [[T_187:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_53]];
+// CHECK-NEXT:                             let [[T_187:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_17]];
 // CHECK-NEXT:                             let [[T_188:__t[0-9]+]] = [[T_187]].to_array();
 // CHECK-NEXT:                             let [[T_189:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                 core::array::from_fn(
@@ -2823,14 +2786,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_26:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_54:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_55:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_190:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_54]];
+// CHECK-NEXT:                     let [[T_190:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_191:__t[0-9]+]] = [[T_190]].to_array();
-// CHECK-NEXT:                     let [[T_192:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_55]];
+// CHECK-NEXT:                     let [[T_192:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_193:__t[0-9]+]] = [[T_192]].to_array();
 // CHECK-NEXT:                     let [[T_194:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2848,14 +2809,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_27:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_56:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:         let [[V_57:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_195:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_56]];
+// CHECK-NEXT:                     let [[T_195:__t[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:                     let [[T_196:__t[0-9]+]] = [[T_195]].to_array();
-// CHECK-NEXT:                     let [[T_197:__t[0-9]+]]: core::simd::Simd<f32, 8> = [[V_57]];
+// CHECK-NEXT:                     let [[T_197:__t[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:                     let [[T_198:__t[0-9]+]] = [[T_197]].to_array();
 // CHECK-NEXT:                     let [[T_199:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2883,14 +2842,14 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     '[[SLATE_BREAK_28:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f64, 4> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_58:__v[0-9]+]]: core::simd::Simd<f64, 4> = c;
-// CHECK-NEXT:         let [[V_59:__v[0-9]+]]: core::simd::Simd<f64, 4> = unsafe { _mm256_set1_pd(2.0f64) };
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<f64, 4>>(
 // CHECK-NEXT:                 {
-// CHECK-NEXT:                     let [[T_200:__t[0-9]+]]: core::simd::Simd<f64, 4> = [[V_58]];
+// CHECK-NEXT:                     let [[T_200:__t[0-9]+]]: core::simd::Simd<f64, 4> = c;
 // CHECK-NEXT:                     let [[T_201:__t[0-9]+]] = [[T_200]].to_array();
-// CHECK-NEXT:                     let [[T_202:__t[0-9]+]]: core::simd::Simd<f64, 4> = [[V_59]];
+// CHECK-NEXT:                     let [[T_202:__t[0-9]+]]: core::simd::Simd<f64, 4> = unsafe {
+// CHECK-NEXT:                         _mm256_set1_pd(2.0f64)
+// CHECK-NEXT:                     };
 // CHECK-NEXT:                     let [[T_203:__t[0-9]+]] = [[T_202]].to_array();
 // CHECK-NEXT:                     let [[T_204:__t[0-9]+]]: core::simd::Simd<i64, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2908,14 +2867,15 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_29:__slate_break_[0-9]+]]: loop {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 4> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         let [[V_60:__v[0-9]+]]: core::simd::Simd<f32, 4> = unsafe { _mm256_castps256_ps128(a) };
-// CHECK-NEXT:         let [[V_61:__v[0-9]+]]: core::simd::Simd<f32, 4> = unsafe { _mm256_castps256_ps128(b) };
+// CHECK-NEXT:         let [[V_18:__v[0-9]+]]: core::simd::Simd<f32, 4> = unsafe { _mm256_castps256_ps128(a) };
 // CHECK-NEXT:         t_ = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:                 !{
-// CHECK-NEXT:                     let [[T_205:__t[0-9]+]]: core::simd::Simd<f32, 4> = [[V_60]];
+// CHECK-NEXT:                     let [[T_205:__t[0-9]+]]: core::simd::Simd<f32, 4> = [[V_18]];
 // CHECK-NEXT:                     let [[T_206:__t[0-9]+]] = [[T_205]].to_array();
-// CHECK-NEXT:                     let [[T_207:__t[0-9]+]]: core::simd::Simd<f32, 4> = [[V_61]];
+// CHECK-NEXT:                     let [[T_207:__t[0-9]+]]: core::simd::Simd<f32, 4> = unsafe {
+// CHECK-NEXT:                         _mm256_castps256_ps128(b)
+// CHECK-NEXT:                     };
 // CHECK-NEXT:                     let [[T_208:__t[0-9]+]] = [[T_207]].to_array();
 // CHECK-NEXT:                     let [[T_209:__t[0-9]+]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -3100,17 +3060,15 @@ int main(void) {
 // CHECK-NEXT:     let b: core::simd::Simd<f32, 16> = unsafe {
 // CHECK-NEXT:         _mm512_loadu_ps((fb as *const f32) as *const ())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_0]]: core::simd::Simd<f32, 16> = a;
-// CHECK-NEXT:     let [[V_1]]: core::simd::Simd<f32, 16> = b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"cmp512_lt %04x\n".as_ptr(),
 // CHECK-NEXT:             (core::simd::cmp::SimdPartialOrd::simd_lt(
 // CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]]: core::simd::Simd<f32, 16> = [[V_0]];
+// CHECK-NEXT:                         let [[T_0]]: core::simd::Simd<f32, 16> = a;
 // CHECK-NEXT:                         let [[T_1]] = [[T_0]].to_array();
-// CHECK-NEXT:                         let [[T_2]]: core::simd::Simd<f32, 16> = [[V_1]];
+// CHECK-NEXT:                         let [[T_2]]: core::simd::Simd<f32, 16> = b;
 // CHECK-NEXT:                         let [[T_3]] = [[T_2]].to_array();
 // CHECK-NEXT:                         let [[T_4]]: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
@@ -3125,17 +3083,17 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let [[V_2]]: core::simd::Simd<f32, 16> = a;
-// CHECK-NEXT:     let [[V_3]]: core::simd::Simd<f32, 16> = b;
+// CHECK-NEXT:     let [[V_0]]: core::simd::Simd<f32, 16> = a;
+// CHECK-NEXT:     let [[V_1]]: core::simd::Simd<f32, 16> = b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"cmp512_unord %04x\n".as_ptr(),
 // CHECK-NEXT:             (core::simd::cmp::SimdPartialOrd::simd_lt(
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_5]]: core::simd::Simd<f32, 16> = [[V_2]];
+// CHECK-NEXT:                         let [[T_5]]: core::simd::Simd<f32, 16> = [[V_0]];
 // CHECK-NEXT:                         let [[T_6]] = [[T_5]].to_array();
-// CHECK-NEXT:                         let [[T_7]]: core::simd::Simd<f32, 16> = [[V_2]];
+// CHECK-NEXT:                         let [[T_7]]: core::simd::Simd<f32, 16> = [[V_0]];
 // CHECK-NEXT:                         let [[T_8]] = [[T_7]].to_array();
 // CHECK-NEXT:                         let [[T_9]]: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
@@ -3145,9 +3103,9 @@ int main(void) {
 // CHECK-NEXT:                         [[T_9]]
 // CHECK-NEXT:                     })
 // CHECK-NEXT:                         | {
-// CHECK-NEXT:                             let [[T_10]]: core::simd::Simd<f32, 16> = [[V_3]];
+// CHECK-NEXT:                             let [[T_10]]: core::simd::Simd<f32, 16> = [[V_1]];
 // CHECK-NEXT:                             let [[T_11]] = [[T_10]].to_array();
-// CHECK-NEXT:                             let [[T_12]]: core::simd::Simd<f32, 16> = [[V_3]];
+// CHECK-NEXT:                             let [[T_12]]: core::simd::Simd<f32, 16> = [[V_1]];
 // CHECK-NEXT:                             let [[T_13]] = [[T_12]].to_array();
 // CHECK-NEXT:                             let [[T_14]]: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                 core::array::from_fn(
@@ -3162,17 +3120,15 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let [[V_62:__v[0-9]+]]: core::simd::Simd<f32, 16> = a;
-// CHECK-NEXT:     let [[V_4]]: core::simd::Simd<f32, 16> = b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"cmp512_nle %04x\n".as_ptr(),
 // CHECK-NEXT:             (core::simd::cmp::SimdPartialOrd::simd_lt(
 // CHECK-NEXT:                     !{
-// CHECK-NEXT:                         let [[T_15]]: core::simd::Simd<f32, 16> = [[V_62]];
+// CHECK-NEXT:                         let [[T_15]]: core::simd::Simd<f32, 16> = a;
 // CHECK-NEXT:                         let [[T_16]] = [[T_15]].to_array();
-// CHECK-NEXT:                         let [[T_17]]: core::simd::Simd<f32, 16> = [[V_4]];
+// CHECK-NEXT:                         let [[T_17]]: core::simd::Simd<f32, 16> = b;
 // CHECK-NEXT:                         let [[T_18]] = [[T_17]].to_array();
 // CHECK-NEXT:                         let [[T_19]]: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
@@ -3187,17 +3143,15 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let [[V_5]]: core::simd::Simd<f32, 16> = a;
-// CHECK-NEXT:     let [[V_63:__v[0-9]+]]: core::simd::Simd<f32, 16> = b;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"mask_cmp512_eq %04x\n".as_ptr(),
 // CHECK-NEXT:             ((core::simd::cmp::SimdPartialOrd::simd_lt(
 // CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_20]]: core::simd::Simd<f32, 16> = [[V_5]];
+// CHECK-NEXT:                         let [[T_20]]: core::simd::Simd<f32, 16> = a;
 // CHECK-NEXT:                         let [[T_21]] = [[T_20]].to_array();
-// CHECK-NEXT:                         let [[T_22]]: core::simd::Simd<f32, 16> = [[V_63]];
+// CHECK-NEXT:                         let [[T_22]]: core::simd::Simd<f32, 16> = b;
 // CHECK-NEXT:                         let [[T_23]] = [[T_22]].to_array();
 // CHECK-NEXT:                         let [[T_24]]: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
@@ -3342,7 +3296,7 @@ int main(void) {
 // CHECK-NEXT:         && std::arch::is_x86_feature_detected!("avx512dq")
 // CHECK-NEXT:         && std::arch::is_x86_feature_detected!("avx512vl") {
 // CHECK-NEXT:         let mut tail: i32 = 0;
-// CHECK-NEXT:         '[[SLATE_BREAK_30:__slate_break_[0-9]+]]: while tail <= 16 {
+// CHECK-NEXT:         '[[SLATE_BREAK_0]]: while tail <= 16 {
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 let [[T_2]] = ia.0.as_mut_ptr() as *const i32;
 // CHECK-NEXT:                 let [[T_3]] = bytes.0.as_mut_ptr() as *const i8;

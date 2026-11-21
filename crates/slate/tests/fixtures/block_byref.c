@@ -646,7 +646,7 @@ int main(void) {
 // CHECK-NEXT:     let mut sum: i64 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: for i in 0i32..100000i32 {
 // CHECK-NEXT:         let made: *mut core::ffi::c_void = make_counter(i);
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe {
+// CHECK-NEXT:         sum += (unsafe {
 // CHECK-NEXT:             let [[T_11:__t[0-9]+]] = made;
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                     core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> i32>>(
@@ -654,8 +654,7 @@ int main(void) {
 // CHECK-NEXT:                     )
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 .unwrap()([[T_11]])
-// CHECK-NEXT:         };
-// CHECK-NEXT:         sum += [[V_0]] as i64;
+// CHECK-NEXT:         }) as i64;
 // CHECK-NEXT:         unsafe { _Block_release(made as *const ()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let end: u64 = unsafe {
@@ -682,13 +681,13 @@ int main(void) {
 // CHECK-NEXT:     c0: *mut __slate_blocks::Byref<*mut core::ffi::c_void>,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "C-unwind" fn __slate_block_0(__block: *mut core::ffi::c_void, [[V_1:__v[0-9]+]]: i32) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn __slate_block_0(__block: *mut core::ffi::c_void, [[V_0:__v[0-9]+]]: i32) -> i32 {
 // CHECK-NEXT:     let __captures: __slate_block_0_captures = unsafe {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_0_captures>(__block)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let fib: *mut __slate_blocks::Byref<*mut core::ffi::c_void> = __captures.c0;
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = if [[V_1]] < 2 {
-// CHECK-NEXT:         [[V_1]]
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = if [[V_0]] < 2 {
+// CHECK-NEXT:         [[V_0]]
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         (unsafe {
 // CHECK-NEXT:             let [[T_0]] = *__slate_blocks::value(fib);
@@ -697,7 +696,7 @@ int main(void) {
 // CHECK-NEXT:                         __slate_blocks::invoke([[T_0]]),
 // CHECK-NEXT:                     )
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 .unwrap()([[T_0]], [[V_1]] - 1)
+// CHECK-NEXT:                 .unwrap()([[T_0]], [[V_0]] - 1)
 // CHECK-NEXT:         })
 // CHECK-NEXT:             + unsafe {
 // CHECK-NEXT:                 let [[T_1]] = *__slate_blocks::value(fib);
@@ -706,10 +705,10 @@ int main(void) {
 // CHECK-NEXT:                             __slate_blocks::invoke([[T_1]]),
 // CHECK-NEXT:                         )
 // CHECK-NEXT:                     }
-// CHECK-NEXT:                     .unwrap()([[T_1]], [[V_1]] - 2)
+// CHECK-NEXT:                     .unwrap()([[T_1]], [[V_0]] - 2)
 // CHECK-NEXT:             }
 // CHECK-NEXT:     };
-// CHECK-NEXT:     [[V_2]]
+// CHECK-NEXT:     [[V_1]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static __slate_block_0_descriptor: __slate_blocks::Descriptor = __slate_blocks::descriptor::<__slate_block_0_captures>(
@@ -722,12 +721,12 @@ int main(void) {
 // CHECK-NEXT:     c0: *mut __slate_blocks::Byref<*mut core::ffi::c_void>,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "C-unwind" fn __slate_block_1(__block: *mut core::ffi::c_void, [[V_1]]: i32) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn __slate_block_1(__block: *mut core::ffi::c_void, [[V_0]]: i32) -> i32 {
 // CHECK-NEXT:     let __captures: __slate_block_1_captures = unsafe {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_1_captures>(__block)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let depth: *mut __slate_blocks::Byref<*mut core::ffi::c_void> = __captures.c0;
-// CHECK-NEXT:     let [[V_2]]: i32 = if [[V_1]] != 0 {
+// CHECK-NEXT:     let [[V_1]]: i32 = if [[V_0]] != 0 {
 // CHECK-NEXT:         (unsafe {
 // CHECK-NEXT:             let [[T_0]] = *__slate_blocks::value(depth);
 // CHECK-NEXT:             unsafe {
@@ -735,12 +734,12 @@ int main(void) {
 // CHECK-NEXT:                         __slate_blocks::invoke([[T_0]]),
 // CHECK-NEXT:                     )
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 .unwrap()([[T_0]], [[V_1]] - 1)
+// CHECK-NEXT:                 .unwrap()([[T_0]], [[V_0]] - 1)
 // CHECK-NEXT:         }) + 1
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         0
 // CHECK-NEXT:     };
-// CHECK-NEXT:     [[V_2]]
+// CHECK-NEXT:     [[V_1]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static __slate_block_1_descriptor: __slate_blocks::Descriptor = __slate_blocks::descriptor::<__slate_block_1_captures>(
@@ -758,12 +757,12 @@ int main(void) {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_2_captures>(__block)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let count: *mut __slate_blocks::Byref<i32> = __captures.c0;
-// CHECK-NEXT:     let [[V_1]]: i32 = unsafe { *__slate_blocks::value(count) };
-// CHECK-NEXT:     let [[V_2]]: i32 = [[V_1]] + 1;
+// CHECK-NEXT:     let [[V_0]]: i32 = unsafe { *__slate_blocks::value(count) };
+// CHECK-NEXT:     let [[V_1]]: i32 = [[V_0]] + 1;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_blocks::value(count) = [[V_2]];
+// CHECK-NEXT:         *__slate_blocks::value(count) = [[V_1]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_2]]
+// CHECK-NEXT:     [[V_1]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static __slate_block_2_descriptor: __slate_blocks::Descriptor = __slate_blocks::descriptor::<__slate_block_2_captures>(
@@ -781,12 +780,12 @@ int main(void) {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_3_captures>(__block)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let total: *mut __slate_blocks::Byref<i64> = __captures.c0;
-// CHECK-NEXT:     let [[V_1]]: i64 = unsafe { *__slate_blocks::value(total) };
-// CHECK-NEXT:     let [[V_2]]: i64 = [[V_1]] + 5;
+// CHECK-NEXT:     let [[V_0]]: i64 = unsafe { *__slate_blocks::value(total) };
+// CHECK-NEXT:     let [[V_1]]: i64 = [[V_0]] + 5;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_blocks::value(total) = [[V_2]];
+// CHECK-NEXT:         *__slate_blocks::value(total) = [[V_1]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_2]] as i32
+// CHECK-NEXT:     [[V_1]] as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static __slate_block_3_descriptor: __slate_blocks::Descriptor = __slate_blocks::descriptor::<__slate_block_3_captures>(
@@ -840,12 +839,12 @@ int main(void) {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_6_captures>(__block)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mine: *mut __slate_blocks::Byref<i32> = __captures.c0;
-// CHECK-NEXT:     let [[V_1]]: i32 = unsafe { *__slate_blocks::value(mine) };
-// CHECK-NEXT:     let [[V_2]]: i32 = [[V_1]] + 1;
+// CHECK-NEXT:     let [[V_0]]: i32 = unsafe { *__slate_blocks::value(mine) };
+// CHECK-NEXT:     let [[V_1]]: i32 = [[V_0]] + 1;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_blocks::value(mine) = [[V_2]];
+// CHECK-NEXT:         *__slate_blocks::value(mine) = [[V_1]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_1]]
+// CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static __slate_block_6_descriptor: __slate_blocks::Descriptor = __slate_blocks::descriptor::<__slate_block_6_captures>(

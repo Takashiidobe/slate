@@ -172,12 +172,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%g %g %ld\n".as_ptr(), r, s as f64, l) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     n = 2.75f64 as i32;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = ((n as f64) + 1.5f64) as i32;
-// CHECK-NEXT:     n = [[V_0]];
+// CHECK-NEXT:     n = ((n as f64) + 1.5f64) as i32;
 // CHECK-NEXT:     println!("{}", n);
 // CHECK-NEXT:     let mut u: u32 = 7;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u32 = ((u as f64) * 0.5f64) as u32;
-// CHECK-NEXT:     u = [[V_1]];
+// CHECK-NEXT:     u = ((u as f64) * 0.5f64) as u32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), u) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

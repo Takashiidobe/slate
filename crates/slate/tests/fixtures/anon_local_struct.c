@@ -74,13 +74,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *buf.pointer = point.x + point.y;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut i32 = buf.pointer;
-// CHECK-NEXT:     buf.pointer = unsafe { [[V_0]].add(1) };
+// CHECK-NEXT:     buf.pointer = unsafe { buf.pointer.add(1) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *buf.pointer = point.x * point.y;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = buf.pointer;
-// CHECK-NEXT:     buf.pointer = unsafe { [[V_1]].add(1) };
+// CHECK-NEXT:     buf.pointer = unsafe { buf.pointer.add(1) };
 // CHECK-NEXT:     println!("{} {}", storage.0[0], storage.0[1]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

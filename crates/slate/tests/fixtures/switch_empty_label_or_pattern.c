@@ -74,9 +74,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         9223372036854775808 => {
 // CHECK-NEXT:             out = 2;
-// CHECK-NEXT:             let [[V_0:_v[0-9]+]]: i32 = out;
-// CHECK-NEXT:             let [[V_1:_v[0-9]+]]: i32 = [[V_0]] + 3;
-// CHECK-NEXT:             out = [[V_1]];
+// CHECK-NEXT:             out += 3;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         3 => {
 // CHECK-NEXT:             out += 3;

@@ -15,6 +15,7 @@ pub(crate) enum Access {
     Read,
     Write,
     Escape,
+    Capture,
 }
 
 pub(crate) struct DefUse {
@@ -52,10 +53,22 @@ impl DefUse {
             .is_some_and(|uses| uses.iter().any(|(_, access)| *access == Access::Escape))
     }
 
+    pub fn ordered(&self) -> bool {
+        self.ordered
+    }
+
+    pub fn single_read(&self, binding: BindingId) -> bool {
+        matches!(
+            self.uses.get(&binding).map(Vec::as_slice),
+            Some([(_, Access::Read)])
+        )
+    }
+
     pub fn touched_in(&self, binding: BindingId, region: &Range<u32>) -> bool {
         self.uses.get(&binding).is_some_and(|uses| {
-            uses.iter()
-                .any(|(position, access)| *access != Access::Read && region.contains(position))
+            uses.iter().any(|(position, access)| {
+                matches!(access, Access::Write | Access::Escape) && region.contains(position)
+            })
         })
     }
 
@@ -122,7 +135,10 @@ impl DefUse {
                 self.ordered = false;
                 self.value(value);
             }
-            Statement::Temporary { initializer, .. } => {
+            Statement::Temporary {
+                ty, initializer, ..
+            } => {
+                self.captures(ty);
                 if let Some(value) = initializer {
                     self.value(value);
                 }
@@ -289,6 +305,7 @@ impl DefUse {
     }
 
     fn variable(&mut self, variable: &Variable) {
+        self.captures(&variable.ty);
         if variable.cleanup.is_some() {
             self.record(variable.id, Access::Escape);
         }
@@ -299,6 +316,7 @@ impl DefUse {
     }
 
     fn target(&mut self, place: &Place) {
+        self.captures(&place.ty);
         match &place.kind {
             PlaceKind::Binding(id) => self.record(*id, Access::Write),
             PlaceKind::MacroArg { place, .. } => self.target(place),
@@ -314,6 +332,7 @@ impl DefUse {
     }
 
     fn place(&mut self, place: &Place) {
+        self.captures(&place.ty);
         match &place.kind {
             PlaceKind::Binding(id) => self.record(*id, Access::Escape),
             PlaceKind::Deref(value) => self.value(value),
@@ -335,7 +354,14 @@ impl DefUse {
     }
 
     fn value(&mut self, value: &Value) {
+        self.captures(&value.ty);
         deep(|| self.value_kind(&value.node.value));
+    }
+
+    fn captures(&mut self, ty: &Type) {
+        for binding in captured(ty) {
+            self.record(binding, Access::Capture);
+        }
     }
 
     fn value_kind(&mut self, kind: &ValueKind) {
@@ -470,4 +496,41 @@ impl DefUse {
             | ValueKind::CodeUnits(_) => {}
         }
     }
+}
+
+pub(crate) fn captured(ty: &Type) -> Vec<BindingId> {
+    let mut bindings = Vec::new();
+    let mut pending = vec![ty];
+    while let Some(ty) = pending.pop() {
+        match ty {
+            Type::VariableArray { element, extent } => {
+                if let VariableExtent::Captured(binding) = extent {
+                    bindings.push(*binding);
+                }
+                pending.push(element);
+            }
+            Type::Array { element, .. } => pending.push(element),
+            Type::Pointer { pointee, .. } => pending.push(pointee),
+            Type::BlockPointer { function } => pending.push(function),
+            Type::Function {
+                return_type,
+                parameters,
+                ..
+            } => {
+                pending.extend(return_type.as_deref());
+                pending.extend(parameters);
+            }
+            Type::Void
+            | Type::Bool
+            | Type::Numeric(_)
+            | Type::Complex(_)
+            | Type::Imaginary(_)
+            | Type::FixedPoint(_)
+            | Type::Vector { .. }
+            | Type::VaList
+            | Type::Sizeless(_)
+            | Type::Defined(_) => {}
+        }
+    }
+    bindings
 }

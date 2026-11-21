@@ -259,12 +259,12 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: LongDouble = unsafe {
-// CHECK-NEXT:         (core::ptr::addr_of!(e.x) as *const LongDouble).read_unaligned()
-// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!(e.x) as *mut LongDouble)
-// CHECK-NEXT:             .write_unaligned([[V_0]] * LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]));
+// CHECK-NEXT:             .write_unaligned(
+// CHECK-NEXT:                 (core::ptr::addr_of!(e.x) as *const LongDouble).read_unaligned()
+// CHECK-NEXT:                     * LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
+// CHECK-NEXT:             );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(

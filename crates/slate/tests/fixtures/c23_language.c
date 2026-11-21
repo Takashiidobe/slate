@@ -298,9 +298,7 @@ int main(void) {
 // CHECK-NEXT:     match value {
 // CHECK-NEXT:         1 => {
 // CHECK-NEXT:             result += 3;
-// CHECK-NEXT:             let [[V_1:_v[0-9]+]]: i32 = result;
-// CHECK-NEXT:             let [[V_2:_v[0-9]+]]: i32 = [[V_1]] + 5;
-// CHECK-NEXT:             result = [[V_2]];
+// CHECK-NEXT:             result += 5;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         2 => {
 // CHECK-NEXT:             result += 5;

@@ -463,11 +463,10 @@ int main(void) {
 // CHECK-NEXT:     let mut accepted: i32 = 0;
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0..((core::mem::size_of::<[LongDouble; 5]>() as u64)
 // CHECK-NEXT:         / (core::mem::size_of::<LongDouble>() as u64)) {
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = {
+// CHECK-NEXT:         accepted += {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]] = addends[i as usize];
 // CHECK-NEXT:             arOpAccumulate(&mut acc, [[T_0]])
 // CHECK-NEXT:         };
-// CHECK-NEXT:         accepted += [[V_1]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     let n: i32 = ld2string(

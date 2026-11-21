@@ -165,8 +165,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { ap.next_arg::<i32>() };
-// CHECK-NEXT:         total += [[V_0]] as i64;
+// CHECK-NEXT:         total += (unsafe { ap.next_arg::<i32>() }) as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -182,19 +181,16 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         let kind: i32 = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:         if kind == 0 {
-// CHECK-NEXT:             let [[V_0]]: i32 = unsafe { ap.next_arg::<i32>() };
-// CHECK-NEXT:             total += [[V_0]] as f64;
+// CHECK-NEXT:             total += (unsafe { ap.next_arg::<i32>() }) as f64;
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if kind == 1 {
-// CHECK-NEXT:                 let [[V_1:__v[0-9]+]]: f64 = unsafe { ap.next_arg::<f64>() };
-// CHECK-NEXT:                 total += [[V_1]];
+// CHECK-NEXT:                 total += unsafe { ap.next_arg::<f64>() };
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if kind == 2 {
 // CHECK-NEXT:                     let text: *const i8 = unsafe { ap.next_arg::<*const i8>() };
 // CHECK-NEXT:                     total += ((unsafe { *text.add(0) }) as i32) as f64;
 // CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     let [[V_2:__v[0-9]+]]: f64 = (unsafe { ap.next_arg::<i64>() }) as f64;
-// CHECK-NEXT:                     total += [[V_2]];
+// CHECK-NEXT:                     total += (unsafe { ap.next_arg::<i64>() }) as f64;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -213,13 +209,11 @@ int main(void) {
 // CHECK-NEXT:     copy = ap.clone();
 // CHECK-NEXT:     let mut first: i32 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         let [[V_0]]: i32 = unsafe { ap.next_arg::<i32>() };
-// CHECK-NEXT:         first += [[V_0]];
+// CHECK-NEXT:         first += unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut second: i32 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i32 = (unsafe { copy.next_arg::<i32>() }) * 2;
-// CHECK-NEXT:         second += [[V_3]];
+// CHECK-NEXT:         second += (unsafe { copy.next_arg::<i32>() }) * 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ap = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(

@@ -90,10 +90,9 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump(f: *mut flags) {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe {
+// CHECK-NEXT:     let [[T_0]] = (unsafe {
 // CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!((*f).__slate_bits_0)).__get_g()
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let [[T_0]] = [[V_0]] + 1;
+// CHECK-NEXT:     }) + 1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]] = core::ptr::read_volatile(
 // CHECK-NEXT:             core::ptr::addr_of_mut!((*f).__slate_bits_0),
@@ -136,10 +135,9 @@ int main(void) {
 // CHECK-NEXT:         [[T_2]].__set_g([[T_1]]);
 // CHECK-NEXT:         core::ptr::write_volatile(core::ptr::addr_of_mut!(w.__slate_bits_0), [[T_2]]);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = unsafe {
+// CHECK-NEXT:     let [[T_3]] = (unsafe {
 // CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(w.__slate_bits_0)).__get_g()
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let [[T_3]] = [[V_1]] + 1;
+// CHECK-NEXT:     }) + 1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut [[T_4:__t[0-9]+]] = core::ptr::read_volatile(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(w.__slate_bits_0),
@@ -156,10 +154,10 @@ int main(void) {
 // CHECK-NEXT:         [[T_5]].__slate_bits_0.__set_neg(-1000i64);
 // CHECK-NEXT:         [[T_5]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u64 = unsafe {
-// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(p.__slate_bits_0)).__get_big()
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let [[T_6:__t[0-9]+]] = [[V_2]].wrapping_add(4294967296);
+// CHECK-NEXT:     let [[T_6:__t[0-9]+]] = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(p.__slate_bits_0)).__get_big()
+// CHECK-NEXT:         }
+// CHECK-NEXT:         .wrapping_add(4294967296);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut [[T_7:__t[0-9]+]] = core::ptr::read_volatile(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(p.__slate_bits_0),
@@ -167,10 +165,9 @@ int main(void) {
 // CHECK-NEXT:         [[T_7]].__set_big([[T_6]]);
 // CHECK-NEXT:         core::ptr::write_volatile(core::ptr::addr_of_mut!(p.__slate_bits_0), [[T_7]]);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i64 = unsafe {
+// CHECK-NEXT:     let [[T_8:__t[0-9]+]] = (((unsafe {
 // CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(p.__slate_bits_0)).__get_neg()
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let [[T_8:__t[0-9]+]] = (([[V_3]] as i32) - 5) as i64;
+// CHECK-NEXT:     }) as i32) - 5) as i64;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let mut [[T_9:__t[0-9]+]] = core::ptr::read_volatile(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(p.__slate_bits_0),

@@ -71,7 +71,6 @@ pub(super) fn registry(
         Box::new(bool_ternary::BoolTernaryFold),
         Box::new(bool_ternary::BoolIntTernaryFold),
         Box::new(inline_temps::LateInlineTemps),
-        Box::new(inline_temps::EffectfulTempForward),
         Box::new(inline_temps::InlineConstArgTemps),
         Box::new(inline_temps::AsmOutputTempFold),
         Box::new(peel_casts::PeelCasts),

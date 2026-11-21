@@ -99,9 +99,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn scale(p: &mut f64) {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: f64 = (unsafe { *p }) * 2.0f64;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p = [[V_0]];
+// CHECK-NEXT:         *p = *p * 2.0f64;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn mark(p: &mut i8) {

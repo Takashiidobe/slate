@@ -114,9 +114,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn lookup(view: *const view, index: c_long, dim: i32) -> *mut c_char {
 // CHECK-NEXT:     let mut ptr: *mut c_char = unsafe { (*view).buf };
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut c_char = ptr;
 // CHECK-NEXT:     ptr = unsafe {
-// CHECK-NEXT:         [[V_0]].offset((*unsafe { (*view).strides }.offset(dim as isize) * index) as isize)
+// CHECK-NEXT:         ptr.offset((*unsafe { (*view).strides }.offset(dim as isize) * index) as isize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ptr = ADJUST_PTR!(ptr, (*view).suboffsets, dim);
 // CHECK-NEXT:     ptr

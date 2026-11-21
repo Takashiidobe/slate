@@ -74,12 +74,10 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let mut index: u64 = 0;
 // CHECK-NEXT:     while index < unsafe { (*flexible).count } {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = total
-// CHECK-NEXT:             + unsafe {
-// CHECK-NEXT:                 *(core::ptr::addr_of_mut!((*flexible).values) as *mut i32)
-// CHECK-NEXT:                     .add(index as usize)
-// CHECK-NEXT:             };
-// CHECK-NEXT:         total = [[V_0]];
+// CHECK-NEXT:         total += unsafe {
+// CHECK-NEXT:             *(core::ptr::addr_of_mut!((*flexible).values) as *mut i32)
+// CHECK-NEXT:                 .add(index as usize)
+// CHECK-NEXT:         };
 // CHECK-NEXT:         index = index.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { free((flexible as *mut ()) as *mut core::ffi::c_void) };

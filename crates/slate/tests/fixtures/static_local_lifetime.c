@@ -141,22 +141,22 @@ int main(void) {
 // CHECK-NEXT: static mut count__11: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn other_counter() -> i32 {
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = unsafe { count__16 };
+// CHECK-NEXT:     let [[V_0]]: i32 = unsafe { count__16 };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         count__16 = [[V_1]] + 1;
+// CHECK-NEXT:         count__16 = [[V_0]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_1]]
+// CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut count__16: i32 = 50;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn history(value: i32) -> *mut i32 {
-// CHECK-NEXT:     let [[V_1]]: i32 = unsafe { next };
+// CHECK-NEXT:     let [[V_0]]: i32 = unsafe { next };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         next = [[V_1]] + 1;
+// CHECK-NEXT:         next = [[V_0]] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slots.0[([[V_1]] % 4) as usize] = value;
+// CHECK-NEXT:         slots.0[([[V_0]] % 4) as usize] = value;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(slots.0) as *mut i32 }
 // CHECK-NEXT: }
@@ -191,12 +191,12 @@ int main(void) {
 // CHECK-NEXT:             deepest = n;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_1]]: i32 = if n == 0 {
+// CHECK-NEXT:     let [[V_0]]: i32 = if n == 0 {
 // CHECK-NEXT:         unsafe { deepest }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         depth(n - 1)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     [[V_1]]
+// CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut deepest: i32 = unsafe { core::mem::zeroed() };
@@ -205,11 +205,11 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         sum = sum + sample;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = (unsafe { samples }) + 1;
+// CHECK-NEXT:     let [[V_0]]: i32 = (unsafe { samples }) + 1;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         samples = [[V_2]];
+// CHECK-NEXT:         samples = [[V_0]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (unsafe { sum }) / ([[V_2]] as f64)
+// CHECK-NEXT:     (unsafe { sum }) / ([[V_0]] as f64)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut sum: f64 = unsafe { core::mem::zeroed() };
@@ -231,12 +231,11 @@ int main(void) {
 // CHECK-NEXT: fn loop_scoped() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..3i32 {
-// CHECK-NEXT:         let [[V_1]]: i32 = unsafe { seen };
+// CHECK-NEXT:         let [[V_0]]: i32 = unsafe { seen };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             seen = [[V_1]] + 1;
+// CHECK-NEXT:             seen = [[V_0]] + 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i32 = [[V_1]];
-// CHECK-NEXT:         total += [[V_3]];
+// CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -244,11 +243,11 @@ int main(void) {
 // CHECK-NEXT: static mut seen: i32 = 7;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn tally() -> i32 {
-// CHECK-NEXT:     let [[V_1]]: i32 = unsafe { counter__68 };
+// CHECK-NEXT:     let [[V_0]]: i32 = unsafe { counter__68 };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         counter__68 = [[V_1]] + 1;
+// CHECK-NEXT:         counter__68 = [[V_0]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_1]]
+// CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut counter__68: i32 = 100;
@@ -281,9 +280,9 @@ int main(void) {
 // CHECK-NEXT:         (*point__1).x = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", unsafe { (*moved(1i32)).x });
-// CHECK-NEXT:     let [[V_0]]: *mut i32 = base_pointer();
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = base_pointer();
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 5;
+// CHECK-NEXT:         *[[V_1]] = *[[V_1]] + 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let through: i32 = unsafe { *base_pointer() };
 // CHECK-NEXT:     println!("{} {}", unsafe { global_base }, through);

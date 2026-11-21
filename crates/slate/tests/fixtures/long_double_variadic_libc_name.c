@@ -223,10 +223,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: LongDouble = unsafe {
-// CHECK-NEXT:             __slate_f80_va_arg(core::ptr::addr_of_mut!(ap))
-// CHECK-NEXT:         };
-// CHECK-NEXT:         total += [[V_0]];
+// CHECK-NEXT:         total += unsafe { __slate_f80_va_arg(core::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

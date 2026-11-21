@@ -162,18 +162,14 @@ int main(void) {
 // CHECK-NEXT:                 0u32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i64 = total;
-// CHECK-NEXT:         total = [[V_0]]
-// CHECK-NEXT:             + (((v.shr_bits(250 as usize).to_u128() as u64) as i64)
-// CHECK-NEXT:                 + ((v
-// CHECK-NEXT:                     .bitand_bits(
-// CHECK-NEXT:                         <bitint::BUint<300, 5, 40, bitint::A8>>::from_bint(
-// CHECK-NEXT:                             <bitint::BInt<300, 5, 40, bitint::A8>>::from_i128(
-// CHECK-NEXT:                                 65535 as i128,
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         ),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                     .to_u128() as u64) as i64));
+// CHECK-NEXT:         total += ((v.shr_bits(250 as usize).to_u128() as u64) as i64)
+// CHECK-NEXT:             + ((v
+// CHECK-NEXT:                 .bitand_bits(
+// CHECK-NEXT:                     <bitint::BUint<300, 5, 40, bitint::A8>>::from_bint(
+// CHECK-NEXT:                         <bitint::BInt<300, 5, 40, bitint::A8>>::from_i128(65535 as i128),
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .to_u128() as u64) as i64);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

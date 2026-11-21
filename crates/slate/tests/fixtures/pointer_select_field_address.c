@@ -48,9 +48,8 @@ int main(void) {
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(acc.indirect) }
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = unsafe { *target };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *target = [[V_0]].wrapping_add(amount);
+// CHECK-NEXT:         *target = unsafe { *target }.wrapping_add(amount);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

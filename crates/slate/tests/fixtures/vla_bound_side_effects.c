@@ -22,8 +22,7 @@ int main(void) {
 // CHECK-NEXT:     let mut evaluated: u64 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = bound;
 // CHECK-NEXT:     bound = [[V_0]] + 1;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u64 = [[V_0]] as u64;
-// CHECK-NEXT:     evaluated = [[V_1]].wrapping_mul(4);
+// CHECK-NEXT:     evaluated = ([[V_0]] as u64).wrapping_mul(4);
 // CHECK-NEXT:     let unevaluated: u64 = core::mem::size_of::<*mut [i32; 0]>() as u64;
 // CHECK-NEXT:     let mut values: [i32; 3] = [7, 8, 9];
 // CHECK-NEXT:     let parameter: i32 = parameter_bound(3i32, values.as_slice());

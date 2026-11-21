@@ -151,11 +151,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut h: i32 = 0;
 // CHECK-NEXT:     while (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(h)) }) < n {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = s
-// CHECK-NEXT:             + p[(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(h)) }) as usize];
-// CHECK-NEXT:         s = [[V_0]];
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(h)) };
-// CHECK-NEXT:         unsafe { core::ptr::write_volatile(core::ptr::addr_of_mut!(h), [[V_1]] + 1) };
+// CHECK-NEXT:         s += p[(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(h)) }) as usize];
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_volatile(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(h),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(h)) + 1,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vn)) } {

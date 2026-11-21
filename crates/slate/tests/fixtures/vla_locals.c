@@ -146,16 +146,14 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for j in 0..argc {
-// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i64 = total;
-// CHECK-NEXT:         total = [[V_2]]
-// CHECK-NEXT:             + (((unsafe {
+// CHECK-NEXT:         total += ((unsafe {
+// CHECK-NEXT:             (*(*(argv.as_mut_ptr() as *mut *mut __SlateRecord_vla_locals_c_7)
+// CHECK-NEXT:                 .offset(j as isize))).kind
+// CHECK-NEXT:         }) as i64)
+// CHECK-NEXT:             + unsafe {
 // CHECK-NEXT:                 (*(*(argv.as_mut_ptr() as *mut *mut __SlateRecord_vla_locals_c_7)
-// CHECK-NEXT:                     .offset(j as isize))).kind
-// CHECK-NEXT:             }) as i64)
-// CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     (*(*(argv.as_mut_ptr() as *mut *mut __SlateRecord_vla_locals_c_7)
-// CHECK-NEXT:                         .offset(j as isize))).payload
-// CHECK-NEXT:                 });
+// CHECK-NEXT:                     .offset(j as isize))).payload
+// CHECK-NEXT:             };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total + ([[V_0]].wrapping_mul(16) as i64) + ([[V_1]].wrapping_mul(8) as i64)
 // CHECK-NEXT: }
@@ -239,31 +237,28 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: u64 = cols as u64;
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u64 = cols as u64;
 // CHECK-NEXT:     let row: *mut [i32; 0] = (unsafe {
 // CHECK-NEXT:         (grid.as_mut_ptr() as *mut [i32; 0])
 // CHECK-NEXT:             .byte_offset(1 * ((([[V_1]] as usize) * core::mem::size_of::<i32>()) as isize))
 // CHECK-NEXT:     }) as *mut [i32; 0];
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for c in 0..cols {
-// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: i32 = sum;
-// CHECK-NEXT:         sum = [[V_4]]
-// CHECK-NEXT:             + ((unsafe {
+// CHECK-NEXT:         sum += (unsafe {
+// CHECK-NEXT:             *(row
+// CHECK-NEXT:                     .byte_offset(
+// CHECK-NEXT:                         0 * ((([[V_2]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                     ) as *mut i32)
+// CHECK-NEXT:                 .offset(c as isize)
+// CHECK-NEXT:         })
+// CHECK-NEXT:             + unsafe {
 // CHECK-NEXT:                 *(row
 // CHECK-NEXT:                         .byte_offset(
-// CHECK-NEXT:                             0
-// CHECK-NEXT:                                 * ((([[V_3]] as usize) * core::mem::size_of::<i32>()) as isize),
+// CHECK-NEXT:                             1
+// CHECK-NEXT:                                 * ((([[V_2]] as usize) * core::mem::size_of::<i32>()) as isize),
 // CHECK-NEXT:                         ) as *mut i32)
 // CHECK-NEXT:                     .offset(c as isize)
-// CHECK-NEXT:             })
-// CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     *(row
-// CHECK-NEXT:                             .byte_offset(
-// CHECK-NEXT:                                 1
-// CHECK-NEXT:                                     * ((([[V_3]] as usize) * core::mem::size_of::<i32>()) as isize),
-// CHECK-NEXT:                             ) as *mut i32)
-// CHECK-NEXT:                         .offset(c as isize)
-// CHECK-NEXT:                 });
+// CHECK-NEXT:             };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let distance: i64 = ((unsafe {
 // CHECK-NEXT:         ((grid.as_mut_ptr() as *mut [i32; 0])
@@ -297,9 +292,7 @@ int main(void) {
 // CHECK-NEXT:                 *(scratch.as_mut_ptr() as *mut i32).offset(k as isize) = k + i;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:         total = [[V_5]]
-// CHECK-NEXT:             + unsafe { *(scratch.as_mut_ptr() as *mut i32).offset((i - 1) as isize) };
+// CHECK-NEXT:         total += unsafe { *(scratch.as_mut_ptr() as *mut i32).offset((i - 1) as isize) };
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total

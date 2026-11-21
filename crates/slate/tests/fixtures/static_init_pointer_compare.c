@@ -77,8 +77,7 @@ int main(void) {
 // CHECK-NEXT:     let mut f: *mut field = unsafe { core::ptr::addr_of_mut!(fields.0) as *mut field };
 // CHECK-NEXT:     while !unsafe { (*f).name }.is_null() {
 // CHECK-NEXT:         unsafe { printf(c"%s %d %d\n".as_ptr(), (*f).name, (*f).is_signed, (*f).size) };
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut field = f;
-// CHECK-NEXT:         f = unsafe { [[V_0]].add(1) };
+// CHECK-NEXT:         f = unsafe { f.add(1) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

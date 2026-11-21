@@ -229,6 +229,7 @@ struct FunctionLowerer<'a, 'm> {
     unborrowed: HashSet<BindingId>,
     reassigned_borrows: HashSet<BindingId>,
     views: HashMap<BindingId, (BindingId, ir::Value, ir::Value)>,
+    inlined: HashMap<BindingId, ir::Value>,
     erased_copy: Option<(*const ir::Place, String)>,
     const_layout: bool,
 }

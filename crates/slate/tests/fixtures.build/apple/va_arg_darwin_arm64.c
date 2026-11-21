@@ -166,8 +166,7 @@ long sum(int count, ...) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = take_int(ap);
-// CHECK-NEXT:         total += [[V_0]] as i64;
+// CHECK-NEXT:         total += take_int(ap) as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let b: big = unsafe {
 // CHECK-NEXT:         __slate_darwin_arm64_va::indirect::<_, big>(core::ptr::addr_of_mut!(ap))

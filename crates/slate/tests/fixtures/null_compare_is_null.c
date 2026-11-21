@@ -57,8 +57,7 @@ int main(void) {
 // CHECK-NEXT:         n += 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { hook }) != None {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { unsafe { hook }.unwrap()(n) };
-// CHECK-NEXT:         n += [[V_0]];
+// CHECK-NEXT:         n += unsafe { unsafe { hook }.unwrap()(n) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     n
 // CHECK: {{^}}}

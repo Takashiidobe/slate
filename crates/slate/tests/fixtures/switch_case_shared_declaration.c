@@ -74,9 +74,7 @@ int main(void) {
 // CHECK-NEXT:             shared = 10;
 // CHECK-NEXT:             total += shared;
 // CHECK-NEXT:             shared = 20;
-// CHECK-NEXT:             let [[V_0:_v[0-9]+]]: i32 = total;
-// CHECK-NEXT:             let [[V_1:_v[0-9]+]]: i32 = [[V_0]] + shared;
-// CHECK-NEXT:             total = [[V_1]];
+// CHECK-NEXT:             total += shared;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         1 => {
 // CHECK-NEXT:             shared = 20;

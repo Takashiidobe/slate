@@ -172,9 +172,11 @@ int main(void) {
 // CHECK-NEXT:             (size as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = unsafe { (*(state as *mut GNUCookie)).length };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(state as *mut GNUCookie)).length = [[V_0]].wrapping_add(size);
+// CHECK-NEXT:         (*(state as *mut GNUCookie)).length = unsafe {
+// CHECK-NEXT:                 (*(state as *mut GNUCookie)).length
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .wrapping_add(size);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     size as i64
 // CHECK-NEXT: }
@@ -191,7 +193,7 @@ int main(void) {
 // CHECK-NEXT:     let mut stream_data: *mut i8 = core::ptr::null_mut::<i8>();
 // CHECK-NEXT:     let mut stream_size: u64 = 0;
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         asprintf(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(formatted),
 // CHECK-NEXT:             c"%s:%d".as_ptr(),
@@ -199,15 +201,12 @@ int main(void) {
 // CHECK-NEXT:             23i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 6) as i32;
-// CHECK-NEXT:     total += [[V_1]];
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_2]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (formatted as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"gnu:23".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32);
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         strcmp(
+// CHECK-NEXT:             (formatted as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:             c"gnu:23".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     unsafe { free((formatted as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     let stream: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         open_memstream(
@@ -215,9 +214,8 @@ int main(void) {
 // CHECK-NEXT:             core::ptr::addr_of_mut!(stream_size),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_3]] + (!stream.is_null() as i32);
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += !stream.is_null() as i32;
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         slate_support::fprintf(
 // CHECK-NEXT:             stream,
 // CHECK-NEXT:             c"%s-%d".as_ptr(),
@@ -225,24 +223,17 @@ int main(void) {
 // CHECK-NEXT:             24i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 8) as i32;
-// CHECK-NEXT:     total += [[V_4]];
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = ((unsafe { __fwriting(stream) }) != 0) as i32;
-// CHECK-NEXT:     total += [[V_5]];
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = ((unsafe { __fpending(stream) }) > 0) as i32;
-// CHECK-NEXT:     total += [[V_6]];
-// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = ((unsafe { fflush(stream) }) == 0) as i32;
-// CHECK-NEXT:     total += [[V_7]];
+// CHECK-NEXT:     total += ((unsafe { __fwriting(stream) }) != 0) as i32;
+// CHECK-NEXT:     total += ((unsafe { __fpending(stream) }) > 0) as i32;
+// CHECK-NEXT:     total += ((unsafe { fflush(stream) }) == 0) as i32;
 // CHECK-NEXT:     total += (stream_size == 8) as i32;
-// CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_8]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (stream_data as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"slate-24".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32);
-// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = ((unsafe { slate_support::fclose(stream) }) == 0) as i32;
-// CHECK-NEXT:     total += [[V_9]];
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         strcmp(
+// CHECK-NEXT:             (stream_data as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:             c"slate-24".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0) as i32;
+// CHECK-NEXT:     total += ((unsafe { slate_support::fclose(stream) }) == 0) as i32;
 // CHECK-NEXT:     unsafe { free((stream_data as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -260,9 +251,8 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_1]]: i32 = total;
-// CHECK-NEXT:     total = [[V_1]] + (!stream.is_null() as i32);
-// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += !stream.is_null() as i32;
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         getdelim(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(line),
 // CHECK-NEXT:             core::ptr::addr_of_mut!(capacity),
@@ -270,33 +260,24 @@ int main(void) {
 // CHECK-NEXT:             stream,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 6) as i32;
-// CHECK-NEXT:     total += [[V_10]];
-// CHECK-NEXT:     let [[V_3]]: i32 = total;
-// CHECK-NEXT:     total = [[V_3]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (line as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"alpha|".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32);
-// CHECK-NEXT:     let [[V_4]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         strcmp(
+// CHECK-NEXT:             (line as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:             c"alpha|".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0) as i32;
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         getline(core::ptr::addr_of_mut!(line), core::ptr::addr_of_mut!(capacity), stream)
 // CHECK-NEXT:     }) == 5) as i32;
-// CHECK-NEXT:     total += [[V_4]];
-// CHECK-NEXT:     let [[V_5]]: i32 = total;
-// CHECK-NEXT:     total = [[V_5]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (line as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"beta\n".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32);
-// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = ((unsafe { __freading(stream) }) != 0) as i32;
-// CHECK-NEXT:     total += [[V_11]];
-// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = ((unsafe { __fbufsize(stream) }) > 0) as i32;
-// CHECK-NEXT:     total += [[V_12]];
-// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = ((unsafe { slate_support::fclose(stream) }) == 0) as i32;
-// CHECK-NEXT:     total += [[V_13]];
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         strcmp(
+// CHECK-NEXT:             (line as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:             c"beta\n".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0) as i32;
+// CHECK-NEXT:     total += ((unsafe { __freading(stream) }) != 0) as i32;
+// CHECK-NEXT:     total += ((unsafe { __fbufsize(stream) }) > 0) as i32;
+// CHECK-NEXT:     total += ((unsafe { slate_support::fclose(stream) }) == 0) as i32;
 // CHECK-NEXT:     unsafe { free((line as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -316,9 +297,8 @@ int main(void) {
 // CHECK-NEXT:     let stream: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         fopencookie(core::ptr::addr_of_mut!(cookie) as *mut (), c"w".as_ptr(), functions)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_1]]: i32 = total;
-// CHECK-NEXT:     total = [[V_1]] + (!stream.is_null() as i32);
-// CHECK-NEXT:     let [[V_10]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += !stream.is_null() as i32;
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         slate_support::fprintf(
 // CHECK-NEXT:             stream,
 // CHECK-NEXT:             c"%s:%d".as_ptr(),
@@ -326,20 +306,16 @@ int main(void) {
 // CHECK-NEXT:             7i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 8) as i32;
-// CHECK-NEXT:     total += [[V_10]];
-// CHECK-NEXT:     let [[V_3]]: i32 = ((unsafe { slate_support::fclose(stream) }) == 0) as i32;
-// CHECK-NEXT:     total += [[V_3]];
+// CHECK-NEXT:     total += ((unsafe { slate_support::fclose(stream) }) == 0) as i32;
 // CHECK-NEXT:     total += (cookie.closed == 1) as i32;
 // CHECK-NEXT:     total += (cookie.length == 8) as i32;
-// CHECK-NEXT:     let [[V_11]]: i32 = total;
-// CHECK-NEXT:     total = [[V_11]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             memcmp(
-// CHECK-NEXT:                 (cookie.bytes.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
-// CHECK-NEXT:                 (b"cookie:7\0".as_ptr() as *const ()) as *const core::ffi::c_void,
-// CHECK-NEXT:                 8u64 as usize,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32);
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         memcmp(
+// CHECK-NEXT:             (cookie.bytes.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             (b"cookie:7\0".as_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             8u64 as usize,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:

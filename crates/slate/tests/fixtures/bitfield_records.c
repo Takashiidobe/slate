@@ -168,21 +168,21 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump(flags: *mut Flags) {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe { (*flags).__slate_bits_0.__get_a() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*flags).__slate_bits_0.__set_a([[V_0]] + 3);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i64 = unsafe { (*flags).__slate_bits_2.__get_wide() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*flags).__slate_bits_2.__set_wide([[V_1]] + 1);
+// CHECK-NEXT:         let [[T_0]] = (*flags).__slate_bits_0.__get_a() + 3;
+// CHECK-NEXT:         (*flags).__slate_bits_0.__set_a([[T_0]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0]] = (*flags).__slate_bits_1.__get__flags2() * 2;
-// CHECK-NEXT:         (*flags).__slate_bits_1.__set__flags2([[T_0]]);
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = (*flags).__slate_bits_2.__get_wide() + 1;
+// CHECK-NEXT:         (*flags).__slate_bits_2.__set_wide([[T_1]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = ((*flags).__slate_bits_0.__get_ready() as i32) == 0;
-// CHECK-NEXT:         (*flags).__slate_bits_0.__set_ready([[T_1]]);
+// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = (*flags).__slate_bits_1.__get__flags2() * 2;
+// CHECK-NEXT:         (*flags).__slate_bits_1.__set__flags2([[T_2]]);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = ((*flags).__slate_bits_0.__get_ready() as i32) == 0;
+// CHECK-NEXT:         (*flags).__slate_bits_0.__set_ready([[T_3]]);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -202,7 +202,7 @@ int main(void) {
 // CHECK-NEXT:     local.tag = 116;
 // CHECK-NEXT:     local.__slate_bits_1.__set__flags2(8388607i32);
 // CHECK-NEXT:     local.__slate_bits_2.__set_wide(549755813887i64);
-// CHECK-NEXT:     let [[T_2:__t[0-9]+]] = true;
+// CHECK-NEXT:     let [[T_2]] = true;
 // CHECK-NEXT:     local.__slate_bits_2.__set_last([[T_2]]);
 // CHECK-NEXT:     local.after = -2;
 // CHECK-NEXT:     let assigned: i32 = 4i32;

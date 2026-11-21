@@ -64,12 +64,10 @@ int main(void) { char b[64]; fmt(b, "%d-%s", 7, "x"); printf("%d %s\n", sum(3, 1
 // CHECK-NEXT:     va_copy!(aq, ap);
 // CHECK-NEXT:     let mut t: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = unsafe { ap.next_arg::<i32>() };
-// CHECK-NEXT:         t += [[V_0]];
+// CHECK-NEXT:         t += unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = unsafe { aq.next_arg::<i32>() };
-// CHECK-NEXT:         t += [[V_1]];
+// CHECK-NEXT:         t += unsafe { aq.next_arg::<i32>() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     va_end!();
 // CHECK-NEXT:     va_end!();

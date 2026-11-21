@@ -78,12 +78,9 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }
 // CHECK-NEXT:         .is_null() {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = count;
-// CHECK-NEXT:         count = [[V_0]]
-// CHECK-NEXT:             + ((unsafe {
-// CHECK-NEXT:                 strlen((line.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char)
-// CHECK-NEXT:                     as u64
-// CHECK-NEXT:             }) as i32);
+// CHECK-NEXT:         count += (unsafe {
+// CHECK-NEXT:             strlen((line.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as u64
+// CHECK-NEXT:         }) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { slate_support::fclose(g) };
 // CHECK-NEXT:     println!("{}", count);

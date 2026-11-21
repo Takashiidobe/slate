@@ -200,10 +200,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn half(p: &mut LongDouble) {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: LongDouble = unsafe { *p };
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: LongDouble = [[V_0]] / __slate_f80_from_i32(2i32);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p = [[V_1]];
+// CHECK-NEXT:         *p = *p / __slate_f80_from_i32(2i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -65,9 +65,11 @@ int main(void) {
 // CHECK-NEXT:             (size as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = unsafe { (*(state as *mut GNUCookie)).length };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(state as *mut GNUCookie)).length = [[V_0]].wrapping_add(size);
+// CHECK-NEXT:         (*(state as *mut GNUCookie)).length = unsafe {
+// CHECK-NEXT:                 (*(state as *mut GNUCookie)).length
+// CHECK-NEXT:             }
+// CHECK-NEXT:             .wrapping_add(size);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     size as i64
 // CHECK: {{^}}}
@@ -92,9 +94,8 @@ int main(void) {
 // CHECK-NEXT:     let stream: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         fopencookie(core::ptr::addr_of_mut!(cookie) as *mut (), c"w".as_ptr(), functions)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_0]] + (!stream.is_null() as i32);
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += !stream.is_null() as i32;
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         slate_support::fprintf(
 // CHECK-NEXT:             stream,
 // CHECK-NEXT:             c"%s:%d".as_ptr(),
@@ -102,20 +103,16 @@ int main(void) {
 // CHECK-NEXT:             7i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 8) as i32;
-// CHECK-NEXT:     total += [[V_1]];
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = ((unsafe { slate_support::fclose(stream) }) == 0) as i32;
-// CHECK-NEXT:     total += [[V_2]];
+// CHECK-NEXT:     total += ((unsafe { slate_support::fclose(stream) }) == 0) as i32;
 // CHECK-NEXT:     total += (cookie.closed == 1) as i32;
 // CHECK-NEXT:     total += (cookie.length == 8) as i32;
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_3]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             memcmp(
-// CHECK-NEXT:                 (cookie.bytes.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
-// CHECK-NEXT:                 (b"cookie:7\0".as_ptr() as *const ()) as *const core::ffi::c_void,
-// CHECK-NEXT:                 8u64 as usize,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32);
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         memcmp(
+// CHECK-NEXT:             (cookie.bytes.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             (b"cookie:7\0".as_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:             8u64 as usize,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     total
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

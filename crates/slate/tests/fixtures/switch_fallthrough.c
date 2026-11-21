@@ -31,9 +31,7 @@ int main(void) {
 // CHECK-NEXT:     match x {
 // CHECK-NEXT:         1 => {
 // CHECK-NEXT:             out += 10;
-// CHECK-NEXT:             let [[V_0:_v[0-9]+]]: i32 = out;
-// CHECK-NEXT:             let [[V_1:_v[0-9]+]]: i32 = [[V_0]] + 20;
-// CHECK-NEXT:             out = [[V_1]];
+// CHECK-NEXT:             out += 20;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         2 => {
 // CHECK-NEXT:             out += 20;

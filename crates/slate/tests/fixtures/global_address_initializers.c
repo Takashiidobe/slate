@@ -214,8 +214,7 @@ int main(void) {
 // CHECK-NEXT:     let mut it: *mut i32 = unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 };
 // CHECK-NEXT:     while it != unsafe { table_end } {
 // CHECK-NEXT:         sum += unsafe { *it };
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: *mut i32 = it;
-// CHECK-NEXT:         it = unsafe { [[V_5]].add(1) };
+// CHECK-NEXT:         it = unsafe { it.add(1) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {}",

@@ -318,9 +318,7 @@ int main(void) {
 // CHECK-NEXT:     let mut compound: f64 = 1e308f64;
 // CHECK-NEXT:     let as_double: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
 // CHECK-NEXT:         as f64;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: f64 = compound
-// CHECK-NEXT:         * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
-// CHECK-NEXT:     compound = [[V_0]];
+// CHECK-NEXT:     compound *= unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
 // CHECK-NEXT:     stored = stored * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) }
 // CHECK-NEXT:         / unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
 // CHECK-NEXT:     {
@@ -434,14 +432,14 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: f64;
-// CHECK-NEXT:     [[V_1]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) })
+// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: f64;
+// CHECK-NEXT:     [[V_0]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) })
 // CHECK-NEXT:         * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"stmt %g\n".as_ptr(),
-// CHECK-NEXT:             [[V_1]] / core::ptr::read_volatile(core::ptr::addr_of!(ten)),
+// CHECK-NEXT:             [[V_0]] / core::ptr::read_volatile(core::ptr::addr_of!(ten)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -464,16 +462,16 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) })
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) })
 // CHECK-NEXT:         * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
-// CHECK-NEXT:     assigned = [[V_2]];
+// CHECK-NEXT:     assigned = [[V_1]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"update %g %g %g\n".as_ptr(),
 // CHECK-NEXT:             compound,
 // CHECK-NEXT:             stored,
-// CHECK-NEXT:             [[V_2]] / core::ptr::read_volatile(core::ptr::addr_of!(ten)),
+// CHECK-NEXT:             [[V_1]] / core::ptr::read_volatile(core::ptr::addr_of!(ten)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

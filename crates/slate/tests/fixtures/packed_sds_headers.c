@@ -343,9 +343,8 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         4 => {
 // CHECK-NEXT:             let [[V_2:__v[0-9]+]]: *mut sdshdr64 = (unsafe { s.sub(17) }) as *mut sdshdr64;
-// CHECK-NEXT:             let [[V_3:__v[0-9]+]]: u64 = unsafe { (*[[V_2]]).len };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*[[V_2]]).len = [[V_3]].wrapping_add(1);
+// CHECK-NEXT:                 (*[[V_2]]).len = unsafe { (*[[V_2]]).len }.wrapping_add(1);
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         _ => {}
@@ -493,9 +492,8 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 (*header).payload_type = i as u8;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             let [[V_1]]: u64 = unsafe { (*header).payload_len };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*header).payload_len = [[V_1]].wrapping_add(7);
+// CHECK-NEXT:                 (*header).payload_len = unsafe { (*header).payload_len }.wrapping_add(7);
 // CHECK-NEXT:             }
 // CHECK-NEXT:             used = used
 // CHECK-NEXT:                 .wrapping_add(

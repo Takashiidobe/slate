@@ -241,9 +241,7 @@ int main(void) {
 // CHECK-NEXT:         v: LongDouble([120, 111, 94, 77, 60, 43, 26, 137, 59, 64]),
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump80(c"before".as_ptr(), b.v);
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: LongDouble = b.v;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: LongDouble = [[V_0]] + __slate_f80_from_i32(1i32);
-// CHECK-NEXT:     b.v = [[V_1]];
+// CHECK-NEXT:     b.v += __slate_f80_from_i32(1i32);
 // CHECK-NEXT:     dump80(c"after".as_ptr(), b.v);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

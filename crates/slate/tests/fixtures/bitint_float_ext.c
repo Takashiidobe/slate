@@ -262,10 +262,8 @@ int main(void) {
 // CHECK-NEXT:     let mut a: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
 // CHECK-NEXT:         1 as i128,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = a;
-// CHECK-NEXT:     a = [[V_0]].shl_bits(150 as usize);
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = a;
-// CHECK-NEXT:     a = [[V_1]].wrapping_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128));
+// CHECK-NEXT:     a = a.shl_bits(150 as usize);
+// CHECK-NEXT:     a = a.wrapping_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128));
 // CHECK-NEXT:     let l: LongDouble = LongDouble(a.to_f80_bytes());
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), l) };
@@ -273,11 +271,8 @@ int main(void) {
 // CHECK-NEXT:     let mut b: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
 // CHECK-NEXT:         1 as i128,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = b;
-// CHECK-NEXT:     b = [[V_2]].shl_bits(100 as usize);
-// CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = b;
-// CHECK-NEXT:     b = [[V_3]]
-// CHECK-NEXT:         .wrapping_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(12345 as i128));
+// CHECK-NEXT:     b = b.shl_bits(100 as usize);
+// CHECK-NEXT:     b = b.wrapping_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(12345 as i128));
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(b.to_f80_bytes()))
@@ -289,11 +284,8 @@ int main(void) {
 // CHECK-NEXT:     c = c
 // CHECK-NEXT:         .wrapping_mul(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(2 as i128))
 // CHECK-NEXT:         .wrapping_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128));
-// CHECK-NEXT:     let mut [[V_4:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = c;
-// CHECK-NEXT:     c = [[V_4]].shl_bits(70 as usize);
-// CHECK-NEXT:     let mut [[V_5:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = c;
-// CHECK-NEXT:     c = [[V_5]]
-// CHECK-NEXT:         .wrapping_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(512 as i128));
+// CHECK-NEXT:     c = c.shl_bits(70 as usize);
+// CHECK-NEXT:     c = c.wrapping_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(512 as i128));
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(c.to_f80_bytes()))
@@ -310,10 +302,8 @@ int main(void) {
 // CHECK-NEXT:     let mut tie: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
 // CHECK-NEXT:         1 as i128,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut [[V_6:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = tie;
-// CHECK-NEXT:     tie = [[V_6]].shl_bits(100 as usize);
-// CHECK-NEXT:     let mut [[V_7:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = tie;
-// CHECK-NEXT:     tie = [[V_7]]
+// CHECK-NEXT:     tie = tie.shl_bits(100 as usize);
+// CHECK-NEXT:     tie = tie
 // CHECK-NEXT:         .wrapping_add(
 // CHECK-NEXT:             <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128)
 // CHECK-NEXT:                 .shl_bits(36 as usize),
@@ -323,8 +313,7 @@ int main(void) {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(tie.to_f80_bytes()))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut [[V_8:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = tie;
-// CHECK-NEXT:     tie = [[V_8]]
+// CHECK-NEXT:     tie = tie
 // CHECK-NEXT:         .wrapping_add(
 // CHECK-NEXT:             <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(1 as i128)
 // CHECK-NEXT:                 .shl_bits(37 as usize),
@@ -337,8 +326,7 @@ int main(void) {
 // CHECK-NEXT:     let mut u: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<200, 4, 32, bitint::A8>>::from_bint(
 // CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(3 as i128),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut [[V_9:__v[0-9]+]]: bitint::BUint<200, 4, 32, bitint::A8> = u;
-// CHECK-NEXT:     u = [[V_9]].shl_bits(190 as usize);
+// CHECK-NEXT:     u = u.shl_bits(190 as usize);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(u.to_f80_bytes()))

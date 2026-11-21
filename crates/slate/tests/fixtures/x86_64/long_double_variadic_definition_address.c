@@ -303,10 +303,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         for i in 0..count {
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: LongDouble = unsafe {
-// CHECK-NEXT:                 __slate_f80_va_arg(core::ptr::addr_of_mut!(ap))
-// CHECK-NEXT:             };
-// CHECK-NEXT:             total += [[V_0]];
+// CHECK-NEXT:             total += unsafe { __slate_f80_va_arg(core::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total * scale
@@ -327,23 +324,15 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     while (unsafe { *f }) != 0 {
 // CHECK-NEXT:         if ((unsafe { *f }) as i32) == 105 {
-// CHECK-NEXT:             let [[V_0]]: i32 = unsafe { ap.next_arg::<i32>() };
-// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: LongDouble = base;
-// CHECK-NEXT:             base = [[V_1]] + __slate_f80_from_i32([[V_0]]);
+// CHECK-NEXT:             base += __slate_f80_from_i32(unsafe { ap.next_arg::<i32>() });
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if ((unsafe { *f }) as i32) == 100 {
-// CHECK-NEXT:                 let [[V_2:__v[0-9]+]]: f64 = unsafe { ap.next_arg::<f64>() };
-// CHECK-NEXT:                 let [[V_3:__v[0-9]+]]: LongDouble = base;
-// CHECK-NEXT:                 base = [[V_3]] - __slate_f80_from_f64([[V_2]]);
+// CHECK-NEXT:                 base -= __slate_f80_from_f64(unsafe { ap.next_arg::<f64>() });
 // CHECK-NEXT:             } else {
-// CHECK-NEXT:                 let [[V_4:__v[0-9]+]]: LongDouble = unsafe {
-// CHECK-NEXT:                     __slate_f80_va_arg(core::ptr::addr_of_mut!(ap))
-// CHECK-NEXT:                 };
-// CHECK-NEXT:                 base *= [[V_4]];
+// CHECK-NEXT:                 base *= unsafe { __slate_f80_va_arg(core::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: *const i8 = f;
-// CHECK-NEXT:         f = unsafe { [[V_5]].add(1) };
+// CHECK-NEXT:         f = unsafe { f.add(1) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     base
 // CHECK-NEXT: }
@@ -383,7 +372,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut i: i32 = 10;
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         let [[V_0]]: i32 = i;
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = i;
 // CHECK-NEXT:         i = [[V_0]] - 1;
 // CHECK-NEXT:         if [[V_0]] <= 0 {
 // CHECK-NEXT:             break;

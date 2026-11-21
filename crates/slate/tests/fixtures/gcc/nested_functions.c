@@ -266,11 +266,11 @@ int main(void) {
 // CHECK-NEXT:     sum_vla__total(core::ptr::addr_of_mut!(n), data.as_mut_ptr() as *mut [i32; 0])
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn sum_vla__total(__slate_capture_4: *mut i32, __slate_capture_5: *mut [i32; 0]) -> i32 {
+// CHECK-NEXT: fn sum_vla__total(__slate_capture_2: *mut i32, __slate_capture_3: *mut [i32; 0]) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < unsafe { *__slate_capture_4 } {
-// CHECK-NEXT:         sum += unsafe { *(__slate_capture_5 as *mut i32).offset(i as isize) };
+// CHECK-NEXT:     while i < unsafe { *__slate_capture_2 } {
+// CHECK-NEXT:         sum += unsafe { *(__slate_capture_3 as *mut i32).offset(i as isize) };
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum

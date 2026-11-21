@@ -78,10 +78,10 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u32 = s.__slate_bits_0.__get_a();
-// CHECK-NEXT:     s.__slate_bits_0.__set_a((([[V_0]] as i32) + 4) as u32);
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = s.__slate_bits_0.__get_b();
-// CHECK-NEXT:     s.__slate_bits_0.__set_b([[V_1]] - 1);
+// CHECK-NEXT:     let [[T_0:__t[0-9]+]] = ((s.__slate_bits_0.__get_a() as i32) + 4) as u32;
+// CHECK-NEXT:     s.__slate_bits_0.__set_a([[T_0]]);
+// CHECK-NEXT:     let [[T_1:__t[0-9]+]] = s.__slate_bits_0.__get_b() - 1;
+// CHECK-NEXT:     s.__slate_bits_0.__set_b([[T_1]]);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -118,9 +118,8 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u64 = w.__slate_bits_0.__get_x();
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: u64 = [[V_2]].wrapping_add(1);
-// CHECK-NEXT:     w.__slate_bits_0.__set_x([[V_3]]);
+// CHECK-NEXT:     let [[T_2:__t[0-9]+]] = w.__slate_bits_0.__get_x().wrapping_add(1);
+// CHECK-NEXT:     w.__slate_bits_0.__set_x([[T_2]]);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%llu\n".as_ptr(), w.__slate_bits_0.__get_x()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

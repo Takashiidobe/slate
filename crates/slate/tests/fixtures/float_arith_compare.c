@@ -113,15 +113,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut f: f32 = 16777216.0f32;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: f32 = f + 1.0f32;
-// CHECK-NEXT:     f = [[V_0]];
+// CHECK-NEXT:     f += 1.0f32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.1f\n".as_ptr(), f as f64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut d: f64 = 2.5f64;
 // CHECK-NEXT:     d *= 3i32 as f64;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: f64 = d - 0.5f64;
-// CHECK-NEXT:     d = [[V_1]];
+// CHECK-NEXT:     d -= 0.5f64;
 // CHECK-NEXT:     d /= 4i32 as f64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%g\n".as_ptr(), d) };

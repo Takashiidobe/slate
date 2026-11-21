@@ -498,7 +498,7 @@ int main(void) {
 // CHECK-NEXT: fn c23_checked_arithmetic() -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (!{
+// CHECK-NEXT:     total += (!{
 // CHECK-NEXT:         let [[T_0]]: i128 = 20 as i128;
 // CHECK-NEXT:         let [[T_1]]: i128 = 22 as i128;
 // CHECK-NEXT:         let [[T_2]]: i128 = [[T_0]].wrapping_add([[T_1]]);
@@ -507,8 +507,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_0]].checked_add([[T_1]]).is_none() || (([[T_2]] as i32) as i128) != [[T_2]]
 // CHECK-NEXT:     } && result == 42) as i32;
-// CHECK-NEXT:     total += [[V_0]];
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = (!{
+// CHECK-NEXT:     total += (!{
 // CHECK-NEXT:         let [[T_3]]: i128 = 50 as i128;
 // CHECK-NEXT:         let [[T_4]]: i128 = 8 as i128;
 // CHECK-NEXT:         let [[T_5]]: i128 = [[T_3]].wrapping_sub([[T_4]]);
@@ -517,8 +516,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_3]].checked_sub([[T_4]]).is_none() || (([[T_5]] as i32) as i128) != [[T_5]]
 // CHECK-NEXT:     } && result == 42) as i32;
-// CHECK-NEXT:     total += [[V_1]];
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = (!{
+// CHECK-NEXT:     total += (!{
 // CHECK-NEXT:         let [[T_6]]: i128 = 6 as i128;
 // CHECK-NEXT:         let [[T_7]]: i128 = 7 as i128;
 // CHECK-NEXT:         let [[T_8]]: i128 = [[T_6]].wrapping_mul([[T_7]]);
@@ -527,8 +525,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_6]].checked_mul([[T_7]]).is_none() || (([[T_8]] as i32) as i128) != [[T_8]]
 // CHECK-NEXT:     } && result == 42) as i32;
-// CHECK-NEXT:     total += [[V_2]];
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: bool = {
+// CHECK-NEXT:     total += ({
 // CHECK-NEXT:         let [[T_9]]: i128 = 2147483647 as i128;
 // CHECK-NEXT:         let [[T_10]]: i128 = 1 as i128;
 // CHECK-NEXT:         let [[T_11]]: i128 = [[T_9]].wrapping_add([[T_10]]);
@@ -536,8 +533,7 @@ int main(void) {
 // CHECK-NEXT:             *core::ptr::addr_of_mut!(result) = [[T_11]] as i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_9]].checked_add([[T_10]]).is_none() || (([[T_11]] as i32) as i128) != [[T_11]]
-// CHECK-NEXT:     };
-// CHECK-NEXT:     total += [[V_3]] as i32;
+// CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -626,24 +622,20 @@ int main(void) {
 // CHECK-NEXT:         strndup(c"library".as_ptr() as *const core::ffi::c_char, 3u64 as usize)
 // CHECK-NEXT:             as *mut i8
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_4]]
-// CHECK-NEXT:         + ((!first_copy.is_null()
-// CHECK-NEXT:             && (unsafe {
-// CHECK-NEXT:                 strcmp(
-// CHECK-NEXT:                     (first_copy as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                     c"c23".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:                 ) as i32
-// CHECK-NEXT:             }) == 0) as i32);
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_5]]
-// CHECK-NEXT:         + ((!second_copy.is_null()
-// CHECK-NEXT:             && (unsafe {
-// CHECK-NEXT:                 strcmp(
-// CHECK-NEXT:                     (second_copy as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                     c"lib".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:                 ) as i32
-// CHECK-NEXT:             }) == 0) as i32);
+// CHECK-NEXT:     total += (!first_copy.is_null()
+// CHECK-NEXT:         && (unsafe {
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (first_copy as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"c23".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         }) == 0) as i32;
+// CHECK-NEXT:     total += (!second_copy.is_null()
+// CHECK-NEXT:         && (unsafe {
+// CHECK-NEXT:             strcmp(
+// CHECK-NEXT:                 (second_copy as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"lib".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as i32
+// CHECK-NEXT:         }) == 0) as i32;
 // CHECK-NEXT:     unsafe { free((first_copy as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     unsafe { free((second_copy as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     let const_hit: *const i8 = (unsafe {
@@ -655,48 +647,37 @@ int main(void) {
 // CHECK-NEXT:             119i32 as i32,
 // CHECK-NEXT:         ) as *mut i8
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_2]]: i32 = total;
-// CHECK-NEXT:     total = [[V_2]] + ((!const_hit.is_null() && !mut_hit.is_null()) as i32);
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_6]]
-// CHECK-NEXT:         + (!((unsafe {
-// CHECK-NEXT:                 memchr(
-// CHECK-NEXT:                     (phrase as *const ()) as *const core::ffi::c_void,
-// CHECK-NEXT:                     111i32 as i32,
-// CHECK-NEXT:                     11u64 as usize,
-// CHECK-NEXT:                 ) as *mut ()
-// CHECK-NEXT:             }) as *const ())
-// CHECK-NEXT:             .is_null() as i32);
-// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_7]]
-// CHECK-NEXT:         + (!unsafe {
-// CHECK-NEXT:                 memchr(
-// CHECK-NEXT:                     (mutable_phrase.as_mut_ptr() as *const ())
-// CHECK-NEXT:                         as *const core::ffi::c_void,
-// CHECK-NEXT:                     111i32 as i32,
-// CHECK-NEXT:                     11u64 as usize,
-// CHECK-NEXT:                 ) as *mut ()
-// CHECK-NEXT:             }
-// CHECK-NEXT:             .is_null() as i32);
-// CHECK-NEXT:     let [[V_8:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_8]]
-// CHECK-NEXT:         + (!((unsafe {
-// CHECK-NEXT:                 strstr(
-// CHECK-NEXT:                     phrase as *const core::ffi::c_char,
-// CHECK-NEXT:                     c"world".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:                 ) as *mut i8
-// CHECK-NEXT:             }) as *const i8)
-// CHECK-NEXT:             .is_null() as i32);
-// CHECK-NEXT:     let [[V_9:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_9]]
-// CHECK-NEXT:         + (!unsafe {
-// CHECK-NEXT:                 strstr(
-// CHECK-NEXT:                     (mutable_phrase.as_mut_ptr() as *const i8)
-// CHECK-NEXT:                         as *const core::ffi::c_char,
-// CHECK-NEXT:                     c"world".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:                 ) as *mut i8
-// CHECK-NEXT:             }
-// CHECK-NEXT:             .is_null() as i32);
+// CHECK-NEXT:     total += (!const_hit.is_null() && !mut_hit.is_null()) as i32;
+// CHECK-NEXT:     total += !((unsafe {
+// CHECK-NEXT:             memchr(
+// CHECK-NEXT:                 (phrase as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:                 111i32 as i32,
+// CHECK-NEXT:                 11u64 as usize,
+// CHECK-NEXT:             ) as *mut ()
+// CHECK-NEXT:         }) as *const ())
+// CHECK-NEXT:         .is_null() as i32;
+// CHECK-NEXT:     total += !unsafe {
+// CHECK-NEXT:             memchr(
+// CHECK-NEXT:                 (mutable_phrase.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
+// CHECK-NEXT:                 111i32 as i32,
+// CHECK-NEXT:                 11u64 as usize,
+// CHECK-NEXT:             ) as *mut ()
+// CHECK-NEXT:         }
+// CHECK-NEXT:         .is_null() as i32;
+// CHECK-NEXT:     total += !((unsafe {
+// CHECK-NEXT:             strstr(
+// CHECK-NEXT:                 phrase as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"world".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as *mut i8
+// CHECK-NEXT:         }) as *const i8)
+// CHECK-NEXT:         .is_null() as i32;
+// CHECK-NEXT:     total += !unsafe {
+// CHECK-NEXT:             strstr(
+// CHECK-NEXT:                 (mutable_phrase.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:                 c"world".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:             ) as *mut i8
+// CHECK-NEXT:         }
+// CHECK-NEXT:         .is_null() as i32;
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -746,23 +727,19 @@ int main(void) {
 // CHECK-NEXT:             core::ptr::addr_of_mut!(utc) as *mut slate_support::tm,
 // CHECK-NEXT:         ) as *mut slate_support::tm
 // CHECK-NEXT:     }) == core::ptr::addr_of_mut!(utc)) as i32;
-// CHECK-NEXT:     let [[V_0]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         localtime_r(
 // CHECK-NEXT:             (core::ptr::addr_of_mut!(timestamp) as *const i64) as *const i64,
 // CHECK-NEXT:             core::ptr::addr_of_mut!(local) as *mut slate_support::tm,
 // CHECK-NEXT:         ) as *mut slate_support::tm
 // CHECK-NEXT:     }) == core::ptr::addr_of_mut!(local)) as i32;
-// CHECK-NEXT:     total += [[V_0]];
-// CHECK-NEXT:     let [[V_1]]: i32 = ((unsafe {
-// CHECK-NEXT:         timespec_getres(core::ptr::addr_of_mut!(resolution), 1i32)
-// CHECK-NEXT:     }) == 1) as i32;
-// CHECK-NEXT:     total += [[V_1]];
+// CHECK-NEXT:     total += ((unsafe { timespec_getres(core::ptr::addr_of_mut!(resolution), 1i32) })
+// CHECK-NEXT:         == 1) as i32;
 // CHECK-NEXT:     total += (resolution.tv_sec > 0 || resolution.tv_nsec > 0) as i32;
-// CHECK-NEXT:     let [[V_6]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         timegm(core::ptr::addr_of_mut!(utc) as *mut slate_support::tm) as i64
 // CHECK-NEXT:     }) == 0) as i32;
-// CHECK-NEXT:     total += [[V_6]];
-// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         strftime(
 // CHECK-NEXT:             (month.0.as_mut_ptr() as *mut i8) as *mut core::ffi::c_char,
 // CHECK-NEXT:             (core::mem::size_of::<[i8; 32]>() as u64) as usize,
@@ -771,16 +748,13 @@ int main(void) {
 // CHECK-NEXT:                 as *const slate_support::tm,
 // CHECK-NEXT:         ) as u64
 // CHECK-NEXT:     }) == 7) as i32;
-// CHECK-NEXT:     total += [[V_10]];
-// CHECK-NEXT:     let [[V_9]]: i32 = total;
-// CHECK-NEXT:     total = [[V_9]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (month.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"January".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32);
-// CHECK-NEXT:     let [[V_11:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         strcmp(
+// CHECK-NEXT:             (month.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
+// CHECK-NEXT:             c"January".as_ptr() as *const core::ffi::c_char,
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     }) == 0) as i32;
+// CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         wcsftime(
 // CHECK-NEXT:             wide_month.0.as_mut_ptr() as *mut i32,
 // CHECK-NEXT:             32u64,
@@ -788,41 +762,30 @@ int main(void) {
 // CHECK-NEXT:             core::ptr::addr_of_mut!(utc) as *const slate_support::tm,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 7) as i32;
-// CHECK-NEXT:     total += [[V_11]];
-// CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_12]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             wcscmp(
-// CHECK-NEXT:                 wide_month.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(__slate_str283) as *mut i32) as *const i32,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) == 0) as i32);
+// CHECK-NEXT:     total += ((unsafe {
+// CHECK-NEXT:         wcscmp(
+// CHECK-NEXT:             wide_month.0.as_mut_ptr() as *const i32,
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(__slate_str283) as *mut i32) as *const i32,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     let const_month: *const i32 = wide_month.0.as_mut_ptr() as *const i32;
-// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_13]]
-// CHECK-NEXT:         + (!((unsafe { wcschr(const_month, 110i32) }) as *const i32).is_null() as i32);
-// CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_14]]
-// CHECK-NEXT:         + (!unsafe { wcschr(wide_month.0.as_mut_ptr() as *const i32, 110i32) }.is_null()
-// CHECK-NEXT:             as i32);
-// CHECK-NEXT:     let [[V_15:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_15]]
-// CHECK-NEXT:         + (!((unsafe {
-// CHECK-NEXT:                 wcsstr(
-// CHECK-NEXT:                     const_month,
-// CHECK-NEXT:                     (core::ptr::addr_of_mut!(__slate_str287) as *mut i32) as *const i32,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }) as *const i32)
-// CHECK-NEXT:             .is_null() as i32);
-// CHECK-NEXT:     let [[V_16:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_16]]
-// CHECK-NEXT:         + (!unsafe {
-// CHECK-NEXT:                 wcsstr(
-// CHECK-NEXT:                     wide_month.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:                     (core::ptr::addr_of_mut!(__slate_str289) as *mut i32) as *const i32,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:             .is_null() as i32);
+// CHECK-NEXT:     total += !((unsafe { wcschr(const_month, 110i32) }) as *const i32).is_null() as i32;
+// CHECK-NEXT:     total += !unsafe { wcschr(wide_month.0.as_mut_ptr() as *const i32, 110i32) }
+// CHECK-NEXT:         .is_null() as i32;
+// CHECK-NEXT:     total += !((unsafe {
+// CHECK-NEXT:             wcsstr(
+// CHECK-NEXT:                 const_month,
+// CHECK-NEXT:                 (core::ptr::addr_of_mut!(__slate_str287) as *mut i32) as *const i32,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }) as *const i32)
+// CHECK-NEXT:         .is_null() as i32;
+// CHECK-NEXT:     total += !unsafe {
+// CHECK-NEXT:             wcsstr(
+// CHECK-NEXT:                 wide_month.0.as_mut_ptr() as *const i32,
+// CHECK-NEXT:                 (core::ptr::addr_of_mut!(__slate_str289) as *mut i32) as *const i32,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
+// CHECK-NEXT:         .is_null() as i32;
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:

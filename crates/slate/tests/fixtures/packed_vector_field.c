@@ -49,12 +49,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump(t: *mut T) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = 1;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i64 = unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!((*t).v).read_unaligned()[[[V_0]] as usize]
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i64 = [[V_1]] + 5;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = [[V_2]];
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = core::ptr::addr_of!((*t).v).read_unaligned()[[[V_0]] as usize] + 5;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::ptr::addr_of_mut!((*t).v);
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]] = [[T_1]].read_unaligned();
 // CHECK-NEXT:         [[T_2]][[[V_0]] as usize] = [[T_0]];

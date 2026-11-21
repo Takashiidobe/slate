@@ -129,12 +129,10 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for j in 0i32..3i32 {
 // CHECK-NEXT:         for k in 0i32..4i32 {
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:             total = [[V_0]]
-// CHECK-NEXT:                 + unsafe {
-// CHECK-NEXT:                     *((*plane.offset(j as isize).add(0)).as_mut_ptr() as *mut i32)
-// CHECK-NEXT:                         .offset(k as isize)
-// CHECK-NEXT:                 };
+// CHECK-NEXT:             total += unsafe {
+// CHECK-NEXT:                 *((*plane.offset(j as isize).add(0)).as_mut_ptr() as *mut i32)
+// CHECK-NEXT:                     .offset(k as isize)
+// CHECK-NEXT:             };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total

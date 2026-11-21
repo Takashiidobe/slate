@@ -70,10 +70,8 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn count_alpha() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_0]] + (((unsafe { "alpha".cmp("alpha") as i32 }) == 0) as i32);
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_1]] + (((unsafe { "beta".cmp("alpha") as i32 }) == 0) as i32);
+// CHECK-NEXT:     total += ((unsafe { "alpha".cmp("alpha") as i32 }) == 0) as i32;
+// CHECK-NEXT:     total += ((unsafe { "beta".cmp("alpha") as i32 }) == 0) as i32;
 // CHECK-NEXT:     total
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn same_prefix() -> i32 {

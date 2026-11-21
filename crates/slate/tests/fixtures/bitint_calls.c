@@ -165,12 +165,10 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         match i % 5 {
 // CHECK-NEXT:             0 => {
-// CHECK-NEXT:                 let [[V_0:__v[0-9]+]]: i16 = unsafe { (ap.next_arg::<i32>() as i16) << 7 >> 7 };
-// CHECK-NEXT:                 total += [[V_0]] as i64;
+// CHECK-NEXT:                 total += (unsafe { (ap.next_arg::<i32>() as i16) << 7 >> 7 }) as i64;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             1 => {
-// CHECK-NEXT:                 let [[V_1:__v[0-9]+]]: u32 = unsafe { ap.next_arg::<u32>() };
-// CHECK-NEXT:                 total += ([[V_1]] as u64) as i64;
+// CHECK-NEXT:                 total += ((unsafe { ap.next_arg::<u32>() }) as u64) as i64;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             2 => {
 // CHECK-NEXT:                 total += (unsafe { ap.next_arg::<i64>() }) as i64;

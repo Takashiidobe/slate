@@ -36,8 +36,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn caller_site() -> *mut () {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(calls)) };
-// CHECK-NEXT:     unsafe { core::ptr::write_volatile(core::ptr::addr_of_mut!(calls), [[V_0]] + 1) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::ptr::write_volatile(
+// CHECK-NEXT:             core::ptr::addr_of_mut!(calls),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(calls)) + 1,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { __slate_intrinsic_ded315013ea6523(const { ((0 as i32) as u32) as i32 }) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

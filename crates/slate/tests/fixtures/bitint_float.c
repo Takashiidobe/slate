@@ -196,8 +196,7 @@ int main(void) {
 // CHECK-NEXT:     let mut big: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
 // CHECK-NEXT:         1 as i128,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bitint::BInt<200, 4, 32, bitint::A8> = big;
-// CHECK-NEXT:     big = [[V_0]].shl_bits(150 as usize);
+// CHECK-NEXT:     big = big.shl_bits(150 as usize);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.17g\n".as_ptr(), big.to_f64()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -207,8 +206,7 @@ int main(void) {
 // CHECK-NEXT:     let mut ub: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<200, 4, 32, bitint::A8>>::from_bint(
 // CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(3 as i128),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bitint::BUint<200, 4, 32, bitint::A8> = ub;
-// CHECK-NEXT:     ub = [[V_1]].shl_bits(190 as usize);
+// CHECK-NEXT:     ub = ub.shl_bits(190 as usize);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.17g\n".as_ptr(), ub.to_f64()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

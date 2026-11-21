@@ -54,8 +54,7 @@ int main(void) {
 // CHECK-NEXT:     while it < unsafe { core::ptr::addr_of_mut!(__stop_slate_gnu_section) as *mut i32 } {
 // CHECK-NEXT:         sum += unsafe { *it };
 // CHECK-NEXT:         count += 1;
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = it;
-// CHECK-NEXT:         it = unsafe { [[V_0]].add(1) };
+// CHECK-NEXT:         it = unsafe { it.add(1) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {}",

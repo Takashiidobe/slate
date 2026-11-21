@@ -613,13 +613,18 @@ impl FunctionLowerer<'_, '_> {
         {
             return Ok(None);
         }
+        let (mut start, mut end) = (counted.start.clone(), counted.end.clone());
+        if self.macro_template_check {
+            ir::strip_all_macro_structure_in_value(&mut start);
+            ir::strip_all_macro_structure_in_value(&mut end);
+        }
         let outer = self.declaring.replace(Some((index.id, false)));
-        let start = self.lower_value(&counted.start);
+        let start = self.lower_value(&start);
         if matches!(self.declaring.replace(outer), Some((_, true))) {
             return Ok(None);
         }
         let start = start?;
-        let mut end = self.lower_value(&counted.end)?;
+        let mut end = self.lower_value(&end)?;
         if counted.inclusive {
             end = Expr::Binary {
                 op: rust::BinOp::Add,
@@ -714,6 +719,19 @@ impl FunctionLowerer<'_, '_> {
         if let ir::Statement::NestedFunction(nested) = &statement.value {
             self.lower_nested_function(statement, nested)
                 .map_err(|error| error.used_at(Site::of(statement)))?;
+            return Ok(Vec::new());
+        }
+        if let ir::Statement::Temporary {
+            id,
+            initializer: Some(initializer),
+            ..
+        } = &statement.value
+            && self.tables.facts.inline_temporary(*id)
+            && self.element_view(initializer).is_none()
+            && self.borrow_of(*id).is_none()
+            && !self.c_string_of(*id)
+        {
+            self.inlined.insert(*id, initializer.clone());
             return Ok(Vec::new());
         }
         let outer = std::mem::take(&mut self.pending);

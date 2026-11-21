@@ -34,8 +34,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut f: f32 = 1.5f32;
-// CHECK-NEXT:     let mut old_f: f32 = 0 as f32;
-// CHECK-NEXT:     old_f = unsafe {
+// CHECK-NEXT:     let old_f: f32 = unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = core::sync::atomic::AtomicU32::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(f) as *mut u32,
 // CHECK-NEXT:             )
@@ -59,7 +58,7 @@ int main(void) {
 // CHECK-NEXT:         [10i32, 20i32, 30i32, 40i32],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut p: *mut i32 = values.0.as_mut_ptr() as *mut i32;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut i32 = unsafe {
+// CHECK-NEXT:     let old_p: *mut i32 = unsafe {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]] = core::sync::atomic::AtomicPtr::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(p) as *mut *mut i32,
 // CHECK-NEXT:             )
@@ -71,14 +70,13 @@ int main(void) {
 // CHECK-NEXT:             .unwrap_or_else(|[[T_3]]| [[T_3]]);
 // CHECK-NEXT:         [[T_2]] as *mut i32
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let old_p: *mut i32 = [[V_0]];
 // CHECK-NEXT:     let now_p: *mut i32 = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicPtr::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(p) as *mut *mut i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .load(core::sync::atomic::Ordering::SeqCst) as *mut i32
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = unsafe {
+// CHECK-NEXT:     let old_x: *mut i32 = unsafe {
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]] = (values.0.as_mut_ptr() as *mut i32).add(1);
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]] = core::sync::atomic::AtomicPtr::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(p) as *mut *mut i32,
@@ -86,7 +84,6 @@ int main(void) {
 // CHECK-NEXT:             .swap([[T_4]] as *mut i32, core::sync::atomic::Ordering::Release);
 // CHECK-NEXT:         [[T_5]] as *mut i32
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let old_x: *mut i32 = [[V_1]];
 // CHECK-NEXT:     let now_x: *mut i32 = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicPtr::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(p) as *mut *mut i32,

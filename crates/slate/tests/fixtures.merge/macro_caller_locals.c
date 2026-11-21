@@ -161,29 +161,23 @@ int main(void) {
 // CHECK-NEXT:     DROP!(4i32, hold, bits);
 // CHECK-NEXT:     CHECK_DROP!(3i32, bits, hold);
 // CHECK-NEXT:     SHIFT_THEN_READ!(1i32, hold, bits, total);
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = ([[V_0]] as u32).wrapping_add(COLLIDE!(n, hold)) as i32;
+// CHECK-NEXT:     total = (total as u32).wrapping_add(COLLIDE!(n, hold)) as i32;
 // CHECK-NEXT:     BODY_LOCAL!(n + 1, total, scale);
 // CHECK-NEXT:     FIELD_WRITE!(pair.left + 7, pair);
 // CHECK-NEXT:     INDEX_WRITE!(2i32, 30i32, table.0);
 // CHECK-NEXT:     DEREF_WRITE!(20i32, cursor);
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_1]] + (DECAY_FIRST!(table.0) + table.0[1] + table.0[2] + pair.right);
+// CHECK-NEXT:     total += DECAY_FIRST!(table.0) + table.0[1] + table.0[2] + pair.right;
 // CHECK-NEXT:     let address: *mut u32 = ADDRESS_OF!(hold);
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u32 = unsafe { *address };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *address = [[V_2]].wrapping_add(1);
+// CHECK-NEXT:         *address = unsafe { *address }.wrapping_add(1);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_3]] + KEYWORD_NAME!(4i32, r#type);
+// CHECK-NEXT:     total += KEYWORD_NAME!(4i32, r#type);
 // CHECK-NEXT:     TEMP_ARG!(total, total);
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:     total = [[V_4]] + PARAMETER_READ!(limit);
+// CHECK-NEXT:     total += PARAMETER_READ!(limit);
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let hold: u32 = 7;
 // CHECK-NEXT:         total = (total as u32).wrapping_add(hold.wrapping_add(1)) as i32;
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = total;
-// CHECK-NEXT:         total = ([[V_5]] as u32).wrapping_add(BITS!(1i32, hold)) as i32;
+// CHECK-NEXT:         total = (total as u32).wrapping_add(BITS!(1i32, hold)) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     INIT!(hold, bits);
 // CHECK-NEXT:     hold.wrapping_add(bits).wrapping_add(total as u32)
@@ -257,8 +251,8 @@ int main(void) {
 // CHECK-NEXT:                 *$cursor = $v;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             let __v: *mut i32 = $cursor;
-// CHECK-NEXT:             let [[V_6:__v[0-9]+]]: *mut i32 = unsafe { __v.add(1) };
-// CHECK-NEXT:             $cursor = [[V_6]];
+// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { __v.add(1) };
+// CHECK-NEXT:             $cursor = [[V_0]];
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -270,11 +264,11 @@ int main(void) {
 // CHECK-NEXT:     ($n:expr, $hold:expr, $bits:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let __v: u32 = $hold;
-// CHECK-NEXT:             let [[V_6]]: u32 = __v >> $n;
-// CHECK-NEXT:             $hold = [[V_6]];
-// CHECK-NEXT:             let [[V_7:__v[0-9]+]]: u32 = $bits;
-// CHECK-NEXT:             let [[V_8:__v[0-9]+]]: u32 = [[V_7]].wrapping_sub(($n) as u32);
-// CHECK-NEXT:             $bits = [[V_8]];
+// CHECK-NEXT:             let [[V_0]]: u32 = __v >> $n;
+// CHECK-NEXT:             $hold = [[V_0]];
+// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: u32 = $bits;
+// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: u32 = [[V_1]].wrapping_sub(($n) as u32);
+// CHECK-NEXT:             $bits = [[V_2]];
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -332,8 +326,8 @@ int main(void) {
 // CHECK-NEXT:     ($v:expr, $total:expr, $scale:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let __v: i32 = $total;
-// CHECK-NEXT:             let [[V_6]]: i32 = __v + (($v) + $scale);
-// CHECK-NEXT:             $total = [[V_6]];
+// CHECK-NEXT:             let [[V_0]]: i32 = __v + (($v) + $scale);
+// CHECK-NEXT:             $total = [[V_0]];
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -346,8 +340,8 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             DROP!($n, $hold, $bits);
 // CHECK-NEXT:             let __v: i32 = $total;
-// CHECK-NEXT:             let [[V_6]]: i32 = (__v as u32).wrapping_add(BITS!(2i32, $hold)) as i32;
-// CHECK-NEXT:             $total = [[V_6]];
+// CHECK-NEXT:             let [[V_0]]: i32 = (__v as u32).wrapping_add(BITS!(2i32, $hold)) as i32;
+// CHECK-NEXT:             $total = [[V_0]];
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -360,8 +354,8 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let temp: i32 = 1;
 // CHECK-NEXT:             let __v: i32 = $total;
-// CHECK-NEXT:             let [[V_6]]: i32 = __v + (temp + $a);
-// CHECK-NEXT:             $total = [[V_6]];
+// CHECK-NEXT:             let [[V_0]]: i32 = __v + (temp + $a);
+// CHECK-NEXT:             $total = [[V_0]];
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }

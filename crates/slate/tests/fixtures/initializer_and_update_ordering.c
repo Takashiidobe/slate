@@ -125,8 +125,7 @@ int main(void) {
 // CHECK-NEXT:         let _ = advance(p) as *const ();
 // CHECK-NEXT:     };
 // CHECK-NEXT:     i += 1;
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i32 = p;
-// CHECK-NEXT:     p = unsafe { [[V_2]].add(1) };
+// CHECK-NEXT:     p = unsafe { p.add(1) };
 // CHECK-NEXT:     println!("{} {} {}", unsafe { calls }, i, unsafe { *p });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

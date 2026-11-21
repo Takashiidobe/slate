@@ -54,8 +54,7 @@ int main(void) {
 // CHECK-NEXT:     while (unsafe { core::ptr::read_volatile(flag as *mut i32) }) < target {
 // CHECK-NEXT:         unsafe { __slate_intrinsic_cf7232a07549d448() };
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = flag as *mut i32;
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = unsafe { core::ptr::read_volatile([[V_0]]) };
-// CHECK-NEXT:         unsafe { core::ptr::write_volatile([[V_0]], [[V_1]] + 1) };
+// CHECK-NEXT:         unsafe { core::ptr::write_volatile([[V_0]], core::ptr::read_volatile([[V_0]]) + 1) };
 // CHECK-NEXT:         spins += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     spins

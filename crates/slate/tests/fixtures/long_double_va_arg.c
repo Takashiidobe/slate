@@ -295,10 +295,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: LongDouble = unsafe {
-// CHECK-NEXT:             __slate_f80_va_arg(core::ptr::addr_of_mut!(ap))
-// CHECK-NEXT:         };
-// CHECK-NEXT:         total += [[V_0]];
+// CHECK-NEXT:         total += unsafe { __slate_f80_va_arg(core::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -318,19 +315,12 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         let kind: i32 = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:         if kind == 0 {
-// CHECK-NEXT:             let [[V_0]]: i32 = unsafe { ap.next_arg::<i32>() };
-// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: LongDouble = total;
-// CHECK-NEXT:             total = [[V_1]] + __slate_f80_from_i32([[V_0]]);
+// CHECK-NEXT:             total += __slate_f80_from_i32(unsafe { ap.next_arg::<i32>() });
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if kind == 1 {
-// CHECK-NEXT:                 let [[V_2:__v[0-9]+]]: f64 = unsafe { ap.next_arg::<f64>() };
-// CHECK-NEXT:                 let [[V_3:__v[0-9]+]]: LongDouble = total;
-// CHECK-NEXT:                 total = [[V_3]] + __slate_f80_from_f64([[V_2]]);
+// CHECK-NEXT:                 total += __slate_f80_from_f64(unsafe { ap.next_arg::<f64>() });
 // CHECK-NEXT:             } else {
-// CHECK-NEXT:                 let [[V_4:__v[0-9]+]]: LongDouble = unsafe {
-// CHECK-NEXT:                     __slate_f80_va_arg(core::ptr::addr_of_mut!(ap))
-// CHECK-NEXT:                 };
-// CHECK-NEXT:                 total += [[V_4]];
+// CHECK-NEXT:                 total += unsafe { __slate_f80_va_arg(core::ptr::addr_of_mut!(ap)) };
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

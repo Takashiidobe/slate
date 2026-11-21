@@ -47,8 +47,7 @@ int main(void) {
 // CHECK-NEXT: fn count(mut format: *const i8, end: i8) -> i32 {
 // CHECK-NEXT:     let mut n: i32 = 0;
 // CHECK-NEXT:     while (unsafe { *format }) != 0 && ((unsafe { *format }) as i32) != (end as i32) {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *const i8 = format;
-// CHECK-NEXT:         format = unsafe { [[V_0]].add(1) };
+// CHECK-NEXT:         format = unsafe { format.add(1) };
 // CHECK-NEXT:         n += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     n
@@ -58,15 +57,13 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         total += (unsafe { *(*p_format) }) as i32;
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: *const i8 = unsafe { *p_format };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *p_format = [[V_1]].add(1);
+// CHECK-NEXT:             *p_format = unsafe { *p_format }.add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if ((unsafe { *(*p_format) }) as i32) == (end as i32) {
-// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: *const i8 = unsafe { *p_format };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *p_format = [[V_2]].add(1);
+// CHECK-NEXT:             *p_format = unsafe { *p_format }.add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
@@ -74,11 +71,11 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn value(p_format: &mut *const i8) -> i32 {
 // CHECK-NEXT:     let mut c: i8 = 0;
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *const i8 = unsafe { *p_format };
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *const i8 = unsafe { *p_format };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p_format = [[V_3]].add(1);
+// CHECK-NEXT:         *p_format = [[V_0]].add(1);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     c = unsafe { *[[V_3]] };
+// CHECK-NEXT:     c = unsafe { *[[V_0]] };
 // CHECK-NEXT:     if (c as i32) == 40 {
 // CHECK-NEXT:         return {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]] = count(*p_format, 41i8);

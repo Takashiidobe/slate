@@ -50,14 +50,14 @@ int main(void) {
 // CHECK-NEXT:     let after: i32 = unsafe { total };
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut first: i32 = 100;
-// CHECK-NEXT:         let __slate_cleanup_ptr_3 = core::ptr::addr_of_mut!(first) as *mut _;
-// CHECK-NEXT:         let __slate_cleanup_3 = ::slate_support::Guard(
-// CHECK-NEXT:             &mut || release(__slate_cleanup_ptr_3 as *mut _),
+// CHECK-NEXT:         let __slate_cleanup_ptr_1 = core::ptr::addr_of_mut!(first) as *mut _;
+// CHECK-NEXT:         let __slate_cleanup_1 = ::slate_support::Guard(
+// CHECK-NEXT:             &mut || release(__slate_cleanup_ptr_1 as *mut _),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         let mut second: i32 = 1000;
-// CHECK-NEXT:         let __slate_cleanup_ptr_4 = core::ptr::addr_of_mut!(second) as *mut _;
-// CHECK-NEXT:         let __slate_cleanup_4 = ::slate_support::Guard(
-// CHECK-NEXT:             &mut || release(__slate_cleanup_ptr_4 as *mut _),
+// CHECK-NEXT:         let __slate_cleanup_ptr_2 = core::ptr::addr_of_mut!(second) as *mut _;
+// CHECK-NEXT:         let __slate_cleanup_2 = ::slate_support::Guard(
+// CHECK-NEXT:             &mut || release(__slate_cleanup_ptr_2 as *mut _),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             total = total * 2;

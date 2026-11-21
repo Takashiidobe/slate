@@ -50,9 +50,8 @@ int main(void) {
 // CHECK-NEXT:             *(*c).p = n;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         n = ((n as i32) + 1) as u8;
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut u8 = unsafe { (*c).p };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*c).p = [[V_0]].add(1);
+// CHECK-NEXT:             (*c).p = unsafe { (*c).p }.add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

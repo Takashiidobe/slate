@@ -220,11 +220,9 @@ int main(void) {
 // CHECK-NEXT:     let mut up: u64 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = 15u64;
 // CHECK-NEXT:     up = 65u64.wrapping_add([[V_0]]) & ![[V_0]];
-// CHECK-NEXT:     let mut down: u64 = 0;
-// CHECK-NEXT:     down = 64u64;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u64 = 15u64;
+// CHECK-NEXT:     let down: u64 = 64u64;
 // CHECK-NEXT:     24 + 24 + 12 + ((address == core::ptr::addr_of_mut!(value)) as i32) + (up as i32)
-// CHECK-NEXT:         + (down as i32) + ((up & [[V_1]] == 0) as i32) + ((1i32 != 0) as i32)
+// CHECK-NEXT:         + (down as i32) + ((up & 15u64 == 0) as i32) + ((1i32 != 0) as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_builtin_source() -> i32 {

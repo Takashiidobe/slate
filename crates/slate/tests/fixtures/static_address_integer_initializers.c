@@ -314,7 +314,7 @@ int main(void) {
 // CHECK-NEXT:             (*(core::ptr::addr_of_mut!(kernels)
 // CHECK-NEXT:                 as *mut __SlateImage_kernels)).0[i as usize]
 // CHECK-NEXT:         }) != 0 {
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = unsafe {
+// CHECK-NEXT:             sum += unsafe {
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                         core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
 // CHECK-NEXT:                             (*(core::ptr::addr_of_mut!(kernels)
@@ -323,7 +323,6 @@ int main(void) {
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     .unwrap()(10i32, i + 1)
 // CHECK-NEXT:             };
-// CHECK-NEXT:             sum += [[V_0]];
 // CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -371,19 +370,17 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:             .unwrap()(1i32, 2i32)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = sum
-// CHECK-NEXT:         + ((unsafe {
-// CHECK-NEXT:             *(*(core::ptr::addr_of_mut!(third) as *mut __SlateImage_third) as *mut i32)
-// CHECK-NEXT:         })
-// CHECK-NEXT:             + unsafe {
-// CHECK-NEXT:                 *(*(core::ptr::addr_of_mut!(past_first) as *mut __SlateImage_past_first)
-// CHECK-NEXT:                     as *mut i32)
-// CHECK-NEXT:             }
-// CHECK-NEXT:             + unsafe {
-// CHECK-NEXT:                 *(*(core::ptr::addr_of_mut!(before_last)
-// CHECK-NEXT:                     as *mut __SlateImage_before_last) as *mut i32)
-// CHECK-NEXT:             });
-// CHECK-NEXT:     sum = [[V_1]];
+// CHECK-NEXT:     sum += (unsafe {
+// CHECK-NEXT:         *(*(core::ptr::addr_of_mut!(third) as *mut __SlateImage_third) as *mut i32)
+// CHECK-NEXT:     })
+// CHECK-NEXT:         + unsafe {
+// CHECK-NEXT:             *(*(core::ptr::addr_of_mut!(past_first) as *mut __SlateImage_past_first)
+// CHECK-NEXT:                 as *mut i32)
+// CHECK-NEXT:         }
+// CHECK-NEXT:         + unsafe {
+// CHECK-NEXT:             *(*(core::ptr::addr_of_mut!(before_last) as *mut __SlateImage_before_last)
+// CHECK-NEXT:                 as *mut i32)
+// CHECK-NEXT:         };
 // CHECK-NEXT:     sum += unsafe {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
@@ -394,7 +391,7 @@ int main(void) {
 // CHECK-NEXT:             .unwrap()(20i32, 6i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0i32..2i32 {
-// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: i32 = unsafe {
+// CHECK-NEXT:         sum += unsafe {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                     core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
 // CHECK-NEXT:                         (*(core::ptr::addr_of_mut!(entries)
@@ -408,9 +405,8 @@ int main(void) {
 // CHECK-NEXT:                     as *mut __SlateImage_entries)).0[i as usize].bias as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         sum += [[V_2]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = ((unsafe {
+// CHECK-NEXT:     sum += ((unsafe {
 // CHECK-NEXT:         (*(core::ptr::addr_of_mut!(nested) as *mut __SlateImage_nested)).label
 // CHECK-NEXT:     }) as i32)
 // CHECK-NEXT:         + unsafe {
@@ -427,21 +423,18 @@ int main(void) {
 // CHECK-NEXT:                     as *mut __SlateImage_nested)).inner.bias as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:     sum += [[V_3]];
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = sum
+// CHECK-NEXT:     sum += (unsafe {
+// CHECK-NEXT:         *((*(core::ptr::addr_of_mut!(nested) as *mut __SlateImage_nested)).slots[0]
+// CHECK-NEXT:             as *mut i32)
+// CHECK-NEXT:     })
 // CHECK-NEXT:         + ((unsafe {
-// CHECK-NEXT:             *((*(core::ptr::addr_of_mut!(nested) as *mut __SlateImage_nested)).slots[0]
-// CHECK-NEXT:                 as *mut i32)
-// CHECK-NEXT:         })
-// CHECK-NEXT:             + ((unsafe {
-// CHECK-NEXT:                 (*(core::ptr::addr_of_mut!(nested) as *mut __SlateImage_nested)).slots[1]
-// CHECK-NEXT:             }) as i32));
-// CHECK-NEXT:     sum = [[V_4]];
+// CHECK-NEXT:             (*(core::ptr::addr_of_mut!(nested) as *mut __SlateImage_nested)).slots[1]
+// CHECK-NEXT:         }) as i32);
 // CHECK-NEXT:     let cursor: *mut u64 = unsafe {
 // CHECK-NEXT:         core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(kernels)
 // CHECK-NEXT:             as *mut __SlateImage_kernels)).0) as *mut u64
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = unsafe {
+// CHECK-NEXT:     sum += unsafe {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
 // CHECK-NEXT:                     *cursor.add(1) as usize,
@@ -449,7 +442,6 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:             .unwrap()(5i32, 1i32)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     sum += [[V_5]];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*(core::ptr::addr_of_mut!(kernels) as *mut __SlateImage_kernels)).0[2] = (unsafe {
 // CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, usize>(
@@ -457,27 +449,23 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) as u64;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_6:__v[0-9]+]]: i32 = sum;
-// CHECK-NEXT:     sum = [[V_6]]
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             (*(core::ptr::addr_of_mut!(kernels) as *mut __SlateImage_kernels)).0[2]
-// CHECK-NEXT:         })
-// CHECK-NEXT:             == ((unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, usize>(
-// CHECK-NEXT:                     Some(add),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }) as u64)) as i32);
+// CHECK-NEXT:     sum += ((unsafe {
+// CHECK-NEXT:         (*(core::ptr::addr_of_mut!(kernels) as *mut __SlateImage_kernels)).0[2]
+// CHECK-NEXT:     })
+// CHECK-NEXT:         == ((unsafe {
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, usize>(
+// CHECK-NEXT:                 Some(add),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }) as u64)) as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*(core::ptr::addr_of_mut!(kernels) as *mut __SlateImage_kernels)).0[2] = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         data.0[2] = 30;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_7:__v[0-9]+]]: i32 = sum
-// CHECK-NEXT:         + unsafe {
-// CHECK-NEXT:             *(*(core::ptr::addr_of_mut!(third) as *mut __SlateImage_third) as *mut i32)
-// CHECK-NEXT:         };
-// CHECK-NEXT:     sum = [[V_7]];
+// CHECK-NEXT:     sum += unsafe {
+// CHECK-NEXT:         *(*(core::ptr::addr_of_mut!(third) as *mut __SlateImage_third) as *mut i32)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{}", sum);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

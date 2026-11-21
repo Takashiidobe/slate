@@ -274,9 +274,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*[[V_0]]).val = (*[[V_0]]).val + left.val;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_1]]: *mut Tree = right.parent;
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut Tree = right.parent;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_1]]).val = (*[[V_1]]).val + right.val;
+// CHECK-NEXT:         (*[[V_2]]).val = (*[[V_2]]).val + right.val;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     root.val + left.val + right.val
 // CHECK-NEXT: }
@@ -294,9 +294,9 @@ int main(void) {
 // CHECK-NEXT:         buf.data[i as usize] = (97 + i) as i8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     buf.cursor = unsafe { (buf.data.as_mut_ptr() as *mut i8).add(3) };
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i8 = buf.cursor;
+// CHECK-NEXT:     let [[V_1]]: *mut i8 = buf.cursor;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_2]] = ((*[[V_2]] as i32) + 1) as i8;
+// CHECK-NEXT:         *[[V_1]] = ((*[[V_1]] as i32) + 1) as i8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (buf.data[3] as i32) + ((unsafe { *buf.cursor.add(0) }) as i32) - 2 * 97
 // CHECK-NEXT: }
@@ -310,10 +310,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *hi = t;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_0]]: *mut i32 = lo;
-// CHECK-NEXT:         lo = unsafe { [[V_0]].add(1) };
-// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: *mut i32 = hi;
-// CHECK-NEXT:         hi = unsafe { [[V_3]].sub(1) };
+// CHECK-NEXT:         lo = unsafe { lo.add(1) };
+// CHECK-NEXT:         hi = unsafe { hi.sub(1) };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
