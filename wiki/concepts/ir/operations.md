@@ -138,7 +138,6 @@ Each conversion node does one thing; the reason is metadata.
 | `widen<i32>(x)`                                  | sign/zero extend by source signedness               | `reason=promotion\|usual_arith\|assign\|arg\|vararg\|return\|explicit` |
 | `truncate<i8>(x)`                                | keep low bits                                       | `fits=always\|unknown`                                                 |
 | `reinterpret<u32>(x)`                            | same width, sign change                             | `fits=always\|unknown`                                                 |
-| `int_cast<u16>(x)`                               | written integer cast on a macro argument            | `fits=always\|unknown`                                                 |
 | `from_bool<i32>(b)`                              | 0 or 1                                              |                                                                        |
 | `bit_cast<T>(x)`                                 | `__builtin_bit_cast`; sizes equal, `T` not an array |                                                                        |
 | `float_widen` / `float_narrow` / `float_convert` | exact / rounded / between binary and decimal        | rounding and exceptions on narrowing                                   |
@@ -152,11 +151,12 @@ Each conversion node does one thing; the reason is metadata.
   `truncate` then `reinterpret`) as one `x as u32`, since a Rust integer `as`
   extends by the source's signedness, so the text matches a target where the
   widths are equal.
-- A written integer cast whose operand is a macro argument is one `int_cast`
-  node, kept even when the types match, so `(ush)x` lifts as one `$x as u16`
-  template for every integer argument. Rust lowering always prints it, also at a
-  site that stays inline, so a template and its inline form agree. Macro
-  argument nodes exist only under `--merge`.
+- A written integer cast whose operand is a macro argument lowers like any other
+  cast, so an identity cast leaves no node. `Module::macro_written_casts`
+  records it for templates, so `(ush)x` lifts as one `$x as u16` template for
+  every integer argument; see
+  [macro invocations](pipeline.md#macro-invocations). A site that stays inline
+  prints no cast the IR does not have.
 - An integer conversion between C types with the same IR type but different
   spellings (`unsigned` to `ulg`) is `reinterpret<T>(x)` with `T` unchanged, so
   each target prints the same cast and merge splices the text. Rust lowering

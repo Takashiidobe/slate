@@ -65,6 +65,10 @@ pub enum Error {
         invalid: Box<lowerer::InvalidIr>,
         report: String,
     },
+    #[error(
+        "{path}: IR built with macro structure and stripped differs from the IR built without it\n{difference}"
+    )]
+    MacroStructureChangedIr { path: PathBuf, difference: String },
 }
 
 #[derive(Debug, Error, miette::Diagnostic)]
@@ -432,7 +436,46 @@ fn lower_parsed(
         crate::diagnostics::collect(&warning, diagnostics);
     }
     macro_keep::pass_caller_locals(&mut module);
+    if std::env::var_os("SLATE_CHECK_MACRO_STRUCTURE").is_some() {
+        check_macro_structure(path, &unit, &files)?;
+    }
     Ok((module, files, parser.directive_diagnostics().to_vec()))
+}
+
+fn check_macro_structure(path: &Path, unit: &TranslationUnit, files: &Files) -> Result<(), Error> {
+    let print = |sema: Sema| -> Option<String> {
+        let mut sema = sema;
+        sema.analyze(files).ok()?;
+        let (module, _) = sema.lower(files).ok()?;
+        Some(module.display(true).to_string())
+    };
+    let plain = print(Sema::new(unit));
+    let stripped = print(
+        Sema::new(unit)
+            .with_macro_structure(true)
+            .with_macro_keep(|_| HashSet::default()),
+    );
+    let (Some(plain), Some(stripped)) = (plain, stripped) else {
+        return Ok(());
+    };
+    if plain == stripped {
+        return Ok(());
+    }
+    let difference = plain
+        .lines()
+        .zip(stripped.lines())
+        .enumerate()
+        .find(|(_, (left, right))| left != right)
+        .map_or_else(
+            || "the printed modules differ in length".to_string(),
+            |(line, (left, right))| {
+                format!("line {}:\n  without: {left}\n  stripped: {right}", line + 1)
+            },
+        );
+    Err(Error::MacroStructureChangedIr {
+        path: path.to_path_buf(),
+        difference,
+    })
 }
 
 pub fn reject_directive_errors(

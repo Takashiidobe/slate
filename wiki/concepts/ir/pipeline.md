@@ -144,7 +144,12 @@ and the [cover table](../preprocessor.md#macro-invocations) before lowering:
   mark one argument occurrence inside its open expansion. Lvalue and rvalue
   occurrences share the mechanism. A conversion the argument needs is applied by
   the parent after the hole closes, so `ADD_ONE(c)` on a `u8` has its `widen`
-  outside. When an argument is passed down to a nested macro the inner hole
+  outside. An explicit integer cast whose operand is a hole lowers as it would
+  without macros (`widen`, `truncate`, `reinterpret`, or nothing for an
+  identity cast). `Module::macro_written_casts` records it, keyed by the
+  cast's result node and naming the hole node, so that a template writes one
+  `$x as T` for every site (`--show-macros` prints `[macro_cast="T"]`).
+  When an argument is passed down to a nested macro the inner hole
   wraps the outer one. Slate's `--merge` also wraps caller locals a kept body
   uses: an `argument` past the definition's parameters indexes
   `Module::macro_hidden_arguments[expansion]`.
@@ -178,6 +183,13 @@ reported. Slate's lowerer mostly does not look through them.
 Slate's frontend (`crates/slate/src/frontend.rs`, `lower_parsed`) builds with
 structure on in every mode; `slate-parser ir` builds it only with
 `--show-macros`. Removing the wrappers from the value tree is `slate-8ge7.2`.
+
+Invariant: sema makes no value decision because a node is a hole or an
+expansion. Stripping every expansion must give the IR built without structure,
+node metadata included. `Module::strip_macro_structure` moves a removed
+wrapper's C spelling onto the node that replaces it.
+`SLATE_CHECK_MACRO_STRUCTURE=1` checks this in `lower_parsed` and fails the
+translation on the first differing line. `project_merge` sets it.
 `Sema::with_macro_keep` passes `crates/slate/src/frontend/macro_keep.rs`, which
 picks the expansions that are safe to lift from a normalized module. Hoisting
 has already kept value expansions together by then and cannot be undone, so

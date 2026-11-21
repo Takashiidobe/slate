@@ -36,7 +36,7 @@ pub use module::{
     FunctionSemantics, Inlining, Linkage, MachineCodegen, MemoryEffects, Metadata, Module,
     NestedCapture, NestedFunction, OmpFor, OmpLoop, OmpParallel, OmpPrivate, OmpSchedule,
     OmpScheduleKind, OmpScheduleModifier, OmpShared, SehHandler, SehIntrinsic, Statement,
-    SymbolAttributes, TargetFeature, TlsModel, Visibility,
+    SymbolAttributes, TargetFeature, TlsModel, Visibility, WrittenCast,
 };
 
 pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};
@@ -310,18 +310,6 @@ impl DisplayValue<'_> {
 }
 
 impl Value {
-    pub fn is_macro_hole(&self) -> bool {
-        match &self.node.value {
-            ValueKind::MacroArg { .. } => true,
-            ValueKind::Read { place, .. } => matches!(place.kind, PlaceKind::MacroArg { .. }),
-            #[expect(
-                slate::sensitive_wildcard,
-                reason = "a hole is a macro argument read as a value or a place; every other kind is not one"
-            )]
-            _ => false,
-        }
-    }
-
     pub fn without_macro_structure(&self) -> &Value {
         let mut value = self;
         loop {

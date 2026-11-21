@@ -569,10 +569,7 @@ impl Tables<'_> {
                 }
             }
             ValueKind::Convert {
-                kind:
-                    ir::ConversionKind::Widen
-                    | ir::ConversionKind::Truncate
-                    | ir::ConversionKind::IntCast,
+                kind: ir::ConversionKind::Widen | ir::ConversionKind::Truncate,
                 operand,
                 ..
             } => self.fold_integer(operand)?,

@@ -1960,7 +1960,7 @@ int main(void) {
 // CHECK-NEXT:                     _mm256_set1_epi32(1000 + (m as i32)),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
-// CHECK-NEXT:             const { (4 as i32) as i32 },
+// CHECK-NEXT:             const { 4 as i32 },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -1977,7 +1977,7 @@ int main(void) {
 // CHECK-NEXT:                     _mm_set1_epi32(-5i32),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
-// CHECK-NEXT:             const { (4 as i32) as i32 },
+// CHECK-NEXT:             const { 4 as i32 },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     show(

@@ -1508,7 +1508,7 @@ int main(void) {
 // CHECK-NEXT:                     index,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
-// CHECK-NEXT:             const { (4 as i32) as i32 },
+// CHECK-NEXT:             const { 4 as i32 },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     show(

@@ -50,6 +50,8 @@ impl<'a, 'm> FunctionLowerer<'a, 'm> {
             macro_sites: Vec::new(),
             negated_macro_conditions: HashSet::new(),
             macro_template_check: false,
+            checked_written_casts: HashMap::new(),
+            written_cast_operand: None,
             old_value: None,
             declaring: std::cell::Cell::new(None),
             after_declaration: None,

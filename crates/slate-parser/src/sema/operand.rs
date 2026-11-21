@@ -1,6 +1,6 @@
 use super::ctype::QualType;
 use super::ctype::{CTypeKind, ComplexDomain, FixedKind, FixedRank, FixedType, FloatKind, IntRank};
-use super::numeric::{Context, ResolveError, conversion, integer_fits};
+use super::numeric::{Context, ResolveError, conversion};
 use super::types::TypeResolver;
 use super::validate::MicrosoftLiteralType;
 use crate::ast::{Expr, ExprKind, FixedPointKind, FixedPointRank, IntegerRank};
@@ -298,7 +298,7 @@ impl TypeResolver {
             return Ok(converted);
         }
         let to = self.ir_type(c);
-        let value = match self.kept_integer_conversion(&operand, c, reason) {
+        let value = match self.kept_integer_conversion(&operand, c) {
             Some((kind, semantics)) => conversion(operand.value, to, kind, reason, semantics),
             None => context.emit_arithmetic_conversion(operand.value, to, reason)?,
         };
@@ -311,26 +311,14 @@ impl TypeResolver {
         &mut self,
         operand: &Operand,
         c: QualType,
-        reason: ConversionReason,
     ) -> Option<(ConversionKind, ConversionSema)> {
         let to = self.ir_type(c);
-        let (
-            Type::Numeric(NumericType::Integer {
-                bit_precise: false, ..
-            }),
-            Type::Numeric(NumericType::Integer {
-                width,
-                signed,
-                bit_precise: false,
-            }),
-        ) = (&operand.value.ty, &to)
+        let Type::Numeric(NumericType::Integer {
+            bit_precise: false, ..
+        }) = &to
         else {
             return None;
         };
-        if reason == ConversionReason::Explicit && operand.value.is_macro_hole() {
-            let fits = integer_fits(&operand.value, *width, *signed);
-            return Some((ConversionKind::IntCast, ConversionSema::Fits(fits)));
-        }
         (operand.value.ty == to && self.ctypes.unqualified(operand.c) != c)
             .then_some((ConversionKind::Reinterpret, ConversionSema::Exact))
     }

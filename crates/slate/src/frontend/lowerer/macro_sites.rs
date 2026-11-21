@@ -1,6 +1,6 @@
 use foldhash::{HashMap, HashSet};
 
-use slate_parser::ast::{MacroCover, MacroExpansionId, MacroInvocations, Span};
+use slate_parser::ast::{MacroCover, MacroExpansionId, MacroInvocations, NodeId, Span};
 use slate_parser::ir;
 
 use super::*;
@@ -356,6 +356,27 @@ impl FunctionLowerer<'_, '_> {
             == 1
     }
 
+    pub(super) fn lower_written_cast(&mut self, value: &ir::Value) -> Option<Result<Expr>> {
+        if self.written_cast_operand == Some(value.node.id) {
+            return None;
+        }
+        let casts = if self.macro_template_check {
+            &self.checked_written_casts
+        } else {
+            self.tables.macro_written_casts
+        };
+        let operand = written_cast_operand(value, casts.get(&value.node.id)?.operand)?;
+        let outer = self.written_cast_operand.replace(operand.node.id);
+        let lowered = self.lower_value(operand);
+        self.written_cast_operand = outer;
+        Some(lowered.and_then(|expr| {
+            Ok(Expr::Cast {
+                expr: Box::new(expr),
+                ty: self.lower_value_type(value)?,
+            })
+        }))
+    }
+
     pub(super) fn lower_promoted_hole(&mut self, value: &ir::Value) -> Option<Result<Expr>> {
         if let ir::ValueKind::Unary {
             op: ir::UnaryArithOp::Not,
@@ -465,19 +486,38 @@ impl FunctionLowerer<'_, '_> {
             return Ok(());
         }
         let mut inline_body = body.to_vec();
-        ir::strip_all_macro_structure(&mut inline_body);
+        let mut unwrapped = ir::strip_all_macro_structure(&mut inline_body);
+        let mut result = result.cloned();
+        if let Some(result) = &mut result {
+            unwrapped.extend(ir::strip_all_macro_structure_in_value(result));
+        }
+        let unwrapped: HashMap<NodeId, NodeId> = unwrapped.into_iter().collect();
+        let remap = |id: NodeId| unwrapped.get(&id).copied().unwrap_or(id);
+        self.checked_written_casts = self
+            .tables
+            .macro_written_casts
+            .iter()
+            .map(|(id, cast)| {
+                (
+                    remap(*id),
+                    ir::WrittenCast {
+                        operand: remap(cast.operand),
+                        ..cast.clone()
+                    },
+                )
+            })
+            .collect();
         let outer = std::mem::replace(&mut self.macro_template_check, true);
         let lowered = self
             .lower_statement_list(&inline_body)
             .and_then(|mut stmts| {
-                if let Some(result) = result {
-                    let mut result = result.clone();
-                    ir::strip_all_macro_structure_in_value(&mut result);
-                    stmts.push(Stmt::Return(Some(self.lower_value(&result)?)));
+                if let Some(result) = &result {
+                    stmts.push(Stmt::Return(Some(self.lower_value(result)?)));
                 }
                 Ok(stmts)
             });
         self.macro_template_check = outer;
+        self.checked_written_casts.clear();
         let mut separately: Vec<Stmt> = lowered?
             .into_iter()
             .filter(|stmt| !matches!(stmt, Stmt::Comment(_)))
@@ -502,6 +542,20 @@ impl FunctionLowerer<'_, '_> {
             return Err(Invariant::MacroTemplateMismatch(self.owner.clone(), difference).into());
         }
         Ok(())
+    }
+}
+
+fn written_cast_operand(value: &ir::Value, operand: NodeId) -> Option<&ir::Value> {
+    if value.node.id == operand {
+        return Some(value);
+    }
+    match &value.node.value {
+        ir::ValueKind::Convert { operand: inner, .. } => written_cast_operand(inner, operand),
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "sema builds a written integer cast only from conversions over its operand"
+        )]
+        _ => None,
     }
 }
 

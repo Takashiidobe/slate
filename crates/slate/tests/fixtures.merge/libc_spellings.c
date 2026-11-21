@@ -72,10 +72,10 @@ int main(void) {
 // CHECK-NEXT:   libc_spellings.c: [] 1 compiled
 // CHECK-NEXT:   units/libc_spellings_address.c: [] 1 compiled
 // CHECK-NEXT: total: 12 compiles across 6 targets
-// CHECK-NEXT: unit libc_spellings: 14 items, 8 gated, 2 duplicated functions
+// CHECK-NEXT: unit libc_spellings: 13 items, 7 gated, 2 duplicated functions
 // CHECK-NEXT:   duplicated fn:graph_at: 2 variants
-// CHECK-NEXT:   duplicated fn:hand_written: 3 variants
-// CHECK-NEXT:   spliced fn:classify: 3 variants
+// CHECK-NEXT:   duplicated fn:hand_written: 2 variants
+// CHECK-NEXT:   spliced fn:classify: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: unit libc_spellings_address: 37 items, 35 gated, 2 duplicated functions
 // CHECK-NEXT:   duplicated fn:isdigit: 2 variants
@@ -402,7 +402,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(thread_local)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(any(target_os = "macos", target_env = "musl"))]
+// CHECK-NEXT: #[cfg(any(target_os = "macos", target_os = "linux"))]
 // CHECK-NEXT: fn hand_written(c: i32) -> i32 {
 // CHECK-NEXT:     if false { unsafe { slate_support::isgraph(c) } } else { 7 }
 // CHECK-NEXT: }
@@ -428,11 +428,6 @@ int main(void) {
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         0
 // CHECK-NEXT:     }
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(target_env = "gnu")]
-// CHECK-NEXT: fn hand_written(c: i32) -> i32 {
-// CHECK-NEXT:     if false { unsafe { slate_support::isgraph(c as i32) } } else { 7 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_env = "musl")]
@@ -556,19 +551,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn classify(c: i32) -> i32 {
 // CHECK-NEXT:     let mut bits: i32 = 0;
-// CHECK-NEXT:     #[cfg(not(target_env = "gnu"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isalnum(c) }) != 0 { 1 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isalpha(c) }) != 0 { 2 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isblank(c) }) != 0 { 4 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::iscntrl(c) }) != 0 { 8 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isdigit(c) }) != 0 { 16 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isgraph(c) }) != 0 { 32 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::islower(c) }) != 0 { 64 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isprint(c) }) != 0 { 128 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::ispunct(c) }) != 0 { 256 } else { 0 };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(target_os = "linux"))]
+// CHECK-NEXT:     bits |= if (unsafe { slate_support::isalnum(c) }) != 0 { 1 } else { 0 };
+// CHECK-NEXT:     bits |= if (unsafe { slate_support::isalpha(c) }) != 0 { 2 } else { 0 };
+// CHECK-NEXT:     bits |= if (unsafe { slate_support::isblank(c) }) != 0 { 4 } else { 0 };
+// CHECK-NEXT:     bits |= if (unsafe { slate_support::iscntrl(c) }) != 0 { 8 } else { 0 };
+// CHECK-NEXT:     bits |= if (unsafe { slate_support::isdigit(c) }) != 0 { 16 } else { 0 };
+// CHECK-NEXT:     bits |= if (unsafe { slate_support::isgraph(c) }) != 0 { 32 } else { 0 };
+// CHECK-NEXT:     bits |= if (unsafe { slate_support::islower(c) }) != 0 { 64 } else { 0 };
+// CHECK-NEXT:     bits |= if (unsafe { slate_support::isprint(c) }) != 0 { 128 } else { 0 };
+// CHECK-NEXT:     bits |= if (unsafe { slate_support::ispunct(c) }) != 0 { 256 } else { 0 };
+// CHECK-NEXT:     #[cfg(not(target_env = "musl"))]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         bits |= if (unsafe { slate_support::isspace(c) }) != 0 { 512 } else { 0 };
 // CHECK-NEXT:     }
@@ -576,34 +568,8 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         bits |= if __isspace(c) != 0 { 512 } else { 0 };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(not(target_env = "gnu"))]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isupper(c) }) != 0 { 1024 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isxdigit(c) }) != 0 { 2048 } else { 0 };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     #[cfg(target_env = "gnu")]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isalnum(c as i32) }) != 0 { 1 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isalpha(c as i32) }) != 0 { 2 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isblank(c as i32) }) != 0 { 4 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::iscntrl(c as i32) }) != 0 { 8 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isdigit(c as i32) }) != 0 { 16 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isgraph(c as i32) }) != 0 { 32 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::islower(c as i32) }) != 0 { 64 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isprint(c as i32) }) != 0 { 128 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::ispunct(c as i32) }) != 0 { 256 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isspace(c as i32) }) != 0 { 512 } else { 0 };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isupper(c as i32) }) != 0 {
-// CHECK-NEXT:             1024
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0
-// CHECK-NEXT:         };
-// CHECK-NEXT:         bits |= if (unsafe { slate_support::isxdigit(c as i32) }) != 0 {
-// CHECK-NEXT:             2048
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     bits |= if (unsafe { slate_support::isupper(c) }) != 0 { 1024 } else { 0 };
+// CHECK-NEXT:     bits |= if (unsafe { slate_support::isxdigit(c) }) != 0 { 2048 } else { 0 };
 // CHECK-NEXT:     bits
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -25,12 +25,20 @@ pub struct Module {
     pub macros: MacroInvocations,
     pub macro_rejections: HashMap<MacroExpansionId, &'static str>,
     pub macro_hidden_arguments: HashMap<MacroExpansionId, Vec<BindingId>>,
+    pub macro_written_casts: HashMap<NodeId, WrittenCast>,
     pub zero_init_padding_bits: crate::compiler_options::ZeroInitPaddingBits,
     pub alloca: AllocaLayout,
     pub hosted: bool,
     pub nostdinc: bool,
     pub null_pointer_is_valid: bool,
     pub machine: MachineCodegen,
+}
+
+#[derive(Debug, Clone)]
+pub struct WrittenCast {
+    pub expansion: MacroExpansionId,
+    pub ty: Type,
+    pub operand: NodeId,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
@@ -465,6 +473,7 @@ impl Module {
             macros: MacroInvocations::default(),
             macro_rejections: HashMap::new(),
             macro_hidden_arguments: HashMap::new(),
+            macro_written_casts: HashMap::new(),
             zero_init_padding_bits: crate::compiler_options::ZeroInitPaddingBits::Standard,
             alloca: AllocaLayout {
                 padding: 0,

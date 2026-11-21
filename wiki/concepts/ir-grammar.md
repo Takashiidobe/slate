@@ -700,7 +700,7 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
 ### Operations
 
 ```ebnf
-conversion = "widen" | "truncate" | "reinterpret" | "int_cast" | "bit_cast" | "from_bool"
+conversion = "widen" | "truncate" | "reinterpret" | "bit_cast" | "from_bool"
            | "int_to_float" | "float_widen" | "float_narrow" | "float_convert"
            | "float_to_int" | "pointer_cast" | "address_space_cast"
            | "ptr_to_int" | "int_to_ptr"
@@ -753,7 +753,7 @@ exceptions        = "ignore" | "observable" ;
 - A policy is the operation's behavior _if_ the case occurs, not a claim that it
   does. `overflow=ub` is signed C arithmetic; `wrap` is unsigned or `-fwrapv`;
   `trap` is `-ftrapv`.
-- `fits` appears on `truncate`/`reinterpret`/`int_cast`; `exact=` on
+- `fits` appears on `truncate`/`reinterpret`; `exact=` on
   `int_to_float`; `out_of_range=ub` on `float_to_int`; `floating` on the other
   float conversions that can round.
 - The arithmetic choices are, in order: `and`/`or`/`xor`/`not` and floating
@@ -789,6 +789,7 @@ absent from default dumps.
 metadata = "[" key "=" string "]" ;          (* only with --show-metadata *)
 c_type   = '[c=' string ']' ;                (* always, when spelling differs from canonical *)
 macro_site = "[macro=" c_identifier "#" digits " " ( "body" | "arg" digits ) "]" ;
+macro_cast = '[macro_cast="' integer_type '"]' ;  (* only with --show-macros *)
 
 macro_definition = "macro_definition #" digits " " c_identifier
                    [ "(" [ c_identifier { ", " c_identifier } ] ")" ] [ " [variadic]" ]
@@ -814,6 +815,10 @@ range            = digits "+" digits ;
   `--show-macros`. A statement or value prints one `macro_site` for each
   expansion labeling it, most recently applied first, after its metadata.
   `defined` is `file:line` with a 0-based line.
+
+- `macro_cast` follows the result of an explicit integer cast whose operand is
+  a macro argument, in the metadata position, and names the written type
+  (`Module::macro_written_casts`).
 
 - `c_type` follows a value, record field, parameter, declaration, or `write`, in
   the same position as metadata. A `let` can print two: its initializer's and

@@ -1378,10 +1378,27 @@ impl Lowerer {
         reason: ConversionReason,
     ) -> Result<Operand, ResolveError> {
         let c = self.types.ctypes.unqualified(to);
+        let hole = (matches!(kind, CastKind::Identity | CastKind::Arithmetic)
+            && reason == ConversionReason::Explicit
+            && is_plain_integer(&value.value.ty))
+        .then(|| written_cast_hole(&value.value))
+        .flatten();
         let converted = Operand {
             value: self.emit_cast(kind, value, c, reason)?,
             c,
         };
+        if let Some((expansion, operand)) = hole
+            && is_plain_integer(&converted.value.ty)
+        {
+            self.module.macro_written_casts.insert(
+                converted.value.node.id,
+                WrittenCast {
+                    expansion,
+                    ty: converted.value.ty.clone(),
+                    operand,
+                },
+            );
+        }
         self.types.record_operand_c_type(&converted);
         Ok(converted)
     }
@@ -1395,7 +1412,7 @@ impl Lowerer {
     ) -> Result<Value, ResolveError> {
         let ty = self.types.ir_type(to);
         if matches!(kind, CastKind::Identity | CastKind::Arithmetic)
-            && let Some((kept, semantics)) = self.types.kept_integer_conversion(&value, to, reason)
+            && let Some((kept, semantics)) = self.types.kept_integer_conversion(&value, to)
         {
             return Ok(conversion(value.value, ty, kept, reason, semantics));
         }
@@ -1763,7 +1780,6 @@ impl Lowerer {
     fn macro_value_holes(&mut self, e: &Expr, mut lowered: Operand) -> Operand {
         for hole in self.macro_structure.holes(e.id) {
             if self.open_macros.contains(&hole.expansion) {
-                self.types.record_operand_c_type(&lowered);
                 let ty = lowered.value.ty.clone();
                 let c = lowered.c;
                 lowered = Operand {
@@ -1777,6 +1793,7 @@ impl Lowerer {
                         }),
                     },
                 };
+                self.types.record_operand_c_type(&lowered);
             }
         }
         lowered
@@ -2722,12 +2739,11 @@ impl Lowerer {
         let lowered = self.lower_expr(e);
         let opened = self.open_macros.split_off(open);
         self.macro_value_hole = enclosing_hole;
-        let mut lowered = lowered.map_err(|error| error.at(e.expansion))?;
+        let mut lowered = self.finish_expr(e, lowered.map_err(|error| error.at(e.expansion))?)?;
         for expansion in opened.into_iter().rev() {
             lowered = self.macro_value_expansion(e, expansion, lowered);
         }
-        let lowered = self.macro_value_holes(e, lowered);
-        self.finish_expr(e, lowered)
+        Ok(self.macro_value_holes(e, lowered))
     }
 
     fn macro_value_expansion(
@@ -2736,10 +2752,9 @@ impl Lowerer {
         expansion: crate::ast::MacroExpansionId,
         lowered: Operand,
     ) -> Operand {
-        self.types.record_operand_c_type(&lowered);
         let ty = lowered.value.ty.clone();
         let c = lowered.c;
-        Operand {
+        let wrapped = Operand {
             c,
             value: Value {
                 ty,
@@ -2751,7 +2766,9 @@ impl Lowerer {
                     }),
                 }),
             },
-        }
+        };
+        self.types.record_operand_c_type(&wrapped);
+        wrapped
     }
 
     fn is_binary_chain(&self, e: &Expr) -> bool {
@@ -2779,8 +2796,8 @@ impl Lowerer {
                 .expr(right)
                 .and_then(|right| self.binary_operands(node, op, accumulated, right))
                 .map_err(|error| error.at(node.expansion))?;
-            let lowered = self.macro_value_holes(node, lowered);
-            accumulated = self.finish_expr(node, lowered)?;
+            let finished = self.finish_expr(node, lowered)?;
+            accumulated = self.macro_value_holes(node, finished);
         }
         Ok(accumulated)
     }
@@ -3847,6 +3864,35 @@ fn locate_conversions_at_cast(value: &mut Value, source: NodeId, cast: &Expr) {
             }
             _ => break,
         }
+    }
+}
+
+fn is_plain_integer(ty: &Type) -> bool {
+    matches!(
+        ty,
+        Type::Numeric(NumericType::Integer {
+            bit_precise: false,
+            ..
+        })
+    )
+}
+
+fn written_cast_hole(value: &Value) -> Option<(crate::ast::MacroExpansionId, NodeId)> {
+    match &value.node.value {
+        ValueKind::MacroArg { expansion, .. } => Some((*expansion, value.node.id)),
+        ValueKind::Read { place, .. } => match &place.kind {
+            PlaceKind::MacroArg { expansion, .. } => Some((*expansion, value.node.id)),
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only a read of a macro argument place is a hole"
+            )]
+            _ => None,
+        },
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "a hole is a macro argument read as a value or a place; every other kind is not one"
+        )]
+        _ => None,
     }
 }
 

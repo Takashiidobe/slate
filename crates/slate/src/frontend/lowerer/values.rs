@@ -451,6 +451,9 @@ impl FunctionLowerer<'_, '_> {
         {
             return self.lower_value(&initializer);
         }
+        if let Some(cast) = self.lower_written_cast(value) {
+            return cast;
+        }
         if let Some(promoted) = self.lower_promoted_hole(value) {
             return promoted;
         }

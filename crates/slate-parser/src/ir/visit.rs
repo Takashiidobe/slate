@@ -15,6 +15,7 @@ pub trait Visitor {
     fn enter_place_hole(&mut self, _expansion: MacroExpansionId, _place: &Place) {}
     fn leave_place_hole(&mut self, _expansion: MacroExpansionId) {}
     fn binding(&mut self, _binding: BindingId) {}
+    fn unwrapped_value(&mut self, _wrapper: crate::ast::NodeId, _inner: crate::ast::NodeId) {}
     fn rewrite_place(&mut self, _place: &mut Place) {}
     fn rewrite_value(&mut self, _value: &mut Value) {}
     fn rewrite_statement(&mut self, _statement: &mut Statement) {}
@@ -298,6 +299,7 @@ impl<V: Visitor> Walker<'_, V> {
                 self.value(value);
                 self.visitor.leave_value_hole(expansion);
                 if !keep {
+                    self.visitor.unwrapped_value(whole.node.id, value.node.id);
                     *whole = value.as_ref().clone();
                 }
             }
@@ -310,6 +312,8 @@ impl<V: Visitor> Walker<'_, V> {
                 self.evaluation(evaluation);
                 self.visitor.leave_expansion(expansion);
                 if !self.visitor.keep(expansion) && evaluation.statements.is_empty() {
+                    self.visitor
+                        .unwrapped_value(whole.node.id, evaluation.value.node.id);
                     *whole = evaluation.value.clone();
                 }
             }

@@ -288,6 +288,14 @@ impl DisplayModule<'_> {
                 table.entry(*id).or_default().push(("c".into(), spelling));
             }
         }
+        if self.show_macros {
+            for (id, cast) in &self.module.macro_written_casts {
+                table
+                    .entry(*id)
+                    .or_default()
+                    .push(("macro_cast".into(), cast.ty.to_string()));
+            }
+        }
         table
     }
 

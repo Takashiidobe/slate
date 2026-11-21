@@ -642,12 +642,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"kshiftli16 %04x\n".as_ptr(), ((a as u16) << 3u16) as u32)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"kshiftli16 %04x\n".as_ptr(), (a << 3u16) as u32) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"kshiftri32 %08x\n".as_ptr(), (c as u32) >> 7u32) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"kshiftri32 %08x\n".as_ptr(), c >> 7u32) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"kshiftri32_wide %08x\n".as_ptr(), 0u32) };
@@ -658,9 +656,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(c"kshiftri64 %016llx\n".as_ptr(), (d as u64) >> 61u64)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"kshiftri64 %016llx\n".as_ptr(), d >> 61u64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
