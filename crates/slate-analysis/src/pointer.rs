@@ -1,3 +1,4 @@
+use crate::effects::{Effects, FunctionEffects};
 use crate::identity::{FunctionIdentity, Known};
 use crate::program::{FunctionId, Program, ProgramBinding, UnitId};
 use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
@@ -97,6 +98,7 @@ enum Shape {
     Array {
         length: u64,
         element: Type,
+        object: Option<BindingId>,
     },
     Allocation {
         pointer: BindingId,
@@ -134,6 +136,8 @@ struct Summary {
     address_taken: Vec<FunctionId>,
     leaked: HashSet<BindingId>,
     automatic: HashSet<BindingId>,
+    derived: Vec<(u32, BindingId)>,
+    opaque: bool,
 }
 
 #[derive(Default)]
@@ -170,6 +174,7 @@ struct Walker<'a, 'm> {
     identities: &'a HashMap<ProgramBinding, FunctionIdentity>,
     inert: &'a HashSet<ProgramBinding>,
     constants: &'a HashSet<ProgramBinding>,
+    mutable_statics: &'a HashSet<ProgramBinding>,
     strings: &'a HashSet<ProgramBinding>,
     unit: UnitId,
     nodes: Vec<Node>,
@@ -187,6 +192,8 @@ struct Walker<'a, 'm> {
     reads: HashMap<BindingId, u32>,
     allocations: HashMap<BindingId, (BindingId, Type)>,
     leaked: HashSet<BindingId>,
+    derived: Vec<(u32, BindingId)>,
+    opaque: bool,
 }
 
 fn part_address(value: &Value) -> bool {
@@ -470,7 +477,16 @@ impl Walker<'_, '_> {
         if sources.null {
             self.flag(destination, NULLABLE);
         }
-        self.leaked.extend(sources.objects);
+        for object in sources.objects {
+            if self.mutable_statics.contains(&ProgramBinding {
+                unit: self.unit,
+                binding: object,
+            }) {
+                self.derived.push((destination, object));
+            } else {
+                self.leaked.insert(object);
+            }
+        }
     }
 
     fn macro_mentions(&mut self, named: Named) {
@@ -491,16 +507,23 @@ impl Walker<'_, '_> {
                         ..
                     },
                 length: Some(length),
-            } if self.automatic.contains(array)
-                || self.constants.contains(&ProgramBinding {
+            } => {
+                let object = ProgramBinding {
                     unit: self.unit,
                     binding: *array,
-                }) =>
-            {
+                };
+                let object = if self.automatic.contains(array) || self.constants.contains(&object) {
+                    None
+                } else if self.mutable_statics.contains(&object) {
+                    Some(*array)
+                } else {
+                    return Shape::Other;
+                };
                 match pointee(&peeled.ty) {
                     Some(element) => Shape::Array {
                         length: *length,
                         element: element.clone(),
+                        object,
                     },
                     None => Shape::Other,
                 }
@@ -993,7 +1016,19 @@ impl Walker<'_, '_> {
                 pinned: self.macro_depth > 0,
                 shapes: arguments
                     .iter()
-                    .map(|argument| self.shape(argument))
+                    .enumerate()
+                    .map(|(index, argument)| match self.shape(argument) {
+                        Shape::Array {
+                            object: Some(object),
+                            ..
+                        } if arguments.iter().enumerate().any(|(other, argument)| {
+                            other != index && touches(argument, object)
+                        }) =>
+                        {
+                            Shape::Other
+                        }
+                        shape => shape,
+                    })
                     .collect(),
                 literals: arguments
                     .iter()
@@ -1019,6 +1054,11 @@ impl Walker<'_, '_> {
             self.calls.push(site);
             return;
         }
+        if arguments.iter().any(|argument| {
+            matches!(&argument.ty, Type::Pointer { pointee, .. } if matches!(**pointee, Type::Function { .. }))
+        }) {
+            self.opaque = true;
+        }
         if let Callee::Direct(binding) = callee
             && self.inert.contains(&ProgramBinding {
                 unit: self.unit,
@@ -1037,6 +1077,9 @@ impl Walker<'_, '_> {
             },
             Callee::Indirect(_) => None,
         };
+        if known.is_none() {
+            self.opaque = true;
+        }
         for (index, argument) in arguments.iter().enumerate() {
             let flags = known.map_or(ESCAPE, |known| known_argument(known, index));
             if flags != 0 {
@@ -1052,6 +1095,7 @@ impl Walker<'_, '_> {
     }
 
     fn escape_all(&mut self, statement: &Span<Statement>) {
+        self.opaque = true;
         let mut escaper = Escaper {
             index: &self.index,
             hits: Vec::new(),
@@ -1068,6 +1112,7 @@ impl Walker<'_, '_> {
 
     fn asm(&mut self, asm: &ir::InlineAsm) {
         let executes = !asm.template.trim().is_empty();
+        self.opaque |= executes;
         for operand in &asm.operands {
             match &operand.kind {
                 ir::AsmOperandKind::In(value) => self.asm_input(value, executes),
@@ -1327,6 +1372,27 @@ impl Visitor for Named {
     }
 }
 
+struct Touches {
+    object: BindingId,
+    hit: bool,
+}
+
+impl Visitor for Touches {
+    fn binding(&mut self, binding: BindingId) {
+        self.hit |= binding == self.object;
+    }
+
+    fn value_kind(&mut self, kind: &ValueKind) {
+        self.hit |= matches!(kind, ValueKind::Call { .. });
+    }
+}
+
+fn touches(value: &Value, object: BindingId) -> bool {
+    let mut touches = Touches { object, hit: false };
+    ir::walk_value(&mut value.clone(), &mut touches);
+    touches.hit
+}
+
 fn null_like(value: &Value) -> bool {
     match &value.node.value {
         ValueKind::Null => true,
@@ -1377,6 +1443,7 @@ fn summarize(
     identities: &HashMap<ProgramBinding, FunctionIdentity>,
     inert: &HashSet<ProgramBinding>,
     constants: &HashSet<ProgramBinding>,
+    mutable_statics: &HashSet<ProgramBinding>,
     strings: &HashSet<ProgramBinding>,
     function: FunctionId,
 ) -> Option<Summary> {
@@ -1386,7 +1453,10 @@ fn summarize(
         identities,
         inert,
         constants,
+        mutable_statics,
         strings,
+        derived: Vec::new(),
+        opaque: false,
         unit: entry.unit,
         nodes: Vec::new(),
         index: HashMap::new(),
@@ -1448,6 +1518,8 @@ fn summarize(
         address_taken: walker.address_taken,
         leaked: walker.leaked,
         automatic: walker.automatic,
+        derived: walker.derived,
+        opaque: walker.opaque,
     })
 }
 
@@ -1656,6 +1728,7 @@ pub(crate) fn analyze(
         }
     }
     let mut constants = HashSet::new();
+    let mut mutable_statics = HashSet::new();
     let mut strings = HashSet::new();
     for (unit, entry) in program.units() {
         for global in &entry.module.globals {
@@ -1665,6 +1738,12 @@ pub(crate) fn analyze(
             };
             if global.variable.is_const {
                 constants.insert(binding);
+            } else if global.definition
+                && matches!(global.linkage, ir::Linkage::Internal)
+                && !global.variable.access.volatile
+                && !global.variable.access.atomic
+            {
+                mutable_statics.insert(binding);
             }
             if c_string_literal(&global.variable) {
                 strings.insert(binding);
@@ -1679,6 +1758,7 @@ pub(crate) fn analyze(
                 identities,
                 &inert,
                 &constants,
+                &mutable_statics,
                 &strings,
                 FunctionId(index),
             )
@@ -1695,6 +1775,7 @@ pub(crate) fn analyze(
     let total = base[count] as usize;
 
     let mut address_taken = vec![false; count];
+    let mut leaked_statics = HashSet::new();
     for summary in summaries.iter().flatten() {
         for function in &summary.address_taken {
             address_taken[function.0 as usize] = true;
@@ -1711,6 +1792,7 @@ pub(crate) fn analyze(
             if let Some(function) = program.callee(unit, &Callee::Direct(binding)) {
                 address_taken[function.0 as usize] = true;
             }
+            leaked_statics.insert(ProgramBinding { unit, binding });
         }
     }
     let candidates: Vec<bool> = program
@@ -1856,8 +1938,33 @@ pub(crate) fn analyze(
         }
     }
     reach(total, &mut backward, &mut returned);
+    let mut passed = HashSet::new();
+    for (function, summary) in summaries.iter().enumerate() {
+        let Some(summary) = summary else { continue };
+        for site in &summary.calls {
+            for &(_, node) in &site.arguments {
+                passed.insert(classes.find(base[function] + node));
+            }
+        }
+    }
     let mut pinned = Vec::new();
-    for summary in summaries.iter().flatten() {
+    for (function, summary) in summaries.iter().enumerate() {
+        let Some(summary) = summary else { continue };
+        let Some(entry) = program.function(FunctionId(function as u32)) else {
+            continue;
+        };
+        for &(node, object) in &summary.derived {
+            let class = classes.find(base[function] + node);
+            if class_flags[class as usize] & ESCAPE != 0
+                || returned[class as usize]
+                || passed.contains(&class)
+            {
+                leaked_statics.insert(ProgramBinding {
+                    unit: entry.unit,
+                    binding: object,
+                });
+            }
+        }
         let mut leaked = summary.leaked.clone();
         for site in &summary.calls {
             let callee = site.callee.0 as usize;
@@ -1874,6 +1981,10 @@ pub(crate) fn analyze(
                 }
             }
         }
+        leaked_statics.extend(leaked.iter().map(|&binding| ProgramBinding {
+            unit: entry.unit,
+            binding,
+        }));
         for site in &summary.calls {
             let callee = site.callee.0 as usize;
             for &(index, object) in &site.objects {
@@ -1980,6 +2091,59 @@ pub(crate) fn analyze(
             }
         }
     }
+    let effects = Effects::new(
+        &summaries
+            .iter()
+            .enumerate()
+            .map(|(function, summary)| {
+                let summary = summary.as_ref()?;
+                let unit = program.function(FunctionId(function as u32))?.unit;
+                let names = summary
+                    .reads
+                    .keys()
+                    .chain(&summary.written)
+                    .map(|&binding| ProgramBinding { unit, binding })
+                    .filter(|binding| mutable_statics.contains(binding))
+                    .collect();
+                Some(FunctionEffects {
+                    names,
+                    opaque: summary.opaque,
+                    callees: summary.calls.iter().map(|site| site.callee).collect(),
+                })
+            })
+            .collect::<Vec<_>>(),
+    );
+    let mut reaching: HashMap<ProgramBinding, HashSet<FunctionId>> = HashMap::new();
+    for (function, summary) in summaries.iter().enumerate() {
+        let Some(summary) = summary else { continue };
+        let Some(entry) = program.function(FunctionId(function as u32)) else {
+            continue;
+        };
+        for site in &summary.calls {
+            for shape in &site.shapes {
+                if let Shape::Array {
+                    object: Some(binding),
+                    ..
+                } = shape
+                {
+                    let object = ProgramBinding {
+                        unit: entry.unit,
+                        binding: *binding,
+                    };
+                    reaching
+                        .entry(object)
+                        .or_insert_with(|| effects.reaching(object));
+                }
+            }
+        }
+    }
+    let untouched = |callee: usize, object: ProgramBinding| {
+        !leaked_statics.contains(&object)
+            && !effects.opaque(FunctionId(callee as u32))
+            && reaching
+                .get(&object)
+                .is_some_and(|reached| !reached.contains(&FunctionId(callee as u32)))
+    };
     let proves = |active: &HashSet<(usize, usize, usize)>,
                   (function, pointer, length): (usize, usize, usize)| {
         let Some(element) = summaries[function]
@@ -2015,9 +2179,22 @@ pub(crate) fn analyze(
                     Some(Shape::Array {
                         length: extent,
                         element: source,
+                        object,
                     }),
                     Some(Shape::Constant(count)),
-                ) => extent == count && same(source),
+                ) => {
+                    extent == count
+                        && same(source)
+                        && object.is_none_or(|binding| {
+                            untouched(
+                                function,
+                                ProgramBinding {
+                                    unit: caller_entry.unit,
+                                    binding,
+                                },
+                            )
+                        })
+                }
                 (
                     Some(Shape::Allocation {
                         pointer: binding,

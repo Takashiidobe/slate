@@ -9,6 +9,7 @@
     clippy::unimplemented
 )]
 
+mod effects;
 mod facts;
 mod identity;
 mod pointer;

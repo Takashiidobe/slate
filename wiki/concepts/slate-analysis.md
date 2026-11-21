@@ -6,6 +6,7 @@
 - [Call resolution](#call-resolution)
 - [Scaling rule](#scaling-rule)
 - [Pointer capabilities](#pointer-capabilities)
+- [Effect summaries](#effect-summaries)
 - [Shadow mode](#shadow-mode)
 - [Related](#related)
 <!-- /toc -->
@@ -187,6 +188,34 @@ Measured (`SLATE_INTERPROC_TIMING`, pass `ir_pointer`): N=800 on every
 `interproc_scaling.py` shape at most 1 ms (Rust-side `pointer_lattice`
 extract 2-4 ms); sqlite 10.9 ms for 17,957 nodes (Rust-side extract 144 ms,
 validate 245 ms).
+
+## Effect summaries
+
+`effects::Effects` (`slate-8ge7.16`) answers "can this call reach object S
+while it runs?" for the pointer analysis, and is the place to extend for later
+questions of the same shape (`slate-8ge7.17`, purity for `slate-8ge7.9`).
+
+- Per function, from the pointer summary walk: the mutable internal statics it
+  names (`Summary.reads` and `written`), its direct callees, and `opaque`.
+  `opaque` is set by an indirect call, a call to an undefined function without
+  a libc identity, an undefined call passing a function pointer (a callback),
+  asm with a non-empty template, and OpenMP or nested-function bodies.
+- `opaque` closes over callers in one reverse pass. Who reaches S is a reverse
+  search from S's direct namers, run once per static that appears as a proof,
+  so cost is linear per queried static.
+- Consumer: a mutable `static` array (internal linkage, not volatile or atomic)
+  decayed at a call with its full extent proves a pointer+length pair when S's
+  address never leaks, the callee is not opaque, and the callee does not reach
+  S. S leaks when a global initializer names it, an escaping or unknown use
+  takes its address, an escaping or returned callee parameter receives it, or
+  a local copy of its address escapes, is returned or is passed to any call. A
+  local copy that stays local (the `ptr_offset` temporary of `s[0] += 1`) does
+  not leak. Another argument of the same call naming S or containing a call
+  also blocks the proof, because Rust evaluates it while the slice is live.
+
+Limits: a static whose address is stored anywhere (a `static int *tail =
+&values[2]` initializer) never proves, even when the callee cannot load that
+pointer; that needs points-to for the holders.
 
 ## Shadow mode
 
