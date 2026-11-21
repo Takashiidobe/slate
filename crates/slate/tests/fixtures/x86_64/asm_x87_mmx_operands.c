@@ -310,7 +310,7 @@ int main(void) {
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn sincos(x: f64, s: &mut f64, c: &mut f64) {
+// CHECK-NEXT: fn sincos(x: f64, s: *mut f64, c: *mut f64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: f64 = x;
 // CHECK-NEXT:         let mut [[T_1]]: f64 = core::mem::zeroed();
@@ -330,8 +330,8 @@ int main(void) {
 // CHECK-NEXT:             lateout("st(7)") _,
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
-// CHECK-NEXT:         *(c as *mut f64) = [[T_1]];
-// CHECK-NEXT:         *(s as *mut f64) = [[T_2]];
+// CHECK-NEXT:         *c = [[T_1]];
+// CHECK-NEXT:         *s = [[T_2]];
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -506,11 +506,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut s: f64 = 0 as f64;
 // CHECK-NEXT:     let mut c: f64 = 0 as f64;
-// CHECK-NEXT:     sincos(
-// CHECK-NEXT:         0.5f64,
-// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(s)) },
-// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(c)) },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     sincos(0.5f64, core::ptr::addr_of_mut!(s), core::ptr::addr_of_mut!(c));
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(

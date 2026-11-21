@@ -111,9 +111,10 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn sum(a: &[i32]) -> i32 {
+// CHECK-NEXT:     let n: i32 = a.len() as i32;
 // CHECK-NEXT:     let mut s: i32 = 0;
-// CHECK-NEXT:     for i in 0..a.len() as i32 {
-// CHECK-NEXT:         s += unsafe { a[i as usize] };
+// CHECK-NEXT:     for i in 0..n {
+// CHECK-NEXT:         s += a[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK: {{^}}}
@@ -181,9 +182,10 @@ int main(void) {
 // CHECK-NEXT:     t
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn find(a: &[i32], x: i32) -> i32 {
+// CHECK-NEXT:     let n: i32 = a.len() as i32;
 // CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < (a.len() as i32) {
-// CHECK-NEXT:         if (unsafe { a[i as usize] }) == x {
+// CHECK-NEXT:     while i < n {
+// CHECK-NEXT:         if a[i as usize] == x {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i += 1;

@@ -314,18 +314,18 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave,sse")]
 // CHECK-NEXT: #[inline(always)]
-// CHECK-NEXT: unsafe fn _mm_storeu_ps(__p: *mut f32, __a: core::simd::Simd<f32, 4>) {
+// CHECK-NEXT: unsafe fn _mm_storeu_ps(__p: &mut f32, __a: core::simd::Simd<f32, 4>) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_ps__2095)).__v)
+// CHECK-NEXT:         core::ptr::addr_of_mut!((*((__p as *mut f32) as *mut __storeu_ps__2095)).__v)
 // CHECK-NEXT:             .write_unaligned(__a);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // CHECK-NEXT: #[inline(always)]
-// CHECK-NEXT: unsafe fn _mm256_storeu_ps(__p: *mut f32, __a: core::simd::Simd<f32, 8>) {
+// CHECK-NEXT: unsafe fn _mm256_storeu_ps(__p: &mut f32, __a: core::simd::Simd<f32, 8>) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_ps__3282)).__v)
+// CHECK-NEXT:         core::ptr::addr_of_mut!((*((__p as *mut f32) as *mut __storeu_ps__3282)).__v)
 // CHECK-NEXT:             .write_unaligned(__a);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -472,10 +472,11 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // CHECK-NEXT: unsafe fn print_lanes(name: *const i8, lanes: &[f32]) {
+// CHECK-NEXT:     let count: i32 = lanes.len() as i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s:".as_ptr(), name) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     for i in 0..lanes.len() as i32 {
+// CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c" %g".as_ptr(), lanes[i as usize] as f64) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -490,17 +491,14 @@ int main(void) {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut out4: __SlateAlign16<[f32; 4]> = __SlateAlign16([0 as f32; 4]);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         _mm_storeu_ps(
-// CHECK-NEXT:             out4.0.as_mut_ptr() as *mut f32,
-// CHECK-NEXT:             vabi_double4(_mm_set_ps(4.0f32, 3.0f32, 2.0f32, 1.0f32)),
-// CHECK-NEXT:         )
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = unsafe { vabi_double4(_mm_set_ps(4.0f32, 3.0f32, 2.0f32, 1.0f32)) };
+// CHECK-NEXT:         unsafe { _mm_storeu_ps(&mut out4.0[0usize], [[T_0]]) }
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { print_lanes(c"double4".as_ptr(), &out4.0) };
+// CHECK-NEXT:     unsafe { print_lanes(c"double4".as_ptr(), out4.0.as_slice()) };
 // CHECK-NEXT:     let mut out8: __SlateAlign16<[f32; 8]> = __SlateAlign16([0 as f32; 8]);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         _mm256_storeu_ps(
-// CHECK-NEXT:             out8.0.as_mut_ptr() as *mut f32,
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = unsafe {
 // CHECK-NEXT:             vabi_add8(
 // CHECK-NEXT:                 _mm256_set1_ps(1.5f32),
 // CHECK-NEXT:                 _mm256_set_ps(
@@ -513,10 +511,11 @@ int main(void) {
 // CHECK-NEXT:                     2i32 as f32,
 // CHECK-NEXT:                     1i32 as f32,
 // CHECK-NEXT:                 ),
-// CHECK-NEXT:             ),
-// CHECK-NEXT:         )
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { _mm256_storeu_ps(&mut out8.0[0usize], [[T_1]]) }
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { print_lanes(c"add8".as_ptr(), &out8.0) };
+// CHECK-NEXT:     unsafe { print_lanes(c"add8".as_ptr(), out8.0.as_slice()) };
 // CHECK-NEXT:     let mut out16: __SlateAlign16<[f32; 16]> = __SlateAlign16([0 as f32; 16]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm512_storeu_ps(
@@ -524,7 +523,7 @@ int main(void) {
 // CHECK-NEXT:             __vabi_scale_by16(_mm512_set1_ps(2.0f32), 0.25f32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { print_lanes(c"scale16".as_ptr(), &out16.0) };
+// CHECK-NEXT:     unsafe { print_lanes(c"scale16".as_ptr(), out16.0.as_slice()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

@@ -1,4 +1,3 @@
-// SLATE-ENV: SLATE_IR_POINTERS=1
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -49,7 +48,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: //! SLATE-ENV: SLATE_IR_POINTERS=1
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn __builtin_prefetch([[ARG_0:arg[0-9]+]]: *const (), ...);
 // CHECK-NEXT: }

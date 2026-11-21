@@ -24,15 +24,16 @@ int main(void) {
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
 // CHECK-EMPTY:
-// CHECK-NEXT: fn touch(y: &mut i32) {
+// CHECK-NEXT: fn touch([[V_0:__v[0-9]+]]: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *y = *y + 1;
+// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn use_and_free(mut y: Box<i32>) -> i32 {
-// CHECK-NEXT:     touch(unsafe { &mut (*(&mut (*y) as *mut i32)) });
-// CHECK-NEXT:     let v: i32 = unsafe { *(&mut (*y) as *mut i32) };
+// CHECK-NEXT: fn use_and_free(y: *mut i32) -> i32 {
+// CHECK-NEXT:     touch(y);
+// CHECK-NEXT:     let v: i32 = unsafe { *y };
+// CHECK-NEXT:     unsafe { free((y as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -43,7 +44,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *y = 41;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{}", use_and_free(unsafe { Box::from_raw(y) }));
+// CHECK-NEXT:     println!("{}", use_and_free(y));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

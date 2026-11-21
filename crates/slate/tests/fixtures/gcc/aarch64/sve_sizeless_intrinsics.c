@@ -71,13 +71,9 @@ int main(void) {
 // CHECK-NEXT:     slot: &mut core::arch::aarch64::svint32_t,
 // CHECK-NEXT:     by: core::arch::aarch64::svint32_t,
 // CHECK-NEXT: ) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(slot as *mut core::arch::aarch64::svint32_t) = core::arch::aarch64::svadd_s32_x(
-// CHECK-NEXT:             core::arch::aarch64::svptrue_b32(),
-// CHECK-NEXT:             *(slot as *mut core::arch::aarch64::svint32_t),
-// CHECK-NEXT:             by,
-// CHECK-NEXT:         );
-// CHECK-NEXT:     }
+// CHECK-NEXT:     *slot = unsafe {
+// CHECK-NEXT:         core::arch::aarch64::svadd_s32_x(core::arch::aarch64::svptrue_b32(), *slot, by)
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,crc,lse,sve,fcma")]
@@ -124,11 +120,9 @@ int main(void) {
 // CHECK-NEXT:         core::arch::aarch64::svdup_n_s32(0i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     acc = unsafe { core::arch::aarch64::svindex_s32(0i32, 2i32) };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         bump(
-// CHECK-NEXT:             &mut (*core::ptr::addr_of_mut!(acc)),
-// CHECK-NEXT:             core::arch::aarch64::svdup_n_s32(5i32),
-// CHECK-NEXT:         )
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = unsafe { core::arch::aarch64::svdup_n_s32(5i32) };
+// CHECK-NEXT:         unsafe { bump(&mut acc, [[T_0]]) }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let rotated: core::arch::aarch64::svint32_t = unsafe {
 // CHECK-NEXT:         rotate_one(acc, core::arch::aarch64::svdup_n_s32(-1i32))

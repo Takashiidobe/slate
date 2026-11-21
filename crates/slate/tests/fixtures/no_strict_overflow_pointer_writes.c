@@ -100,18 +100,18 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut drv: driver = driver { fixup: Some(outer_fixup) };
 // CHECK-EMPTY:
-// CHECK-NEXT: fn fill(slots: *mut *mut i32, n: i32, v: *mut i32) {
+// CHECK-NEXT: fn fill(slots: &mut [*mut i32], v: *mut i32) {
+// CHECK-NEXT:     let n: i32 = slots.len() as i32;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *slots.wrapping_offset(i as isize) = v;
-// CHECK-NEXT:         }
+// CHECK-NEXT:         slots[i as usize] = v;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn sum(values: *const i32, n: i32) -> i32 {
+// CHECK-NEXT: fn sum(values: &[i32]) -> i32 {
+// CHECK-NEXT:     let n: i32 = values.len() as i32;
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         total = total.wrapping_add(unsafe { *values.wrapping_offset(i as isize) });
+// CHECK-NEXT:         total = total.wrapping_add(values[i as usize]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -131,11 +131,13 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut x: i32 = 3;
 // CHECK-NEXT:     let mut slots: __SlateAlign16<[*mut i32; 3]> = __SlateAlign16([0 as *mut i32; 3]);
-// CHECK-NEXT:     fill(slots.0.as_mut_ptr() as *mut *mut i32, 3i32, core::ptr::addr_of_mut!(x));
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = core::ptr::addr_of_mut!(x);
+// CHECK-NEXT:         fill(slots.0.as_mut_slice(), [[T_0]])
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{}", unsafe { *slots.0[0] }.wrapping_add(unsafe { *slots.0[2] }));
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
-// CHECK-NEXT:     let __slate_printf_arg0 = sum(values.0.as_mut_ptr() as *const i32, 4i32);
-// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
+// CHECK-NEXT:     println!("{}", sum(values.0.as_slice()));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

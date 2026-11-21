@@ -261,9 +261,8 @@ int main(void) {
 // CHECK-NEXT:     z: num_complex::Complex<LongDouble>,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn offset(base: &(), field: *const ()) -> u32 {
-// CHECK-NEXT:     ((unsafe { (field as *const i8).offset_from((base as *const ()) as *const i8) })
-// CHECK-NEXT:         as i32) as u32
+// CHECK-NEXT: fn offset(base: *const (), field: *const ()) -> u32 {
+// CHECK-NEXT:     ((unsafe { (field as *const i8).offset_from(base as *const i8) }) as i32) as u32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -296,7 +295,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u32 = offset(
-// CHECK-NEXT:         unsafe { &(*(core::ptr::addr_of_mut!(w) as *const ())) },
+// CHECK-NEXT:         core::ptr::addr_of_mut!(w) as *const (),
 // CHECK-NEXT:         core::ptr::addr_of_mut!(w.l) as *const (),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
@@ -305,7 +304,7 @@ int main(void) {
 // CHECK-NEXT:             core::mem::size_of::<wide>() as u32,
 // CHECK-NEXT:             core::mem::align_of::<wide>() as u32,
 // CHECK-NEXT:             offset(
-// CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(w) as *const ())),
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(w) as *const (),
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(w.d) as *const (),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             [[V_0]],

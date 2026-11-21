@@ -114,8 +114,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut record: Record = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut trailing: Trailing = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let record: Record = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let trailing: Trailing = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     __SlateAlign16([0i32; 5]);
 // CHECK-NEXT:     let index: i32 = 2;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -410,10 +410,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"members %lu\n".as_ptr(),
-// CHECK-NEXT:             member_sizes(
-// CHECK-NEXT:                 &(*core::ptr::addr_of_mut!(record)),
-// CHECK-NEXT:                 &(*core::ptr::addr_of_mut!(trailing)),
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             member_sizes(&record, &trailing),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

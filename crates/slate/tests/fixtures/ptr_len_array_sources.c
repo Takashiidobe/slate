@@ -64,36 +64,31 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn sum_values(values: &[i32]) -> i32 {
+// CHECK-NEXT:     let len: i32 = values.len() as i32;
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     for i in 0..values.len() as i32 {
-// CHECK-NEXT:         sum += unsafe { values[i as usize] };
+// CHECK-NEXT:     for i in 0..len {
+// CHECK-NEXT:         sum += values[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn bump_values(values: &mut [i32]) {
-// CHECK-NEXT:     for i in 0..values.len() as i32 {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             values[i as usize] = values[i as usize] + 1;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     let len: i32 = values.len() as i32;
+// CHECK-NEXT:     for i in 0..len {
+// CHECK-NEXT:         values[i as usize] += 1;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn sum_prefix(values: *const i32, len: i32) -> i32 {
-// CHECK-NEXT:     let __values_view = unsafe {
-// CHECK-NEXT:         core::slice::from_raw_parts(values as *const i32, len as usize)
-// CHECK-NEXT:     };
+// CHECK-LABEL: {{^}}fn sum_prefix(values: &[i32], len: i32) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         sum += unsafe { __values_view[i as usize] };
+// CHECK-NEXT:         sum += values[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn score_text(text: &str) -> i32 {
-// CHECK-NEXT:     unsafe { text.len() };
+// CHECK-LABEL: {{^}}fn score_text(text: *const u8, len: i32) -> i32 {
+// CHECK-NEXT:     unsafe { strlen((text as *const i8) as *const core::ffi::c_char) as u64 };
 // CHECK-NEXT:     let mut score: i32 = 0;
-// CHECK-NEXT:     for i in 0..text.len() as i32 {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = score;
-// CHECK-NEXT:         score = [[V_0]]
-// CHECK-NEXT:             + ((unsafe { *(text.as_ptr() as *const u8).offset(i as isize) }) as i32);
+// CHECK-NEXT:     for i in 0..len {
+// CHECK-NEXT:         score += (unsafe { *text.offset(i as isize) }) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     score
 // CHECK: {{^}}}

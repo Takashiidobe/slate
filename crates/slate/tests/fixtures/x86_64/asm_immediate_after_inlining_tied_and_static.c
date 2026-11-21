@@ -109,14 +109,14 @@ int main(void) {
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
-// CHECK-NEXT: fn load_g__const5(mut p: &u32, n: i32) -> u32 {
+// CHECK-NEXT: fn load_g__const5(mut p: *mut u32, n: i32) -> u32 {
 // CHECK-NEXT:     let mut out: u32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movl ({1:r}), {0:e}\n\taddl ${2}, {0:e}",
 // CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) p as *const u32,
+// CHECK-NEXT:             in(reg) p,
 // CHECK-NEXT:             const 3 as i32,
 // CHECK-NEXT:             options(pure, readonly, nostack, att_syntax),
 // CHECK-NEXT:         );
@@ -136,7 +136,7 @@ int main(void) {
 // CHECK-NEXT:             counted__const3(3i32),
 // CHECK-NEXT:             counted__const3(3i32),
 // CHECK-NEXT:             counted__const4(4i32),
-// CHECK-NEXT:             load_g__const5(&(*core::ptr::addr_of_mut!(v)), 3i32),
+// CHECK-NEXT:             load_g__const5(core::ptr::addr_of_mut!(v), 3i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

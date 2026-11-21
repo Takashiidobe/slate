@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lu %s\n".as_ptr(),
-// CHECK-NEXT:             entry_size(&(*core::ptr::addr_of_mut!(entry))),
+// CHECK-NEXT:             entry_size(&entry),
 // CHECK-NEXT:             entry.d_name.as_mut_ptr() as *mut i8,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

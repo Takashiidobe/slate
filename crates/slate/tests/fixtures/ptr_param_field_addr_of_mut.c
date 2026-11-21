@@ -37,18 +37,8 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn freeCResources(ress: &mut __SlateRecord_ptr_param_field_addr_of_mut_c_16) {
-// CHECK-NEXT:     freeDict(
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::ptr::addr_of_mut!((*(ress
-// CHECK-NEXT:                 as *mut __SlateRecord_ptr_param_field_addr_of_mut_c_16)).dict)
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
-// CHECK-NEXT:     syncDestroy(
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::ptr::addr_of_mut!((*(ress
-// CHECK-NEXT:                 as *mut __SlateRecord_ptr_param_field_addr_of_mut_c_16)).io)
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     freeDict(core::ptr::addr_of_mut!((*ress).dict));
+// CHECK-NEXT:     syncDestroy(core::ptr::addr_of_mut!((*ress).io));
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut r: __SlateRecord_ptr_param_field_addr_of_mut_c_16 = __SlateRecord_ptr_param_field_addr_of_mut_c_16 {
@@ -60,7 +50,7 @@ int main(void) {
 // CHECK-NEXT:             y: 7,
 // CHECK-NEXT:         },
 // CHECK-NEXT:     };
-// CHECK-NEXT:     freeCResources(unsafe { &mut (*core::ptr::addr_of_mut!(r)) });
+// CHECK-NEXT:     freeCResources(&mut r);
 // CHECK-NEXT:     println!("{} {} {}", r.dict.x, r.io.y, r.cctx);
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

@@ -25,37 +25,31 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: fn bump(mut p: &mut i32) -> i32 {
-// CHECK-NEXT:     let before: i32 = unsafe { *(p as *mut i32) };
+// CHECK-NEXT: fn bump(mut p: *mut i32) -> i32 {
+// CHECK-NEXT:     let before: i32 = unsafe { *p };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addl $1, ({0:r})",
-// CHECK-NEXT:             in(reg) p as *mut i32,
-// CHECK-NEXT:             options(nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         core::arch::asm!("addl $1, ({0:r})", in(reg) p, options(nostack, att_syntax));
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (unsafe { *(p as *mut i32) }) - before
+// CHECK-NEXT:     (unsafe { *p }) - before
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn store(mut p: &mut i32) -> i32 {
-// CHECK-NEXT:     let before: i32 = unsafe { *(p as *mut i32) };
+// CHECK-NEXT: fn store(mut p: *mut i32) -> i32 {
+// CHECK-NEXT:     let before: i32 = unsafe { *p };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movl $7, ({0:r})",
-// CHECK-NEXT:             in(reg) (p as *mut i32) as u64,
+// CHECK-NEXT:             in(reg) p as u64,
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (unsafe { *(p as *mut i32) }) - before
+// CHECK-NEXT:     (unsafe { *p }) - before
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut value: i32 = 41;
-// CHECK-NEXT:     let __slate_printf_arg0 = bump(unsafe { &mut (*core::ptr::addr_of_mut!(value)) });
-// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
+// CHECK-NEXT:     println!("{}", bump(core::ptr::addr_of_mut!(value)));
 // CHECK-NEXT:     println!("{}", value);
-// CHECK-NEXT:     let __slate_printf_arg0 = store(unsafe { &mut (*core::ptr::addr_of_mut!(value)) });
-// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
+// CHECK-NEXT:     println!("{}", store(core::ptr::addr_of_mut!(value)));
 // CHECK-NEXT:     println!("{}", value);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

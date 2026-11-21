@@ -710,6 +710,11 @@ impl Walker<'_, '_> {
                 }
             }
             ValueKind::ArrayDecay { place, .. } | ValueKind::AddressOf(place) => {
+                if let PlaceKind::Binding(function) = place.kind
+                    && let Some(id) = self.program.callee(self.unit, &Callee::Direct(function))
+                {
+                    self.address_taken.push(id);
+                }
                 self.place(place, Use::Address)
             }
             ValueKind::FunctionDecay { place } => {

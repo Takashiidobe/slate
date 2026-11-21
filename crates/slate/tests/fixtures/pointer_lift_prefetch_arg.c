@@ -35,14 +35,15 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum(values: &[i32]) -> i32 {
+// CHECK-NEXT:     let n: i32 = values.len() as i32;
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0..values.len() as i32 {
-// CHECK-NEXT:         total += unsafe { values[i as usize] };
+// CHECK-NEXT:     for i in 0..n {
+// CHECK-NEXT:         total += values[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn first(p: *const i32) -> i32 {
+// CHECK-NEXT: fn first(p: &i32) -> i32 {
 // CHECK-NEXT:     unsafe { *(p as *const i32) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -50,8 +51,7 @@ int main(void) {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 8]> = __SlateAlign16(
 // CHECK-NEXT:         [1i32, 2i32, 3i32, 4i32, 5i32, 6i32, 7i32, 8i32],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_printf_arg1 = first(values.0.as_mut_ptr() as *const i32);
-// CHECK-NEXT:     println!("{} {}", sum(&values.0), __slate_printf_arg1);
+// CHECK-NEXT:     println!("{} {}", sum(values.0.as_slice()), first(&values.0[0usize]));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

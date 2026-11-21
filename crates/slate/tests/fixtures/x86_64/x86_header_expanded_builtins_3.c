@@ -388,15 +388,13 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _load_mask32(__A: &u32) -> u32 {
-// CHECK-NEXT:     unsafe { *(__A as *const u32) }
+// CHECK-NEXT:     *__A
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _store_mask64(__A: &mut u64, __B: u64) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(__A as *mut u64) = __B;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     *__A = __B;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512bw")]
@@ -437,12 +435,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
 // CHECK-NEXT: #[inline(never)]
-// CHECK-NEXT: unsafe fn avx(fa: *const f32, da: *const f64, words: *const i16) {
+// CHECK-NEXT: unsafe fn avx(fa: *const f32, da: *const f64, words: &i16) {
 // CHECK-NEXT:     let w: core::simd::Simd<i64, 2> = unsafe {
-// CHECK-NEXT:         _mm_loadu_si128(words as *const core::simd::Simd<i64, 2>)
+// CHECK-NEXT:         _mm_loadu_si128((words as *const i16) as *const core::simd::Simd<i64, 2>)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let w256: core::simd::Simd<i64, 4> = unsafe {
-// CHECK-NEXT:         _mm256_loadu_si256(words as *const core::simd::Simd<i64, 4>)
+// CHECK-NEXT:         _mm256_loadu_si256((words as *const i16) as *const core::simd::Simd<i64, 4>)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     SHOW__2!(
 // CHECK-NEXT:         c"shufflelo".as_ptr() as *mut i8,
@@ -610,7 +608,7 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(c"kunpackb %04x\n".as_ptr(), _mm512_kunpackb(a, b) as u32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut c: u32 = seed.wrapping_mul(2246822519);
+// CHECK-NEXT:     let c: u32 = seed.wrapping_mul(2246822519);
 // CHECK-NEXT:     let mut d: u64 = (seed as u64).wrapping_mul(11400714819323198485);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -628,12 +626,10 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"knot64 %016llx\n".as_ptr(), _knot_mask64(d)) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let loaded: u32 = unsafe { _load_mask32(&(*core::ptr::addr_of_mut!(c))) };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         _store_mask64(
-// CHECK-NEXT:             &mut (*core::ptr::addr_of_mut!(d)),
-// CHECK-NEXT:             _cvtu64_mask64((_cvtmask32_u32(loaded) as u64) << 3i32),
-// CHECK-NEXT:         )
+// CHECK-NEXT:     let loaded: u32 = unsafe { _load_mask32(&c) };
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = unsafe { _cvtu64_mask64((_cvtmask32_u32(loaded) as u64) << 3i32) };
+// CHECK-NEXT:         unsafe { _store_mask64(&mut d, [[T_0]]) }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -697,12 +693,10 @@ int main(void) {
 // CHECK-NEXT:         words.0[i as usize] = (i * 4099 - 777) as i16;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if std::arch::is_x86_feature_detected!("avx2") {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             avx(
-// CHECK-NEXT:                 fa.0.as_mut_ptr() as *const f32,
-// CHECK-NEXT:                 da.0.as_mut_ptr() as *const f64,
-// CHECK-NEXT:                 words.0.as_mut_ptr() as *const i16,
-// CHECK-NEXT:             )
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let [[T_0]] = fa.0.as_mut_ptr() as *const f32;
+// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = da.0.as_mut_ptr() as *const f64;
+// CHECK-NEXT:             unsafe { avx([[T_0]], [[T_1]], &words.0[0usize]) }
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if std::arch::is_x86_feature_detected!("avx512bw")

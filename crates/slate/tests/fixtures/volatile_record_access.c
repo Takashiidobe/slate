@@ -67,11 +67,11 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: fn once(state: &State) -> *mut State {
+// CHECK-NEXT: fn once(state: &mut State) -> *mut State {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (state as *const State) as *mut State
+// CHECK-NEXT:     state as *mut State
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -89,9 +89,7 @@ int main(void) {
 // CHECK-NEXT:     state.pointer = core::ptr::addr_of_mut!(target) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_volatile(
-// CHECK-NEXT:             core::ptr::addr_of_mut!((*once(
-// CHECK-NEXT:                 &(*core::ptr::addr_of_mut!(state)),
-// CHECK-NEXT:             )).[[SLATE_ANON_0]].interrupted),
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*once(&mut state)).[[SLATE_ANON_0]].interrupted),
 // CHECK-NEXT:             17i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

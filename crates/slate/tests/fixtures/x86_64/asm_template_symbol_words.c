@@ -59,13 +59,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn incl(mut p: &mut i32) {
+// CHECK-NEXT: fn incl(mut p: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "lock incl ({0:r})",
-// CHECK-NEXT:             in(reg) p as *mut i32,
-// CHECK-NEXT:             options(nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         core::arch::asm!("lock incl ({0:r})", in(reg) p, options(nostack, att_syntax));
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -106,7 +102,7 @@ int main(void) {
 // CHECK-NEXT:         core::mem::size_of::<[i8; 6]>() as u64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut x: i32 = 41;
-// CHECK-NEXT:     incl(unsafe { &mut (*core::ptr::addr_of_mut!(x)) });
+// CHECK-NEXT:     incl(core::ptr::addr_of_mut!(x));
 // CHECK-NEXT:     bump();
 // CHECK-NEXT:     bump();
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

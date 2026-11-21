@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:     [4usize as *mut (), 5usize as *mut (), 6usize as *mut ()],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: fn retry(slot: *mut i32, n: i32) -> i32 {
+// CHECK-NEXT: fn retry(slot: &mut i32, n: i32) -> i32 {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut tries: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -110,8 +110,8 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %d %d\n".as_ptr(),
 // CHECK-NEXT:             jump_probe(core::ptr::read_volatile(core::ptr::addr_of!(input))),
-// CHECK-NEXT:             retry(core::ptr::addr_of_mut!(slot), 4i32),
-// CHECK-NEXT:             retry(core::ptr::addr_of_mut!(other), 1i32),
+// CHECK-NEXT:             retry(&mut slot, 4i32),
+// CHECK-NEXT:             retry(&mut other, 1i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0

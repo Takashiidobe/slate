@@ -19,7 +19,7 @@ int counter_apply(int (*fn)(struct counter *), struct counter *c) { return fn(c)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn counter_get(c: &counter) -> i32 {
-// CHECK-NEXT:     unsafe { (*(c as *const counter)).value }
+// CHECK-NEXT:     (*c).value
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn counter_apply(

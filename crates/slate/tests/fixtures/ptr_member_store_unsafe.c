@@ -51,21 +51,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn init(o: &mut outer) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(o as *mut outer)).buf.start = 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(o as *mut outer)).buf.end = 2;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(o as *mut outer)).error = 0;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     bump(unsafe { core::ptr::addr_of_mut!((*(o as *mut outer)).buf.start) });
+// CHECK-NEXT:     (*o).buf.start = 1;
+// CHECK-NEXT:     (*o).buf.end = 2;
+// CHECK-NEXT:     (*o).error = 0;
+// CHECK-NEXT:     bump(core::ptr::addr_of_mut!((*o).buf.start));
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut o: outer = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     init(unsafe { &mut (*core::ptr::addr_of_mut!(o)) });
+// CHECK-NEXT:     init(&mut o);
 // CHECK-NEXT:     println!("{} {} {}", o.buf.start, o.buf.end, o.error);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

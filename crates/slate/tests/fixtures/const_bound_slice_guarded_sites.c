@@ -50,35 +50,33 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
-// CHECK-NEXT: fn sum_then_next(p: *mut i32) -> i32 {
+// CHECK-NEXT: fn sum_then_next(p: &[i32]) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < 4 {
-// CHECK-NEXT:         s += unsafe { *p.offset(i as isize) };
+// CHECK-NEXT:         s += p[i as usize];
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     s + unsafe { *p.offset(i as isize) }
+// CHECK-NEXT:     s + p[i as usize]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn two_loops(p: &[i32], q: &mut [i32]) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..4i32 {
-// CHECK-NEXT:         s += unsafe { p[i as usize] };
+// CHECK-NEXT:         s += p[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..8i32 {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             q[i as usize] = i;
-// CHECK-NEXT:         }
+// CHECK-NEXT:         q[i as usize] = i;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn shifted(p: *mut i32) -> i32 {
+// CHECK-NEXT: fn shifted(p: &[i32]) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         i += 1;
-// CHECK-NEXT:         s += unsafe { *p.offset(i as isize) };
+// CHECK-NEXT:         s += p[i as usize];
 // CHECK-NEXT:         if i >= 4 {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
@@ -90,20 +88,10 @@ int main(void) {
 // CHECK-NEXT:     let mut a: __SlateAlign16<[i32; 5]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32, 5i32]);
 // CHECK-NEXT:     let mut small: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
 // CHECK-NEXT:     let mut big: __SlateAlign16<[i32; 8]> = __SlateAlign16([0i32; 8]);
-// CHECK-NEXT:     let __slate_printf_arg0 = sum_then_next(a.0.as_mut_ptr() as *mut i32);
-// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
-// CHECK-NEXT:     let __slate_printf_arg0_1 = two_loops(
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::slice::from_raw_parts(small.0.as_mut_ptr() as *const i32, 4usize)
-// CHECK-NEXT:         },
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::slice::from_raw_parts_mut(big.0.as_mut_ptr() as *mut i32, 8usize)
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!("{}", __slate_printf_arg0_1);
+// CHECK-NEXT:     println!("{}", sum_then_next(a.0.as_slice()));
+// CHECK-NEXT:     println!("{}", two_loops(small.0.as_slice(), big.0.as_mut_slice()));
 // CHECK-NEXT:     println!("{}", big.0[7]);
-// CHECK-NEXT:     let __slate_printf_arg0 = shifted(a.0.as_mut_ptr() as *mut i32);
-// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
+// CHECK-NEXT:     println!("{}", shifted(a.0.as_slice()));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

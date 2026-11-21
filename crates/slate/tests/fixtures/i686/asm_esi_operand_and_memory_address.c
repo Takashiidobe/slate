@@ -116,11 +116,11 @@ int main(void) {
 // CHECK-NEXT:     ((fsw as i32) == 0 && (fcw as i32) & 4159 == 63) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn set_bit(mut nr: i32, mut addr: &mut ()) {
+// CHECK-NEXT: fn set_bit(mut nr: i32, mut addr: *mut ()) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "btsl {1:e},({0:e})",
-// CHECK-NEXT:             in(reg) (addr as *mut ()) as *mut u32,
+// CHECK-NEXT:             in(reg) addr as *mut u32,
 // CHECK-NEXT:             in(reg) nr as u32,
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
@@ -154,7 +154,7 @@ int main(void) {
 // CHECK-NEXT:     let mut a: [i8; 6] = [115, 108, 97, 116, 101, 0];
 // CHECK-NEXT:     let mut b: [i8; 6] = [115, 108, 97, 116, 102, 0];
 // CHECK-NEXT:     let mut word: u32 = 0;
-// CHECK-NEXT:     set_bit(5i32, unsafe { &mut (*(core::ptr::addr_of_mut!(word) as *mut ())) });
+// CHECK-NEXT:     set_bit(5i32, core::ptr::addr_of_mut!(word) as *mut ());
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

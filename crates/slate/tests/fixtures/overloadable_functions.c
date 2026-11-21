@@ -46,16 +46,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn lock_ctx__1(lock: &mut spinlock) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(lock as *mut spinlock)).held = 1;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     (*lock).held = 1;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn lock_ctx__2(lock: &mut mutex) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(lock as *mut mutex)).owner = 7;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     (*lock).owner = 7;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*lock).depth = (*lock).depth + 1;
 // CHECK-NEXT:     }
@@ -63,13 +59,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn held__1(lock: &spinlock) -> i32 {
-// CHECK-NEXT:     unsafe { (*(lock as *const spinlock)).held }
+// CHECK-NEXT:     (*lock).held
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn held__2(lock: &mutex) -> i32 {
-// CHECK-NEXT:     (unsafe { (*(lock as *const mutex)).owner }) * 10
-// CHECK-NEXT:         + unsafe { (*(lock as *const mutex)).depth }
+// CHECK-NEXT:     (*lock).owner * 10 + (*lock).depth
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn [[PICK__1_0:pick__[0-9]+_[0-9]+]](x: i32) -> i32 {
@@ -97,15 +92,9 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut s: spinlock = spinlock { held: 0 };
 // CHECK-NEXT:     let mut m: mutex = mutex { owner: 0, depth: 1 };
-// CHECK-NEXT:     lock_ctx__1(unsafe { &mut (*core::ptr::addr_of_mut!(s)) });
-// CHECK-NEXT:     lock_ctx__2(unsafe { &mut (*core::ptr::addr_of_mut!(m)) });
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         printf(
-// CHECK-NEXT:             c"%d %d\n".as_ptr(),
-// CHECK-NEXT:             held__1(&(*(core::ptr::addr_of_mut!(s) as *const spinlock))),
-// CHECK-NEXT:             held__2(&(*(core::ptr::addr_of_mut!(m) as *const mutex))),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     lock_ctx__1(&mut s);
+// CHECK-NEXT:     lock_ctx__2(&mut m);
+// CHECK-NEXT:     unsafe { printf(c"%d %d\n".as_ptr(), held__1(&s), held__2(&m)) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d %d %d\n".as_ptr(),

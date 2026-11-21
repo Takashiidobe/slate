@@ -176,8 +176,7 @@ int main(void) {
 // CHECK-NEXT: fn compose(msg: &mut msi_msg, vector: u32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = vector;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::ptr::addr_of_mut!((*(msg
-// CHECK-NEXT:             as *mut msi_msg)).[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]])
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::ptr::addr_of_mut!((*msg).[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]])
 // CHECK-NEXT:             as *mut __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25;
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]] = [[T_1]].read_unaligned();
 // CHECK-NEXT:         [[T_2]].[[SLATE_ANON_0]].__slate_bits_0.__set_vector([[T_0]]);
@@ -185,8 +184,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]] = 5u32;
-// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = core::ptr::addr_of_mut!((*(msg
-// CHECK-NEXT:             as *mut msi_msg)).[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]])
+// CHECK-NEXT:         let [[T_4:__t[0-9]+]] = core::ptr::addr_of_mut!((*msg).[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]])
 // CHECK-NEXT:             as *mut __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25;
 // CHECK-NEXT:         let mut [[T_5:__t[0-9]+]] = [[T_4]].read_unaligned();
 // CHECK-NEXT:         [[T_5]].[[SLATE_ANON_0]].__slate_bits_0.__set_delivery_mode([[T_3]]);
@@ -194,8 +192,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_6:__t[0-9]+]] = 1u32;
-// CHECK-NEXT:         let [[T_7:__t[0-9]+]] = core::ptr::addr_of_mut!((*(msg
-// CHECK-NEXT:             as *mut msi_msg)).[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]])
+// CHECK-NEXT:         let [[T_7:__t[0-9]+]] = core::ptr::addr_of_mut!((*msg).[[SLATE_ANON_1]].arch_data.[[SLATE_ANON_0]])
 // CHECK-NEXT:             as *mut __SlateRecord_packed_union_bitfield_and_aligned_literal_c_25;
 // CHECK-NEXT:         let mut [[T_8:__t[0-9]+]] = [[T_7]].read_unaligned();
 // CHECK-NEXT:         [[T_8]].[[SLATE_ANON_0]].__slate_bits_0.__set_is_level([[T_6]]);
@@ -282,7 +279,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     compose(unsafe { &mut (*core::ptr::addr_of_mut!(msg)) }, 49u32);
+// CHECK-NEXT:     compose(&mut msg, 49u32);
 // CHECK-NEXT:     let mut copy: msi_msg = msg;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

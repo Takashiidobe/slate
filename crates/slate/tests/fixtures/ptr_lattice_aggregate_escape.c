@@ -57,9 +57,10 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum(args: &[*mut obj]) -> i32 {
+// CHECK-NEXT:     let n: i32 = args.len() as i32;
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0..args.len() as i32 {
-// CHECK-NEXT:         if !unsafe { args[i as usize] }.is_null() {
+// CHECK-NEXT:     for i in 0..n {
+// CHECK-NEXT:         if !args[i as usize].is_null() {
 // CHECK-NEXT:             total += unsafe { (*args[i as usize]).v };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -67,20 +68,19 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fire(retval: *mut obj) -> i32 {
-// CHECK-NEXT:     let args: __SlateAlign16<[*mut obj; 2]> = __SlateAlign16(
+// CHECK-NEXT:     let mut args: __SlateAlign16<[*mut obj; 2]> = __SlateAlign16(
 // CHECK-NEXT:         [core::ptr::null_mut::<obj>(), retval],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     sum(&args.0)
+// CHECK-NEXT:     sum(args.0.as_slice())
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn count(l: &list) -> i64 {
-// CHECK-NEXT:     (unsafe { (*(l as *const list)).n })
-// CHECK-NEXT:         + ((unsafe { *(*(*(l as *const list)).items) }) as i64)
+// CHECK-NEXT:     (*l).n + ((unsafe { *(*(*l).items) }) as i64)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn wrap(length: i64, items: *mut *mut i32) -> i64 {
-// CHECK-NEXT:     let mut l: list = list { n: length, items: items };
-// CHECK-NEXT:     count(unsafe { &(*core::ptr::addr_of_mut!(l)) })
+// CHECK-NEXT:     let l: list = list { n: length, items: items };
+// CHECK-NEXT:     count(&l)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

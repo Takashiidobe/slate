@@ -117,11 +117,11 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: fn next_slot(slots: *mut i32) -> *mut i32 {
+// CHECK-NEXT: fn next_slot(slots: &mut [i32]) -> *mut i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { slots.offset(calls as isize) }
+// CHECK-NEXT:     unsafe { slots.as_mut_ptr().offset(calls as isize) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -243,11 +243,11 @@ int main(void) {
 // CHECK-NEXT:     r = [[V_20]];
 // CHECK-NEXT:     println!("{} {} {}", r, i, values.0[2]);
 // CHECK-NEXT:     let mut slots: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32, 0i32, 0i32, 0i32]);
-// CHECK-NEXT:     let [[V_21:__v[0-9]+]]: *mut i32 = next_slot(slots.0.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     let [[V_21:__v[0-9]+]]: *mut i32 = next_slot(slots.0.as_mut_slice());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_21]] = *[[V_21]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_22:__v[0-9]+]]: *mut i32 = next_slot(slots.0.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     let [[V_22:__v[0-9]+]]: *mut i32 = next_slot(slots.0.as_mut_slice());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_22]] = *[[V_22]] + 1;
 // CHECK-NEXT:     }

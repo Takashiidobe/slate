@@ -225,11 +225,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memcpy;
 // CHECK-EMPTY:
-// CHECK-NEXT: fn load80(bytes: *const u8) -> LongDouble {
+// CHECK-NEXT: fn load80(bytes: &u8) -> LongDouble {
 // CHECK-NEXT:     let mut value: LongDouble = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((bytes as *const ()) as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             (((bytes as *const u8) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(value) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (10u64 as usize) as usize,
@@ -260,12 +261,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut one_bits: [u8; 10] = [0, 0, 0, 0, 0, 0, 0, 128, 255, 63];
-// CHECK-NEXT:     let mut two_bits: [u8; 10] = [0, 0, 0, 0, 0, 0, 0, 128, 0, 64];
-// CHECK-NEXT:     let mut near_bits: [u8; 10] = [1, 0, 0, 0, 0, 0, 0, 128, 255, 63];
-// CHECK-NEXT:     let one: LongDouble = load80(one_bits.as_mut_ptr() as *const u8);
-// CHECK-NEXT:     let two: LongDouble = load80(two_bits.as_mut_ptr() as *const u8);
-// CHECK-NEXT:     let near: LongDouble = load80(near_bits.as_mut_ptr() as *const u8);
+// CHECK-NEXT:     let one_bits: [u8; 10] = [0, 0, 0, 0, 0, 0, 0, 128, 255, 63];
+// CHECK-NEXT:     let two_bits: [u8; 10] = [0, 0, 0, 0, 0, 0, 0, 128, 0, 64];
+// CHECK-NEXT:     let near_bits: [u8; 10] = [1, 0, 0, 0, 0, 0, 0, 128, 255, 63];
+// CHECK-NEXT:     let one: LongDouble = load80(&one_bits[0usize]);
+// CHECK-NEXT:     let two: LongDouble = load80(&two_bits[0usize]);
+// CHECK-NEXT:     let near: LongDouble = load80(&near_bits[0usize]);
 // CHECK-NEXT:     dump80(c"add".as_ptr(), one + two);
 // CHECK-NEXT:     dump80(c"sub".as_ptr(), near - one);
 // CHECK-NEXT:     dump80(c"mul".as_ptr(), one * two);

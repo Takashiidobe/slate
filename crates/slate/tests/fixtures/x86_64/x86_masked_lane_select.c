@@ -355,58 +355,62 @@ int main(void) {
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn selects(
 // CHECK-NEXT:     mask: u32,
-// CHECK-NEXT:     a: *const i64,
-// CHECK-NEXT:     b: *const i64,
-// CHECK-NEXT:     q512: *mut i64,
-// CHECK-NEXT:     d256: *mut i32,
-// CHECK-NEXT:     w128: *mut i16,
-// CHECK-NEXT:     b128: *mut i8,
+// CHECK-NEXT:     a: &i64,
+// CHECK-NEXT:     b: &i64,
+// CHECK-NEXT:     q512: &mut i64,
+// CHECK-NEXT:     d256: &mut i32,
+// CHECK-NEXT:     w128: &mut i16,
+// CHECK-NEXT:     b128: &mut i8,
 // CHECK-NEXT: ) {
-// CHECK-NEXT:     let qa: core::simd::Simd<i64, 8> = unsafe { _mm512_loadu_si512(a as *const ()) };
-// CHECK-NEXT:     let qb: core::simd::Simd<i64, 8> = unsafe { _mm512_loadu_si512(b as *const ()) };
+// CHECK-NEXT:     let qa: core::simd::Simd<i64, 8> = unsafe {
+// CHECK-NEXT:         _mm512_loadu_si512((a as *const i64) as *const ())
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let qb: core::simd::Simd<i64, 8> = unsafe {
+// CHECK-NEXT:         _mm512_loadu_si512((b as *const i64) as *const ())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm512_storeu_si512(
-// CHECK-NEXT:             q512 as *mut (),
+// CHECK-NEXT:             (q512 as *mut i64) as *mut (),
 // CHECK-NEXT:             _mm512_mask_sub_epi64(qa, mask as u8, qa, qb),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let da: core::simd::Simd<i64, 4> = unsafe {
-// CHECK-NEXT:         _mm256_loadu_si256(a as *const core::simd::Simd<i64, 4>)
+// CHECK-NEXT:         _mm256_loadu_si256((a as *const i64) as *const core::simd::Simd<i64, 4>)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let db: core::simd::Simd<i64, 4> = unsafe {
-// CHECK-NEXT:         _mm256_loadu_si256(b as *const core::simd::Simd<i64, 4>)
+// CHECK-NEXT:         _mm256_loadu_si256((b as *const i64) as *const core::simd::Simd<i64, 4>)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm256_storeu_si256(
-// CHECK-NEXT:             d256 as *mut core::simd::Simd<i64, 4>,
+// CHECK-NEXT:             (d256 as *mut i32) as *mut core::simd::Simd<i64, 4>,
 // CHECK-NEXT:             _mm256_mask_add_epi32(da, mask as u8, da, db),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let wa: core::simd::Simd<i64, 2> = unsafe {
-// CHECK-NEXT:         _mm_loadu_si128(a as *const core::simd::Simd<i64, 2>)
+// CHECK-NEXT:         _mm_loadu_si128((a as *const i64) as *const core::simd::Simd<i64, 2>)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let wb: core::simd::Simd<i64, 2> = unsafe {
-// CHECK-NEXT:         _mm_loadu_si128(b as *const core::simd::Simd<i64, 2>)
+// CHECK-NEXT:         _mm_loadu_si128((b as *const i64) as *const core::simd::Simd<i64, 2>)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm_storeu_si128(
-// CHECK-NEXT:             w128 as *mut core::simd::Simd<i64, 2>,
+// CHECK-NEXT:             (w128 as *mut i16) as *mut core::simd::Simd<i64, 2>,
 // CHECK-NEXT:             _mm_mask_add_epi16(wa, mask as u8, wa, wb),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm_storeu_si128(
-// CHECK-NEXT:             b128 as *mut core::simd::Simd<i64, 2>,
+// CHECK-NEXT:             (b128 as *mut i8) as *mut core::simd::Simd<i64, 2>,
 // CHECK-NEXT:             _mm_maskz_add_epi8(mask as u16, wa, wb),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut a: __SlateAlign16<[i64; 8]> = __SlateAlign16(
+// CHECK-NEXT:     let a: __SlateAlign16<[i64; 8]> = __SlateAlign16(
 // CHECK-NEXT:         [1i64, 2i64, 3i64, 4i64, 5i64, 6i64, 7i64, 8i64],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut b: __SlateAlign16<[i64; 8]> = __SlateAlign16(
+// CHECK-NEXT:     let b: __SlateAlign16<[i64; 8]> = __SlateAlign16(
 // CHECK-NEXT:         [100i64, 200i64, 300i64, 400i64, 500i64, 600i64, 700i64, 800i64],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut q: __SlateAlign16<[i64; 8]> = __SlateAlign16([0i64; 8]);
@@ -423,12 +427,12 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             selects(
 // CHECK-NEXT:                 mask,
-// CHECK-NEXT:                 a.0.as_mut_ptr() as *const i64,
-// CHECK-NEXT:                 b.0.as_mut_ptr() as *const i64,
-// CHECK-NEXT:                 q.0.as_mut_ptr() as *mut i64,
-// CHECK-NEXT:                 d.0.as_mut_ptr() as *mut i32,
-// CHECK-NEXT:                 w.0.as_mut_ptr() as *mut i16,
-// CHECK-NEXT:                 c.0.as_mut_ptr() as *mut i8,
+// CHECK-NEXT:                 &a.0[0usize],
+// CHECK-NEXT:                 &b.0[0usize],
+// CHECK-NEXT:                 &mut q.0[0usize],
+// CHECK-NEXT:                 &mut d.0[0usize],
+// CHECK-NEXT:                 &mut w.0[0usize],
+// CHECK-NEXT:                 &mut c.0[0usize],
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

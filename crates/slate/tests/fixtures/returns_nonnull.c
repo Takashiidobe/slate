@@ -17,8 +17,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut x: i32 = 5;
-// CHECK-NEXT:     println!("{}", unsafe { *get(&(*core::ptr::addr_of_mut!(x))) });
+// CHECK-NEXT:     let x: i32 = 5;
+// CHECK-NEXT:     println!("{}", unsafe { *get(&x) });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

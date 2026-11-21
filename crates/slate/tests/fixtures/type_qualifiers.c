@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn add_restrict_pointers(lhs: &i32, rhs: &i32) -> i32 {
-// CHECK-NEXT:     (unsafe { *(lhs as *const i32) }) + unsafe { *(rhs as *const i32) }
+// CHECK-NEXT:     *lhs + *rhs
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn add_atomic_value(value: i32) -> i32 {
@@ -61,16 +61,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut left: i32 = 7;
-// CHECK-NEXT:     let mut right: i32 = 11;
+// CHECK-NEXT:     let left: i32 = 7;
+// CHECK-NEXT:     let right: i32 = 11;
 // CHECK-NEXT:     println!("{}", add_const_param(2i32));
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}",
-// CHECK-NEXT:         add_restrict_pointers(
-// CHECK-NEXT:             unsafe { &(*core::ptr::addr_of_mut!(left)) },
-// CHECK-NEXT:             unsafe { &(*core::ptr::addr_of_mut!(right)) },
-// CHECK-NEXT:         )
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{}", add_restrict_pointers(&left, &right));
 // CHECK-NEXT:     println!("{}", add_atomic_value(6i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

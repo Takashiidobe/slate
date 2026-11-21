@@ -99,12 +99,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f,avx512vl")]
-// CHECK-NEXT: unsafe fn masked_load_probe(p: *mut i32, mask: u32, out: *mut i32) {
+// CHECK-NEXT: unsafe fn masked_load_probe(p: *mut i32, mask: u32, out: &mut i32) {
 // CHECK-NEXT:     let w: core::simd::Simd<i64, 2> = unsafe { _mm_set1_epi32(-1i32) };
 // CHECK-NEXT:     let v: core::simd::Simd<i64, 2> = unsafe {
 // CHECK-NEXT:         _mm_mask_loadu_epi32(w, mask as u8, p as *const ())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { _mm_storeu_si128(out as *mut core::simd::Simd<i64, 2>, v) };
+// CHECK-NEXT:     unsafe { _mm_storeu_si128((out as *mut i32) as *mut core::simd::Simd<i64, 2>, v) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -112,12 +112,9 @@ int main(void) {
 // CHECK-NEXT:         [10i32, 20i32, 30i32, 40i32],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut out: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         masked_load_probe(
-// CHECK-NEXT:             data.0.as_mut_ptr() as *mut i32,
-// CHECK-NEXT:             5u32,
-// CHECK-NEXT:             out.0.as_mut_ptr() as *mut i32,
-// CHECK-NEXT:         )
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = data.0.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:         unsafe { masked_load_probe([[T_0]], 5u32, &mut out.0[0usize]) }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {} {}", out.0[0], out.0[1], out.0[2], out.0[3]);
 // CHECK-NEXT:     0

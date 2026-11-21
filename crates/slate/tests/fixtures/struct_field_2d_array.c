@@ -80,30 +80,25 @@ int main(void) {
 // CHECK-NEXT: fn fill(t: &mut table) {
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *((*((*(t as *mut table)).rows.as_mut_ptr() as *mut [i8; 3])
-// CHECK-NEXT:                         .offset(i as isize))
-// CHECK-NEXT:                     .as_mut_ptr() as *mut i8)
+// CHECK-NEXT:             *((*((*t).rows.as_mut_ptr() as *mut [i8; 3]).offset(i as isize)).as_mut_ptr()
+// CHECK-NEXT:                     as *mut i8)
 // CHECK-NEXT:                 .add(0) = (97 + i) as i8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *((*((*(t as *mut table)).rows.as_mut_ptr() as *mut [i8; 3])
-// CHECK-NEXT:                         .offset(i as isize))
-// CHECK-NEXT:                     .as_mut_ptr() as *mut i8)
+// CHECK-NEXT:             *((*((*t).rows.as_mut_ptr() as *mut [i8; 3]).offset(i as isize)).as_mut_ptr()
+// CHECK-NEXT:                     as *mut i8)
 // CHECK-NEXT:                 .add(1) = (48 + i) as i8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *((*((*(t as *mut table)).rows.as_mut_ptr() as *mut [i8; 3])
-// CHECK-NEXT:                         .offset(i as isize))
-// CHECK-NEXT:                     .as_mut_ptr() as *mut i8)
+// CHECK-NEXT:             *((*((*t).rows.as_mut_ptr() as *mut [i8; 3]).offset(i as isize)).as_mut_ptr()
+// CHECK-NEXT:                     as *mut i8)
 // CHECK-NEXT:                 .add(2) = 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn fill_via_ptr(t: &mut table, i: i32) {
-// CHECK-NEXT:     let row: *mut [i8; 3] = unsafe {
-// CHECK-NEXT:         (*(t as *mut table)).rows.as_mut_ptr() as *mut [i8; 3]
-// CHECK-NEXT:     };
+// CHECK-NEXT: fn fill_via_ptr(t: &mut [table], i: i32) {
+// CHECK-NEXT:     let row: *mut [i8; 3] = t[0usize].rows.as_mut_ptr() as *mut [i8; 3];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *((*row.offset(i as isize).add(0)).as_mut_ptr() as *mut i8).add(0) = 88;
 // CHECK-NEXT:     }
@@ -114,7 +109,7 @@ int main(void) {
 // CHECK-NEXT:         for j in 0i32..3i32 {
 // CHECK-NEXT:             for k in 0i32..4i32 {
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *((*((*((*(c as *mut cube)).v.as_mut_ptr() as *mut {{\[\[}}i32; 4]; 3])
+// CHECK-NEXT:                     *((*((*((*c).v.as_mut_ptr() as *mut {{\[\[}}i32; 4]; 3])
 // CHECK-NEXT:                                         .offset(i as isize))
 // CHECK-NEXT:                                     .as_mut_ptr() as *mut [i32; 4])
 // CHECK-NEXT:                                 .offset(j as isize))
@@ -126,9 +121,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn sum_cube_via_ptr(c: &mut cube) -> i32 {
+// CHECK-NEXT: fn sum_cube_via_ptr(c: &[cube]) -> i32 {
 // CHECK-NEXT:     let plane: *mut [i32; 4] = unsafe {
-// CHECK-NEXT:         (*((*(c as *mut cube)).v.as_mut_ptr() as *mut {{\[\[}}i32; 4]; 3]).add(1)).as_mut_ptr()
+// CHECK-NEXT:         (*(c[0usize].v.as_ptr() as *mut {{\[\[}}i32; 4]; 3]).add(1)).as_mut_ptr()
 // CHECK-NEXT:             as *mut [i32; 4]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
@@ -147,8 +142,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut t: table = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     fill(unsafe { &mut (*core::ptr::addr_of_mut!(t)) });
-// CHECK-NEXT:     fill_via_ptr(unsafe { &mut (*core::ptr::addr_of_mut!(t)) }, 2i32);
+// CHECK-NEXT:     fill(&mut t);
+// CHECK-NEXT:     fill_via_ptr(core::slice::from_mut(&mut t), 2i32);
 // CHECK-NEXT:     for i in 0i32..4i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -160,11 +155,13 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut c: cube = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     fill_cube(unsafe { &mut (*core::ptr::addr_of_mut!(c)) });
-// CHECK-NEXT:     let __slate_printf_arg2 = sum_cube_via_ptr(
-// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(c)) },
+// CHECK-NEXT:     fill_cube(&mut c);
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         c.v[0][0][0],
+// CHECK-NEXT:         c.v[1][2][3],
+// CHECK-NEXT:         sum_cube_via_ptr(core::slice::from_ref(&c))
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!("{} {} {}", c.v[0][0][0], c.v[1][2][3], __slate_printf_arg2);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

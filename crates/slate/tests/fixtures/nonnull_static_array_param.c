@@ -26,19 +26,14 @@ int main(void) {
 // CHECK-NEXT: fn sum4(arr: &[i32]) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..4i32 {
-// CHECK-NEXT:         s += unsafe { arr[i as usize] };
+// CHECK-NEXT:         s += arr[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
-// CHECK-NEXT:     let __slate_printf_arg0 = sum4(
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::slice::from_raw_parts(values.0.as_mut_ptr() as *const i32, 4usize)
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!("{}", __slate_printf_arg0);
+// CHECK-NEXT:     println!("{}", sum4(values.0.as_slice()));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

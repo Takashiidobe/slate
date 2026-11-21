@@ -56,13 +56,9 @@ int main(void) {
 // CHECK-NEXT:     consume,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: fn destroy(mut ctx: Box<__SlateRecord_heap_box_param_raw_borrow_c_7>) {
-// CHECK-NEXT:     consume(
-// CHECK-NEXT:         &mut (*ctx) as *mut __SlateRecord_heap_box_param_raw_borrow_c_7,
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*(&(*ctx) as *const __SlateRecord_heap_box_param_raw_borrow_c_7)).loaded
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
+// CHECK-NEXT: fn destroy(ctx: *mut __SlateRecord_heap_box_param_raw_borrow_c_7) {
+// CHECK-NEXT:     consume(ctx, unsafe { (*ctx).loaded });
+// CHECK-NEXT:     unsafe { free((ctx as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -82,7 +78,7 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), (*ctx).size) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     destroy(unsafe { Box::from_raw(ctx) });
+// CHECK-NEXT:     destroy(ctx);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

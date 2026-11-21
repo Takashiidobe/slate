@@ -80,11 +80,11 @@ int main(void) {
 // CHECK-NEXT:     x + 5
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn once(p: &i32) -> *mut i32 {
+// CHECK-NEXT: fn once(p: *mut i32) -> *mut i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls = calls + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (p as *const i32) as *mut i32
+// CHECK-NEXT:     p
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -171,7 +171,7 @@ int main(void) {
 // CHECK-NEXT:     let vv: i32 = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicI32::load_volatile(
 // CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr_raw(
-// CHECK-NEXT:                 once(&(*core::ptr::addr_of_mut!(v))) as *mut i32,
+// CHECK-NEXT:                 once(core::ptr::addr_of_mut!(v)) as *mut i32,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:             core::sync::atomic::Ordering::Relaxed,
 // CHECK-NEXT:         )

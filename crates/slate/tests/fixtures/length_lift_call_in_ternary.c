@@ -22,9 +22,10 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum(values: &[i32]) -> i32 {
+// CHECK-NEXT:     let count: i32 = values.len() as i32;
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0..values.len() as i32 {
-// CHECK-NEXT:         total += unsafe { values[i as usize] };
+// CHECK-NEXT:     for i in 0..count {
+// CHECK-NEXT:         total += values[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -34,17 +35,17 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let values: [i32; 3] = [1, 2, 5];
-// CHECK-NEXT:     report(if sum(&values) == 8 { 0i32 } else { 1i32 });
+// CHECK-NEXT:     let mut values: [i32; 3] = [1, 2, 5];
+// CHECK-NEXT:     report(if sum(values.as_slice()) == 8 { 0i32 } else { 1i32 });
 // CHECK-NEXT:     let mut picked: i32 = 0;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if sum(&values) > 2 {
-// CHECK-NEXT:         sum(&values)
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if sum(values.as_slice()) > 2 {
+// CHECK-NEXT:         sum(values.as_slice())
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         0
 // CHECK-NEXT:     };
 // CHECK-NEXT:     picked = [[V_0]];
 // CHECK-NEXT:     println!("picked {}", picked);
-// CHECK-NEXT:     if sum(&values) == 8 { 0 } else { 1 }
+// CHECK-NEXT:     if sum(values.as_slice()) == 8 { 0 } else { 1 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

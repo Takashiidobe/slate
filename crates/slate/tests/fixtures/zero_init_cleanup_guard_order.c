@@ -81,15 +81,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn do_send(d: &dev, byte: u8) -> i32 {
-// CHECK-NEXT:     println!("do_send locked={}", unsafe { (*(*(d as *const dev)).port).locked });
-// CHECK-NEXT:     (byte as i32) + unsafe { (*(*(d as *const dev)).port).locked }
+// CHECK-NEXT:     println!("do_send locked={}", unsafe { (*(*d).port).locked });
+// CHECK-NEXT:     (byte as i32) + unsafe { (*(*d).port).locked }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn send(d: &dev, byte: u8) -> i32 {
 // CHECK-NEXT:     let mut retval: i32 = 0;
-// CHECK-NEXT:     let mut guard: *mut port = class_pause_constructor(
-// CHECK-NEXT:         unsafe { (*(d as *const dev)).port },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut guard: *mut port = class_pause_constructor((*d).port);
 // CHECK-NEXT:     let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(guard) as *mut _;
 // CHECK-NEXT:     let __slate_cleanup_0 = ::slate_support::Guard(
 // CHECK-NEXT:         &mut || class_pause_destructor(__slate_cleanup_ptr_0 as *mut _),
@@ -97,13 +95,7 @@ int main(void) {
 // CHECK-NEXT:     retval = do_send(d, byte);
 // CHECK-NEXT:     if false {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%02x - %x\n".as_ptr(),
-// CHECK-NEXT:                 byte as i32,
-// CHECK-NEXT:                 (*(d as *const dev)).nak,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%02x - %x\n".as_ptr(), byte as i32, (*d).nak) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     retval
@@ -111,13 +103,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut p: port = port { locked: 0 };
-// CHECK-NEXT:     let mut d: dev = {
+// CHECK-NEXT:     let d: dev = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: dev = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].port = core::ptr::addr_of_mut!(p);
 // CHECK-NEXT:         [[T_0]].nak = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     println!("{}", send(unsafe { &(*core::ptr::addr_of_mut!(d)) }, 41u8));
+// CHECK-NEXT:     println!("{}", send(&d, 41u8));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

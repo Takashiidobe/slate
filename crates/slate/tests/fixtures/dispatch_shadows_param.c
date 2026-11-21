@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         total = name as i32;
 // CHECK-NEXT:         if k == 0 {
-// CHECK-NEXT:             name__1 = (*(fd as *const fd)).name;
+// CHECK-NEXT:             name__1 = (*fd).name;
 // CHECK-NEXT:             total += (name__1 as i32) * 10;
 // CHECK-NEXT:             if name__1 > 5 {
 // CHECK-NEXT:                 total += 1000;
@@ -59,13 +59,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut small: fd = fd { name: 3 };
-// CHECK-NEXT:     let mut big: fd = fd { name: 9 };
+// CHECK-NEXT:     let small: fd = fd { name: 3 };
+// CHECK-NEXT:     let big: fd = fd { name: 9 };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
-// CHECK-NEXT:         pick(unsafe { &(*core::ptr::addr_of_mut!(small)) }, 2u32, 0i32),
-// CHECK-NEXT:         pick(unsafe { &(*core::ptr::addr_of_mut!(big)) }, 2u32, 0i32),
-// CHECK-NEXT:         pick(unsafe { &(*core::ptr::addr_of_mut!(small)) }, 2u32, 1i32)
+// CHECK-NEXT:         pick(&small, 2u32, 0i32),
+// CHECK-NEXT:         pick(&big, 2u32, 0i32),
+// CHECK-NEXT:         pick(&small, 2u32, 1i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

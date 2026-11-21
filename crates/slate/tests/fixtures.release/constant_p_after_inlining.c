@@ -126,7 +126,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
-// CHECK-NEXT: fn retry(fr: u32, slot: *mut i32, n: i32) -> i32 {
+// CHECK-NEXT: fn retry(fr: u32, slot: &mut i32, n: i32) -> i32 {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut tries: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -152,7 +152,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn likely_retry(slot: *mut i32, n: i32) -> i32 {
+// CHECK-NEXT: fn likely_retry(slot: &mut i32, n: i32) -> i32 {
 // CHECK-NEXT:     retry(1u32, slot, n)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -191,7 +191,7 @@ int main(void) {
 // CHECK-NEXT:             limit(9u32),
 // CHECK-NEXT:             query(3i32, 1.5f64),
 // CHECK-NEXT:             likely_pick(4i32),
-// CHECK-NEXT:             likely_retry(core::ptr::addr_of_mut!(slot), 5i32),
+// CHECK-NEXT:             likely_retry(&mut slot, 5i32),
 // CHECK-NEXT:             drain(10i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

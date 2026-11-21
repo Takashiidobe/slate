@@ -28,14 +28,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::memcmp;
 // CHECK-EMPTY:
-// CHECK-NEXT: fn cmp_bytes(a: &[u8], b: &[u8]) -> i32 {
+// CHECK-NEXT: fn cmp_bytes(a: &[u8], alen: i32, b: &[u8], blen: i32) -> i32 {
 // CHECK-NEXT:     let mut sa: i32 = 0;
 // CHECK-NEXT:     let mut sb: i32 = 0;
-// CHECK-NEXT:     for i in 0..a.len() as i32 {
-// CHECK-NEXT:         sa += (unsafe { a[i as usize] }) as i32;
+// CHECK-NEXT:     for i in 0..alen {
+// CHECK-NEXT:         sa += a[i as usize] as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for i in 0..b.len() as i32 {
-// CHECK-NEXT:         sb += (unsafe { b[i as usize] }) as i32;
+// CHECK-NEXT:     for i in 0..blen {
+// CHECK-NEXT:         sb += b[i as usize] as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let order: i32 = unsafe {
 // CHECK-NEXT:         a[0usize..(3u64 as usize) as usize].cmp(&b[0usize..(3u64 as usize) as usize])
@@ -46,10 +46,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let x: [u8; 3] = [1, 2, 3];
-// CHECK-NEXT:     let y: [u8; 3] = [1, 2, 4];
-// CHECK-NEXT:     let z: [u8; 3] = [1, 2, 3];
-// CHECK-NEXT:     println!("{} {} {}", cmp_bytes(&x, &y), cmp_bytes(&y, &x), cmp_bytes(&x, &z));
+// CHECK-NEXT:     let mut x: [u8; 3] = [1, 2, 3];
+// CHECK-NEXT:     let mut y: [u8; 3] = [1, 2, 4];
+// CHECK-NEXT:     let mut z: [u8; 3] = [1, 2, 3];
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         cmp_bytes(x.as_slice(), 3i32, y.as_slice(), 3i32),
+// CHECK-NEXT:         cmp_bytes(y.as_slice(), 3i32, x.as_slice(), 3i32),
+// CHECK-NEXT:         cmp_bytes(x.as_slice(), 3i32, z.as_slice(), 3i32)
+// CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

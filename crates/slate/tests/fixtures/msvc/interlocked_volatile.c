@@ -94,9 +94,12 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT: }
 // I686-PC-WINDOWS-MSVC-EMPTY:
 // I686-PC-WINDOWS-MSVC-NEXT: #[inline(always)]
-// I686-PC-WINDOWS-MSVC-NEXT: fn _InlineInterlockedExchangePointer(Destination: *mut *mut (), Value: &()) -> *mut () {
+// I686-PC-WINDOWS-MSVC-NEXT: fn _InlineInterlockedExchangePointer(
+// I686-PC-WINDOWS-MSVC-NEXT:     Destination: *mut *mut (),
+// I686-PC-WINDOWS-MSVC-NEXT:     Value: *mut (),
+// I686-PC-WINDOWS-MSVC-NEXT: ) -> *mut () {
 // I686-PC-WINDOWS-MSVC-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe {
-// I686-PC-WINDOWS-MSVC-NEXT:         let [[T_0:__t[0-9]+]] = (Value as *const ()) as i32;
+// I686-PC-WINDOWS-MSVC-NEXT:         let [[T_0:__t[0-9]+]] = Value as i32;
 // I686-PC-WINDOWS-MSVC-NEXT:         let [[T_1:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(Destination as *mut i32)
 // I686-PC-WINDOWS-MSVC-NEXT:             .swap([[T_0]], core::sync::atomic::Ordering::SeqCst);
 // I686-PC-WINDOWS-MSVC-NEXT:         [[T_1]]
@@ -107,12 +110,12 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT: #[inline(always)]
 // I686-PC-WINDOWS-MSVC-NEXT: fn _InlineInterlockedCompareExchangePointer(
 // I686-PC-WINDOWS-MSVC-NEXT:     Destination: *mut *mut (),
-// I686-PC-WINDOWS-MSVC-NEXT:     ExChange: &(),
+// I686-PC-WINDOWS-MSVC-NEXT:     ExChange: *mut (),
 // I686-PC-WINDOWS-MSVC-NEXT:     Comperand: *mut (),
 // I686-PC-WINDOWS-MSVC-NEXT: ) -> *mut () {
 // I686-PC-WINDOWS-MSVC-NEXT:     let [[V_0]]: i32 = unsafe {
 // I686-PC-WINDOWS-MSVC-NEXT:         let [[T_1]] = Comperand as i32;
-// I686-PC-WINDOWS-MSVC-NEXT:         let [[T_0]] = (ExChange as *const ()) as i32;
+// I686-PC-WINDOWS-MSVC-NEXT:         let [[T_0]] = ExChange as i32;
 // I686-PC-WINDOWS-MSVC-NEXT:         let [[T_2:__t[0-9]+]] = core::sync::atomic::AtomicI32::from_ptr(Destination as *mut i32)
 // I686-PC-WINDOWS-MSVC-NEXT:             .compare_exchange(
 // I686-PC-WINDOWS-MSVC-NEXT:                 [[T_1]],
@@ -197,10 +200,10 @@ int main(void) { return 0; }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn reference_shared(fresh: &()) -> *mut () {
+// CHECK-NEXT: fn reference_shared(fresh: *mut ()) -> *mut () {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     let [[V_0]]: *mut () = unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         let [[T_1]] = core::ptr::null_mut::<()>();
-// X86_64-PC-WINDOWS-MSVC-NEXT:         let [[T_0]] = fresh as *const ();
+// X86_64-PC-WINDOWS-MSVC-NEXT:         let [[T_0]] = fresh;
 // X86_64-PC-WINDOWS-MSVC-NEXT:         let [[T_2]] = core::sync::atomic::AtomicPtr::from_ptr(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 core::ptr::addr_of_mut!(g_shared) as *mut *mut (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             )
@@ -220,7 +223,7 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:     );
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     let [[V_0]]: *mut () = unsafe {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         let [[T_1]] = core::ptr::null_mut::<()>();
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         let [[T_0]] = fresh as *const ();
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         let [[T_0]] = fresh;
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         let [[T_2]] = core::sync::atomic::AtomicPtr::from_ptr(
 // AARCH64-PC-WINDOWS-MSVC-NEXT:                 core::ptr::addr_of_mut!(g_shared) as *mut *mut (),
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             )
@@ -233,7 +236,7 @@ int main(void) { return 0; }
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         [[T_2]].unwrap_or_else(|[[T_3]]| [[T_3]]) as *mut ()
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     };
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     let previous: *mut () = [[V_0]];
-// CHECK-NEXT:     if !previous.is_null() { previous } else { (fresh as *const ()) as *mut () }
+// CHECK-NEXT:     if !previous.is_null() { previous } else { fresh }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -346,10 +349,9 @@ int main(void) { return 0; }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut a: i32 = 1;
 // CHECK-NEXT:     let mut b: i32 = 2;
-// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: bool = reference_shared(
-// CHECK-NEXT:         unsafe { &(*(core::ptr::addr_of_mut!(a) as *mut ())) },
-// CHECK-NEXT:     ) != (core::ptr::addr_of_mut!(a) as *mut ())
-// CHECK-NEXT:         || reference_shared(unsafe { &(*(core::ptr::addr_of_mut!(b) as *mut ())) })
+// CHECK-NEXT:     let [[V_13:__v[0-9]+]]: bool = reference_shared(core::ptr::addr_of_mut!(a) as *mut ())
+// CHECK-NEXT:         != (core::ptr::addr_of_mut!(a) as *mut ())
+// CHECK-NEXT:         || reference_shared(core::ptr::addr_of_mut!(b) as *mut ())
 // CHECK-NEXT:             != (core::ptr::addr_of_mut!(a) as *mut ());
 // CHECK-NEXT:     if [[V_13]] {
 // CHECK-NEXT:         unsafe { std::process::abort() };
@@ -365,7 +367,7 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     if [[V_14]] != (core::ptr::addr_of_mut!(a) as *mut ())
 // I686-PC-WINDOWS-MSVC-NEXT:     if _InlineInterlockedExchangePointer(
 // I686-PC-WINDOWS-MSVC-NEXT:         unsafe { core::ptr::addr_of_mut!(g_shared) },
-// I686-PC-WINDOWS-MSVC-NEXT:         unsafe { &(*(core::ptr::addr_of_mut!(b) as *mut ())) },
+// I686-PC-WINDOWS-MSVC-NEXT:         core::ptr::addr_of_mut!(b) as *mut (),
 // I686-PC-WINDOWS-MSVC-NEXT:     ) != (core::ptr::addr_of_mut!(a) as *mut ())
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     let [[V_14:__v[0-9]+]]: *mut () = unsafe {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         let [[T_16:__t[0-9]+]] = core::ptr::addr_of_mut!(b) as *mut ();

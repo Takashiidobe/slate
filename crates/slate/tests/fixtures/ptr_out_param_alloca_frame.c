@@ -33,9 +33,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn check_target(ptr: *const i8, end: *const i8, tokPtr: &mut i32) -> i32 {
 // CHECK-NEXT:     let mut upper: i32 = 0;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(tokPtr as *mut i32) = 7;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     *tokPtr = 7;
 // CHECK-NEXT:     if ((unsafe { end.offset_from(ptr as *const i8) }) as i64) != 3 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
@@ -49,9 +47,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if upper != 0 {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *(tokPtr as *mut i32) = 9;
-// CHECK-NEXT:         }
+// CHECK-NEXT:         *tokPtr = 9;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
@@ -59,11 +55,10 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut tok: i32 = 0;
 // CHECK-NEXT:     let s: *const i8 = c"xyz".as_ptr();
-// CHECK-NEXT:     let r: i32 = check_target(
-// CHECK-NEXT:         s,
-// CHECK-NEXT:         unsafe { s.add(3) },
-// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(tok)) },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let r: i32 = {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = unsafe { s.add(3) };
+// CHECK-NEXT:         check_target(s, [[T_0]], &mut tok)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {}", r, tok);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

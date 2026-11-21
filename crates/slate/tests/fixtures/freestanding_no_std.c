@@ -35,9 +35,10 @@ int main(void) {
 // CHECK-NEXT: use slate_support::getenv;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum(values: &[i32]) -> i32 {
+// CHECK-NEXT:     let count: i32 = values.len() as i32;
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0..values.len() as i32 {
-// CHECK-NEXT:         total += unsafe { values[i as usize] };
+// CHECK-NEXT:     for i in 0..count {
+// CHECK-NEXT:         total += values[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -54,9 +55,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *cell = 5;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let values: [i32; 3] = [1, 2, unsafe { *cell }];
+// CHECK-NEXT:     let mut values: [i32; 3] = [1, 2, unsafe { *cell }];
 // CHECK-NEXT:     release(cell);
-// CHECK-NEXT:     unsafe { slate_support::printf(c"sum %d\n".as_ptr(), sum(&values)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"sum %d\n".as_ptr(), sum(values.as_slice())) };
 // CHECK-NEXT:     unsafe { slate_support::putchar(10i32) };
 // CHECK-NEXT:     if !unsafe {
 // CHECK-NEXT:             getenv(c"SLATE_FREESTANDING_UNSET".as_ptr() as *const core::ffi::c_char)
@@ -65,7 +66,7 @@ int main(void) {
 // CHECK-NEXT:         .is_null() {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { exit((if sum(&values) == 8 { 0i32 } else { 1i32 }) as i32) };
+// CHECK-NEXT:     unsafe { exit((if sum(values.as_slice()) == 8 { 0i32 } else { 1i32 }) as i32) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}

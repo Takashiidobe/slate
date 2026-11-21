@@ -37,15 +37,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut seen: u64 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: fn load(mut dtr: &mut desc_ptr) {
+// CHECK-NEXT: fn load(mut dtr: *const desc_ptr) {
 // CHECK-NEXT:     let mut got: u64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movq 2({1:r}), {0:r}\n# {2}",
 // CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) (dtr as *mut desc_ptr) as u64,
-// CHECK-NEXT:             in(reg) dtr as *mut desc_ptr,
+// CHECK-NEXT:             in(reg) dtr as u64,
+// CHECK-NEXT:             in(reg) dtr,
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         got = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
@@ -60,7 +60,7 @@ int main(void) {
 // CHECK-NEXT:         size: 15,
 // CHECK-NEXT:         address: 4660,
 // CHECK-NEXT:     };
-// CHECK-NEXT:     load(unsafe { &mut (*(core::ptr::addr_of_mut!(desc) as *mut desc_ptr)) });
+// CHECK-NEXT:     load(core::ptr::addr_of_mut!(desc) as *const desc_ptr);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lx %u\n".as_ptr(), seen, desc.size as i32) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

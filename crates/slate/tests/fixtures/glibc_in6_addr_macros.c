@@ -81,9 +81,8 @@ int main(void) {
 // CHECK-NEXT: fn classify(address: &sockaddr_in6) -> i32 {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool;
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let __a: *const in6_addr = unsafe {
-// CHECK-NEXT:             core::ptr::addr_of!((*(address as *const sockaddr_in6)).sin6_addr)
-// CHECK-NEXT:         };
+// CHECK-NEXT:         let __a: *const in6_addr = core::ptr::addr_of!((*address).sin6_addr)
+// CHECK-NEXT:             as *const in6_addr;
 // CHECK-NEXT:         [[V_0]] = (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(0) })
 // CHECK-NEXT:             == 0
 // CHECK-NEXT:             && (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(1) })
@@ -97,9 +96,8 @@ int main(void) {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bool;
-// CHECK-NEXT:     let __a: *const in6_addr = unsafe {
-// CHECK-NEXT:         core::ptr::addr_of!((*(address as *const sockaddr_in6)).sin6_addr)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let __a: *const in6_addr = core::ptr::addr_of!((*address).sin6_addr)
+// CHECK-NEXT:         as *const in6_addr;
 // CHECK-NEXT:     [[V_1]] = (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(0) }) == 0
 // CHECK-NEXT:         && (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(1) }) == 0
 // CHECK-NEXT:         && (unsafe { *((*__a).__in6_u.__u6_addr32.as_ptr() as *const u32).add(2) })
@@ -147,7 +145,7 @@ int main(void) {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%s: %d\n".as_ptr(),
 // CHECK-NEXT:                 inputs.0[i as usize],
-// CHECK-NEXT:                 classify(&(*(core::ptr::addr_of_mut!(address) as *const sockaddr_in6))),
+// CHECK-NEXT:                 classify(&address),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };

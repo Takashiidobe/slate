@@ -304,7 +304,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::memset;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn half(p: &LongDouble) -> LongDouble {
-// CHECK-NEXT:     (unsafe { *(p as *const LongDouble) }) / __slate_f80_from_i32(2i32)
+// CHECK-NEXT:     *p / __slate_f80_from_i32(2i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -424,16 +424,11 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut aligned: LongDouble = unsafe {
+// CHECK-NEXT:     let aligned: LongDouble = unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of!(p.l) as *const LongDouble).read_unaligned()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __slate_printf__ri32_pi8_f80(
-// CHECK-NEXT:             c"%.2Lf\n".as_ptr(),
-// CHECK-NEXT:             half(&(*core::ptr::addr_of_mut!(aligned))),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { __slate_printf__ri32_pi8_f80(c"%.2Lf\n".as_ptr(), half(&aligned)) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

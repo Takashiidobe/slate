@@ -120,7 +120,7 @@ int main(void) {
 // CHECK-NEXT:     ASSERT!(a + 1 == b + 1, c"still differ".as_ptr() as *mut c_char);
 // CHECK-NEXT:     ASSERT!(7i32 == 7, c"folded".as_ptr() as *mut c_char);
 // CHECK-NEXT:     ASSERT!(
-// CHECK-NEXT:         next_id(unsafe { &mut (*core::ptr::addr_of_mut!(state)) }) == 1,
+// CHECK-NEXT:         next_id(core::ptr::addr_of_mut!(state)) == 1,
 // CHECK-NEXT:         c"side effect".as_ptr() as *mut c_char
 // CHECK-NEXT:     );
 // CHECK-NEXT:     TRACE!(c"a %d b %d\n".as_ptr() as *mut c_char, a, b);
@@ -147,11 +147,11 @@ int main(void) {
 // CHECK-NEXT:     (a != b) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn next_id(state: &mut i32) -> i32 {
+// CHECK-NEXT: fn next_id(state: *mut i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *state = *state + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { *(state as *mut i32) }
+// CHECK-NEXT:     unsafe { *state }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn report(message: *const c_char) {

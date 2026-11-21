@@ -62,32 +62,26 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pairwise_swap(items: &mut [i32]) {
-// CHECK-NEXT:     for i in 0..items.len() as i32 {
-// CHECK-NEXT:         for j in 0..items.len() as i32 {
-// CHECK-NEXT:             if (unsafe { items[i as usize] }) > unsafe { items[j as usize] } {
-// CHECK-NEXT:                 let tmp: i32 = unsafe { items[i as usize] };
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     items[i as usize] = items[j as usize];
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     items[j as usize] = tmp;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:     let len: i32 = items.len() as i32;
+// CHECK-NEXT:     for i in 0..len {
+// CHECK-NEXT:         for j in 0..len {
+// CHECK-NEXT:             if items[i as usize] > items[j as usize] {
+// CHECK-NEXT:                 let tmp: i32 = items[i as usize];
+// CHECK-NEXT:                 items[i as usize] = items[j as usize];
+// CHECK-NEXT:                 items[j as usize] = tmp;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pairwise_swap_tmp_reused(items: &mut [i32]) {
-// CHECK-NEXT:     for i in 0..items.len() as i32 {
-// CHECK-NEXT:         for j in 0..items.len() as i32 {
-// CHECK-NEXT:             if (unsafe { items[i as usize] }) > unsafe { items[j as usize] } {
-// CHECK-NEXT:                 let tmp: i32 = unsafe { items[i as usize] };
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     items[i as usize] = items[j as usize];
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     items[j as usize] = tmp;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:     let len: i32 = items.len() as i32;
+// CHECK-NEXT:     for i in 0..len {
+// CHECK-NEXT:         for j in 0..len {
+// CHECK-NEXT:             if items[i as usize] > items[j as usize] {
+// CHECK-NEXT:                 let tmp: i32 = items[i as usize];
+// CHECK-NEXT:                 items[i as usize] = items[j as usize];
+// CHECK-NEXT:                 items[j as usize] = tmp;
 // CHECK-NEXT:                 println!("tmp={}", tmp);
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -95,16 +89,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn nested_self_swap(items: &mut [i32]) {
-// CHECK-NEXT:     for i in 0..items.len() as i32 {
-// CHECK-NEXT:         for j in 0..items.len() as i32 {
-// CHECK-NEXT:             if (unsafe { items[i as usize] }) > 0 {
-// CHECK-NEXT:                 let tmp: i32 = unsafe { items[j as usize] };
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     items[j as usize] = items[j as usize];
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     items[j as usize] = tmp;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:     let len: i32 = items.len() as i32;
+// CHECK-NEXT:     for i in 0..len {
+// CHECK-NEXT:         for j in 0..len {
+// CHECK-NEXT:             if items[i as usize] > 0 {
+// CHECK-NEXT:                 let tmp: i32 = items[j as usize];
+// CHECK-NEXT:                 items[j as usize] = items[j as usize];
+// CHECK-NEXT:                 items[j as usize] = tmp;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -112,13 +103,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: __SlateAlign16<[i32; 5]> = __SlateAlign16([5i32, 3i32, 4i32, 1i32, 2i32]);
-// CHECK-NEXT:     pairwise_swap(&mut a.0);
+// CHECK-NEXT:     pairwise_swap(a.0.as_mut_slice());
 // CHECK-NEXT:     println!("{} {} {} {} {}", a.0[0], a.0[1], a.0[2], a.0[3], a.0[4]);
 // CHECK-NEXT:     let mut b: [i32; 3] = [3, 1, 2];
-// CHECK-NEXT:     pairwise_swap_tmp_reused(&mut b);
+// CHECK-NEXT:     pairwise_swap_tmp_reused(b.as_mut_slice());
 // CHECK-NEXT:     println!("{} {} {}", b[0], b[1], b[2]);
 // CHECK-NEXT:     let mut c: [i32; 3] = [7, 8, 9];
-// CHECK-NEXT:     nested_self_swap(&mut c);
+// CHECK-NEXT:     nested_self_swap(c.as_mut_slice());
 // CHECK-NEXT:     println!("{} {} {}", c[0], c[1], c[2]);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

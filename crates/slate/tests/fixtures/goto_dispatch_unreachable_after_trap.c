@@ -74,7 +74,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut trapped: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: fn walk(values: *const i32, count: i32) -> i32 {
+// CHECK-NEXT: fn walk(values: &[i32]) -> i32 {
+// CHECK-NEXT:     let count: i32 = values.len() as i32;
 // CHECK-NEXT:     let mut steps: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut sc_level: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut level: i32 = unsafe { core::mem::zeroed() };
@@ -140,7 +141,7 @@ int main(void) {
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 7 => {
-// CHECK-NEXT:                     sc_level = level + *values.offset((steps % count) as isize);
+// CHECK-NEXT:                     sc_level = level + values[(steps % count) as usize];
 // CHECK-NEXT:                     __slate_state = 6;
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
@@ -191,10 +192,9 @@ int main(void) {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16(
 // CHECK-NEXT:         [3i32, 1i32, 4i32, 1i32, 5i32],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_printf_arg0 = walk(values.0.as_mut_ptr() as *const i32, 5i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "walk {} trapped {}",
-// CHECK-NEXT:         __slate_printf_arg0,
+// CHECK-NEXT:         walk(values.0.as_slice()),
 // CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(trapped)) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0

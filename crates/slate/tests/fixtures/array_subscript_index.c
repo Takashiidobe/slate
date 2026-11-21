@@ -131,8 +131,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn through_pointer(p: *const i32, t: &mut Tail) -> i32 {
-// CHECK-NEXT:     (unsafe { *p.add(1) })
-// CHECK-NEXT:         + unsafe { *((*(t as *mut Tail)).data.as_mut_ptr() as *mut i32).add(0) }
+// CHECK-LABEL: {{^}}fn through_pointer(p: &[i32], t: &Tail) -> i32 {
+// CHECK-NEXT:     p[1] + unsafe { *((*t).data.as_ptr() as *mut i32).add(0) }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

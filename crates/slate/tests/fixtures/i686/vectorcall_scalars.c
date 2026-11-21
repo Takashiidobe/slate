@@ -58,18 +58,16 @@ int main(void) {
 // CHECK-NEXT:     (a as f64) + b + (c as f64) + (d as f64) + e + (f as f64) + g + (h as f64) + i
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "vectorcall-unwind" fn scale(p: *const f32, k: f32) -> f32 {
-// CHECK-NEXT:     (unsafe { *p }) * k
+// CHECK-NEXT: extern "vectorcall-unwind" fn scale(p: &f32, k: f32) -> f32 {
+// CHECK-NEXT:     *p * k
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "vectorcall-unwind" fn store(out: *mut i32, v: f64) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *out = (v * 2.0f64) as i32;
-// CHECK-NEXT:     }
+// CHECK-NEXT: extern "vectorcall-unwind" fn store(out: &mut i32, v: f64) {
+// CHECK-NEXT:     *out = (v * 2.0f64) as i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut x: f32 = 1.5f32;
+// CHECK-NEXT:     let x: f32 = 1.5f32;
 // CHECK-NEXT:     let mut out: i32 = 0;
 // CHECK-NEXT:     let fp: Option<unsafe extern "vectorcall-unwind" fn(i32, f64, f32, i32, f64, f32, f64, i64, f64) -> f64> = Some(
 // CHECK-NEXT:         mix,
@@ -97,11 +95,17 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%.2f\n".as_ptr(),
-// CHECK-NEXT:             scale(core::ptr::addr_of_mut!(x) as *const f32, 4.0f32) as f64,
+// CHECK-NEXT:             ({
+// CHECK-NEXT:                 let [[T_0:__t[0-9]+]] = 4.0f32;
+// CHECK-NEXT:                 scale(&x, [[T_0]])
+// CHECK-NEXT:             }) as f64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     store(core::ptr::addr_of_mut!(out), 10.25f64);
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = 10.25f64;
+// CHECK-NEXT:         store(&mut out, [[T_1]])
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{}", out);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

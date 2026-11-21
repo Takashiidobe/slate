@@ -244,9 +244,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
-// CHECK-NEXT: unsafe fn _mm_storeu_ps(__p: *mut f32, __a: core::simd::Simd<f32, 4>) {
+// CHECK-NEXT: unsafe fn _mm_storeu_ps(__p: &mut f32, __a: core::simd::Simd<f32, 4>) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_ps)).__v).write_unaligned(__a);
+// CHECK-NEXT:         core::ptr::addr_of_mut!((*((__p as *mut f32) as *mut __storeu_ps)).__v)
+// CHECK-NEXT:             .write_unaligned(__a);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -1101,11 +1102,9 @@ int main(void) {
 // CHECK-NEXT:         _mm256_fmadd_ps(floats, floats, _mm256_set1_ps(0.5f32))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut f: __SlateAlign16<[f32; 4]> = __SlateAlign16([0 as f32; 4]);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         _mm_storeu_ps(
-// CHECK-NEXT:             f.0.as_mut_ptr() as *mut f32,
-// CHECK-NEXT:             core::simd::simd_swizzle!(fused, [4, 5, 6, 7]),
-// CHECK-NEXT:         )
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = core::simd::simd_swizzle!(fused, [4, 5, 6, 7]);
+// CHECK-NEXT:         unsafe { _mm_storeu_ps(&mut f.0[0usize], [[T_0]]) }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -1118,11 +1117,9 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         _mm_storeu_ps(
-// CHECK-NEXT:             f.0.as_mut_ptr() as *mut f32,
-// CHECK-NEXT:             core::simd::simd_swizzle!(fused, [0, 1, 2, 3]),
-// CHECK-NEXT:         )
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::simd::simd_swizzle!(fused, [0, 1, 2, 3]);
+// CHECK-NEXT:         unsafe { _mm_storeu_ps(&mut f.0[0usize], [[T_1]]) }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

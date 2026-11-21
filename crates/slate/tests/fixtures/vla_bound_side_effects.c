@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT:     evaluated = [[V_1]].wrapping_mul(4);
 // CHECK-NEXT:     let unevaluated: u64 = core::mem::size_of::<*mut [i32; 0]>() as u64;
 // CHECK-NEXT:     let mut values: [i32; 3] = [7, 8, 9];
-// CHECK-NEXT:     let parameter: i32 = parameter_bound(3i32, values.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     let parameter: i32 = parameter_bound(3i32, values.as_slice());
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

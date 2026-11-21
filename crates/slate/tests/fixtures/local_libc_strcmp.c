@@ -27,24 +27,21 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::strcmp;
 // CHECK-EMPTY:
-// CHECK-NEXT: fn cmp_texts(a: &str, b: &str) -> i32 {
+// CHECK-NEXT: fn cmp_texts(a: *const i8, alen: i32, b: *const i8, blen: i32) -> i32 {
 // CHECK-NEXT:     let mut sa: i32 = 0;
 // CHECK-NEXT:     let mut sb: i32 = 0;
-// CHECK-NEXT:     for i in 0..a.len() as i32 {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = sa;
-// CHECK-NEXT:         sa = [[V_0]] + ((unsafe { *(a.as_ptr() as *const i8).offset(i as isize) }) as i32);
+// CHECK-NEXT:     for i in 0..alen {
+// CHECK-NEXT:         sa += (unsafe { *a.offset(i as isize) }) as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     for i in 0..b.len() as i32 {
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = sb;
-// CHECK-NEXT:         sb = [[V_1]] + ((unsafe { *(b.as_ptr() as *const i8).offset(i as isize) }) as i32);
+// CHECK-NEXT:     for i in 0..blen {
+// CHECK-NEXT:         sb += (unsafe { *b.offset(i as isize) }) as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let order: i32 = unsafe { a.cmp(b) as i32 };
+// CHECK-NEXT:     let order: i32 = unsafe {
+// CHECK-NEXT:         strcmp(a as *const core::ffi::c_char, b as *const core::ffi::c_char) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let sign: i32 = ((order > 0) as i32) - ((order < 0) as i32);
 // CHECK-NEXT:     let eq: i32 = ((unsafe {
-// CHECK-NEXT:         strcmp(
-// CHECK-NEXT:             (a.as_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:             (b.as_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:         strcmp(a as *const core::ffi::c_char, b as *const core::ffi::c_char) as i32
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     sign * 1000 + eq * 100 + (sa - sb)
 // CHECK-NEXT: }
@@ -54,42 +51,9 @@ int main(void) {
 // CHECK-NEXT:     let mut y: [i8; 4] = [97, 98, 100, 0];
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
-// CHECK-NEXT:         cmp_texts(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::str::from_utf8_unchecked(
-// CHECK-NEXT:                     core::slice::from_raw_parts(x.as_ptr() as *const u8, 3 as usize),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::str::from_utf8_unchecked(
-// CHECK-NEXT:                     core::slice::from_raw_parts(y.as_ptr() as *const u8, 3 as usize),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         cmp_texts(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::str::from_utf8_unchecked(
-// CHECK-NEXT:                     core::slice::from_raw_parts(y.as_ptr() as *const u8, 3 as usize),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::str::from_utf8_unchecked(
-// CHECK-NEXT:                     core::slice::from_raw_parts(x.as_ptr() as *const u8, 3 as usize),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         cmp_texts(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::str::from_utf8_unchecked(
-// CHECK-NEXT:                     core::slice::from_raw_parts(x.as_ptr() as *const u8, 3 as usize),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::str::from_utf8_unchecked(
-// CHECK-NEXT:                     core::slice::from_raw_parts(x.as_ptr() as *const u8, 3 as usize),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         )
+// CHECK-NEXT:         cmp_texts(x.as_ptr() as *const i8, 3i32, y.as_ptr() as *const i8, 3i32),
+// CHECK-NEXT:         cmp_texts(y.as_ptr() as *const i8, 3i32, x.as_ptr() as *const i8, 3i32),
+// CHECK-NEXT:         cmp_texts(x.as_ptr() as *const i8, 3i32, x.as_ptr() as *const i8, 3i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

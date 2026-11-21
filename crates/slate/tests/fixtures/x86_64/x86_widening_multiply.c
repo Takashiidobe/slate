@@ -255,27 +255,22 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
 // CHECK-NEXT: #[inline(never)]
-// CHECK-NEXT: unsafe fn avx2_products(
-// CHECK-NEXT:     x: *const i32,
-// CHECK-NEXT:     y: *const i32,
-// CHECK-NEXT:     unsigned_out: *mut u64,
-// CHECK-NEXT:     signed_out: *mut u64,
-// CHECK-NEXT: ) {
+// CHECK-NEXT: unsafe fn avx2_products(x: &i32, y: &i32, unsigned_out: &mut u64, signed_out: &mut u64) {
 // CHECK-NEXT:     let a: core::simd::Simd<i64, 4> = unsafe {
-// CHECK-NEXT:         _mm256_loadu_si256(x as *const core::simd::Simd<i64, 4>)
+// CHECK-NEXT:         _mm256_loadu_si256((x as *const i32) as *const core::simd::Simd<i64, 4>)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let b: core::simd::Simd<i64, 4> = unsafe {
-// CHECK-NEXT:         _mm256_loadu_si256(y as *const core::simd::Simd<i64, 4>)
+// CHECK-NEXT:         _mm256_loadu_si256((y as *const i32) as *const core::simd::Simd<i64, 4>)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm256_storeu_si256(
-// CHECK-NEXT:             unsigned_out as *mut core::simd::Simd<i64, 4>,
+// CHECK-NEXT:             (unsigned_out as *mut u64) as *mut core::simd::Simd<i64, 4>,
 // CHECK-NEXT:             _mm256_mul_epu32(a, b),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm256_storeu_si256(
-// CHECK-NEXT:             signed_out as *mut core::simd::Simd<i64, 4>,
+// CHECK-NEXT:             (signed_out as *mut u64) as *mut core::simd::Simd<i64, 4>,
 // CHECK-NEXT:             _mm256_mul_epi32(a, b),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -309,10 +304,10 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%llx %llx\n".as_ptr(), out.0[0], out.0[1]) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut x: __SlateAlign16<[i32; 8]> = __SlateAlign16(
+// CHECK-NEXT:     let x: __SlateAlign16<[i32; 8]> = __SlateAlign16(
 // CHECK-NEXT:         [-15i32, 7i32, -1985229329i32, 2147483647i32, -1i32, 3i32, -889275714i32, 1i32],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut y: __SlateAlign16<[i32; 8]> = __SlateAlign16(
+// CHECK-NEXT:     let y: __SlateAlign16<[i32; 8]> = __SlateAlign16(
 // CHECK-NEXT:         [
 // CHECK-NEXT:             -2147483648i32, 305419896i32, -559038737i32, 5i32, 65536i32, 9i32,
 // CHECK-NEXT:             195948557i32, 2i32,
@@ -320,10 +315,10 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         avx2_products(
-// CHECK-NEXT:             x.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:             y.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:             wide_unsigned.0.as_mut_ptr() as *mut u64,
-// CHECK-NEXT:             wide_signed.0.as_mut_ptr() as *mut u64,
+// CHECK-NEXT:             &x.0[0usize],
+// CHECK-NEXT:             &y.0[0usize],
+// CHECK-NEXT:             &mut wide_unsigned.0[0usize],
+// CHECK-NEXT:             &mut wide_signed.0[0usize],
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

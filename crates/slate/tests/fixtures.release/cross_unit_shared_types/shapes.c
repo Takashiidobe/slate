@@ -122,16 +122,16 @@ int count_vowels(const char *text) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn shape_area_sum(shapes: &[shape]) -> i32 {
+// CHECK-NEXT:     let count: i32 = shapes.len() as i32;
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     for i in 0..shapes.len() as i32 {
-// CHECK-NEXT:         sum += (unsafe { shapes[i as usize].origin.x })
-// CHECK-NEXT:             * unsafe { shapes[i as usize].origin.y };
+// CHECK-NEXT:     for i in 0..count {
+// CHECK-NEXT:         sum += shapes[i as usize].origin.x * shapes[i as usize].origin.y;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn tag_score(tag: &__SlateRecord_shapes_h_18) -> i32 {
-// CHECK-NEXT:     (unsafe { (*(tag as *const __SlateRecord_shapes_h_18)).weight }) * 2
+// CHECK-NEXT:     (*tag).weight * 2
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn count_vowels(text: *const i8) -> i32 {

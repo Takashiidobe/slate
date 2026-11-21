@@ -102,9 +102,12 @@ give-up fixtures `pointer_lift_local_copy_chain.c` and
 candidate function and every named pointer local a `PointerCapability`
 (write, unique, free, offset, escape, nullable, string, raw, byte elements) in
 `BindingFacts::pointer`; `UnitFacts::pointer_bindings(function)` lists them.
-The capabilities are `pointer-capability-lattice`'s flags; lowering maps them
-to a representation (today only for shadow mode, through
-`PointerFact::resolved`).
+The capabilities are `pointer-capability-lattice`'s flags. Each fact also
+carries the representation lowering emits: `borrow` (`&T`, `&mut T`, or a
+slice when `many`) and `length` (a companion integer parameter that is dropped
+and rebuilt from `len()`). Lowering reads `borrow` and `length` by default
+(`slate-8ge7.14`), and the Rust-side `pointer_lattice` does not run;
+`SLATE_IR_POINTERS=0` restores the Rust-side pass until it is deleted.
 
 - Per-function summaries, built in parallel (rayon): one node per pointer
   parameter, local, temporary, call result and return value. Statement order

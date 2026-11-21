@@ -52,36 +52,29 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn xor_block(vblk: *mut (), len: i32) {
-// CHECK-NEXT:     let __vblk_view = unsafe {
-// CHECK-NEXT:         core::slice::from_raw_parts_mut(vblk as *mut u8, len as usize)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let blk: *mut u8 = vblk as *mut u8;
 // CHECK-NEXT:     let mut k: u32 = 0;
 // CHECK-NEXT:     while (k as i32) < len {
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut u8 = unsafe { blk.add(k as usize) };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __vblk_view[k as usize] = ((__vblk_view[k as usize] as i32)
-// CHECK-NEXT:                 ^ ((k.wrapping_mul(7).wrapping_add(1) as u8) as i32)) as u8;
+// CHECK-NEXT:             *[[V_0]] = ((*[[V_0]] as i32) ^ ((k.wrapping_mul(7).wrapping_add(1) as u8) as i32))
+// CHECK-NEXT:                 as u8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         k = k.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn rc4_block(handle: &mut (), vblk: *mut (), len: i32) {
-// CHECK-NEXT:     let __vblk_view = unsafe {
-// CHECK-NEXT:         core::slice::from_raw_parts_mut(vblk as *mut u8, len as usize)
-// CHECK-NEXT:     };
+// CHECK-LABEL: {{^}}fn rc4_block(handle: *mut (), vblk: *mut (), len: i32) {
+// CHECK-NEXT:     let blk: *mut u8 = vblk as *mut u8;
 // CHECK-NEXT:     let mut k: u32 = 0;
 // CHECK-NEXT:     let mut tmp: u8 = 0;
 // CHECK-NEXT:     let mut i: u8 = 0;
 // CHECK-NEXT:     let mut j: u8 = 0;
 // CHECK-NEXT:     let s: *mut u8 = unsafe {
-// CHECK-NEXT:         (*((handle as *mut ()) as *mut __SlateRecord_void_param_byte_view_c_5)).s
-// CHECK-NEXT:             .as_mut_ptr() as *mut u8
+// CHECK-NEXT:         (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).s.as_mut_ptr()
+// CHECK-NEXT:             as *mut u8
 // CHECK-NEXT:     };
-// CHECK-NEXT:     i = unsafe {
-// CHECK-NEXT:         (*((handle as *mut ()) as *mut __SlateRecord_void_param_byte_view_c_5)).i
-// CHECK-NEXT:     };
-// CHECK-NEXT:     j = unsafe {
-// CHECK-NEXT:         (*((handle as *mut ()) as *mut __SlateRecord_void_param_byte_view_c_5)).j
-// CHECK-NEXT:     };
+// CHECK-NEXT:     i = unsafe { (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).i };
+// CHECK-NEXT:     j = unsafe { (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).j };
 // CHECK-NEXT:     while (k as i32) < len {
 // CHECK-NEXT:         i = ((i as i32) + 1 & 255) as u8;
 // CHECK-NEXT:         j = ((j as i32) + ((unsafe { *s.offset((i as i32) as isize) }) as i32) & 255)
@@ -93,8 +86,9 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *s.offset((j as i32) as isize) = tmp;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut u8 = unsafe { blk.add(k as usize) };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __vblk_view[k as usize] = ((__vblk_view[k as usize] as i32)
+// CHECK-NEXT:             *[[V_0]] = ((*[[V_0]] as i32)
 // CHECK-NEXT:                 ^ (*s
 // CHECK-NEXT:                     .offset(
 // CHECK-NEXT:                         ((*s.offset((i as i32) as isize) as i32)
@@ -104,10 +98,10 @@ int main(void) {
 // CHECK-NEXT:         k = k.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*((handle as *mut ()) as *mut __SlateRecord_void_param_byte_view_c_5)).i = i;
+// CHECK-NEXT:         (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).i = i;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*((handle as *mut ()) as *mut __SlateRecord_void_param_byte_view_c_5)).j = j;
+// CHECK-NEXT:         (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).j = j;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

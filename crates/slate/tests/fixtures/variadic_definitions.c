@@ -133,14 +133,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn next_pair(ap: &mut core::ffi::VaList<'static>) -> i32 {
-// CHECK-NEXT:     let left: i32 = unsafe {
-// CHECK-NEXT:         (*core::ptr::addr_of_mut!(*(ap as *mut core::ffi::VaList<'static>)))
-// CHECK-NEXT:             .next_arg::<i32>()
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let right: i32 = unsafe {
-// CHECK-NEXT:         (*core::ptr::addr_of_mut!(*(ap as *mut core::ffi::VaList<'static>)))
-// CHECK-NEXT:             .next_arg::<i32>()
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let left: i32 = unsafe { (*ap).next_arg::<i32>() };
+// CHECK-NEXT:     let right: i32 = unsafe { (*ap).next_arg::<i32>() };
 // CHECK-NEXT:     left * right
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -153,7 +147,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..pairs {
-// CHECK-NEXT:         let [[V_0]]: i32 = next_pair(unsafe { &mut (*core::ptr::addr_of_mut!(ap)) });
+// CHECK-NEXT:         let [[V_0]]: i32 = next_pair(&mut ap);
 // CHECK-NEXT:         total += [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total

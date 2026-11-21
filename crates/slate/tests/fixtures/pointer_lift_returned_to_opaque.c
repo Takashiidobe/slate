@@ -32,19 +32,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn score(left: &i32, right: &i32, which: i32) -> i32 {
-// CHECK-NEXT:     let chosen: *const i32 = if which != 0 {
-// CHECK-NEXT:         left as *const i32
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         right as *const i32
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { *chosen }
+// CHECK-NEXT:     let chosen: &i32 = if which != 0 { left } else { right };
+// CHECK-NEXT:     *chosen
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: [i8; 6] = [97, 108, 112, 104, 97, 0];
 // CHECK-NEXT:     let mut b: [i8; 5] = [98, 101, 116, 97, 0];
-// CHECK-NEXT:     let mut x: i32 = 3;
-// CHECK-NEXT:     let mut y: i32 = 4;
+// CHECK-NEXT:     let x: i32 = 3;
+// CHECK-NEXT:     let y: i32 = 4;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -53,11 +49,7 @@ int main(void) {
 // CHECK-NEXT:                 pick(1i32, a.as_mut_ptr() as *const i8, b.as_mut_ptr() as *const i8)
 // CHECK-NEXT:                     as *const core::ffi::c_char,
 // CHECK-NEXT:             ) as u64,
-// CHECK-NEXT:             score(
-// CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(x) as *const i32)),
-// CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(y) as *const i32)),
-// CHECK-NEXT:                 0i32,
-// CHECK-NEXT:             ),
+// CHECK-NEXT:             score(&x, &y, 0i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

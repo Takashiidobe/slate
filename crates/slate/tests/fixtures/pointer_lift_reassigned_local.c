@@ -1,4 +1,3 @@
-// SLATE-ENV: SLATE_IR_POINTERS=1
 #include <stdlib.h>
 
 static int pick(const int *a, const int *b, int n, int which) {
@@ -22,7 +21,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: //! SLATE-ENV: SLATE_IR_POINTERS=1
 // CHECK-NEXT: use slate_support::abort;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pick(a: &[i32], b: &[i32], n: i32, which: i32) -> i32 {

@@ -199,7 +199,7 @@ int main(void) {
 // CHECK-NEXT:         __slate_cleanup_armed_0.set(true);
 // CHECK-NEXT:         if !(*[[SLATE_SLOT_0]]).lock.is_null() || false {
 // CHECK-NEXT:             if true {
-// CHECK-NEXT:                 *(slot as *mut i32) = value;
+// CHECK-NEXT:                 *slot = value;
 // CHECK-NEXT:                 ret = 0;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -226,7 +226,7 @@ int main(void) {
 // CHECK-NEXT:         __slate_cleanup_armed_0.set(true);
 // CHECK-NEXT:         if !(*[[SLATE_SLOT_0]]).lock.is_null() || false {
 // CHECK-NEXT:             if true {
-// CHECK-NEXT:                 return *(slot as *const i32) + *lock * 100;
+// CHECK-NEXT:                 return *slot + *lock * 100;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __slate_cleanup_armed_0.set(false);
@@ -236,10 +236,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn guard_lock_ptr(g: &guard) -> *mut i32 {
-// CHECK-NEXT:     unsafe { (*(g as *const guard)).lock }
+// CHECK-NEXT:     (*g).lock
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn locked_by_address(lock: *mut i32, slot: *mut i32) -> i32 {
+// CHECK-NEXT: fn locked_by_address(lock: *mut i32, slot: &mut i32) -> i32 {
 // CHECK-NEXT:     let mut scope: core::mem::MaybeUninit<guard> = core::mem::MaybeUninit::uninit();
 // CHECK-NEXT:     let [[SLATE_SLOT_1:__slate_slot_[0-9]+]]: *mut guard = core::ptr::addr_of_mut!(scope) as *mut guard;
 // CHECK-NEXT:     let __slate_cleanup_ptr_3 = [[SLATE_SLOT_1]];
@@ -254,7 +254,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_1]], guard_take(lock, 1i32));
 // CHECK-NEXT:         __slate_cleanup_armed_3.set(true);
-// CHECK-NEXT:         if !guard_lock_ptr(&(*core::ptr::addr_of_mut!(*[[SLATE_SLOT_1]]))).is_null() {
+// CHECK-NEXT:         if !guard_lock_ptr(&(*[[SLATE_SLOT_1]])).is_null() {
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 *slot = *slot + 1;
 // CHECK-NEXT:             }
@@ -531,29 +531,25 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut lock: i32 = 0;
 // CHECK-NEXT:     let mut slot: i32 = 0;
-// CHECK-NEXT:     let a: i32 = set_value(
-// CHECK-NEXT:         core::ptr::addr_of_mut!(lock),
-// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(slot)) },
-// CHECK-NEXT:         7i32,
-// CHECK-NEXT:         1i32,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let a: i32 = {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = core::ptr::addr_of_mut!(lock);
+// CHECK-NEXT:         set_value([[T_0]], &mut slot, 7i32, 1i32)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {}", a, lock, slot);
-// CHECK-NEXT:     let b: i32 = set_value(
-// CHECK-NEXT:         core::ptr::addr_of_mut!(lock),
-// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(slot)) },
-// CHECK-NEXT:         9i32,
-// CHECK-NEXT:         0i32,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let b: i32 = {
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::ptr::addr_of_mut!(lock);
+// CHECK-NEXT:         set_value([[T_1]], &mut slot, 9i32, 0i32)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {}", b, lock, slot);
-// CHECK-NEXT:     let c: i32 = read_value(
-// CHECK-NEXT:         core::ptr::addr_of_mut!(lock),
-// CHECK-NEXT:         unsafe { &(*core::ptr::addr_of_mut!(slot)) },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let c: i32 = {
+// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = core::ptr::addr_of_mut!(lock);
+// CHECK-NEXT:         read_value([[T_2]], &slot)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {}", c, lock);
-// CHECK-NEXT:     let d: i32 = locked_by_address(
-// CHECK-NEXT:         core::ptr::addr_of_mut!(lock),
-// CHECK-NEXT:         core::ptr::addr_of_mut!(slot),
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let d: i32 = {
+// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = core::ptr::addr_of_mut!(lock);
+// CHECK-NEXT:         locked_by_address([[T_3]], &mut slot)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {}", d, lock, slot);
 // CHECK-NEXT:     let mut r#box: i32 = 5;
 // CHECK-NEXT:     let e: i32 = reassigned(core::ptr::addr_of_mut!(r#box), 1i32);

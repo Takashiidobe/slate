@@ -68,7 +68,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut trapped: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: fn collapse(values: *const i32, count: i32, mut start: i32) -> i32 {
+// CHECK-NEXT: fn collapse(values: &[i32], mut start: i32) -> i32 {
+// CHECK-NEXT:     let count: i32 = values.len() as i32;
 // CHECK-NEXT:     let mut copy: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
@@ -78,7 +79,7 @@ int main(void) {
 // CHECK-NEXT:                 if start >= count {
 // CHECK-NEXT:                     break '[[JOIN_0]];
 // CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     if *values.offset(start as isize) < 0 {
+// CHECK-NEXT:                     if values[start as usize] < 0 {
 // CHECK-NEXT:                         start += 1;
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         break;
@@ -87,7 +88,7 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:             '__loop_1: loop {
 // CHECK-NEXT:                 if start < count {
-// CHECK-NEXT:                     copy = *values.offset(start as isize);
+// CHECK-NEXT:                     copy = values[start as usize];
 // CHECK-NEXT:                     loop {
 // CHECK-NEXT:                         if unlikely!(copy < 0) != 0 {
 // CHECK-NEXT:                             break '__loop_1;
@@ -123,10 +124,9 @@ int main(void) {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 8]> = __SlateAlign16(
 // CHECK-NEXT:         [-1i32, 3i32, 1i32, 4i32, 1i32, 5i32, 10i32, 2i32],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_printf_arg0 = collapse(values.0.as_mut_ptr() as *const i32, 8i32, 0i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "collapse {} trapped {}",
-// CHECK-NEXT:         __slate_printf_arg0,
+// CHECK-NEXT:         collapse(values.0.as_slice(), 0i32),
 // CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(trapped)) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0

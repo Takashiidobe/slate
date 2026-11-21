@@ -29,23 +29,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn total(a: &i32, b: &i32) -> i32 {
-// CHECK-NEXT:     (unsafe { *(a as *const i32) }) + unsafe { *(b as *const i32) }
+// CHECK-NEXT:     *a + *b
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut v: [i32; 3] = [1, 2, 3];
 // CHECK-NEXT:     add_into(v.as_mut_ptr() as *mut i32, v.as_mut_ptr() as *const i32, 3i32);
-// CHECK-NEXT:     let mut x: i32 = 4;
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}",
-// CHECK-NEXT:         v[0],
-// CHECK-NEXT:         v[1],
-// CHECK-NEXT:         v[2],
-// CHECK-NEXT:         total(
-// CHECK-NEXT:             unsafe { &(*(core::ptr::addr_of_mut!(x) as *const i32)) },
-// CHECK-NEXT:             unsafe { &(*(core::ptr::addr_of_mut!(x) as *const i32)) },
-// CHECK-NEXT:         )
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let x: i32 = 4;
+// CHECK-NEXT:     println!("{} {} {} {}", v[0], v[1], v[2], total(&x, &x));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

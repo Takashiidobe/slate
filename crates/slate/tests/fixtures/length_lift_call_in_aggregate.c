@@ -34,30 +34,31 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum(values: &[i32]) -> i32 {
+// CHECK-NEXT:     let count: i32 = values.len() as i32;
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0..values.len() as i32 {
-// CHECK-NEXT:         total += unsafe { values[i as usize] };
+// CHECK-NEXT:     for i in 0..count {
+// CHECK-NEXT:         total += values[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let values: [i32; 3] = [1, 2, 5];
+// CHECK-NEXT:     let mut values: [i32; 3] = [1, 2, 5];
 // CHECK-NEXT:     let p: pair = pair {
-// CHECK-NEXT:         a: sum(&values),
-// CHECK-NEXT:         b: sum(&values),
+// CHECK-NEXT:         a: sum(values.as_slice()),
+// CHECK-NEXT:         b: sum(values.as_slice()),
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let arr: [i32; 2] = [sum(&values), sum(&values)];
-// CHECK-NEXT:     let z: i32 = sum(&values);
+// CHECK-NEXT:     let arr: [i32; 2] = [sum(values.as_slice()), sum(values.as_slice())];
+// CHECK-NEXT:     let z: i32 = sum(values.as_slice());
 // CHECK-NEXT:     let mut n: i32 = 0;
-// CHECK-NEXT:     while sum(&values) > n * 4 {
+// CHECK-NEXT:     while sum(values.as_slice()) > n * 4 {
 // CHECK-NEXT:         n += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut w: i32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if n > 1 {
-// CHECK-NEXT:         sum(&values)
+// CHECK-NEXT:         sum(values.as_slice())
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         -sum(&values)
+// CHECK-NEXT:         -sum(values.as_slice())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     w = [[V_0]];
 // CHECK-NEXT:     println!("{} {} {} {} {} {} {}", z, p.a, p.b, arr[0], arr[1], n, w);

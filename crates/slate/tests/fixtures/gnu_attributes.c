@@ -276,11 +276,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_pure(value: &i32) -> i32 {
-// CHECK-NEXT:     (unsafe { *(value as *const i32) }) + 19
+// CHECK-NEXT:     *value + 19
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_nonnull(value: &i32) -> i32 {
-// CHECK-NEXT:     (unsafe { *(value as *const i32) }) + 23
+// CHECK-NEXT:     *value + 23
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_result(value: i32) -> i32 {
@@ -360,7 +360,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut value: i32 = 71;
+// CHECK-NEXT:     let value: i32 = 71;
 // CHECK-NEXT:     let never: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         gnu_common_value = 73;
@@ -381,13 +381,8 @@ int main(void) {
 // CHECK-NEXT:         gnu_attribute_target(89i32),
 // CHECK-NEXT:         gnu_attribute_weak(),
 // CHECK-NEXT:         gnu_attribute_decorated(97i32) + gnu_attribute_flatten(101i32),
-// CHECK-NEXT:         gnu_attribute_const(103i32)
-// CHECK-NEXT:             + gnu_attribute_pure(
-// CHECK-NEXT:                 unsafe { &(*(core::ptr::addr_of_mut!(value) as *const i32)) },
-// CHECK-NEXT:             )
-// CHECK-NEXT:             + gnu_attribute_nonnull(
-// CHECK-NEXT:                 unsafe { &(*(core::ptr::addr_of_mut!(value) as *const i32)) },
-// CHECK-NEXT:             ),
+// CHECK-NEXT:         gnu_attribute_const(103i32) + gnu_attribute_pure(&value)
+// CHECK-NEXT:             + gnu_attribute_nonnull(&value),
 // CHECK-NEXT:         gnu_attribute_result(107i32) + gnu_attribute_deprecated(109i32),
 // CHECK-NEXT:         (unsafe { gnu_attribute_sentinel(113i32, core::ptr::null_mut::<()>()) })
 // CHECK-NEXT:             + gnu_attribute_returns_twice() + gnu_attribute_leaf(127i32)

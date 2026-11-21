@@ -93,8 +93,8 @@ int main(void) {
 // CHECK-NEXT:     return t;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "thiscall-unwind" fn this_mix(self_: *mut i32, k: i64, f: f32) -> i64 {
-// CHECK-NEXT:     ((unsafe { *self_ }) as i64) * k + (f as i64)
+// CHECK-NEXT: extern "thiscall-unwind" fn this_mix(self_: &i32, k: i64, f: f32) -> i64 {
+// CHECK-NEXT:     (*self_ as i64) * k + (f as i64)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.this_swap")]
@@ -118,7 +118,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let p: pair = pair { a: 3, b: 4 };
-// CHECK-NEXT:     let mut self_: i32 = 7;
+// CHECK-NEXT:     let self_: i32 = 7;
 // CHECK-NEXT:     let sf: Option<unsafe extern "stdcall-unwind" fn(i32, i16, i64, f64) -> i32> = Some(
 // CHECK-NEXT:         std_sum,
 // CHECK-NEXT:     );
@@ -137,7 +137,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld\n".as_ptr(),
-// CHECK-NEXT:             this_mix(core::ptr::addr_of_mut!(self_), 6i64, 2.5f32),
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let [[T_0:__t[0-9]+]] = 2.5f32;
+// CHECK-NEXT:                 this_mix(&self_, 6i64, [[T_0]])
+// CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

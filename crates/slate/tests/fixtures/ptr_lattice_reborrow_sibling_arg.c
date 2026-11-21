@@ -57,13 +57,13 @@ int main(void) {
 // CHECK-NEXT: fn group(p_format: &mut *const i8, end: i8, n: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         total += (unsafe { *(*(p_format as *mut *const i8)) }) as i32;
+// CHECK-NEXT:         total += (unsafe { *(*p_format) }) as i32;
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: *const i8 = unsafe { *p_format };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *p_format = [[V_1]].add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if ((unsafe { *(*(p_format as *mut *const i8)) }) as i32) == (end as i32) {
+// CHECK-NEXT:     if ((unsafe { *(*p_format) }) as i32) == (end as i32) {
 // CHECK-NEXT:         let [[V_2:__v[0-9]+]]: *const i8 = unsafe { *p_format };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *p_format = [[V_2]].add(1);
@@ -81,8 +81,8 @@ int main(void) {
 // CHECK-NEXT:     c = unsafe { *[[V_3]] };
 // CHECK-NEXT:     if (c as i32) == 40 {
 // CHECK-NEXT:         return {
-// CHECK-NEXT:             let __arg2 = count(unsafe { *(p_format as *mut *const i8) }, 41i8);
-// CHECK-NEXT:             group(p_format, 41i8, __arg2)
+// CHECK-NEXT:             let [[T_0:__t[0-9]+]] = count(*p_format, 41i8);
+// CHECK-NEXT:             group(p_format, 41i8, [[T_0]])
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     c as i32
@@ -91,8 +91,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let format: *const i8 = c"(abc)d".as_ptr();
 // CHECK-NEXT:     let mut p: *const i8 = format;
-// CHECK-NEXT:     let first: i32 = value(unsafe { &mut (*core::ptr::addr_of_mut!(p)) });
-// CHECK-NEXT:     let second: i32 = value(unsafe { &mut (*core::ptr::addr_of_mut!(p)) });
+// CHECK-NEXT:     let first: i32 = value(&mut p);
+// CHECK-NEXT:     let second: i32 = value(&mut p);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d %d %s\n".as_ptr(), first, second, p) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

@@ -91,14 +91,14 @@ int main(void) {
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn load_via_address(mut p: &u32) -> u32 {
+// CHECK-NEXT: fn load_via_address(mut p: *mut u32) -> u32 {
 // CHECK-NEXT:     let mut v: u32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movl (%edi), {0:e}",
 // CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in("di") (p as *const u32) as u32,
+// CHECK-NEXT:             in("di") p as u32,
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
@@ -115,7 +115,7 @@ int main(void) {
 // CHECK-NEXT:             (cpuid_vendor_ebx() != 0) as i32,
 // CHECK-NEXT:             add_via_ebx(40u32, 2u32),
 // CHECK-NEXT:             clobber_ebx(21u32),
-// CHECK-NEXT:             load_via_address(&(*core::ptr::addr_of_mut!(word))),
+// CHECK-NEXT:             load_via_address(core::ptr::addr_of_mut!(word)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

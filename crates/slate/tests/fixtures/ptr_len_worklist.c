@@ -23,10 +23,9 @@ int main(void) {
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fill_values(values: &mut [i32]) {
-// CHECK-NEXT:     for i in 0..values.len() as i32 {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             values[i as usize] = i * 3;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     let len: i32 = values.len() as i32;
+// CHECK-NEXT:     for i in 0..len {
+// CHECK-NEXT:         values[i as usize] = i * 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -40,9 +39,7 @@ int main(void) {
 // CHECK-NEXT:         malloc((len as u64).wrapping_mul(core::mem::size_of::<i32>() as u64) as usize)
 // CHECK-NEXT:             as *mut ()
 // CHECK-NEXT:     }) as *mut i32;
-// CHECK-NEXT:     forward_fill(
-// CHECK-NEXT:         unsafe { core::slice::from_raw_parts_mut(values as *mut i32, len as usize) },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     forward_fill(unsafe { core::slice::from_raw_parts_mut(values, len as usize) });
 // CHECK-NEXT:     println!("{} {}", unsafe { *values.add(1) }, unsafe { *values.add(4) });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

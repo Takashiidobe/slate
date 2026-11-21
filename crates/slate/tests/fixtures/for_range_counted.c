@@ -192,8 +192,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     t
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn shadow_param(i: *const i32, n: i32) -> i32 {
-// CHECK-NEXT:     let mut t: i32 = unsafe { *i };
+// CHECK-LABEL: {{^}}fn shadow_param(i: &i32, n: i32) -> i32 {
+// CHECK-NEXT:     let mut t: i32 = *i;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         t += 2 * i;
 // CHECK-NEXT:     }

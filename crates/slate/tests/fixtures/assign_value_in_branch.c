@@ -41,8 +41,8 @@ int main() {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut x: u64 = 10;
-// CHECK-NEXT:     let a: u64 = bump(unsafe { &mut (*core::ptr::addr_of_mut!(x)) }, 1i32);
-// CHECK-NEXT:     let b: u64 = bump(unsafe { &mut (*core::ptr::addr_of_mut!(x)) }, 0i32);
+// CHECK-NEXT:     let a: u64 = bump(&mut x, 1i32);
+// CHECK-NEXT:     let b: u64 = bump(&mut x, 0i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lu %lu %lu\n".as_ptr(), a, b, x) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

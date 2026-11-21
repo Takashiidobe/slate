@@ -72,12 +72,9 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum(values: *const i32, count: i32) -> i32 {
-// CHECK-NEXT:     let __values_view = unsafe {
-// CHECK-NEXT:         core::slice::from_raw_parts(values as *const i32, count as usize)
-// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         total += unsafe { __values_view[i as usize] };
+// CHECK-NEXT:         total += unsafe { *values.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

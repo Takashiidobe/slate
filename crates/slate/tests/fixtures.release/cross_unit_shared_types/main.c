@@ -109,7 +109,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut tag: __SlateRecord_shapes_h_18 = {
+// CHECK-NEXT:     let tag: __SlateRecord_shapes_h_18 = {
 // CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: __SlateRecord_shapes_h_18 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_3]].label = c"heavy".as_ptr();
 // CHECK-NEXT:         [[T_3]].weight = 21i32;
@@ -118,7 +118,7 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         unsafe { registry_count(registry as *const registry) },
-// CHECK-NEXT:         unsafe { shape_area_sum(&shapes.0) }
+// CHECK-NEXT:         unsafe { shape_area_sum(shapes.0.as_slice()) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -131,11 +131,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             tag_score(
-// CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(tag) as *const __SlateRecord_shapes_h_18)),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe { tag_score(&tag) },
 // CHECK-NEXT:         unsafe { count_vowels(c"translation unit".as_ptr()) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { registry_free(registry) };

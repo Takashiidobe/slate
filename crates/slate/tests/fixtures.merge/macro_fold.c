@@ -437,7 +437,7 @@ int main(void) {
 // CHECK-NEXT:     DIFFERS!(count);
 // CHECK-NEXT:     ASSERT!(count == 3, c"count is not three".as_ptr() as *mut c_char);
 // CHECK-NEXT:     ASSERT!(
-// CHECK-NEXT:         next_id(unsafe { &mut (*core::ptr::addr_of_mut!(state)) }) == 1,
+// CHECK-NEXT:         next_id(core::ptr::addr_of_mut!(state)) == 1,
 // CHECK-NEXT:         c"side effect".as_ptr() as *mut c_char
 // CHECK-NEXT:     );
 // CHECK-NEXT:     NOTE!(
@@ -620,11 +620,11 @@ int main(void) {
 // CHECK-NEXT:     a * 2
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn next_id(state: &mut i32) -> i32 {
+// CHECK-NEXT: fn next_id(state: *mut i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *state = *state + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { *(state as *mut i32) }
+// CHECK-NEXT:     unsafe { *state }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn report(message: *const c_char) {

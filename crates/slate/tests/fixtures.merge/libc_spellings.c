@@ -495,14 +495,8 @@ int main(void) {
 // CHECK-NEXT:             + unsafe { slate_support::toupper(c) }) % 1000003;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut position: i32 = 0;
-// CHECK-NEXT:     let mut graphs: i32 = graph_at(
-// CHECK-NEXT:         c" a".as_ptr(),
-// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(position)) },
-// CHECK-NEXT:     );
-// CHECK-NEXT:     let [[V_1]]: i32 = graph_at(
-// CHECK-NEXT:         c" a".as_ptr(),
-// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(position)) },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut graphs: i32 = graph_at(c" a".as_ptr(), &mut position);
+// CHECK-NEXT:     let [[V_1]]: i32 = graph_at(c" a".as_ptr(), &mut position);
 // CHECK-NEXT:     graphs += [[V_1]];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *slate_support::errno_location() = 0;

@@ -16,20 +16,14 @@ int use_it(int *a, int *b) { return *a / *b; }
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut x: i32 = 6;
-// CHECK-NEXT:     let mut y: i32 = 2;
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}",
-// CHECK-NEXT:         use_it(
-// CHECK-NEXT:             unsafe { &(*core::ptr::addr_of_mut!(x)) },
-// CHECK-NEXT:             unsafe { &(*core::ptr::addr_of_mut!(y)) },
-// CHECK-NEXT:         )
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let x: i32 = 6;
+// CHECK-NEXT:     let y: i32 = 2;
+// CHECK-NEXT:     println!("{}", use_it(&x, &y));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn use_it(a: &i32, b: &i32) -> i32 {
-// CHECK-NEXT:     (unsafe { *(a as *const i32) }) / unsafe { *(b as *const i32) }
+// CHECK-NEXT:     *a / *b
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

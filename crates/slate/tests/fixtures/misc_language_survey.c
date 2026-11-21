@@ -35,12 +35,10 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn scale(n: i32, arr: *mut i32) {
+// CHECK-NEXT: fn scale(arr: &mut [i32]) {
+// CHECK-NEXT:     let n: i32 = arr.len() as i32;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { arr.offset(i as isize) };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *[[V_0]] = *[[V_0]] * 2;
-// CHECK-NEXT:         }
+// CHECK-NEXT:         arr[i as usize] *= 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -50,7 +48,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: [i32; 3] = [1, 2, 3];
-// CHECK-NEXT:     scale(3i32, values.as_mut_ptr() as *mut i32);
+// CHECK-NEXT:     scale(values.as_mut_slice());
 // CHECK-NEXT:     let separated: f64 = 1000.5f64;
 // CHECK-NEXT:     let escape_e: i8 = 27;
 // CHECK-NEXT:     let escape_unknown: i8 = 37;

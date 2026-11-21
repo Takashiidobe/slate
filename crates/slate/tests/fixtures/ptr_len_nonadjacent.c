@@ -25,17 +25,18 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum_items(items: &[i32], printable: i32) -> i32 {
+// CHECK-NEXT:     let length: i32 = items.len() as i32;
 // CHECK-NEXT:     println!("this is another number: {}", printable);
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0..items.len() as i32 {
-// CHECK-NEXT:         total += unsafe { items[i as usize] };
+// CHECK-NEXT:     for i in 0..length {
+// CHECK-NEXT:         total += items[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let values: __SlateAlign16<[i32; 4]> = __SlateAlign16([2i32, 4i32, 6i32, 8i32]);
-// CHECK-NEXT:     println!("{}", sum_items(&values.0, 5i32));
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([2i32, 4i32, 6i32, 8i32]);
+// CHECK-NEXT:     println!("{}", sum_items(values.0.as_slice(), 5i32));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

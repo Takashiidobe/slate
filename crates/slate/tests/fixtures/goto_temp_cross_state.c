@@ -60,23 +60,7 @@ int main(void) {
 // CHECK-NEXT:     ou.r#in = inr;
 // CHECK-NEXT:     let mut s: __SlateRecord_goto_temp_cross_state_c_17 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     s.dict = core::ptr::addr_of_mut!(ou);
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         compute(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(s)
-// CHECK-NEXT:                     as *const __SlateRecord_goto_temp_cross_state_c_17))
-// CHECK-NEXT:             },
-// CHECK-NEXT:             0i32,
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         compute(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 &(*(core::ptr::addr_of_mut!(s)
-// CHECK-NEXT:                     as *const __SlateRecord_goto_temp_cross_state_c_17))
-// CHECK-NEXT:             },
-// CHECK-NEXT:             1i32,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {}", compute(&s, 0i32), compute(&s, 1i32));
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

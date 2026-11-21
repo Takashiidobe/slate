@@ -20,7 +20,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN aarch64-unknown-linux-gnu
-// CHECK-LABEL: {{^}}fn atomic_increment(mut counter: &mut i32) -> i32 {
+// CHECK-LABEL: {{^}}fn atomic_increment(mut counter: *mut i32) -> i32 {
 // CHECK-NEXT:     let mut old: i32 = 0;
 // CHECK-NEXT:     let mut status: i32 = 0;
 // CHECK-NEXT:     unsafe {
@@ -29,8 +29,8 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "1: ldxr {0:w}, [{1:x}]\n\tadd {0:w}, {0:w}, #1\n\tstxr {3:w}, {0:w}, [{2:x}]\n\tcbnz {3:w}, 1b",
 // CHECK-NEXT:             out(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) counter as *mut i32,
-// CHECK-NEXT:             in(reg) counter as *mut i32,
+// CHECK-NEXT:             in(reg) counter,
+// CHECK-NEXT:             in(reg) counter,
 // CHECK-NEXT:             out(reg) [[T_1]],
 // CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );

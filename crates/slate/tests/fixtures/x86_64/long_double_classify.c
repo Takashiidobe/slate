@@ -340,7 +340,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn arOpAccumulate(acc: &mut LongDouble, v: LongDouble) -> i32 {
-// CHECK-NEXT:     let next: LongDouble = (unsafe { *(acc as *mut LongDouble) }) + v;
+// CHECK-NEXT:     let next: LongDouble = *acc + v;
 // CHECK-NEXT:     if __slate_f80_is_fp_class(next, 3)
 // CHECK-NEXT:         || (if __slate_f80_is_fp_class(next, 516) {
 // CHECK-NEXT:             if __slate_f80_signbit(next) { -1i32 } else { 1i32 }
@@ -349,9 +349,7 @@ int main(void) {
 // CHECK-NEXT:         }) != 0 {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(acc as *mut LongDouble) = next;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     *acc = next;
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -463,12 +461,12 @@ int main(void) {
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 255]),
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     let mut accepted: i32 = 0;
-// CHECK-NEXT:     for i in 0..((core::mem::size_of::<[LongDouble; 5]>() as u64)
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0..((core::mem::size_of::<[LongDouble; 5]>() as u64)
 // CHECK-NEXT:         / (core::mem::size_of::<LongDouble>() as u64)) {
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = arOpAccumulate(
-// CHECK-NEXT:             unsafe { &mut (*core::ptr::addr_of_mut!(acc)) },
-// CHECK-NEXT:             addends[i as usize],
-// CHECK-NEXT:         );
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = {
+// CHECK-NEXT:             let [[T_0:__t[0-9]+]] = addends[i as usize];
+// CHECK-NEXT:             arOpAccumulate(&mut acc, [[T_0]])
+// CHECK-NEXT:         };
 // CHECK-NEXT:         accepted += [[V_1]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);

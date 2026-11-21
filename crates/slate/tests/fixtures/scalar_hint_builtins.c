@@ -76,9 +76,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn weigh(words: &[u64]) -> i64 {
+// CHECK-NEXT:     let count: i32 = words.len() as i32;
 // CHECK-NEXT:     let mut total: i64 = 0;
-// CHECK-NEXT:     for i in 0..words.len() as i32 {
-// CHECK-NEXT:         let word: u64 = unsafe { words[i as usize] };
+// CHECK-NEXT:     for i in 0..count {
+// CHECK-NEXT:         let word: u64 = words[i as usize];
 // CHECK-NEXT:         if unlikely!(word == 0) != 0 {
 // CHECK-NEXT:             continue;
 // CHECK-NEXT:         }
@@ -95,7 +96,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let words: __SlateAlign16<[u64; 12]> = __SlateAlign16(
+// CHECK-NEXT:     let mut words: __SlateAlign16<[u64; 12]> = __SlateAlign16(
 // CHECK-NEXT:         [
 // CHECK-NEXT:             0u64, 1u64, 9223372036854775808u64, 18446744073709551615u64,
 // CHECK-NEXT:             67818912035696640u64, 12345u64, 11400714819323198485u64, 2u64, 4294967296u64,
@@ -103,7 +104,7 @@ int main(void) {
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), weigh(&words.0)) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), weigh(words.0.as_slice())) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let e: i64 = (next() as i64) + ((next() * 10) as i64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

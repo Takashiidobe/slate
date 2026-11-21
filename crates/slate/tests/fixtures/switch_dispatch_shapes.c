@@ -183,12 +183,12 @@ int main(void) {
 // CHECK-NEXT:     out
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn run(ops: *const u32) -> i32 {
+// CHECK-NEXT: fn run(ops: &[u32]) -> i32 {
 // CHECK-NEXT:     let mut acc: i32 = 1;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while true {
 // CHECK-NEXT:         '[[SLATE_CONTINUE_0:__slate_continue_[0-9]+]]: {
-// CHECK-NEXT:             let op: u32 = unsafe { *ops.offset(i as isize) };
+// CHECK-NEXT:             let op: u32 = ops[i as usize];
 // CHECK-NEXT:             i += 1;
 // CHECK-NEXT:             match op as u32 {
 // CHECK-NEXT:                 0 => {
@@ -213,9 +213,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn first_over(values: &[i32], limit: i32) -> i32 {
+// CHECK-NEXT:     let count: i32 = values.len() as i32;
 // CHECK-NEXT:     let mut found: i32 = -1;
-// CHECK-NEXT:     for i in 0..values.len() as i32 {
-// CHECK-NEXT:         if (unsafe { values[i as usize] }) > limit {
+// CHECK-NEXT:     for i in 0..count {
+// CHECK-NEXT:         if values[i as usize] > limit {
 // CHECK-NEXT:             found = i;
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
@@ -227,7 +228,7 @@ int main(void) {
 // CHECK-NEXT:     let mut ops: __SlateAlign16<[u32; 5]> = __SlateAlign16(
 // CHECK-NEXT:         [0u32, 1u32, 2u32, 0u32, 3u32],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let values: __SlateAlign16<[i32; 5]> = __SlateAlign16(
+// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16(
 // CHECK-NEXT:         [3i32, 8i32, 1i32, 12i32, 7i32],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut picked: i32 = 0;
@@ -250,12 +251,11 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {} {}", no_default(97i8), no_default(122i8), no_default(113i8));
 // CHECK-NEXT:     println!("{} {} {}", nested(0i32, 0i32), nested(0i32, 5i32), nested(1i32, 0i32));
-// CHECK-NEXT:     let __slate_printf_arg0 = run(ops.0.as_mut_ptr() as *const u32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
-// CHECK-NEXT:         __slate_printf_arg0,
-// CHECK-NEXT:         first_over(&values.0, 10i32),
-// CHECK-NEXT:         first_over(&values.0, 50i32)
+// CHECK-NEXT:         run(ops.0.as_slice()),
+// CHECK-NEXT:         first_over(values.0.as_slice(), 10i32),
+// CHECK-NEXT:         first_over(values.0.as_slice(), 50i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {}", picked, unsafe { calls });
 // CHECK-NEXT:     0

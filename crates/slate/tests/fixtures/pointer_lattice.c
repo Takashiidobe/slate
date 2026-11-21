@@ -35,35 +35,34 @@ int main(void) {
 // CHECK-NEXT: use slate_support::free;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump(p: &mut i32) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(p as *mut i32) = *(p as *mut i32) + 1;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     *p += 1;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn peek(p: &i32) -> i32 {
-// CHECK-NEXT:     (unsafe { *(p as *const i32) }) + 1
+// CHECK-NEXT:     *p + 1
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn use_and_free(mut y: Box<i32>) -> i32 {
+// CHECK-NEXT: fn use_and_free(y: *mut i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(&mut (*y) as *mut i32) = *(&mut (*y) as *mut i32) + 1;
+// CHECK-NEXT:         *y = *y + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let v: i32 = unsafe { *(&mut (*y) as *mut i32) };
+// CHECK-NEXT:     let v: i32 = unsafe { *y };
+// CHECK-NEXT:     unsafe { free((y as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: i32 = 1;
-// CHECK-NEXT:     bump(unsafe { &mut (*core::ptr::addr_of_mut!(a)) });
-// CHECK-NEXT:     let mut b: i32 = 10;
-// CHECK-NEXT:     let peeked: i32 = peek(unsafe { &(*core::ptr::addr_of_mut!(b)) });
+// CHECK-NEXT:     bump(&mut a);
+// CHECK-NEXT:     let b: i32 = 10;
+// CHECK-NEXT:     let peeked: i32 = peek(&b);
 // CHECK-NEXT:     let c: *mut i32 = (unsafe {
 // CHECK-NEXT:         malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ()
 // CHECK-NEXT:     }) as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *c = 100;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let v: i32 = use_and_free(unsafe { Box::from_raw(c) });
+// CHECK-NEXT:     let v: i32 = use_and_free(c);
 // CHECK-NEXT:     println!("{} {} {}", a, peeked, v);
 // CHECK-NEXT:     a + peeked + v
 // CHECK-NEXT: }

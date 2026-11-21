@@ -57,17 +57,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*r#gen).r#gen = (*r#gen).r#gen + send;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { (*(r#gen as *mut r#gen)).r#gen }
+// CHECK-NEXT:     (*r#gen).r#gen
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut state: r#gen = r#gen { r#gen: 1, r#try: 2 };
 // CHECK-NEXT:     let gen_local: i32 = r#gen(4i32);
 // CHECK-NEXT:     let fp: Option<unsafe extern "C-unwind" fn(i32) -> i32> = Some(r#gen);
-// CHECK-NEXT:     let __slate_printf_arg0 = advance(
-// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(state)) },
-// CHECK-NEXT:         5i32,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let __slate_printf_arg0 = advance(&mut state, 5i32);
 // CHECK-NEXT:     println!("{} {} {}", __slate_printf_arg0, gen_local, unsafe { fp.unwrap()(1i32) });
 // CHECK-NEXT:     let mut r#gen: i32 = 7;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = r#gen;

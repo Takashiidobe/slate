@@ -53,21 +53,17 @@ int main(void) {
 // CHECK-NEXT:     if value.is_null() {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(out as *mut *mut i8) = value as *mut i8;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     *out = value as *mut i8;
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn retarget(slot: &mut *const i8) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(slot as *mut *const i8) = c"gpu".as_ptr();
-// CHECK-NEXT:     }
+// CHECK-NEXT:     *slot = c"gpu".as_ptr();
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn check(value: *const i8) -> i32 {
 // CHECK-NEXT:     let mut device: *mut i8 = c"".as_ptr() as *mut i8;
-// CHECK-NEXT:     if fill(unsafe { &mut (*core::ptr::addr_of_mut!(device)) }, value) == 0 {
+// CHECK-NEXT:     if fill(&mut device, value) == 0 {
 // CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe {
@@ -83,7 +79,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn check_const() -> i32 {
 // CHECK-NEXT:     let mut device: *const i8 = c"cpu".as_ptr();
-// CHECK-NEXT:     retarget(unsafe { &mut (*core::ptr::addr_of_mut!(device)) });
+// CHECK-NEXT:     retarget(&mut device);
 // CHECK-NEXT:     ((unsafe {
 // CHECK-NEXT:         strcmp(
 // CHECK-NEXT:             device as *const core::ffi::c_char,
@@ -94,7 +90,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn length_after() -> u64 {
 // CHECK-NEXT:     let mut name: *mut i8 = c"".as_ptr() as *mut i8;
-// CHECK-NEXT:     fill(unsafe { &mut (*core::ptr::addr_of_mut!(name)) }, c"numpy".as_ptr());
+// CHECK-NEXT:     fill(&mut name, c"numpy".as_ptr());
 // CHECK-NEXT:     unsafe { strlen((name as *const i8) as *const core::ffi::c_char) as u64 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -302,9 +302,7 @@ int main(void) {
 // CHECK-NEXT: static mut truncated: i32 = (0.1f64 * (35i32 as f64)) as i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn take(x: f64, out: &mut f64) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(out as *mut f64) = x;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     *out = x;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -325,11 +323,11 @@ int main(void) {
 // CHECK-NEXT:     compound = [[V_0]];
 // CHECK-NEXT:     stored = stored * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) }
 // CHECK-NEXT:         / unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
-// CHECK-NEXT:     take(
-// CHECK-NEXT:         (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) })
-// CHECK-NEXT:             * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) },
-// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(passed)) },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) })
+// CHECK-NEXT:             * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
+// CHECK-NEXT:         take([[T_0]], &mut passed)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{}", 0i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

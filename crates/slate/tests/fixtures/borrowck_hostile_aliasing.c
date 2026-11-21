@@ -160,11 +160,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pair_lo(p: &mut Pair) -> *mut i32 {
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!((*(p as *mut Pair)).lo) }
+// CHECK-NEXT:     core::ptr::addr_of_mut!((*p).lo)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pair_hi(p: &mut Pair) -> *mut i32 {
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!((*(p as *mut Pair)).hi) }
+// CHECK-NEXT:     core::ptr::addr_of_mut!((*p).hi)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
@@ -174,8 +174,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn alias_struct_fields() -> i32 {
 // CHECK-NEXT:     let mut pair: Pair = Pair { lo: 1, hi: 2 };
-// CHECK-NEXT:     let lo: *mut i32 = pair_lo(unsafe { &mut (*core::ptr::addr_of_mut!(pair)) });
-// CHECK-NEXT:     let hi: *mut i32 = pair_hi(unsafe { &mut (*core::ptr::addr_of_mut!(pair)) });
+// CHECK-NEXT:     let lo: *mut i32 = pair_lo(&mut pair);
+// CHECK-NEXT:     let hi: *mut i32 = pair_hi(&mut pair);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *lo = *lo + *hi;
 // CHECK-NEXT:     }

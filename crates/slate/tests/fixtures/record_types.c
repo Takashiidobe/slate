@@ -94,10 +94,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn segment_length(s: &Segment) -> i64 {
-// CHECK-NEXT:     (((unsafe { (*(s as *const Segment)).to.x })
-// CHECK-NEXT:         - unsafe { (*(s as *const Segment)).from.x }) as i64)
-// CHECK-NEXT:         + ((unsafe { (*(s as *const Segment)).to.y })
-// CHECK-NEXT:             - unsafe { (*(s as *const Segment)).from.y })
+// CHECK-NEXT:     (((*s).to.x - (*s).from.x) as i64) + ((*s).to.y - (*s).from.y)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum_list(mut node: *mut Node, mut count: i32) -> i32 {
@@ -126,7 +123,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%ld %c %.2f\n".as_ptr(),
-// CHECK-NEXT:             segment_length(&(*core::ptr::addr_of_mut!(s))),
+// CHECK-NEXT:             segment_length(&s),
 // CHECK-NEXT:             s.tag as i32,
 // CHECK-NEXT:             s.weight,
 // CHECK-NEXT:         )

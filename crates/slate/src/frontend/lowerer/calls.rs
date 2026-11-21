@@ -2,6 +2,24 @@ use super::*;
 
 pub(super) const VA_ARGS: &str = "__va_args";
 
+fn independent_argument(arg: &Expr, unborrowed: &dyn Fn(&rust::Ident) -> bool) -> bool {
+    match arg {
+        Expr::Value(_) | Expr::Str(_) | Expr::CStr(_) | Expr::ByteStr(_) => true,
+        Expr::Var(name) => unborrowed(name),
+        Expr::Cast { expr, .. } => independent_argument(expr, unborrowed),
+        Expr::MethodCall { recv, method, args } => {
+            method.as_str() == "as_ptr"
+                && args.is_empty()
+                && matches!(**recv, Expr::Str(_) | Expr::CStr(_) | Expr::ByteStr(_))
+        }
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "any other argument may read an object a sibling argument borrows"
+        )]
+        _ => false,
+    }
+}
+
 pub(super) fn static_va_list(list: Expr, target: rust::Type) -> Expr {
     Expr::Unsafe(Box::new(rust::Block {
         stmts: Vec::new(),
@@ -187,24 +205,7 @@ impl FunctionLowerer<'_, '_> {
             };
             let trivial: Vec<bool> = args
                 .iter()
-                .map(|arg| match arg {
-                    Expr::Value(_) => true,
-                    Expr::Var(name) => unborrowed(name),
-                    Expr::Cast { expr, .. } => match &**expr {
-                        Expr::Value(_) => true,
-                        Expr::Var(name) => unborrowed(name),
-                        #[expect(
-                            slate::sensitive_wildcard,
-                            reason = "any other cast operand may read an object a sibling argument borrows"
-                        )]
-                        _ => false,
-                    },
-                    #[expect(
-                        slate::sensitive_wildcard,
-                        reason = "any other argument may read an object a sibling argument borrows"
-                    )]
-                    _ => false,
-                })
+                .map(|arg| independent_argument(arg, &unborrowed))
                 .collect();
             for (index, arg) in args.iter_mut().enumerate() {
                 let trivial = trivial[index];

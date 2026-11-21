@@ -46,14 +46,12 @@ int main(void) { return 0; }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn GetSystemTime(time: &mut _SYSTEMTIME) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(time as *mut _SYSTEMTIME)).value = 123;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     (*time).value = 123;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut time: _SYSTEMTIME = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     GetSystemTime(unsafe { &mut (*core::ptr::addr_of_mut!(time)) });
+// CHECK-NEXT:     GetSystemTime(&mut time);
 // CHECK-NEXT:     if GetCurrentProcessId() != 42 || time.value != 123 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }

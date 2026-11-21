@@ -1,4 +1,3 @@
-// SLATE-ENV: SLATE_IR_POINTERS=1
 #include <stdlib.h>
 
 static int sum(const int *p, int n) {
@@ -21,7 +20,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: //! SLATE-ENV: SLATE_IR_POINTERS=1
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:

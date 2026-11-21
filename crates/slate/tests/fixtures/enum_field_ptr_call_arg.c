@@ -37,12 +37,6 @@ int main(void) {
 // CHECK-NEXT:     ((unsafe { *repeatMode }) as u32).wrapping_add(count)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn run(e: &mut __SlateRecord_enum_field_ptr_call_arg_c_5, count: u32) -> i32 {
-// CHECK-NEXT:     select_type(
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::ptr::addr_of_mut!((*(e
-// CHECK-NEXT:                 as *mut __SlateRecord_enum_field_ptr_call_arg_c_5)).mode)
-// CHECK-NEXT:         },
-// CHECK-NEXT:         count,
-// CHECK-NEXT:     ) as i32
+// CHECK-NEXT:     select_type(core::ptr::addr_of_mut!((*e).mode), count) as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -27,7 +27,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn narrow_output(mut r#in: u64, out: &mut u32) -> u64 {
+// CHECK-NEXT: fn narrow_output(mut r#in: u64, out: *mut u32) -> u64 {
 // CHECK-NEXT:     let mut a: u64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         a = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
-// CHECK-NEXT:         *(out as *mut u32) = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
+// CHECK-NEXT:         *out = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
@@ -60,10 +60,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut low: u32 = 0;
-// CHECK-NEXT:     let a: u64 = narrow_output(
-// CHECK-NEXT:         4294967301u64,
-// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(low)) },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let a: u64 = narrow_output(4294967301u64, core::ptr::addr_of_mut!(low));
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

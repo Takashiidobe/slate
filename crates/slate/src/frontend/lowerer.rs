@@ -387,7 +387,7 @@ type ParameterBorrow = (slate_analysis::Borrow, Option<slate_analysis::Length>);
 
 pub fn ir_pointers() -> bool {
     static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
-    *ENABLED.get_or_init(|| std::env::var_os("SLATE_IR_POINTERS").is_some_and(|value| value != "0"))
+    *ENABLED.get_or_init(|| std::env::var_os("SLATE_IR_POINTERS").is_none_or(|value| value != "0"))
 }
 
 impl Tables<'_> {

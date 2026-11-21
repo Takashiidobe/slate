@@ -372,10 +372,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     PUSH!(stack.0, top, 5i32);
 // CHECK-NEXT:     PUSH!(stack.0, top, 6i32);
-// CHECK-NEXT:     pushes(
-// CHECK-NEXT:         stack.0.as_mut_ptr() as *mut i32,
-// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(top)) },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     pushes(stack.0.as_mut_slice(), &mut top);
 // CHECK-NEXT:     SET_COUNT__2!(s);
 // CHECK-NEXT:     SHOW_COUNT!(s);
 // CHECK-NEXT:     SHOW_COUNT__2!(*ps);
@@ -406,8 +403,8 @@ int main(void) {
 // CHECK-NEXT:     writes_through(core::ptr::addr_of_mut!(deref_target));
 // CHECK-NEXT:     DOUBLE_READ!(n);
 // CHECK-NEXT:     let mut buffer: __SlateAlignLargeArray<[i32; 4]> = __SlateAlignLargeArray([0i32; 4]);
-// CHECK-NEXT:     fill(buffer.0.as_mut_ptr() as *mut i32, 4i32);
-// CHECK-NEXT:     SHOW!(sum(&buffer.0));
+// CHECK-NEXT:     fill(buffer.0.as_mut_slice());
+// CHECK-NEXT:     SHOW!(sum(buffer.0.as_mut_ptr() as *const i32, 4i32));
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -516,19 +513,16 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn fill(values: *mut i32, length: i32) {
+// CHECK-NEXT: fn fill(values: &mut [i32]) {
+// CHECK-NEXT:     let length: i32 = values.len() as i32;
 // CHECK-NEXT:     SHOW!(length);
 // CHECK-NEXT:     for i in 0..length {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *values.offset(i as isize) = i + 1;
-// CHECK-NEXT:         }
+// CHECK-NEXT:         values[i as usize] = i + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn pushes(stack: *mut i32, top: &mut i32) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *stack.offset(*(top as *mut i32) as isize) = 4;
-// CHECK-NEXT:     }
+// CHECK-NEXT: fn pushes(stack: &mut [i32], top: &mut i32) {
+// CHECK-NEXT:     stack[*top as usize] = 4;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *top = *top + 1;
 // CHECK-NEXT:     }
@@ -539,10 +533,10 @@ int main(void) {
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn sum(values: &[i32]) -> i32 {
+// CHECK-NEXT: fn sum(values: *const i32, length: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0..values.len() as i32 {
-// CHECK-NEXT:         total += unsafe { values[i as usize] };
+// CHECK-NEXT:     for i in 0..length {
+// CHECK-NEXT:         total += unsafe { *values.offset(i as isize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

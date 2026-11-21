@@ -431,9 +431,9 @@ int main(void) {
 // CHECK-NEXT:     left + right
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn c89_store(destination: &mut (), source: &()) {
+// CHECK-NEXT: fn c89_store(destination: *mut (), source: *const ()) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *((destination as *mut ()) as *mut i32) = *((source as *const ()) as *const i32);
+// CHECK-NEXT:         *(destination as *mut i32) = *(source as *const i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -539,8 +539,8 @@ int main(void) {
 // CHECK-NEXT:     let pointer: *mut i32 = array.0.as_mut_ptr() as *mut i32;
 // CHECK-NEXT:     let const_pointer: *const i32 = pointer as *const i32;
 // CHECK-NEXT:     c89_store(
-// CHECK-NEXT:         unsafe { &mut (*(core::ptr::addr_of_mut!(copied_value) as *mut ())) },
-// CHECK-NEXT:         unsafe { &(*(core::ptr::addr_of_mut!(source_value) as *const ())) },
+// CHECK-NEXT:         core::ptr::addr_of_mut!(copied_value) as *mut (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(source_value) as *const (),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let operation: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = Some(c89_add);
 // CHECK-NEXT:     arithmetic = (automatic_value + register_value) * 4 - 3;

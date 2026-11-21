@@ -45,8 +45,8 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK-LABEL: {{^}}fn neq(p: *mut u32, h: u32) -> i32 {
-// CHECK-NEXT:     if (unsafe { *p.add(h as usize) }) == 0 {
+// CHECK-LABEL: {{^}}fn neq(p: &[u32], h: u32) -> i32 {
+// CHECK-NEXT:     if p[h as usize] == 0 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

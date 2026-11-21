@@ -49,11 +49,11 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
-// CHECK-NEXT: fn spin_until(flag: *mut i32, target: i32) -> i32 {
+// CHECK-NEXT: fn spin_until(flag: &mut i32, target: i32) -> i32 {
 // CHECK-NEXT:     let mut spins: i32 = 0;
-// CHECK-NEXT:     while (unsafe { core::ptr::read_volatile(flag) }) < target {
+// CHECK-NEXT:     while (unsafe { core::ptr::read_volatile(flag as *mut i32) }) < target {
 // CHECK-NEXT:         unsafe { __slate_intrinsic_cf7232a07549d448() };
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = flag;
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = flag as *mut i32;
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = unsafe { core::ptr::read_volatile([[V_0]]) };
 // CHECK-NEXT:         unsafe { core::ptr::write_volatile([[V_0]], [[V_1]] + 1) };
 // CHECK-NEXT:         spins += 1;
@@ -80,7 +80,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe { __slate_intrinsic_6f7c5327cf9e8272() };
 // CHECK-NEXT:         sum += i;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("spins={} sum={}", spin_until(core::ptr::addr_of_mut!(flag), 5i32), sum);
+// CHECK-NEXT:     let __slate_printf_arg0 = spin_until(&mut flag, 5i32);
+// CHECK-NEXT:     println!("spins={} sum={}", __slate_printf_arg0, sum);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

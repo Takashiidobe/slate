@@ -1628,16 +1628,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f,avx512dq,avx512vl")]
 // CHECK-NEXT: #[inline(never)]
-// CHECK-NEXT: unsafe fn avx512(
-// CHECK-NEXT:     fs: *const f32,
-// CHECK-NEXT:     ds: *const f64,
-// CHECK-NEXT:     table: *mut i32,
-// CHECK-NEXT:     index: *const i32,
-// CHECK-NEXT:     m: u16,
-// CHECK-NEXT: ) {
-// CHECK-NEXT:     let a: core::simd::Simd<f32, 16> = unsafe { _mm512_loadu_ps(fs as *const ()) };
-// CHECK-NEXT:     let b: core::simd::Simd<f64, 8> = unsafe { _mm512_loadu_pd(ds as *const ()) };
-// CHECK-NEXT:     let c: core::simd::Simd<f64, 8> = unsafe { _mm512_loadu_pd(ds.add(8) as *const ()) };
+// CHECK-NEXT: unsafe fn avx512(fs: &f32, ds: &[f64], table: *mut i32, index: &i32, m: u16) {
+// CHECK-NEXT:     let a: core::simd::Simd<f32, 16> = unsafe {
+// CHECK-NEXT:         _mm512_loadu_ps((fs as *const f32) as *const ())
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let b: core::simd::Simd<f64, 8> = unsafe {
+// CHECK-NEXT:         _mm512_loadu_pd(ds.as_ptr() as *const ())
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let c: core::simd::Simd<f64, 8> = unsafe {
+// CHECK-NEXT:         _mm512_loadu_pd(ds.as_ptr().add(8) as *const ())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     CLASSES_PS!(a, m);
 // CHECK-NEXT:     CLASSES_PD!(b, m as u8);
 // CHECK-NEXT:     CLASSES_PD!(c, ((m as i32) >> 8i32) as u8);
@@ -1867,7 +1867,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let idx: core::simd::Simd<i64, 4> = unsafe {
-// CHECK-NEXT:         _mm256_loadu_si256(index as *const core::simd::Simd<i64, 4>)
+// CHECK-NEXT:         _mm256_loadu_si256((index as *const i32) as *const core::simd::Simd<i64, 4>)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let old: core::simd::Simd<i64, 4> = unsafe { _mm256_set1_epi32(-1i32) };
 // CHECK-NEXT:     SHOW!(
@@ -2060,7 +2060,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ds.0[13] = -f32::from_bits(0x7fc00000) as f64;
 // CHECK-NEXT:     let mut table: __SlateAlign16<[i32; 64]> = __SlateAlign16([0i32; 64]);
-// CHECK-NEXT:     let mut index: __SlateAlign16<[i32; 8]> = __SlateAlign16(
+// CHECK-NEXT:     let index: __SlateAlign16<[i32; 8]> = __SlateAlign16(
 // CHECK-NEXT:         [3i32, 0i32, 17i32, 9i32, 31i32, 5i32, 12i32, 2i32],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..64i32 {
@@ -2069,32 +2069,23 @@ int main(void) {
 // CHECK-NEXT:     if std::arch::is_x86_feature_detected!("avx512f")
 // CHECK-NEXT:         && std::arch::is_x86_feature_detected!("avx512dq")
 // CHECK-NEXT:         && std::arch::is_x86_feature_detected!("avx512vl") {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             avx512(
-// CHECK-NEXT:                 fs.0.as_mut_ptr() as *const f32,
-// CHECK-NEXT:                 ds.0.as_mut_ptr() as *const f64,
-// CHECK-NEXT:                 table.0.as_mut_ptr() as *mut i32,
-// CHECK-NEXT:                 index.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:                 65535u16,
-// CHECK-NEXT:             )
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let [[T_209:__t[0-9]+]] = table.0.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 avx512(&fs.0[0usize], ds.0.as_slice(), [[T_209]], &index.0[0usize], 65535u16)
+// CHECK-NEXT:             }
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             avx512(
-// CHECK-NEXT:                 fs.0.as_mut_ptr() as *const f32,
-// CHECK-NEXT:                 ds.0.as_mut_ptr() as *const f64,
-// CHECK-NEXT:                 table.0.as_mut_ptr() as *mut i32,
-// CHECK-NEXT:                 index.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:                 42435u16,
-// CHECK-NEXT:             )
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let [[T_210:__t[0-9]+]] = table.0.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 avx512(&fs.0[0usize], ds.0.as_slice(), [[T_210]], &index.0[0usize], 42435u16)
+// CHECK-NEXT:             }
 // CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             avx512(
-// CHECK-NEXT:                 fs.0.as_mut_ptr() as *const f32,
-// CHECK-NEXT:                 ds.0.as_mut_ptr() as *const f64,
-// CHECK-NEXT:                 table.0.as_mut_ptr() as *mut i32,
-// CHECK-NEXT:                 index.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:                 0u16,
-// CHECK-NEXT:             )
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let [[T_0]] = table.0.as_mut_ptr() as *mut i32;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 avx512(&fs.0[0usize], ds.0.as_slice(), [[T_0]], &index.0[0usize], 0u16)
+// CHECK-NEXT:             }
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

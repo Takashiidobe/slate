@@ -355,37 +355,39 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn sse2_probe(out: *mut i32) {
+// CHECK-NEXT: fn sse2_probe(out: &mut i32) {
 // CHECK-NEXT:     let a: core::simd::Simd<i64, 2> = unsafe { _mm_set1_epi32(5i32) };
 // CHECK-NEXT:     let b: core::simd::Simd<i64, 2> = unsafe { _mm_set1_epi32(3i32) };
 // CHECK-NEXT:     let c: core::simd::Simd<i64, 2> = unsafe { _mm_add_epi32(a, b) };
-// CHECK-NEXT:     unsafe { _mm_storeu_si128(out as *mut core::simd::Simd<i64, 2>, c) };
+// CHECK-NEXT:     unsafe { _mm_storeu_si128((out as *mut i32) as *mut core::simd::Simd<i64, 2>, c) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "ssse3")]
-// CHECK-NEXT: unsafe fn ssse3_probe(out: *mut i8) {
+// CHECK-NEXT: unsafe fn ssse3_probe(out: &mut i8) {
 // CHECK-NEXT:     let a: core::simd::Simd<i64, 2> = unsafe { _mm_set1_epi8(-1i8) };
 // CHECK-NEXT:     let idx: core::simd::Simd<i64, 2> = unsafe { _mm_setzero_si128() };
 // CHECK-NEXT:     let abs_a: core::simd::Simd<i64, 2> = unsafe { _mm_abs_epi8(a) };
 // CHECK-NEXT:     let shuf: core::simd::Simd<i64, 2> = unsafe { _mm_shuffle_epi8(abs_a, idx) };
-// CHECK-NEXT:     unsafe { _mm_storeu_si128(out as *mut core::simd::Simd<i64, 2>, shuf) };
+// CHECK-NEXT:     unsafe { _mm_storeu_si128((out as *mut i8) as *mut core::simd::Simd<i64, 2>, shuf) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
-// CHECK-NEXT: unsafe fn avx2_probe(out: *mut i32) {
+// CHECK-NEXT: unsafe fn avx2_probe(out: &mut i32) {
 // CHECK-NEXT:     let a: core::simd::Simd<i64, 4> = unsafe { _mm256_set1_epi32(7i32) };
 // CHECK-NEXT:     let b: core::simd::Simd<i64, 4> = unsafe { _mm256_set1_epi32(2i32) };
 // CHECK-NEXT:     let c: core::simd::Simd<i64, 4> = unsafe { _mm256_add_epi32(a, b) };
-// CHECK-NEXT:     unsafe { _mm256_storeu_si256(out as *mut core::simd::Simd<i64, 4>, c) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         _mm256_storeu_si256((out as *mut i32) as *mut core::simd::Simd<i64, 4>, c)
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut sse2_out: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
 // CHECK-NEXT:     let mut ssse3_out: __SlateAlign16<[i8; 16]> = __SlateAlign16([0i8; 16]);
 // CHECK-NEXT:     let mut avx2_out: __SlateAlign16<[i32; 8]> = __SlateAlign16([0i32; 8]);
-// CHECK-NEXT:     sse2_probe(sse2_out.0.as_mut_ptr() as *mut i32);
-// CHECK-NEXT:     unsafe { ssse3_probe(ssse3_out.0.as_mut_ptr() as *mut i8) };
-// CHECK-NEXT:     unsafe { avx2_probe(avx2_out.0.as_mut_ptr() as *mut i32) };
+// CHECK-NEXT:     sse2_probe(&mut sse2_out.0[0usize]);
+// CHECK-NEXT:     unsafe { ssse3_probe(&mut ssse3_out.0[0usize]) };
+// CHECK-NEXT:     unsafe { avx2_probe(&mut avx2_out.0[0usize]) };
 // CHECK-NEXT:     println!("{} {} {} {}", sse2_out.0[0], sse2_out.0[1], sse2_out.0[2], sse2_out.0[3]);
 // CHECK-NEXT:     println!("{} {}", ssse3_out.0[0] as i32, ssse3_out.0[15] as i32);
 // CHECK-NEXT:     println!(

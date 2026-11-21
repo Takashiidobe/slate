@@ -37,17 +37,17 @@ int main(void) {
 // CHECK-NEXT:     buf: [u8; 8],
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn fill(c: &mut cursor, mut n: u8) {
+// CHECK-NEXT: fn fill(c: *mut cursor, mut n: u8) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(c as *mut cursor)).p = (*(c as *mut cursor)).buf.as_mut_ptr() as *mut u8;
+// CHECK-NEXT:         (*c).p = (*c).buf.as_mut_ptr() as *mut u8;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     while (unsafe { (*(c as *mut cursor)).p })
+// CHECK-NEXT:     while (unsafe { (*c).p })
 // CHECK-NEXT:         < unsafe {
-// CHECK-NEXT:             ((*(c as *mut cursor)).buf.as_mut_ptr() as *mut u8)
+// CHECK-NEXT:             ((*c).buf.as_mut_ptr() as *mut u8)
 // CHECK-NEXT:                 .offset(core::mem::size_of::<[u8; 8]>() as isize)
 // CHECK-NEXT:         } {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *(*(c as *mut cursor)).p = n;
+// CHECK-NEXT:             *(*c).p = n;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         n = ((n as i32) + 1) as u8;
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut u8 = unsafe { (*c).p };
@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut c: cursor = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     fill(unsafe { &mut (*core::ptr::addr_of_mut!(c)) }, 1u8);
+// CHECK-NEXT:     fill(core::ptr::addr_of_mut!(c), 1u8);
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         total += c.buf[i as usize] as i32;

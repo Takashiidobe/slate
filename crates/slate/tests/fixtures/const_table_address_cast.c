@@ -128,17 +128,19 @@ int main(void) {
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum_values(table: &[entry]) -> i32 {
+// CHECK-NEXT:     let count: i32 = table.len() as i32;
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     for i in 0..table.len() as i32 {
-// CHECK-NEXT:         total += unsafe { table[i as usize].value };
+// CHECK-NEXT:     for i in 0..count {
+// CHECK-NEXT:         total += table[i as usize].value;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fold_crc(table: &[u32]) -> u32 {
+// CHECK-NEXT:     let count: i32 = table.len() as i32;
 // CHECK-NEXT:     let mut crc: u32 = 0;
-// CHECK-NEXT:     for i in 0..table.len() as i32 {
-// CHECK-NEXT:         crc ^= unsafe { table[i as usize] };
+// CHECK-NEXT:     for i in 0..count {
+// CHECK-NEXT:         crc ^= table[i as usize];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     crc
 // CHECK-NEXT: }
@@ -160,7 +162,7 @@ int main(void) {
 // CHECK-NEXT:             c"%d %s %d\n".as_ptr(),
 // CHECK-NEXT:             sum_values(
 // CHECK-NEXT:                 core::slice::from_raw_parts(
-// CHECK-NEXT:                     (core::ptr::addr_of!(entries.0) as *const entry) as *const entry,
+// CHECK-NEXT:                     core::ptr::addr_of!(entries.0) as *const entry,
 // CHECK-NEXT:                     3 as usize,
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             ),
@@ -175,7 +177,7 @@ int main(void) {
 // CHECK-NEXT:             c"%08x %08x\n".as_ptr(),
 // CHECK-NEXT:             fold_crc(
 // CHECK-NEXT:                 core::slice::from_raw_parts(
-// CHECK-NEXT:                     (core::ptr::addr_of!(crc_table.0) as *const u32) as *const u32,
+// CHECK-NEXT:                     core::ptr::addr_of!(crc_table.0) as *const u32,
 // CHECK-NEXT:                     4 as usize,
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             ),

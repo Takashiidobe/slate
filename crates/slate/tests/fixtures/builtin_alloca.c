@@ -332,8 +332,8 @@ int main(void) {
 // CHECK-NEXT: fn sum_frame(f: &frame) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < unsafe { (*(f as *const frame)).count } {
-// CHECK-NEXT:         sum += unsafe { *unsafe { (*(f as *const frame)).args }.offset(i as isize) };
+// CHECK-NEXT:     while i < (*f).count {
+// CHECK-NEXT:         sum += unsafe { *(*f).args.offset(i as isize) };
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
@@ -364,7 +364,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         f.count = min;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     sum_frame(unsafe { &(*(core::ptr::addr_of_mut!(f) as *const frame)) })
+// CHECK-NEXT:     sum_frame(&f)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn ternary_alloca(scratch: *mut i8, n: i32) -> i32 {

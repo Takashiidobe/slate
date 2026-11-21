@@ -78,19 +78,18 @@ int main(void) {
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: fn config_score(config: &mode_config) -> i32 {
-// CHECK-NEXT:     let mut score: i32 = (unsafe { (*(config as *const mode_config)).count }) * 10
-// CHECK-NEXT:         + unsafe { (*(*(config as *const mode_config)).funcs).id };
-// CHECK-NEXT:     if (unsafe { (*(*(config as *const mode_config)).funcs).mode_valid }) == None {
+// CHECK-NEXT:     let mut score: i32 = (*config).count * 10 + unsafe { (*(*config).funcs).id };
+// CHECK-NEXT:     if (unsafe { (*(*config).funcs).mode_valid }) == None {
 // CHECK-NEXT:         score += 100;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if unsafe { (*(config as *const mode_config)).pending }.is_null() {
+// CHECK-NEXT:     if (*config).pending.is_null() {
 // CHECK-NEXT:         score += 1000;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     score
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut config: mode_config = {
+// CHECK-NEXT:     let config: mode_config = {
 // CHECK-NEXT:         let mut [[T_0]]: mode_config = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].funcs = unsafe { core::ptr::addr_of!(funcs.0) };
 // CHECK-NEXT:         [[T_0]].pending = core::ptr::null_mut::<i32>();
@@ -100,7 +99,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d\n".as_ptr(),
-// CHECK-NEXT:             config_score(&(*(core::ptr::addr_of_mut!(config) as *const mode_config))),
+// CHECK-NEXT:             config_score(&config),
 // CHECK-NEXT:             unsafe { (*config.funcs).attach }.unwrap()(config.pending, 2i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

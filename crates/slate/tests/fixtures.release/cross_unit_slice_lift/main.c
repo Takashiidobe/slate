@@ -1,4 +1,3 @@
-// SLATE-ENV: SLATE_IR_POINTERS=1
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -29,7 +28,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK: {{^}}#![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: //! SLATE-ENV: SLATE_IR_POINTERS=1
 // CHECK-NEXT: #[path = "table.rs"]
 // CHECK-NEXT: mod __slate_unit_table;
 // CHECK-EMPTY:

@@ -14,19 +14,13 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn add(a: &i32, b: &i32) -> i32 {
-// CHECK-NEXT:     (unsafe { *(a as *const i32) }) + unsafe { *(b as *const i32) }
+// CHECK-NEXT:     *a + *b
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut x: i32 = 3;
-// CHECK-NEXT:     let mut y: i32 = 4;
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{}",
-// CHECK-NEXT:         add(
-// CHECK-NEXT:             unsafe { &(*core::ptr::addr_of_mut!(x)) },
-// CHECK-NEXT:             unsafe { &(*core::ptr::addr_of_mut!(y)) },
-// CHECK-NEXT:         )
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let x: i32 = 3;
+// CHECK-NEXT:     let y: i32 = 4;
+// CHECK-NEXT:     println!("{}", add(&x, &y));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

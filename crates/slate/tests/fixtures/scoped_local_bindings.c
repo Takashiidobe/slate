@@ -99,18 +99,12 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT: static mut total: i32 = 100;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fill(out: &mut i32, value: i32) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(out as *mut i32) = value;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     *out = value;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fill_pair(first: &mut i64, second: &mut i64) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(first as *mut i64) = 11;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(second as *mut i64) = 22;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     *first = 11;
+// CHECK-NEXT:     *second = 22;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn shadow_params(value: i32, step: i32) -> i32 {
@@ -158,13 +152,10 @@ int read_static_total(void) { return total; }
 // CHECK-NEXT:     let r#mod: i32 = 7;
 // CHECK-NEXT:     let keywords: i32 = r#type + r#match * r#loop + r#ref * r#fn + r#impl - r#mod;
 // CHECK-NEXT:     let mut filled: i32 = 0;
-// CHECK-NEXT:     fill(unsafe { &mut (*core::ptr::addr_of_mut!(filled)) }, 77i32);
+// CHECK-NEXT:     fill(&mut filled, 77i32);
 // CHECK-NEXT:     let mut a: i64 = 0;
 // CHECK-NEXT:     let mut b: i64 = 0;
-// CHECK-NEXT:     fill_pair(
-// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(a)) },
-// CHECK-NEXT:         unsafe { &mut (*core::ptr::addr_of_mut!(b)) },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     fill_pair(&mut a, &mut b);
 // CHECK-NEXT:     let chosen: i32 = if x > 0 {
 // CHECK-NEXT:         10
 // CHECK-NEXT:     } else {

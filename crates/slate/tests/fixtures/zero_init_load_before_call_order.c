@@ -54,9 +54,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn change_flags(d: &mut dev, flags: u32) -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(d as *mut dev)).flags = flags;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     (*d).flags = flags;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*d).gflags = (((*d).gflags as i32) ^ 2) as u16;
 // CHECK-NEXT:     }
@@ -64,13 +62,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
-// CHECK-NEXT: fn notify_flags(d: &mut dev, old_flags: u32, changes: u32) {
+// CHECK-NEXT: fn notify_flags(d: &dev, old_flags: u32, changes: u32) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"old=%#x now=%#x changes=%#x\n".as_ptr(),
 // CHECK-NEXT:             old_flags,
-// CHECK-NEXT:             (*(d as *mut dev)).flags,
+// CHECK-NEXT:             (*d).flags,
 // CHECK-NEXT:             changes,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -80,7 +78,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%s\n".as_ptr(),
-// CHECK-NEXT:                 if (*(d as *mut dev)).flags & 1 != 0 {
+// CHECK-NEXT:                 if (*d).flags & 1 != 0 {
 // CHECK-NEXT:                     c"up".as_ptr() as *mut i8
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     c"down".as_ptr() as *mut i8
@@ -94,14 +92,13 @@ int main(void) {
 // CHECK-NEXT: fn set_flags(dev: &mut dev, flags: u32) -> i32 {
 // CHECK-NEXT:     let mut ret: i32 = 0;
 // CHECK-NEXT:     let mut changes: u32 = 0;
-// CHECK-NEXT:     let old_flags: u32 = unsafe { (*(dev as *mut dev)).flags };
-// CHECK-NEXT:     let old_gflags: u32 = (unsafe { (*(dev as *mut dev)).gflags }) as u32;
+// CHECK-NEXT:     let old_flags: u32 = (*dev).flags;
+// CHECK-NEXT:     let old_gflags: u32 = (*dev).gflags as u32;
 // CHECK-NEXT:     ret = change_flags(dev, flags);
 // CHECK-NEXT:     if ret < 0 {
 // CHECK-NEXT:         return ret;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     changes = old_flags ^ unsafe { (*(dev as *mut dev)).flags }
-// CHECK-NEXT:         | old_gflags ^ (((unsafe { (*(dev as *mut dev)).gflags }) as i32) as u32);
+// CHECK-NEXT:     changes = old_flags ^ (*dev).flags | old_gflags ^ (((*dev).gflags as i32) as u32);
 // CHECK-NEXT:     notify_flags(dev, old_flags, changes);
 // CHECK-NEXT:     ret
 // CHECK-NEXT: }
@@ -113,8 +110,8 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].gflags = 0u16;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     set_flags(unsafe { &mut (*core::ptr::addr_of_mut!(d)) }, 9u32);
-// CHECK-NEXT:     set_flags(unsafe { &mut (*core::ptr::addr_of_mut!(d)) }, 8u32);
+// CHECK-NEXT:     set_flags(&mut d, 9u32);
+// CHECK-NEXT:     set_flags(&mut d, 8u32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -23,10 +23,9 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fill(p: &mut [i32], val: i32) {
-// CHECK-NEXT:     for i in 0..p.len() as i32 {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             p[i as usize] = val;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     let n: i32 = p.len() as i32;
+// CHECK-NEXT:     for i in 0..n {
+// CHECK-NEXT:         p[i as usize] = val;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -38,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
-// CHECK-NEXT:     fill(&mut buf.0, 7i32);
+// CHECK-NEXT:     fill(buf.0.as_mut_slice(), 7i32);
 // CHECK-NEXT:     println!("{} {} {} {}", buf.0[0], buf.0[1], buf.0[2], buf.0[3]);
 // CHECK-NEXT:     buf.0[0] + buf.0[1] + buf.0[2] + buf.0[3]
 // CHECK-NEXT: }

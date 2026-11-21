@@ -203,8 +203,8 @@ int main(void) {
 // CHECK-NEXT:     (unsafe { *left }) + unsafe { *right }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn c99_qualified_array_sum(values: *mut i32) -> i32 {
-// CHECK-NEXT:     (unsafe { *values.add(0) }) + unsafe { *values.add(1) } + unsafe { *values.add(2) }
+// CHECK-NEXT: fn c99_qualified_array_sum(values: &[i32]) -> i32 {
+// CHECK-NEXT:     values[0] + values[1] + values[2]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c99_vm_sum(length: i32, values: *mut [i32; 0]) -> i32 {
@@ -456,7 +456,7 @@ int main(void) {
 // CHECK-NEXT:             declaration_after_statement,
 // CHECK-NEXT:             for_total,
 // CHECK-NEXT:             c99_inline_square(8i32),
-// CHECK-NEXT:             c99_qualified_array_sum(qualified_values.as_mut_ptr() as *mut i32),
+// CHECK-NEXT:             c99_qualified_array_sum(qualified_values.as_slice()),
 // CHECK-NEXT:             macro_total,
 // CHECK-NEXT:             translation_limit_total,
 // CHECK-NEXT:             17i32,

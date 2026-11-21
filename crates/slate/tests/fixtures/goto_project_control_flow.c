@@ -61,7 +61,7 @@ int main(void) {
 // CHECK-NEXT:     value % 4
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn accumulate(n: i32, total: *mut i32) {
+// CHECK-NEXT: fn accumulate(n: i32, total: &mut i32) {
 // CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         i = 0;
@@ -138,7 +138,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             calls = 0;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         accumulate(n, core::ptr::addr_of_mut!(total));
+// CHECK-NEXT:         accumulate(n, &mut total);
 // CHECK-NEXT:         println!("{} {} {}", n, unsafe { calls }, total);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(

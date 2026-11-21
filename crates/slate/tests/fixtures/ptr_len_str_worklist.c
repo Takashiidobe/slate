@@ -26,30 +26,22 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-EMPTY:
-// CHECK-NEXT: fn score_text(bytes: &str) -> i32 {
-// CHECK-NEXT:     unsafe { bytes.len() };
+// CHECK-NEXT: fn score_text(bytes: *const u8, len: i32) -> i32 {
+// CHECK-NEXT:     unsafe { strlen((bytes as *const i8) as *const core::ffi::c_char) as u64 };
 // CHECK-NEXT:     let mut score: i32 = 0;
-// CHECK-NEXT:     for i in 0..bytes.len() as i32 {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = score;
-// CHECK-NEXT:         score = [[V_0]]
-// CHECK-NEXT:             + ((unsafe { *(bytes.as_ptr() as *const u8).offset(i as isize) }) as i32);
+// CHECK-NEXT:     for i in 0..len {
+// CHECK-NEXT:         score += (unsafe { *bytes.offset(i as isize) }) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     score
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn forward_text(bytes: &str) -> i32 {
-// CHECK-NEXT:     score_text(bytes)
+// CHECK-NEXT: fn forward_text(bytes: *const u8, len: i32) -> i32 {
+// CHECK-NEXT:     score_text(bytes, len)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut bytes: [u8; 4] = [97, 98, 99, 0];
-// CHECK-NEXT:     let score: i32 = forward_text(
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::str::from_utf8_unchecked(
-// CHECK-NEXT:                 core::slice::from_raw_parts(bytes.as_ptr() as *const u8, 3 as usize),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let score: i32 = forward_text(bytes.as_ptr() as *const u8, 3i32);
 // CHECK-NEXT:     println!("{}", score);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
