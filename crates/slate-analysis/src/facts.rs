@@ -1,9 +1,8 @@
 use crate::counted_loops::{self, CountedLoop};
 use crate::identity::{FunctionIdentity, identify};
-use crate::inline_temporaries;
 use crate::pointer::{self, PointerFact};
 use crate::program::{Program, ProgramBinding, UnitId};
-use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
+use foldhash::{HashMap, HashMapExt};
 use slate_parser::ast::NodeId;
 use slate_parser::ir::BindingId;
 
@@ -21,7 +20,6 @@ pub struct Facts {
     values: HashMap<NodeId, ValueFacts>,
     identities: HashMap<ProgramBinding, FunctionIdentity>,
     counted_loops: Vec<HashMap<BindingId, CountedLoop>>,
-    inline_temporaries: Vec<HashSet<BindingId>>,
 }
 
 impl Facts {
@@ -59,13 +57,6 @@ impl<'f> UnitFacts<'f> {
             .and_then(|loops| loops.get(&statement))
     }
 
-    pub fn inline_temporary(&self, temporary: BindingId) -> bool {
-        self.facts
-            .inline_temporaries
-            .get(self.unit.0 as usize)
-            .is_some_and(|temporaries| temporaries.contains(&temporary))
-    }
-
     pub fn identity(&self, function: BindingId) -> FunctionIdentity {
         self.facts
             .identities
@@ -101,22 +92,6 @@ pub fn analyze(program: &Program<'_>) -> Facts {
             loops
         })
         .collect();
-    let inline_temporaries = program
-        .units()
-        .map(|(_, program_unit)| {
-            let mut temporaries = HashSet::new();
-            let captures = inline_temporaries::record_captures(program_unit.module);
-            for function in &program_unit.module.functions {
-                inline_temporaries::analyze(
-                    &function.value,
-                    &captures,
-                    &program_unit.module.macro_values,
-                    &mut temporaries,
-                );
-            }
-            temporaries
-        })
-        .collect();
     let pointers = pointer::analyze(program, &identities);
     let bindings = pointers
         .bindings
@@ -135,6 +110,5 @@ pub fn analyze(program: &Program<'_>) -> Facts {
         values: HashMap::new(),
         identities,
         counted_loops,
-        inline_temporaries,
     }
 }

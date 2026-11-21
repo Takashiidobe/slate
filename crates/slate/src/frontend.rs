@@ -1,4 +1,5 @@
 use foldhash::HashSet;
+use slate_analysis::transform::{Passes, Slot};
 use slate_parser::ast::TranslationUnit;
 use slate_parser::compiler_args::CompilerArgs;
 use slate_parser::dialect::Dialect;
@@ -253,16 +254,27 @@ pub fn lower_single_module(
 }
 
 pub fn parse_module_with_args(path: &Path, args: &[String]) -> Result<(Module, Files), Error> {
-    let (module, files, diagnostics) = parse_module_with_source(path, None, args)?;
-    reject_directive_errors(path, &diagnostics)?;
-    Ok((module, files))
+    parse_module_with_passes(path, args, &Passes::default())
 }
 
 pub fn parse_module_with_compiler_args(
     path: &Path,
     args: CompilerArgs,
 ) -> Result<(Module, Files), Error> {
-    let (module, files, diagnostics) = parse_module_from_args(path, None, args, &mut Vec::new())?;
+    let (module, files, diagnostics) =
+        parse_module_from_args(path, None, args, &mut Vec::new(), &Passes::default())?;
+    reject_directive_errors(path, &diagnostics)?;
+    Ok((module, files))
+}
+
+pub fn parse_module_with_passes(
+    path: &Path,
+    args: &[String],
+    passes: &Passes,
+) -> Result<(Module, Files), Error> {
+    let args = crate::target::parse_args(args)?;
+    let (module, files, diagnostics) =
+        parse_module_from_args(path, None, args, &mut Vec::new(), passes)?;
     reject_directive_errors(path, &diagnostics)?;
     Ok((module, files))
 }
@@ -282,7 +294,7 @@ pub fn parse_module_with_diagnostics(
     diagnostics: &mut Vec<serde_json::Value>,
 ) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
     let args = crate::target::parse_args(args)?;
-    parse_module_from_args(path, source, args, diagnostics)
+    parse_module_from_args(path, source, args, diagnostics, &Passes::default())
 }
 
 fn parser_from_args(args: CompilerArgs) -> Result<Parser, Error> {
@@ -361,7 +373,8 @@ impl PreprocessedUnit {
                 path: path.clone(),
                 source: Box::new(error),
             })?;
-        let (module, files, diagnostics) = lower_parsed(&path, &parser, parsed, &mut Vec::new())?;
+        let (module, files, diagnostics) =
+            lower_parsed(&path, &parser, parsed, &mut Vec::new(), &Passes::default())?;
         reject_directive_errors(&path, &diagnostics)?;
         Ok((module, files))
     }
@@ -387,6 +400,7 @@ fn parse_module_from_args(
     source: Option<String>,
     args: CompilerArgs,
     diagnostics: &mut Vec<serde_json::Value>,
+    passes: &Passes,
 ) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
     let mut parser = parser_from_args(args)?;
     let parsed = match source {
@@ -400,7 +414,7 @@ fn parse_module_from_args(
             source: Box::new(error),
         }
     })?;
-    lower_parsed(path, &parser, parsed, diagnostics)
+    lower_parsed(path, &parser, parsed, diagnostics, passes)
 }
 
 fn lower_parsed(
@@ -408,6 +422,7 @@ fn lower_parsed(
     parser: &Parser,
     (unit, files): (TranslationUnit, Files),
     diagnostics: &mut Vec<serde_json::Value>,
+    passes: &Passes,
 ) -> Result<(Module, Files, Vec<DirectiveDiagnostic>), Error> {
     let mut sema = Sema::new(&unit).with_macro_structure(true);
     let warnings = sema.analyze(&files).map_err(|error| {
@@ -433,9 +448,11 @@ fn lower_parsed(
     for warning in warnings {
         crate::diagnostics::collect(&warning, diagnostics);
     }
+    passes.run(&mut module, Slot::BeforeMacroKeep);
     let kept = macro_keep::kept_expansions(&mut module);
     module.strip_macro_structure(|expansion| kept.contains(&expansion));
     macro_keep::pass_caller_locals(&mut module);
+    passes.run(&mut module, Slot::AfterMacroStrip);
     if std::env::var_os("SLATE_CHECK_MACRO_STRUCTURE").is_some() {
         check_macro_structure(path, &unit, &files)?;
     }

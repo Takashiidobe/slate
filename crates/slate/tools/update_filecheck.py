@@ -21,6 +21,7 @@ MERGE = TESTS / "fixtures.merge"
 SELECT = TESTS / "fixtures.select"
 BUILD = TESTS / "fixtures.build"
 DYLINK = TESTS / "fixtures.dylink"
+TRANSFORMS = TESTS / "fixtures.transforms"
 DYLINK_PLATFORMS = {
     "linux": "x86_64-unknown-linux-gnu",
     "linux-aarch64": "aarch64-unknown-linux-gnu",
@@ -47,6 +48,7 @@ MERGE_TEST_COMMAND = ["--test", "project_merge", "-E", "test(=merge_filecheck)"]
 SELECT_TEST_COMMAND = ["--test", "project_select", "-E", "test(=select_filecheck)"]
 BUILD_TEST_COMMAND = ["--test", "build_filecheck", "-E", "test(=build_filecheck)"]
 DYLINK_TEST_COMMAND = ["--test", "dylink", "-E", "test(/^dylink_/)"]
+TRANSFORM_TEST_COMMAND = ["--test", "transform_filecheck", "-E", "test(=transform_filecheck)"]
 
 BEGIN = "// SLATE-FILECHECK-BEGIN"
 END = "// SLATE-FILECHECK-END"
@@ -93,6 +95,14 @@ GENERATED_IDENTIFIER = re.compile(
 RENAMED_IDENTIFIER = re.compile(r"\b([A-Za-z_]\w*?)_[0-9]+\b")
 CANDIDATE_IDENTIFIER = re.compile(f"{GENERATED_IDENTIFIER.pattern}|{RENAMED_IDENTIFIER.pattern}", re.X)
 C_IDENTIFIER = re.compile(r"\b[A-Za-z_]\w*\b")
+IR_QUOTED_PATTERN = re.compile(r'"(?:[^"\\]|\\.)*"')
+IR_BINDING_PATTERN = re.compile(r"(?<![\w%])%([0-9]+)\b")
+IR_TYPE_PATTERN = re.compile(r"@type([0-9]+)\b")
+IR_NAMED_BINDING_PATTERNS = (
+    re.compile(r"(?<![\w%])%([0-9]+) @([A-Za-z_]\w*)\("),
+    re.compile(r"(?<![\w%])%([0-9]+) ([A-Za-z_]\w*):"),
+)
+IR_FN_PATTERN = re.compile(r"^fn %[0-9]+ @([A-Za-z_]\w*)\(")
 C_COMMENT = re.compile(r"//[^\n]*|/\*.*?\*/", re.S)
 
 
@@ -120,8 +130,12 @@ def dylink_targets(path):
     return [DYLINK_PLATFORMS[name] for name in platforms or DYLINK_DEFAULT_PLATFORMS]
 
 
+def is_transform(path):
+    return TRANSFORMS in path.resolve().parents
+
+
 def is_msvc(path):
-    return not is_release(path) and not is_plan(path) and not is_build(path) and not is_dylink(path) and path.resolve().relative_to(FIXTURES).parts[0] == "msvc"
+    return not is_release(path) and not is_plan(path) and not is_build(path) and not is_dylink(path) and not is_transform(path) and path.resolve().relative_to(FIXTURES).parts[0] == "msvc"
 
 
 def is_build(path):
@@ -129,7 +143,7 @@ def is_build(path):
 
 
 def fixture_arch(path):
-    if is_release(path) or is_plan(path) or is_build(path) or is_dylink(path):
+    if is_release(path) or is_plan(path) or is_build(path) or is_dylink(path) or is_transform(path):
         return None
     relative = path.resolve().relative_to(FIXTURES)
     if relative.parts[0] in ("gcc", "msvc"):
@@ -160,6 +174,8 @@ def release_project(path):
 
 
 def generated_rust(target, path):
+    if is_transform(path):
+        return WORK / "transforms" / target / f"{path.parent.name}_{path.stem}.generated.rs"
     if is_build(path):
         return WORK / "build" / target / f"{path.parent.name}_{path.stem}.generated.rs"
     if is_plan(path):
@@ -242,6 +258,18 @@ def block_targets(source):
     return match.group(1).split() if match else []
 
 
+def ir_functions(lines):
+    return [match.group(1) for line in lines if (match := IR_FN_PATTERN.match(line))]
+
+
+def ir_function(lines, name, target):
+    for index, line in enumerate(lines):
+        match = IR_FN_PATTERN.match(line)
+        if match and match.group(1) == name:
+            return lines[index : lines.index("}", index) + 1]
+    raise FixtureError(f"IR for {target} has no function @{name}")
+
+
 def rust_function(lines, c_name, target):
     rust_name = "__slate_main" if c_name == "main" else c_name
     pattern = re.compile(RUST_FN_PREFIX + re.escape(rust_name) + r"\s*[(<]")
@@ -314,6 +342,61 @@ class Variables:
         return "".join(parts).replace(f"{CRATE}{os.sep}", "{{.*}}")
 
 
+class IrVariables:
+    def __init__(self, lines):
+        self.names = {}
+        self.taken = set()
+        self.defined = defaultdict(set)
+        self.ordinal = 0
+        for line in lines:
+            text = IR_QUOTED_PATTERN.sub(lambda quoted: " " * len(quoted.group()), line)
+            for pattern in IR_NAMED_BINDING_PATTERNS:
+                for match in pattern.finditer(text):
+                    self.name("V", match.group(1), match.group(2))
+
+    def name(self, kind, number, name=None):
+        if (kind, number) not in self.names:
+            if name is None:
+                variable = f"{kind}{self.ordinal}"
+                self.ordinal += 1
+            else:
+                variable = f"{kind}_{name.upper()}"
+            base, suffix = variable, 2
+            while variable in self.taken:
+                variable = f"{base}_{suffix}"
+                suffix += 1
+            self.taken.add(variable)
+            self.names[(kind, number)] = variable
+        return self.names[(kind, number)]
+
+    def pattern(self, line, lane, label=False):
+        def reference(kind, number):
+            if label:
+                return "{{[0-9]+}}"
+            variable = self.name(kind, number)
+            if variable in self.defined[lane]:
+                return f"[[{variable}]]"
+            self.defined[lane].add(variable)
+            return f"[[{variable}:[0-9]+]]"
+
+        parts = []
+        offset = 0
+        for quoted in IR_QUOTED_PATTERN.finditer(line):
+            parts.append((line[offset : quoted.start()], True))
+            parts.append((quoted.group(), False))
+            offset = quoted.end()
+        parts.append((line[offset:], True))
+        return "".join(
+            IR_BINDING_PATTERN.sub(
+                lambda match: "%" + reference("V", match.group(1)),
+                IR_TYPE_PATTERN.sub(lambda match: "@type" + reference("T", match.group(1)), escape(part)),
+            )
+            if loosen
+            else escape(part)
+            for part, loosen in parts
+        )
+
+
 def c_identifiers(source):
     return set(C_IDENTIFIER.findall(C_COMMENT.sub(" ", source)))
 
@@ -359,9 +442,8 @@ def function_kind(position, length, line):
     return ("-EMPTY", False) if not line.strip() else ("-NEXT", False)
 
 
-def render(lines_by_target, identifiers, kind):
+def render(lines_by_target, variables, kind):
     targets = list(lines_by_target)
-    variables = Variables(identifiers)
     lengths = {target: len(lines) for target, lines in lines_by_target.items()}
     positions = defaultdict(int)
     checks = []
@@ -422,31 +504,36 @@ def sort_items(lines):
     return out
 
 
-def update_source(source, outputs, sort=False):
+def update_source(source, outputs, sort=False, ir=False):
     names = checked_functions(source)
     stripped = BLOCK_PATTERN.sub("", source).rstrip("\n")
     identifiers = c_identifiers(stripped)
     lines_by_target = {target: rust.rstrip("\n").splitlines() for target, rust in outputs.items()}
     if sort:
         lines_by_target = {target: sort_items(lines) for target, lines in lines_by_target.items()}
+    if ir and not names:
+        names = list(dict.fromkeys(name for lines in lines_by_target.values() for name in ir_functions(lines)))
+    function = ir_function if ir else rust_function
+
+    def variables(lines_by_target):
+        if ir:
+            return IrVariables([line for lines in lines_by_target.values() for line in lines])
+        return Variables(identifiers)
+
     if names:
-        checks = [
-            check
-            for name in names
-            for check in render(
-                {target: rust_function(lines, name, target) for target, lines in lines_by_target.items()},
-                identifiers,
-                function_kind,
-            )
-        ]
+        checks = []
+        for name in names:
+            functions = {target: function(lines, name, target) for target, lines in lines_by_target.items()}
+            checks += render(functions, variables(functions), function_kind)
     else:
-        checks = [*render(lines_by_target, identifiers, file_kind), "// CHECK-NOT: {{.}}"]
+        checks = [*render(lines_by_target, variables(lines_by_target), file_kind), "// CHECK-NOT: {{.}}"]
     header = " ".join([BEGIN, *outputs])
     return f"{stripped}\n\n{header}\n" + "\n".join(checks) + f"\n{END}\n"
 
 
 def run_harness(targets, fixtures):
-    generated = [path for path in fixtures if not is_release(path) and not is_plan(path) and not is_build(path) and not is_dylink(path)]
+    generated = [path for path in fixtures if not is_release(path) and not is_plan(path) and not is_build(path) and not is_dylink(path) and not is_transform(path)]
+    transforms = [path for path in fixtures if is_transform(path)]
     dylink = [path for path in fixtures if is_dylink(path)]
     build = [path for path in fixtures if is_build(path)]
     release = [path for path in fixtures if is_release(path)]
@@ -463,6 +550,7 @@ def run_harness(targets, fixtures):
         ({path.stem for path in select}, SELECT_TEST_COMMAND),
         ({path.stem for path in build}, BUILD_TEST_COMMAND),
         ({dylink_project(path) for path in dylink}, DYLINK_TEST_COMMAND),
+        ({path.stem for path in transforms}, TRANSFORM_TEST_COMMAND),
     ):
         if not names:
             continue
@@ -492,7 +580,7 @@ def all_fixtures():
         for path in DYLINK.glob("*/host/*.c")
         if BEGIN in path.read_text(errors="surrogateescape")
     )
-    return sorted([*generated, *release, *dylink, *PLAN.glob("*.c"), *LOWERED_NAMES.glob("*.c"), *MERGE.glob("*.c"), *SELECT.glob("*.c"), *BUILD.glob("*/*.c")])
+    return sorted([*generated, *release, *dylink, *PLAN.glob("*.c"), *LOWERED_NAMES.glob("*.c"), *MERGE.glob("*.c"), *SELECT.glob("*.c"), *BUILD.glob("*/*.c"), *TRANSFORMS.glob("*/*.c")])
 
 
 def expand_glob(argument):
@@ -547,7 +635,7 @@ def fixture_targets(path, requested, extra):
 
 def main(argv):
     parser = argparse.ArgumentParser(
-        description="Regenerate the FileCheck blocks of tests/fixtures, tests/fixtures.release, tests/fixtures.plan, tests/fixtures.lowered-names, tests/fixtures.merge, tests/fixtures.select, tests/fixtures.build and tests/fixtures.dylink host fixtures: the whole generated output, or only the @check-fn-wrapped functions."
+        description="Regenerate the FileCheck blocks of tests/fixtures, tests/fixtures.release, tests/fixtures.plan, tests/fixtures.lowered-names, tests/fixtures.merge, tests/fixtures.select, tests/fixtures.build, tests/fixtures.transforms and tests/fixtures.dylink host fixtures: the whole generated output, or only the @check-fn-wrapped functions."
     )
     parser.add_argument(
         "fixtures",
@@ -607,7 +695,7 @@ def main(argv):
         else:
             try:
                 source = path.read_text(errors="surrogateescape")
-                updated = update_source(source, outputs, path.resolve().parent == MERGE)
+                updated = update_source(source, outputs, path.resolve().parent == MERGE, is_transform(path))
             except FixtureError as error:
                 print(f"error: {name}: {error}", file=sys.stderr)
                 failures += 1

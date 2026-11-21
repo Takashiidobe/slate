@@ -14,6 +14,8 @@
 
 ```text
 C + target headers -> slate-parser -> ir::Module
+  -> slate-analysis transforms, slot 1 (per unit) -> macro_keep + macro strip
+  -> slate-analysis transforms, slot 2 (per unit)
   -> slate-analysis (one target's units) -> Facts
   -> frontend::lowerer -> rust_ast::Program -> Rust source
 ```
@@ -22,6 +24,7 @@ C + target headers -> slate-parser -> ir::Module
 | ----------------------- | ------------------------------------------------------------- | ------------------------------------------------------------ |
 | Arguments and target    | `crates/slate/src/target.rs`                                  | Parser arguments, target default, layout options             |
 | Preprocess, parse, sema | `crates/slate-parser` via `src/frontend.rs`                   | C semantics and typed IR                                     |
+| IR transforms           | `slate_analysis::transform`, called from `src/frontend.rs`    | IR -> IR canonicalization before macro_keep and the facts    |
 | IR analysis             | `crates/slate-analysis` ([slate-analysis](slate-analysis.md)) | Whole-program facts over one target's IR, read by lowering   |
 | Rust lowering           | `src/frontend/lowerer.rs` and its modules                     | Translate typed values, places, statements and declarations  |
 | Multi-target merge      | `src/project/{merge,cfg,splice,hoist}.rs`                     | Merge per-target translations behind Rust cfg items          |
@@ -50,7 +53,7 @@ with `crates/`.
 
 | Command             | Output                                                                                                                                                                                                                                                                                           |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `emit-slate-ir`     | Printed typed parser IR                                                                                                                                                                                                                                                                          |
+| `emit-slate-ir`     | Printed typed parser IR; `--passes=<a,b\|all>` (first argument) applies those IR transforms first                                                                                                                                                                                                 |
 | `lowering-barriers` | All lowering barriers, without emitting Rust                                                                                                                                                                                                                                                     |
 | `translate`         | Rust after the backend pipeline for one target; `--targets=a,b` merges several targets with the `--merge` engine                                                                                                                                                                                 |
 | `translate-project` | Cargo crate with translation units as modules and optional C shims: a binary when one unit defines `main`, otherwise a library with `--crate-type` rlib/staticlib/cdylib. Each command parses as the compiler it names unless `--flavor` overrides ([compiler-arg-rules](compiler-arg-rules.md)) |

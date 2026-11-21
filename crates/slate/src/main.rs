@@ -289,7 +289,13 @@ fn cli_result<T, E: std::error::Error + 'static>(result: Result<T, E>) -> Result
 }
 
 fn emit_slate_ir(path: &Path, compiler_args: &[String]) -> Result<String, String> {
-    let (module, _) = cli_result(api::slate_ir_with_args(path, compiler_args))?;
+    let (passes, compiler_args) = match compiler_args.split_first() {
+        Some((first, rest)) if let Some(names) = first.strip_prefix("--passes=") => {
+            (slate_analysis::transform::Passes::named(names)?, rest)
+        }
+        _ => (slate_analysis::transform::Passes::none(), compiler_args),
+    };
+    let (module, _) = cli_result(api::slate_ir_with_passes(path, compiler_args, &passes))?;
     Ok(module.display(false).to_string())
 }
 

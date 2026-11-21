@@ -224,6 +224,16 @@ plan with every feature subset. A `// plan-args:` line replaces the arguments,
 which is how usage errors are pinned. The test also requires the same output at
 `SLATE_JOBS=1`. Nothing is compiled, so these fixtures have no runtime gate.
 
+`tests/fixtures.transforms/<passes>/` fixtures pin the IR after slate-analysis
+transforms ([slate-analysis](slate-analysis.md#transform-stage)).
+`transform_filecheck` (`tests/transform_filecheck.rs`) runs
+`emit-slate-ir --passes=<passes>` (the directory name) for each block target,
+default `x86_64-unknown-linux-gnu`, keeps only the function bodies, and checks
+them with the generated block: one `CHECK-LABEL` group per function, binding
+and type numbers as FileCheck variables. `// SLATE-TRANSFORM-ARGS` adds parser
+arguments. Output is cached under `target/difftest-generated/transforms/` by
+`translation_key`, so an unchanged fixture and binary rerun nothing.
+
 `tests/fixtures.merge/` fixtures (`project_merge`) check the `--merge` report
 and every generated file, run `--check-projection all` on
 `x86_64-unknown-linux-gnu`, `aarch64-apple-darwin` and `x86_64-pc-windows-msvc`

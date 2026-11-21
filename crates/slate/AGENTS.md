@@ -12,7 +12,7 @@ that hits it. A missing or wrong IR fact is fixed in `slate-parser`, not worked
 around here.
 
 ```
-ir::Module -> slate-analysis Facts -> src/frontend/lowerer.rs -> backend::rust_ast -> src/backend rewrites -> Rust
+ir::Module -> slate-analysis transforms -> slate-analysis Facts -> src/frontend/lowerer.rs -> backend::rust_ast -> src/backend rewrites -> Rust
 ```
 
 New analyses that only need C semantics go in `crates/slate-analysis` as facts
@@ -54,11 +54,14 @@ Decide whether a failure is parser, lowering, or rewrite before editing:
 
 ```bash
 cargo run --release -p slate-c2rust -- emit-slate-ir <file.c>
+cargo run --release -p slate-c2rust -- emit-slate-ir --passes=all <file.c>
 cargo run --release -p slate-c2rust -- translate <file.c>
 cargo run --release -p slate-c2rust -- lowering-barriers <file.c>
 ```
 
 `emit-slate-ir` is what slate receives: a wrong fact there is a parser bug.
+`--passes=all` (or a pass list) adds the slate-analysis IR transforms, which is
+what lowering receives; a wrong change between the two is a transform bug.
 `translate` always runs the rewrites.
 
 ## Fixtures and tests

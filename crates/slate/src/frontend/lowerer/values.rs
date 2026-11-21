@@ -451,18 +451,6 @@ impl FunctionLowerer<'_, '_> {
         if let Some(wrapped) = self.lower_macro_wrap(value) {
             return wrapped;
         }
-        if let ValueKind::Read {
-            place:
-                ir::Place {
-                    kind: PlaceKind::Binding(id),
-                    ..
-                },
-            ordering: None,
-        } = &value.node.value
-            && let Some(initializer) = self.inlined.get(id).cloned()
-        {
-            return self.lower_value(&initializer);
-        }
         if let Some(cast) = self.lower_written_cast(value) {
             return cast;
         }

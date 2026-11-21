@@ -3,6 +3,7 @@
 <!-- toc -->
 - [Boundary](#boundary)
 - [Where a rewrite belongs](#where-a-rewrite-belongs)
+- [Transform stage](#transform-stage)
 - [Keys](#keys)
 - [Call resolution](#call-resolution)
 - [Scaling rule](#scaling-rule)
@@ -64,6 +65,40 @@ the rewrite's precondition reads:
 A rule never sits half in each layer: port it whole or leave it. The
 2026-11-21 triage of `backend/engine/rules` (`slate-8ge7.24.3`) assigns each
 rule a place and a port bead.
+
+## Transform stage
+
+`slate_analysis::transform` (`slate-8ge7.24.1`) holds the IR -> IR passes.
+`PASSES` lists each pass with its name and the slots it runs in, and
+`Passes::run(module, slot)` runs the selected passes of one slot in list
+order. `frontend::lower_parsed` calls two slots per unit:
+
+- `Slot::BeforeMacroKeep`, after `sema.lower` and before
+  `macro_keep::kept_expansions`. Every `Statement::MacroExpansion` and wrapped
+  value (`Module::macro_values`) is still present and a pass must not move
+  anything into, out of, or across one. Passes here change what macro_keep
+  surveys (temporaries are gone before its `local_used_after_macro` and
+  `argument_reads_macro_local` checks).
+- `Slot::AfterMacroStrip`, after `strip_macro_structure` and
+  `pass_caller_locals`. Only kept expansions remain; the code of dropped ones
+  is ordinary statements now.
+
+A pass that needs callee summaries from other units would run at a
+whole-target slot after `project::merge::without_definitions`; none does yet.
+
+Invariants: a pass moves nodes and never clones or rebuilds them, so every
+surviving node keeps its `NodeId` (side tables such as `macro_written_casts`
+stay valid); a new node gets a fresh id; slate-parser's printed IR is
+unchanged, since the passes run in `crates/slate`'s pipeline only. Fact
+analyses read the transformed IR and never see a removed node.
+
+`slate emit-slate-ir --passes=<a,b|all> <file.c>` prints the IR after the named
+passes (no flag: none, which is sema's output after the macro strip). Fixtures
+live in `crates/slate/tests/fixtures.transforms/<passes>/*.c`: the directory
+names the passes, the C is the input, and the generated block checks every
+function body with `CHECK-LABEL`. Test: `transform_filecheck` in the `slate`
+profile; regenerate with `crates/slate/tools/update_filecheck.py`, which turns
+binding and type numbers into FileCheck variables.
 
 ## Keys
 
@@ -277,10 +312,13 @@ clones of IR values, so a macro body keeps its `macro_arg` holes; the
 
 ### Inline temporaries
 
-`inline_temporaries::analyze` (`slate-8ge7.9.1`) produces
-`UnitFacts::inline_temporary(id)`: an IR `Statement::Temporary` (printed
-`__v<n>`) that lowering does not declare, lowering its initializer at the one
-read instead. A temporary qualifies when all of these hold:
+The `inline-temps` transform (`transform/inline_temporaries.rs`,
+`slate-8ge7.9.1`, a transform since `slate-8ge7.24.1`) deletes an IR
+`Statement::Temporary` (printed `let %n: T [synthetic]`, lowered as `__v<n>`)
+and moves its initializer, same `NodeId`, into its one read. It runs in both
+slots: before macro_keep, so macro_keep surveys IR without those temporaries,
+and after the strip, for temporaries inside expansions macro_keep dropped. A
+temporary qualifies when all of these hold:
 
 - the temporary has an initializer, is not
   `unsequenced`, has the initializer's type, has exactly one `Read`, and no
@@ -295,13 +333,14 @@ read instead. A temporary qualifies when all of these hold:
   or compare-exchange that contains the read counts as running after it.
 - an effectful producer is never moved under a `&&`/`||` rhs or a `?:` arm.
 
-Lowering records the initializer in `FunctionLowerer::inlined`, emits no
-statement (so engine rules like `structure_dispatch` see the same shape), and
-substitutes it at the `Read`. The goto state machine (`lower_dispatch`) records
-every inlined temporary before lowering any block, because block order is not
-source order, and gives them no slot. Temporaries the lowerer itself makes
-(`__t<n>`) are not covered (`slate-8ge7.9.2`); the engine's
-`inline_temps::late` still folds those.
+Each statement list is processed in order and each move happens before the
+next temporary is decided, so a chain (`t1 = a; t2 = t1 + b; use(t2)`)
+collapses in one pass and `t2`'s producer summary already includes `a`. The
+lowerer sees no inlinable temporary, so the goto state machine needs no special
+case. The lowering-side gates (`element_view`, `borrow_of`, `c_string_of`)
+were dropped: across 3067 fixtures none ever blocked a candidate. Temporaries
+the lowerer itself makes (`__t<n>`) are not covered (`slate-8ge7.24.2`); the
+engine's `inline_temps::late` still folds those.
 
 ## Shadow mode
 

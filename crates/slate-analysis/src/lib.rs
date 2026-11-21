@@ -14,9 +14,9 @@ mod def_use;
 mod effects;
 mod facts;
 mod identity;
-mod inline_temporaries;
 mod pointer;
 mod program;
+pub mod transform;
 
 pub use counted_loops::CountedLoop;
 pub use facts::{BindingFacts, Facts, UnitFacts, ValueFacts, analyze};

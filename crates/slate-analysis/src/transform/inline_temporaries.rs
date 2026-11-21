@@ -5,7 +5,19 @@ use slate_parser::ir::*;
 
 const MAX_DISTANCE: usize = 32;
 
-pub(crate) fn record_captures(module: &Module) -> HashSet<BindingId> {
+pub(crate) fn transform(module: &mut Module) {
+    let captures = record_captures(module);
+    let Module {
+        functions,
+        macro_values,
+        ..
+    } = module;
+    for function in functions {
+        rewrite(&mut function.value, &captures, macro_values);
+    }
+}
+
+fn record_captures(module: &Module) -> HashSet<BindingId> {
     let mut captures = HashSet::new();
     for definition in &module.types {
         if let TypeDefinitionKind::Record {
@@ -21,13 +33,12 @@ pub(crate) fn record_captures(module: &Module) -> HashSet<BindingId> {
     captures
 }
 
-pub(crate) fn analyze(
-    function: &Function,
+fn rewrite(
+    function: &mut Function,
     record_captures: &HashSet<BindingId>,
     macro_values: &MacroValues,
-    inlined: &mut HashSet<BindingId>,
 ) {
-    let Some(body) = &function.body else {
+    let Some(body) = &mut function.body else {
         return;
     };
     let def_use = DefUse::of(body);
@@ -48,16 +59,16 @@ pub(crate) fn analyze(
         record_captures,
         macro_values,
     };
-    context.statements(body, inlined);
+    context.statements(body);
 }
 
 fn plain(access: &Access) -> bool {
     !access.volatile && !access.atomic
 }
 
-fn collect_locals(body: &[Span<Statement>], locals: &mut HashSet<BindingId>) {
+fn collect_locals(body: &mut [Span<Statement>], locals: &mut HashSet<BindingId>) {
     for statement in body {
-        deep(|| match &statement.value {
+        deep(|| match &mut statement.value {
             Statement::Let(variable) => {
                 if variable.storage == StorageDuration::Automatic && plain(&variable.access) {
                     locals.insert(variable.id);
@@ -75,14 +86,14 @@ fn collect_locals(body: &[Span<Statement>], locals: &mut HashSet<BindingId>) {
                     collect_locals(list, locals);
                 }
                 for evaluation in evaluations(other) {
-                    collect_locals(&evaluation.statements, locals);
+                    collect_locals(&mut evaluation.statements, locals);
                 }
             }
         });
     }
 }
 
-fn children(statement: &Statement) -> Vec<&[Span<Statement>]> {
+fn children(statement: &mut Statement) -> Vec<&mut Vec<Span<Statement>>> {
     match statement {
         Statement::Block(body)
         | Statement::While { body, .. }
@@ -96,7 +107,7 @@ fn children(statement: &Statement) -> Vec<&[Span<Statement>]> {
             else_body,
             ..
         } => {
-            let mut lists = vec![then_body.as_slice()];
+            let mut lists = vec![then_body];
             if let Some(body) = else_body {
                 lists.push(body);
             }
@@ -129,7 +140,7 @@ fn children(statement: &Statement) -> Vec<&[Span<Statement>]> {
     }
 }
 
-fn evaluations(statement: &Statement) -> Vec<&Evaluation> {
+fn evaluations(statement: &mut Statement) -> Vec<&mut Evaluation> {
     match statement {
         Statement::While { condition, .. } | Statement::DoWhile { condition, .. } => {
             vec![condition]
@@ -138,7 +149,7 @@ fn evaluations(statement: &Statement) -> Vec<&Evaluation> {
             condition,
             increment,
             ..
-        } => condition.iter().chain(increment.iter()).collect(),
+        } => condition.iter_mut().chain(increment.iter_mut()).collect(),
         Statement::SehTry {
             handler: SehHandler::Except { filter, .. },
             ..
@@ -183,63 +194,93 @@ struct Context<'a> {
     macro_values: &'a MacroValues,
 }
 
+enum Site {
+    Following(usize),
+    Tail,
+}
+
 impl Context<'_> {
-    fn statements(&self, body: &[Span<Statement>], inlined: &mut HashSet<BindingId>) {
-        self.list(body, None, inlined);
+    fn statements(&self, body: &mut Vec<Span<Statement>>) {
+        self.list(body, None);
         for statement in body {
             deep(|| {
-                for list in children(&statement.value) {
-                    self.statements(list, inlined);
+                for list in children(&mut statement.value) {
+                    self.statements(list);
                 }
-                for evaluation in evaluations(&statement.value) {
-                    self.list(&evaluation.statements, Some(&evaluation.value), inlined);
-                    self.statements_nested(&evaluation.statements, inlined);
+                for evaluation in evaluations(&mut statement.value) {
+                    self.list(&mut evaluation.statements, Some(&mut evaluation.value));
+                    self.statements_nested(&mut evaluation.statements);
                 }
             });
         }
     }
 
-    fn statements_nested(&self, body: &[Span<Statement>], inlined: &mut HashSet<BindingId>) {
+    fn statements_nested(&self, body: &mut [Span<Statement>]) {
         for statement in body {
             deep(|| {
-                for list in children(&statement.value) {
-                    self.statements(list, inlined);
+                for list in children(&mut statement.value) {
+                    self.statements(list);
                 }
             });
         }
     }
 
-    fn list(
-        &self,
-        body: &[Span<Statement>],
-        tail: Option<&Value>,
-        inlined: &mut HashSet<BindingId>,
-    ) {
-        for (index, statement) in body.iter().enumerate() {
-            let Statement::Temporary {
-                id,
-                ty,
-                initializer: Some(initializer),
-                unsequenced: false,
-            } = &statement.value
+    fn list(&self, body: &mut Vec<Span<Statement>>, mut tail: Option<&mut Value>) {
+        let mut index = 0;
+        while index < body.len() {
+            let Some(site) = self.site(&body[index].value, &body[index + 1..], tail.as_deref())
             else {
+                index += 1;
                 continue;
             };
-            if initializer.ty != *ty
-                || !self.def_use.single_read(*id)
-                || self.record_captures.contains(id)
-            {
+            let (head, following) = body.split_at_mut(index + 1);
+            let Statement::Temporary {
+                id, initializer, ..
+            } = &mut head[index].value
+            else {
+                index += 1;
                 continue;
-            }
-            let mut producer = Scan::new(self, None);
-            producer.value(initializer);
-            if producer.found || producer.rejected {
-                continue;
-            }
-            if self.movable(*id, &producer.summary, &body[index + 1..], tail) {
-                inlined.insert(*id);
+            };
+            let values = match site {
+                Site::Following(distance) => own_values(&mut following[distance].value),
+                Site::Tail => tail.as_deref_mut().into_iter().collect(),
+            };
+            *initializer = substitute(values, *id, initializer.take());
+            if initializer.is_some() {
+                index += 1;
+            } else {
+                body.remove(index);
             }
         }
+    }
+
+    fn site(
+        &self,
+        statement: &Statement,
+        following: &[Span<Statement>],
+        tail: Option<&Value>,
+    ) -> Option<Site> {
+        let Statement::Temporary {
+            id,
+            ty,
+            initializer: Some(initializer),
+            unsequenced: false,
+        } = statement
+        else {
+            return None;
+        };
+        if initializer.ty != *ty
+            || !self.def_use.single_read(*id)
+            || self.record_captures.contains(id)
+        {
+            return None;
+        }
+        let mut producer = Scan::new(self, None);
+        producer.value(initializer);
+        if producer.found || producer.rejected {
+            return None;
+        }
+        self.movable(*id, &producer.summary, following, tail)
     }
 
     fn movable(
@@ -248,36 +289,122 @@ impl Context<'_> {
         producer: &Summary,
         following: &[Span<Statement>],
         tail: Option<&Value>,
-    ) -> bool {
+    ) -> Option<Site> {
         let mut between = Scan::new(self, Some(temporary));
         for (distance, statement) in following.iter().enumerate() {
             if distance >= MAX_DISTANCE {
-                return false;
+                return None;
             }
             let mut own = Scan::new(self, Some(temporary));
             own.own_values(&statement.value);
             if own.found {
-                return !own.rejected
-                    && !(own.conditional && producer.effectful())
-                    && !producer.conflicts(&between.summary)
-                    && !producer.conflicts(&own.summary);
+                return own
+                    .accepts(producer, &between.summary)
+                    .then_some(Site::Following(distance));
             }
             between.statement(&statement.value);
             if between.found || between.rejected {
-                return false;
+                return None;
             }
         }
-        let Some(tail) = tail else {
-            return false;
-        };
         let mut own = Scan::new(self, Some(temporary));
-        own.value(tail);
-        own.found
-            && !own.rejected
-            && !(own.conditional && producer.effectful())
-            && !producer.conflicts(&between.summary)
-            && !producer.conflicts(&own.summary)
+        own.value(tail?);
+        (own.found && own.accepts(producer, &between.summary)).then_some(Site::Tail)
     }
+}
+
+fn own_values(statement: &mut Statement) -> Vec<&mut Value> {
+    match statement {
+        Statement::Expression(value)
+        | Statement::Return(Some(value))
+        | Statement::If {
+            condition: value, ..
+        }
+        | Statement::Switch {
+            discriminant: value,
+            ..
+        }
+        | Statement::Temporary {
+            initializer: Some(value),
+            ..
+        } => vec![value],
+        Statement::Write { place, value, .. } => {
+            let mut values = vec![value];
+            place_values(place, &mut values);
+            values
+        }
+        Statement::Let(variable) => variable.initializer.iter_mut().collect(),
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "mirrors Scan::own_values: no other statement has a value evaluated once before its nested statements"
+        )]
+        _ => Vec::new(),
+    }
+}
+
+fn place_values<'p>(place: &'p mut Place, values: &mut Vec<&'p mut Value>) {
+    match &mut place.kind {
+        PlaceKind::Binding(_) | PlaceKind::MacroArg { .. } => {}
+        PlaceKind::Deref(value)
+        | PlaceKind::CompoundLiteral {
+            initializer: value, ..
+        }
+        | PlaceKind::Temporary {
+            initializer: value, ..
+        } => values.push(value),
+        PlaceKind::ComplexPart { base, .. }
+        | PlaceKind::Field { base, .. }
+        | PlaceKind::Swizzle { base, .. } => place_values(base, values),
+        PlaceKind::Lane { base, index } => {
+            place_values(base, values);
+            values.push(index);
+        }
+        PlaceKind::Index { base, index } => {
+            values.push(base);
+            values.push(index);
+        }
+    }
+}
+
+struct Substitute {
+    temporary: BindingId,
+    initializer: Option<Value>,
+}
+
+impl Visitor for Substitute {
+    fn rewrite_value(&mut self, value: &mut Value) {
+        if let ValueKind::Read {
+            place:
+                Place {
+                    kind: PlaceKind::Binding(binding),
+                    ..
+                },
+            ..
+        } = &value.node.value
+            && *binding == self.temporary
+            && let Some(initializer) = self.initializer.take()
+        {
+            *value = initializer;
+        }
+    }
+}
+
+fn substitute(
+    values: Vec<&mut Value>,
+    temporary: BindingId,
+    initializer: Option<Value>,
+) -> Option<Value> {
+    let mut substitute = Substitute {
+        temporary,
+        initializer,
+    };
+    for value in values {
+        if substitute.initializer.is_none() {
+            break;
+        }
+        walk_value(value, &mut substitute);
+    }
+    substitute.initializer
 }
 
 struct Scan<'c, 'a> {
@@ -303,6 +430,13 @@ impl<'c, 'a> Scan<'c, 'a> {
             conditional_depth: 0,
             nested_depth: 0,
         }
+    }
+
+    fn accepts(&self, producer: &Summary, between: &Summary) -> bool {
+        !self.rejected
+            && !(self.conditional && producer.effectful())
+            && !producer.conflicts(between)
+            && !producer.conflicts(&self.summary)
     }
 
     fn own_values(&mut self, statement: &Statement) {

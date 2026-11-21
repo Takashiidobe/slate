@@ -28,6 +28,14 @@ pub fn slate_ir_with_args(
     frontend::parse_module_with_args(path, compiler_args).map_err(Error::from)
 }
 
+pub fn slate_ir_with_passes(
+    path: &Path,
+    compiler_args: &[String],
+    passes: &slate_analysis::transform::Passes,
+) -> Result<(slate_parser::ir::Module, slate_parser::files::Files), Error> {
+    frontend::parse_module_with_passes(path, compiler_args, passes).map_err(Error::from)
+}
+
 fn single_file_options(path: &Path) -> frontend::lowerer::LowerOptions {
     frontend::lowerer::LowerOptions {
         unit: path

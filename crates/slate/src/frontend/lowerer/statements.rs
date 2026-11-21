@@ -712,25 +712,6 @@ impl FunctionLowerer<'_, '_> {
         ])
     }
 
-    pub(super) fn record_inlined(&mut self, statement: &ir::Statement) -> bool {
-        let ir::Statement::Temporary {
-            id,
-            initializer: Some(initializer),
-            ..
-        } = statement
-        else {
-            return false;
-        };
-        let inlines = self.tables.facts.inline_temporary(*id)
-            && self.element_view(initializer).is_none()
-            && self.borrow_of(*id).is_none()
-            && !self.c_string_of(*id);
-        if inlines {
-            self.inlined.insert(*id, initializer.clone());
-        }
-        inlines
-    }
-
     pub(super) fn lower_statement(
         &mut self,
         statement: &slate_parser::ast::Span<ir::Statement>,
@@ -738,9 +719,6 @@ impl FunctionLowerer<'_, '_> {
         if let ir::Statement::NestedFunction(nested) = &statement.value {
             self.lower_nested_function(statement, nested)
                 .map_err(|error| error.used_at(Site::of(statement)))?;
-            return Ok(Vec::new());
-        }
-        if self.record_inlined(&statement.value) {
             return Ok(Vec::new());
         }
         let outer = std::mem::take(&mut self.pending);
