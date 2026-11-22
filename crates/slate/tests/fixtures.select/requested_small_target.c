@@ -17,7 +17,7 @@ int value(void) {
 // CHECK-NEXT: use crate::__slate_unit_requested_small_target::value;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     (unsafe { value() }) + 3
+// CHECK-NEXT:     value() + 3
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

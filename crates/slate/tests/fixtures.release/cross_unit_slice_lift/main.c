@@ -45,12 +45,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn window_total() -> i32 {
 // CHECK-NEXT:     let mut window: [i32; 2] = [5, 6];
-// CHECK-NEXT:     unsafe { table_sum(window.as_slice()) }
+// CHECK-NEXT:     table_sum(window.as_slice())
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
-// CHECK-NEXT:     unsafe { table_scale(values.0.as_mut_slice(), 3i32) };
+// CHECK-NEXT:     table_scale(values.0.as_mut_slice(), 3i32);
 // CHECK-NEXT:     let count: i32 = 3;
 // CHECK-NEXT:     let heap: *mut i32 = unsafe {
 // CHECK-NEXT:         (malloc((count as u64).wrapping_mul(core::mem::size_of::<i32>() as u64) as usize)
@@ -61,15 +61,15 @@ int main(void) {
 // CHECK-NEXT:             *heap.offset(i as isize) = i + 10;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { table_scale(core::slice::from_raw_parts_mut(heap, count as usize), 2i32) };
+// CHECK-NEXT:     table_scale(unsafe { core::slice::from_raw_parts_mut(heap, count as usize) }, 2i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}",
-// CHECK-NEXT:         unsafe { table_sum(values.0.as_slice()) },
+// CHECK-NEXT:         table_sum(values.0.as_slice()),
 // CHECK-NEXT:         window_total(),
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             table_sum(core::slice::from_raw_parts(heap as *const i32, count as usize))
-// CHECK-NEXT:         },
-// CHECK-NEXT:         unsafe { table_first(values.0.as_slice()) }
+// CHECK-NEXT:         table_sum(
+// CHECK-NEXT:             unsafe { core::slice::from_raw_parts(heap as *const i32, count as usize) },
+// CHECK-NEXT:         ),
+// CHECK-NEXT:         table_first(values.0.as_slice())
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { free((heap as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     0

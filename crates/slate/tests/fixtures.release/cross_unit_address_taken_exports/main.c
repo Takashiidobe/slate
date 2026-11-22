@@ -52,7 +52,7 @@ int main(void) {
 // CHECK-NEXT:             add as *const (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { bump(core::ptr::addr_of_mut!(c), add(2i32, 3i32)) };
+// CHECK-NEXT:     bump(core::ptr::addr_of_mut!(c), add(2i32, 3i32));
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         api.bump.unwrap()(core::ptr::addr_of_mut!(c), api.sub.unwrap()(10i32, 4i32))
 // CHECK-NEXT:     };

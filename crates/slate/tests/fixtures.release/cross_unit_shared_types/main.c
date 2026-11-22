@@ -97,10 +97,10 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let registry: *mut registry = unsafe { registry_new() };
+// CHECK-NEXT:     let registry: *mut registry = registry_new();
 // CHECK-NEXT:     for i in 0i32..3i32 {
-// CHECK-NEXT:         unsafe { shape_move(shapes.0.as_mut_ptr().offset(i as isize), i, 1i32) };
-// CHECK-NEXT:         unsafe { registry_add(registry, shapes.0.as_mut_ptr().offset(i as isize)) };
+// CHECK-NEXT:         shape_move(unsafe { shapes.0.as_mut_ptr().offset(i as isize) }, i, 1i32);
+// CHECK-NEXT:         registry_add(registry, unsafe { shapes.0.as_mut_ptr().offset(i as isize) });
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let tag: __SlateRecord_shapes_h_18 = {
 // CHECK-NEXT:         let mut [[T_3:__t[0-9]+]]: __SlateRecord_shapes_h_18 = unsafe { core::mem::zeroed() };
@@ -108,14 +108,11 @@ int main(void) {
 // CHECK-NEXT:         [[T_3]].weight = 21i32;
 // CHECK-NEXT:         [[T_3]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let __slate_printf_arg1 = unsafe {
-// CHECK-NEXT:         shape_area_sum(shapes.0.as_mut_ptr() as *const shape, 3i32)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         unsafe { registry_count(registry as *const registry) },
-// CHECK-NEXT:         __slate_printf_arg1
+// CHECK-NEXT:     let __slate_printf_arg1 = shape_area_sum(
+// CHECK-NEXT:         shapes.0.as_mut_ptr() as *const shape,
+// CHECK-NEXT:         3i32,
 // CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {}", registry_count(registry as *const registry), __slate_printf_arg1);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%u %u %d\n".as_ptr(),
@@ -125,12 +122,8 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         unsafe { tag_score(&tag) },
-// CHECK-NEXT:         unsafe { count_vowels(c"translation unit".as_ptr()) }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe { registry_free(registry) };
+// CHECK-NEXT:     println!("{} {}", tag_score(&tag), count_vowels(c"translation unit".as_ptr()));
+// CHECK-NEXT:     registry_free(registry);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

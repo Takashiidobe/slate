@@ -1,10 +1,13 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use super::SharedTypes;
+use crate::backend::engine::macro_templates;
 use crate::backend::interproc::{self, FnKey};
 use crate::backend::rust_ast::{
-    Attr, ExternDecl, ExternFnDecl, FnDef, Ident, Item, Path, Program, Type, Visibility,
+    Attr, Expr, ExternDecl, ExternFnDecl, FnDef, Ident, Item, Path, Program, Type, Unsafe,
+    Visibility,
 };
+use crate::function_identity::CallBinding;
 
 pub(in crate::backend) fn rust_bound(
     programs: &[Program],
@@ -57,6 +60,11 @@ pub(in crate::backend) fn bind_calls(
         .chain(c_bound)
         .map(|key| (key.name.as_str(), key))
         .collect();
+    let safe: BTreeSet<FnKey> = interproc::fn_defs(programs)
+        .into_iter()
+        .filter(|(_, def)| !def.unsafe_)
+        .map(|(key, _)| key)
+        .collect();
     let mut imported = BTreeSet::new();
     for (unit, program) in programs.iter_mut().enumerate() {
         let mut uses = BTreeSet::new();
@@ -86,6 +94,12 @@ pub(in crate::backend) fn bind_calls(
             }
         });
         super::insert_imports(&mut program.items, imports.collect::<Vec<_>>());
+        let safe_names: BTreeSet<&str> = uses
+            .iter()
+            .filter(|key| safe.contains(*key))
+            .map(|key| key.name.as_str())
+            .collect();
+        clear_safe_calls(&mut program.items, &safe_names);
         imported.extend(uses);
     }
     for (unit, program) in programs.iter_mut().enumerate() {
@@ -101,6 +115,32 @@ pub(in crate::backend) fn bind_calls(
             if imported.contains(&key) {
                 f.vis = Visibility::Pub;
             }
+        }
+    }
+}
+
+fn clear_safe_calls(items: &mut [Item], safe_names: &BTreeSet<&str>) {
+    if safe_names.is_empty() {
+        return;
+    }
+    for item in items {
+        match item {
+            Item::Fn(def) => macro_templates::visit_exprs_mut(&mut def.body, &mut |expr| {
+                if let Expr::Call {
+                    func,
+                    binding: CallBinding::Direct { .. },
+                    unsafe_,
+                    ..
+                } = expr
+                    && let Expr::Var { name, .. } = &**func
+                    && safe_names.contains(name.as_str())
+                {
+                    *unsafe_ = Unsafe(false);
+                }
+            }),
+            Item::InlineMod { items, .. } => clear_safe_calls(items, safe_names),
+            Item::Cfg { item, .. } => clear_safe_calls(std::slice::from_mut(item), safe_names),
+            _ => {}
         }
     }
 }

@@ -28,17 +28,17 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     let mut written: i32 = unsafe { slate_support::printf(c"first\n".as_ptr()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe { later(written) };
+// CHECK-NEXT:     later(written);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     written = unsafe {
 // CHECK-NEXT:         slate_support::fprintf(slate_support::stdout(), c"third\n".as_ptr())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe { later(written) };
+// CHECK-NEXT:     later(written);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     let put: i32 = unsafe { slate_support::fputc(120i32, slate_support::stdout()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe { later(put) };
+// CHECK-NEXT:     later(put);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

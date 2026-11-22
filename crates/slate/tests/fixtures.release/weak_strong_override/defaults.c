@@ -43,7 +43,7 @@ int defaults_used(void) { return fallback() * 100 + threshold; }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn defaults_used() -> i32 {
-// CHECK-NEXT:     (unsafe { fallback() }) * 100 + unsafe { threshold }
+// CHECK-NEXT:     fallback() * 100 + unsafe { threshold }
 // CHECK-NEXT: }
 // CHECK-NOT: {{.}}
 // SLATE-FILECHECK-END

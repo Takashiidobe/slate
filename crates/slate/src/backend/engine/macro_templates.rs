@@ -391,7 +391,7 @@ pub fn parameter_is_written(template: &[Stmt], parameter: &str) -> bool {
     stmts_mutate_parameter(template, parameter)
 }
 
-fn visit_exprs_mut(stmts: &mut [Stmt], visit: &mut impl FnMut(&mut Expr)) {
+pub(in crate::backend) fn visit_exprs_mut(stmts: &mut [Stmt], visit: &mut impl FnMut(&mut Expr)) {
     for stmt in stmts {
         let mut exprs = Vec::new();
         stmt_exprs_mut(stmt, &mut exprs);
