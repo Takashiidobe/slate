@@ -795,7 +795,9 @@ fn crate_manifest(package: &str, lib_crate_types: Option<&[String]>) -> cargo_to
     manifest.dependencies.extend([
         (
             "slate-support".to_string(),
-            cargo_toml::Dependency::path("slate-support"),
+            cargo_toml::Dependency::path("slate-support")
+                .without_default_features()
+                .with_features(["std"]),
         ),
         (
             "aligned".to_string(),
@@ -828,10 +830,9 @@ fn crate_manifest(package: &str, lib_crate_types: Option<&[String]>) -> cargo_to
 
 fn make_manifest_freestanding(manifest: &mut cargo_toml::Manifest) {
     if let Some(support) = manifest.dependencies.remove("slate-support") {
-        manifest.dependencies.insert(
-            "slate-support".to_string(),
-            support.without_default_features(),
-        );
+        manifest
+            .dependencies
+            .insert("slate-support".to_string(), support.with_features([]));
     }
     for profile in ["dev", "release"] {
         manifest.profile_mut(profile).panic = Some(cargo_toml::Panic::Abort);
@@ -992,6 +993,10 @@ fn write_slate_support(crate_dir: &Path) -> Result<(), String> {
     write_file(
         &src_dir.join("strings.rs"),
         include_str!("../vendor/slate-support/src/strings.rs"),
+    )?;
+    write_file(
+        &src_dir.join("process.rs"),
+        include_str!("../vendor/slate-support/src/process.rs"),
     )
 }
 

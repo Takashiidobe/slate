@@ -4,10 +4,18 @@
 mod strings;
 pub use strings::*;
 
-#[cfg(feature = "hosted")]
+#[cfg(feature = "std")]
+extern crate std;
+
+#[cfg(feature = "std")]
 mod hosted;
-#[cfg(feature = "hosted")]
+#[cfg(feature = "std")]
 pub use hosted::*;
+
+#[cfg(feature = "std")]
+mod process;
+#[cfg(feature = "std")]
+pub use process::*;
 
 #[cfg(target_vendor = "apple")]
 pub use mach2 as mach;

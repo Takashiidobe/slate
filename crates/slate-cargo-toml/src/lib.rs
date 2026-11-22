@@ -132,6 +132,18 @@ impl Dependency {
         Self::Detailed(detail)
     }
 
+    pub fn with_features<const N: usize>(self, features: [&str; N]) -> Self {
+        let mut detail = match self {
+            Self::Version(version) => DependencyDetail {
+                version: Some(version),
+                ..DependencyDetail::default()
+            },
+            Self::Detailed(detail) => detail,
+        };
+        detail.features = features.map(String::from).to_vec();
+        Self::Detailed(detail)
+    }
+
     pub fn renamed_from(self, package: impl Into<String>) -> Self {
         let mut detail = match self {
             Self::Version(version) => DependencyDetail {

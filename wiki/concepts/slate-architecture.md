@@ -7,6 +7,7 @@
 - [Projects and targets](#projects-and-targets)
 - [Macro templates](#macro-templates)
 - [Validation](#validation)
+- [slate_support features](#slate_support-features)
 - [System declarations](#system-declarations)
 <!-- /toc -->
 
@@ -229,6 +230,29 @@ cargo nextest r --release --profile slate
   supported/unsupported ratchet and triage commands.
 - Prior design records are collected in the
   [historical index](../historical/index.md).
+
+## slate_support features
+
+`crates/slate/vendor/slate-support` is `no_std`. A helper's placement depends
+on what it needs:
+
+- **`core` only** (`strings.rs`: `__slate_atoi`, `__slate_strspn`): ungated,
+  usable by freestanding output.
+- **alloc or the OS** (libc re-exports in `hosted.rs`, `process.rs`:
+  `__slate_exit` over `std::process::exit`): behind the `std` feature, which
+  also brings in `extern crate std` and the `libc` dependency. Add new
+  std-needing helpers there as their own module behind `#[cfg(feature = "std")]`,
+  not as a new feature.
+
+Project emission (`crate_manifest`/`make_manifest_freestanding` in
+`src/main.rs`) depends on slate-support with `default-features = false` and
+sets `features = ["std"]` unless every unit is `Runtime::Core` (freestanding or
+`-nostdinc`). There is no separate alloc tier: a freestanding program that
+calls `malloc` is assumed to have an allocator, and the developer wires up
+`#[global_allocator]` after translation. `std` stays the crate's default so
+standalone consumers (the differential harness, `slate-libc-gen` probes) get
+it without asking. A new vendored file must also be written by
+`write_slate_support`.
 
 ## System declarations
 
