@@ -216,7 +216,7 @@ fn each_template_type(stmts: &mut [Stmt], visit: &mut impl FnMut(&mut Type)) {
                         | LayoutQuery::OffsetOf { ty, .. },
                     ..
                 } => visit(ty),
-                Expr::Block(block) | Expr::Unsafe(block) => {
+                Expr::Block(block) => {
                     each_template_type(&mut block.stmts, visit);
                 }
                 _ => {}
@@ -359,7 +359,7 @@ fn expr_mutates_parameter(expr: &Expr, parameter: &str) -> bool {
         | Expr::AtomicFetch { .. }
         | Expr::AtomicSwap { .. }
         | Expr::AtomicCompareExchange { .. } => reads_place_parameter(expr, parameter),
-        Expr::Block(block) | Expr::Unsafe(block) => stmts_mutate_parameter(&block.stmts, parameter),
+        Expr::Block(block) => stmts_mutate_parameter(&block.stmts, parameter),
         _ => false,
     };
     here || child_exprs(expr)
@@ -554,7 +554,7 @@ fn each_label(stmts: &mut [Stmt], visit: &mut impl FnMut(&mut Label)) {
         stmt_exprs_mut(stmt, &mut exprs);
         for expr in exprs {
             visit_expr_mut(expr, &mut |expr| {
-                if let Expr::Block(block) | Expr::Unsafe(block) = expr {
+                if let Expr::Block(block) = expr {
                     each_label(&mut block.stmts, visit);
                 }
             });

@@ -84,9 +84,6 @@ fn is_movable_pure_expr(expr: &Expr) -> bool {
         Expr::TupleStructLit { fields, .. } => fields.iter().all(is_movable_pure_expr),
         Expr::ArrayLit(elems) => elems.iter().all(is_movable_pure_expr),
         Expr::ArrayRepeat { elem, .. } => is_movable_pure_expr(elem),
-        Expr::Unsafe(block) if block.stmts.is_empty() => {
-            block.tail.as_deref().is_some_and(is_movable_pure_expr)
-        }
         Expr::If {
             cond,
             then_expr,
@@ -625,9 +622,7 @@ fn root_var(expr: &Expr) -> Option<&str> {
             expr,
         }
         | Expr::Cast { expr, .. } => root_var(expr),
-        Expr::Block(block) | Expr::Unsafe(block) if block.stmts.is_empty() => {
-            block.tail.as_deref().and_then(root_var)
-        }
+        Expr::Block(block) if block.stmts.is_empty() => block.tail.as_deref().and_then(root_var),
         _ => None,
     }
 }
@@ -666,7 +661,7 @@ fn simple_macro_arg_use_expr(expr: &Expr, name: Ident) -> bool {
                     .iter()
                     .all(|arg| simple_macro_arg_uses_name(arg, name) || is_obviously_pure_expr(arg))
         }
-        Expr::Block(block) | Expr::Unsafe(block) => block
+        Expr::Block(block) => block
             .tail
             .as_deref()
             .is_some_and(|tail| simple_macro_arg_use_expr(tail, name)),
@@ -1163,7 +1158,7 @@ fn type_stable_arg_init(init: &Expr, ty: Option<&Type>) -> bool {
         Expr::Unary { .. } => ty.is_some(),
         Expr::Binary { .. } => ty.is_some() && !contains_integer_literal(init),
         Expr::Index { .. } => ty.is_some(),
-        Expr::Block(block) | Expr::Unsafe(block) if block.stmts.is_empty() => block
+        Expr::Block(block) if block.stmts.is_empty() => block
             .tail
             .as_deref()
             .is_some_and(|tail| type_stable_arg_init(tail, ty)),
@@ -1185,7 +1180,7 @@ fn call_arg_uses_name(expr: &Expr, name: Ident) -> bool {
     match expr {
         Expr::Var { name: var, .. } => *var == name,
         Expr::Cast { expr, .. } => call_arg_uses_name(expr, name),
-        Expr::Block(block) | Expr::Unsafe(block) if block.stmts.is_empty() => block
+        Expr::Block(block) if block.stmts.is_empty() => block
             .tail
             .as_deref()
             .is_some_and(|tail| call_arg_uses_name(tail, name)),
@@ -1201,7 +1196,7 @@ fn call_or_macro_arg_use_expr(expr: &Expr, name: Ident) -> bool {
         Expr::MethodCall { args, .. } | Expr::MethodCallGeneric { args, .. } => {
             args.iter().any(|arg| e_ident_count(arg, name) > 0)
         }
-        Expr::Block(block) | Expr::Unsafe(block) => block
+        Expr::Block(block) => block
             .tail
             .as_deref()
             .is_some_and(|tail| call_or_macro_arg_use_expr(tail, name)),
@@ -1234,7 +1229,7 @@ fn method_arg_use_expr(expr: &Expr, name: Ident) -> bool {
         Expr::MethodCall { args, .. } | Expr::MethodCallGeneric { args, .. } => {
             args.iter().any(|arg| e_ident_count(arg, name) > 0)
         }
-        Expr::Block(block) | Expr::Unsafe(block) => block
+        Expr::Block(block) => block
             .tail
             .as_deref()
             .is_some_and(|tail| method_arg_use_expr(tail, name)),
@@ -1716,7 +1711,7 @@ fn expr_arg_pos(expr: &Expr, name: Ident, ty: Option<&Type>) -> Option<ArgPos> {
             }
             None
         }
-        Expr::Block(block) | Expr::Unsafe(block) => block
+        Expr::Block(block) => block
             .tail
             .as_deref()
             .and_then(|tail| expr_arg_pos(tail, name, ty)),

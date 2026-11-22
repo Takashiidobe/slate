@@ -50,9 +50,7 @@ fn is_pure(expr: &Expr) -> bool {
             ) && is_pure(lhs)
                 && is_pure(rhs)
         }
-        Expr::Block(block) | Expr::Unsafe(block) => {
-            block.stmts.is_empty() && block.tail.as_deref().is_none_or(is_pure)
-        }
+        Expr::Block(block) => block.stmts.is_empty() && block.tail.as_deref().is_none_or(is_pure),
         _ => false,
     }
 }

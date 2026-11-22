@@ -21,7 +21,7 @@ pub(super) fn is_drop_guard(expr: &Expr) -> bool {
 
 fn is_inert_init(expr: &Expr) -> bool {
     match expr {
-        Expr::Unsafe(block) | Expr::Block(block) if block.stmts.is_empty() => {
+        Expr::Block(block) if block.stmts.is_empty() => {
             block.tail.as_deref().is_some_and(is_inert_init)
         }
         Expr::Call { func, args, .. } => match &**func {

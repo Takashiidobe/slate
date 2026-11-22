@@ -151,11 +151,9 @@ fn diverges(stmt: &Stmt) -> bool {
             ..
         } => tail_diverges(then_body) && tail_diverges(else_body),
         Stmt::Match { arms, .. } => arms.iter().all(|arm| tail_diverges(&arm.body)),
-        Stmt::Unsafe {
-            body: RustBlock { stmts, tail: None },
+        Stmt::Block(RustBlock { stmts, tail: None }) | Stmt::Scope { body: stmts, .. } => {
+            tail_diverges(stmts)
         }
-        | Stmt::Block(RustBlock { stmts, tail: None })
-        | Stmt::Scope { body: stmts, .. } => tail_diverges(stmts),
         _ => false,
     }
 }

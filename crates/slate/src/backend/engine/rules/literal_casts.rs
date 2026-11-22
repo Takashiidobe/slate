@@ -107,7 +107,7 @@ fn fixed(expr: &Expr) -> bool {
             !matches!(func.as_ref(), Expr::Var { name: v, .. } if v.as_str() == "core::mem::zeroed")
         }
         Expr::Transmute { .. } | Expr::Todo(_) => false,
-        Expr::Block(block) | Expr::Unsafe(block) => block.tail.as_deref().is_some_and(fixed),
+        Expr::Block(block) => block.tail.as_deref().is_some_and(fixed),
         other => eval(other).is_none(),
     }
 }
@@ -181,7 +181,7 @@ fn rewrite(expr: &mut Expr, typed: bool) -> bool {
             changed |= rewrite(else_expr, typed);
             changed
         }
-        Expr::Block(block) | Expr::Unsafe(block) if block.stmts.is_empty() => block
+        Expr::Block(block) if block.stmts.is_empty() => block
             .tail
             .as_deref_mut()
             .is_some_and(|tail| rewrite(tail, typed)),

@@ -69,9 +69,7 @@ impl Binding<'_> {
             | Expr::AtomicFetch { .. }
             | Expr::AtomicSwap { .. }
             | Expr::AtomicCompareExchange { .. } => true,
-            Expr::Block(block) | Expr::Unsafe(block) => {
-                block.stmts.iter().any(|stmt| self.stmt_mutates(stmt))
-            }
+            Expr::Block(block) => block.stmts.iter().any(|stmt| self.stmt_mutates(stmt)),
             _ => false,
         };
         here || child_exprs(expr)

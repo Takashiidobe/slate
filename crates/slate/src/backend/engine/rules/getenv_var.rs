@@ -113,9 +113,7 @@ fn extract_null_check(arena: &Arena, cond: &Expr) -> Option<(Ident, bool)> {
 fn peel_wrapper(expr: &Expr) -> &Expr {
     match expr {
         Expr::Cast { expr, .. } => peel_wrapper(expr),
-        Expr::Unsafe(block) | Expr::Block(block)
-            if block.stmts.is_empty() && block.tail.is_some() =>
-        {
+        Expr::Block(block) if block.stmts.is_empty() && block.tail.is_some() => {
             peel_wrapper(block.tail.as_deref().unwrap())
         }
         _ => expr,

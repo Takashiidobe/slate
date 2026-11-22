@@ -167,7 +167,7 @@ fn is_writer_value(expr: &Expr, writer_names: &HashSet<String>) -> bool {
                 && !args.iter().any(|arg| reads_writer(arg, writer_names))
         }
         Expr::Cast { expr, .. } => is_writer_value(expr, writer_names),
-        Expr::Block(block) | Expr::Unsafe(block) => {
+        Expr::Block(block) => {
             !block
                 .stmts
                 .iter()
@@ -292,9 +292,7 @@ fn contains_mut_borrow(expr: &Expr) -> bool {
         Expr::MethodCall { recv, args, .. } | Expr::MethodCallGeneric { recv, args, .. } => {
             contains_mut_borrow(recv) || args.iter().any(contains_mut_borrow)
         }
-        Expr::Block(block) | Expr::Unsafe(block) => {
-            block.tail.as_deref().is_some_and(contains_mut_borrow)
-        }
+        Expr::Block(block) => block.tail.as_deref().is_some_and(contains_mut_borrow),
         _ => false,
     }
 }
@@ -426,7 +424,7 @@ fn rewrite_stmt_nested(stmt: &mut Stmt, printf_names: &HashSet<String>, state: &
         | Stmt::For { body, .. }
         | Stmt::Scope { body, .. }
         | Stmt::LabeledBlock { body, .. } => rewrite_block_stmts(body, printf_names, state, false),
-        Stmt::While { body, .. } | Stmt::Unsafe { body } => {
+        Stmt::While { body, .. } => {
             rewrite_block_stmts(&mut body.stmts, printf_names, state, false)
         }
         Stmt::Block(block) => rewrite_block_stmts(&mut block.stmts, printf_names, state, false),
@@ -548,7 +546,7 @@ fn stmt_exposes_writer(stmt: &Stmt, writer_names: &HashSet<String>) -> bool {
         Stmt::While { cond, body, .. } => {
             reads_writer(cond, writer_names) || block_exposes_writer(body, writer_names)
         }
-        Stmt::Unsafe { body } | Stmt::Block(body) => block_exposes_writer(body, writer_names),
+        Stmt::Block(body) => block_exposes_writer(body, writer_names),
         Stmt::Match { expr, arms } => {
             reads_writer(expr, writer_names)
                 || arms

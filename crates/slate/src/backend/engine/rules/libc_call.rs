@@ -145,9 +145,7 @@ fn peel_wrapper(expr: &Expr, through_ptr_methods: bool) -> &Expr {
         {
             peel_wrapper(recv, through_ptr_methods)
         }
-        Expr::Unsafe(block) | Expr::Block(block)
-            if block.stmts.is_empty() && block.tail.is_some() =>
-        {
+        Expr::Block(block) if block.stmts.is_empty() && block.tail.is_some() => {
             peel_wrapper(block.tail.as_deref().unwrap(), through_ptr_methods)
         }
         other => other,
@@ -657,11 +655,7 @@ enum PeelStep {
 fn peel_call_head_mut(expr: &mut Expr) -> &mut Expr {
     let step = match &*expr {
         Expr::Cast { .. } => PeelStep::Cast,
-        Expr::Unsafe(block) | Expr::Block(block)
-            if block.stmts.is_empty() && block.tail.is_some() =>
-        {
-            PeelStep::Wrap
-        }
+        Expr::Block(block) if block.stmts.is_empty() && block.tail.is_some() => PeelStep::Wrap,
         _ => PeelStep::Stop,
     };
     match step {
@@ -672,7 +666,7 @@ fn peel_call_head_mut(expr: &mut Expr) -> &mut Expr {
             peel_call_head_mut(expr)
         }
         PeelStep::Wrap => {
-            let (Expr::Unsafe(block) | Expr::Block(block)) = expr else {
+            let Expr::Block(block) = expr else {
                 unreachable!()
             };
             peel_call_head_mut(block.tail.as_deref_mut().unwrap())
