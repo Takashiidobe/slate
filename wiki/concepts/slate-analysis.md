@@ -542,9 +542,13 @@ Storage stays `[c_char; N]`: retyping to `[u8; N]` would cast every other use.
 
 `pointer::analyze` sets `PointerFact::owner = Some(Owner::Vec)` on a local
 8-bit pointer that owns its allocation. Lowering declares it `Vec<T>`
-(`vec![0; n]`), lowers `p = realloc(p, n)` to `resize(n, 0)`, `free(p)` to
-`drop(p)`, and a null compare on it to a constant (the allocation aborts
-instead of returning NULL). The fact also carries a `many` borrow, so indexing,
+(`vec![0; n]`), lowers `p = realloc(p, n)` to `resize(n, 0)`, and a null
+compare on it to a constant (the allocation aborts instead of returning NULL).
+
+`free(p)` is elided (`ValueFacts::elided_release`) when only other frees
+follow it and then a `return`, or the end of the block that declares `p`: the
+scope's own drop releases it there. Any other free is an early release the
+programmer placed on purpose and stays `drop(p)`. The fact also carries a `many` borrow, so indexing,
 `mem*` buffers and raw libc arguments (`p.as_mut_ptr()`) reuse the slice-view
 paths, and callees it is passed to can lift to `&[T]`/`&mut [T]`.
 

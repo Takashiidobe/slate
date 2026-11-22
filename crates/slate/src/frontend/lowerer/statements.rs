@@ -416,6 +416,9 @@ impl FunctionLowerer<'_, '_> {
             }
             ir::Statement::Expression(value) => match &value.node.value {
                 ValueKind::Void | ValueKind::VaEnd { .. } => Stmt::Block(rust::Block::default()),
+                ValueKind::Call { .. } if self.elided_release(value) => {
+                    Stmt::Block(rust::Block::default())
+                }
                 ValueKind::VaStart {
                     list,
                     convention: ir::VaConvention::Target,

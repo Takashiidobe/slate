@@ -108,6 +108,28 @@ static int returned_in_loop(int n) {
 // @check-fn-end
 
 // @check-fn-begin
+static int released_early(int n) {
+  char *buf = malloc(n);
+  memset(buf, 3, n);
+  int result = total(buf, n);
+  free(buf);
+  for (int i = 0; i < n; i++)
+    result += i;
+  return result;
+}
+// @check-fn-end
+
+// @check-fn-begin
+static int released_in_branch(int n) {
+  char *buf = calloc(n, 1);
+  int result = buf[0];
+  if (n > 2)
+    free(buf);
+  return result + n;
+}
+// @check-fn-end
+
+// @check-fn-begin
 static int freed_by_callee(void) {
   char *buf = malloc(8);
   buf[0] = 1;
@@ -132,6 +154,7 @@ int main(void) {
   printf("%d\n", leaked(4));
   printf("%d %d\n", offset(5), looped(6));
   printf("%d %d %d\n", returned_in_loop(4), returned_in_loop(1), freed_by_callee());
+  printf("%d %d %d\n", released_early(4), released_in_branch(4), released_in_branch(1));
   char *kept = escaped(4);
   printf("%d\n", kept[3]);
   free(kept);
@@ -148,7 +171,6 @@ int main(void) {
 // CHECK-NEXT:     buf[0] = 120;
 // CHECK-NEXT:     buf[(n - 1) as usize] = 0;
 // CHECK-NEXT:     let result: i32 = (buf[0] as i32) + (buf[1] as i32) + total(&buf, n);
-// CHECK-NEXT:     drop(buf);
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn grown() -> i32 {
@@ -161,18 +183,15 @@ int main(void) {
 // CHECK-NEXT:     fill(&mut grow, 4i32, 2i8);
 // CHECK-NEXT:     let result: i32 = (grow[0] as i32) + (grow[3] as i32) + (grow[5] as i32)
 // CHECK-NEXT:         + (grow[7] as i32);
-// CHECK-NEXT:     drop(grow);
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn early(n: i32, bail: i32) -> i32 {
 // CHECK-NEXT:     let mut buf: Vec<i8> = vec![0; (n as u64) as usize];
 // CHECK-NEXT:     if bail != 0 {
-// CHECK-NEXT:         drop(buf);
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     buf[0usize..((n as u64) as usize) as usize].fill((1i32 as i32) as i8);
 // CHECK-NEXT:     let result: i32 = total(&buf, n);
-// CHECK-NEXT:     drop(buf);
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn leaked(n: i32) -> i32 {
@@ -184,7 +203,6 @@ int main(void) {
 // CHECK-NEXT:     let mut buf: Vec<i8> = vec![0; (n as u64) as usize];
 // CHECK-NEXT:     buf[0usize..((n as u64) as usize) as usize].fill((4i32 as i32) as i8);
 // CHECK-NEXT:     let result: i32 = peek(unsafe { buf.as_mut_ptr().add(2) as *const i8 });
-// CHECK-NEXT:     drop(buf);
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn looped(n: i32) -> i32 {
@@ -193,7 +211,6 @@ int main(void) {
 // CHECK-NEXT:         let mut buf: Vec<i8> = vec![0; (4 as usize) * (1 as usize)];
 // CHECK-NEXT:         buf[(i % 4) as usize] = i as i8;
 // CHECK-NEXT:         sum += buf[(i % 4) as usize] as i32;
-// CHECK-NEXT:         drop(buf);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK: {{^}}}
@@ -203,12 +220,28 @@ int main(void) {
 // CHECK-NEXT:     let result: i32 = buf[0] as i32;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         if i == 2 {
-// CHECK-NEXT:             drop(buf);
 // CHECK-NEXT:             return result + i;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     drop(buf);
 // CHECK-NEXT:     result
+// CHECK: {{^}}}
+// CHECK-LABEL: {{^}}fn released_early(n: i32) -> i32 {
+// CHECK-NEXT:     let mut buf: Vec<i8> = vec![0; (n as u64) as usize];
+// CHECK-NEXT:     buf[0usize..((n as u64) as usize) as usize].fill((3i32 as i32) as i8);
+// CHECK-NEXT:     let mut result: i32 = total(&buf, n);
+// CHECK-NEXT:     drop(buf);
+// CHECK-NEXT:     for i in 0..n {
+// CHECK-NEXT:         result += i;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     result
+// CHECK: {{^}}}
+// CHECK-LABEL: {{^}}fn released_in_branch(n: i32) -> i32 {
+// CHECK-NEXT:     let buf: Vec<i8> = vec![0; ((n as u64) as usize) * 1];
+// CHECK-NEXT:     let result: i32 = buf[0] as i32;
+// CHECK-NEXT:     if n > 2 {
+// CHECK-NEXT:         drop(buf);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     result + n
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn freed_by_callee() -> i32 {
 // CHECK-NEXT:     let buf: *mut i8 = unsafe { (malloc(8u64 as usize) as *mut ()) as *mut i8 };

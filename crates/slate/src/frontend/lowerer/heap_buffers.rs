@@ -135,6 +135,13 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
+    pub(super) fn elided_release(&self, value: &ir::Value) -> bool {
+        let ValueKind::Call { arguments, .. } = &value.node.value else {
+            return false;
+        };
+        self.tables.elided_release(value.node.id) && self.lower_release(arguments).is_some()
+    }
+
     pub(super) fn owned_null_compare(&self, left: &ir::Value, right: &ir::Value) -> bool {
         let null = |value: &ir::Value| {
             matches!(

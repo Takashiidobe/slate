@@ -20,13 +20,15 @@ pub struct BindingFacts {
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
-pub struct ValueFacts {}
+pub struct ValueFacts {
+    pub elided_release: bool,
+}
 
 #[derive(Debug, Default)]
 pub struct Facts {
     bindings: HashMap<ProgramBinding, BindingFacts>,
     block_captures: HashMap<(ProgramBinding, BindingId), BindingMutability>,
-    values: HashMap<NodeId, ValueFacts>,
+    values: HashMap<(UnitId, NodeId), ValueFacts>,
     identities: HashMap<ProgramBinding, FunctionIdentity>,
     counted_loops: Vec<HashMap<BindingId, CountedLoop>>,
 }
@@ -66,7 +68,7 @@ impl<'f> UnitFacts<'f> {
     }
 
     pub fn value(&self, node: NodeId) -> Option<&'f ValueFacts> {
-        self.facts.values.get(&node)
+        self.facts.values.get(&(self.unit, node))
     }
 
     pub fn counted_loop(&self, statement: BindingId) -> Option<&'f CountedLoop> {
@@ -227,10 +229,22 @@ pub fn analyze(program: &Program<'_>) -> Facts {
                 .constant_string = Some(bytes);
         }
     }
+    let values = pointers
+        .elided_releases
+        .into_iter()
+        .map(|key| {
+            (
+                key,
+                ValueFacts {
+                    elided_release: true,
+                },
+            )
+        })
+        .collect();
     Facts {
         bindings,
         block_captures,
-        values: HashMap::new(),
+        values,
         identities,
         counted_loops,
     }

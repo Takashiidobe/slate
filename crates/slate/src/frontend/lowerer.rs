@@ -431,6 +431,12 @@ impl Tables<'_> {
             .and_then(|fact| fact.borrow)
     }
 
+    fn elided_release(&self, call: slate_parser::ast::NodeId) -> bool {
+        self.facts
+            .value(call)
+            .is_some_and(|facts| facts.elided_release)
+    }
+
     fn owner_of(&self, binding: BindingId) -> Option<slate_analysis::Owner> {
         self.facts
             .binding(binding)

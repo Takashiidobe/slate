@@ -71,6 +71,7 @@ impl PointerCapability {
 
 pub(crate) struct PointerFacts {
     pub bindings: HashMap<ProgramBinding, PointerFact>,
+    pub elided_releases: HashSet<(UnitId, NodeId)>,
 }
 
 const WRITE: u8 = 1;
@@ -144,20 +145,42 @@ struct Summary {
     leaked: HashSet<BindingId>,
     automatic: HashSet<BindingId>,
     derived: Vec<(u32, BindingId)>,
-    owned: Vec<(u32, bool)>,
+    owned: Vec<Owned>,
     opaque: bool,
+}
+
+struct Owned {
+    node: u32,
+    written: bool,
+    elided: Vec<NodeId>,
 }
 
 struct Release {
     binding: BindingId,
+    call: NodeId,
     position: u32,
     depth: u32,
-    terminal: bool,
+    scope: u32,
+    ending: Ending,
+}
+
+#[derive(Clone, Copy, Default, PartialEq, Eq)]
+enum Ending {
+    #[default]
+    Continues,
+    Returns,
+    ClosesScope,
+}
+
+#[derive(Clone, Copy)]
+struct Allocation {
+    depth: u32,
+    scope: u32,
 }
 
 #[derive(Default)]
 struct Ownership {
-    allocated: HashMap<BindingId, u32>,
+    allocated: HashMap<BindingId, Allocation>,
     writes: HashMap<BindingId, u32>,
     reallocations: HashMap<BindingId, u32>,
     last_read: HashMap<BindingId, u32>,
@@ -165,13 +188,33 @@ struct Ownership {
     checked: Vec<u32>,
     position: u32,
     depth: u32,
-    terminal: bool,
+    scope: u32,
+    scopes: u32,
+    ending: Ending,
     jumps: bool,
 }
 
 impl Ownership {
+    fn elided(&self, binding: BindingId) -> impl Iterator<Item = NodeId> + '_ {
+        let scope = self
+            .allocated
+            .get(&binding)
+            .map(|allocation| allocation.scope);
+        self.releases
+            .iter()
+            .filter(move |release| {
+                release.binding == binding
+                    && match release.ending {
+                        Ending::Returns => true,
+                        Ending::ClosesScope => Some(release.scope) == scope,
+                        Ending::Continues => false,
+                    }
+            })
+            .map(|release| release.call)
+    }
+
     fn owns(&self, binding: BindingId) -> bool {
-        let Some(&depth) = self.allocated.get(&binding) else {
+        let Some(&Allocation { depth, .. }) = self.allocated.get(&binding) else {
             return false;
         };
         let last = self.last_read.get(&binding).copied();
@@ -182,7 +225,8 @@ impl Ownership {
                 .iter()
                 .filter(|release| release.binding == binding)
                 .all(|release| {
-                    release.terminal || (release.depth == depth && Some(release.position) == last)
+                    release.ending == Ending::Returns
+                        || (release.depth == depth && Some(release.position) == last)
                 })
     }
 }
@@ -1216,9 +1260,11 @@ impl Walker<'_, '_> {
         {
             self.ownership.releases.push(Release {
                 binding,
+                call: call.node.id,
                 position,
                 depth: self.ownership.depth,
-                terminal: self.ownership.terminal,
+                scope: self.ownership.scope,
+                ending: self.ownership.ending,
             });
         }
         for (index, argument) in arguments.iter().enumerate() {
@@ -1230,24 +1276,44 @@ impl Walker<'_, '_> {
     }
 
     fn statements(&mut self, body: &[Span<Statement>]) {
-        let mut terminal = vec![false; body.len()];
-        let mut returned: Option<Option<&Value>> = None;
+        let mut endings = vec![Ending::Continues; body.len()];
+        let mut rest: Option<Option<&Value>> = Some(None);
+        let mut returns = false;
         for (index, statement) in body.iter().enumerate().rev() {
-            if let Statement::Return(value) = &statement.value {
-                returned = Some(value.as_ref());
-            } else if let Some(value) = returned
-                && let Some(binding) = self.released(statement)
-            {
-                terminal[index] = value.is_none_or(|value| !touches(value, binding));
-            } else {
-                returned = None;
+            match &statement.value {
+                Statement::Comment(_) | Statement::Null => continue,
+                Statement::Return(value) => {
+                    rest = Some(value.as_ref());
+                    returns = true;
+                    continue;
+                }
+                #[expect(
+                    slate::sensitive_wildcard,
+                    reason = "only frees, comments and a return keep a following free at the end of its run"
+                )]
+                _ => {}
+            }
+            match (self.released(statement), rest) {
+                (Some(binding), Some(value)) => {
+                    endings[index] = if !returns {
+                        Ending::ClosesScope
+                    } else if value.is_none_or(|value| !touches(value, binding)) {
+                        Ending::Returns
+                    } else {
+                        Ending::Continues
+                    };
+                }
+                (Some(_) | None, _) => rest = None,
             }
         }
-        for (statement, terminal) in body.iter().zip(terminal) {
-            let outer = std::mem::replace(&mut self.ownership.terminal, terminal);
+        self.ownership.scopes += 1;
+        let outer = std::mem::replace(&mut self.ownership.scope, self.ownership.scopes);
+        for (statement, ending) in body.iter().zip(endings) {
+            let outer = std::mem::replace(&mut self.ownership.ending, ending);
             self.statement(statement);
-            self.ownership.terminal = outer;
+            self.ownership.ending = outer;
         }
+        self.ownership.scope = outer;
     }
 
     fn looped(&mut self, walk: impl FnOnce(&mut Self)) {
@@ -1387,9 +1453,13 @@ impl Walker<'_, '_> {
                         self.allocations.insert(variable.id, allocation);
                     }
                     if node.is_some() && !variable.access.volatile && self.fresh(initializer) {
-                        self.ownership
-                            .allocated
-                            .insert(variable.id, self.ownership.depth);
+                        self.ownership.allocated.insert(
+                            variable.id,
+                            Allocation {
+                                depth: self.ownership.depth,
+                                scope: self.ownership.scope,
+                            },
+                        );
                     }
                     match node {
                         Some(node) => self.assign(node, initializer),
@@ -1693,7 +1763,7 @@ fn summarize(
             walker.nodes[source as usize].flags |= SHARED;
         }
     }
-    let owned: Vec<(u32, bool)> = walker
+    let owned: Vec<Owned> = walker
         .nodes
         .iter()
         .enumerate()
@@ -1704,15 +1774,14 @@ fn summarize(
                 && item.flags & (ESCAPE | MACRO) == 0
                 && walker.ownership.owns(item.binding)
         })
-        .map(|(node, item)| {
-            (
-                node as u32,
-                walker.ownership.writes.contains_key(&item.binding),
-            )
+        .map(|(node, item)| Owned {
+            node: node as u32,
+            written: walker.ownership.writes.contains_key(&item.binding),
+            elided: walker.ownership.elided(item.binding).collect(),
         })
         .collect();
     for &node in &walker.ownership.checked {
-        if !owned.iter().any(|&(owned, _)| owned == node) {
+        if !owned.iter().any(|owned| owned.node == node) {
             walker.nodes[node as usize].flags |= NULLABLE;
         }
     }
@@ -2221,10 +2290,19 @@ pub(crate) fn analyze(
         class_sizes[class as usize] += 1;
     }
     let mut owned: HashMap<u32, bool> = HashMap::new();
+    let mut elided_releases = HashSet::new();
     for (function, summary) in summaries.iter().enumerate() {
         let Some(summary) = summary else { continue };
+        let Some(entry) = program.function(FunctionId(function as u32)) else {
+            continue;
+        };
         let offset = base[function];
-        for &(node, written) in &summary.owned {
+        for &Owned {
+            node,
+            written,
+            ref elided,
+        } in &summary.owned
+        {
             let global = offset + node;
             let class = class_of[global as usize] as usize;
             let freed_by_callee = summary.calls.iter().any(|site| {
@@ -2243,6 +2321,7 @@ pub(crate) fn analyze(
                 && !freed_by_callee
             {
                 owned.insert(global, written || class_flags[class] & WRITE != 0);
+                elided_releases.extend(elided.iter().map(|&call| (entry.unit, call)));
             }
         }
     }
@@ -2527,6 +2606,7 @@ pub(crate) fn analyze(
 
     let mut facts = PointerFacts {
         bindings: HashMap::new(),
+        elided_releases,
     };
     for (function, summary) in summaries.iter().enumerate() {
         let Some(summary) = summary else { continue };
