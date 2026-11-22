@@ -5,7 +5,6 @@ mod dead_store;
 mod for_range;
 mod inline_temps;
 mod label_elide;
-mod libc_call;
 pub(super) mod literal_casts;
 mod null_compare;
 mod pattern_range;
@@ -33,10 +32,7 @@ pub(super) fn control_flow_registry() -> Vec<Box<dyn NodeRule>> {
     ]
 }
 
-pub(super) fn registry(
-    target: &slate_parser::target_info::TargetInfo,
-    runtime: crate::backend::rust_ast::Runtime,
-) -> Vec<Box<dyn NodeRule>> {
+pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Box<dyn NodeRule>> {
     let mut rules = control_flow_registry();
     rules.extend(vec![
         Box::new(remove_mut::RemoveMut) as Box<dyn NodeRule>,
@@ -69,7 +65,6 @@ pub(super) fn registry(
         Box::new(pure_stmts::EmptyThenInvert),
         Box::new(return_cleanup::FinalReturnTail),
     ]);
-    rules.extend(libc_call::rules(target, runtime));
     rules
 }
 

@@ -383,7 +383,12 @@ impl FunctionLowerer<'_, '_> {
                     };
                     self.lower_assignment(destination, source)?
                 }
-                _ => Stmt::Expr(self.lower_value(value)?),
+                _ => {
+                    let outer = self.discarded_call.replace(value.node.id);
+                    let lowered = self.lower_value(value);
+                    self.discarded_call = outer;
+                    Stmt::Expr(lowered?)
+                }
             },
             ir::Statement::Write {
                 place:

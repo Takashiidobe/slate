@@ -285,8 +285,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(export_name = "__slate_ldv____slate_ldfp_long_double_variadic_definition_address_twice_sum__rf80_f80_i32")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.twice_sum")]
 // CHECK-NEXT: unsafe extern "C-unwind" fn twice_sum(

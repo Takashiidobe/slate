@@ -300,9 +300,6 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-NEXT: use slate_support::memset;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn half(p: &LongDouble) -> LongDouble {
 // CHECK-NEXT:     *p / __slate_f80_from_i32(2i32)
 // CHECK-NEXT: }

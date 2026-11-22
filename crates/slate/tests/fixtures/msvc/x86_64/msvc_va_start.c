@@ -107,8 +107,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut _OptionsStorage: u64 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::abort;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn vsnprintf(
 // CHECK-NEXT:     _Buffer: *mut i8,
 // CHECK-NEXT:     _BufferCount: u64,

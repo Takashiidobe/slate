@@ -359,8 +359,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
@@ -466,13 +464,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[u8; 64]> = __SlateAlign16([0u8; 64]);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::write_bytes(
-// CHECK-NEXT:             ((buffer.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             (0i32 as i32) as u8,
-// CHECK-NEXT:             ((core::mem::size_of::<[u8; 64]>() as u64) as usize) as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     buffer.0[0usize..64usize].fill((0i32 as i32) as u8);
 // CHECK-NEXT:     let mut used: u64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut i: i32 = 1;

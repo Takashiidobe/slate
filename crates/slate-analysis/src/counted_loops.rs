@@ -41,17 +41,24 @@ fn plain_access(access: &Access) -> bool {
 }
 
 fn collect_locals(body: &[Span<Statement>], plain: &mut HashSet<BindingId>) {
+    for_each_let(body, &mut |variable| {
+        if plain_local(variable) {
+            plain.insert(variable.id);
+        }
+    });
+}
+
+pub(crate) fn plain_local(variable: &Variable) -> bool {
+    variable.storage == StorageDuration::Automatic
+        && plain_access(&variable.access)
+        && variable.register.is_none()
+        && variable.cleanup.is_none()
+}
+
+pub(crate) fn for_each_let<'a>(body: &'a [Span<Statement>], visit: &mut impl FnMut(&'a Variable)) {
     for statement in body {
         deep(|| match &statement.value {
-            Statement::Let(variable) => {
-                if variable.storage == StorageDuration::Automatic
-                    && plain_access(&variable.access)
-                    && variable.register.is_none()
-                    && variable.cleanup.is_none()
-                {
-                    plain.insert(variable.id);
-                }
-            }
+            Statement::Let(variable) => visit(variable),
             Statement::MacroExpansion { body, .. }
             | Statement::Block(body)
             | Statement::LabeledBlock { body, .. }
@@ -60,20 +67,20 @@ fn collect_locals(body: &[Span<Statement>], plain: &mut HashSet<BindingId>) {
             | Statement::Switch { body, .. }
             | Statement::Case { body, .. }
             | Statement::Default { body, .. }
-            | Statement::Label { body, .. } => collect_locals(body, plain),
+            | Statement::Label { body, .. } => for_each_let(body, visit),
             Statement::If {
                 then_body,
                 else_body,
                 ..
             } => {
-                collect_locals(then_body, plain);
+                for_each_let(then_body, visit);
                 if let Some(body) = else_body {
-                    collect_locals(body, plain);
+                    for_each_let(body, visit);
                 }
             }
             Statement::For { init, body, .. } => {
-                collect_locals(init, plain);
-                collect_locals(body, plain);
+                for_each_let(init, visit);
+                for_each_let(body, visit);
             }
             _ => {}
         });

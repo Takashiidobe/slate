@@ -153,7 +153,6 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::free;
-// CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: use slate_support::memcmp;
 // CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: use slate_support::strlen;

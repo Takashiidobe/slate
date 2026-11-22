@@ -56,8 +56,6 @@ int main(void) {
 // CHECK-NEXT:     {{\[\[}}1u64, 2u64, 3u64], [4u64, 5u64, 6u64]],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn is_hybrid(pmu: *mut pmu) -> i32 {
 // CHECK-NEXT:     unsafe { (*pmu).hybrid }
 // CHECK-NEXT: }

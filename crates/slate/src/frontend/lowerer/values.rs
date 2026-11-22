@@ -2345,7 +2345,10 @@ impl FunctionLowerer<'_, '_> {
                 arguments,
                 signature,
                 ..
-            } => self.lower_call(callee, arguments, signature)?,
+            } => {
+                let discarded = self.discarded_call == Some(value.node.id);
+                self.lower_call(callee, arguments, signature, discarded)?
+            }
             ValueKind::Aggregate { members, zero_fill } => {
                 self.lower_aggregate(&value.ty, members, *zero_fill)?
             }

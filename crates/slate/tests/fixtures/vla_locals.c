@@ -100,7 +100,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::snprintf;
-// CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {

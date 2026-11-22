@@ -26,20 +26,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-NEXT: use slate_support::memmove;
-// CHECK-NEXT: use slate_support::memset;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut dst: __SlateAlign16<[i8; 16]> = __SlateAlign16([0i8; 16]);
-// CHECK-NEXT:     let mut src: [i8; 8] = [104, 101, 108, 108, 111, 0, 0, 0];
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((src.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
-// CHECK-NEXT:             ((dst.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             (6u64 as usize) as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let src: [i8; 8] = [104, 101, 108, 108, 111, 0, 0, 0];
+// CHECK-NEXT:     dst.0[0usize..6usize].copy_from_slice(&src[0usize..6usize]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_bytes(
 // CHECK-NEXT:             ((dst.0.as_mut_ptr().add(5) as *mut ()) as *mut core::ffi::c_void)
@@ -50,13 +40,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dst.0[8] = 0;
 // CHECK-NEXT:     let mut moved: __SlateAlign16<[i8; 16]> = __SlateAlign16([0i8; 16]);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::copy(
-// CHECK-NEXT:             ((dst.0.as_mut_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,
-// CHECK-NEXT:             ((moved.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             (9u64 as usize) as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     moved.0[0usize..9usize].copy_from_slice(&dst.0[0usize..9usize]);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%s\n".as_ptr(), moved.0.as_mut_ptr()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

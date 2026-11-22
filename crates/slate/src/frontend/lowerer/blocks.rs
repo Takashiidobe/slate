@@ -52,6 +52,7 @@ impl<'a, 'm> FunctionLowerer<'a, 'm> {
             macro_template_check: false,
             peeled_macro_wraps: HashMap::new(),
             written_cast_operand: None,
+            discarded_call: None,
             old_value: None,
             declaring: std::cell::Cell::new(None),
             after_declaration: None,

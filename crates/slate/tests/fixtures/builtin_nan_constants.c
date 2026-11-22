@@ -68,8 +68,6 @@ int main(void) {
 // CHECK-NEXT:     [f64::from_bits(0x7ff0000000000001), f64::from_bits(0x7ff8000000000002)],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn bits_f(mut value: f32) -> u32 {
 // CHECK-NEXT:     let mut bits: u32 = 0;
 // CHECK-NEXT:     unsafe {

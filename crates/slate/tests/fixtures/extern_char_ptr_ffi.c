@@ -14,7 +14,7 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let msg: *const i8 = c"hello".as_ptr();
-// CHECK-NEXT:     let n: u64 = ("hello".len() as u64) as u64;
+// CHECK-NEXT:     let n: u64 = 5u64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::puts(msg) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

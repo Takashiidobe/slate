@@ -127,7 +127,6 @@ int main(void) {
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::reallocarray;
 // CHECK-NEXT: use slate_support::free;
-// CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: use slate_support::sysconf;
 // CHECK-EMPTY:

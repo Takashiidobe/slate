@@ -275,7 +275,6 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::getopt_long;
-// CHECK-NEXT: use slate_support::atoi;
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
 // CHECK-NEXT: use slate_support::strcmp;
@@ -311,7 +310,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (*arguments).number = __slate_atoi(
 // CHECK-NEXT:                 ((argument as *const i8) as *const core::ffi::c_char) as *const i8,
-// CHECK-NEXT:             ) as i32;
+// CHECK-NEXT:             );
 // CHECK-NEXT:         }
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
@@ -416,7 +415,7 @@ int main(void) {
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     ((optarg as *const i8) as *const core::ffi::c_char) as *const i8
 // CHECK-NEXT:                 },
-// CHECK-NEXT:             ) as i32;
+// CHECK-NEXT:             );
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if option == 102 {
 // CHECK-NEXT:                 flag_value = 1;

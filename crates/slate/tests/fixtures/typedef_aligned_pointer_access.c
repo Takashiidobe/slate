@@ -62,8 +62,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memset;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn load(a: *mut i32) -> i32 {
 // CHECK-NEXT:     unsafe { a.read_unaligned() }
 // CHECK-NEXT: }
@@ -98,13 +96,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::write_bytes(
-// CHECK-NEXT:             ((buffer.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             (0i32 as i32) as u8,
-// CHECK-NEXT:             ((core::mem::size_of::<[i8; 64]>() as u64) as usize) as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     buffer.0[0usize..64usize].fill((0i32 as i32) as i8);
 // CHECK-NEXT:     store(unsafe { buffer.0.as_mut_ptr().add(1) as *mut i32 }, 42i32);
 // CHECK-NEXT:     let __slate_printf_arg0 = load(unsafe { buffer.0.as_mut_ptr().add(1) as *mut i32 });
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);

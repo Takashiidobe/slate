@@ -45,7 +45,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%d %ld %lu %ld %ld %lu %.1f\n".as_ptr(),
-// CHECK-NEXT:             atoi((whole.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as i32,
+// CHECK-NEXT:             __slate_atoi(
+// CHECK-NEXT:                 ((whole.as_mut_ptr() as *const i8) as *const core::ffi::c_char)
+// CHECK-NEXT:                     as *const i8,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:             strtol(
 // CHECK-NEXT:                 whole_long.as_mut_ptr() as *const i8,
 // CHECK-NEXT:                 core::ptr::null_mut::<*mut i8>(),
@@ -56,7 +59,10 @@ int main(void) {
 // CHECK-NEXT:                 core::ptr::null_mut::<*mut i8>(),
 // CHECK-NEXT:                 10i32,
 // CHECK-NEXT:             ),
-// CHECK-NEXT:             atol((leading.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as i64,
+// CHECK-NEXT:             __slate_atol(
+// CHECK-NEXT:                 ((leading.as_mut_ptr() as *const i8) as *const core::ffi::c_char)
+// CHECK-NEXT:                     as *const i8,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:             strtol(
 // CHECK-NEXT:                 large.0.as_mut_ptr() as *const i8,
 // CHECK-NEXT:                 core::ptr::null_mut::<*mut i8>(),

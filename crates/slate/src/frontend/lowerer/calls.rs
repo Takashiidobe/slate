@@ -59,6 +59,7 @@ impl FunctionLowerer<'_, '_> {
         callee: &ir::Callee,
         arguments: &[ir::Value],
         signature: &ir::Type,
+        discarded: bool,
     ) -> Result<Expr> {
         if let ir::Callee::Indirect(pointer) = callee
             && matches!(
@@ -67,6 +68,12 @@ impl FunctionLowerer<'_, '_> {
             )
         {
             return self.lower_block_call(pointer, arguments, signature);
+        }
+        let known = self.known_callee(callee);
+        if let Some(known) = known
+            && let Some(folded) = self.fold_known_call(known, arguments, signature)?
+        {
+            return Ok(folded);
         }
         let names = &self.tables.names;
         let func = match callee {
@@ -234,6 +241,13 @@ impl FunctionLowerer<'_, '_> {
                     init: Some(std::mem::replace(arg, Expr::var(temp.as_str().into()))),
                 });
             }
+        }
+        if evaluated.is_empty()
+            && let Some(known) = known
+            && let Some(lowered) =
+                self.lower_known_call(known, arguments, &args, signature, discarded)?
+        {
+            return Ok(lowered);
         }
         let names = &self.tables.names;
         let call = Expr::Call {

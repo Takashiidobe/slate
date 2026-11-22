@@ -276,8 +276,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut c23_never_flag: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::exit;
-// CHECK-EMPTY:
 // CHECK-NEXT: static c23_file_constant: i32 = 59;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c23_unnamed_parameter([[V_0:__v[0-9]+]]: i32, value: i32) -> i32 {

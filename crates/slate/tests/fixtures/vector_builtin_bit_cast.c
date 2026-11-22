@@ -79,7 +79,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: use slate_support::memcmp;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn as_doubles(bits: core::simd::Simd<i64, 2>) -> core::simd::Simd<f64, 2> {

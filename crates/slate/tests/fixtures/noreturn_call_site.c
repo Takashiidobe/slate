@@ -48,8 +48,6 @@ int main(void) {
 // CHECK-NEXT:     std::process::exit(code as i32);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::exit;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn stop(code: i32) {
 // CHECK-NEXT:     finish(code + 1);
 // CHECK-NEXT:     unsafe { core::hint::unreachable_unchecked() };

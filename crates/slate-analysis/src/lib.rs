@@ -9,6 +9,7 @@
     clippy::unimplemented
 )]
 
+mod constant_strings;
 mod counted_loops;
 mod def_use;
 mod effects;

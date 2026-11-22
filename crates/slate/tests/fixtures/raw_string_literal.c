@@ -53,7 +53,7 @@ second)";
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %d\n".as_ptr(),
-// CHECK-NEXT:             ("gnu\\n".len() as u64) as u64,
+// CHECK-NEXT:             5u64,
 // CHECK-NEXT:             core::mem::size_of::<[i8; 3]>() as u64,
 // CHECK-NEXT:             wcslen(wide as *const i32) as u64,
 // CHECK-NEXT:             *wide.add(1) as i32,
@@ -63,7 +63,6 @@ second)";
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: use slate_support::wcslen;
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut __slate_str22: [i32; 4] = [119, 92, 48, 0];

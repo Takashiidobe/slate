@@ -26,8 +26,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcmp;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn cmp_bytes(a: &[u8], alen: i32, b: &[u8], blen: i32) -> i32 {
 // CHECK-NEXT:     let mut sa: i32 = 0;
 // CHECK-NEXT:     let mut sb: i32 = 0;
@@ -37,8 +35,8 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..blen {
 // CHECK-NEXT:         sb += b[i as usize] as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let order: i32 = (a[0usize..(3u64 as usize) as usize]
-// CHECK-NEXT:         .cmp(&b[0usize..(3u64 as usize) as usize]) as i32) as i32;
+// CHECK-NEXT:     let order: i32 = a[0usize..(3u64 as usize) as usize]
+// CHECK-NEXT:         .cmp(&b[0usize..(3u64 as usize) as usize]) as i32;
 // CHECK-NEXT:     let sign: i32 = ((order > 0) as i32) - ((order < 0) as i32);
 // CHECK-NEXT:     sign * 1000 + (sa - sb)
 // CHECK-NEXT: }

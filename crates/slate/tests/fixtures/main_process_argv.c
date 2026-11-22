@@ -37,8 +37,6 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::open;
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-NEXT: use slate_support::close;
 // CHECK-NEXT: use slate_support::read;

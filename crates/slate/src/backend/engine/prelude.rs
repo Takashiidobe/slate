@@ -4,11 +4,11 @@ use crate::backend::rust_ast::{
 };
 use crate::function_identity::CallBinding;
 
-pub(super) const ATOI: &str = "__slate_atoi";
-pub(super) const ATOL: &str = "__slate_atol";
-pub(super) const ATOLL: &str = "__slate_atoll";
+pub(crate) const ATOI: &str = "__slate_atoi";
+pub(crate) const ATOL: &str = "__slate_atol";
+pub(crate) const ATOLL: &str = "__slate_atoll";
 
-pub(in crate::backend) fn char_prim(target: &slate_parser::target_info::TargetInfo) -> Prim {
+pub(crate) fn char_prim(target: &slate_parser::target_info::TargetInfo) -> Prim {
     if target.char_signed {
         Prim::I8
     } else {
@@ -85,7 +85,7 @@ fn build(name: &str, target: &slate_parser::target_info::TargetInfo) -> Item {
     }
 }
 
-pub(in crate::backend) fn long_prim(target: &slate_parser::target_info::TargetInfo) -> Prim {
+pub(crate) fn long_prim(target: &slate_parser::target_info::TargetInfo) -> Prim {
     if target.long_width == 64 {
         Prim::I64
     } else {

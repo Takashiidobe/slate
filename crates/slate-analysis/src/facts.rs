@@ -1,3 +1,4 @@
+use crate::constant_strings;
 use crate::counted_loops::{self, CountedLoop};
 use crate::identity::{FunctionIdentity, identify};
 use crate::pointer::{self, PointerFact};
@@ -9,6 +10,7 @@ use slate_parser::ir::BindingId;
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct BindingFacts {
     pub pointer: Option<PointerFact>,
+    pub constant_string: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
@@ -93,7 +95,7 @@ pub fn analyze(program: &Program<'_>) -> Facts {
         })
         .collect();
     let pointers = pointer::analyze(program, &identities);
-    let bindings = pointers
+    let mut bindings: HashMap<ProgramBinding, BindingFacts> = pointers
         .bindings
         .into_iter()
         .map(|(binding, fact)| {
@@ -101,10 +103,24 @@ pub fn analyze(program: &Program<'_>) -> Facts {
                 binding,
                 BindingFacts {
                     pointer: Some(fact),
+                    constant_string: None,
                 },
             )
         })
         .collect();
+    for (unit, program_unit) in program.units() {
+        let literals = constant_strings::literals(program_unit.module);
+        let mut strings = HashMap::new();
+        for function in &program_unit.module.functions {
+            constant_strings::analyze(&function.value, &literals, &mut strings);
+        }
+        for (binding, bytes) in strings {
+            bindings
+                .entry(ProgramBinding { unit, binding })
+                .or_default()
+                .constant_string = Some(bytes);
+        }
+    }
     Facts {
         bindings,
         values: HashMap::new(),

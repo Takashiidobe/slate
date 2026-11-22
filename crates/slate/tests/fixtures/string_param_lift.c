@@ -19,7 +19,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::atoi;
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_atoi(s: *const i8) -> i32 {
@@ -48,7 +47,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn parse_num(s: *mut i8) -> i32 {
-// CHECK-NEXT:     __slate_atoi(((s as *const i8) as *const core::ffi::c_char) as *const i8) as i32
+// CHECK-NEXT:     __slate_atoi(((s as *const i8) as *const core::ffi::c_char) as *const i8)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn forward_num(s: *mut i8) -> i32 {

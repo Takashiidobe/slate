@@ -208,8 +208,6 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(link_section = ".data.gnu_attribute")]
 // CHECK-NEXT: static mut gnu_section_value: i32 = 3;
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::exit;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_cleanup(value: *mut i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         gnu_cleanup_total += *value;

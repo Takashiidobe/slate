@@ -161,8 +161,6 @@ int main(void) {
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         core::ptr::addr_of_mut!(gp) as *const (),

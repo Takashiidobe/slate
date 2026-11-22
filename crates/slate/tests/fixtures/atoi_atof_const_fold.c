@@ -20,9 +20,6 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::atof;
-// CHECK-NEXT: use slate_support::atoi;
-// CHECK-NEXT: use slate_support::atol;
-// CHECK-NEXT: use slate_support::atoll;
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
@@ -30,20 +27,20 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let s: *const i8 = c"-7xyz".as_ptr();
-// CHECK-NEXT:     println!("{}", 42i32 as i32);
-// CHECK-NEXT:     println!("{}", 13i32 as i32);
-// CHECK-NEXT:     println!("{}", -7i32 as i32);
-// CHECK-NEXT:     println!("{}", 0i32 as i32);
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), 1000000000000i64 as i64) };
+// CHECK-NEXT:     println!("{}", 42i32);
+// CHECK-NEXT:     println!("{}", 13i32);
+// CHECK-NEXT:     println!("{}", -7i32);
+// CHECK-NEXT:     println!("{}", 0i32);
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), 1000000000000i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), -9000000000000i64 as i64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), -9000000000000i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%.2f\n".as_ptr(), 3.14 as f64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%.2f\n".as_ptr(), 3.14) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%.1f\n".as_ptr(), 2.0 as f64) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%.1f\n".as_ptr(), 2.0) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

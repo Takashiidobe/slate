@@ -51,6 +51,17 @@ impl DefUse {
             .is_some_and(|uses| uses.iter().any(|(_, access)| *access == Access::Escape))
     }
 
+    pub fn written_once(&self, binding: BindingId) -> bool {
+        let uses = self.uses.get(&binding).map(Vec::as_slice).unwrap_or(&[]);
+        uses.iter()
+            .filter(|(_, access)| *access == Access::Write)
+            .count()
+            == 1
+            && uses
+                .iter()
+                .all(|(_, access)| matches!(access, Access::Write | Access::Read))
+    }
+
     pub fn single_read(&self, binding: BindingId) -> bool {
         matches!(
             self.uses.get(&binding).map(Vec::as_slice),

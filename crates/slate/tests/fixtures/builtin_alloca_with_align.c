@@ -165,8 +165,6 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memset;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn aligned_to(p: *mut (), bytes: u64) -> i32 {
 // CHECK-NEXT:     ((p as u64) & bytes.wrapping_sub(1) == 0) as i32
 // CHECK-NEXT: }

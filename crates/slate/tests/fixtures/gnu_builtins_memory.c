@@ -250,8 +250,8 @@ int main(void) {
 // CHECK-NEXT:         16 as usize,
 // CHECK-NEXT:         ((128 as usize) / 8usize).max(16usize),
 // CHECK-NEXT:     ) as *mut ()) as *mut u8;
-// CHECK-NEXT:     unsafe { __builtin_memset(first as *mut (), 3i32, 16u64) };
-// CHECK-NEXT:     unsafe { __builtin_memset(aligned as *mut (), 5i32, 16u64) };
+// CHECK-NEXT:     unsafe { core::ptr::write_bytes((first as *mut ()) as *mut u8, 3u8, 16 as usize) };
+// CHECK-NEXT:     unsafe { core::ptr::write_bytes((aligned as *mut ()) as *mut u8, 5u8, 16 as usize) };
 // CHECK-NEXT:     (unsafe {
 // CHECK-NEXT:         (*first.add(0) as i32) + (*first.add(15) as i32) + (*aligned.add(0) as i32)
 // CHECK-NEXT:             + (*aligned.add(15) as i32)
@@ -297,18 +297,12 @@ int main(void) {
 // CHECK-NEXT:             8 as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     third.0[0usize..16usize].copy_from_slice(&source.0[0usize..16usize]);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __builtin_memcpy(
-// CHECK-NEXT:             third.0.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             source.0.as_mut_ptr() as *const (),
-// CHECK-NEXT:             16u64,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __builtin_memmove(
-// CHECK-NEXT:             third.0.as_mut_ptr().add(2) as *mut (),
-// CHECK-NEXT:             third.0.as_mut_ptr() as *const (),
-// CHECK-NEXT:             8u64,
+// CHECK-NEXT:         core::ptr::copy(
+// CHECK-NEXT:             (third.0.as_mut_ptr() as *const ()) as *const u8,
+// CHECK-NEXT:             (third.0.as_mut_ptr().add(2) as *mut ()) as *mut u8,
+// CHECK-NEXT:             8 as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { __builtin_bzero(second.0.as_mut_ptr().add(8) as *mut (), 8u64) };

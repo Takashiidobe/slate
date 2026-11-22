@@ -30,6 +30,7 @@ mod functions;
 mod globals;
 mod intrinsics;
 mod intrinsics_table;
+mod libc_calls;
 mod libc_symbols;
 mod macro_sites;
 mod names;
@@ -217,6 +218,7 @@ struct FunctionLowerer<'a, 'm> {
     macro_template_check: bool,
     peeled_macro_wraps: HashMap<slate_parser::ast::NodeId, usize>,
     written_cast_operand: Option<slate_parser::ast::NodeId>,
+    discarded_call: Option<slate_parser::ast::NodeId>,
     old_value: Option<Expr>,
     declaring: std::cell::Cell<Option<(BindingId, bool)>>,
     after_declaration: Option<Stmt>,
@@ -398,6 +400,10 @@ impl Tables<'_> {
             .binding(binding)
             .and_then(|facts| facts.pointer)
             .and_then(|fact| fact.borrow)
+    }
+
+    fn constant_string_of(&self, binding: BindingId) -> Option<Vec<u8>> {
+        self.facts.binding(binding)?.constant_string.clone()
     }
 
     fn c_string_of(&self, binding: BindingId) -> bool {

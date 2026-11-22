@@ -18,8 +18,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::exit;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn die(code: i32) {
 // CHECK-NEXT:     println!("dying with {}", code);
 // CHECK-NEXT:     std::process::exit(code as i32);

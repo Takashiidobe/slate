@@ -30,7 +30,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
-// CHECK-NEXT: use slate_support::memcpy;
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn consume_text(text: *mut i8, len: i32) -> i32 {

@@ -208,8 +208,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut global_edge: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]);
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn dump80(name: *const i8, mut value: LongDouble) {
 // CHECK-NEXT:     let mut bytes: [u8; 10] = [0u8; 10];
 // CHECK-NEXT:     unsafe {

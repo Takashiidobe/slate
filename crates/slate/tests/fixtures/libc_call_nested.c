@@ -72,69 +72,34 @@ int main(void) {
 // CHECK-NEXT:     let alpha: *const i8 = c"alpha".as_ptr();
 // CHECK-NEXT:     let beta: *const i8 = c"beta".as_ptr();
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     total += ((("alpha".cmp("alpha") as i32) as i32) == 0) as i32;
-// CHECK-NEXT:     total += ((("beta".cmp("alpha") as i32) as i32) == 0) as i32;
+// CHECK-NEXT:     total += (0i32 == 0) as i32;
+// CHECK-NEXT:     total += (1i32 == 0) as i32;
 // CHECK-NEXT:     total
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn same_prefix() -> i32 {
 // CHECK-NEXT:     let a: *const i8 = c"abx".as_ptr();
-// CHECK-NEXT:     if (("abx".as_bytes()[0usize..2usize].cmp(&"aby".as_bytes()[0usize..2usize]) as i32)
-// CHECK-NEXT:         as i32) == 0 {
+// CHECK-NEXT:     if 0i32 == 0 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn long_word() -> i32 {
 // CHECK-NEXT:     let s: *const i8 = c"lengthy".as_ptr();
-// CHECK-NEXT:     (((("lengthy".len() as i32) as u64) as i32) > 4) as i32
+// CHECK-NEXT:     ((7u64 as i32) > 4) as i32
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn spans() -> i32 {
 // CHECK-NEXT:     let s: *const i8 = c"  word".as_ptr();
-// CHECK-NEXT:     ((("  word"
-// CHECK-NEXT:         .as_bytes()
-// CHECK-NEXT:         .iter()
-// CHECK-NEXT:         .position(|__slate_byte| !" ".as_bytes().contains(__slate_byte))
-// CHECK-NEXT:         .unwrap_or("  word".as_bytes().len()) as i32) as u64) as i32)
-// CHECK-NEXT:         + ((("  word"
-// CHECK-NEXT:             .as_bytes()
-// CHECK-NEXT:             .iter()
-// CHECK-NEXT:             .position(|__slate_byte| "r".as_bytes().contains(__slate_byte))
-// CHECK-NEXT:             .unwrap_or("  word".as_bytes().len()) as i32) as u64) as i32)
+// CHECK-NEXT:     (2u64 as i32) + (4u64 as i32)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn parsed() -> i32 {
-// CHECK-NEXT:     3 + (12i32 as i32) * 2
+// CHECK-NEXT:     3 + 12i32 * 2
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn embedded(n: i32) -> i32 {
 // CHECK-NEXT:     let s: *const i8 = b"ab\0cd\0".as_ptr() as *const i8;
-// CHECK-NEXT:     ((("ab\u{0}cd"
-// CHECK-NEXT:             .as_bytes()[0usize.."ab\u{0}cd"
-// CHECK-NEXT:             .as_bytes()
-// CHECK-NEXT:             .iter()
-// CHECK-NEXT:             .position(|__slate_byte| *__slate_byte == 0u8)
-// CHECK-NEXT:             .unwrap_or("ab\u{0}cd".as_bytes().len()) as usize]
-// CHECK-NEXT:         .iter()
-// CHECK-NEXT:         .position(|__slate_byte| !"abcd".as_bytes().contains(__slate_byte))
-// CHECK-NEXT:         .unwrap_or(
-// CHECK-NEXT:             "ab\u{0}cd"
-// CHECK-NEXT:                     .as_bytes()[0usize.."ab\u{0}cd"
-// CHECK-NEXT:                     .as_bytes()
-// CHECK-NEXT:                     .iter()
-// CHECK-NEXT:                     .position(|__slate_byte| *__slate_byte == 0u8)
-// CHECK-NEXT:                     .unwrap_or("ab\u{0}cd".as_bytes().len()) as usize]
-// CHECK-NEXT:                 .len(),
-// CHECK-NEXT:         ) as i32) as u64) as i32)
-// CHECK-NEXT:         + (((("ab\u{0}cd"
-// CHECK-NEXT:                 .as_bytes()[0usize.."ab\u{0}cd"
-// CHECK-NEXT:                 .as_bytes()
-// CHECK-NEXT:                 .iter()
-// CHECK-NEXT:                 .position(|__slate_byte| *__slate_byte == 0u8)
-// CHECK-NEXT:                 .unwrap_or("ab\u{0}cd".as_bytes().len())
-// CHECK-NEXT:                 .min(((n as u64) as usize) as usize) as usize]
-// CHECK-NEXT:             .cmp(
-// CHECK-NEXT:                 &"abz"
-// CHECK-NEXT:                     .as_bytes()[0usize..(((n as u64) as usize) as usize).min(3usize)
-// CHECK-NEXT:                     as usize],
-// CHECK-NEXT:             ) as i32) as i32) == 0) as i32)
+// CHECK-NEXT:     (2u64 as i32)
+// CHECK-NEXT:         + (((b"ab"[0usize..((n as u64) as usize).min(2usize)]
+// CHECK-NEXT:             .cmp(&b"abz"[0usize..((n as u64) as usize).min(3usize)]) as i32) == 0)
+// CHECK-NEXT:             as i32)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn effectful() -> i32 {
 // CHECK-NEXT:     if (unsafe {

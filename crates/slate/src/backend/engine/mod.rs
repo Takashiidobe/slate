@@ -1,6 +1,7 @@
 mod arena;
 pub mod macro_templates;
 mod prelude;
+pub(crate) use prelude::{ATOI, ATOL, ATOLL, char_prim, long_prim};
 mod printf_format;
 mod rules;
 pub mod shadow;
@@ -100,7 +101,7 @@ pub(in crate::backend) fn apply_local(
     target: &slate_parser::target_info::TargetInfo,
 ) {
     let passes = [
-        RuleRegistry::build(rules::registry(target, program.runtime)),
+        RuleRegistry::build(rules::registry(target)),
         RuleRegistry::build(rules::late_registry()),
     ];
     for item in &mut program.items {

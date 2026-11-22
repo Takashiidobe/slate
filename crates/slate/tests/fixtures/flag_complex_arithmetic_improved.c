@@ -497,8 +497,6 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-EMPTY:
 // X86_64-UNKNOWN-LINUX-GNU-NEXT: fn showf(name: *const i8, z: num_complex::Complex<f32>) {
 // I686-UNKNOWN-LINUX-GNU-NEXT: fn showf(name: *const i8, z: num_complex::Complex<f32>) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT: fn showf(name: *const u8, z: num_complex::Complex<f32>) {

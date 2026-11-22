@@ -203,8 +203,6 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn dump80(name: *const i8, mut value: LongDouble) {
 // CHECK-NEXT:     let mut bytes: [u8; 10] = [0u8; 10];
 // CHECK-NEXT:     unsafe {

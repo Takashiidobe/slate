@@ -103,18 +103,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign32<T> {}
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-NEXT: use slate_support::memset;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn scribble() {
 // CHECK-NEXT:     let mut junk: __SlateAlign16<[u8; 256]> = __SlateAlign16([0u8; 256]);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::write_bytes(
-// CHECK-NEXT:             ((junk.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             (165i32 as i32) as u8,
-// CHECK-NEXT:             ((core::mem::size_of::<[u8; 256]>() as u64) as usize) as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     junk.0[0usize..256usize].fill((165i32 as i32) as u8);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn inspect() {

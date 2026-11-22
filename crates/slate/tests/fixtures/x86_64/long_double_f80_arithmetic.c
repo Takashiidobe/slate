@@ -223,8 +223,6 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn load80(bytes: &u8) -> LongDouble {
 // CHECK-NEXT:     let mut value: LongDouble = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {

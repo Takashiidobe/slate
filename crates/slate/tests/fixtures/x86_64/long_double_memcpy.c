@@ -217,9 +217,6 @@ int main(void) {
 // CHECK-NEXT:     bytes: [u8; 16],
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-NEXT: use slate_support::memset;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut src: ld_union = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut dst: ld_union = unsafe { core::mem::zeroed() };

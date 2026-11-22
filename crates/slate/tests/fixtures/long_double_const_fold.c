@@ -226,8 +226,6 @@ int main(void) {
 // CHECK-NEXT:     LongDouble([110, 219, 182, 109, 219, 182, 109, 219, 254, 191]),
 // CHECK-NEXT: ];
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn dump(mut v: LongDouble) {
 // CHECK-NEXT:     let mut bytes: __SlateAlign16<[u8; 16]> = __SlateAlign16(
 // CHECK-NEXT:         {

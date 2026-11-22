@@ -157,7 +157,6 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memset;
 // CHECK-NEXT: use slate_support::memcmp;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn guid_equal(

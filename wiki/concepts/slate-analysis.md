@@ -428,6 +428,33 @@ Measured (`SLATE_INTERPROC_TIMING`, pass `ir_pointer`): N=800 on every
 extract 2-4 ms); sqlite 10.9 ms for 17,957 nodes (Rust-side extract 144 ms,
 validate 245 ms).
 
+## Constant strings and libc calls
+
+`constant_strings::analyze` (`slate-8ge7.24.12`) gives a pointer local
+`BindingFacts::constant_string` (the literal's bytes, terminator dropped) when
+it is a plain automatic local, DefUse sees exactly one write (its initializer)
+and only reads besides, and the initializer resolves through pointer casts and
+other such locals to a decayed string literal. An address-taken local
+(`pick(&word)`) records an escape and gets no fact.
+
+Lowering (`frontend/lowerer/libc_calls.rs`) picks the Rust form for a call
+whose callee has a `Known` identity and is spelled as that symbol or its
+`__builtin_` form. `bcopy`/`bzero`/`bit_cast` carry family identities with
+different argument orders, so they stay plain calls:
+
+- Before arguments are lowered: `strlen`, `strcmp`, `strspn`, `strcspn`,
+  `ato*` and `atof` with constant-string arguments fold to constants;
+  `strncmp`/`strnlen` with a runtime bound slice byte literals. Folding first
+  keeps the literal's `__slate_strN` static from being emitted, and a call
+  whose argument is a macro argument is never folded.
+- After: `exit`/`abort` become `std::process` calls, non-constant `ato*` call
+  the `__slate_ato*` prelude helper, `memcpy`/`memmove`/`memset` on decayed
+  local byte arrays with a constant length become
+  `copy_from_slice`/`copy_within`/`fill` (otherwise `core::ptr` copies), and
+  `memcmp` of borrowed `&[u8]` parameters becomes a slice `cmp`.
+
+The Rust-side `libc_call` and `getenv_var` rules are deleted.
+
 ## Effect summaries
 
 `effects::Effects` (`slate-8ge7.16`) answers "can this call reach object S
