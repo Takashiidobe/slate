@@ -68,21 +68,9 @@ int main(void) {
 // CHECK-NEXT:     if stop != 0 {
 // CHECK-NEXT:         return 7;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: loop {
-// CHECK-NEXT:         let __slate_state: usize = 0usize;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             loop {
-// CHECK-NEXT:                 match __slate_state {
-// CHECK-NEXT:                     0 => {
-// CHECK-NEXT:                         continue '[[SLATE_BREAK_0]];
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     _ => {
-// CHECK-NEXT:                         unreachable!();
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:         break '[[SLATE_BREAK_0]];
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         continue;
+// CHECK-NEXT:         break;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }

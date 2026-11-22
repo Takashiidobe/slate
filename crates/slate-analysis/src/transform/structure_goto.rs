@@ -83,6 +83,10 @@ impl StructureGoto<'_> {
                 self.list(&mut evaluation.statements);
             }
         }
+        self.labels(body);
+    }
+
+    fn labels(&mut self, body: &mut Body) {
         let mut index = 0;
         while index < body.len() {
             let Statement::Label { id, .. } = body[index].value else {
@@ -135,11 +139,21 @@ impl StructureGoto<'_> {
             }
             None => label,
         };
+        if let Some(&start) = forward.first() {
+            self.revisit(&mut body[start]);
+        }
         if end.is_some() {
+            self.revisit(&mut body[position]);
             return Some(position + 1);
         }
         self.dissolve(body, position);
         Some(position)
+    }
+
+    fn revisit(&mut self, statement: &mut Span<Statement>) {
+        for child in children(&mut statement.value) {
+            self.labels(child);
+        }
     }
 
     fn wrap_block(&mut self, body: &mut Body, start: usize, label: usize, id: BindingId) {

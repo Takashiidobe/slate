@@ -27,13 +27,11 @@ inner:
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         j = 0;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             loop {
-// CHECK-NEXT:                 total += i * j;
-// CHECK-NEXT:                 j += 1;
-// CHECK-NEXT:                 if !(j < 3) {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             total += i * j;
+// CHECK-NEXT:             j += 1;
+// CHECK-NEXT:             if j >= 3 {
+// CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i += 1;
