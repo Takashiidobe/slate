@@ -3,7 +3,6 @@ mod branch_init;
 mod cstr_literal;
 mod dead_store;
 mod for_range;
-mod getenv_var;
 mod inline_temps;
 mod label_elide;
 mod libc_call;
@@ -63,9 +62,6 @@ pub(super) fn registry(
             },
         }),
     ]);
-    if runtime.has_std() {
-        rules.push(Box::new(getenv_var::GetenvVar));
-    }
     rules.extend(vec![
         Box::new(dead_store::DeadStore) as Box<dyn NodeRule>,
         Box::new(pure_stmts::PureStmtDrop),
