@@ -28,29 +28,33 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn classify_zero(mut value: i32) -> i32 {
-// CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:             result = 11;
-// CHECK-NEXT:             let mut __slate_asm_target: bool = false;
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "testl {0:e}, {0:e}\n\tjz {1}",
-// CHECK-NEXT:                 in(reg) value as u32,
-// CHECK-NEXT:                 label {
-// CHECK-NEXT:                     __slate_asm_target = true;
-// CHECK-NEXT:                 },
-// CHECK-NEXT:                 options(nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:             if !__slate_asm_target {
-// CHECK-NEXT:                 if true {
-// CHECK-NEXT:                     break '[[JOIN_0]];
+// CHECK-NEXT:     let mut result: i32 = 0;
+// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32;
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut result: i32 = 11;
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             '[[JOIN_0:__join_[0-9]+]]: {
+// CHECK-NEXT:                 let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:                 core::arch::asm!(
+// CHECK-NEXT:                     "testl {0:e}, {0:e}\n\tjz {1}",
+// CHECK-NEXT:                     in(reg) value as u32,
+// CHECK-NEXT:                     label {
+// CHECK-NEXT:                         __slate_asm_target = true;
+// CHECK-NEXT:                     },
+// CHECK-NEXT:                     options(nostack, att_syntax),
+// CHECK-NEXT:                 );
+// CHECK-NEXT:                 if !__slate_asm_target {
+// CHECK-NEXT:                     if true {
+// CHECK-NEXT:                         break '[[JOIN_0]];
+// CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
+// CHECK-NEXT:                 result = 13;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             result = 13;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let result: i32 = result;
-// CHECK-NEXT:         return result;
+// CHECK-NEXT:         [[V_0]] = result;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     result = [[V_0]];
+// CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

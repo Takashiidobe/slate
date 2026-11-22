@@ -181,58 +181,43 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn set_value(lock: *mut i32, slot: &mut i32, value: i32, ok: i32) -> i32 {
-// CHECK-NEXT:     let mut scope: core::mem::MaybeUninit<guard> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut guard = core::ptr::addr_of_mut!(scope) as *mut guard;
-// CHECK-NEXT:     let mut ret: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let __slate_cleanup_ptr_0 = [[SLATE_SLOT_0]];
-// CHECK-NEXT:     let __slate_cleanup_armed_0 = core::cell::Cell::new(false);
-// CHECK-NEXT:     let __slate_cleanup_0 = ::slate_support::Guard(
-// CHECK-NEXT:         &mut || {
-// CHECK-NEXT:             if __slate_cleanup_armed_0.get() {
-// CHECK-NEXT:                 unsafe { guard_release(__slate_cleanup_ptr_0 as *mut _) };
-// CHECK-NEXT:             }
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         ret = -22;
-// CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_0]], guard_take(lock, ok));
-// CHECK-NEXT:         __slate_cleanup_armed_0.set(true);
-// CHECK-NEXT:         if !(*[[SLATE_SLOT_0]]).lock.is_null() || false {
-// CHECK-NEXT:             if true {
+// CHECK-NEXT:     let mut ret: i32 = -22;
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut scope: guard = guard_take(lock, ok);
+// CHECK-NEXT:         let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(scope) as *mut _;
+// CHECK-NEXT:         let __slate_cleanup_0 = ::slate_support::Guard(
+// CHECK-NEXT:             &mut || guard_release(__slate_cleanup_ptr_0 as *mut _),
+// CHECK-NEXT:         );
+// CHECK-NEXT:         while !scope.lock.is_null() || false {
+// CHECK-NEXT:             if false {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             } else {
 // CHECK-NEXT:                 *slot = value;
 // CHECK-NEXT:                 ret = 0;
 // CHECK-NEXT:             }
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         __slate_cleanup_armed_0.set(false);
-// CHECK-NEXT:         guard_release([[SLATE_SLOT_0]] as *mut _);
-// CHECK-NEXT:         return ret;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     ret
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn read_value(lock: *mut i32, slot: &i32) -> i32 {
-// CHECK-NEXT:     let mut scope: core::mem::MaybeUninit<guard> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0]]: *mut guard = core::ptr::addr_of_mut!(scope) as *mut guard;
-// CHECK-NEXT:     let __slate_cleanup_ptr_0 = [[SLATE_SLOT_0]];
-// CHECK-NEXT:     let __slate_cleanup_armed_0 = core::cell::Cell::new(false);
-// CHECK-NEXT:     let __slate_cleanup_0 = ::slate_support::Guard(
-// CHECK-NEXT:         &mut || {
-// CHECK-NEXT:             if __slate_cleanup_armed_0.get() {
-// CHECK-NEXT:                 unsafe { guard_release(__slate_cleanup_ptr_0 as *mut _) };
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut scope: guard = guard_take(lock, 1i32);
+// CHECK-NEXT:         let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(scope) as *mut _;
+// CHECK-NEXT:         let __slate_cleanup_0 = ::slate_support::Guard(
+// CHECK-NEXT:             &mut || guard_release(__slate_cleanup_ptr_0 as *mut _),
+// CHECK-NEXT:         );
+// CHECK-NEXT:         while !scope.lock.is_null() || false {
+// CHECK-NEXT:             if false {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 return *slot + (unsafe { *lock }) * 100;
 // CHECK-NEXT:             }
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_0]], guard_take(lock, 1i32));
-// CHECK-NEXT:         __slate_cleanup_armed_0.set(true);
-// CHECK-NEXT:         if !(*[[SLATE_SLOT_0]]).lock.is_null() || false {
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 return *slot + *lock * 100;
-// CHECK-NEXT:             }
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         __slate_cleanup_armed_0.set(false);
-// CHECK-NEXT:         guard_release([[SLATE_SLOT_0]] as *mut _);
-// CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     -1
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn guard_lock_ptr(g: &guard) -> *mut i32 {
@@ -240,29 +225,24 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn locked_by_address(lock: *mut i32, slot: &mut i32) -> i32 {
-// CHECK-NEXT:     let mut scope: core::mem::MaybeUninit<guard> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_1:__slate_slot_[0-9]+]]: *mut guard = core::ptr::addr_of_mut!(scope) as *mut guard;
-// CHECK-NEXT:     let __slate_cleanup_ptr_1 = [[SLATE_SLOT_1]];
-// CHECK-NEXT:     let __slate_cleanup_armed_1 = core::cell::Cell::new(false);
-// CHECK-NEXT:     let __slate_cleanup_1 = ::slate_support::Guard(
-// CHECK-NEXT:         &mut || {
-// CHECK-NEXT:             if __slate_cleanup_armed_1.get() {
-// CHECK-NEXT:                 unsafe { guard_release(__slate_cleanup_ptr_1 as *mut _) };
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut scope: guard = guard_take(lock, 1i32);
+// CHECK-NEXT:         let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(scope) as *mut _;
+// CHECK-NEXT:         let __slate_cleanup_0 = ::slate_support::Guard(
+// CHECK-NEXT:             &mut || guard_release(__slate_cleanup_ptr_0 as *mut _),
+// CHECK-NEXT:         );
+// CHECK-NEXT:         while !guard_lock_ptr(&scope).is_null() {
+// CHECK-NEXT:             if false {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     *slot = *slot + 1;
+// CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_1]], guard_take(lock, 1i32));
-// CHECK-NEXT:         __slate_cleanup_armed_1.set(true);
-// CHECK-NEXT:         if !guard_lock_ptr(&(*[[SLATE_SLOT_1]])).is_null() {
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 *slot = *slot + 1;
-// CHECK-NEXT:             }
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         __slate_cleanup_armed_1.set(false);
-// CHECK-NEXT:         guard_release([[SLATE_SLOT_1]] as *mut _);
-// CHECK-NEXT:         return *lock;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { *lock }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn free_box(p: *mut *mut i32) {
@@ -306,171 +286,106 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn nested(outer_lock: *mut i32, inner_lock: *mut i32, mode: i32) -> i32 {
-// CHECK-NEXT:     let mut b: core::mem::MaybeUninit<i8> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_2:__slate_slot_[0-9]+]]: *mut i8 = core::ptr::addr_of_mut!(b) as *mut i8;
-// CHECK-NEXT:     let mut scope: core::mem::MaybeUninit<guard> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_3:__slate_slot_[0-9]+]]: *mut guard = core::ptr::addr_of_mut!(scope) as *mut guard;
-// CHECK-NEXT:     let mut a: core::mem::MaybeUninit<i8> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_4:__slate_slot_[0-9]+]]: *mut i8 = core::ptr::addr_of_mut!(a) as *mut i8;
-// CHECK-NEXT:     let mut scope: core::mem::MaybeUninit<guard> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_5:__slate_slot_[0-9]+]]: *mut guard = core::ptr::addr_of_mut!(scope) as *mut guard;
-// CHECK-NEXT:     let __slate_cleanup_ptr_5 = [[SLATE_SLOT_5]];
-// CHECK-NEXT:     let __slate_cleanup_armed_5 = core::cell::Cell::new(false);
-// CHECK-NEXT:     let __slate_cleanup_5 = ::slate_support::Guard(
-// CHECK-NEXT:         &mut || {
-// CHECK-NEXT:             if __slate_cleanup_armed_5.get() {
-// CHECK-NEXT:                 unsafe { guard_release(__slate_cleanup_ptr_5 as *mut _) };
-// CHECK-NEXT:             }
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_cleanup_ptr_4 = [[SLATE_SLOT_4]];
-// CHECK-NEXT:     let __slate_cleanup_armed_4 = core::cell::Cell::new(false);
-// CHECK-NEXT:     let __slate_cleanup_4 = ::slate_support::Guard(
-// CHECK-NEXT:         &mut || {
-// CHECK-NEXT:             if __slate_cleanup_armed_4.get() {
-// CHECK-NEXT:                 unsafe { note(__slate_cleanup_ptr_4 as *mut _) };
-// CHECK-NEXT:             }
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_cleanup_ptr_3 = [[SLATE_SLOT_3]];
-// CHECK-NEXT:     let __slate_cleanup_armed_3 = core::cell::Cell::new(false);
-// CHECK-NEXT:     let __slate_cleanup_3 = ::slate_support::Guard(
-// CHECK-NEXT:         &mut || {
-// CHECK-NEXT:             if __slate_cleanup_armed_3.get() {
-// CHECK-NEXT:                 unsafe { guard_release(__slate_cleanup_ptr_3 as *mut _) };
-// CHECK-NEXT:             }
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_cleanup_ptr_2 = [[SLATE_SLOT_2]];
-// CHECK-NEXT:     let __slate_cleanup_armed_2 = core::cell::Cell::new(false);
-// CHECK-NEXT:     let __slate_cleanup_2 = ::slate_support::Guard(
-// CHECK-NEXT:         &mut || {
-// CHECK-NEXT:             if __slate_cleanup_armed_2.get() {
-// CHECK-NEXT:                 unsafe { note(__slate_cleanup_ptr_2 as *mut _) };
-// CHECK-NEXT:             }
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_5]], guard_take(outer_lock, 1i32));
-// CHECK-NEXT:         __slate_cleanup_armed_5.set(true);
-// CHECK-NEXT:         if !(*[[SLATE_SLOT_5]]).lock.is_null() || false {
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 core::ptr::write([[SLATE_SLOT_4]], 97i8);
-// CHECK-NEXT:                 __slate_cleanup_armed_4.set(true);
-// CHECK-NEXT:                 core::ptr::write([[SLATE_SLOT_3]], guard_take(inner_lock, 1i32));
-// CHECK-NEXT:                 __slate_cleanup_armed_3.set(true);
-// CHECK-NEXT:                 if !(*[[SLATE_SLOT_3]]).lock.is_null() || false {
-// CHECK-NEXT:                     if true {
-// CHECK-NEXT:                         core::ptr::write([[SLATE_SLOT_2]], 98i8);
-// CHECK-NEXT:                         __slate_cleanup_armed_2.set(true);
-// CHECK-NEXT:                         if mode == 0 {
-// CHECK-NEXT:                             return *outer_lock * 10 + *inner_lock;
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             if mode == 1 {
-// CHECK-NEXT:                                 __slate_cleanup_armed_2.set(false);
-// CHECK-NEXT:                                 note([[SLATE_SLOT_2]] as *mut _);
-// CHECK-NEXT:                                 __slate_cleanup_armed_3.set(false);
-// CHECK-NEXT:                                 guard_release([[SLATE_SLOT_3]] as *mut _);
-// CHECK-NEXT:                                 __slate_cleanup_armed_4.set(false);
-// CHECK-NEXT:                                 note([[SLATE_SLOT_4]] as *mut _);
-// CHECK-NEXT:                                 __slate_cleanup_armed_5.set(false);
-// CHECK-NEXT:                                 guard_release([[SLATE_SLOT_5]] as *mut _);
-// CHECK-NEXT:                                 let [[V_0]]: i32 = order_len;
-// CHECK-NEXT:                                 order_len = [[V_0]] + 1;
-// CHECK-NEXT:                                 order.0[[[V_0]] as usize] = 33;
-// CHECK-NEXT:                                 return -2;
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut scope: guard = guard_take(outer_lock, 1i32);
+// CHECK-NEXT:             let __slate_cleanup_ptr_1 = core::ptr::addr_of_mut!(scope) as *mut _;
+// CHECK-NEXT:             let __slate_cleanup_1 = ::slate_support::Guard(
+// CHECK-NEXT:                 &mut || guard_release(__slate_cleanup_ptr_1 as *mut _),
+// CHECK-NEXT:             );
+// CHECK-NEXT:             while !scope.lock.is_null() || false {
+// CHECK-NEXT:                 if false {
+// CHECK-NEXT:                     break;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     let mut a: i8 = 97;
+// CHECK-NEXT:                     let __slate_cleanup_ptr_3 = core::ptr::addr_of_mut!(a) as *mut _;
+// CHECK-NEXT:                     let __slate_cleanup_3 = ::slate_support::Guard(
+// CHECK-NEXT:                         &mut || note(__slate_cleanup_ptr_3 as *mut _),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     {
+// CHECK-NEXT:                         let mut scope: guard = guard_take(inner_lock, 1i32);
+// CHECK-NEXT:                         let __slate_cleanup_ptr_4 = core::ptr::addr_of_mut!(scope)
+// CHECK-NEXT:                             as *mut _;
+// CHECK-NEXT:                         let __slate_cleanup_4 = ::slate_support::Guard(
+// CHECK-NEXT:                             &mut || guard_release(__slate_cleanup_ptr_4 as *mut _),
+// CHECK-NEXT:                         );
+// CHECK-NEXT:                         while !scope.lock.is_null() || false {
+// CHECK-NEXT:                             if false {
+// CHECK-NEXT:                                 break;
 // CHECK-NEXT:                             } else {
+// CHECK-NEXT:                                 let mut b: i8 = 98;
+// CHECK-NEXT:                                 let __slate_cleanup_ptr_6 = core::ptr::addr_of_mut!(b)
+// CHECK-NEXT:                                     as *mut _;
+// CHECK-NEXT:                                 let __slate_cleanup_6 = ::slate_support::Guard(
+// CHECK-NEXT:                                     &mut || note(__slate_cleanup_ptr_6 as *mut _),
+// CHECK-NEXT:                                 );
+// CHECK-NEXT:                                 if mode == 0 {
+// CHECK-NEXT:                                     return (unsafe { *outer_lock }) * 10
+// CHECK-NEXT:                                         + unsafe { *inner_lock };
+// CHECK-NEXT:                                 }
+// CHECK-NEXT:                                 if mode == 1 {
+// CHECK-NEXT:                                     break '[[SLATE_BREAK_0]];
+// CHECK-NEXT:                                 }
 // CHECK-NEXT:                                 if mode == 2 {
-// CHECK-NEXT:                                     __slate_cleanup_armed_2.set(false);
-// CHECK-NEXT:                                     note([[SLATE_SLOT_2]] as *mut _);
-// CHECK-NEXT:                                 } else {
-// CHECK-NEXT:                                     __slate_cleanup_armed_2.set(false);
-// CHECK-NEXT:                                     note([[SLATE_SLOT_2]] as *mut _);
+// CHECK-NEXT:                                     break;
 // CHECK-NEXT:                                 }
 // CHECK-NEXT:                             }
+// CHECK-NEXT:                             break;
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                     }
+// CHECK-NEXT:                     let [[V_1:__v[0-9]+]]: i32 = unsafe { order_len };
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         order_len = [[V_1]] + 1;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         order.0[[[V_1]] as usize] = 45;
+// CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 __slate_cleanup_armed_3.set(false);
-// CHECK-NEXT:                 guard_release([[SLATE_SLOT_3]] as *mut _);
-// CHECK-NEXT:                 let [[V_1:__v[0-9]+]]: i32 = order_len;
-// CHECK-NEXT:                 order_len = [[V_1]] + 1;
-// CHECK-NEXT:                 order.0[[[V_1]] as usize] = 45;
-// CHECK-NEXT:                 __slate_cleanup_armed_4.set(false);
-// CHECK-NEXT:                 note([[SLATE_SLOT_4]] as *mut _);
+// CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         __slate_cleanup_armed_5.set(false);
-// CHECK-NEXT:         guard_release([[SLATE_SLOT_5]] as *mut _);
 // CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = unsafe { order_len };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         order_len = [[V_2]] + 1;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         order.0[[[V_2]] as usize] = 33;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     -2
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn loop_guards(counter: *mut i32, n: i32) -> i32 {
-// CHECK-NEXT:     let mut c: core::mem::MaybeUninit<i8> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0]]: *mut i8 = core::ptr::addr_of_mut!(c) as *mut i8;
-// CHECK-NEXT:     let mut scope: core::mem::MaybeUninit<guard> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_1]]: *mut guard = core::ptr::addr_of_mut!(scope) as *mut guard;
-// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let __slate_cleanup_ptr_1 = [[SLATE_SLOT_1]];
-// CHECK-NEXT:     let __slate_cleanup_armed_1 = core::cell::Cell::new(false);
-// CHECK-NEXT:     let __slate_cleanup_1 = ::slate_support::Guard(
-// CHECK-NEXT:         &mut || {
-// CHECK-NEXT:             if __slate_cleanup_armed_1.get() {
-// CHECK-NEXT:                 unsafe { guard_release(__slate_cleanup_ptr_1 as *mut _) };
-// CHECK-NEXT:             }
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_cleanup_ptr_0 = [[SLATE_SLOT_0]];
-// CHECK-NEXT:     let __slate_cleanup_armed_0 = core::cell::Cell::new(false);
-// CHECK-NEXT:     let __slate_cleanup_0 = ::slate_support::Guard(
-// CHECK-NEXT:         &mut || {
-// CHECK-NEXT:             if __slate_cleanup_armed_0.get() {
-// CHECK-NEXT:                 unsafe { note(__slate_cleanup_ptr_0 as *mut _) };
-// CHECK-NEXT:             }
-// CHECK-NEXT:         },
-// CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         total = 0;
-// CHECK-NEXT:         i = 0;
-// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:             loop {
-// CHECK-NEXT:                 if i < n {
-// CHECK-NEXT:                     core::ptr::write([[SLATE_SLOT_1]], guard_take(counter, 1i32));
-// CHECK-NEXT:                     __slate_cleanup_armed_1.set(true);
-// CHECK-NEXT:                     if !(*[[SLATE_SLOT_1]]).lock.is_null() || false {
-// CHECK-NEXT:                         if true {
-// CHECK-NEXT:                             core::ptr::write([[SLATE_SLOT_0]], 99i8);
-// CHECK-NEXT:                             __slate_cleanup_armed_0.set(true);
-// CHECK-NEXT:                             if i == 1 {
-// CHECK-NEXT:                                 __slate_cleanup_armed_0.set(false);
-// CHECK-NEXT:                                 note([[SLATE_SLOT_0]] as *mut _);
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 if i == 3 {
-// CHECK-NEXT:                                     break;
-// CHECK-NEXT:                                 } else {
-// CHECK-NEXT:                                     total += *counter;
-// CHECK-NEXT:                                     __slate_cleanup_armed_0.set(false);
-// CHECK-NEXT:                                     note([[SLATE_SLOT_0]] as *mut _);
-// CHECK-NEXT:                                 }
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     __slate_cleanup_armed_1.set(false);
-// CHECK-NEXT:                     guard_release([[SLATE_SLOT_1]] as *mut _);
-// CHECK-NEXT:                     i += 1;
+// CHECK-NEXT:     let mut total: i32 = 0;
+// CHECK-NEXT:     '[[SLATE_BREAK_0]]: {
+// CHECK-NEXT:         for i in 0..n {
+// CHECK-NEXT:             let mut scope: guard = guard_take(counter, 1i32);
+// CHECK-NEXT:             let __slate_cleanup_ptr_1 = core::ptr::addr_of_mut!(scope) as *mut _;
+// CHECK-NEXT:             let __slate_cleanup_1 = ::slate_support::Guard(
+// CHECK-NEXT:                 &mut || guard_release(__slate_cleanup_ptr_1 as *mut _),
+// CHECK-NEXT:             );
+// CHECK-NEXT:             while !scope.lock.is_null() || false {
+// CHECK-NEXT:                 if false {
+// CHECK-NEXT:                     break;
 // CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     break '[[JOIN_0]];
+// CHECK-NEXT:                     let mut c: i8 = 99;
+// CHECK-NEXT:                     let __slate_cleanup_ptr_3 = core::ptr::addr_of_mut!(c) as *mut _;
+// CHECK-NEXT:                     let __slate_cleanup_3 = ::slate_support::Guard(
+// CHECK-NEXT:                         &mut || note(__slate_cleanup_ptr_3 as *mut _),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     if i != 1 {
+// CHECK-NEXT:                         if i == 3 {
+// CHECK-NEXT:                             break '[[SLATE_BREAK_0]];
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                         total += unsafe { *counter };
+// CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
+// CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             __slate_cleanup_armed_0.set(false);
-// CHECK-NEXT:             note([[SLATE_SLOT_0]] as *mut _);
-// CHECK-NEXT:             __slate_cleanup_armed_1.set(false);
-// CHECK-NEXT:             guard_release([[SLATE_SLOT_1]] as *mut _);
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return total;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

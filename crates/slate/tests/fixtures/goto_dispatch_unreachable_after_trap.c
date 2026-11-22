@@ -76,98 +76,96 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn walk(values: &[i32]) -> i32 {
 // CHECK-NEXT:     let count: i32 = values.len() as i32;
-// CHECK-NEXT:     let mut steps: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut sc_level: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut level: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut __slate_state: usize = 10usize;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     level = sc_level;
-// CHECK-NEXT:                     __slate_state = 9usize;
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     level = sc_level;
-// CHECK-NEXT:                     __slate_state = 8usize;
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     if (level ^ sc_level) & 4 != 0 {
-// CHECK-NEXT:                         __slate_state = 0usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         __slate_state = 1usize;
-// CHECK-NEXT:                         continue;
+// CHECK-NEXT:     let mut level: i32 = 0;
+// CHECK-NEXT:     let mut sc_level: i32 = 0;
+// CHECK-NEXT:     let mut steps: i32 = 0;
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: loop {
+// CHECK-NEXT:         let mut __slate_state: usize = 9usize;
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             loop {
+// CHECK-NEXT:                 match __slate_state {
+// CHECK-NEXT:                     0 => {
+// CHECK-NEXT:                         level = sc_level;
+// CHECK-NEXT:                         continue '[[SLATE_BREAK_0]];
 // CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 3 => {
-// CHECK-NEXT:                     sc_level += 2;
-// CHECK-NEXT:                     if sc_level < level + 3 {
-// CHECK-NEXT:                         __slate_state = 3usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         __slate_state = 2usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 4 => {
-// CHECK-NEXT:                     core::arch::asm!("", options(nostack, att_syntax));
-// CHECK-NEXT:                     core::ptr::write_volatile(core::ptr::addr_of_mut!(trapped), 1i32);
-// CHECK-NEXT:                     core::hint::unreachable_unchecked();
-// CHECK-NEXT:                     __slate_state = 3usize;
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 5 => {
-// CHECK-NEXT:                     sc_level = level + values[(steps % count) as usize];
-// CHECK-NEXT:                     if unlikely!(sc_level < level) != 0 {
-// CHECK-NEXT:                         __slate_state = 4usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         __slate_state = 3usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 6 => {
-// CHECK-NEXT:                     return level;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 7 => {
-// CHECK-NEXT:                     let [[V_0:__v[0-9]+]]: i32 = steps + 1;
-// CHECK-NEXT:                     steps = [[V_0]];
-// CHECK-NEXT:                     if [[V_0]] > count {
-// CHECK-NEXT:                         __slate_state = 6usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         __slate_state = 5usize;
-// CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 8 => {
-// CHECK-NEXT:                     __slate_state = 7usize;
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 9 => {
-// CHECK-NEXT:                     if level & 1 != 0 {
+// CHECK-NEXT:                     1 => {
+// CHECK-NEXT:                         level = sc_level;
 // CHECK-NEXT:                         __slate_state = 8usize;
 // CHECK-NEXT:                         continue;
-// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     2 => {
+// CHECK-NEXT:                         if (level ^ sc_level) & 4 != 0 {
+// CHECK-NEXT:                             __slate_state = 0usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         } else {
+// CHECK-NEXT:                             __slate_state = 1usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     3 => {
+// CHECK-NEXT:                         sc_level += 2;
+// CHECK-NEXT:                         if sc_level < level + 3 {
+// CHECK-NEXT:                             __slate_state = 3usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         } else {
+// CHECK-NEXT:                             __slate_state = 2usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     4 => {
+// CHECK-NEXT:                         core::arch::asm!("", options(nostack, att_syntax));
+// CHECK-NEXT:                         core::ptr::write_volatile(
+// CHECK-NEXT:                             core::ptr::addr_of_mut!(trapped),
+// CHECK-NEXT:                             1i32,
+// CHECK-NEXT:                         );
+// CHECK-NEXT:                         core::hint::unreachable_unchecked();
+// CHECK-NEXT:                         __slate_state = 3usize;
+// CHECK-NEXT:                         continue;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     5 => {
+// CHECK-NEXT:                         sc_level = level + values[(steps % count) as usize];
+// CHECK-NEXT:                         if unlikely!(sc_level < level) != 0 {
+// CHECK-NEXT:                             __slate_state = 4usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         } else {
+// CHECK-NEXT:                             __slate_state = 3usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     6 => {
+// CHECK-NEXT:                         return level;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     7 => {
+// CHECK-NEXT:                         let [[V_0:__v[0-9]+]]: i32 = steps + 1;
+// CHECK-NEXT:                         steps = [[V_0]];
+// CHECK-NEXT:                         if [[V_0]] > count {
+// CHECK-NEXT:                             __slate_state = 6usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         } else {
+// CHECK-NEXT:                             __slate_state = 5usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     8 => {
 // CHECK-NEXT:                         __slate_state = 7usize;
 // CHECK-NEXT:                         continue;
 // CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 10 => {
-// CHECK-NEXT:                     level = 0;
-// CHECK-NEXT:                     sc_level = 0;
-// CHECK-NEXT:                     steps = 0;
-// CHECK-NEXT:                     __slate_state = 9usize;
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     unreachable!();
+// CHECK-NEXT:                     9 => {
+// CHECK-NEXT:                         if level & 1 != 0 {
+// CHECK-NEXT:                             __slate_state = 8usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         } else {
+// CHECK-NEXT:                             __slate_state = 7usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     _ => {
+// CHECK-NEXT:                         unreachable!();
+// CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
+// CHECK-NEXT:         break '[[SLATE_BREAK_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }

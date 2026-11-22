@@ -208,10 +208,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_computed_goto(mut selector: u32) -> i32 {
+// CHECK-NEXT:     if selector > 1 {
+// CHECK-NEXT:         selector = 2;
+// CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         if selector > 1 {
-// CHECK-NEXT:             selector = 2;
-// CHECK-NEXT:         }
 // CHECK-NEXT:         match targets.0[selector as usize] as usize {
 // CHECK-NEXT:             19 => {
 // CHECK-NEXT:                 return 7;

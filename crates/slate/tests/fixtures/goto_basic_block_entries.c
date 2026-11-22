@@ -65,29 +65,36 @@ int main(void) {
 // CHECK-NEXT: static mut observed: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn forwarding_cycle(stop: i32) -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         if stop != 0 {
-// CHECK-NEXT:             return 7;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             loop {}
+// CHECK-NEXT:     if stop != 0 {
+// CHECK-NEXT:         return 7;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: loop {
+// CHECK-NEXT:         let __slate_state: usize = 0usize;
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             loop {
+// CHECK-NEXT:                 match __slate_state {
+// CHECK-NEXT:                     0 => {
+// CHECK-NEXT:                         continue '[[SLATE_BREAK_0]];
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     _ => {
+// CHECK-NEXT:                         unreachable!();
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
 // CHECK-NEXT:         }
+// CHECK-NEXT:         break '[[SLATE_BREAK_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn run(mode: i32) -> i32 {
-// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut steps: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut checks: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut visits: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut sum: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut sum: i32 = 0;
+// CHECK-NEXT:     let mut visits: i32 = 0;
+// CHECK-NEXT:     let mut checks: i32 = 0;
+// CHECK-NEXT:     let mut steps: i32 = 0;
+// CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     let mut __slate_state: usize = 10usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         sum = 0;
-// CHECK-NEXT:         visits = 0;
-// CHECK-NEXT:         checks = 0;
-// CHECK-NEXT:         steps = 0;
-// CHECK-NEXT:         i = 0;
 // CHECK-NEXT:         if mode != 0 {
 // CHECK-NEXT:             __slate_state = 8;
 // CHECK-NEXT:         } else {
@@ -140,16 +147,16 @@ int main(void) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {} {} {} {}",
-// CHECK-NEXT:             sum,
-// CHECK-NEXT:             visits,
-// CHECK-NEXT:             checks,
-// CHECK-NEXT:             steps,
-// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(observed))
-// CHECK-NEXT:         );
-// CHECK-NEXT:         return sum;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {} {} {}",
+// CHECK-NEXT:         sum,
+// CHECK-NEXT:         visits,
+// CHECK-NEXT:         checks,
+// CHECK-NEXT:         steps,
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(observed)) }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     sum
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

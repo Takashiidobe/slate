@@ -680,11 +680,8 @@ impl FunctionLowerer<'_, '_> {
             }));
         }
         self.non_index_names = self.non_index_names(&params, body);
-        let mut statements = if control_flow::needs_dispatch(body) {
-            self.lower_dispatch(body, &params)?
-        } else {
-            self.lower_statement_list(body)?
-        };
+        self.dispatch_params = params.clone();
+        let mut statements = self.lower_statement_list(body)?;
         statements.extend(self.remaining_statement_comments(body));
         statements.splice(0..0, std::mem::take(&mut self.hoisted));
         let rebound: Vec<Stmt> = fixed

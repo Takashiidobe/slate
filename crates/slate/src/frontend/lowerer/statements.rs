@@ -579,6 +579,19 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         statements: &[slate_parser::ast::Span<ir::Statement>],
     ) -> Result<Vec<Stmt>> {
+        let Some(region) = control_flow::residual(statements) else {
+            return self.lower_structured_list(statements);
+        };
+        let mut lowered = self.lower_structured_list(&statements[..region.start])?;
+        lowered.extend(self.lower_dispatch(&statements[region.clone()])?);
+        lowered.extend(self.lower_structured_list(&statements[region.end..])?);
+        Ok(lowered)
+    }
+
+    fn lower_structured_list(
+        &mut self,
+        statements: &[slate_parser::ast::Span<ir::Statement>],
+    ) -> Result<Vec<Stmt>> {
         let mut lowered = Vec::with_capacity(statements.len());
         for statement in statements {
             lowered.extend(self.lower_statement(statement)?);

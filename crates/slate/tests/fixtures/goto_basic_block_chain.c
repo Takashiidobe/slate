@@ -65,11 +65,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn run(skip: i32) -> i32 {
-// CHECK-NEXT:     let mut value: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut result: i32 = mark(1i32);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         result = mark(1i32);
 // CHECK-NEXT:         saved = core::ptr::addr_of_mut!(result);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let mut value: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         if skip == 0 {
 // CHECK-NEXT:             value = mark(2i32);
 // CHECK-NEXT:         }
@@ -78,16 +79,21 @@ int main(void) {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = mark(4i32);
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: *mut i32 = saved;
 // CHECK-NEXT:         *[[V_1]] = *[[V_1]] + [[V_0]];
-// CHECK-NEXT:         result += mark(5i32);
-// CHECK-NEXT:         println!("{} {}", result, unsafe { trace });
-// CHECK-NEXT:         return result;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
+// CHECK-NEXT:         break '[[SLATE_BREAK_0]];
+// CHECK-NEXT:         result = mark(9i32);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = mark(5i32);
+// CHECK-NEXT:     result += [[V_2]];
+// CHECK-NEXT:     println!("{} {}", result, unsafe { trace });
+// CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn straight_line() -> i32 {
 // CHECK-NEXT:     let mut result: i32 = mark(6i32);
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
-// CHECK-NEXT:         break '[[SLATE_BREAK_0]];
+// CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: {
+// CHECK-NEXT:         break '[[SLATE_BREAK_1]];
 // CHECK-NEXT:         result = mark(9i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result += mark(7i32);

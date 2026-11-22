@@ -22,15 +22,12 @@ inner:
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut j: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         i = 0;
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     let mut j: i32 = 0;
+// CHECK-NEXT:     let mut total: i32 = 0;
+// CHECK-NEXT:     loop {
 // CHECK-NEXT:         j = 0;
-// CHECK-NEXT:         total = 0;
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             j = 0;
+// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             loop {
 // CHECK-NEXT:                 total += i * j;
 // CHECK-NEXT:                 j += 1;
@@ -38,13 +35,13 @@ inner:
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:             i += 1;
-// CHECK-NEXT:             if !(i < 4) {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         println!("{}", total);
-// CHECK-NEXT:         return 0;
+// CHECK-NEXT:         i += 1;
+// CHECK-NEXT:         if i >= 4 {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-NEXT:     println!("{}", total);
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

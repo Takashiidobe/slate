@@ -229,6 +229,7 @@ struct FunctionLowerer<'a, 'm> {
     byref_slots: HashSet<BindingId>,
     pending: Vec<Stmt>,
     dispatching: bool,
+    dispatch_params: Vec<rust::FnParam>,
     switch_lets: HashSet<BindingId>,
     unborrowed: HashSet<BindingId>,
     reassigned_borrows: HashSet<BindingId>,

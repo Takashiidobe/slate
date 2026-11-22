@@ -86,11 +86,9 @@ impl FunctionLowerer<'_, '_> {
         }
         let enclosing = self.shared_pointers.clone();
         self.shared_pointers.extend(shared);
-        let lowered = if control_flow::needs_dispatch(&region.body) {
-            self.lower_dispatch(&region.body, &[])
-        } else {
-            self.lower_statement_list(&region.body)
-        };
+        let params = std::mem::take(&mut self.dispatch_params);
+        let lowered = self.lower_statement_list(&region.body);
+        self.dispatch_params = params;
         self.shared_pointers = enclosing;
         body.extend(lowered?);
         outer.push(Stmt::Expr(Expr::Call {

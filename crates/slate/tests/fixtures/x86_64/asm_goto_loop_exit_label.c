@@ -57,36 +57,34 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fill_until_fault(mut buf: *mut i8, size: u64, mut fault_at: u64) -> u64 {
-// CHECK-NEXT:     let mut i: core::mem::MaybeUninit<u64> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut u64 = core::ptr::addr_of_mut!(i) as *mut u64;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         if size == 0 {
-// CHECK-NEXT:             return 0;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             region_begin();
-// CHECK-NEXT:             *[[SLATE_SLOT_0]] = 0;
-// CHECK-NEXT:             while *[[SLATE_SLOT_0]] < size {
-// CHECK-NEXT:                 let mut __slate_asm_target: bool = false;
-// CHECK-NEXT:                 core::arch::asm!(
-// CHECK-NEXT:                     "cmpq {0:r}, {1:r}\n\tje {3}\n\tmovb $1, ({2:r})",
-// CHECK-NEXT:                     in(reg) *[[SLATE_SLOT_0]] as u64,
-// CHECK-NEXT:                     in(reg) fault_at as u64,
-// CHECK-NEXT:                     in(reg) buf.offset(*[[SLATE_SLOT_0]] as isize) as u64,
-// CHECK-NEXT:                     label {
-// CHECK-NEXT:                         __slate_asm_target = true;
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     options(nostack, att_syntax),
-// CHECK-NEXT:                 );
-// CHECK-NEXT:                 if __slate_asm_target {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     *[[SLATE_SLOT_0]] = (*[[SLATE_SLOT_0]]).wrapping_add(1);
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
-// CHECK-NEXT:             region_end();
-// CHECK-NEXT:             return size.wrapping_sub(*[[SLATE_SLOT_0]]);
-// CHECK-NEXT:         }
+// CHECK-NEXT:     let mut i: u64 = 0;
+// CHECK-NEXT:     if size == 0 {
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     region_begin();
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         i = 0;
+// CHECK-NEXT:         while i < size {
+// CHECK-NEXT:             let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmpq {0:r}, {1:r}\n\tje {3}\n\tmovb $1, ({2:r})",
+// CHECK-NEXT:                 in(reg) i as u64,
+// CHECK-NEXT:                 in(reg) fault_at as u64,
+// CHECK-NEXT:                 in(reg) buf.add(i as usize) as u64,
+// CHECK-NEXT:                 label {
+// CHECK-NEXT:                     __slate_asm_target = true;
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 options(nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:             if __slate_asm_target {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 i = i.wrapping_add(1);
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:         region_end();
+// CHECK-NEXT:     }
+// CHECK-NEXT:     size.wrapping_sub(i)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

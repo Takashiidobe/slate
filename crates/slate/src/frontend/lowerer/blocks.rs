@@ -65,6 +65,7 @@ impl<'a, 'm> FunctionLowerer<'a, 'm> {
             byref_slots: HashSet::new(),
             pending: Vec::new(),
             dispatching: false,
+            dispatch_params: Vec::new(),
             switch_lets: HashSet::new(),
             unborrowed: HashSet::new(),
             reassigned_borrows: HashSet::new(),
@@ -439,11 +440,8 @@ impl FunctionLowerer<'_, '_> {
             }))),
         }];
         statements.extend(loads);
-        let lowered = if control_flow::needs_dispatch(body) {
-            self.lower_dispatch(body, &params)?
-        } else {
-            self.lower_statement_list(body)?
-        };
+        self.dispatch_params = params.clone();
+        let lowered = self.lower_statement_list(body)?;
         statements.extend(std::mem::take(&mut self.hoisted));
         statements.extend(lowered);
         let ends_in_return = matches!(

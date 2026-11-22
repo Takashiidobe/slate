@@ -24,12 +24,10 @@ done:
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut x: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut choose_b: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let choose_b: i32 = 0;
+// CHECK-NEXT:     let mut x: i32 = 0;
 // CHECK-NEXT:     let mut __slate_state: usize = 3usize;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         choose_b = 0;
-// CHECK-NEXT:         x = 0;
 // CHECK-NEXT:         if core::ptr::read_volatile(core::ptr::addr_of!(choose_b)) != 0 {
 // CHECK-NEXT:             __slate_state = 1;
 // CHECK-NEXT:         } else {
@@ -55,9 +53,9 @@ done:
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         println!("{}", x);
-// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     println!("{}", x);
+// CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

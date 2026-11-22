@@ -31,23 +31,22 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn jump_probe(x: i32) -> i32 {
+// CHECK-NEXT:     if x < 0 || x > 2 {
+// CHECK-NEXT:         return -1;
+// CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         if x < 0 || x > 2 {
-// CHECK-NEXT:             return -1;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             match targets.0[x as usize] as usize {
-// CHECK-NEXT:                 4 => {
-// CHECK-NEXT:                     return 10;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 5 => {
-// CHECK-NEXT:                     return 20;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 6 => {
-// CHECK-NEXT:                     return 30;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     unreachable!();
-// CHECK-NEXT:                 }
+// CHECK-NEXT:         match targets.0[x as usize] as usize {
+// CHECK-NEXT:             4 => {
+// CHECK-NEXT:                 return 10;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             5 => {
+// CHECK-NEXT:                 return 20;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             6 => {
+// CHECK-NEXT:                 return 30;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 unreachable!();
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

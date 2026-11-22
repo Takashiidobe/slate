@@ -284,12 +284,10 @@ again:
 // CHECK-EMPTY:
 // CHECK-NEXT: fn redeclare(rounds: i32) -> i32 {
 // CHECK-NEXT:     let mut __slate_block_0_slot: core::mem::MaybeUninit<__slate_blocks::Block<__slate_block_0_captures>> = core::mem::MaybeUninit::uninit();
+// CHECK-NEXT:     let mut round: i32 = 0;
+// CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let mut n: __slate_blocks::ByrefSlot<i32> = __slate_blocks::ByrefSlot::new();
-// CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut round: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         round = 0;
-// CHECK-NEXT:         total = 0;
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             __slate_blocks::store(
 // CHECK-NEXT:                 __slate_blocks::init(core::ptr::addr_of_mut!(n)),
@@ -321,9 +319,11 @@ again:
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return total
-// CHECK-NEXT:             + *__slate_blocks::value(__slate_blocks::slot(core::ptr::addr_of_mut!(n)));
 // CHECK-NEXT:     }
+// CHECK-NEXT:     total
+// CHECK-NEXT:         + unsafe {
+// CHECK-NEXT:             *__slate_blocks::value(__slate_blocks::slot(core::ptr::addr_of_mut!(n)))
+// CHECK-NEXT:         }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn self_referential(mut rounds: i32) -> i32 {

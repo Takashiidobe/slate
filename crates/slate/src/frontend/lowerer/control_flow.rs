@@ -234,6 +234,55 @@ pub(super) fn endless(statement: &ir::Statement) -> bool {
     matches!(statement, ir::Statement::For { id, condition: None, body, .. } if !breaks(body, *id))
 }
 
+pub(super) fn residual(statements: &[Statement]) -> Option<std::ops::Range<usize>> {
+    let mut marked = statements
+        .iter()
+        .enumerate()
+        .filter(|(_, statement)| needs_dispatch(std::slice::from_ref(*statement)))
+        .map(|(index, _)| index);
+    let first = marked.next()?;
+    let last = marked.next_back().unwrap_or(first);
+    if first == last && transparent(&statements[first].value) {
+        return None;
+    }
+    let end = match statements[first..=last]
+        .iter()
+        .any(|statement| cleanup_variable(&statement.value).is_some())
+    {
+        true => statements.len(),
+        false => last + 1,
+    };
+    Some(first..end)
+}
+
+fn transparent(statement: &ir::Statement) -> bool {
+    match statement {
+        ir::Statement::Block(_) | ir::Statement::LabeledBlock { .. } | ir::Statement::If { .. } => {
+            true
+        }
+        ir::Statement::While { condition, .. } | ir::Statement::DoWhile { condition, .. } => {
+            !needs_dispatch(&condition.statements)
+        }
+        ir::Statement::For {
+            init,
+            condition,
+            increment,
+            ..
+        } => {
+            !needs_dispatch(init)
+                && condition
+                    .iter()
+                    .chain(increment)
+                    .all(|evaluation| !needs_dispatch(&evaluation.statements))
+        }
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "only statements whose bodies lower through lower_statement_list can hold a residual region"
+        )]
+        _ => false,
+    }
+}
+
 pub(super) fn needs_dispatch(statements: &[Statement]) -> bool {
     statements.iter().any(|statement| {
         matches!(
@@ -479,13 +528,18 @@ impl<'a> Graph<'a> {
                     .collect();
                 self.push(Node::Indirect(target, targets))
             }
-            ir::Statement::Break(id) => {
-                let (target, depth) = self.breaks[id];
-                self.unwind(depth, target)
-            }
-            ir::Statement::Continue(id) => {
-                let (target, depth) = self.continues[id];
-                self.unwind(depth, target)
+            ir::Statement::Break(id) | ir::Statement::Continue(id) => {
+                let jumps = match statement.value {
+                    ir::Statement::Break(_) => &self.breaks,
+                    _ => &self.continues,
+                };
+                match jumps.get(id).copied() {
+                    Some((target, depth)) => self.unwind(depth, target),
+                    None => {
+                        let exit = self.push(Node::Statement(statement, None));
+                        self.unwind(0, exit)
+                    }
+                }
             }
             ir::Statement::If {
                 condition,
@@ -788,11 +842,14 @@ impl FunctionLowerer<'_, '_> {
         ])
     }
 
-    pub(super) fn lower_dispatch(
-        &mut self,
-        statements: &[Statement],
-        params: &[rust::FnParam],
-    ) -> Result<Vec<Stmt>> {
+    pub(super) fn lower_dispatch(&mut self, statements: &[Statement]) -> Result<Vec<Stmt>> {
+        let outer = std::mem::replace(&mut self.dispatching, true);
+        let lowered = self.lower_dispatch_region(statements);
+        self.dispatching = outer;
+        lowered
+    }
+
+    fn lower_dispatch_region(&mut self, statements: &[Statement]) -> Result<Vec<Stmt>> {
         let mut graph = Graph::default();
         collect_labels(statements, &mut graph.targets);
         scope_labels(statements, &mut Vec::new(), &mut graph.label_scopes);
@@ -819,7 +876,6 @@ impl FunctionLowerer<'_, '_> {
         cleanups.sort_by_key(|variable| variable.id.0);
         cleanups.dedup_by_key(|variable| variable.id);
         let (entry, blocks) = graph.blocks(entry);
-        self.dispatching = true;
         for (id, ty, _) in &graph.locals {
             if graph.byref.contains(id) {
                 continue;
@@ -865,7 +921,7 @@ impl FunctionLowerer<'_, '_> {
                 }
                 None => ty.clone(),
             };
-            let storage = parameter_free_name(self.binding_name(id), params);
+            let storage = parameter_free_name(self.binding_name(id), &self.dispatch_params);
             storage_positions.insert(id, lowered.len());
             lowered.push(Stmt::Let {
                 origin: if self.tables.bindings.contains_key(&id) {

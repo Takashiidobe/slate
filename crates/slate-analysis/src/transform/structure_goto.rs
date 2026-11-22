@@ -21,6 +21,11 @@ pub(super) fn transform(module: &mut Module) {
         if survey.indirect {
             continue;
         }
+        let mut threads = HashMap::default();
+        scan_threads(body, &mut Vec::new(), &mut threads);
+        if !threads.is_empty() {
+            thread(body, &mut Vec::new(), &threads, &mut survey.gotos);
+        }
         let mut pass = StructureGoto {
             module,
             gotos: survey.gotos,
@@ -245,6 +250,124 @@ impl StructureGoto<'_> {
             self.retired.push(body[index].id);
             body.splice(index..=index, inner);
         }
+    }
+}
+
+fn scan_threads(
+    body: &[Span<Statement>],
+    enclosing: &mut Vec<(BindingId, bool)>,
+    threads: &mut HashMap<BindingId, BindingId>,
+) {
+    let dirty: Vec<bool> = enclosing.iter().map(|(_, dirty)| *dirty).collect();
+    scan_list(body, enclosing, threads);
+    for ((_, flag), dirty) in enclosing.iter_mut().zip(dirty) {
+        *flag = dirty;
+    }
+}
+
+fn scan_list(
+    body: &[Span<Statement>],
+    enclosing: &mut Vec<(BindingId, bool)>,
+    threads: &mut HashMap<BindingId, BindingId>,
+) {
+    for statement in body {
+        match &statement.value {
+            Statement::Let(variable) if variable.cleanup.is_some() => {
+                for (_, dirty) in enclosing.iter_mut() {
+                    *dirty = true;
+                }
+            }
+            Statement::Label { id, body, .. } => {
+                if let Some(Statement::Break(target)) = body.first().map(|first| &first.value)
+                    && enclosing.contains(&(*target, false))
+                {
+                    threads.insert(*id, *target);
+                }
+            }
+            _ => {}
+        }
+        match &statement.value {
+            Statement::For {
+                id,
+                init,
+                condition,
+                increment,
+                body,
+            } => {
+                let dirty: Vec<bool> = enclosing.iter().map(|(_, dirty)| *dirty).collect();
+                scan_list(init, enclosing, threads);
+                enclosing.push((*id, false));
+                scan_threads(body, enclosing, threads);
+                for evaluation in condition.iter().chain(increment) {
+                    scan_threads(&evaluation.statements, enclosing, threads);
+                }
+                enclosing.pop();
+                for ((_, flag), dirty) in enclosing.iter_mut().zip(dirty) {
+                    *flag = dirty;
+                }
+            }
+            other => {
+                let breakable = breakable(other);
+                enclosing.extend(breakable.map(|id| (id, false)));
+                for list in jump_lists(other) {
+                    scan_threads(list, enclosing, threads);
+                }
+                if breakable.is_some() {
+                    enclosing.pop();
+                }
+            }
+        }
+    }
+}
+
+fn thread(
+    body: &mut Body,
+    enclosing: &mut Vec<BindingId>,
+    threads: &HashMap<BindingId, BindingId>,
+    gotos: &mut HashMap<BindingId, usize>,
+) {
+    for statement in body {
+        if let Statement::Goto(label) = statement.value
+            && let Some(&target) = threads.get(&label)
+            && enclosing.contains(&target)
+        {
+            statement.value = Statement::Break(target);
+            if let Some(count) = gotos.get_mut(&label) {
+                *count -= 1;
+            }
+            continue;
+        }
+        let breakable = breakable(&statement.value);
+        let is_for = matches!(statement.value, Statement::For { .. });
+        let mut lists = children(&mut statement.value).into_iter();
+        if is_for && let Some(init) = lists.next() {
+            thread(init, enclosing, threads, gotos);
+        }
+        enclosing.extend(breakable);
+        for list in lists {
+            thread(list, enclosing, threads, gotos);
+        }
+        for evaluation in evaluations(&mut statement.value) {
+            thread(&mut evaluation.statements, enclosing, threads, gotos);
+        }
+        if breakable.is_some() {
+            enclosing.pop();
+        }
+    }
+}
+
+fn breakable(statement: &Statement) -> Option<BindingId> {
+    match statement {
+        Statement::For { id, .. }
+        | Statement::While { id, .. }
+        | Statement::DoWhile { id, .. }
+        | Statement::Switch { id, .. }
+        | Statement::LabeledBlock { id, .. } => Some(*id),
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "only loops, switches and labeled blocks are break targets"
+        )]
+        _ => None,
     }
 }
 

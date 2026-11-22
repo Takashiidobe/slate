@@ -60,17 +60,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn run(mode: i32) -> i32 {
+// CHECK-NEXT:     let mut sum: i32 = 0;
+// CHECK-NEXT:     let mut checks: i32 = 0;
+// CHECK-NEXT:     let mut steps: i32 = 0;
+// CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     let skipped: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut value: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut steps: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut checks: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut sum: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         sum = 0;
-// CHECK-NEXT:         checks = 0;
-// CHECK-NEXT:         steps = 0;
-// CHECK-NEXT:         i = 0;
 // CHECK-NEXT:         if mode == 0 {
 // CHECK-NEXT:             value = initialize();
 // CHECK-NEXT:         }
@@ -117,9 +113,9 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:             sum += 3;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         println!("{} {} {} {}", sum, checks, steps, unsafe { initializers });
-// CHECK-NEXT:         return sum;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     println!("{} {} {} {}", sum, checks, steps, unsafe { initializers });
+// CHECK-NEXT:     sum
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
