@@ -39,11 +39,17 @@ pub struct Borrow {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Owner {
+    Vec,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct PointerFact {
     pub role: PointerRole,
     pub borrow: Option<Borrow>,
     pub length: Option<Length>,
     pub c_string: bool,
+    pub owner: Option<Owner>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -138,7 +144,47 @@ struct Summary {
     leaked: HashSet<BindingId>,
     automatic: HashSet<BindingId>,
     derived: Vec<(u32, BindingId)>,
+    owned: Vec<(u32, bool)>,
     opaque: bool,
+}
+
+struct Release {
+    binding: BindingId,
+    position: u32,
+    depth: u32,
+    terminal: bool,
+}
+
+#[derive(Default)]
+struct Ownership {
+    allocated: HashMap<BindingId, u32>,
+    writes: HashMap<BindingId, u32>,
+    reallocations: HashMap<BindingId, u32>,
+    last_read: HashMap<BindingId, u32>,
+    releases: Vec<Release>,
+    checked: Vec<u32>,
+    position: u32,
+    depth: u32,
+    terminal: bool,
+    jumps: bool,
+}
+
+impl Ownership {
+    fn owns(&self, binding: BindingId) -> bool {
+        let Some(&depth) = self.allocated.get(&binding) else {
+            return false;
+        };
+        let last = self.last_read.get(&binding).copied();
+        !self.jumps
+            && self.writes.get(&binding) == self.reallocations.get(&binding)
+            && self
+                .releases
+                .iter()
+                .filter(|release| release.binding == binding)
+                .all(|release| {
+                    release.terminal || (release.depth == depth && Some(release.position) == last)
+                })
+    }
 }
 
 #[derive(Default)]
@@ -195,6 +241,7 @@ struct Walker<'a, 'm> {
     allocations: HashMap<BindingId, (BindingId, Type)>,
     leaked: HashSet<BindingId>,
     derived: Vec<(u32, BindingId)>,
+    ownership: Ownership,
     opaque: bool,
 }
 
@@ -563,6 +610,88 @@ impl Walker<'_, '_> {
         )
     }
 
+    fn known(&self, callee: &Callee) -> Option<Known> {
+        let Callee::Direct(binding) = callee else {
+            return None;
+        };
+        match self.identities.get(&ProgramBinding {
+            unit: self.unit,
+            binding: *binding,
+        }) {
+            Some(FunctionIdentity::Known(known)) => Some(*known),
+            Some(FunctionIdentity::HeaderInline | FunctionIdentity::Unknown) | None => None,
+        }
+    }
+
+    fn allocator<'v>(&self, value: &'v Value) -> Option<(Known, &'v [Value])> {
+        let mut call = value;
+        while let ValueKind::Copy { operand, .. }
+        | ValueKind::Convert {
+            kind: ConversionKind::PointerCast,
+            operand,
+            ..
+        } = &call.node.value
+        {
+            call = operand;
+        }
+        let ValueKind::Call {
+            callee, arguments, ..
+        } = &call.node.value
+        else {
+            return None;
+        };
+        let known = self.known(callee)?;
+        matches!(known, Known::Malloc | Known::Calloc | Known::Realloc)
+            .then_some((known, arguments.as_slice()))
+    }
+
+    fn fresh(&self, value: &Value) -> bool {
+        let module = &self.program.unit(self.unit).module;
+        module.hosted
+            && !module.nostdinc
+            && matches!(
+                self.allocator(value),
+                Some((Known::Malloc, [_]) | (Known::Calloc, [_, _]))
+            )
+    }
+
+    fn reallocates(&self, binding: BindingId, value: &Value) -> bool {
+        matches!(
+            self.allocator(value),
+            Some((Known::Realloc, [pointer, _])) if read_binding(peel_conversions(pointer)) == Some(binding)
+        )
+    }
+
+    fn check(&mut self, value: &Value) {
+        let roots = self.sources(value).roots;
+        self.ownership
+            .checked
+            .extend(roots.into_iter().map(|(node, _)| node));
+    }
+
+    fn released(&self, statement: &Span<Statement>) -> Option<BindingId> {
+        let Statement::Expression(Value {
+            node:
+                Span {
+                    value:
+                        ValueKind::Call {
+                            callee, arguments, ..
+                        },
+                    ..
+                },
+            ..
+        }) = &statement.value
+        else {
+            return None;
+        };
+        let [pointer] = arguments.as_slice() else {
+            return None;
+        };
+        (self.known(callee) == Some(Known::Free))
+            .then(|| read_binding(peel_conversions(pointer)))
+            .flatten()
+    }
+
     fn allocation(&self, ty: &Type, initializer: &Value) -> Option<(BindingId, Type)> {
         let element = pointee(ty)?;
         let mut call = initializer;
@@ -732,8 +861,15 @@ impl Walker<'_, '_> {
             PlaceKind::Binding(binding) => {
                 if access == Use::Read {
                     *self.reads.entry(*binding).or_default() += 1;
+                    self.ownership.position += 1;
+                    self.ownership
+                        .last_read
+                        .insert(*binding, self.ownership.position);
                 } else {
                     self.written.insert(*binding);
+                    if access == Use::Write {
+                        *self.ownership.writes.entry(*binding).or_default() += 1;
+                    }
                 }
                 if let Some(node) = self.node(*binding) {
                     match access {
@@ -813,12 +949,12 @@ impl Walker<'_, '_> {
             ValueKind::Constant(_)
             | ValueKind::LayoutQuery { .. }
             | ValueKind::Null
-            | ValueKind::LabelAddress(_)
             | ValueKind::Seh(_)
             | ValueKind::Void
             | ValueKind::CodeUnits(_)
             | ValueKind::Fence { .. }
             | ValueKind::OldValue => {}
+            ValueKind::LabelAddress(_) => self.ownership.jumps = true,
             ValueKind::Copy { operand, .. } => self.value(operand),
             ValueKind::Aggregate { members, .. } => {
                 for member in members {
@@ -940,12 +1076,11 @@ impl Walker<'_, '_> {
             ValueKind::Convert { operand, .. } => {
                 self.value(operand);
                 if tracked_pointer(&operand.ty).is_some() && tracked_pointer(&value.ty).is_none() {
-                    let flags = if value.ty == Type::Bool {
-                        NULLABLE
+                    if value.ty == Type::Bool {
+                        self.check(operand);
                     } else {
-                        ESCAPE
-                    };
-                    self.mark(operand, flags);
+                        self.mark(operand, ESCAPE);
+                    }
                 }
             }
             ValueKind::Arith { left, right, .. } | ValueKind::Logical { left, right, .. } => {
@@ -972,10 +1107,10 @@ impl Walker<'_, '_> {
                 self.value(right);
                 if matches!(op, CompareOp::Eq | CompareOp::Ne) {
                     if null_like(right) {
-                        self.mark(left, NULLABLE);
+                        self.check(left);
                     }
                     if null_like(left) {
-                        self.mark(right, NULLABLE);
+                        self.check(right);
                     }
                 }
             }
@@ -1070,18 +1205,21 @@ impl Walker<'_, '_> {
         {
             return;
         }
-        let known = match callee {
-            Callee::Direct(binding) => match self.identities.get(&ProgramBinding {
-                unit: self.unit,
-                binding: *binding,
-            }) {
-                Some(FunctionIdentity::Known(known)) => Some(*known),
-                Some(FunctionIdentity::HeaderInline | FunctionIdentity::Unknown) | None => None,
-            },
-            Callee::Indirect(_) => None,
-        };
+        let known = self.known(callee);
         if known.is_none() {
             self.opaque = true;
+        }
+        if known == Some(Known::Free)
+            && let [pointer] = arguments
+            && let Some(binding) = read_binding(peel_conversions(pointer))
+            && let Some(&position) = self.ownership.last_read.get(&binding)
+        {
+            self.ownership.releases.push(Release {
+                binding,
+                position,
+                depth: self.ownership.depth,
+                terminal: self.ownership.terminal,
+            });
         }
         for (index, argument) in arguments.iter().enumerate() {
             let flags = known.map_or(ESCAPE, |known| known_argument(known, index));
@@ -1092,9 +1230,30 @@ impl Walker<'_, '_> {
     }
 
     fn statements(&mut self, body: &[Span<Statement>]) {
-        for statement in body {
-            self.statement(statement);
+        let mut terminal = vec![false; body.len()];
+        let mut returned: Option<Option<&Value>> = None;
+        for (index, statement) in body.iter().enumerate().rev() {
+            if let Statement::Return(value) = &statement.value {
+                returned = Some(value.as_ref());
+            } else if let Some(value) = returned
+                && let Some(binding) = self.released(statement)
+            {
+                terminal[index] = value.is_none_or(|value| !touches(value, binding));
+            } else {
+                returned = None;
+            }
         }
+        for (statement, terminal) in body.iter().zip(terminal) {
+            let outer = std::mem::replace(&mut self.ownership.terminal, terminal);
+            self.statement(statement);
+            self.ownership.terminal = outer;
+        }
+    }
+
+    fn looped(&mut self, walk: impl FnOnce(&mut Self)) {
+        self.ownership.depth += 1;
+        walk(self);
+        self.ownership.depth -= 1;
     }
 
     fn escape_all(&mut self, statement: &Span<Statement>) {
@@ -1174,8 +1333,8 @@ impl Walker<'_, '_> {
             | Statement::Return(None)
             | Statement::Break(_)
             | Statement::Continue(_)
-            | Statement::Goto(_)
             | Statement::SehLeave(_) => {}
+            Statement::Goto(_) => self.ownership.jumps = true,
             Statement::Temporary {
                 id,
                 ty,
@@ -1227,18 +1386,39 @@ impl Walker<'_, '_> {
                     {
                         self.allocations.insert(variable.id, allocation);
                     }
+                    if node.is_some() && !variable.access.volatile && self.fresh(initializer) {
+                        self.ownership
+                            .allocated
+                            .insert(variable.id, self.ownership.depth);
+                    }
                     match node {
                         Some(node) => self.assign(node, initializer),
                         None => self.mark(initializer, ESCAPE),
                     }
                 }
             }
-            Statement::Write { place, value, .. } => {
+            Statement::Write {
+                place,
+                value,
+                ordering,
+                ..
+            } => {
                 self.value(value);
                 self.place(place, Use::Write);
+                if let PlaceKind::Binding(binding) = place.kind
+                    && ordering.is_none()
+                    && !place.access.volatile
+                    && self.reallocates(binding, value)
+                {
+                    *self.ownership.reallocations.entry(binding).or_default() += 1;
+                }
                 self.store(place, value);
             }
-            Statement::Expression(value) | Statement::ComputedGoto(value) => self.value(value),
+            Statement::Expression(value) => self.value(value),
+            Statement::ComputedGoto(value) => {
+                self.ownership.jumps = true;
+                self.value(value);
+            }
             Statement::Return(Some(value)) => {
                 self.value(value);
                 match self.returned {
@@ -1248,8 +1428,11 @@ impl Walker<'_, '_> {
             }
             Statement::Block(body)
             | Statement::LabeledBlock { body, .. }
-            | Statement::Default { body, .. }
-            | Statement::Label { body, .. } => self.statements(body),
+            | Statement::Default { body, .. } => self.statements(body),
+            Statement::Label { body, .. } => {
+                self.ownership.jumps = true;
+                self.statements(body);
+            }
             Statement::MacroExpansion { body, .. } => {
                 self.macro_depth += 1;
                 self.statements(body);
@@ -1272,10 +1455,10 @@ impl Walker<'_, '_> {
             }
             | Statement::DoWhile {
                 condition, body, ..
-            } => {
-                self.evaluation(condition);
-                self.statements(body);
-            }
+            } => self.looped(|walker| {
+                walker.evaluation(condition);
+                walker.statements(body);
+            }),
             Statement::For {
                 init,
                 condition,
@@ -1284,13 +1467,15 @@ impl Walker<'_, '_> {
                 ..
             } => {
                 self.statements(init);
-                if let Some(condition) = condition {
-                    self.evaluation(condition);
-                }
-                if let Some(increment) = increment {
-                    self.evaluation(increment);
-                }
-                self.statements(body);
+                self.looped(|walker| {
+                    if let Some(condition) = condition {
+                        walker.evaluation(condition);
+                    }
+                    if let Some(increment) = increment {
+                        walker.evaluation(increment);
+                    }
+                    walker.statements(body);
+                });
             }
             Statement::Switch {
                 discriminant, body, ..
@@ -1308,6 +1493,7 @@ impl Walker<'_, '_> {
                 self.statements(body);
             }
             Statement::SehTry { body, handler, .. } => {
+                self.ownership.jumps = true;
                 self.statements(body);
                 match handler {
                     SehHandler::Except { filter, body } => {
@@ -1410,6 +1596,7 @@ fn null_like(value: &Value) -> bool {
 fn known_argument(known: Known, index: usize) -> u8 {
     match known {
         Known::Free => FREE,
+        Known::Realloc if index == 0 => FREE,
         Known::MemCpy | Known::MemMove | Known::MemSet => {
             if index == 0 {
                 WRITE
@@ -1475,6 +1662,7 @@ fn summarize(
         reads: HashMap::new(),
         allocations: HashMap::new(),
         leaked: HashSet::new(),
+        ownership: Ownership::default(),
     };
     if let Some(return_type) = &entry.function.return_type {
         walker.returned = walker.anonymous(entry.function.value.id, return_type, NodeKind::Return);
@@ -1505,6 +1693,29 @@ fn summarize(
             walker.nodes[source as usize].flags |= SHARED;
         }
     }
+    let owned: Vec<(u32, bool)> = walker
+        .nodes
+        .iter()
+        .enumerate()
+        .filter(|(_, item)| {
+            item.kind == NodeKind::Local
+                && item.byte_elements
+                && !item.opaque_pointee
+                && item.flags & (ESCAPE | MACRO) == 0
+                && walker.ownership.owns(item.binding)
+        })
+        .map(|(node, item)| {
+            (
+                node as u32,
+                walker.ownership.writes.contains_key(&item.binding),
+            )
+        })
+        .collect();
+    for &node in &walker.ownership.checked {
+        if !owned.iter().any(|&(owned, _)| owned == node) {
+            walker.nodes[node as usize].flags |= NULLABLE;
+        }
+    }
     Some(Summary {
         parameters,
         lengths,
@@ -1521,6 +1732,7 @@ fn summarize(
         leaked: walker.leaked,
         automatic: walker.automatic,
         derived: walker.derived,
+        owned,
         opaque: walker.opaque,
     })
 }
@@ -2004,10 +2216,44 @@ pub(crate) fn analyze(
     reach(total, &mut copies, &mut raw);
 
     let class_of: Vec<u32> = (0..total as u32).map(|node| classes.find(node)).collect();
+    let mut class_sizes = vec![0u32; total];
+    for &class in &class_of {
+        class_sizes[class as usize] += 1;
+    }
+    let mut owned: HashMap<u32, bool> = HashMap::new();
+    for (function, summary) in summaries.iter().enumerate() {
+        let Some(summary) = summary else { continue };
+        let offset = base[function];
+        for &(node, written) in &summary.owned {
+            let global = offset + node;
+            let class = class_of[global as usize] as usize;
+            let freed_by_callee = summary.calls.iter().any(|site| {
+                site.arguments.iter().any(|&(index, argument)| {
+                    argument == node
+                        && parameters[site.callee.0 as usize].get(&index).is_some_and(
+                            |&parameter| {
+                                class_flags[class_of[parameter as usize] as usize] & FREE != 0
+                            },
+                        )
+                })
+            });
+            if class_sizes[class] == 1
+                && class_flags[class] & (ESCAPE | MACRO) == 0
+                && !returned[class]
+                && !freed_by_callee
+            {
+                owned.insert(global, written || class_flags[class] & WRITE != 0);
+            }
+        }
+    }
+    let owned_classes: HashSet<u32> = owned.keys().map(|&node| class_of[node as usize]).collect();
     let class_borrow = |flags: u8| capability(flags, false, false).borrow();
     let seed_unproven = |covered: &HashSet<(usize, usize)>| {
         let mut unproven = vec![false; total];
         for &class in &class_of {
+            if owned_classes.contains(&class) {
+                continue;
+            }
             let class = class as usize;
             if class_flags[class] & MACRO != 0 || class_borrow(class_flags[class]).is_none() {
                 unproven[class] = true;
@@ -2040,12 +2286,13 @@ pub(crate) fn analyze(
                     let global = offset + node;
                     let item = &summary.nodes[node as usize];
                     let class = class_of[global as usize] as usize;
-                    let lowered_raw = raw[global as usize]
-                        || item.opaque_pointee
-                        || matches!(item.kind, NodeKind::Temporary | NodeKind::Return)
-                        || (item.kind == NodeKind::Local
-                            && class_borrow(class_flags[class])
-                                .is_none_or(|borrow| borrow.mutable));
+                    let lowered_raw = !owned.contains_key(&global)
+                        && (raw[global as usize]
+                            || item.opaque_pointee
+                            || matches!(item.kind, NodeKind::Temporary | NodeKind::Return)
+                            || (item.kind == NodeKind::Local
+                                && class_borrow(class_flags[class])
+                                    .is_none_or(|borrow| borrow.mutable)));
                     if lowered_raw && let Some(&parameter) = parameters[callee].get(&index) {
                         unproven[class_of[parameter as usize] as usize] = true;
                     }
@@ -2334,6 +2581,14 @@ pub(crate) fn analyze(
                     many: borrow.many || length.is_some(),
                     ..borrow
                 });
+            let ownership = owned.get(&global);
+            let borrow = match ownership {
+                Some(&mutable) => Some(Borrow {
+                    mutable,
+                    many: true,
+                }),
+                None => borrow,
+            };
             facts.bindings.insert(
                 ProgramBinding {
                     unit: entry.unit,
@@ -2344,6 +2599,7 @@ pub(crate) fn analyze(
                     borrow,
                     length,
                     c_string: matches!(item.kind, NodeKind::Parameter(index) if c_strings.contains(&(function, index))),
+                    owner: ownership.map(|_| Owner::Vec),
                 },
             );
         }

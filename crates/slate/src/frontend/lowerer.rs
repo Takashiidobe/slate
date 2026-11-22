@@ -28,6 +28,7 @@ mod f80;
 mod float_fold;
 mod functions;
 mod globals;
+mod heap_buffers;
 mod intrinsics;
 mod intrinsics_table;
 mod libc_calls;
@@ -428,6 +429,13 @@ impl Tables<'_> {
             .binding(binding)
             .and_then(|facts| facts.pointer)
             .and_then(|fact| fact.borrow)
+    }
+
+    fn owner_of(&self, binding: BindingId) -> Option<slate_analysis::Owner> {
+        self.facts
+            .binding(binding)
+            .and_then(|facts| facts.pointer)
+            .and_then(|fact| fact.owner)
     }
 
     fn c_string_array_of(&self, binding: BindingId) -> bool {

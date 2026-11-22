@@ -18,8 +18,10 @@
 - [String views and libc calls](#string-views-and-libc-calls)
 - [Byte buffers and mem\* calls](#byte-buffers-and-mem-calls)
 - [C-string arrays](#c-string-arrays)
+- [Heap buffers](#heap-buffers)
 - [Effect summaries](#effect-summaries)
 - [Def-use](#def-use)
+  - [Binding mutability](#binding-mutability)
   - [Counted loops](#counted-loops)
   - [Inline temporaries](#inline-temporaries)
 - [Shadow mode](#shadow-mode)
@@ -535,6 +537,33 @@ discarded `strcpy`/`strcat` into it becomes
 `slate_support::__slate_strcpy`/`__slate_strcat(&mut buf, src)`, with `src`
 as a `&str` or byte slice from its view; they panic where C would overflow.
 Storage stays `[c_char; N]`: retyping to `[u8; N]` would cast every other use.
+
+## Heap buffers
+
+`pointer::analyze` sets `PointerFact::owner = Some(Owner::Vec)` on a local
+8-bit pointer that owns its allocation. Lowering declares it `Vec<T>`
+(`vec![0; n]`), lowers `p = realloc(p, n)` to `resize(n, 0)`, `free(p)` to
+`drop(p)`, and a null compare on it to a constant (the allocation aborts
+instead of returning NULL). The fact also carries a `many` borrow, so indexing,
+`mem*` buffers and raw libc arguments (`p.as_mut_ptr()`) reuse the slice-view
+paths, and callees it is passed to can lift to `&[T]`/`&mut [T]`.
+
+Ownership needs no CFG. Dropping where C leaks is unobservable, so "freed once
+on every path" is not required; the conditions are no alias, no escape, no use
+after free:
+
+- the `let` initializer is `malloc`/`calloc` in a unit with std (hosted, no
+  `-nostdinc`), and every other write is a statement `p = realloc(p, n)`;
+- the function has no goto, label, label address, computed goto or SEH;
+- each `free(p)` is the last read of `p` in walk order at the `let`'s loop
+  depth, or is terminal: in a run of frees directly before a `return` that does
+  not mention `p`;
+- the copy class is the node alone, not ESCAPE/MACRO, not returned, and no
+  callee parameter it reaches has FREE.
+
+Null checks are kept apart from NULLABLE until the candidates are known, so an
+owned buffer does not make a callee's parameter nullable. `Owner` is the
+extension point for `Box<T>`, `Vec<T>`, `CString` and `String`.
 
 ## Effect summaries
 

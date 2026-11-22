@@ -27,5 +27,5 @@ pub use counted_loops::CountedLoop;
 pub use def_use::{BindingMutability, BorrowArgument};
 pub use facts::{BindingFacts, Facts, UnitFacts, ValueFacts, analyze};
 pub use identity::{FunctionIdentity, Known};
-pub use pointer::{Borrow, Length, PointerFact, PointerRole};
+pub use pointer::{Borrow, Length, Owner, PointerFact, PointerRole};
 pub use program::{FunctionEntry, FunctionId, Program, ProgramBinding, ProgramUnit, UnitId};

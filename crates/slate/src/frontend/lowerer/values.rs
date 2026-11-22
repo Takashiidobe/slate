@@ -1695,6 +1695,14 @@ impl FunctionLowerer<'_, '_> {
                 left,
                 right,
                 ..
+            } if self.owned_null_compare(left, right) => {
+                Expr::Value(rust::RustValue::Bool(*op == ir::CompareOp::Ne))
+            }
+            ValueKind::Compare {
+                op: op @ (ir::CompareOp::Eq | ir::CompareOp::Ne),
+                left,
+                right,
+                ..
             } if let Some(pointer) = self.opaque_null_operand(left, right) => {
                 let is_null = Expr::Call {
                     func: Box::new(Expr::var("::slate_support::opaque_is_null".into())),

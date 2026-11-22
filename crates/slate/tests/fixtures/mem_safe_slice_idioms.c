@@ -79,22 +79,10 @@ int main(void) {
 // CHECK-NEXT:     dst_f[0usize..((n as u64) as usize) as usize]
 // CHECK-NEXT:         .copy_from_slice(&src_f[0usize..((n as u64) as usize) as usize]);
 // CHECK-NEXT:     let mut dst_g: [u8; 4] = [0, 0, 0, 0];
-// CHECK-NEXT:     let src_g: *mut u8 = unsafe { (malloc(4u64 as usize) as *mut ()) as *mut u8 };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::write_bytes(
-// CHECK-NEXT:             ((src_g as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             (5i32 as i32) as u8,
-// CHECK-NEXT:             (4u64 as usize) as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((src_g as *const ()) as *const core::ffi::c_void) as *const u8,
-// CHECK-NEXT:             ((dst_g.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             (4u64 as usize) as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { free((src_g as *mut ()) as *mut core::ffi::c_void) };
+// CHECK-NEXT:     let mut src_g: Vec<u8> = vec![0; 4 as usize];
+// CHECK-NEXT:     src_g[0usize..4usize].fill((5i32 as i32) as u8);
+// CHECK-NEXT:     dst_g[0usize..4usize].copy_from_slice(&src_g[0usize..4usize]);
+// CHECK-NEXT:     drop(src_g);
 // CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         print!("{} ", dst_a[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

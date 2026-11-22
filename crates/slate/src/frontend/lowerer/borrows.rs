@@ -461,6 +461,12 @@ impl FunctionLowerer<'_, '_> {
                 && (source.mutable || !target.mutable) =>
             {
                 let binding = Expr::var(self.binding_name(id).as_str().into());
+                if self.owned(id) && target.many {
+                    return Ok(Expr::Ref {
+                        mutable: target.mutable,
+                        expr: Box::new(binding),
+                    });
+                }
                 Ok(match (source.many, target.many) {
                     (false, false) | (true, true) => binding,
                     (true, false) => first_element(target.mutable, binding),

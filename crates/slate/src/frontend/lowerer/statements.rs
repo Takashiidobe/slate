@@ -224,6 +224,9 @@ impl FunctionLowerer<'_, '_> {
                         init: Some(init),
                     });
                 }
+                if let Some(owned) = self.lower_owned_let(variable)? {
+                    return Ok(owned);
+                }
                 let alignment = self.tables.over_alignment(&variable.ty, variable.alignment);
                 if let Some(borrow) = self.borrow_of(variable.id) {
                     if let Some(initializer) = &variable.initializer
@@ -443,6 +446,20 @@ impl FunctionLowerer<'_, '_> {
                     Stmt::Expr(lowered?)
                 }
             },
+            ir::Statement::Write {
+                place:
+                    place @ ir::Place {
+                        kind: PlaceKind::Binding(id),
+                        ..
+                    },
+                value,
+                ordering: None,
+                ..
+            } if !place.access.volatile
+                && let Some(reallocation) = self.lower_reallocation(*id, value)? =>
+            {
+                reallocation
+            }
             ir::Statement::Write {
                 place:
                     place @ ir::Place {

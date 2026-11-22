@@ -61,13 +61,13 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let buffer: *mut i8 = unsafe { __builtin_malloc(32u64) as *mut i8 };
-// CHECK-NEXT:     unsafe { __builtin_strcpy(buffer, c"slate".as_ptr()) };
+// CHECK-NEXT:     let mut buffer: Vec<i8> = vec![0; 32 as usize];
+// CHECK-NEXT:     unsafe { __builtin_strcpy(buffer.as_mut_ptr(), c"slate".as_ptr()) };
 // CHECK-NEXT:     let mut copy: [i8; 8] = [0i8; 8];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin_strncpy(
 // CHECK-NEXT:             copy.as_mut_ptr(),
-// CHECK-NEXT:             buffer as *const i8,
+// CHECK-NEXT:             buffer.as_mut_ptr() as *const i8,
 // CHECK-NEXT:             core::mem::size_of::<[i8; 8]>() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -77,7 +77,7 @@ int main(void) {
 // CHECK-NEXT:             formatted.0.as_mut_ptr(),
 // CHECK-NEXT:             c"%s-%d".as_ptr(),
 // CHECK-NEXT:             copy.as_mut_ptr(),
-// CHECK-NEXT:             __builtin_strlen(buffer as *const i8) as i32,
+// CHECK-NEXT:             __builtin_strlen(buffer.as_mut_ptr() as *const i8) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut bounded: [i8; 4] = [0i8; 4];
@@ -103,7 +103,7 @@ int main(void) {
 // CHECK-NEXT:             formatted.0.as_mut_ptr(),
 // CHECK-NEXT:             bounded.as_mut_ptr(),
 // CHECK-NEXT:             wanted,
-// CHECK-NEXT:             __builtin_strcmp(buffer as *const i8, c"slate".as_ptr()),
+// CHECK-NEXT:             __builtin_strcmp(buffer.as_mut_ptr() as *const i8, c"slate".as_ptr()),
 // CHECK-NEXT:             found.offset_from(formatted.0.as_mut_ptr() as *const i8) as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -143,7 +143,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe { __builtin_free(buffer as *mut ()) };
+// CHECK-NEXT:     drop(buffer);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

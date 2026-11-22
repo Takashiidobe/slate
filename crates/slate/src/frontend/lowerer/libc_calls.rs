@@ -89,6 +89,7 @@ impl FunctionLowerer<'_, '_> {
             Known::Abort if self.tables.runtime.has_std() => {
                 Some(free_call(&["std", "process", "abort"], args.to_vec()))
             }
+            Known::Free => self.lower_release(arguments),
             Known::StrCpy | Known::StrCat if discarded => {
                 self.lower_c_string_copy(known, arguments)?
             }
