@@ -274,31 +274,19 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn reassigned(r#box: *mut i32, pick: i32) -> i32 {
-// CHECK-NEXT:     let mut owned: core::mem::MaybeUninit<*mut i32> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0]]: *mut *mut i32 = core::ptr::addr_of_mut!(owned) as *mut *mut i32;
-// CHECK-NEXT:     let __slate_cleanup_ptr_0 = [[SLATE_SLOT_0]];
-// CHECK-NEXT:     let __slate_cleanup_armed_0 = core::cell::Cell::new(false);
+// CHECK-NEXT:     let mut owned: *mut i32 = core::ptr::null_mut::<i32>();
+// CHECK-NEXT:     let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(owned) as *mut _;
 // CHECK-NEXT:     let __slate_cleanup_0 = ::slate_support::Guard(
-// CHECK-NEXT:         &mut || {
-// CHECK-NEXT:             if __slate_cleanup_armed_0.get() {
-// CHECK-NEXT:                 unsafe { free_box(__slate_cleanup_ptr_0 as *mut _) };
-// CHECK-NEXT:             }
-// CHECK-NEXT:         },
+// CHECK-NEXT:         &mut || free_box(__slate_cleanup_ptr_0 as *mut _),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_0]], core::ptr::null_mut::<i32>());
-// CHECK-NEXT:         __slate_cleanup_armed_0.set(true);
-// CHECK-NEXT:         if pick != 0 {
-// CHECK-NEXT:             *[[SLATE_SLOT_0]] = r#box;
-// CHECK-NEXT:             if (*[[SLATE_SLOT_0]]).is_null() {
-// CHECK-NEXT:                 return -1;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 return *(*[[SLATE_SLOT_0]]) + 1;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             return 0;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     if pick == 0 {
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     owned = r#box;
+// CHECK-NEXT:     if owned.is_null() {
+// CHECK-NEXT:         return -1;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     (unsafe { *owned }) + 1
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut order: __SlateAlign16<[i8; 32]> = __SlateAlign16(

@@ -123,9 +123,9 @@ impl DefUse {
 
     fn statement(&mut self, statement: &Statement) {
         match statement {
-            Statement::MacroExpansion { body, .. } | Statement::Block(body) => {
-                self.statements(body)
-            }
+            Statement::MacroExpansion { body, .. }
+            | Statement::Block(body)
+            | Statement::LabeledBlock { body, .. } => self.statements(body),
             Statement::Comment(_)
             | Statement::Null
             | Statement::Fence { .. }

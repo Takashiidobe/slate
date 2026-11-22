@@ -31,23 +31,29 @@ done:
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut r: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut b: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let a: i32 = 3;
-// CHECK-NEXT:         b = -1;
-// CHECK-NEXT:         if a > 0 {
-// CHECK-NEXT:             if b > 0 {
+// CHECK-NEXT:     let a: i32 = 3;
+// CHECK-NEXT:     let b: i32 = -1;
+// CHECK-NEXT:     let mut r: i32 = 0;
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
+// CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: {
+// CHECK-NEXT:             '[[SLATE_BREAK_2:__slate_break_[0-9]+]]: {
+// CHECK-NEXT:                 if a > 0 {
+// CHECK-NEXT:                     if !(b > 0) {
+// CHECK-NEXT:                         break '[[SLATE_BREAK_2]];
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     break '[[SLATE_BREAK_1]];
+// CHECK-NEXT:                 }
 // CHECK-NEXT:                 r = 1;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 r = 2;
+// CHECK-NEXT:                 break '[[SLATE_BREAK_0]];
 // CHECK-NEXT:             }
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             r = 3;
+// CHECK-NEXT:             r = 2;
+// CHECK-NEXT:             break '[[SLATE_BREAK_0]];
 // CHECK-NEXT:         }
-// CHECK-NEXT:         println!("{}", r);
-// CHECK-NEXT:         return 0;
+// CHECK-NEXT:         r = 3;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     println!("{}", r);
+// CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

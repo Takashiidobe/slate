@@ -1009,6 +1009,14 @@ impl Printer<'_> {
                     writeln!(f, "{:indent$}}}", "")?;
                     continue;
                 }
+                Statement::LabeledBlock { id, body } => {
+                    write!(f, "block %{} {{", id.0)?;
+                    self.statement_annotations(f, statement)?;
+                    writeln!(f)?;
+                    self.statements(f, body, indent + 4)?;
+                    writeln!(f, "{:indent$}}}", "")?;
+                    continue;
+                }
                 Statement::NestedFunction(nested) => {
                     let function = &nested.function;
                     write!(f, "nested_fn %{} @{}(", function.id.0, function.name)?;

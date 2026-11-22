@@ -24,17 +24,14 @@ print:
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut cls: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let n: i32 = 7;
-// CHECK-NEXT:         if n < 0 {
-// CHECK-NEXT:             cls = -1;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             cls = 1;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         println!("{}", cls);
-// CHECK-NEXT:         return 0;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let n: i32 = 7;
+// CHECK-NEXT:     let cls: i32 = if n < 0 {
+// CHECK-NEXT:         -1
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         1
+// CHECK-NEXT:     };
+// CHECK-NEXT:     println!("{}", cls);
+// CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

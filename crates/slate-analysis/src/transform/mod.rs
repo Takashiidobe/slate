@@ -2,6 +2,7 @@ mod const_fold;
 mod dead_temporaries;
 mod decl_init;
 mod inline_temporaries;
+mod structure_goto;
 mod truth_canonicalize;
 
 use slate_parser::ir::Module;
@@ -20,6 +21,11 @@ pub struct Pass {
 }
 
 pub static PASSES: &[Pass] = &[
+    Pass {
+        name: "structure-goto",
+        slots: &[Slot::AfterMacroStrip],
+        run: structure_goto::transform,
+    },
     Pass {
         name: "truth-canonicalize",
         slots: &[Slot::AfterMacroStrip],

@@ -38,6 +38,7 @@ pub(super) fn normalize(
     }
     module.c_types.nodes = hoister.c_nodes;
     module.c_types.bindings = hoister.c_bindings;
+    module.next_binding = hoister.next_id;
     for expansion in hoister.split_expansions {
         module
             .macro_rejections
@@ -151,6 +152,10 @@ impl Hoister {
                     Statement::ComputedGoto(self.value(value, &mut out)?)
                 }
                 Statement::Block(body) => Statement::Block(self.statements(body)?),
+                Statement::LabeledBlock { id, body } => Statement::LabeledBlock {
+                    id,
+                    body: self.statements(body)?,
+                },
                 Statement::If {
                     condition,
                     then_body,

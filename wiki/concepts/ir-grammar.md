@@ -380,7 +380,8 @@ statement  = simple { metadata } ";"
                    "step:" ("add" | "sub") value }
                "body:" body
            | asm
-           | "{" { metadata } body "}" ;
+           | "{" { metadata } body "}"
+           | "block" binding "{" { metadata } body "}" ;
 asm        = "asm" [ " volatile" ] [ " inline" ] [ " goto" ] string
                [ " [dialect=" ( "att" | "intel" ) "]" ]
                [ " [options=" asm_options "]" ]
@@ -448,6 +449,8 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
 - Loops, switches and labels are identified by their `binding`. `break` and
   `continue` name the loop or switch they leave, and `case`/`default` name their
   switch even when nested deeper (Duff's device). There are no implicit targets.
+- `block %N { ... }` is a labeled block that `break %N` leaves. Sema never
+  emits it; only slate-analysis transforms do (goto structuring).
 - Statement order and the absence of `break` express fallthrough.
 - An `asm` with no operand sections prints as a single `;` statement; that is
   basic asm, whose template is emitted verbatim. The quoted string after the

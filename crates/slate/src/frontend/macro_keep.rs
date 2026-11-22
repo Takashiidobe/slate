@@ -102,7 +102,8 @@ impl Visitor for Survey<'_> {
             Statement::Write { place, .. } if writes_bit_field(place) => {
                 self.reject_open("bit_field_write")
             }
-            Statement::While { id, .. }
+            Statement::LabeledBlock { id, .. }
+            | Statement::While { id, .. }
             | Statement::DoWhile { id, .. }
             | Statement::For { id, .. }
             | Statement::Switch { id, .. } => {

@@ -290,57 +290,28 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn shifted_names(value: i32, limit: i32) -> i32 {
-// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     #[cfg(feature = "alpha")]
-// CHECK-NEXT:     let mut [[I_0:i_[0-9]+]]: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         result = 0;
+// CHECK-NEXT:     let mut result: i32 = 0;
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
 // CHECK-NEXT:         #[cfg(feature = "alpha")]
 // CHECK-NEXT:         {
-// CHECK-NEXT:             [[I_0]] = 0;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:             #[cfg(feature = "alpha")]
-// CHECK-NEXT:             {
-// CHECK-NEXT:                 while [[I_0]] < limit {
-// CHECK-NEXT:                     if [[I_0]] == value {
-// CHECK-NEXT:                         break '[[JOIN_0]];
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         [[I_0]] += 1;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 result += 50;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             i = 0;
-// CHECK-NEXT:             while i < limit {
-// CHECK-NEXT:                 if i * 2 == value {
-// CHECK-NEXT:                     #[cfg(feature = "alpha")]
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         break '[[JOIN_0]];
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     #[cfg(not(feature = "alpha"))]
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         result += 1000;
-// CHECK-NEXT:                         return result;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     result += i;
-// CHECK-NEXT:                     i += 1;
+// CHECK-NEXT:             for i in 0..limit {
+// CHECK-NEXT:                 if i == value {
+// CHECK-NEXT:                     break '[[SLATE_BREAK_0]];
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:             result += 7;
-// CHECK-NEXT:             #[cfg(feature = "alpha")]
-// CHECK-NEXT:             {
-// CHECK-NEXT:                 return result;
+// CHECK-NEXT:             result += 50;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         for i in 0..limit {
+// CHECK-NEXT:             if i * 2 == value {
+// CHECK-NEXT:                 break '[[SLATE_BREAK_0]];
 // CHECK-NEXT:             }
+// CHECK-NEXT:             result += i;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(feature = "alpha")]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             result += 1000;
-// CHECK-NEXT:         }
+// CHECK-NEXT:         result += 7;
 // CHECK-NEXT:         return result;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     result += 1000;
+// CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

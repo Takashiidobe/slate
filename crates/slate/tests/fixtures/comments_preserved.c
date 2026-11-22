@@ -89,13 +89,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: /// preserved-goto-function-comment
-// CHECK-NEXT: fn jumped(n: i32) -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         // preserved-before-goto-comment
-// CHECK-NEXT:         return n;
+// CHECK-NEXT: fn jumped(mut n: i32) -> i32 {
+// CHECK-NEXT:     // preserved-before-goto-comment
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
+// CHECK-NEXT:         break '[[SLATE_BREAK_0]];
+// CHECK-NEXT:         // preserved-unreachable-comment
+// CHECK-NEXT:         n += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     // preserved-unreachable-comment
-// CHECK-NEXT:     // preserved-label-comment
+// CHECK-NEXT:     return n; // preserved-label-comment
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: /// preserved-function-comment

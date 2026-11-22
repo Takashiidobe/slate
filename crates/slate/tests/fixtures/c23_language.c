@@ -285,10 +285,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c23_label_declaration(value: i32) -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let result: i32 = value + 1;
-// CHECK-NEXT:         return result;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let result: i32 = value + 1;
+// CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c23_label_before_brace() {}

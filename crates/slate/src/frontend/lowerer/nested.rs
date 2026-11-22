@@ -13,6 +13,7 @@ pub(super) fn collect_nested_functions<'m>(
                 }
             }
             ir::Statement::Block(body)
+            | ir::Statement::LabeledBlock { body, .. }
             | ir::Statement::MacroExpansion { body, .. }
             | ir::Statement::While { body, .. }
             | ir::Statement::DoWhile { body, .. }

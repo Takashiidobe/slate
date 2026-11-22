@@ -1252,6 +1252,7 @@ impl Walker<'_, '_> {
                 }
             }
             Statement::Block(body)
+            | Statement::LabeledBlock { body, .. }
             | Statement::Default { body, .. }
             | Statement::Label { body, .. } => self.statements(body),
             Statement::MacroExpansion { body, .. } => {

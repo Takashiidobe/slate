@@ -22,17 +22,16 @@ int main() {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn classify(n: i32) -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         if n < 0 {
-// CHECK-NEXT:             return -1;
-// CHECK-NEXT:         } else {
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
+// CHECK-NEXT:         if !(n < 0) {
 // CHECK-NEXT:             if n == 0 {
-// CHECK-NEXT:                 return 0;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 return 1;
+// CHECK-NEXT:                 break '[[SLATE_BREAK_0]];
 // CHECK-NEXT:             }
+// CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

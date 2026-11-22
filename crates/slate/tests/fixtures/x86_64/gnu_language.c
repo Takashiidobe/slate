@@ -198,16 +198,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_local_label(input: i32) -> i32 {
-// CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         result = input;
-// CHECK-NEXT:         if result > 0 {
-// CHECK-NEXT:             result += 5;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             result = 0;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         return result;
+// CHECK-NEXT:     let mut result: i32 = input;
+// CHECK-NEXT:     if result > 0 {
+// CHECK-NEXT:         result += 5;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         result = 0;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_computed_goto(mut selector: u32) -> i32 {

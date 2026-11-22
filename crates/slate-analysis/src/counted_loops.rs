@@ -54,6 +54,7 @@ fn collect_locals(body: &[Span<Statement>], plain: &mut HashSet<BindingId>) {
             }
             Statement::MacroExpansion { body, .. }
             | Statement::Block(body)
+            | Statement::LabeledBlock { body, .. }
             | Statement::While { body, .. }
             | Statement::DoWhile { body, .. }
             | Statement::Switch { body, .. }
@@ -84,6 +85,7 @@ fn mark(body: &[Span<Statement>], scope: &Scope, loops: &mut HashMap<BindingId, 
         deep(|| match &statement.value {
             Statement::MacroExpansion { body, .. }
             | Statement::Block(body)
+            | Statement::LabeledBlock { body, .. }
             | Statement::While { body, .. }
             | Statement::DoWhile { body, .. }
             | Statement::Switch { body, .. }

@@ -55,26 +55,22 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn scan(n: i32, mode: i32) -> i32 {
-// CHECK-NEXT:     let mut s: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         i = 0;
-// CHECK-NEXT:         s = 0;
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     let mut s: i32 = 0;
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
 // CHECK-NEXT:         if mode != 0 {
 // CHECK-NEXT:             loop {
 // CHECK-NEXT:                 if i >= n {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     s += i;
-// CHECK-NEXT:                     i += 1;
+// CHECK-NEXT:                     break '[[SLATE_BREAK_0]];
 // CHECK-NEXT:                 }
+// CHECK-NEXT:                 s += i;
+// CHECK-NEXT:                 i += 1;
 // CHECK-NEXT:             }
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             s += 100;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         println!("scan {} {}", s, i);
-// CHECK-NEXT:         return s;
+// CHECK-NEXT:         s += 100;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     println!("scan {} {}", s, i);
+// CHECK-NEXT:     s
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn flags(mut c: i32) -> i32 {

@@ -214,19 +214,13 @@ int main(void) {
 // CHECK-NEXT:     s
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn jumps(p: &i32, n: i32) -> i32 {
-// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut s: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         s = 0;
-// CHECK-NEXT:         i = 0;
-// CHECK-NEXT:         while i < n {
-// CHECK-NEXT:             if i != 1 {
-// CHECK-NEXT:                 s += 10;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             s += 1;
-// CHECK-NEXT:             i += 1;
+// CHECK-NEXT:     let mut s: i32 = 0;
+// CHECK-NEXT:     for i in 0..n {
+// CHECK-NEXT:         if i != 1 {
+// CHECK-NEXT:             s += 10;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return s;
+// CHECK-NEXT:         s += 1;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     s
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -26,30 +26,34 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut [[RESULT_0:result_[0-9]+]]: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut first: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut value: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         value = 0;
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = value + 1;
-// CHECK-NEXT:         value = [[V_0]];
-// CHECK-NEXT:         if [[V_0]] != 1 {
-// CHECK-NEXT:             [[RESULT_0]] = -5;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             [[RESULT_0]] = 17;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         first = [[RESULT_0]];
+// CHECK-NEXT:     let mut value: i32 = 0;
+// CHECK-NEXT:     let mut first: i32 = 0;
+// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32;
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let mut result: i32 = 0;
 // CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = value + 1;
 // CHECK-NEXT:         value = [[V_1]];
-// CHECK-NEXT:         if [[V_1]] != 9 {
-// CHECK-NEXT:             result = -5;
-// CHECK-NEXT:         } else {
+// CHECK-NEXT:         if [[V_1]] == 1 {
 // CHECK-NEXT:             result = 17;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             result = -5;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let second: i32 = result;
-// CHECK-NEXT:         println!("{} {} {}", first, second, value);
-// CHECK-NEXT:         return 0;
+// CHECK-NEXT:         [[V_0]] = result;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     first = [[V_0]];
+// CHECK-NEXT:     let mut second: i32 = 0;
+// CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: i32;
+// CHECK-NEXT:     let mut result: i32 = 0;
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = value + 1;
+// CHECK-NEXT:     value = [[V_3]];
+// CHECK-NEXT:     if [[V_3]] == 9 {
+// CHECK-NEXT:         result = 17;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         result = -5;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     [[V_2]] = result;
+// CHECK-NEXT:     second = [[V_2]];
+// CHECK-NEXT:     println!("{} {} {}", first, second, value);
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

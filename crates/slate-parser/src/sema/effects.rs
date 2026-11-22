@@ -96,7 +96,7 @@ fn assigned_value(place: &Place, value: Value) -> Value {
 }
 
 pub(super) struct Hoister {
-    next_id: u32,
+    pub(super) next_id: u32,
     old: Vec<Value>,
     unsequenced: bool,
     pub(super) arguments_reversed: bool,

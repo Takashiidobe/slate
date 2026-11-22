@@ -204,28 +204,21 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn run(n: i32) -> i32 {
-// CHECK-NEXT:     let mut func: core::mem::MaybeUninit<Option<unsafe extern "C-unwind" fn(i32) -> i32>> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut Option<unsafe extern "C-unwind" fn(i32) -> i32> = core::ptr::addr_of_mut!(func)
-// CHECK-NEXT:         as *mut Option<unsafe extern "C-unwind" fn(i32) -> i32>;
-// CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut s: core::mem::MaybeUninit<slot> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_1:__slate_slot_[0-9]+]]: *mut slot = core::ptr::addr_of_mut!(s) as *mut slot;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         total = 0;
-// CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_0]], None);
-// CHECK-NEXT:         if n > 5 {
-// CHECK-NEXT:             *[[SLATE_SLOT_0]] = Some(twice);
-// CHECK-NEXT:             PUSH!(core::ptr::addr_of_mut!(*[[SLATE_SLOT_1]]), *[[SLATE_SLOT_0]]);
-// CHECK-NEXT:             total = (*[[SLATE_SLOT_1]]).func.unwrap()(n * 10);
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             *[[SLATE_SLOT_0]] = Some(twice);
-// CHECK-NEXT:             if *[[SLATE_SLOT_0]] != None {
-// CHECK-NEXT:                 PUSH!(core::ptr::addr_of_mut!(*[[SLATE_SLOT_1]]), *[[SLATE_SLOT_0]]);
-// CHECK-NEXT:             }
-// CHECK-NEXT:             total = (*[[SLATE_SLOT_1]]).func.unwrap()(n) + (*[[SLATE_SLOT_1]]).num;
+// CHECK-NEXT:     let mut s: slot = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut total: i32 = 0;
+// CHECK-NEXT:     let mut func: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
+// CHECK-NEXT:     if !(n > 5) {
+// CHECK-NEXT:         func = Some(twice);
+// CHECK-NEXT:         if func != None {
+// CHECK-NEXT:             PUSH!(core::ptr::addr_of_mut!(s), func);
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return total;
+// CHECK-NEXT:         total = (unsafe { s.func.unwrap()(n) }) + s.num;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         func = Some(twice);
+// CHECK-NEXT:         PUSH!(core::ptr::addr_of_mut!(s), func);
+// CHECK-NEXT:         total = unsafe { s.func.unwrap()(n * 10) };
 // CHECK-NEXT:     }
+// CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! EQUAL {
@@ -255,13 +248,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! PUSH {
-// CHECK-NEXT:     ($s:expr, $func:expr) => {
+// CHECK-NEXT:     ($s:expr, $func:ident) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 (*$s).num = 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*$s).func = $func;
+// CHECK-NEXT:                 (*$s).$func = $func;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;

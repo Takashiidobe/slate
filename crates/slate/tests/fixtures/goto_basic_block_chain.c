@@ -85,13 +85,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn straight_line() -> i32 {
-// CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         result = mark(6i32);
-// CHECK-NEXT:         result += mark(7i32);
-// CHECK-NEXT:         result += mark(8i32);
-// CHECK-NEXT:         return result;
+// CHECK-NEXT:     let mut result: i32 = mark(6i32);
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
+// CHECK-NEXT:         break '[[SLATE_BREAK_0]];
+// CHECK-NEXT:         result = mark(9i32);
 // CHECK-NEXT:     }
+// CHECK-NEXT:     result += mark(7i32);
+// CHECK-NEXT:     result += mark(8i32);
+// CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

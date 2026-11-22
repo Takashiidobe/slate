@@ -74,6 +74,7 @@ pub(super) fn contains_switch_label(statements: &[&ir::Statement], switch: Bindi
             true
         }
         ir::Statement::Block(body)
+        | ir::Statement::LabeledBlock { body, .. }
         | ir::Statement::While { body, .. }
         | ir::Statement::DoWhile { body, .. }
         | ir::Statement::Switch { body, .. }

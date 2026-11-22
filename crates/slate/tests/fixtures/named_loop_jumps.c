@@ -75,88 +75,66 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: //! { dg-options "-std=c2y" }
 // CHECK-NEXT: fn grid(limit: i32) -> i32 {
-// CHECK-NEXT:     let mut j: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut hits: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         hits = 0;
-// CHECK-NEXT:         i = 0;
-// CHECK-NEXT:         '__loop_1: while i < 6 {
-// CHECK-NEXT:             j = 0;
-// CHECK-NEXT:             while j < 6 {
-// CHECK-NEXT:                 if j > i {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     if i * j > limit {
-// CHECK-NEXT:                         break '__loop_1;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         if (i + j) % 3 != 0 {
-// CHECK-NEXT:                             hits += i * 10 + j;
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         j += 1;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
+// CHECK-NEXT:     let mut hits: i32 = 0;
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..6i32 {
+// CHECK-NEXT:         for j in 0i32..6i32 {
+// CHECK-NEXT:             if j > i {
+// CHECK-NEXT:                 continue '[[SLATE_BREAK_0]];
 // CHECK-NEXT:             }
-// CHECK-NEXT:             i += 1;
+// CHECK-NEXT:             if i * j > limit {
+// CHECK-NEXT:                 break '[[SLATE_BREAK_0]];
+// CHECK-NEXT:             }
+// CHECK-NEXT:             if (i + j) % 3 == 0 {
+// CHECK-NEXT:                 continue;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             hits += i * 10 + j;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return hits;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     hits
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn dispatch(n: i32) -> i32 {
-// CHECK-NEXT:     let mut k: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         total = 0;
-// CHECK-NEXT:         k = 0;
-// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:             loop {
-// CHECK-NEXT:                 if k < 8 {
-// CHECK-NEXT:                     k += 1;
-// CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: i32 = n + k;
-// CHECK-NEXT:                     if [[T_0]] == 3 {
-// CHECK-NEXT:                         total += 1;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         if [[T_0]] == 5 {
-// CHECK-NEXT:                             total += 100;
-// CHECK-NEXT:                             continue;
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             if [[T_0]] == 9 {
-// CHECK-NEXT:                                 break;
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     total += 10;
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     break '[[JOIN_0]];
+// CHECK-NEXT:     let mut total: i32 = 0;
+// CHECK-NEXT:     let mut k: i32 = 0;
+// CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: while k < 8 {
+// CHECK-NEXT:         '[[SLATE_CONTINUE_0:__slate_continue_[0-9]+]]: {
+// CHECK-NEXT:             k += 1;
+// CHECK-NEXT:             match n + k {
+// CHECK-NEXT:                 3 => {
+// CHECK-NEXT:                     total += 1;
 // CHECK-NEXT:                 }
+// CHECK-NEXT:                 5 => {
+// CHECK-NEXT:                     total += 100;
+// CHECK-NEXT:                     break '[[SLATE_CONTINUE_0]];
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 9 => {
+// CHECK-NEXT:                     total += 1000;
+// CHECK-NEXT:                     break '[[SLATE_BREAK_1]];
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 _ => {}
 // CHECK-NEXT:             }
-// CHECK-NEXT:             total += 1000;
+// CHECK-NEXT:             total += 10;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return total * 16 + k;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     total * 16 + k
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn countdown(mut n: i32) -> i32 {
-// CHECK-NEXT:     let mut steps: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         steps = 0;
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             n -= 1;
-// CHECK-NEXT:             steps += 1;
-// CHECK-NEXT:             if n % 2 == 0 {
-// CHECK-NEXT:                 if n < 3 {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     steps += 5;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if !(n > 0) {
+// CHECK-NEXT:     let mut steps: i32 = 0;
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         n -= 1;
+// CHECK-NEXT:         steps += 1;
+// CHECK-NEXT:         if n % 2 == 0 {
+// CHECK-NEXT:             if n < 3 {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
+// CHECK-NEXT:             steps += 5;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return steps * 100 + n;
+// CHECK-NEXT:         if n <= 0 {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-NEXT:     steps * 100 + n
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

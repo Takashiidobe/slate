@@ -436,7 +436,12 @@ pub fn fill_holes(template: &mut [Stmt], params: &[MacroParam], args: &[Expr]) {
         } else if let Some(parameter) = place_pointer_parameter(expr) {
             argument(parameter).cloned()
         } else {
-            hole_parameter(expr).and_then(argument).cloned()
+            hole_parameter(expr)
+                .and_then(argument)
+                .map(|argument| match argument {
+                    Expr::MacroName(name) => Expr::Var(name.as_str().into()),
+                    other => other.clone(),
+                })
         };
         if let Some(value) = value {
             *expr = value;

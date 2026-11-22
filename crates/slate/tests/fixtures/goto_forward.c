@@ -14,11 +14,13 @@ done:
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let x: i32 = 1;
-// CHECK-NEXT:         println!("{}", x);
-// CHECK-NEXT:         return 0;
+// CHECK-NEXT:     let mut x: i32 = 1;
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
+// CHECK-NEXT:         break '[[SLATE_BREAK_0]];
+// CHECK-NEXT:         x = 99;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     println!("{}", x);
+// CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

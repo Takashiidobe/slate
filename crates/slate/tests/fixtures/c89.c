@@ -463,40 +463,37 @@ int main(void) {
 // CHECK-NEXT: static mut calls: i32 = 0;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c89_control_flow(value: i32) -> i32 {
-// CHECK-NEXT:     let mut index: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         result = 0;
-// CHECK-NEXT:         index = 0;
-// CHECK-NEXT:         while index < value {
-// CHECK-NEXT:             if index == 1 {
-// CHECK-NEXT:                 index += 1;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 result += index;
-// CHECK-NEXT:                 if result > 20 {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     index += 1;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             result -= 1;
-// CHECK-NEXT:             if !(result > 6) {
+// CHECK-NEXT:     let mut result: i32 = 0;
+// CHECK-NEXT:     let mut index: i32 = 0;
+// CHECK-NEXT:     while index < value {
+// CHECK-NEXT:         if index == 1 {
+// CHECK-NEXT:             index += 1;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             result += index;
+// CHECK-NEXT:             if result > 20 {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
+// CHECK-NEXT:             index += 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: i32 = value;
-// CHECK-NEXT:         if [[T_0]] == 4 {
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         result -= 1;
+// CHECK-NEXT:         if result <= 6 {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     match value {
+// CHECK-NEXT:         4 => {
 // CHECK-NEXT:             result += 10;
-// CHECK-NEXT:         } else {
+// CHECK-NEXT:         }
+// CHECK-NEXT:         _ => {
 // CHECK-NEXT:             result = 0;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if result != 16 {
-// CHECK-NEXT:             result = -1;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         return result;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     if result != 16 {
+// CHECK-NEXT:         result = -1;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

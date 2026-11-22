@@ -69,6 +69,11 @@ was.
   `x86_64/asm_folded_size_dispatch.c`).
 - Labels, `goto`, and `label_addr<ptr<void>>` use label `BindingId`s, distinct
   for GNU local labels. Computed goto keeps its pointer operand.
+- `Statement::LabeledBlock { id, body }` (`block %N`) is a block that
+  `break %N` leaves; it has no `continue`. Sema never emits it. The
+  slate-analysis goto-structuring transform creates it for forward gotos and
+  takes the id from `Module::fresh_binding` (`Module::next_binding` is one past
+  the largest id sema allocated). Rust lowering emits a labeled block.
 - Fixtures: `ir_control_*.c`.
 
 ### Counted loops

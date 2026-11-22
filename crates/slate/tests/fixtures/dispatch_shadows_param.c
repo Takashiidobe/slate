@@ -40,22 +40,22 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pick(fd: &fd, name: u32, k: i32) -> i32 {
-// CHECK-NEXT:     let mut name__1: u32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         total = name as i32;
+// CHECK-NEXT:     let mut total: i32 = name as i32;
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
 // CHECK-NEXT:         if k == 0 {
-// CHECK-NEXT:             name__1 = (*fd).name;
-// CHECK-NEXT:             total += (name__1 as i32) * 10;
-// CHECK-NEXT:             if name__1 > 5 {
-// CHECK-NEXT:                 total += 1000;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 total += name__1 as i32;
-// CHECK-NEXT:                 total += (name as i32) * 100;
+// CHECK-NEXT:             {
+// CHECK-NEXT:                 let name: u32 = (*fd).name;
+// CHECK-NEXT:                 total += (name as i32) * 10;
+// CHECK-NEXT:                 if name > 5 {
+// CHECK-NEXT:                     total += 1000;
+// CHECK-NEXT:                     break '[[SLATE_BREAK_0]];
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 total += name as i32;
 // CHECK-NEXT:             }
+// CHECK-NEXT:             total += (name as i32) * 100;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return total;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

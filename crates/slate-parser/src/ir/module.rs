@@ -33,6 +33,7 @@ pub struct Module {
     pub nostdinc: bool,
     pub null_pointer_is_valid: bool,
     pub machine: MachineCodegen,
+    pub next_binding: u32,
 }
 
 pub type MacroValues = HashMap<NodeId, Vec<MacroWrap>>;
@@ -326,6 +327,10 @@ pub enum Statement {
     Expression(Value),
     Return(Option<Value>),
     Block(Vec<Span<Statement>>),
+    LabeledBlock {
+        id: BindingId,
+        body: Vec<Span<Statement>>,
+    },
     Null,
     If {
         condition: Value,
@@ -504,7 +509,14 @@ impl Module {
             nostdinc: false,
             null_pointer_is_valid: false,
             machine: MachineCodegen::default(),
+            next_binding: 0,
         }
+    }
+
+    pub fn fresh_binding(&mut self) -> BindingId {
+        let id = BindingId(self.next_binding);
+        self.next_binding += 1;
+        id
     }
 
     pub fn annotate<T>(

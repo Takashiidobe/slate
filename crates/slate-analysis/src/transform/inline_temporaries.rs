@@ -96,6 +96,7 @@ fn collect_locals(body: &mut [Span<Statement>], locals: &mut HashSet<BindingId>)
 pub(super) fn children(statement: &mut Statement) -> Vec<&mut Vec<Span<Statement>>> {
     match statement {
         Statement::Block(body)
+        | Statement::LabeledBlock { body, .. }
         | Statement::While { body, .. }
         | Statement::DoWhile { body, .. }
         | Statement::Switch { body, .. }
@@ -516,7 +517,7 @@ impl<'c, 'a> Scan<'c, 'a> {
                     self.value(value);
                 }
             }
-            Statement::Block(body) => self.statements(body),
+            Statement::Block(body) | Statement::LabeledBlock { body, .. } => self.statements(body),
             Statement::If {
                 condition,
                 then_body,

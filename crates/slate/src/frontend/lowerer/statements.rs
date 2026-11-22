@@ -434,6 +434,10 @@ impl FunctionLowerer<'_, '_> {
             ir::Statement::Block(body) => Stmt::Scope {
                 body: self.lower_statement_list(body)?,
             },
+            ir::Statement::LabeledBlock { id, body } => Stmt::LabeledBlock {
+                label: self.break_label(*id),
+                body: self.lower_statement_list(body)?,
+            },
             ir::Statement::MacroExpansion { expansion, body } => {
                 self.lower_macro_site(*expansion, body)?
             }

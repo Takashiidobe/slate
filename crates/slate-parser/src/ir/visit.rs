@@ -121,7 +121,7 @@ impl<V: Visitor> Walker<'_, V> {
                 self.statements(body);
                 self.visitor.leave_expansion(*expansion);
             }
-            Statement::Block(body) => self.statements(body),
+            Statement::Block(body) | Statement::LabeledBlock { body, .. } => self.statements(body),
             Statement::NestedFunction(nested) => {
                 if let Some(body) = &mut nested.function.body {
                     self.statements(body);

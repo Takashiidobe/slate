@@ -181,6 +181,7 @@ fn enter_scope(
 pub(super) fn children(statement: &ir::Statement) -> Vec<&[Statement]> {
     match statement {
         ir::Statement::Block(body)
+        | ir::Statement::LabeledBlock { body, .. }
         | ir::Statement::MacroExpansion { body, .. }
         | ir::Statement::Switch { body, .. }
         | ir::Statement::Case { body, .. }
@@ -446,6 +447,10 @@ impl<'a> Graph<'a> {
     fn statement(&mut self, statement: &'a Statement, next: usize) -> usize {
         match &statement.value {
             ir::Statement::Block(body) => self.list(body, next),
+            ir::Statement::LabeledBlock { id, body } => {
+                self.breaks.insert(*id, (next, self.active.len()));
+                self.list(body, next)
+            }
             ir::Statement::Label { id, body, .. } => {
                 let entry = self.list(body, next);
                 let label = self.label(*id);
