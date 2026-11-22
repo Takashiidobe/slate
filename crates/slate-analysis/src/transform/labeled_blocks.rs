@@ -1,8 +1,8 @@
 use foldhash::{HashMap, HashSet};
 use slate_parser::ast::{NodeId, Span};
 use slate_parser::ir::{
-    BindingId, CaptureKind, Function, MacroValues, Parameters, Statement, Visitor,
-    walk_function_body,
+    BindingId, Callee, CaptureKind, Function, MacroValues, Parameters, Statement, ValueKind,
+    Visitor, walk_function_body,
 };
 
 use super::PassContext;
@@ -16,19 +16,21 @@ pub(super) fn transform(function: &mut Function, cx: &mut PassContext) {
     let Some(body) = &mut function.body else {
         return;
     };
-    let parameters: HashSet<String> = match &function.parameters {
-        Parameters::Prototype { fixed, .. } => fixed
-            .iter()
-            .filter_map(|parameter| parameter.value.name.clone())
-            .collect(),
-        Parameters::Unprototyped => HashSet::default(),
-    };
+    let mut bindings = cx.visible.clone();
+    if let Parameters::Prototype { fixed, .. } = &function.parameters {
+        bindings.extend(fixed.iter().filter_map(|parameter| {
+            parameter
+                .value
+                .name
+                .clone()
+                .map(|name| (parameter.value.id, name))
+        }));
+    }
+    bindings.extend(names(body).0);
     let mut retired = Vec::new();
     let mut pass = Pass {
         macro_values: &cx.module.macro_values,
-        outer: cx.visible,
-        parameters: &parameters,
-        locals: names(body).0,
+        bindings,
         cases: false,
         retired: &mut retired,
     };
@@ -40,9 +42,7 @@ pub(super) fn transform(function: &mut Function, cx: &mut PassContext) {
 
 struct Pass<'a> {
     macro_values: &'a MacroValues,
-    outer: &'a HashSet<String>,
-    parameters: &'a HashSet<String>,
-    locals: HashMap<String, usize>,
+    bindings: HashMap<BindingId, String>,
     cases: bool,
     retired: &'a mut Vec<NodeId>,
 }
@@ -130,8 +130,11 @@ impl Pass<'_> {
         if !inner.last().is_some_and(|last| diverges(&last.value))
             || nested_breaks(inner, id) != 1
             || all_breaks(inner, id) != 1
-            || self.shadows(inner)
         {
+            return false;
+        }
+        let (declared, scoped) = names(inner);
+        if scoped {
             return false;
         }
         let end = body[index + 1..]
@@ -143,7 +146,10 @@ impl Pass<'_> {
             (None, Some(exit)) => (body.len(), Some(exit)),
             (None, None) => return false,
         };
-        if end == index + 1 || !movable(&body[index + 1..end], &body[end..]) {
+        if end == index + 1
+            || !movable(&body[index + 1..end], &body[end..])
+            || self.shadows(&declared, &body[index + 1..end])
+        {
             return false;
         }
         let mut tail: Body = body.drain(index + 1..end).collect();
@@ -234,14 +240,17 @@ impl Pass<'_> {
         true
     }
 
-    fn shadows(&self, inner: &mut Body) -> bool {
-        let (declared, scoped) = names(inner);
-        scoped
-            || declared.iter().any(|(name, count)| {
-                self.outer.contains(name)
-                    || self.parameters.contains(name)
-                    || self.locals.get(name).copied().unwrap_or(0) > *count
-            })
+    fn shadows(&self, declared: &[(BindingId, String)], tail: &[Span<Statement>]) -> bool {
+        if declared.is_empty() {
+            return false;
+        }
+        let mut references = References::default();
+        walk_function_body(&mut tail.to_vec(), &mut references);
+        references
+            .read
+            .difference(&references.declared)
+            .filter_map(|binding| self.bindings.get(binding))
+            .any(|name| declared.iter().any(|(_, inner)| inner == name))
     }
 
     fn dissolve(&mut self, body: &mut Body, index: usize) -> bool {
@@ -373,7 +382,7 @@ impl Visitor for Breaks {
     }
 }
 
-fn names(body: &mut Body) -> (HashMap<String, usize>, bool) {
+fn names(body: &mut Body) -> (Vec<(BindingId, String)>, bool) {
     let mut names = Names::default();
     walk_function_body(body, &mut names);
     (names.declared, names.scoped)
@@ -381,7 +390,7 @@ fn names(body: &mut Body) -> (HashMap<String, usize>, bool) {
 
 #[derive(Default)]
 struct Names {
-    declared: HashMap<String, usize>,
+    declared: Vec<(BindingId, String)>,
     scoped: bool,
 }
 
@@ -391,7 +400,7 @@ impl Visitor for Names {
             Statement::Let(variable) => {
                 self.scoped |= variable.cleanup.is_some() || variable.ty.is_variably_modified();
                 if !variable.name.is_empty() {
-                    *self.declared.entry(variable.name.clone()).or_default() += 1;
+                    self.declared.push((variable.id, variable.name.clone()));
                 }
             }
             Statement::SehTry { .. } => self.scoped = true,
@@ -401,6 +410,40 @@ impl Visitor for Names {
             )]
             _ => {}
         }
+    }
+}
+
+#[derive(Default)]
+struct References {
+    declared: HashSet<BindingId>,
+    read: HashSet<BindingId>,
+}
+
+impl Visitor for References {
+    fn statement(&mut self, statement: &Statement) {
+        if let Statement::Let(variable) = statement {
+            self.declared.insert(variable.id);
+        } else if let Statement::Temporary { id, .. } = statement {
+            self.declared.insert(*id);
+        }
+    }
+
+    fn value_kind(&mut self, kind: &ValueKind) {
+        if let ValueKind::Call {
+            callee: Callee::Direct(binding),
+            ..
+        } = kind
+        {
+            self.read.insert(*binding);
+        }
+    }
+
+    fn binding(&mut self, binding: BindingId) {
+        self.read.insert(binding);
+    }
+
+    fn capture(&mut self, binding: BindingId, _kind: CaptureKind) {
+        self.read.insert(binding);
     }
 }
 

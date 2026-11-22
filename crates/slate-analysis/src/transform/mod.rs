@@ -9,7 +9,7 @@ mod truth_canonicalize;
 mod truth_locals;
 
 use crate::def_use::captured;
-use foldhash::HashSet;
+use foldhash::{HashMap, HashSet};
 use slate_parser::ast::NodeId;
 use slate_parser::ir::*;
 pub use truth_canonicalize::negation;
@@ -30,7 +30,7 @@ pub struct Pass {
 pub(crate) struct PassContext<'a> {
     pub module: &'a mut Module,
     pub captured: &'a HashSet<BindingId>,
-    pub visible: &'a HashSet<String>,
+    pub visible: &'a HashMap<BindingId, String>,
 }
 
 impl PassContext<'_> {
@@ -114,15 +114,15 @@ fn run_functions(module: &mut Module, run: fn(&mut Function, &mut PassContext)) 
         .flat_map(|field| captured(&field.ty))
         .collect();
     captured.extend(module.macro_hidden_arguments.values().flatten().copied());
-    let visible: HashSet<String> = module
+    let visible: HashMap<BindingId, String> = module
         .globals
         .iter()
-        .map(|global| global.value.variable.name.clone())
+        .map(|global| (global.value.variable.id, global.value.variable.name.clone()))
         .chain(
             module
                 .functions
                 .iter()
-                .map(|function| function.value.name.clone()),
+                .map(|function| (function.value.id, function.value.name.clone())),
         )
         .collect();
     let mut functions = std::mem::take(&mut module.functions);
@@ -136,7 +136,7 @@ fn run_scoped(
     function: &mut Function,
     module: &mut Module,
     captured: &HashSet<BindingId>,
-    visible: &HashSet<String>,
+    visible: &HashMap<BindingId, String>,
     run: fn(&mut Function, &mut PassContext),
 ) {
     if function.body.is_none() {
@@ -163,11 +163,13 @@ fn run_scoped(
     walk_function_body(body, &mut scope);
     names.extend(scope.names);
     if let Parameters::Prototype { fixed, .. } = &function.parameters {
-        names.extend(
-            fixed
-                .iter()
-                .filter_map(|parameter| parameter.value.name.clone()),
-        );
+        names.extend(fixed.iter().filter_map(|parameter| {
+            parameter
+                .value
+                .name
+                .clone()
+                .map(|name| (parameter.value.id, name))
+        }));
     }
     for_each_inner_function(body, &mut |inner| {
         run_scoped(inner, module, captured, &names, run);
@@ -177,7 +179,7 @@ fn run_scoped(
 #[derive(Default)]
 struct Scope {
     collect: bool,
-    names: Vec<String>,
+    names: Vec<(BindingId, String)>,
     inner: bool,
 }
 
@@ -185,7 +187,7 @@ impl Visitor for Scope {
     fn statement(&mut self, statement: &Statement) {
         match statement {
             Statement::Let(variable) if self.collect && !variable.name.is_empty() => {
-                self.names.push(variable.name.clone());
+                self.names.push((variable.id, variable.name.clone()));
             }
             Statement::NestedFunction(_) => self.inner = true,
             #[expect(
