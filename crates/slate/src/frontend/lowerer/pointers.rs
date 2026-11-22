@@ -153,8 +153,26 @@ impl FunctionLowerer<'_, '_> {
         element: &ir::Type,
         wrap: bool,
     ) -> Result<Expr> {
+        let lowered = self.lower_value(amount)?;
+        let isize_max = u64::MAX >> (65 - u64::from(self.tables.target.pointer_width));
+        let literal = match &lowered {
+            Expr::Cast { expr, .. } => match **expr {
+                Expr::Value(rust::RustValue::U128(number)) => u64::try_from(number).ok(),
+                Expr::Value(rust::RustValue::I128(number)) => u64::try_from(number).ok(),
+                Expr::Value(rust::RustValue::I64(number)) => u64::try_from(number).ok(),
+                Expr::Value(rust::RustValue::Usize(number)) => u64::try_from(number).ok(),
+                _ => None,
+            },
+            _ => None,
+        }
+        .filter(|&number| number <= isize_max);
+        let unsigned = literal.is_some()
+            || matches!(
+                self.tables.resolve_type(&amount.ty).integer_bits(),
+                Some((_, false))
+            );
         let offset = Expr::Cast {
-            expr: Box::new(self.lower_value(amount)?),
+            expr: Box::new(lowered.clone()),
             ty: rust::Type::Prim(Prim::Isize),
         };
         let offset = if subtract {
@@ -164,6 +182,18 @@ impl FunctionLowerer<'_, '_> {
             }
         } else {
             offset
+        };
+        let (method, index) = if unsigned {
+            let index = match literal {
+                Some(number) => Expr::Value(rust::RustValue::I64(number as i64)),
+                None => Expr::Cast {
+                    expr: Box::new(lowered),
+                    ty: rust::Type::Prim(Prim::Usize),
+                },
+            };
+            (if subtract { "sub" } else { "add" }, index)
+        } else {
+            ("offset", offset.clone())
         };
         Ok(match element {
             _ if wrap && self.tables.variably_modified(element) => Expr::MethodCall {
@@ -198,10 +228,17 @@ impl FunctionLowerer<'_, '_> {
                         {
                             "wrapping_offset"
                         } else {
-                            "offset"
+                            method
                         }
                         .into(),
-                        args: vec![offset],
+                        args: vec![if wrap
+                            || self.in_static_initializer
+                            || matches!(pointer.node.value, ValueKind::LabelAddress(_))
+                        {
+                            offset
+                        } else {
+                            index
+                        }],
                     })),
                 }))),
                 ty: self.lower_value_type(value)?,
@@ -224,8 +261,8 @@ impl FunctionLowerer<'_, '_> {
                 stmts: Vec::new(),
                 tail: Some(Box::new(Expr::MethodCall {
                     recv: Box::new(self.lower_value(pointer)?),
-                    method: "offset".into(),
-                    args: vec![offset],
+                    method: method.into(),
+                    args: vec![index],
                 })),
             })),
         })

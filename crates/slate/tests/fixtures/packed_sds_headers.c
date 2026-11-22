@@ -460,14 +460,14 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             free(
 // CHECK-NEXT:                 (s
-// CHECK-NEXT:                     .offset(
-// CHECK-NEXT:                         -((if types[i as usize] == 1 {
+// CHECK-NEXT:                     .sub(
+// CHECK-NEXT:                         (if types[i as usize] == 1 {
 // CHECK-NEXT:                             3u64
 // CHECK-NEXT:                         } else if types[i as usize] == 2 {
 // CHECK-NEXT:                             5u64
 // CHECK-NEXT:                         } else {
 // CHECK-NEXT:                             17u64
-// CHECK-NEXT:                         }) as isize),
+// CHECK-NEXT:                         }) as usize,
 // CHECK-NEXT:                     ) as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };

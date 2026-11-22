@@ -167,7 +167,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             ((buffer as *const ()) as *const core::ffi::c_void) as *const u8,
-// CHECK-NEXT:             (((*cookie).bytes.as_mut_ptr().offset((*cookie).length as isize) as *mut ())
+// CHECK-NEXT:             (((*cookie).bytes.as_mut_ptr().add((*cookie).length as usize) as *mut ())
 // CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (size as usize) as usize,
 // CHECK-NEXT:         )
