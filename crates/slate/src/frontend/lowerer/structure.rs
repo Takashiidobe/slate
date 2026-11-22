@@ -441,7 +441,7 @@ fn is_reducible(blocks: &[Block], entry: usize) -> bool {
     reducible(blocks, &idom, entry)
 }
 
-fn sccs(blocks: &[Block]) -> Vec<Vec<usize>> {
+fn sccs(blocks: &[Block], members: &BTreeSet<usize>) -> Vec<Vec<usize>> {
     let count = blocks.len();
     let mut index = vec![usize::MAX; count];
     let mut low = vec![0usize; count];
@@ -451,7 +451,7 @@ fn sccs(blocks: &[Block]) -> Vec<Vec<usize>> {
     let mut components = Vec::new();
     let mut calls: Vec<(usize, usize)> = Vec::new();
 
-    for start in 0..count {
+    for &start in members {
         if index[start] != usize::MAX {
             continue;
         }
@@ -462,7 +462,10 @@ fn sccs(blocks: &[Block]) -> Vec<Vec<usize>> {
         on_stack[start] = true;
         calls.push((start, 0));
         while let Some(&mut (node, ref mut cursor)) = calls.last_mut() {
-            let successors = edges(&blocks[node].term);
+            let successors: Vec<usize> = edges(&blocks[node].term)
+                .into_iter()
+                .filter(|target| members.contains(target))
+                .collect();
             if *cursor < successors.len() {
                 let child = successors[*cursor];
                 *cursor += 1;
@@ -520,73 +523,84 @@ fn retarget_term(term: &mut Term, from: usize, to: usize) {
 }
 
 fn split_irreducible(blocks: &mut Vec<Block>, entry: usize, state: Ident) -> Option<usize> {
-    let components = sccs(blocks);
-    let preds = predecessors(blocks, &(0..blocks.len()).collect::<Vec<_>>());
+    let original = blocks.len();
     let mut next_state = blocks.iter().map(|block| block.state).max()? + 1;
     let mut new_entry = entry;
+    let mut regions: Vec<BTreeSet<usize>> = vec![(0..original).collect()];
 
-    for component in components {
-        if component.len() < 2 {
-            continue;
-        }
-        let members: BTreeSet<usize> = component.iter().copied().collect();
-        let mut entries: Vec<usize> = component
-            .iter()
-            .copied()
-            .filter(|&node| node == entry || preds[node].iter().any(|pred| !members.contains(pred)))
-            .collect();
-        if entries.len() < 2 {
-            continue;
-        }
-        entries.sort_unstable();
-
-        let header = blocks.len();
-        let arms = entries
-            .iter()
-            .enumerate()
-            .map(|(position, &target)| {
-                let pattern = match position + 1 == entries.len() {
-                    true => Pattern::Wildcard,
-                    false => Pattern::I64(blocks[target].state),
-                };
-                (pattern, Term::Jump(target))
-            })
-            .collect();
-        blocks.push(Block {
-            state: next_state,
-            prefix: Vec::new(),
-            term: Term::Switch {
-                selector: Expr::Var(state),
-                arms,
-            },
-        });
-        next_state += 1;
-
-        for source in 0..header {
-            let reached: BTreeSet<usize> = edges(&blocks[source].term)
-                .into_iter()
-                .filter(|target| entries.contains(target))
-                .collect();
-            for target in reached {
-                let trampoline = blocks.len();
-                blocks.push(Block {
-                    state: next_state,
-                    prefix: vec![Stmt::Assign {
-                        target: Expr::Var(state),
-                        value: Expr::Value(RustValue::I64(blocks[target].state)),
-                    }],
-                    term: Term::Jump(header),
-                });
-                next_state += 1;
-                retarget_term(&mut blocks[source].term, target, trampoline);
+    while let Some(region) = regions.pop() {
+        for component in sccs(blocks, &region) {
+            if component.len() < 2 {
+                continue;
             }
-        }
+            let members: BTreeSet<usize> = component.iter().copied().collect();
+            let preds = predecessors(blocks, &(0..blocks.len()).collect::<Vec<_>>());
+            let mut entries: Vec<usize> = component
+                .iter()
+                .copied()
+                .filter(|&node| {
+                    node == new_entry || preds[node].iter().any(|pred| !members.contains(pred))
+                })
+                .collect();
+            entries.sort_unstable();
+            if entries.len() < 2 {
+                let mut inner = members;
+                for header in &entries {
+                    inner.remove(header);
+                }
+                regions.push(inner);
+                continue;
+            }
 
-        if members.contains(&entry) {
-            new_entry = header;
+            let header = blocks.len();
+            let arms = entries
+                .iter()
+                .enumerate()
+                .map(|(position, &target)| {
+                    let pattern = match position + 1 == entries.len() {
+                        true => Pattern::Wildcard,
+                        false => Pattern::I64(blocks[target].state),
+                    };
+                    (pattern, Term::Jump(target))
+                })
+                .collect();
+            blocks.push(Block {
+                state: next_state,
+                prefix: Vec::new(),
+                term: Term::Switch {
+                    selector: Expr::Var(state),
+                    arms,
+                },
+            });
+            next_state += 1;
+
+            for source in 0..header {
+                let reached: BTreeSet<usize> = edges(&blocks[source].term)
+                    .into_iter()
+                    .filter(|target| entries.contains(target))
+                    .collect();
+                for target in reached {
+                    let trampoline = blocks.len();
+                    blocks.push(Block {
+                        state: next_state,
+                        prefix: vec![Stmt::Assign {
+                            target: Expr::Var(state),
+                            value: Expr::Value(RustValue::I64(blocks[target].state)),
+                        }],
+                        term: Term::Jump(header),
+                    });
+                    next_state += 1;
+                    retarget_term(&mut blocks[source].term, target, trampoline);
+                }
+            }
+
+            if members.contains(&new_entry) {
+                new_entry = header;
+            }
+            regions.push(members);
         }
     }
-    (new_entry != entry || blocks.len() > preds.len()).then_some(new_entry)
+    (new_entry != entry || blocks.len() > original).then_some(new_entry)
 }
 
 fn build(dispatch: &Dispatch, arms: &[(i64, Vec<Stmt>)], entry_state: i64) -> Option<Graph> {
