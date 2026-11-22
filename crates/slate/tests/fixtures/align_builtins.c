@@ -50,7 +50,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     let base: *mut i8 = unsafe { buffer.0.as_mut_ptr().add(3) };
-// CHECK-NEXT:     let cp: *const i32 = (unsafe { buffer.0.as_mut_ptr().add(5) }) as *const i32;
+// CHECK-NEXT:     let cp: *const i32 = unsafe { buffer.0.as_mut_ptr().add(5) as *const i32 };
 // CHECK-NEXT:     let small: u8 = 13;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     let [[V_0]]: u64 = 16u64.wrapping_sub(1u64);
@@ -69,20 +69,20 @@ int main(void) {
 // CHECK-NEXT:         .wrapping_offset(
 // CHECK-NEXT:             (([[V_4]] as u64).wrapping_add([[V_3]]) & ![[V_3]]).wrapping_sub([[V_4]] as u64) as isize,
 // CHECK-NEXT:         ) as *const i32;
-// CHECK-NEXT:     let __slate_printf_arg0 = (((unsafe {
-// CHECK-NEXT:         up.offset_from(buffer.0.as_mut_ptr() as *mut i8)
-// CHECK-NEXT:     }) as i64) as i32)
+// CHECK-NEXT:     let __slate_printf_arg0 = (unsafe {
+// CHECK-NEXT:         (up.offset_from(buffer.0.as_mut_ptr() as *mut i8) as i64) as i32
+// CHECK-NEXT:     })
 // CHECK-NEXT:         - (((buffer.0.as_mut_ptr() as u64).wrapping_add(3).wrapping_add(15) / 16)
 // CHECK-NEXT:             .wrapping_mul(16)
 // CHECK-NEXT:             .wrapping_sub(buffer.0.as_mut_ptr() as u64) as i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
 // CHECK-NEXT:         __slate_printf_arg0,
-// CHECK-NEXT:         ((((unsafe { base.offset_from(down as *mut i8) }) as i64) as i32)
+// CHECK-NEXT:         ((unsafe { (base.offset_from(down as *mut i8) as i64) as i32 })
 // CHECK-NEXT:             == (((base as u64) % 16) as i32)) as i32,
 // CHECK-NEXT:         ((cup as u64) % 8 == 0) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_printf_arg1 = (((unsafe { buffer.0.as_mut_ptr().add(1) }) as u64)
+// CHECK-NEXT:     let __slate_printf_arg1 = ((unsafe { buffer.0.as_mut_ptr().add(1) as u64 })
 // CHECK-NEXT:         & 1u64.wrapping_sub(1u64) == 0) as i32;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
@@ -107,9 +107,9 @@ int main(void) {
 // CHECK-NEXT:         .wrapping_offset(
 // CHECK-NEXT:             (([[V_9]] as u64).wrapping_add([[V_7]]) & ![[V_7]]).wrapping_sub([[V_9]] as u64) as isize,
 // CHECK-NEXT:         ) as *mut i8;
-// CHECK-NEXT:     let __slate_printf_arg0 = ((unsafe {
-// CHECK-NEXT:         p.offset_from(buffer.0.as_mut_ptr() as *mut i8)
-// CHECK-NEXT:     }) as i64) as i32;
+// CHECK-NEXT:     let __slate_printf_arg0 = unsafe {
+// CHECK-NEXT:         (p.offset_from(buffer.0.as_mut_ptr() as *mut i8) as i64) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         __slate_printf_arg0,

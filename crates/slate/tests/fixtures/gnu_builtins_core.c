@@ -138,9 +138,11 @@ int main(void) {
 // CHECK-NEXT: fn gnu_builtin_nonlocal() -> i32 {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: __slate_builtin_setjmp::Buffer = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[*mut (); 5]> = __SlateAlign16([0 as *mut (); 5]);
-// CHECK-NEXT:     if (unsafe {
-// CHECK-NEXT:         *(buffer.0.as_mut_ptr() as *mut *mut __slate_builtin_setjmp::Buffer) = core::ptr::addr_of_mut!([[T_0]]);
-// CHECK-NEXT:         __slate_builtin_setjmp::_setjmp(core::ptr::addr_of_mut!([[T_0]])) as i32
+// CHECK-NEXT:     if ({
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *(buffer.0.as_mut_ptr() as *mut *mut __slate_builtin_setjmp::Buffer) = core::ptr::addr_of_mut!([[T_0]]);
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe { __slate_builtin_setjmp::_setjmp(core::ptr::addr_of_mut!([[T_0]])) as i32 }
 // CHECK-NEXT:     }) == 0 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             __slate_builtin_setjmp::_longjmp(
@@ -227,13 +229,13 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_builtin_source() -> i32 {
-// CHECK-NEXT:     ((((unsafe { *(c"gnu_builtin_source".as_ptr() as *mut i8).add(0) }) as i32) == 103)
+// CHECK-NEXT:     (((unsafe { *(c"gnu_builtin_source".as_ptr() as *mut i8).add(0) as i32 }) == 103)
 // CHECK-NEXT:         as i32)
-// CHECK-NEXT:         + ((((unsafe {
+// CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             *(c"{{.*}}tests/fixtures/gnu_builtins_core.c"
 // CHECK-NEXT:                     .as_ptr() as *mut i8)
-// CHECK-NEXT:                 .add(0)
-// CHECK-NEXT:         }) as i32) != 0) as i32) + (true as i32) + (true as i32)
+// CHECK-NEXT:                 .add(0) as i32
+// CHECK-NEXT:         }) != 0) as i32) + (true as i32) + (true as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

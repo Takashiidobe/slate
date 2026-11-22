@@ -232,14 +232,8 @@ int main(void) {
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = unsafe { (*__slate_capture_0).as_mut_ptr().add(3) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_1]] += (*__slate_capture_1).x;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*__slate_capture_1).y *= 2;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_capture_2 = unsafe { *__slate_capture_2 }.add(1);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *__slate_capture_2 = (*__slate_capture_2).add(1);
 // CHECK-NEXT:         *(*__slate_capture_2) += 100;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -248,9 +242,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: u64 = n as u64;
 // CHECK-NEXT:     let mut data: Vec<i32> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_2]] as usize);
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_2]] as usize);
-// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe { __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_2]] as usize) };
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut i: i32 = 0;
@@ -312,11 +304,9 @@ int main(void) {
 // CHECK-NEXT:             (values.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             5u64 as usize,
 // CHECK-NEXT:             (core::mem::size_of::<i32>() as u64) as usize,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>, Option<unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void) -> i32>>(
-// CHECK-NEXT:                     Some(sort_with_nested__ascending),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>, Option<unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void) -> i32>>(
+// CHECK-NEXT:                 Some(sort_with_nested__ascending),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0i32..5i32 {
@@ -328,11 +318,9 @@ int main(void) {
 // CHECK-NEXT:             (values.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             5u64 as usize,
 // CHECK-NEXT:             (core::mem::size_of::<i32>() as u64) as usize,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>, Option<unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void) -> i32>>(
-// CHECK-NEXT:                     Some(compare_ints),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>, Option<unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void) -> i32>>(
+// CHECK-NEXT:                 Some(compare_ints),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0i32..5i32 {
@@ -343,7 +331,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn sort_with_nested__ascending(a: *const (), b: *const ()) -> i32 {
-// CHECK-NEXT:     (unsafe { *(a as *const i32) }) - unsafe { *(b as *const i32) }
+// CHECK-NEXT:     unsafe { *(a as *const i32) - *(b as *const i32) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn shadowed(mut x: i32) -> i32 {

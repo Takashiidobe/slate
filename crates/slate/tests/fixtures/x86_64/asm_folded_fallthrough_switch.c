@@ -44,14 +44,16 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         match [[T_0]] {
 // CHECK-NEXT:             0 => {
-// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                 {
 // CHECK-NEXT:                     let [[T_1:__t[0-9]+]]: u64;
-// CHECK-NEXT:                     core::arch::asm!(
-// CHECK-NEXT:                         "movzbl {1:l}, {0:e}",
-// CHECK-NEXT:                         lateout(reg) [[T_1]],
-// CHECK-NEXT:                         in(reg) (*p as u8) as u32,
-// CHECK-NEXT:                         options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:                     );
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         core::arch::asm!(
+// CHECK-NEXT:                             "movzbl {1:l}, {0:e}",
+// CHECK-NEXT:                             lateout(reg) [[T_1]],
+// CHECK-NEXT:                             in(reg) (*p as u8) as u32,
+// CHECK-NEXT:                             options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:                         );
+// CHECK-NEXT:                     }
 // CHECK-NEXT:                     x = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 [[T_0]] = 1;

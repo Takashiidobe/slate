@@ -33,7 +33,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{} {}", bump(), !unsafe { environ_alias }.is_null() as i32);
+// CHECK-NEXT:     println!("{} {}", bump(), !unsafe { environ_alias.is_null() } as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

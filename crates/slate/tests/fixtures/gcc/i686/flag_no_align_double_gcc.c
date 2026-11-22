@@ -36,8 +36,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn offset(base: *const (), field: *const ()) -> u32 {
-// CHECK-NEXT:     ((unsafe { (field as *const i8).offset_from((base as *const i8) as *const i8) })
-// CHECK-NEXT:         as i32) as u32
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         ((field as *const i8).offset_from((base as *const i8) as *const i8) as i32)
+// CHECK-NEXT:             as u32
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

@@ -2008,7 +2008,7 @@ impl FunctionLowerer<'_, '_> {
                     )),
                     args,
                     binding: CallBinding::Generated,
-                    unsafe_: rust::Unsafe(false),
+                    unsafe_: rust::Unsafe(true),
                 };
                 match arguments.as_slice() {
                     [buf] => {

@@ -105,14 +105,14 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].small = 9u16;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let av: i32 = (unsafe {
+// CHECK-NEXT:     let av: i32 = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicU8::from_ptr(core::ptr::addr_of_mut!(a) as *mut u8)
-// CHECK-NEXT:             .load(core::sync::atomic::Ordering::Relaxed)
-// CHECK-NEXT:     }) as i32;
-// CHECK-NEXT:     let bv: i32 = (unsafe {
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::Relaxed) as i32
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let bv: i32 = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicI16::from_ptr(core::ptr::addr_of_mut!(b) as *mut i16)
-// CHECK-NEXT:             .load(core::sync::atomic::Ordering::Acquire)
-// CHECK-NEXT:     }) as i32;
+// CHECK-NEXT:             .load(core::sync::atomic::Ordering::Acquire) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let cv: i32 = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(c) as *mut i32)
 // CHECK-NEXT:             .load(core::sync::atomic::Ordering::Acquire)
@@ -138,23 +138,19 @@ int main(void) {
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(r#fn) as *mut *mut u8,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .store(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *mut u8>(
-// CHECK-NEXT:                         Some(callback),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *mut u8>(
+// CHECK-NEXT:                     Some(callback),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 core::sync::atomic::Ordering::Relaxed,
 // CHECK-NEXT:             )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let fnv: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<*mut u8, Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
-// CHECK-NEXT:                 core::sync::atomic::AtomicPtr::from_ptr(
-// CHECK-NEXT:                         core::ptr::addr_of_mut!(r#fn) as *mut *mut u8,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                     .load(core::sync::atomic::Ordering::Acquire),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }
+// CHECK-NEXT:         core::mem::transmute::<*mut u8, Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:             core::sync::atomic::AtomicPtr::from_ptr(
+// CHECK-NEXT:                     core::ptr::addr_of_mut!(r#fn) as *mut *mut u8,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .load(core::sync::atomic::Ordering::Acquire),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = (unsafe { *cpv }) != c || (unsafe { fnv.unwrap()(7i32) }) != 12;
 // CHECK-NEXT:     if [[V_0]]

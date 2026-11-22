@@ -170,10 +170,12 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT: fn bytes_are(want: *const i8) -> i32 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     for i in 0i32..16i32 {
 // I686-PC-WINDOWS-MSVC-NEXT:     for i in 0i32..16i32 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         if ((unsafe { bytes.0[i as usize] }) as i32)
-// I686-PC-WINDOWS-MSVC-NEXT:         if ((unsafe { bytes[i as usize] }) as i32)
-// X86_64-PC-WINDOWS-MSVC-NEXT:             != (((unsafe { *want.offset(i as isize) }) as u8) as i32) {
-// I686-PC-WINDOWS-MSVC-NEXT:             != (((unsafe { *want.offset(i as isize) }) as u8) as i32) {
+// X86_64-PC-WINDOWS-MSVC-NEXT:         if unsafe {
+// I686-PC-WINDOWS-MSVC-NEXT:         if unsafe {
+// X86_64-PC-WINDOWS-MSVC-NEXT:             (bytes.0[i as usize] as i32) != ((*want.offset(i as isize) as u8) as i32)
+// I686-PC-WINDOWS-MSVC-NEXT:             (bytes[i as usize] as i32) != ((*want.offset(i as isize) as u8) as i32)
+// X86_64-PC-WINDOWS-MSVC-NEXT:         } {
+// I686-PC-WINDOWS-MSVC-NEXT:         } {
 // X86_64-PC-WINDOWS-MSVC-NEXT:             return 0;
 // I686-PC-WINDOWS-MSVC-NEXT:             return 0;
 // X86_64-PC-WINDOWS-MSVC-NEXT:         }
@@ -221,8 +223,8 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:         ) as i32
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }) != 0 {
 // I686-PC-WINDOWS-MSVC-NEXT:     }) != 0 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
-// I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
+// I686-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     fill_bytes();
@@ -247,8 +249,8 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:     if bytes_are(c"\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0b\x0c\r\x0e\x0f\x10".as_ptr())
 // X86_64-PC-WINDOWS-MSVC-NEXT:         == 0 {
 // I686-PC-WINDOWS-MSVC-NEXT:         == 0 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
-// I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
+// I686-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     fill_bytes();
@@ -273,8 +275,8 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:         c"\x01\x02\x01\x02\x01\x02\x01\x02\x01\x02\x01\x02\r\x0e\x0f\x10".as_ptr(),
 // X86_64-PC-WINDOWS-MSVC-NEXT:     ) == 0 {
 // I686-PC-WINDOWS-MSVC-NEXT:     ) == 0 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
-// I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
+// I686-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     fill_bytes();
@@ -315,8 +317,8 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:     if bytes_are(c"\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10".as_ptr())
 // X86_64-PC-WINDOWS-MSVC-NEXT:         == 0 {
 // I686-PC-WINDOWS-MSVC-NEXT:         == 0 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
-// I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
+// I686-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     for i in 0i32..8i32 {
@@ -345,19 +347,18 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:     };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     for i in 1i32..7i32 {
 // I686-PC-WINDOWS-MSVC-NEXT:     for i in 1i32..7i32 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         if ((unsafe { words.0[i as usize] }) as i32) != 4096 {
-// I686-PC-WINDOWS-MSVC-NEXT:         if ((unsafe { words[i as usize] }) as i32) != 4096 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             unsafe { std::process::abort() };
-// I686-PC-WINDOWS-MSVC-NEXT:             unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:         if (unsafe { words.0[i as usize] as i32 }) != 4096 {
+// I686-PC-WINDOWS-MSVC-NEXT:         if (unsafe { words[i as usize] as i32 }) != 4096 {
+// X86_64-PC-WINDOWS-MSVC-NEXT:             std::process::abort();
+// I686-PC-WINDOWS-MSVC-NEXT:             std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:         }
 // I686-PC-WINDOWS-MSVC-NEXT:         }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if ((unsafe { words.0[0] }) as i32) != 4096
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words.0[7] }) as i32) != 4103 {
-// I686-PC-WINDOWS-MSVC-NEXT:     if ((unsafe { words[0] }) as i32) != 4096 || ((unsafe { words[7] }) as i32) != 4103 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
-// I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if (unsafe { words.0[0] as i32 }) != 4096 || (unsafe { words.0[7] as i32 }) != 4103 {
+// I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe { words[0] as i32 }) != 4096 || (unsafe { words[7] as i32 }) != 4103 {
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
+// I686-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     for i in 0i32..8i32 {
@@ -390,8 +391,8 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[5] }) != 268435461 {
 // I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords[0] }) != 268435458 || (unsafe { dwords[4] }) != 268435462
 // I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[5] }) != 268435461 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
-// I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
+// I686-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe {
@@ -415,8 +416,8 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords[2] }) != 268435458 || (unsafe { dwords[3] }) != 268435459
 // I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[4] }) != 268435458 || (unsafe { dwords[5] }) != 268435459
 // I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[6] }) != 268435462 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
-// I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
+// I686-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe { __stosb(out.0.as_mut_ptr() as *mut u8, 171u8 as u8, 7u64 as usize) };
@@ -425,16 +426,16 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:     for i in 0i32..7i32 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         if (out.0[i as usize] as i32) != 171 {
 // I686-PC-WINDOWS-MSVC-NEXT:         if (out[i as usize] as i32) != 171 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:             unsafe { std::process::abort() };
-// I686-PC-WINDOWS-MSVC-NEXT:             unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:             std::process::abort();
+// I686-PC-WINDOWS-MSVC-NEXT:             std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:         }
 // I686-PC-WINDOWS-MSVC-NEXT:         }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if (out.0[7] as i32) != ((unsafe { bytes.0[7] }) as i32) {
-// I686-PC-WINDOWS-MSVC-NEXT:     if (out[7] as i32) != ((unsafe { bytes[7] }) as i32) {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
-// I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if (out.0[7] as i32) != unsafe { bytes.0[7] as i32 } {
+// I686-PC-WINDOWS-MSVC-NEXT:     if (out[7] as i32) != unsafe { bytes[7] as i32 } {
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
+// I686-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe {
@@ -451,15 +452,14 @@ int main(void) { return 0; }
 // I686-PC-WINDOWS-MSVC-NEXT:         )
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // I686-PC-WINDOWS-MSVC-NEXT:     };
-// X86_64-PC-WINDOWS-MSVC-NEXT:     if ((unsafe { words.0[1] }) as i32) != 4096
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words.0[2] }) as i32) != 48879
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words.0[4] }) as i32) != 48879
-// X86_64-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words.0[5] }) as i32) != 4096 {
-// I686-PC-WINDOWS-MSVC-NEXT:     if ((unsafe { words[1] }) as i32) != 4096 || ((unsafe { words[2] }) as i32) != 48879
-// I686-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words[4] }) as i32) != 48879
-// I686-PC-WINDOWS-MSVC-NEXT:         || ((unsafe { words[5] }) as i32) != 4096 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
-// I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:     if (unsafe { words.0[1] as i32 }) != 4096 || (unsafe { words.0[2] as i32 }) != 48879
+// X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { words.0[4] as i32 }) != 48879
+// X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { words.0[5] as i32 }) != 4096 {
+// I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe { words[1] as i32 }) != 4096 || (unsafe { words[2] as i32 }) != 48879
+// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { words[4] as i32 }) != 48879
+// I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { words[5] as i32 }) != 4096 {
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
+// I686-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe {
@@ -479,7 +479,7 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords.0[0] }) != 268435458 || (unsafe { dwords.0[1] }) != 3735928559
 // X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[2] }) != 3735928559
 // X86_64-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords.0[3] }) != 268435459 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     let mut qwords: __SlateAlign16<[u64; 6]> = __SlateAlign16(
 // X86_64-PC-WINDOWS-MSVC-NEXT:         [1u64, 2u64, 3u64, 4u64, 5u64, 6u64],
@@ -492,7 +492,7 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     if qwords.0[0] != 1 || qwords.0[1] != 1 || qwords.0[4] != 1 || qwords.0[5] != 6 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __movsq(
@@ -502,7 +502,7 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     if qwords.0[0] != 1 || qwords.0[1] != 6 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe {
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __stosq(
@@ -515,8 +515,8 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:         || qwords.0[4] != 81985529216486895 {
 // I686-PC-WINDOWS-MSVC-NEXT:     if (unsafe { dwords[0] }) != 268435458 || (unsafe { dwords[1] }) != 3735928559
 // I686-PC-WINDOWS-MSVC-NEXT:         || (unsafe { dwords[2] }) != 3735928559 || (unsafe { dwords[3] }) != 268435459 {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
-// I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
+// I686-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
 // CHECK-NEXT:     0

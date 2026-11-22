@@ -118,9 +118,8 @@ int main(void) {
 // CHECK-NEXT: static mut small: __SlateAlign16<i8> = __SlateAlign16(unsafe { core::mem::zeroed() });
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut values_tail: *mut u32 = unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!(values.0) as *mut u32
-// CHECK-NEXT:     }
-// CHECK-NEXT:     .wrapping_offset(2i32 as isize);
+// CHECK-NEXT:     (core::ptr::addr_of_mut!(values.0) as *mut u32).wrapping_offset(2i32 as isize)
+// CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut origin_ptr: *mut Point = unsafe { core::ptr::addr_of_mut!(origin.0) };
 // CHECK-EMPTY:
@@ -143,7 +142,7 @@ int main(void) {
 // CHECK-NEXT:         calls.0 += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { calls.0 })
-// CHECK-NEXT:         + aligned((unsafe { core::ptr::addr_of_mut!(calls.0) }) as *const (), 256u64)
+// CHECK-NEXT:         + aligned(unsafe { core::ptr::addr_of_mut!(calls.0) as *const () }, 256u64)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut calls: __SlateAlign256<i32> = __SlateAlign256(unsafe { core::mem::zeroed() });
@@ -151,53 +150,41 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         counter.0 += 10;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         values.0[1] = 50;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u32 = unsafe { values_tail };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = unsafe { *[[V_0]] }.wrapping_add(600);
+// CHECK-NEXT:         *[[V_0]] = (*[[V_0]]).wrapping_add(600);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut f64 = unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!(weights.0) as *mut f64).add(0)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_1]] *= 4.0f64;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         origin.0.y = 80;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*origin_ptr).x += 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         page.0[3] = 112;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         small.0 = 115;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *counter_ptr *= 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bump();
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {}",
-// CHECK-NEXT:         aligned((unsafe { core::ptr::addr_of_mut!(counter.0) }) as *const (), 64u64),
+// CHECK-NEXT:         aligned(unsafe { core::ptr::addr_of_mut!(counter.0) as *const () }, 64u64),
 // CHECK-NEXT:         aligned(
-// CHECK-NEXT:             (unsafe { core::ptr::addr_of_mut!(values.0) as *mut u32 }) as *const (),
+// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(values.0) as *mut u32) as *const () },
 // CHECK-NEXT:             32u64,
 // CHECK-NEXT:         ),
 // CHECK-NEXT:         aligned(
-// CHECK-NEXT:             (unsafe { core::ptr::addr_of_mut!(weights.0) as *mut f64 }) as *const (),
+// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(weights.0) as *mut f64) as *const () },
 // CHECK-NEXT:             128u64,
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         aligned((unsafe { core::ptr::addr_of_mut!(origin.0) }) as *const (), 16u64),
+// CHECK-NEXT:         aligned(unsafe { core::ptr::addr_of_mut!(origin.0) as *const () }, 16u64),
 // CHECK-NEXT:         aligned(
-// CHECK-NEXT:             (unsafe { core::ptr::addr_of_mut!(page.0) as *mut i8 }) as *const (),
+// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(page.0) as *mut i8) as *const () },
 // CHECK-NEXT:             4096u64,
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         aligned((unsafe { core::ptr::addr_of_mut!(small.0) }) as *const (), 16u64)
+// CHECK-NEXT:         aligned(unsafe { core::ptr::addr_of_mut!(small.0) as *const () }, 16u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

@@ -39,53 +39,63 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn walk() -> i32 {
 // CHECK-NEXT:     let mut __slate_state: usize = 5usize;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         '__loop_5: loop {
-// CHECK-NEXT:             if f != 0 {
+// CHECK-NEXT:     '__loop_5: loop {
+// CHECK-NEXT:         if (unsafe { f }) != 0 {
+// CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 g = 0;
-// CHECK-NEXT:                 __slate_state = 7;
-// CHECK-NEXT:             } else {
+// CHECK-NEXT:             }
+// CHECK-NEXT:             __slate_state = 7;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 e = 0;
-// CHECK-NEXT:                 loop {
-// CHECK-NEXT:                     if e != 0 {
-// CHECK-NEXT:                         d = ((d as i32) + 1) as i16;
-// CHECK-NEXT:                         if h != 0 {
-// CHECK-NEXT:                             break;
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             e = 0;
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         break '__loop_5;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 __slate_state = 9;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             loop {
-// CHECK-NEXT:                 match __slate_state {
-// CHECK-NEXT:                     7 => {
-// CHECK-NEXT:                         if g <= 32 {
-// CHECK-NEXT:                             for i in 0i32..3i32 {
-// CHECK-NEXT:                                 while 1 > (d as i32) {
-// CHECK-NEXT:                                     if c[(b as i32) as usize] != 0 {
-// CHECK-NEXT:                                         break;
-// CHECK-NEXT:                                     }
-// CHECK-NEXT:                                 }
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                             __slate_state = 9;
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             break;
+// CHECK-NEXT:                 if (unsafe { e }) != 0 {
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         d = ((d as i32) + 1) as i16;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     if (unsafe { h }) != 0 {
+// CHECK-NEXT:                         break;
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         unsafe {
+// CHECK-NEXT:                             e = 0;
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                     }
-// CHECK-NEXT:                     _ => {
-// CHECK-NEXT:                         if j != 0 {
-// CHECK-NEXT:                             break;
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             g += 1;
-// CHECK-NEXT:                             __slate_state = 7;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     break '__loop_5;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             __slate_state = 9;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             match __slate_state {
+// CHECK-NEXT:                 7 => {
+// CHECK-NEXT:                     if (unsafe { g }) <= 32 {
+// CHECK-NEXT:                         for i in 0i32..3i32 {
+// CHECK-NEXT:                             while 1 > unsafe { d as i32 } {
+// CHECK-NEXT:                                 if (unsafe { c[(b as i32) as usize] }) != 0 {
+// CHECK-NEXT:                                     break;
+// CHECK-NEXT:                                 }
+// CHECK-NEXT:                             }
 // CHECK-NEXT:                         }
+// CHECK-NEXT:                         __slate_state = 9;
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         break;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 _ => {
+// CHECK-NEXT:                     if (unsafe { j }) != 0 {
+// CHECK-NEXT:                         break;
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         unsafe {
+// CHECK-NEXT:                             g += 1;
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                         __slate_state = 7;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             f = a as i32;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

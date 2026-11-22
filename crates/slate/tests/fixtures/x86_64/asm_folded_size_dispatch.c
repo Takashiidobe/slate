@@ -101,8 +101,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn zero_u8(mut p: &u8) -> i32 {
+// CHECK-NEXT:     let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "cmpb $0, {0:l}\n\tje {1}",
 // CHECK-NEXT:             in(reg) (*p as u8) as u32,
@@ -111,17 +111,17 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
-// CHECK-NEXT:         if __slate_asm_target {
-// CHECK-NEXT:             return 1;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             return 0;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if __slate_asm_target {
+// CHECK-NEXT:         return 1;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn zero_u32(mut p: &u32) -> i32 {
+// CHECK-NEXT:     let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "cmpl $0, {0:e}\n\tje {1}",
 // CHECK-NEXT:             in(reg) *p as u32,
@@ -130,17 +130,17 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
-// CHECK-NEXT:         if __slate_asm_target {
-// CHECK-NEXT:             return 1;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             return 0;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if __slate_asm_target {
+// CHECK-NEXT:         return 1;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn zero_u64(mut p: &u64) -> i32 {
+// CHECK-NEXT:     let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "cmpq $0, {0:r}\n\tje {1}",
 // CHECK-NEXT:             in(reg) *p as u64,
@@ -149,39 +149,39 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
-// CHECK-NEXT:         if __slate_asm_target {
-// CHECK-NEXT:             return 1;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             return 0;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if __slate_asm_target {
+// CHECK-NEXT:         return 1;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn load_u64(mut p: &u64) -> u64 {
 // CHECK-NEXT:     let mut x: u64 = 0;
 // CHECK-NEXT:     if ((const { core::mem::size_of::<u64>() }) as u64) == 4 {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:             core::arch::asm!(
 // CHECK-NEXT:                 "movl ({1:r}), {0:r}",
 // CHECK-NEXT:                 lateout(reg) [[T_0]],
 // CHECK-NEXT:                 in(reg) (p as *const u64) as *mut u64,
 // CHECK-NEXT:                 options(pure, readonly, nostack, att_syntax),
 // CHECK-NEXT:             );
-// CHECK-NEXT:             x = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:         }
+// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         if ((const { core::mem::size_of::<u64>() }) as u64) == 8 {
+// CHECK-NEXT:             let [[T_1:__t[0-9]+]]: u64;
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 let [[T_1:__t[0-9]+]]: u64;
 // CHECK-NEXT:                 core::arch::asm!(
 // CHECK-NEXT:                     "movq ({1:r}), {0:r}",
 // CHECK-NEXT:                     lateout(reg) [[T_1]],
 // CHECK-NEXT:                     in(reg) (p as *const u64) as *mut u64,
 // CHECK-NEXT:                     options(pure, readonly, nostack, att_syntax),
 // CHECK-NEXT:                 );
-// CHECK-NEXT:                 x = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:             }
+// CHECK-NEXT:             x = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             unsafe { __bad_size() };
 // CHECK-NEXT:         }
@@ -192,28 +192,28 @@ int main(void) {
 // CHECK-NEXT: fn load_u32(mut p: &u32) -> u32 {
 // CHECK-NEXT:     let mut x: u32 = 0;
 // CHECK-NEXT:     if ((const { core::mem::size_of::<u32>() }) as u64) == 4 {
+// CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             let [[T_0]]: u32;
 // CHECK-NEXT:             core::arch::asm!(
 // CHECK-NEXT:                 "movl ({1:r}), {0:e}",
 // CHECK-NEXT:                 lateout(reg) [[T_0]],
 // CHECK-NEXT:                 in(reg) (p as *const u32) as *mut u32,
 // CHECK-NEXT:                 options(pure, readonly, nostack, att_syntax),
 // CHECK-NEXT:             );
-// CHECK-NEXT:             x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:         }
+// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         if ((const { core::mem::size_of::<u32>() }) as u64) == 8 {
+// CHECK-NEXT:             let [[T_1]]: u32;
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 let [[T_1]]: u32;
 // CHECK-NEXT:                 core::arch::asm!(
 // CHECK-NEXT:                     "movq ({1:r}), {0:e}",
 // CHECK-NEXT:                     lateout(reg) [[T_1]],
 // CHECK-NEXT:                     in(reg) (p as *const u32) as *mut u32,
 // CHECK-NEXT:                     options(pure, readonly, nostack, att_syntax),
 // CHECK-NEXT:                 );
-// CHECK-NEXT:                 x = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:             }
+// CHECK-NEXT:             x = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             unsafe { __bad_size() };
 // CHECK-NEXT:         }
@@ -225,16 +225,16 @@ int main(void) {
 // CHECK-NEXT:     let mut r: i32 = 0;
 // CHECK-NEXT:     match (const { core::mem::size_of::<u64>() }) as u64 {
 // CHECK-NEXT:         4 => {
+// CHECK-NEXT:             let [[T_0]]: u32;
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 let [[T_0]]: u32;
 // CHECK-NEXT:                 core::arch::asm!(
 // CHECK-NEXT:                     "movl {1:r}, {0:e}",
 // CHECK-NEXT:                     lateout(reg) [[T_0]],
 // CHECK-NEXT:                     in(reg) *p as u64,
 // CHECK-NEXT:                     options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:                 );
-// CHECK-NEXT:                 r = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:             }
+// CHECK-NEXT:             r = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         8 => {
 // CHECK-NEXT:             r = *p as i32;

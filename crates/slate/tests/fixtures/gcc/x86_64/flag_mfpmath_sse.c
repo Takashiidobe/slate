@@ -306,24 +306,33 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let t: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) })
-// CHECK-NEXT:         * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
-// CHECK-NEXT:     let h: f32 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(f)) })
-// CHECK-NEXT:         + unsafe { core::ptr::read_volatile(core::ptr::addr_of!(fone)) };
-// CHECK-NEXT:     let y: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
-// CHECK-NEXT:         + unsafe { core::ptr::read_volatile(core::ptr::addr_of!(eps)) };
+// CHECK-NEXT:     let t: f64 = unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(huge))
+// CHECK-NEXT:             * core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let h: f32 = unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(f))
+// CHECK-NEXT:             + core::ptr::read_volatile(core::ptr::addr_of!(fone))
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let y: f64 = unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(one))
+// CHECK-NEXT:             + core::ptr::read_volatile(core::ptr::addr_of!(eps))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut stored: f64 = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) };
 // CHECK-NEXT:     let mut assigned: f64 = 0 as f64;
 // CHECK-NEXT:     let mut passed: f64 = 0 as f64;
 // CHECK-NEXT:     let mut compound: f64 = 1e308f64;
-// CHECK-NEXT:     let as_double: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
-// CHECK-NEXT:         as f64;
+// CHECK-NEXT:     let as_double: f64 = unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(big)) as f64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     compound *= unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
 // CHECK-NEXT:     stored = stored * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) }
 // CHECK-NEXT:         / unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) })
-// CHECK-NEXT:             * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(huge))
+// CHECK-NEXT:                 * core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         take([[T_0]], &mut passed)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{}", 0i32);
@@ -370,22 +379,28 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "cmp {} {} {}",
-// CHECK-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) })
-// CHECK-NEXT:             + unsafe { core::ptr::read_volatile(core::ptr::addr_of!(eps)) }
-// CHECK-NEXT:             == unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) }) as i32,
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             (core::ptr::read_volatile(core::ptr::addr_of!(one))
+// CHECK-NEXT:                 + core::ptr::read_volatile(core::ptr::addr_of!(eps))
+// CHECK-NEXT:                 == core::ptr::read_volatile(core::ptr::addr_of!(one))) as i32
+// CHECK-NEXT:         },
 // CHECK-NEXT:         (y == unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) }) as i32,
-// CHECK-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) })
-// CHECK-NEXT:             * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) } > 1e308f64)
-// CHECK-NEXT:             as i32
+// CHECK-NEXT:         ((unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(huge))
+// CHECK-NEXT:                 * core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:         }) > 1e308f64) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "cond {}",
-// CHECK-NEXT:         ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) })
-// CHECK-NEXT:             * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) } != 0.0f64)
-// CHECK-NEXT:             as i32
+// CHECK-NEXT:         ((unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(tiny))
+// CHECK-NEXT:                 * core::ptr::read_volatile(core::ptr::addr_of!(tiny))
+// CHECK-NEXT:         }) != 0.0f64) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) })
-// CHECK-NEXT:         * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) } != 0.0f64 {
+// CHECK-NEXT:     if (unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(tiny))
+// CHECK-NEXT:             * core::ptr::read_volatile(core::ptr::addr_of!(tiny))
+// CHECK-NEXT:     }) != 0.0f64 {
 // CHECK-NEXT:         println!("if");
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -430,8 +445,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: f64;
-// CHECK-NEXT:     [[V_0]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) })
-// CHECK-NEXT:         * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
+// CHECK-NEXT:     [[V_0]] = unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(huge))
+// CHECK-NEXT:             * core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -459,8 +476,10 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) })
-// CHECK-NEXT:         * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) };
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: f64 = unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(huge))
+// CHECK-NEXT:             * core::ptr::read_volatile(core::ptr::addr_of!(ten))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     assigned = [[V_1]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

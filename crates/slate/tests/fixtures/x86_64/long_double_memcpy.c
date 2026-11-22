@@ -250,8 +250,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     i = 0;
 // CHECK-NEXT:     while i < 10 {
-// CHECK-NEXT:         if ((unsafe { dst.bytes[i as usize] }) as i32)
-// CHECK-NEXT:             != ((unsafe { src.bytes[i as usize] }) as i32) {
+// CHECK-NEXT:         if unsafe { (dst.bytes[i as usize] as i32) != (src.bytes[i as usize] as i32) } {
 // CHECK-NEXT:             return 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i += 1;

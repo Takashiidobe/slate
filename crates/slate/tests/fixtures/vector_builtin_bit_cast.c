@@ -130,13 +130,9 @@ int main(void) {
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT:     let scalar: f64 = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 2>, f64>(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
-// CHECK-NEXT:                         [0i32, 1074266112i32],
-// CHECK-NEXT:                     );
-// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             *{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array([0i32, 1074266112i32]);
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -161,11 +157,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let pair: pair = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 2>, pair>(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_1]] = core::simd::Simd::from_array([-7i32, 9i32]);
-// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             *{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_1]] = core::simd::Simd::from_array([-7i32, 9i32]);
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -185,11 +179,9 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut rebuilt: core::simd::Simd<f32, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<f32, 4>>(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<f32, 4>, core::simd::Simd<u8, 16>>(
-// CHECK-NEXT:                     floats,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<f32, 4>, core::simd::Simd<u8, 16>>(
+// CHECK-NEXT:                 floats,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let __slate_printf_arg0 = ((unsafe {

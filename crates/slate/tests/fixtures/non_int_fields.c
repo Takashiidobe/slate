@@ -95,18 +95,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn union_double(value: f64) -> f64 {
 // CHECK-NEXT:     let mut s: Scalar = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         s.total = value;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     s.total = value;
 // CHECK-NEXT:     unsafe { s.total }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn union_char(value: i8) -> i32 {
 // CHECK-NEXT:     let mut s: Scalar = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         s.tag = value;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     (unsafe { s.tag }) as i32
+// CHECK-NEXT:     s.tag = value;
+// CHECK-NEXT:     unsafe { s.tag as i32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

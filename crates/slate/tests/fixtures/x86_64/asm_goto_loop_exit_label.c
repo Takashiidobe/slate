@@ -62,10 +62,10 @@ int main(void) {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     region_begin();
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         i = 0;
-// CHECK-NEXT:         while i < size {
-// CHECK-NEXT:             let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:     i = 0;
+// CHECK-NEXT:     while i < size {
+// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::arch::asm!(
 // CHECK-NEXT:                 "cmpq {0:r}, {1:r}\n\tje {3}\n\tmovb $1, ({2:r})",
 // CHECK-NEXT:                 in(reg) i as u64,
@@ -76,14 +76,14 @@ int main(void) {
 // CHECK-NEXT:                 },
 // CHECK-NEXT:                 options(nostack, att_syntax),
 // CHECK-NEXT:             );
-// CHECK-NEXT:             if __slate_asm_target {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 i = i.wrapping_add(1);
-// CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         region_end();
+// CHECK-NEXT:         if __slate_asm_target {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             i = i.wrapping_add(1);
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-NEXT:     region_end();
 // CHECK-NEXT:     size.wrapping_sub(i)
 // CHECK-NEXT: }
 // CHECK-EMPTY:

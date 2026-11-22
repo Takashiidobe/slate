@@ -68,8 +68,6 @@ fn starts_with_brace_expr(expr: &Expr) -> bool {
             Expr::Block(_)
                 | Expr::Unsafe(_)
                 | Expr::ConstBlock(_)
-                | Expr::Transmute { .. }
-                | Expr::CopyNonoverlapping { .. }
                 | Expr::If { .. }
                 | Expr::Match { .. }
         ),
@@ -1788,27 +1786,21 @@ impl Codegen {
                 ordering_str(*ordering)
             )),
             Expr::Transmute { from, to, expr } => {
-                self.word("unsafe ");
-                self.small_block(|this| {
-                    this.word("core::mem::transmute::<");
-                    this.ty(from);
-                    this.word(", ");
-                    this.ty(to);
-                    this.word(">");
-                    this.call_tail(std::slice::from_ref(expr));
-                });
+                self.word("core::mem::transmute::<");
+                self.ty(from);
+                self.word(", ");
+                self.ty(to);
+                self.word(">");
+                self.call_tail(std::slice::from_ref(expr));
             }
             Expr::CopyNonoverlapping { src, dst, count } => {
-                self.word("unsafe ");
-                self.small_block(|this| {
-                    this.word("core::ptr::copy_nonoverlapping(");
-                    this.pieces(&[
-                        Piece::Expr(src),
-                        Piece::Expr(dst),
-                        Piece::Text(count.to_string()),
-                    ]);
-                    this.word(")");
-                });
+                self.word("core::ptr::copy_nonoverlapping(");
+                self.pieces(&[
+                    Piece::Expr(src),
+                    Piece::Expr(dst),
+                    Piece::Text(count.to_string()),
+                ]);
+                self.word(")");
             }
             Expr::PtrCopy {
                 src,

@@ -28,13 +28,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn tied_twice(x: i64) -> i64 {
 // CHECK-NEXT:     let mut t: i64 = x;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addq %r11, %r11",
-// CHECK-NEXT:             inlateout("r11") t as u64 => [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "addq %r11, %r11",
+// CHECK-NEXT:                 inlateout("r11") t as u64 => [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         t = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     t
@@ -43,14 +45,16 @@ int main(void) {
 // CHECK-NEXT: fn input_twice(x: i64) -> i64 {
 // CHECK-NEXT:     let mut t: i64 = x;
 // CHECK-NEXT:     let mut out: i64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq (%r11,%r11), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in("r11") t as u64,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "leaq (%r11,%r11), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in("r11") t as u64,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         out = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out

@@ -42,10 +42,10 @@ int main(void) {
 // CHECK-NEXT: static mut counter: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn movsb(mut dst: *mut (), mut src: *const (), mut n: u64) {
+// CHECK-NEXT:     let [[T_0:__t[0-9]+]]: u64;
+// CHECK-NEXT:     let [[T_1:__t[0-9]+]]: u64;
+// CHECK-NEXT:     let [[T_2:__t[0-9]+]]: u64;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "rep movsb",
 // CHECK-NEXT:             inlateout("di") dst as u64 => [[T_0]],
@@ -53,10 +53,10 @@ int main(void) {
 // CHECK-NEXT:             inlateout("cx") n as u64 => [[T_2]],
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
-// CHECK-NEXT:         dst = unsafe { core::mem::transmute::<u64, *mut ()>([[T_0]] as u64) };
-// CHECK-NEXT:         src = unsafe { core::mem::transmute::<u64, *const ()>([[T_1]] as u64) };
-// CHECK-NEXT:         n = unsafe { core::mem::transmute::<u64, u64>([[T_2]] as u64) };
 // CHECK-NEXT:     }
+// CHECK-NEXT:     dst = unsafe { core::mem::transmute::<u64, *mut ()>([[T_0]] as u64) };
+// CHECK-NEXT:     src = unsafe { core::mem::transmute::<u64, *const ()>([[T_1]] as u64) };
+// CHECK-NEXT:     n = unsafe { core::mem::transmute::<u64, u64>([[T_2]] as u64) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn incl(mut p: &mut i32) {
@@ -81,13 +81,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn read_ds() -> u16 {
 // CHECK-NEXT:     let mut v: u16 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u16;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movw %ds,{0:x}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movw %ds,{0:x}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u16, u16>([[T_0]] as u16) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v

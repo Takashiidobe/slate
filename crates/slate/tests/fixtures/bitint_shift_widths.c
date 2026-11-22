@@ -503,8 +503,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld %llu %lld\n".as_ptr(),
-// CHECK-NEXT:             unsafe { g_shl }.shr_bits(70 as usize).to_i128() as i64,
-// CHECK-NEXT:             unsafe { g_shr }.to_u128() as u64,
+// CHECK-NEXT:             g_shl.shr_bits(70 as usize).to_i128() as i64,
+// CHECK-NEXT:             g_shr.to_u128() as u64,
 // CHECK-NEXT:             g_small as i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

@@ -58,48 +58,52 @@ int main(void) {
 // CHECK-NEXT:     83, 69, 82, 73, 65, 76, 95, 56, 50, 53, 48, 95, 77, 73, 68, 0,
 // CHECK-NEXT: ];
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut table: core::mem::MaybeUninit<__SlateImage_table> = unsafe {
+// CHECK-NEXT: static mut table: core::mem::MaybeUninit<__SlateImage_table> = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: core::mem::MaybeUninit<__SlateImage_table> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1:__t[0-9]+]] = [[T_0]].as_mut_ptr();
-// CHECK-NEXT:     (*[[T_1]]).0[0].vendor = 1u32;
-// CHECK-NEXT:     (*[[T_1]]).0[0].device = 2u32;
-// CHECK-NEXT:     (*[[T_1]]).0[0].data = 0u64;
-// CHECK-NEXT:     (*[[T_1]]).0[1].vendor = 3u32;
-// CHECK-NEXT:     (*[[T_1]]).0[1].device = 4u32;
-// CHECK-NEXT:     (core::ptr::addr_of_mut!((*[[T_1]]).0[1].data) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*[[T_1]]).0[0].vendor = 1u32;
+// CHECK-NEXT:         (*[[T_1]]).0[0].device = 2u32;
+// CHECK-NEXT:         (*[[T_1]]).0[0].data = 0u64;
+// CHECK-NEXT:         (*[[T_1]]).0[1].vendor = 3u32;
+// CHECK-NEXT:         (*[[T_1]]).0[1].device = 4u32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*[[T_1]]).0[1].data) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<*mut [i8; 15], *const ()>(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(__slate_str10),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
-// CHECK-NEXT:     (*[[T_1]]).0[2].vendor = 5u32;
-// CHECK-NEXT:     (*[[T_1]]).0[2].device = 6u32;
-// CHECK-NEXT:     (core::ptr::addr_of_mut!((*[[T_1]]).0[2].data) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*[[T_1]]).0[2].vendor = 5u32;
+// CHECK-NEXT:         (*[[T_1]]).0[2].device = 6u32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*[[T_1]]).0[2].data) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<*mut [i8; 16], *const ()>(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(__slate_str11),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut __slate_str12: [i8; 6] = [112, 108, 97, 105, 110, 0];
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut plain: core::mem::MaybeUninit<__SlateImage_plain> = unsafe {
+// CHECK-NEXT: static mut plain: core::mem::MaybeUninit<__SlateImage_plain> = {
 // CHECK-NEXT:     let mut [[T_0]]: core::mem::MaybeUninit<__SlateImage_plain> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
-// CHECK-NEXT:     (core::ptr::addr_of_mut!(*[[T_1]]) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!(*[[T_1]]) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<*mut [i8; 6], *const ()>(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(__slate_str12),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:

@@ -49,9 +49,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C" fn main() -> i32 {
-// CHECK-NEXT:     let cell: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ()
-// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:     let cell: *mut i32 = unsafe {
+// CHECK-NEXT:         (malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ()) as *mut i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *cell = 5;
 // CHECK-NEXT:     }
@@ -60,10 +60,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"sum %d\n".as_ptr(), sum(values.as_slice())) };
 // CHECK-NEXT:     unsafe { slate_support::putchar(10i32) };
 // CHECK-NEXT:     if !unsafe {
-// CHECK-NEXT:             getenv(c"SLATE_FREESTANDING_UNSET".as_ptr() as *const core::ffi::c_char)
-// CHECK-NEXT:                 as *mut i8
-// CHECK-NEXT:         }
-// CHECK-NEXT:         .is_null() {
+// CHECK-NEXT:         (getenv(c"SLATE_FREESTANDING_UNSET".as_ptr() as *const core::ffi::c_char)
+// CHECK-NEXT:                 as *mut i8)
+// CHECK-NEXT:             .is_null()
+// CHECK-NEXT:     } {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { exit(((sum(values.as_slice()) != 8) as i32) as i32) };

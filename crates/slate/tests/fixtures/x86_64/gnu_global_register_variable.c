@@ -42,9 +42,11 @@ int main(void) {
 // CHECK-NEXT: fn read_integer() -> i32 {
 // CHECK-NEXT:     let mut local: i32 = 1;
 // CHECK-NEXT:     near(
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]]: usize;
-// CHECK-NEXT:             core::arch::asm!("mov {0}, rsp", lateout(reg) [[T_0]]);
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::arch::asm!("mov {0}, rsp", lateout(reg) [[T_0]]);
+// CHECK-NEXT:             }
 // CHECK-NEXT:             [[T_0]] as u64
 // CHECK-NEXT:         },
 // CHECK-NEXT:         core::ptr::addr_of_mut!(local) as *const (),
@@ -54,9 +56,11 @@ int main(void) {
 // CHECK-NEXT: fn read_pointer() -> i32 {
 // CHECK-NEXT:     let mut local: i32 = 2;
 // CHECK-NEXT:     near(
-// CHECK-NEXT:         (unsafe {
+// CHECK-NEXT:         ({
 // CHECK-NEXT:             let [[T_0]]: usize;
-// CHECK-NEXT:             core::arch::asm!("mov {0}, rsp", lateout(reg) [[T_0]]);
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::arch::asm!("mov {0}, rsp", lateout(reg) [[T_0]]);
+// CHECK-NEXT:             }
 // CHECK-NEXT:             [[T_0]] as *mut i8
 // CHECK-NEXT:         }) as u64,
 // CHECK-NEXT:         core::ptr::addr_of_mut!(local) as *const (),

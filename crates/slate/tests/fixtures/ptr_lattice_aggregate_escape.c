@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn count(l: &list) -> i64 {
-// CHECK-NEXT:     (*l).n + ((unsafe { *(*(*l).items) }) as i64)
+// CHECK-NEXT:     (*l).n + unsafe { *(*(*l).items) as i64 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn wrap(length: i64, items: *mut *mut i32) -> i64 {

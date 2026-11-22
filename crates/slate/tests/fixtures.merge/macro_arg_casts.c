@@ -108,9 +108,7 @@ int main(void) {
 // CHECK-NEXT:         let val: i32 = wide - 1;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             buffer = ((buffer as i32) | ((val as u16) as i32) << 1i32) as u16;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = flips + val;
+// CHECK-NEXT:             flips += val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
@@ -121,9 +119,7 @@ int main(void) {
 // CHECK-NEXT:         let val: i32 = wide + 2;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             buffer = ((buffer as i32) | ((val as u16) as i32) << 1i32) as u16;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = flips + val;
+// CHECK-NEXT:             flips += val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
@@ -136,9 +132,7 @@ int main(void) {
 // CHECK-NEXT:         let val: i32 = (lc as i32) - 1;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             buffer = ((buffer as i32) | ((val as u16) as i32) << 1i32) as u16;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = flips + val;
+// CHECK-NEXT:             flips += val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
@@ -150,9 +144,7 @@ int main(void) {
 // CHECK-NEXT:         let val: i32 = (code as i32) + 1;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             buffer = ((buffer as i32) | ((val as u16) as i32) << 1i32) as u16;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = flips + val;
+// CHECK-NEXT:             flips += val;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
@@ -170,7 +162,7 @@ int main(void) {
 // CHECK-NEXT:     MIXED!(wide);
 // CHECK-NEXT:     MIXED!((small as i32) + 1);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         flips = flips + ((small as i32) + 1 * (small as i32) + 1);
+// CHECK-NEXT:         flips += (small as i32) + 1 * (small as i32) + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     UNHYGIENIC!(code);
 // CHECK-NEXT:     #[cfg(windows)]
@@ -193,11 +185,11 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {} {} {}",
-// CHECK-NEXT:             (unsafe { buffer }) as i32,
+// CHECK-NEXT:             unsafe { buffer as i32 },
 // CHECK-NEXT:             unsafe { flips },
 // CHECK-NEXT:             unsafe { used },
-// CHECK-NEXT:             (unsafe { bytes[0] }) as i32,
-// CHECK-NEXT:             (unsafe { bytes[3] }) as i32
+// CHECK-NEXT:             unsafe { bytes[0] as i32 },
+// CHECK-NEXT:             unsafe { bytes[3] as i32 }
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
@@ -223,8 +215,6 @@ int main(void) {
 // CHECK-NEXT:             let __v: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 buffer = ((__v as i32) | ((val as u16) as i32) << 1i32) as u16;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 flips = flips + val;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         } else {
@@ -241,8 +231,6 @@ int main(void) {
 // CHECK-NEXT:         let __v: i32 = unsafe { used };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             used = __v + 1;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             bytes[__v as usize] = ($c) as u8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };

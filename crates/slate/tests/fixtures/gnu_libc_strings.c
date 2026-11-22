@@ -142,13 +142,13 @@ int main(void) {
 // CHECK-NEXT:     let mut obscured: [i8; 4] = [103, 110, 117, 0];
 // CHECK-NEXT:     let mut tokens: [i8; 6] = [97, 58, 58, 98, 99, 0];
 // CHECK-NEXT:     let mut cursor: *mut i8 = tokens.as_mut_ptr();
-// CHECK-NEXT:     let end: *mut i8 = (unsafe {
-// CHECK-NEXT:         mempcpy(
+// CHECK-NEXT:     let end: *mut i8 = unsafe {
+// CHECK-NEXT:         (mempcpy(
 // CHECK-NEXT:             (destination.0.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             (b"slate\0".as_ptr() as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:             6u64 as usize,
-// CHECK-NEXT:         ) as *mut ()
-// CHECK-NEXT:     }) as *mut i8;
+// CHECK-NEXT:         ) as *mut ()) as *mut i8
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut token_score: i32 = 0;
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i8 = unsafe {
@@ -159,40 +159,41 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         token_score = token_score * 10
-// CHECK-NEXT:             + ((unsafe {
-// CHECK-NEXT:                 strlen((token as *const i8) as *const core::ffi::c_char) as u64
-// CHECK-NEXT:             }) as i32);
+// CHECK-NEXT:             + unsafe {
+// CHECK-NEXT:                 (strlen((token as *const i8) as *const core::ffi::c_char) as u64) as i32
+// CHECK-NEXT:             };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { memfrob(obscured.as_mut_ptr() as *mut (), 3u64) };
 // CHECK-NEXT:     unsafe { memfrob(obscured.as_mut_ptr() as *mut (), 3u64) };
-// CHECK-NEXT:     ((((((unsafe { end.offset_from(destination.0.as_mut_ptr() as *mut i8) }) as i64)
-// CHECK-NEXT:         as i32)
+// CHECK-NEXT:     ((((unsafe {
+// CHECK-NEXT:         (end.offset_from(destination.0.as_mut_ptr() as *mut i8) as i64) as i32
+// CHECK-NEXT:     })
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             strcmp(
 // CHECK-NEXT:                 (destination.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
 // CHECK-NEXT:                 c"slate".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         }) == 0) as i32)) as i64)
-// CHECK-NEXT:         + ((unsafe {
+// CHECK-NEXT:         + unsafe {
 // CHECK-NEXT:             (memrchr(repeated.as_ptr() as *const (), 97i32, 4u64) as *const i8)
-// CHECK-NEXT:                 .offset_from(repeated.as_ptr() as *const i8)
-// CHECK-NEXT:         }) as i64)
-// CHECK-NEXT:         + ((unsafe {
+// CHECK-NEXT:                 .offset_from(repeated.as_ptr() as *const i8) as i64
+// CHECK-NEXT:         }
+// CHECK-NEXT:         + unsafe {
 // CHECK-NEXT:             (rawmemchr(repeated.as_ptr() as *const (), 99i32) as *const i8)
-// CHECK-NEXT:                 .offset_from(repeated.as_ptr() as *const i8)
-// CHECK-NEXT:         }) as i64)
-// CHECK-NEXT:         + ((unsafe {
+// CHECK-NEXT:                 .offset_from(repeated.as_ptr() as *const i8) as i64
+// CHECK-NEXT:         }
+// CHECK-NEXT:         + unsafe {
 // CHECK-NEXT:             (strchrnul(c"abc".as_ptr() as *const core::ffi::c_char, 122i32 as i32)
 // CHECK-NEXT:                     as *mut i8)
-// CHECK-NEXT:                 .offset_from(c"abc".as_ptr() as *mut i8)
-// CHECK-NEXT:         }) as i64)
+// CHECK-NEXT:                 .offset_from(c"abc".as_ptr() as *mut i8) as i64
+// CHECK-NEXT:         }
 // CHECK-NEXT:         + ((!unsafe {
-// CHECK-NEXT:                 strcasestr(
+// CHECK-NEXT:             (strcasestr(
 // CHECK-NEXT:                     c"GNU Library".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:                     c"library".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:                 ) as *mut i8
-// CHECK-NEXT:             }
-// CHECK-NEXT:             .is_null() as i32) as i64)
+// CHECK-NEXT:                 ) as *mut i8)
+// CHECK-NEXT:                 .is_null()
+// CHECK-NEXT:         } as i32) as i64)
 // CHECK-NEXT:         + ((((unsafe { strverscmp(c"release-2".as_ptr(), c"release-10".as_ptr()) }) < 0)
 // CHECK-NEXT:             as i32) as i64)
 // CHECK-NEXT:         + ((((unsafe {
@@ -208,7 +209,7 @@ int main(void) {
 // CHECK-NEXT:                 c"EINVAL".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         }) == 0) as i32) as i64)
-// CHECK-NEXT:         + ((!unsafe { strerrordesc_np(slate_support::EINVAL as i32) }.is_null() as i32)
+// CHECK-NEXT:         + ((!unsafe { strerrordesc_np(slate_support::EINVAL as i32).is_null() } as i32)
 // CHECK-NEXT:             as i64)) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -290,8 +291,9 @@ int main(void) {
 // CHECK-NEXT:             c"one".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }) == 0) as i32;
-// CHECK-NEXT:     total += !unsafe { envz_entry(envz as *const i8, length, c"BETA".as_ptr()) }
-// CHECK-NEXT:         .is_null() as i32;
+// CHECK-NEXT:     total += !unsafe {
+// CHECK-NEXT:         envz_entry(envz as *const i8, length, c"BETA".as_ptr()).is_null()
+// CHECK-NEXT:     } as i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         envz_remove(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(envz),
@@ -299,8 +301,9 @@ int main(void) {
 // CHECK-NEXT:             c"ALPHA".as_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     total += unsafe { envz_get(envz as *const i8, length, c"ALPHA".as_ptr()) }.is_null()
-// CHECK-NEXT:         as i32;
+// CHECK-NEXT:     total += unsafe {
+// CHECK-NEXT:         envz_get(envz as *const i8, length, c"ALPHA".as_ptr()).is_null() as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         envz_strip(core::ptr::addr_of_mut!(envz), core::ptr::addr_of_mut!(length))
 // CHECK-NEXT:     };

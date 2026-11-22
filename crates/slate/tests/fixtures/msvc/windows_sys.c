@@ -93,15 +93,15 @@ int main(void) { return 0; }
 // CHECK-NEXT:             GetCurrentProcessId as *const (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if current_process_id() != ((unsafe { _getpid() }) as u32)
+// CHECK-NEXT:     if current_process_id() != unsafe { _getpid() as u32 }
 // CHECK-NEXT:         || (unsafe { process_id.unwrap()() }) != current_process_id() {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut time: _SYSTEMTIME = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe { GetSystemTime(core::ptr::addr_of_mut!(time)) };
 // CHECK-NEXT:     if (time.wYear as i32) < 2020 || (time.wMonth as i32) < 1
 // CHECK-NEXT:         || (time.wMonth as i32) > 12 {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let event: *mut () = unsafe {
 // CHECK-NEXT:         CreateEventW(
@@ -113,10 +113,10 @@ int main(void) { return 0; }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = event.is_null() || (unsafe { SetEvent(event) }) == 0;
 // CHECK-NEXT:     if [[V_0]] || (unsafe { WaitForSingleObject(event, 0u32) }) != 0u32.wrapping_add(0u32) {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { CloseHandle(event) }) == 0 {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

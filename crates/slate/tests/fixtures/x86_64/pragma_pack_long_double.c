@@ -221,8 +221,10 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn offset(base: *const (), field: *const ()) -> u32 {
-// CHECK-NEXT:     ((unsafe { (field as *const i8).offset_from((base as *const i8) as *const i8) })
-// CHECK-NEXT:         as i64) as u32
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         ((field as *const i8).offset_from((base as *const i8) as *const i8) as i64)
+// CHECK-NEXT:             as u32
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -231,8 +233,8 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].c = 1i8;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (core::ptr::addr_of_mut!([[T_0]].x) as *mut LongDouble)
-// CHECK-NEXT:                 .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]));
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]].tail = 3i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
@@ -243,8 +245,8 @@ int main(void) {
 // CHECK-NEXT:                 [[T_1]].c = 4i8;
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     (core::ptr::addr_of_mut!([[T_1]].x) as *mut LongDouble)
-// CHECK-NEXT:                         .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 176, 1, 64]));
-// CHECK-NEXT:                 }
+// CHECK-NEXT:                         .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 176, 1, 64]))
+// CHECK-NEXT:                 };
 // CHECK-NEXT:                 [[T_1]].tail = 6i32;
 // CHECK-NEXT:                 [[T_1]]
 // CHECK-NEXT:             },
@@ -253,8 +255,8 @@ int main(void) {
 // CHECK-NEXT:                 [[T_2]].c = 7i8;
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     (core::ptr::addr_of_mut!([[T_2]].x) as *mut LongDouble)
-// CHECK-NEXT:                         .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 136, 2, 64]));
-// CHECK-NEXT:                 }
+// CHECK-NEXT:                         .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 136, 2, 64]))
+// CHECK-NEXT:                 };
 // CHECK-NEXT:                 [[T_2]].tail = 9i32;
 // CHECK-NEXT:                 [[T_2]]
 // CHECK-NEXT:             },
@@ -265,8 +267,8 @@ int main(void) {
 // CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 (core::ptr::addr_of!(e.x) as *const LongDouble).read_unaligned()
 // CHECK-NEXT:                     * LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64]),
-// CHECK-NEXT:             );
-// CHECK-NEXT:     }
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%zu %zu %u %u\n".as_ptr(),

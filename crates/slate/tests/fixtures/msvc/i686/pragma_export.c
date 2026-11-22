@@ -78,30 +78,30 @@ int main(void) {
 // CHECK-NEXT:     let self_: *mut HINSTANCE__ = unsafe { GetModuleHandleA(core::ptr::null::<i8>()) };
 // CHECK-NEXT:     let exported: Option<unsafe extern "C-unwind" fn() -> i32> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<Option<unsafe extern "stdcall-unwind" fn() -> i32>, Option<unsafe extern "C-unwind" fn() -> i32>>(
-// CHECK-NEXT:             unsafe { GetProcAddress(self_, c"exp_fn".as_ptr()) },
+// CHECK-NEXT:             GetProcAddress(self_, c"exp_fn".as_ptr()),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let aliased: Option<unsafe extern "C-unwind" fn() -> i32> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<Option<unsafe extern "stdcall-unwind" fn() -> i32>, Option<unsafe extern "C-unwind" fn() -> i32>>(
-// CHECK-NEXT:             unsafe { GetProcAddress(self_, c"alias_fn".as_ptr()) },
+// CHECK-NEXT:             GetProcAddress(self_, c"alias_fn".as_ptr()),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let data: *mut i32 = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<Option<unsafe extern "stdcall-unwind" fn() -> i32>, *mut i32>(
-// CHECK-NEXT:             unsafe { GetProcAddress(self_, c"exp_data".as_ptr()) },
+// CHECK-NEXT:             GetProcAddress(self_, c"exp_data".as_ptr()),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if exported == None || (unsafe { exported.unwrap()() }) != 7 {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if aliased == None || (unsafe { aliased.unwrap()() }) != 9 {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if data.is_null() || (unsafe { *data }) != 5 {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { GetProcAddress(self_, c"hidden_fn".as_ptr()) }) != None {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

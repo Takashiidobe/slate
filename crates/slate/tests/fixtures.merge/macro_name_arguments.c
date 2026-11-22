@@ -232,10 +232,10 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             if !$ptr.is_null()
 // CHECK-NEXT:                 && ((unsafe { (*$ptr).hash }) != $hash_val
-// CHECK-NEXT:                     || !EQUAL!($key, unsafe { (*$ptr).key })) {
-// CHECK-NEXT:                 while !unsafe { (*$ptr).next }.is_null()
+// CHECK-NEXT:                     || !unsafe { EQUAL!($key, (*$ptr).key) }) {
+// CHECK-NEXT:                 while !unsafe { (*$ptr).next.is_null() }
 // CHECK-NEXT:                     && ((unsafe { (*(*$ptr).next).hash }) != $hash_val
-// CHECK-NEXT:                         || !EQUAL!($key, unsafe { (*(*$ptr).next).key })) {
+// CHECK-NEXT:                         || !unsafe { EQUAL!($key, (*(*$ptr).next).key) }) {
 // CHECK-NEXT:                     $ptr = unsafe { (*$ptr).next };
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 $ptr = unsafe { (*$ptr).next };
@@ -252,8 +252,6 @@ int main(void) {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 (*$s).num = 1;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 (*$s).$func = $func;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {

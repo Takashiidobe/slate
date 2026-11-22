@@ -29,37 +29,43 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN aarch64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn inc32_via_r(mut x: i32) -> i32 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "add {0:x}, {0:x}, #1",
-// CHECK-NEXT:             inlateout(reg) x as u32 => [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "add {0:x}, {0:x}, #1",
+// CHECK-NEXT:                 inlateout(reg) x as u32 => [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn inc64_via_r(mut x: i64) -> i64 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "add {0:x}, {0:x}, #1",
-// CHECK-NEXT:             inlateout(reg) x as u64 => [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "add {0:x}, {0:x}, #1",
+// CHECK-NEXT:                 inlateout(reg) x as u64 => [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         x = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn inc_w_then_x(mut x: i64) -> i64 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "add {0:w}, {0:w}, #1\n\tadd {0:x}, {0:x}, #0",
-// CHECK-NEXT:             inlateout(reg) x as u64 => [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "add {0:w}, {0:w}, #1\n\tadd {0:x}, {0:x}, #0",
+// CHECK-NEXT:                 inlateout(reg) x as u64 => [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         x = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x

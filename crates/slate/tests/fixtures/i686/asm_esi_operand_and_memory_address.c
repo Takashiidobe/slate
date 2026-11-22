@@ -51,20 +51,22 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bytes_differ(mut s1: *const (), mut s2: *const (), mut len: u32) -> i32 {
 // CHECK-NEXT:     let mut diff: bool = false;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u32;
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov %esi, {2:e}\nmov {1:e}, %esi\ntest %ecx, %ecx\n\trepe cmpsb\n\tsetnz {0:l}\nmov %esi, {1:e}\nmov {2:e}, %esi",
-// CHECK-NEXT:             lateout(reg_abcd) [[T_0]],
-// CHECK-NEXT:             inout(reg) s2 as u32 => [[T_2]],
-// CHECK-NEXT:             out(reg) _,
-// CHECK-NEXT:             inlateout("di") s1 as u32 => [[T_1]],
-// CHECK-NEXT:             inlateout("cx") len as u32 => [[T_3]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov %esi, {2:e}\nmov {1:e}, %esi\ntest %ecx, %ecx\n\trepe cmpsb\n\tsetnz {0:l}\nmov %esi, {1:e}\nmov {2:e}, %esi",
+// CHECK-NEXT:                 lateout(reg_abcd) [[T_0]],
+// CHECK-NEXT:                 inout(reg) s2 as u32 => [[T_2]],
+// CHECK-NEXT:                 out(reg) _,
+// CHECK-NEXT:                 inlateout("di") s1 as u32 => [[T_1]],
+// CHECK-NEXT:                 inlateout("cx") len as u32 => [[T_3]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         diff = ([[T_0]] as u8) != 0;
 // CHECK-NEXT:         s1 = unsafe { core::mem::transmute::<u32, *const ()>([[T_1]] as u32) };
 // CHECK-NEXT:         s2 = unsafe { core::mem::transmute::<u32, *const ()>([[T_2]] as u32) };
@@ -74,29 +76,33 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum_via_esi(mut a: u32, mut b: u32) -> u32 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov %esi, {2:e}\nmov {1:e}, %esi\naddl %esi, {0:e}\nmov {2:e}, %esi",
-// CHECK-NEXT:             inlateout(reg) a as u32 => [[T_0]],
-// CHECK-NEXT:             in(reg) b as u32,
-// CHECK-NEXT:             out(reg) _,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov %esi, {2:e}\nmov {1:e}, %esi\naddl %esi, {0:e}\nmov {2:e}, %esi",
+// CHECK-NEXT:                 inlateout(reg) a as u32 => [[T_0]],
+// CHECK-NEXT:                 in(reg) b as u32,
+// CHECK-NEXT:                 out(reg) _,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         a = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn clobber_esi(mut x: u32) -> u32 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov %esi, {1:e}\nmovl {0:e}, %esi\n\tshll $2, %esi\n\tmovl %esi, {0:e}\nmov {1:e}, %esi",
-// CHECK-NEXT:             inlateout(reg) x as u32 => [[T_0]],
-// CHECK-NEXT:             out(reg) _,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov %esi, {1:e}\nmovl {0:e}, %esi\n\tshll $2, %esi\n\tmovl %esi, {0:e}\nmov {1:e}, %esi",
+// CHECK-NEXT:                 inlateout(reg) x as u32 => [[T_0]],
+// CHECK-NEXT:                 out(reg) _,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
@@ -128,23 +134,25 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn root(mut x: f64) -> f64 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: f64 = x;
-// CHECK-NEXT:         let mut [[T_1]]: f64 = core::mem::zeroed();
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fldl ({0:e})\nfsqrt\nfstpl ({1:e})",
-// CHECK-NEXT:             in(reg) core::ptr::addr_of!([[T_0]]),
-// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!([[T_1]]),
-// CHECK-NEXT:             lateout("st(0)") _,
-// CHECK-NEXT:             lateout("st(1)") _,
-// CHECK-NEXT:             lateout("st(2)") _,
-// CHECK-NEXT:             lateout("st(3)") _,
-// CHECK-NEXT:             lateout("st(4)") _,
-// CHECK-NEXT:             lateout("st(5)") _,
-// CHECK-NEXT:             lateout("st(6)") _,
-// CHECK-NEXT:             lateout("st(7)") _,
-// CHECK-NEXT:             options(nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         let mut [[T_1]]: f64 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "fldl ({0:e})\nfsqrt\nfstpl ({1:e})",
+// CHECK-NEXT:                 in(reg) core::ptr::addr_of!([[T_0]]),
+// CHECK-NEXT:                 in(reg) core::ptr::addr_of_mut!([[T_1]]),
+// CHECK-NEXT:                 lateout("st(0)") _,
+// CHECK-NEXT:                 lateout("st(1)") _,
+// CHECK-NEXT:                 lateout("st(2)") _,
+// CHECK-NEXT:                 lateout("st(3)") _,
+// CHECK-NEXT:                 lateout("st(4)") _,
+// CHECK-NEXT:                 lateout("st(5)") _,
+// CHECK-NEXT:                 lateout("st(6)") _,
+// CHECK-NEXT:                 lateout("st(7)") _,
+// CHECK-NEXT:                 options(nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         x = [[T_1]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x

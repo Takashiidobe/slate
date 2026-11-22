@@ -46,14 +46,14 @@ int main(void) {
 // CHECK-NEXT:     a: *const __SlateRecord_pointer_lift_aliased_args_c_5,
 // CHECK-NEXT:     b: *const __SlateRecord_pointer_lift_aliased_args_c_5,
 // CHECK-NEXT: ) {
-// CHECK-NEXT:     let v0: u32 = unsafe { *(*a).w.as_ptr().add(0) }
-// CHECK-NEXT:         .wrapping_add(unsafe { *(*b).w.as_ptr().add(0) });
-// CHECK-NEXT:     let v1: u32 = unsafe { *(*a).w.as_ptr().add(1) }
-// CHECK-NEXT:         .wrapping_add(unsafe { *(*b).w.as_ptr().add(1) });
+// CHECK-NEXT:     let v0: u32 = unsafe {
+// CHECK-NEXT:         (*(*a).w.as_ptr().add(0)).wrapping_add(*(*b).w.as_ptr().add(0))
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let v1: u32 = unsafe {
+// CHECK-NEXT:         (*(*a).w.as_ptr().add(1)).wrapping_add(*(*b).w.as_ptr().add(1))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(*r).w.as_mut_ptr().add(0) = v0;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(*r).w.as_mut_ptr().add(1) = v1
 // CHECK-NEXT:             .wrapping_add(((v0 < *(*a).w.as_ptr().add(0)) as i32) as u32);
 // CHECK-NEXT:     }
@@ -62,10 +62,12 @@ int main(void) {
 // CHECK-NEXT:     a: &__SlateRecord_pointer_lift_aliased_args_c_5,
 // CHECK-NEXT:     b: &__SlateRecord_pointer_lift_aliased_args_c_5,
 // CHECK-NEXT: ) -> u32 {
-// CHECK-NEXT:     unsafe { *(*a).w.as_ptr().add(0) }
-// CHECK-NEXT:         .wrapping_add(unsafe { *(*a).w.as_ptr().add(1) })
-// CHECK-NEXT:         .wrapping_add(unsafe { *(*b).w.as_ptr().add(0) })
-// CHECK-NEXT:         .wrapping_add(unsafe { *(*b).w.as_ptr().add(1) })
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*(*a).w.as_ptr().add(0))
+// CHECK-NEXT:             .wrapping_add(*(*a).w.as_ptr().add(1))
+// CHECK-NEXT:             .wrapping_add(*(*b).w.as_ptr().add(0))
+// CHECK-NEXT:             .wrapping_add(*(*b).w.as_ptr().add(1))
+// CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn poly_feed(ctx: *mut poly, x: u32) {
 // CHECK-NEXT:     let mut c: __SlateRecord_pointer_lift_aliased_args_c_5 = __SlateRecord_pointer_lift_aliased_args_c_5 {
@@ -74,14 +76,19 @@ int main(void) {
 // CHECK-NEXT:     bigval_add(
 // CHECK-NEXT:         core::ptr::addr_of_mut!(c),
 // CHECK-NEXT:         core::ptr::addr_of_mut!(c) as *const __SlateRecord_pointer_lift_aliased_args_c_5,
-// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!((*ctx).h) })
-// CHECK-NEXT:             as *const __SlateRecord_pointer_lift_aliased_args_c_5,
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*ctx).h)
+// CHECK-NEXT:                 as *const __SlateRecord_pointer_lift_aliased_args_c_5
+// CHECK-NEXT:         },
 // CHECK-NEXT:     );
-// CHECK-NEXT:     bigval_add(
-// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!((*ctx).h) },
-// CHECK-NEXT:         core::ptr::addr_of_mut!(c) as *const __SlateRecord_pointer_lift_aliased_args_c_5,
-// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!((*ctx).h) })
-// CHECK-NEXT:             as *const __SlateRecord_pointer_lift_aliased_args_c_5,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         bigval_add(
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*ctx).h),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(c)
+// CHECK-NEXT:                 as *const __SlateRecord_pointer_lift_aliased_args_c_5,
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*ctx).h)
+// CHECK-NEXT:                 as *const __SlateRecord_pointer_lift_aliased_args_c_5,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn probe(p: *const i8) -> i32 {
-// CHECK-NEXT:     if !p.is_null() { (unsafe { *p.add(0) }) as i32 } else { 0 }
+// CHECK-NEXT:     if !p.is_null() { unsafe { *p.add(0) as i32 } } else { 0 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn both(p: *const i8) -> i32 {

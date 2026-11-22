@@ -208,13 +208,9 @@ int main(void) { printf("%d\n", convert(6.75L)); }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         bits.u64[0] = 0;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         bits.u64[1] = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         bits.f80 = value;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     bits.f80 = value;
 // CHECK-NEXT:     __slate_f80_to_i32(unsafe { bits.f80 })
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -104,137 +104,141 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut data: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut kernels: core::mem::MaybeUninit<__SlateImage_kernels> = unsafe {
+// CHECK-NEXT: static mut kernels: core::mem::MaybeUninit<__SlateImage_kernels> = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: core::mem::MaybeUninit<__SlateImage_kernels> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1:__t[0-9]+]] = [[T_0]].as_mut_ptr();
-// CHECK-NEXT:     (core::ptr::addr_of_mut!((*[[T_1]]).0[0]) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*[[T_1]]).0[0]) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, *const ()>(
 // CHECK-NEXT:                     Some(add),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
-// CHECK-NEXT:     (core::ptr::addr_of_mut!((*[[T_1]]).0[1]) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*[[T_1]]).0[1]) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, *const ()>(
 // CHECK-NEXT:                     Some(sub),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
-// CHECK-NEXT:     (*[[T_1]]).0[2] = 0u64;
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*[[T_1]]).0[2] = 0u64;
+// CHECK-NEXT:     }
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut exported_kernels: core::mem::MaybeUninit<__SlateImage_exported_kernels> = unsafe {
+// CHECK-NEXT: static mut exported_kernels: core::mem::MaybeUninit<__SlateImage_exported_kernels> = {
 // CHECK-NEXT:     let mut [[T_0]]: core::mem::MaybeUninit<__SlateImage_exported_kernels> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
-// CHECK-NEXT:     (core::ptr::addr_of_mut!((*[[T_1]]).0[0]) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*[[T_1]]).0[0]) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, *const ()>(
 // CHECK-NEXT:                     Some(sub),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
-// CHECK-NEXT:     (core::ptr::addr_of_mut!((*[[T_1]]).0[1]) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*[[T_1]]).0[1]) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, *const ()>(
 // CHECK-NEXT:                     Some(add),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut aligned: core::mem::MaybeUninit<__SlateImage_aligned> = unsafe {
+// CHECK-NEXT: static mut aligned: core::mem::MaybeUninit<__SlateImage_aligned> = {
 // CHECK-NEXT:     let mut [[T_0]]: core::mem::MaybeUninit<__SlateImage_aligned> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
-// CHECK-NEXT:     (core::ptr::addr_of_mut!((*[[T_1]]).0[0]) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*[[T_1]]).0[0]) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, *const ()>(
 // CHECK-NEXT:                     Some(add),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
-// CHECK-NEXT:     (*[[T_1]]).0[1] = 5u64;
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*[[T_1]]).0[1] = 5u64;
+// CHECK-NEXT:     }
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut scalar: core::mem::MaybeUninit<__SlateImage_scalar> = unsafe {
+// CHECK-NEXT: static mut scalar: core::mem::MaybeUninit<__SlateImage_scalar> = {
 // CHECK-NEXT:     let mut [[T_0]]: core::mem::MaybeUninit<__SlateImage_scalar> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
-// CHECK-NEXT:     (core::ptr::addr_of_mut!(*[[T_1]]) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!(*[[T_1]]) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, *const ()>(
 // CHECK-NEXT:                     Some(add),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut third: core::mem::MaybeUninit<__SlateImage_third> = unsafe {
+// CHECK-NEXT: static mut third: core::mem::MaybeUninit<__SlateImage_third> = {
 // CHECK-NEXT:     let mut [[T_0]]: core::mem::MaybeUninit<__SlateImage_third> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
-// CHECK-NEXT:     (core::ptr::addr_of_mut!(*[[T_1]]) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!(*[[T_1]]) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<*mut i32, *const ()>(
-// CHECK-NEXT:                     unsafe { core::ptr::addr_of_mut!(data.0) as *mut i32 }
+// CHECK-NEXT:                     (core::ptr::addr_of_mut!(data.0) as *mut i32)
 // CHECK-NEXT:                         .wrapping_offset(2i32 as isize),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut past_first: core::mem::MaybeUninit<__SlateImage_past_first> = unsafe {
+// CHECK-NEXT: static mut past_first: core::mem::MaybeUninit<__SlateImage_past_first> = {
 // CHECK-NEXT:     let mut [[T_0]]: core::mem::MaybeUninit<__SlateImage_past_first> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
-// CHECK-NEXT:     (core::ptr::addr_of_mut!(*[[T_1]]) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<*mut i32, *const ()>(
-// CHECK-NEXT:                         unsafe { core::ptr::addr_of_mut!(data.0) as *mut i32 },
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!(*[[T_1]]) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
+// CHECK-NEXT:                 core::mem::transmute::<*mut i32, *const ()>(
+// CHECK-NEXT:                         core::ptr::addr_of_mut!(data.0) as *mut i32,
 // CHECK-NEXT:                     )
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 .wrapping_byte_offset(4isize),
-// CHECK-NEXT:         );
+// CHECK-NEXT:                     .wrapping_byte_offset(4isize),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut before_last: core::mem::MaybeUninit<__SlateImage_before_last> = unsafe {
+// CHECK-NEXT: static mut before_last: core::mem::MaybeUninit<__SlateImage_before_last> = {
 // CHECK-NEXT:     let mut [[T_0]]: core::mem::MaybeUninit<__SlateImage_before_last> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
-// CHECK-NEXT:     (core::ptr::addr_of_mut!(*[[T_1]]) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<*mut i32, *const ()>(
-// CHECK-NEXT:                         unsafe { core::ptr::addr_of_mut!(data.0) as *mut i32 }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!(*[[T_1]]) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
+// CHECK-NEXT:                 core::mem::transmute::<*mut i32, *const ()>(
+// CHECK-NEXT:                         (core::ptr::addr_of_mut!(data.0) as *mut i32)
 // CHECK-NEXT:                             .wrapping_offset(3i32 as isize),
 // CHECK-NEXT:                     )
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 .wrapping_byte_offset(-4isize),
-// CHECK-NEXT:         );
+// CHECK-NEXT:                     .wrapping_byte_offset(-4isize),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut constant_handle: core::mem::MaybeUninit<__SlateImage_constant_handle> = unsafe {
+// CHECK-NEXT: static mut constant_handle: core::mem::MaybeUninit<__SlateImage_constant_handle> = {
 // CHECK-NEXT:     let mut [[T_0]]: core::mem::MaybeUninit<__SlateImage_constant_handle> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
-// CHECK-NEXT:     (core::ptr::addr_of_mut!(*[[T_1]]) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!(*[[T_1]]) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, *const ()>(
 // CHECK-NEXT:                     Some(sub),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
@@ -246,28 +250,32 @@ int main(void) {
 // CHECK-NEXT:     bias: i64,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut entries: core::mem::MaybeUninit<__SlateImage_entries> = unsafe {
+// CHECK-NEXT: static mut entries: core::mem::MaybeUninit<__SlateImage_entries> = {
 // CHECK-NEXT:     let mut [[T_0]]: core::mem::MaybeUninit<__SlateImage_entries> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
-// CHECK-NEXT:     (*[[T_1]]).0[0].tag = 7i32;
-// CHECK-NEXT:     (core::ptr::addr_of_mut!((*[[T_1]]).0[0].r#fn) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*[[T_1]]).0[0].tag = 7i32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*[[T_1]]).0[0].r#fn) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, *const ()>(
 // CHECK-NEXT:                     Some(sub),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
-// CHECK-NEXT:     (*[[T_1]]).0[0].bias = 3i64;
-// CHECK-NEXT:     (*[[T_1]]).0[1].tag = 1i32;
-// CHECK-NEXT:     (core::ptr::addr_of_mut!((*[[T_1]]).0[1].r#fn) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*[[T_1]]).0[0].bias = 3i64;
+// CHECK-NEXT:         (*[[T_1]]).0[1].tag = 1i32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*[[T_1]]).0[1].r#fn) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, *const ()>(
 // CHECK-NEXT:                     Some(add),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
@@ -279,30 +287,36 @@ int main(void) {
 // CHECK-NEXT:     slots: [u64; 2],
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut nested: core::mem::MaybeUninit<__SlateImage_nested> = unsafe {
+// CHECK-NEXT: static mut nested: core::mem::MaybeUninit<__SlateImage_nested> = {
 // CHECK-NEXT:     let mut [[T_0]]: core::mem::MaybeUninit<__SlateImage_nested> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1]] = [[T_0]].as_mut_ptr();
-// CHECK-NEXT:     (*[[T_1]]).label = 110i8;
-// CHECK-NEXT:     (*[[T_1]]).inner.tag = 4i32;
-// CHECK-NEXT:     (core::ptr::addr_of_mut!((*[[T_1]]).inner.r#fn) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*[[T_1]]).label = 110i8;
+// CHECK-NEXT:         (*[[T_1]]).inner.tag = 4i32;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*[[T_1]]).inner.r#fn) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, *const ()>(
 // CHECK-NEXT:                     Some(add),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
-// CHECK-NEXT:     (*[[T_1]]).inner.bias = 9i64;
-// CHECK-NEXT:     (core::ptr::addr_of_mut!((*[[T_1]]).slots[0]) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*[[T_1]]).inner.bias = 9i64;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*[[T_1]]).slots[0]) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<*mut i32, *const ()>(
-// CHECK-NEXT:                     unsafe { core::ptr::addr_of_mut!(data.0) as *mut i32 }
+// CHECK-NEXT:                     (core::ptr::addr_of_mut!(data.0) as *mut i32)
 // CHECK-NEXT:                         .wrapping_offset(1i32 as isize),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
-// CHECK-NEXT:     (*[[T_1]]).slots[1] = 0u64;
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*[[T_1]]).slots[1] = 0u64;
+// CHECK-NEXT:     }
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
@@ -315,89 +329,68 @@ int main(void) {
 // CHECK-NEXT:                 as *mut __SlateImage_kernels)).0[i as usize]
 // CHECK-NEXT:         }) != 0 {
 // CHECK-NEXT:             sum += unsafe {
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
-// CHECK-NEXT:                             (*(core::ptr::addr_of_mut!(kernels)
-// CHECK-NEXT:                                 as *mut __SlateImage_kernels)).0[i as usize] as usize,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     }
+// CHECK-NEXT:                 core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
+// CHECK-NEXT:                         (*(core::ptr::addr_of_mut!(kernels)
+// CHECK-NEXT:                             as *mut __SlateImage_kernels)).0[i as usize] as usize,
+// CHECK-NEXT:                     )
 // CHECK-NEXT:                     .unwrap()(10i32, i + 1)
 // CHECK-NEXT:             };
 // CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     sum += (unsafe {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
-// CHECK-NEXT:                     (*(core::ptr::addr_of_mut!(exported_kernels)
-// CHECK-NEXT:                         as *mut __SlateImage_exported_kernels)).0[0] as usize,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
+// CHECK-NEXT:     sum += unsafe {
+// CHECK-NEXT:         core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
+// CHECK-NEXT:                 (*(core::ptr::addr_of_mut!(exported_kernels)
+// CHECK-NEXT:                     as *mut __SlateImage_exported_kernels)).0[0] as usize,
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .unwrap()(9i32, 4i32)
-// CHECK-NEXT:     })
-// CHECK-NEXT:         + unsafe {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
-// CHECK-NEXT:                         (*(core::ptr::addr_of_mut!(exported_kernels)
-// CHECK-NEXT:                             as *mut __SlateImage_exported_kernels)).0[1] as usize,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 .unwrap()(9i32, 4i32)
-// CHECK-NEXT:         };
-// CHECK-NEXT:     sum += (unsafe {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
-// CHECK-NEXT:                     (*(core::ptr::addr_of_mut!(aligned)
-// CHECK-NEXT:                         as *mut __SlateImage_aligned)).0[0] as usize,
+// CHECK-NEXT:             + core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
+// CHECK-NEXT:                     (*(core::ptr::addr_of_mut!(exported_kernels)
+// CHECK-NEXT:                         as *mut __SlateImage_exported_kernels)).0[1] as usize,
 // CHECK-NEXT:                 )
-// CHECK-NEXT:             }
+// CHECK-NEXT:                 .unwrap()(9i32, 4i32)
+// CHECK-NEXT:     };
+// CHECK-NEXT:     sum += (unsafe {
+// CHECK-NEXT:         core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
+// CHECK-NEXT:                 (*(core::ptr::addr_of_mut!(aligned) as *mut __SlateImage_aligned)).0[0]
+// CHECK-NEXT:                     as usize,
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .unwrap()(
 // CHECK-NEXT:             1i32,
 // CHECK-NEXT:             (*(core::ptr::addr_of_mut!(aligned) as *mut __SlateImage_aligned)).0[1]
 // CHECK-NEXT:                 as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     })
-// CHECK-NEXT:         + ((((unsafe {
-// CHECK-NEXT:             core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(aligned)
-// CHECK-NEXT:                 as *mut __SlateImage_aligned)).0) as *mut u64
-// CHECK-NEXT:         }) as u64) & 31 == 0) as i32);
+// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:             (core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(aligned)
+// CHECK-NEXT:                 as *mut __SlateImage_aligned)).0) as *mut u64) as u64
+// CHECK-NEXT:         }) & 31 == 0) as i32);
 // CHECK-NEXT:     sum += unsafe {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
-// CHECK-NEXT:                     *(core::ptr::addr_of_mut!(scalar) as *mut __SlateImage_scalar)
-// CHECK-NEXT:                         as usize,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
+// CHECK-NEXT:         core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
+// CHECK-NEXT:                 *(core::ptr::addr_of_mut!(scalar) as *mut __SlateImage_scalar) as usize,
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .unwrap()(1i32, 2i32)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     sum += (unsafe {
-// CHECK-NEXT:         *(*(core::ptr::addr_of_mut!(third) as *mut __SlateImage_third) as *mut i32)
-// CHECK-NEXT:     })
-// CHECK-NEXT:         + unsafe {
-// CHECK-NEXT:             *(*(core::ptr::addr_of_mut!(past_first) as *mut __SlateImage_past_first)
-// CHECK-NEXT:                 as *mut i32)
-// CHECK-NEXT:         }
-// CHECK-NEXT:         + unsafe {
-// CHECK-NEXT:             *(*(core::ptr::addr_of_mut!(before_last) as *mut __SlateImage_before_last)
-// CHECK-NEXT:                 as *mut i32)
-// CHECK-NEXT:         };
 // CHECK-NEXT:     sum += unsafe {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
-// CHECK-NEXT:                     *(core::ptr::addr_of_mut!(constant_handle)
-// CHECK-NEXT:                         as *mut __SlateImage_constant_handle) as usize,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
+// CHECK-NEXT:         *(*(core::ptr::addr_of_mut!(third) as *mut __SlateImage_third) as *mut i32)
+// CHECK-NEXT:             + *(*(core::ptr::addr_of_mut!(past_first) as *mut __SlateImage_past_first)
+// CHECK-NEXT:                 as *mut i32)
+// CHECK-NEXT:             + *(*(core::ptr::addr_of_mut!(before_last) as *mut __SlateImage_before_last)
+// CHECK-NEXT:                 as *mut i32)
+// CHECK-NEXT:     };
+// CHECK-NEXT:     sum += unsafe {
+// CHECK-NEXT:         core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
+// CHECK-NEXT:                 *(core::ptr::addr_of_mut!(constant_handle)
+// CHECK-NEXT:                     as *mut __SlateImage_constant_handle) as usize,
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .unwrap()(20i32, 6i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0i32..2i32 {
 // CHECK-NEXT:         sum += unsafe {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
-// CHECK-NEXT:                         (*(core::ptr::addr_of_mut!(entries)
-// CHECK-NEXT:                             as *mut __SlateImage_entries)).0[i as usize].r#fn as usize,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
+// CHECK-NEXT:                     (*(core::ptr::addr_of_mut!(entries)
+// CHECK-NEXT:                         as *mut __SlateImage_entries)).0[i as usize].r#fn as usize,
+// CHECK-NEXT:                 )
 // CHECK-NEXT:                 .unwrap()(
 // CHECK-NEXT:                 (*(core::ptr::addr_of_mut!(entries)
 // CHECK-NEXT:                     as *mut __SlateImage_entries)).0[i as usize].tag,
@@ -406,61 +399,48 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     sum += ((unsafe {
-// CHECK-NEXT:         (*(core::ptr::addr_of_mut!(nested) as *mut __SlateImage_nested)).label
-// CHECK-NEXT:     }) as i32)
-// CHECK-NEXT:         + unsafe {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
-// CHECK-NEXT:                         (*(core::ptr::addr_of_mut!(nested)
-// CHECK-NEXT:                             as *mut __SlateImage_nested)).inner.r#fn as usize,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 }
+// CHECK-NEXT:     sum += unsafe {
+// CHECK-NEXT:         ((*(core::ptr::addr_of_mut!(nested) as *mut __SlateImage_nested)).label as i32)
+// CHECK-NEXT:             + core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
+// CHECK-NEXT:                     (*(core::ptr::addr_of_mut!(nested)
+// CHECK-NEXT:                         as *mut __SlateImage_nested)).inner.r#fn as usize,
+// CHECK-NEXT:                 )
 // CHECK-NEXT:                 .unwrap()(
 // CHECK-NEXT:                 (*(core::ptr::addr_of_mut!(nested)
 // CHECK-NEXT:                     as *mut __SlateImage_nested)).inner.tag,
 // CHECK-NEXT:                 (*(core::ptr::addr_of_mut!(nested)
 // CHECK-NEXT:                     as *mut __SlateImage_nested)).inner.bias as i32,
 // CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     sum += (unsafe {
+// CHECK-NEXT:     };
+// CHECK-NEXT:     sum += unsafe {
 // CHECK-NEXT:         *((*(core::ptr::addr_of_mut!(nested) as *mut __SlateImage_nested)).slots[0]
 // CHECK-NEXT:             as *mut i32)
-// CHECK-NEXT:     })
-// CHECK-NEXT:         + ((unsafe {
-// CHECK-NEXT:             (*(core::ptr::addr_of_mut!(nested) as *mut __SlateImage_nested)).slots[1]
-// CHECK-NEXT:         }) as i32);
+// CHECK-NEXT:             + ((*(core::ptr::addr_of_mut!(nested) as *mut __SlateImage_nested)).slots[1]
+// CHECK-NEXT:                 as i32)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let cursor: *mut u64 = unsafe {
 // CHECK-NEXT:         core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(kernels)
 // CHECK-NEXT:             as *mut __SlateImage_kernels)).0) as *mut u64
 // CHECK-NEXT:     };
 // CHECK-NEXT:     sum += unsafe {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
-// CHECK-NEXT:                     *cursor.add(1) as usize,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
+// CHECK-NEXT:         core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
+// CHECK-NEXT:                 *cursor.add(1) as usize,
+// CHECK-NEXT:             )
 // CHECK-NEXT:             .unwrap()(5i32, 1i32)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(core::ptr::addr_of_mut!(kernels) as *mut __SlateImage_kernels)).0[2] = (unsafe {
-// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, usize>(
-// CHECK-NEXT:                 Some(add),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) as u64;
+// CHECK-NEXT:         (*(core::ptr::addr_of_mut!(kernels) as *mut __SlateImage_kernels)).0[2] = core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, usize>(
+// CHECK-NEXT:             Some(add),
+// CHECK-NEXT:         ) as u64;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     sum += ((unsafe {
-// CHECK-NEXT:         (*(core::ptr::addr_of_mut!(kernels) as *mut __SlateImage_kernels)).0[2]
-// CHECK-NEXT:     })
-// CHECK-NEXT:         == ((unsafe {
-// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, usize>(
+// CHECK-NEXT:     sum += unsafe {
+// CHECK-NEXT:         ((*(core::ptr::addr_of_mut!(kernels) as *mut __SlateImage_kernels)).0[2]
+// CHECK-NEXT:             == (core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>, usize>(
 // CHECK-NEXT:                 Some(add),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) as u64)) as i32;
+// CHECK-NEXT:             ) as u64)) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*(core::ptr::addr_of_mut!(kernels) as *mut __SlateImage_kernels)).0[2] = 0;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         data.0[2] = 30;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum += unsafe {

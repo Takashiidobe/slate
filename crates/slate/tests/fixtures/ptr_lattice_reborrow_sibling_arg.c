@@ -46,7 +46,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn count(mut format: *const i8, end: i8) -> i32 {
 // CHECK-NEXT:     let mut n: i32 = 0;
-// CHECK-NEXT:     while (unsafe { *format }) != 0 && ((unsafe { *format }) as i32) != (end as i32) {
+// CHECK-NEXT:     while (unsafe { *format }) != 0 && (unsafe { *format as i32 }) != (end as i32) {
 // CHECK-NEXT:         format = unsafe { format.add(1) };
 // CHECK-NEXT:         n += 1;
 // CHECK-NEXT:     }
@@ -56,14 +56,14 @@ int main(void) {
 // CHECK-NEXT: fn group(p_format: &mut *const i8, end: i8, n: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         total += (unsafe { *(*p_format) }) as i32;
+// CHECK-NEXT:         total += unsafe { *(*p_format) as i32 };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *p_format = unsafe { *p_format }.add(1);
+// CHECK-NEXT:             *p_format = (*p_format).add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if ((unsafe { *(*p_format) }) as i32) == (end as i32) {
+// CHECK-NEXT:     if (unsafe { *(*p_format) as i32 }) == (end as i32) {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *p_format = unsafe { *p_format }.add(1);
+// CHECK-NEXT:             *p_format = (*p_format).add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total

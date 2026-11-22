@@ -64,8 +64,6 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn two(a: *mut i32, b: *mut i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *a = 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *b += 2;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}

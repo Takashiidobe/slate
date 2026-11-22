@@ -200,7 +200,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c99_restrict_sum(left: *const i32, right: *const i32) -> i32 {
-// CHECK-NEXT:     (unsafe { *left }) + unsafe { *right }
+// CHECK-NEXT:     unsafe { *left + *right }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c99_qualified_array_sum(values: &[i32]) -> i32 {
@@ -304,12 +304,12 @@ int main(void) {
 // CHECK-NEXT:                         im: 1.0f32 as f128,
 // CHECK-NEXT:                     }) as i32);
 // CHECK-NEXT:     let mut flexible_total: i32 = 0;
-// CHECK-NEXT:     let flexible: *mut C99Flexible = (unsafe {
-// CHECK-NEXT:         malloc(
+// CHECK-NEXT:     let flexible: *mut C99Flexible = unsafe {
+// CHECK-NEXT:         (malloc(
 // CHECK-NEXT:             8u64.wrapping_add(3u64.wrapping_mul(core::mem::size_of::<i32>() as u64))
 // CHECK-NEXT:                 as usize,
-// CHECK-NEXT:         ) as *mut ()
-// CHECK-NEXT:     }) as *mut C99Flexible;
+// CHECK-NEXT:         ) as *mut ()) as *mut C99Flexible
+// CHECK-NEXT:     };
 // CHECK-NEXT:     if flexible.is_null() {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
@@ -335,9 +335,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64 = length as u64;
 // CHECK-NEXT:     let mut variable_length_array: Vec<i32> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_0]] as usize);
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_0]] as usize);
-// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe { __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_0]] as usize) };
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for index in 0..length {

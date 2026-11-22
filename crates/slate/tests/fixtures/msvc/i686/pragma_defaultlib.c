@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     if (unsafe { GetSystemMetrics(0i32) }) < 0 {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

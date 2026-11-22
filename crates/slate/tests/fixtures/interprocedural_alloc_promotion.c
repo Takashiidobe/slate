@@ -20,9 +20,10 @@ int main(void) {
 // CHECK-NEXT: use slate_support::free;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn alloc() -> *mut i32 {
-// CHECK-NEXT:     (unsafe {
-// CHECK-NEXT:         malloc((core::mem::size_of::<i32>() as u64).wrapping_mul(10) as usize) as *mut ()
-// CHECK-NEXT:     }) as *mut i32
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (malloc((core::mem::size_of::<i32>() as u64).wrapping_mul(10) as usize)
+// CHECK-NEXT:             as *mut ()) as *mut i32
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

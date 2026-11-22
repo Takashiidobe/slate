@@ -67,11 +67,11 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {}", unsafe { cb.unwrap()(41i32) }, unsafe { cb2.unwrap()(99i32) });
-// CHECK-NEXT:     let address: u64 = (unsafe {
+// CHECK-NEXT:     let address: u64 = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, usize>(
 // CHECK-NEXT:             Some(add_one),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     }) as u64;
+// CHECK-NEXT:         ) as u64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let cb3: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<usize, Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
 // CHECK-NEXT:             address as usize,
@@ -81,11 +81,11 @@ int main(void) {
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         unsafe { cb3.unwrap()(1i32) },
 // CHECK-NEXT:         (address
-// CHECK-NEXT:             == ((unsafe {
+// CHECK-NEXT:             == unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *mut ()>(
 // CHECK-NEXT:                     Some(add_one),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }) as u64)) as i32
+// CHECK-NEXT:                 ) as u64
+// CHECK-NEXT:             }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let other: Option<unsafe extern "C-unwind" fn(i64, i64) -> i64> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, Option<unsafe extern "C-unwind" fn(i64, i64) -> i64>>(

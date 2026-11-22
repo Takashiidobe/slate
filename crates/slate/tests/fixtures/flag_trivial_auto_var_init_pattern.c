@@ -37,9 +37,9 @@ int main(void) {
 // CHECK-NEXT: fn show() {
 // CHECK-NEXT:     let scalar: i32 = -1431655766i32;
 // CHECK-NEXT:     let mut r: record = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(r) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let bytes: *mut u8 = core::ptr::addr_of_mut!(r) as *mut u8;
 // CHECK-NEXT:     unsafe {

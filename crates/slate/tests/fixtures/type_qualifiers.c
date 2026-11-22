@@ -44,16 +44,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn add_atomic_value(value: i32) -> i32 {
-// CHECK-NEXT:     let local: i32 = (unsafe {
+// CHECK-NEXT:     let local: i32 = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of!(value) as *mut i32)
 // CHECK-NEXT:             .load(core::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:     })
-// CHECK-NEXT:         + unsafe {
-// CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:             + core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of!(atomic_counter) as *mut i32,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .load(core::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:         };
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of!(local) as *mut i32)
 // CHECK-NEXT:             .load(core::sync::atomic::Ordering::SeqCst)

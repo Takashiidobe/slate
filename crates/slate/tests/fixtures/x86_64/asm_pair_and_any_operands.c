@@ -61,31 +61,35 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pair_out() -> u128 {
 // CHECK-NEXT:     let mut r: u128 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movq $7, %rax\n\tmovq $9, %rdx # %rax",
-// CHECK-NEXT:             lateout("ax") [[T_0]],
-// CHECK-NEXT:             lateout("dx") [[T_1]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movq $7, %rax\n\tmovq $9, %rdx # %rax",
+// CHECK-NEXT:                 lateout("ax") [[T_0]],
+// CHECK-NEXT:                 lateout("dx") [[T_1]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         r = (([[T_1]] as u128) << 64 | ([[T_0]] as u128)) as u128;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pair_inout(mut x: u128) -> u128 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u128 = x as u128;
 // CHECK-NEXT:         let [[T_1]]: u64;
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addq $1, %rax\n\tadcq $0, %rdx",
-// CHECK-NEXT:             inlateout("ax") [[T_0]] as u64 => [[T_1]],
-// CHECK-NEXT:             inlateout("dx") ([[T_0]] >> 64) as u64 => [[T_2]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "addq $1, %rax\n\tadcq $0, %rdx",
+// CHECK-NEXT:                 inlateout("ax") [[T_0]] as u64 => [[T_1]],
+// CHECK-NEXT:                 inlateout("dx") ([[T_0]] >> 64) as u64 => [[T_2]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         x = (([[T_2]] as u128) << 64 | ([[T_1]] as u128)) as u128;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
@@ -93,16 +97,18 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pair_in_high(x: u128) -> u64 {
 // CHECK-NEXT:     let mut hi: u64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         let [[T_1]]: u128 = x as u128;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movq %rdx, {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in("ax") [[T_1]] as u64,
-// CHECK-NEXT:             in("dx") ([[T_1]] >> 64) as u64,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movq %rdx, {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in("ax") [[T_1]] as u64,
+// CHECK-NEXT:                 in("dx") ([[T_1]] >> 64) as u64,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         hi = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     hi
@@ -110,14 +116,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn single_a(mut x: u64) -> u64 {
 // CHECK-NEXT:     let mut r: u64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq 3({0:r}), %rax",
-// CHECK-NEXT:             in(reg) x as u64,
-// CHECK-NEXT:             lateout("ax") [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "leaq 3({0:r}), %rax",
+// CHECK-NEXT:                 in(reg) x as u64,
+// CHECK-NEXT:                 lateout("ax") [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         r = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
@@ -138,13 +146,15 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut r: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movl $42, {0:e}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movl $42, {0:e}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         r = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r + x - 40

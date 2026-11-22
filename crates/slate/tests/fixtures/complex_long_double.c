@@ -216,15 +216,11 @@ int main(void) {
 // CHECK-NEXT:                 re: 0f128,
 // CHECK-NEXT:                 im: 0.0,
 // CHECK-NEXT:             }) as i32,
-// CHECK-NEXT:         if (a
+// CHECK-NEXT:         (a
 // CHECK-NEXT:             != num_complex::Complex {
 // CHECK-NEXT:                 re: 0f128,
 // CHECK-NEXT:                 im: 0.0,
-// CHECK-NEXT:             }) {
-// CHECK-NEXT:             1i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
+// CHECK-NEXT:             }) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let re: f128 = a.re;
 // CHECK-NEXT:     let truncated: i32 = a.re as i32;

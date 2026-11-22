@@ -17,14 +17,16 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN armv7-unknown-linux-gnueabihf
 // CHECK-LABEL: {{^}}fn load_via_uv(mut address: &i32) -> i32 {
 // CHECK-NEXT:     let mut value: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "ldr {0}, [{1}]",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) address as *const i32,
-// CHECK-NEXT:             options(pure, readonly, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "ldr {0}, [{1}]",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) address as *const i32,
+// CHECK-NEXT:                 options(pure, readonly, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value

@@ -317,8 +317,8 @@ int main(void) {
 // CHECK-NEXT: unsafe fn _mm_storeu_ps(__p: &mut f32, __a: core::simd::Simd<f32, 4>) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::addr_of_mut!((*((__p as *mut f32) as *mut __storeu_ps__2095)).__v)
-// CHECK-NEXT:             .write_unaligned(__a);
-// CHECK-NEXT:     }
+// CHECK-NEXT:             .write_unaligned(__a)
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
@@ -326,8 +326,8 @@ int main(void) {
 // CHECK-NEXT: unsafe fn _mm256_storeu_ps(__p: &mut f32, __a: core::simd::Simd<f32, 8>) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::addr_of_mut!((*((__p as *mut f32) as *mut __storeu_ps__3282)).__v)
-// CHECK-NEXT:             .write_unaligned(__a);
-// CHECK-NEXT:     }
+// CHECK-NEXT:             .write_unaligned(__a)
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(
@@ -420,8 +420,8 @@ int main(void) {
 // CHECK-NEXT: unsafe fn _mm512_storeu_ps(__P: *mut (), __A: core::simd::Simd<f32, 16>) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::addr_of_mut!((*(__P as *mut __storeu_ps__4291)).__v)
-// CHECK-NEXT:             .write_unaligned(__A);
-// CHECK-NEXT:     }
+// CHECK-NEXT:             .write_unaligned(__A)
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,avx512f,f16c,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]

@@ -480,7 +480,7 @@ int main(void) {
 // CHECK-NEXT:     let bytes: *const u8 = p as *const u8;
 // CHECK-NEXT:     let mut h: u32 = 2166136261;
 // CHECK-NEXT:     for i in 0..size {
-// CHECK-NEXT:         h = (h ^ (((unsafe { *bytes.add(i as usize) }) as i32) as u32))
+// CHECK-NEXT:         h = (h ^ unsafe { (*bytes.add(i as usize) as i32) as u32 })
 // CHECK-NEXT:             .wrapping_mul(16777619);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     h
@@ -500,131 +500,166 @@ int main(void) {
 // CHECK-NEXT:     let mut f: f32 = f32::from_bits(4294967295u32);
 // CHECK-NEXT:     let mut d: f64 = f64::from_bits(18446744073709551615u64);
 // CHECK-NEXT:     let mut ld: LongDouble = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(ld) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 16usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 10usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(10usize), 0u8, 6usize);
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 16usize)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 10usize)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(10usize), 0u8, 6usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut p: *mut () = 12297829382473034410usize as *mut ();
 // CHECK-NEXT:     let mut lone: bool = false;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(lone) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 1usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 1usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut cf: num_complex::Complex<f32> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(cf) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 8usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 8usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut arr: [i32; 3] = [-1431655766i32; 3];
 // CHECK-NEXT:     let mut pad: padded = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(pad) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut pads: __SlateAlign16<[padded; 2]> = __SlateAlign16(
 // CHECK-NEXT:         unsafe { core::mem::zeroed() },
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(pads.0) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 16usize);
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 16usize)
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut mix: mixed = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(mix) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 24usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(4usize), 255u8, 4usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(16usize), 255u8, 8usize);
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 24usize)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(4usize), 255u8, 4usize) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(16usize), 255u8, 8usize)
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut fl: floats = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(fl) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 12usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 8usize);
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 12usize)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 8usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut bf: bits = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(bf) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut un: either = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(un) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut int_float: int_float = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(int_float) as *mut _)
 // CHECK-NEXT:             as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 4usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 4usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut float_int: float_int = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(float_int) as *mut _)
 // CHECK-NEXT:             as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 4usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 4usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut double_long: double_long = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(double_long) as *mut _)
 // CHECK-NEXT:             as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 8usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 8usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut long_double: long_double = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(long_double) as *mut _)
 // CHECK-NEXT:             as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut floats_double: floats_double = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(floats_double) as *mut _)
 // CHECK-NEXT:             as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 16usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 8usize);
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 16usize)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 8usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut bits_float: bits_float = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(bits_float) as *mut _)
 // CHECK-NEXT:             as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 4usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 4usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut tail: tail = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(tail) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 32usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(16usize), 255u8, 10usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(26usize), 0u8, 6usize);
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 32usize)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(16usize), 255u8, 10usize)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(26usize), 0u8, 6usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut tails: [tail; 2] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(tails) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 64usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(16usize), 255u8, 10usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(26usize), 0u8, 6usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(48usize), 255u8, 10usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(58usize), 0u8, 6usize);
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 64usize)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(16usize), 255u8, 10usize)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(26usize), 0u8, 6usize) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(48usize), 255u8, 10usize)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(58usize), 0u8, 6usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut cld: num_complex::Complex<LongDouble> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(cld) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 32usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 10usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(10usize), 0u8, 6usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(16usize), 255u8, 10usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(26usize), 0u8, 6usize);
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 32usize)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 255u8, 10usize)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(10usize), 0u8, 6usize) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(16usize), 255u8, 10usize)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(26usize), 0u8, 6usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut pairs: __SlateAlign16<[pair; 600]> = __SlateAlign16(
 // CHECK-NEXT:         unsafe { core::mem::zeroed() },
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(pairs.0) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 4800usize);
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 4800usize)
+// CHECK-NEXT:         };
 // CHECK-NEXT:         for __slate_auto_index0 in 0usize..600usize {
-// CHECK-NEXT:             let __slate_auto_bytes0 = __slate_auto_bytes
-// CHECK-NEXT:                 .add(0usize + __slate_auto_index0 * 8usize);
-// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes0.add(4usize), 255u8, 4usize);
+// CHECK-NEXT:             let __slate_auto_bytes0 = unsafe {
+// CHECK-NEXT:                 __slate_auto_bytes.add(0usize + __slate_auto_index0 * 8usize)
+// CHECK-NEXT:             };
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::ptr::write_bytes(__slate_auto_bytes0.add(4usize), 255u8, 4usize)
+// CHECK-NEXT:             };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     dump(
@@ -745,7 +780,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"pairs[599]".as_ptr(),
-// CHECK-NEXT:         (unsafe { pairs.0.as_mut_ptr().add(599) }) as *const (),
+// CHECK-NEXT:         unsafe { pairs.0.as_mut_ptr().add(599) as *const () },
 // CHECK-NEXT:         core::mem::size_of::<pair>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let raw: *const u8 = core::ptr::addr_of_mut!(pad) as *const u8;

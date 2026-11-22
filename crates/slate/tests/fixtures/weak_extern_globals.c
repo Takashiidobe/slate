@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::memcmp;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn read_counter() -> i32 {
-// CHECK-NEXT:     if !unsafe { core::ptr::addr_of_mut!(*missing_counter) }.is_null() {
+// CHECK-NEXT:     if !unsafe { core::ptr::addr_of_mut!(*missing_counter).is_null() } {
 // CHECK-NEXT:         unsafe { *missing_counter }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         -1
@@ -51,7 +51,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "ehdr {}",
-// CHECK-NEXT:         (!unsafe { core::ptr::addr_of_mut!(*__ehdr_start) as *mut i8 }.is_null()
+// CHECK-NEXT:         (!unsafe { (core::ptr::addr_of_mut!(*__ehdr_start) as *mut i8).is_null() }
 // CHECK-NEXT:             && (unsafe {
 // CHECK-NEXT:                 memcmp(
 // CHECK-NEXT:                     ((core::ptr::addr_of_mut!(*__ehdr_start) as *mut i8) as *const ())
@@ -63,13 +63,15 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "init {}",
-// CHECK-NEXT:         ((unsafe { core::ptr::addr_of!(*__init_array_start) })
-// CHECK-NEXT:             <= unsafe { core::ptr::addr_of!(*__init_array_end) }) as i32
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             (core::ptr::addr_of!(*__init_array_start)
+// CHECK-NEXT:                 <= core::ptr::addr_of!(*__init_array_end)) as i32
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "missing {} {}",
-// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(*missing_counter) }.is_null() as i32,
-// CHECK-NEXT:         unsafe { core::ptr::addr_of!(*missing_table) as *const u64 }.is_null() as i32
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(*missing_counter).is_null() as i32 },
+// CHECK-NEXT:         unsafe { (core::ptr::addr_of!(*missing_table) as *const u64).is_null() as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("counter {}", read_counter());
 // CHECK-NEXT:     0

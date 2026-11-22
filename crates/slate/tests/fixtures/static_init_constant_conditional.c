@@ -129,7 +129,7 @@ int main(void) {
 // CHECK-NEXT:                 c"header %s %lu %s %lu\n".as_ptr(),
 // CHECK-NEXT:                 headers.0[i as usize].name,
 // CHECK-NEXT:                 headers.0[i as usize].name_length,
-// CHECK-NEXT:                 if !unsafe { headers.0[i as usize].search }.is_null() {
+// CHECK-NEXT:                 if !headers.0[i as usize].search.is_null() {
 // CHECK-NEXT:                     headers.0[i as usize].search
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     c"-".as_ptr()

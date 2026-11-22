@@ -425,7 +425,7 @@ int main(void) {
 // CHECK-NEXT:     let p: *const u8 = data as *const u8;
 // CHECK-NEXT:     let mut hash: u32 = 2166136261;
 // CHECK-NEXT:     for i in 0..bytes {
-// CHECK-NEXT:         hash = (hash ^ (((unsafe { *p.offset(i as isize) }) as i32) as u32))
+// CHECK-NEXT:         hash = (hash ^ unsafe { (*p.offset(i as isize) as i32) as u32 })
 // CHECK-NEXT:             .wrapping_mul(16777619);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -442,140 +442,117 @@ int main(void) {
 // CHECK-NEXT:     let w256: core::simd::Simd<i64, 4> = unsafe {
 // CHECK-NEXT:         _mm256_loadu_si256((words as *const i16) as *const core::simd::Simd<i64, 4>)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"shufflelo".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW__3!(
+// CHECK-NEXT:             c"shufflelo".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<i64, 2>>(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i16, 8>>(
-// CHECK-NEXT:                             w,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i16, 8>>(
+// CHECK-NEXT:                         w,
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     [3, 2, 1, 0, 4, 5, 6, 7]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"shufflehi".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__3!(
+// CHECK-NEXT:             c"shufflehi".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<i64, 2>>(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i16, 8>>(
-// CHECK-NEXT:                             w,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i16, 8>>(
+// CHECK-NEXT:                         w,
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     [0, 1, 2, 3, 5, 4, 7, 6]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"shufflelo256".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"shufflelo256".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 16>, core::simd::Simd<i64, 4>>(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i16, 16>>(
-// CHECK-NEXT:                             w256,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i16, 16>>(
+// CHECK-NEXT:                         w256,
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     [2, 3, 0, 1, 4, 5, 6, 7, 10, 11, 8, 9, 12, 13, 14, 15]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"shufflehi256".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"shufflehi256".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 16>, core::simd::Simd<i64, 4>>(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i16, 16>>(
-// CHECK-NEXT:                             w256,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i16, 16>>(
+// CHECK-NEXT:                         w256,
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     [0, 1, 2, 3, 7, 4, 5, 6, 8, 9, 10, 11, 15, 12, 13, 14]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__6!(
-// CHECK-NEXT:         c"permute_ps".as_ptr() as *mut i8,
-// CHECK-NEXT:         core::simd::simd_swizzle!(unsafe { _mm_loadu_ps(fa) }, [1, 2, 3, 0])
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__4!(
-// CHECK-NEXT:         c"permute256_ps".as_ptr() as *mut i8,
-// CHECK-NEXT:         core::simd::simd_swizzle!(
-// CHECK-NEXT:             unsafe { _mm256_loadu_ps(fa) },
-// CHECK-NEXT:             [2, 1, 0, 3, 6, 5, 4, 7]
-// CHECK-NEXT:         )
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__8!(
-// CHECK-NEXT:         c"permute_pd".as_ptr() as *mut i8,
-// CHECK-NEXT:         core::simd::simd_swizzle!(unsafe { _mm_loadu_pd(da) }, [1, 0])
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__5!(
-// CHECK-NEXT:         c"permute256_pd".as_ptr() as *mut i8,
-// CHECK-NEXT:         core::simd::simd_swizzle!(unsafe { _mm256_loadu_pd(da) }, [1, 0, 3, 2])
-// CHECK-NEXT:     );
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__6!(
+// CHECK-NEXT:             c"permute_ps".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::simd::simd_swizzle!(_mm_loadu_ps(fa), [1, 2, 3, 0])
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__4!(
+// CHECK-NEXT:             c"permute256_ps".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::simd::simd_swizzle!(_mm256_loadu_ps(fa), [2, 1, 0, 3, 6, 5, 4, 7])
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__8!(
+// CHECK-NEXT:             c"permute_pd".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::simd::simd_swizzle!(_mm_loadu_pd(da), [1, 0])
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__5!(
+// CHECK-NEXT:             c"permute256_pd".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::simd::simd_swizzle!(_mm256_loadu_pd(da), [1, 0, 3, 2])
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f,avx512bw,avx512dq")]
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn avx512(fa: *const f32, da: *const f64, words: *const i16, seed: u32) {
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"shufflelo512".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW__2!(
+// CHECK-NEXT:             c"shufflelo512".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 32>, core::simd::Simd<i64, 8>>(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i16, 32>>(
-// CHECK-NEXT:                             unsafe { _mm512_loadu_si512(words as *const ()) },
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i16, 32>>(
+// CHECK-NEXT:                         _mm512_loadu_si512(words as *const ()),
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     [
 // CHECK-NEXT:                         1, 0, 2, 3, 4, 5, 6, 7, 9, 8, 10, 11, 12, 13, 14, 15, 17, 16, 18,
 // CHECK-NEXT:                         19, 20, 21, 22, 23, 25, 24, 26, 27, 28, 29, 30, 31,
 // CHECK-NEXT:                     ]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"shufflehi512".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__2!(
+// CHECK-NEXT:             c"shufflehi512".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 32>, core::simd::Simd<i64, 8>>(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i16, 32>>(
-// CHECK-NEXT:                             unsafe { _mm512_loadu_si512(words as *const ()) },
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i16, 32>>(
+// CHECK-NEXT:                         _mm512_loadu_si512(words as *const ()),
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     [
 // CHECK-NEXT:                         0, 1, 2, 3, 5, 7, 6, 4, 8, 9, 10, 11, 13, 15, 14, 12, 16, 17, 18,
 // CHECK-NEXT:                         19, 21, 23, 22, 20, 24, 25, 26, 27, 29, 31, 30, 28,
 // CHECK-NEXT:                     ]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__7!(
-// CHECK-NEXT:         c"permute512_ps".as_ptr() as *mut i8,
-// CHECK-NEXT:         core::simd::simd_swizzle!(
-// CHECK-NEXT:             unsafe { _mm512_loadu_ps(fa as *const ()) },
-// CHECK-NEXT:             [2, 0, 3, 1, 6, 4, 7, 5, 10, 8, 11, 9, 14, 12, 15, 13]
-// CHECK-NEXT:         )
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__9!(
-// CHECK-NEXT:         c"permute512_pd".as_ptr() as *mut i8,
-// CHECK-NEXT:         core::simd::simd_swizzle!(
-// CHECK-NEXT:             unsafe { _mm512_loadu_pd(da as *const ()) },
-// CHECK-NEXT:             [0, 1, 3, 2, 4, 5, 6, 7]
-// CHECK-NEXT:         )
-// CHECK-NEXT:     );
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__7!(
+// CHECK-NEXT:             c"permute512_ps".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::simd::simd_swizzle!(
+// CHECK-NEXT:                 _mm512_loadu_ps(fa as *const ()),
+// CHECK-NEXT:                 [2, 0, 3, 1, 6, 4, 7, 5, 10, 8, 11, 9, 14, 12, 15, 13]
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__9!(
+// CHECK-NEXT:             c"permute512_pd".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::simd::simd_swizzle!(
+// CHECK-NEXT:                 _mm512_loadu_pd(da as *const ()),
+// CHECK-NEXT:                 [0, 1, 3, 2, 4, 5, 6, 7]
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     let a: u16 = seed.wrapping_mul(2654435761) as u16;
 // CHECK-NEXT:     let b: u16 = seed.wrapping_mul(40503).wrapping_add(7) as u16;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

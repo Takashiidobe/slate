@@ -606,21 +606,25 @@ int main(void) {
 // CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     CHECK!(ptr, 16i32 as *mut (), 2i32);
-// CHECK-NEXT:     CHECK!(
-// CHECK-NEXT:         calloc(
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         16i32 as *mut (),
-// CHECK-NEXT:         3i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         CHECK!(
+// CHECK-NEXT:             calloc(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(count)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(count)),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             16i32 as *mut (),
+// CHECK-NEXT:             3i32
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     CHECK!(
 // CHECK-NEXT:         realloc(ptr, unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) }),
 // CHECK-NEXT:         16i32 as *mut (),
 // CHECK-NEXT:         4i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     free(ptr);
-// CHECK-NEXT:     CHECK!(unsafe { project_state }, 77i32, 5i32);
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         CHECK!(project_state, 77i32, 5i32);
+// CHECK-NEXT:     }
 // CHECK-NEXT:     CHECK__4!(
 // CHECK-NEXT:         memcpy(
 // CHECK-NEXT:             a.as_mut_ptr() as *mut (),
@@ -639,26 +643,30 @@ int main(void) {
 // CHECK-NEXT:         a.as_mut_ptr(),
 // CHECK-NEXT:         7i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     CHECK__4!(
-// CHECK-NEXT:         memset(
-// CHECK-NEXT:             a.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(number)) },
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         a.as_mut_ptr(),
-// CHECK-NEXT:         8i32
-// CHECK-NEXT:     );
-// CHECK-NEXT:     CHECK!(
-// CHECK-NEXT:         memchr(
-// CHECK-NEXT:             a.as_mut_ptr() as *const (),
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(number)) },
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         24i32 as *mut (),
-// CHECK-NEXT:         9i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         CHECK__4!(
+// CHECK-NEXT:             memset(
+// CHECK-NEXT:                 a.as_mut_ptr() as *mut (),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(number)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(count)),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             a.as_mut_ptr(),
+// CHECK-NEXT:             8i32
+// CHECK-NEXT:         );
+// CHECK-NEXT:         CHECK!(
+// CHECK-NEXT:             memchr(
+// CHECK-NEXT:                 a.as_mut_ptr() as *const (),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(number)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(count)),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             24i32 as *mut (),
+// CHECK-NEXT:             9i32
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     CHECK__2!(strlen(a.as_mut_ptr() as *const i8), 5i32, 10i32);
-// CHECK-NEXT:     CHECK__2!(unsafe { strlen_call.unwrap()(a.as_mut_ptr() as *const i8) }, 5i32, 10i32);
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         CHECK__2!(strlen_call.unwrap()(a.as_mut_ptr() as *const i8), 5i32, 10i32);
+// CHECK-NEXT:     }
 // CHECK-NEXT:     CHECK!(strcpy(a.as_mut_ptr(), b.as_mut_ptr() as *const i8), a.as_mut_ptr(), 11i32);
 // CHECK-NEXT:     CHECK!(strcat(a.as_mut_ptr(), b.as_mut_ptr() as *const i8), a.as_mut_ptr(), 12i32);
 // CHECK-NEXT:     CHECK!(
@@ -780,26 +788,28 @@ int main(void) {
 // CHECK-NEXT:         40i32 as *mut i8,
 // CHECK-NEXT:         33i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     CHECK__2!(
-// CHECK-NEXT:         fread(
-// CHECK-NEXT:             a.as_mut_ptr() as *mut (),
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
-// CHECK-NEXT:             stream,
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         56i32,
-// CHECK-NEXT:         34i32
-// CHECK-NEXT:     );
-// CHECK-NEXT:     CHECK__2!(
-// CHECK-NEXT:         fwrite(
-// CHECK-NEXT:             a.as_mut_ptr() as *const (),
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
-// CHECK-NEXT:             stream,
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         57i32,
-// CHECK-NEXT:         35i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         CHECK__2!(
+// CHECK-NEXT:             fread(
+// CHECK-NEXT:                 a.as_mut_ptr() as *mut (),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(count)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(count)),
+// CHECK-NEXT:                 stream,
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             56i32,
+// CHECK-NEXT:             34i32
+// CHECK-NEXT:         );
+// CHECK-NEXT:         CHECK__2!(
+// CHECK-NEXT:             fwrite(
+// CHECK-NEXT:                 a.as_mut_ptr() as *const (),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(count)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(count)),
+// CHECK-NEXT:                 stream,
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             57i32,
+// CHECK-NEXT:             35i32
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     CHECK!(fclose(stream), 58i32, 36i32);
 // CHECK-NEXT:     CHECK!(fflush(stream), 59i32, 37i32);
 // CHECK-NEXT:     CHECK!(remove(a.as_mut_ptr() as *const i8), 60i32, 38i32);
@@ -843,14 +853,16 @@ int main(void) {
 // CHECK-NEXT:         68.0f64,
 // CHECK-NEXT:         46i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     CHECK!(
-// CHECK-NEXT:         pow(
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(real)) },
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(real)) },
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         69.0f64,
-// CHECK-NEXT:         47i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         CHECK!(
+// CHECK-NEXT:             pow(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(real)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(real)),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             69.0f64,
+// CHECK-NEXT:             47i32
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     CHECK!(
 // CHECK-NEXT:         sqrt(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(real)) }),
 // CHECK-NEXT:         70.0f64,
@@ -866,14 +878,16 @@ int main(void) {
 // CHECK-NEXT:         72.0f64,
 // CHECK-NEXT:         50i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     CHECK!(
-// CHECK-NEXT:         fmod(
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(real)) },
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(real)) },
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         73.0f64,
-// CHECK-NEXT:         51i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         CHECK!(
+// CHECK-NEXT:             fmod(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(real)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(real)),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             73.0f64,
+// CHECK-NEXT:             51i32
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     CHECK__3!(
 // CHECK-NEXT:         lround(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(real)) }),
 // CHECK-NEXT:         74i32,
@@ -895,24 +909,28 @@ int main(void) {
 // CHECK-NEXT:         54i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     CHECK!(pthread_join(thread, core::ptr::addr_of_mut!(ptr)), 79i32, 55i32);
-// CHECK-NEXT:     qsort(
-// CHECK-NEXT:         a.as_mut_ptr() as *mut (),
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
-// CHECK-NEXT:         Some(compare),
-// CHECK-NEXT:     );
-// CHECK-NEXT:     CHECK!(unsafe { project_state }, 76i32, 56i32);
-// CHECK-NEXT:     CHECK!(
-// CHECK-NEXT:         bsearch(
-// CHECK-NEXT:             a.as_mut_ptr() as *const (),
-// CHECK-NEXT:             b.as_mut_ptr() as *const (),
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
-// CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         qsort(
+// CHECK-NEXT:             a.as_mut_ptr() as *mut (),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(count)),
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(count)),
 // CHECK-NEXT:             Some(compare),
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         56i32 as *mut (),
-// CHECK-NEXT:         57i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         CHECK!(project_state, 76i32, 56i32);
+// CHECK-NEXT:         CHECK!(
+// CHECK-NEXT:             bsearch(
+// CHECK-NEXT:                 a.as_mut_ptr() as *const (),
+// CHECK-NEXT:                 b.as_mut_ptr() as *const (),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(count)),
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(count)),
+// CHECK-NEXT:                 Some(compare),
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             56i32 as *mut (),
+// CHECK-NEXT:             57i32
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     exit(0i32);
 // CHECK-NEXT:     if (unsafe { project_state }) == 80 { 1 } else { 58 }
 // CHECK-NEXT: }

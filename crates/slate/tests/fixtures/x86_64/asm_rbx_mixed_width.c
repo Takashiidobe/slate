@@ -29,15 +29,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn narrow_output(mut r#in: u64, out: &mut u32) -> u64 {
 // CHECK-NEXT:     let mut a: u64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xchg %rbx, {0:r}\nmovq %rbx, %rax\n\taddl $1, %ebx\nxchg %rbx, {0:r}",
-// CHECK-NEXT:             inout(reg) r#in as u64 => [[T_1]],
-// CHECK-NEXT:             lateout("ax") [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "xchg %rbx, {0:r}\nmovq %rbx, %rax\n\taddl $1, %ebx\nxchg %rbx, {0:r}",
+// CHECK-NEXT:                 inout(reg) r#in as u64 => [[T_1]],
+// CHECK-NEXT:                 lateout("ax") [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         a = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:         *out = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
@@ -46,13 +48,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn wide_output(mut r#in: u32) -> u64 {
 // CHECK-NEXT:     let mut out: u64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xchg %rbx, {0:r}\nmovl %ebx, %ebx\n\taddq $1, %rbx\nxchg %rbx, {0:r}",
-// CHECK-NEXT:             inout(reg) (r#in as u32) as u64 => [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "xchg %rbx, {0:r}\nmovl %ebx, %ebx\n\taddq $1, %rbx\nxchg %rbx, {0:r}",
+// CHECK-NEXT:                 inout(reg) (r#in as u32) as u64 => [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         out = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out

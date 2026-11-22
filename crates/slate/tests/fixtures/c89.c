@@ -536,9 +536,7 @@ int main(void) {
 // CHECK-NEXT:     point.y = 37;
 // CHECK-NEXT:     bits.__slate_bits_0.__set_low(6u32);
 // CHECK-NEXT:     bits.__slate_bits_0.__set_high(-3i32);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         number.integer = 41;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     number.integer = 41;
 // CHECK-NEXT:     array.0[0] = 1;
 // CHECK-NEXT:     array.0[1] = 2;
 // CHECK-NEXT:     array.0[2] = 3;
@@ -586,7 +584,7 @@ int main(void) {
 // CHECK-NEXT:         bits.__slate_bits_0.__get_low() as i32,
 // CHECK-NEXT:         bits.__slate_bits_0.__get_high(),
 // CHECK-NEXT:         unsafe { number.integer },
-// CHECK-NEXT:         (unsafe { *const_pointer.add(0) }) + unsafe { *const_pointer.add(3) },
+// CHECK-NEXT:         unsafe { *const_pointer.add(0) + *const_pointer.add(3) },
 // CHECK-NEXT:         copied_value,
 // CHECK-NEXT:         unsafe { operation.unwrap()(53i32, 6i32) },
 // CHECK-NEXT:         arithmetic,

@@ -165,7 +165,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i64 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         total += (unsafe { ap.next_arg::<i32>() }) as i64;
+// CHECK-NEXT:         total += unsafe { ap.next_arg::<i32>() as i64 };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -181,16 +181,16 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         let kind: i32 = unsafe { ap.next_arg::<i32>() };
 // CHECK-NEXT:         if kind == 0 {
-// CHECK-NEXT:             total += (unsafe { ap.next_arg::<i32>() }) as f64;
+// CHECK-NEXT:             total += unsafe { ap.next_arg::<i32>() as f64 };
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if kind == 1 {
 // CHECK-NEXT:                 total += unsafe { ap.next_arg::<f64>() };
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 if kind == 2 {
 // CHECK-NEXT:                     let text: *const i8 = unsafe { ap.next_arg::<*const i8>() };
-// CHECK-NEXT:                     total += ((unsafe { *text.add(0) }) as i32) as f64;
+// CHECK-NEXT:                     total += unsafe { (*text.add(0) as i32) as f64 };
 // CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     total += (unsafe { ap.next_arg::<i64>() }) as f64;
+// CHECK-NEXT:                     total += unsafe { ap.next_arg::<i64>() as f64 };
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

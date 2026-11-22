@@ -406,7 +406,9 @@ int main(void) {
 // CHECK-NEXT:     WIDEN!(wide);
 // CHECK-NEXT:     WIDEN__2!(byte);
 // CHECK-NEXT:     TWICE!(next());
-// CHECK-NEXT:     AFTER!(unsafe { calls });
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         AFTER!(calls);
+// CHECK-NEXT:     }
 // CHECK-NEXT:     let moved: i32 = unsafe { calls };
 // CHECK-NEXT:     AFTER!(moved);
 // CHECK-NEXT:     UNUSED!(local);
@@ -445,7 +447,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn next() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = calls + 1;
+// CHECK-NEXT:         calls += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { calls }
 // CHECK-NEXT: }

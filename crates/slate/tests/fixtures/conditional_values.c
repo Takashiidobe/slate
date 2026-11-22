@@ -91,10 +91,8 @@ int main(void) {
 // CHECK-NEXT:     let half: f64 = if x > y { (x as f64) / 2.0f64 } else { (y as f64) / 2.0f64 };
 // CHECK-NEXT:     let wide: u64 = if y > 0 { 4000000000 } else { 1 };
 // CHECK-NEXT:     let mut buffer: [i32; 3] = [10, 20, 30];
-// CHECK-NEXT:     let cursor: *mut i32 = if x != 0 {
-// CHECK-NEXT:         unsafe { buffer.as_mut_ptr().add(2) }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         unsafe { buffer.as_mut_ptr().add(0) }
+// CHECK-NEXT:     let cursor: *mut i32 = unsafe {
+// CHECK-NEXT:         if x != 0 { buffer.as_mut_ptr().add(2) } else { buffer.as_mut_ptr().add(0) }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if (if x > 2 { (y > 2) as i32 } else { (y < 2) as i32 }) != 0 {
 // CHECK-NEXT:         total += 1000;

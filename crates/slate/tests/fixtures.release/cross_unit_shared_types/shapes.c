@@ -69,16 +69,13 @@ int count_vowels(const char *text) {
 // CHECK-NEXT: use slate_support::free;
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn registry_new() -> *mut registry {
-// CHECK-NEXT:     let registry: *mut registry = (unsafe {
-// CHECK-NEXT:         malloc((core::mem::size_of::<registry>() as u64) as usize) as *mut ()
-// CHECK-NEXT:     }) as *mut registry;
+// CHECK-NEXT:     let registry: *mut registry = unsafe {
+// CHECK-NEXT:         (malloc((core::mem::size_of::<registry>() as u64) as usize) as *mut ())
+// CHECK-NEXT:             as *mut registry
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*registry).head = core::ptr::null_mut::<shape>();
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*registry).count = 0;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*registry).stats.adds = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     registry
@@ -87,20 +84,14 @@ int count_vowels(const char *text) {
 // CHECK-NEXT: pub fn registry_add(registry: *mut registry, shape: *mut shape) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*shape).next = (*registry).head;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*registry).head = shape;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*registry).count += 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*registry).stats.adds += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn registry_count(registry: *const registry) -> i32 {
-// CHECK-NEXT:     (unsafe { (*registry).count }) + unsafe { (*registry).stats.adds }
+// CHECK-NEXT:     unsafe { (*registry).count + (*registry).stats.adds }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn registry_free(registry: *mut registry) {
@@ -110,22 +101,19 @@ int count_vowels(const char *text) {
 // CHECK-NEXT: pub fn shape_move(shape: *mut shape, dx: i32, dy: i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*shape).origin.x += dx;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*shape).origin.y += dy;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (((*shape).flags.__slate_bits_0.__get_level() as i32) + 1 & 15)
-// CHECK-NEXT:             as u32;
-// CHECK-NEXT:         (*shape).flags.__slate_bits_0.__set_level([[T_0]]);
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[T_0:__t[0-9]+]] = ((unsafe { (*shape).flags.__slate_bits_0.__get_level() as i32 }) + 1 & 15)
+// CHECK-NEXT:         as u32;
+// CHECK-NEXT:     unsafe { (*shape).flags.__slate_bits_0.__set_level([[T_0]]) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn shape_area_sum(shapes: *const shape, count: i32) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..count {
-// CHECK-NEXT:         sum += (unsafe { (*shapes.offset(i as isize)).origin.x })
-// CHECK-NEXT:             * unsafe { (*shapes.offset(i as isize)).origin.y };
+// CHECK-NEXT:         sum += unsafe {
+// CHECK-NEXT:             (*shapes.offset(i as isize)).origin.x * (*shapes.offset(i as isize)).origin.y
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }

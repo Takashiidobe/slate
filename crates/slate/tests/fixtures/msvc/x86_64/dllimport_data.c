@@ -53,18 +53,18 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let page: *mut u16 = code_page();
-// CHECK-NEXT:     if (((unsafe { *NlsAnsiCodePage }) as i32) as u32) != unsafe { GetACP() } {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:     if unsafe { ((*NlsAnsiCodePage as i32) as u32) != GetACP() } {
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if ((unsafe { *page }) as i32) != ((unsafe { *NlsAnsiCodePage }) as i32)
+// CHECK-NEXT:     if (unsafe { (*page as i32) != (*NlsAnsiCodePage as i32) })
 // CHECK-NEXT:         || page != unsafe { core::ptr::addr_of_mut!(*NlsAnsiCodePage) } {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if ((unsafe { *NlsMbCodePageTag }) as i32) > 1 {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:     if (unsafe { *NlsMbCodePageTag as i32 }) > 1 {
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if ((const { core::mem::size_of::<u16>() }) as u64) != 2 {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

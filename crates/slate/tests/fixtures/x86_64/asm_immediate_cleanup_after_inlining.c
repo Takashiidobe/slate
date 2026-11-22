@@ -50,8 +50,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn branch__const1(key: *mut key) -> i32 {
+// CHECK-NEXT:     let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "jmp {1}\n\t# {0}",
 // CHECK-NEXT:             sym k1,
@@ -60,17 +60,17 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
-// CHECK-NEXT:         if __slate_asm_target {
-// CHECK-NEXT:             return 1;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             return 0;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if __slate_asm_target {
+// CHECK-NEXT:         return 1;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn unlock(p: *mut i32) {
-// CHECK-NEXT:     if branch__const1(unsafe { core::ptr::addr_of_mut!(k1) }) != 0 {
+// CHECK-NEXT:     if branch__const1(core::ptr::addr_of_mut!(k1)) != 0 {
 // CHECK-NEXT:         println!("unlock {}", unsafe { *p });
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

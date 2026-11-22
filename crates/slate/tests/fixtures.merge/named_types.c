@@ -285,8 +285,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn tally_sum(tally: *const tally) -> c_long {
-// CHECK-NEXT:     (unsafe { (*tally).count }) + ((unsafe { (*tally).bytes }) as c_long)
-// CHECK-NEXT:         + ((unsafe { (*tally).tag }) as c_long)
+// CHECK-NEXT:     unsafe { (*tally).count + ((*tally).bytes as c_long) + ((*tally).tag as c_long) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: use core::ffi::c_char;

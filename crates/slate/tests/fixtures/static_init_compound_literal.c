@@ -180,18 +180,18 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut word: word = word { value: 16909060u32 };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut spin_address: *mut lock = unsafe {
-// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_compound_spin_address_0)
-// CHECK-NEXT: };
+// CHECK-NEXT: static mut spin_address: *mut lock = core::ptr::addr_of_mut!(__slate_compound_spin_address_0);
 // CHECK-EMPTY:
 // CHECK-NEXT: fn ratelimited() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         rs.burst -= 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { rs.lock.raw }
-// CHECK-NEXT:         .wrapping_mul(100)
-// CHECK-NEXT:         .wrapping_add((unsafe { rs.interval }) as u32)
-// CHECK-NEXT:         .wrapping_add((unsafe { rs.burst }) as u32) as i32
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         rs.lock.raw
+// CHECK-NEXT:             .wrapping_mul(100)
+// CHECK-NEXT:             .wrapping_add(rs.interval as u32)
+// CHECK-NEXT:             .wrapping_add(rs.burst as u32) as i32
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut rs: ratelimit = ratelimit {
@@ -220,7 +220,7 @@ int main(void) {
 // CHECK-NEXT:             c"%s %lu %d\n".as_ptr(),
 // CHECK-NEXT:             tracepoint.name,
 // CHECK-NEXT:             tracepoint.key.key.[[SLATE_ANON_0]].r#type,
-// CHECK-NEXT:             unsafe { tracepoint.reg }.unwrap()(),
+// CHECK-NEXT:             tracepoint.reg.unwrap()(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {

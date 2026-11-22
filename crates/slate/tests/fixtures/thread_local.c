@@ -50,8 +50,6 @@ int main(void) {
 // CHECK-NEXT:     let result: i32 = (unsafe { file_value }) * 100 + unsafe { block_value };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         file_value = file_next;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         block_value = block_next;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
@@ -62,7 +60,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn worker(argument: *mut ()) -> i32 {
 // CHECK-NEXT:     let values: *mut i32 = argument as *mut i32;
-// CHECK-NEXT:     update_values(unsafe { *values.add(0) }, unsafe { *values.add(1) })
+// CHECK-NEXT:     unsafe { update_values(*values.add(0), *values.add(1)) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

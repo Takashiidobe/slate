@@ -22,10 +22,10 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn make(n: i32) -> *mut i32 {
-// CHECK-NEXT:     let p: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc((n as u64).wrapping_mul(core::mem::size_of::<i32>() as u64) as usize)
-// CHECK-NEXT:             as *mut ()
-// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:     let p: *mut i32 = unsafe {
+// CHECK-NEXT:         (malloc((n as u64).wrapping_mul(core::mem::size_of::<i32>() as u64) as usize)
+// CHECK-NEXT:             as *mut ()) as *mut i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *p.offset(i as isize) = i * i;

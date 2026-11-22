@@ -77,8 +77,6 @@ int late = 99;
 // CHECK-NEXT: fn record(t: *mut Tally, weight: i64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*t).hits += 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*t).weight += weight;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -88,12 +86,12 @@ int late = 99;
 // CHECK-NEXT:     let mut total__0: i32 = 3;
 // CHECK-NEXT:     bump(core::ptr::addr_of_mut!(total__0), 4i32);
 // CHECK-NEXT:     println!("local {}", total__0);
-// CHECK-NEXT:     bump(unsafe { core::ptr::addr_of_mut!(total) }, 5i32);
+// CHECK-NEXT:     bump(core::ptr::addr_of_mut!(total), 5i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         scale = 7;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     record(unsafe { core::ptr::addr_of_mut!(tally) }, unsafe { scale });
-// CHECK-NEXT:     record(unsafe { core::ptr::addr_of_mut!(tally) }, (unsafe { scale }) * 2);
+// CHECK-NEXT:     record(core::ptr::addr_of_mut!(tally), unsafe { scale });
+// CHECK-NEXT:     record(core::ptr::addr_of_mut!(tally), (unsafe { scale }) * 2);
 // CHECK-NEXT:     println!("{} {} {}", before, unsafe { total }, shadow_param(unsafe { total }));
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d %ld\n".as_ptr(), tally.hits, tally.weight) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

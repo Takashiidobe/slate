@@ -55,15 +55,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn call_helper() -> u32 {
 // CHECK-NEXT:     let mut value: u32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "bl slate_sp_helper\n\tmov {0:w}, w9",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             out("x9") _,
-// CHECK-NEXT:             out("x30") _,
-// CHECK-NEXT:             options(preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "bl slate_sp_helper\n\tmov {0:w}, w9",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 out("x9") _,
+// CHECK-NEXT:                 out("x30") _,
+// CHECK-NEXT:                 options(preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
@@ -71,13 +73,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn stack_copy() -> u64 {
 // CHECK-NEXT:     let mut copy: u64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov {0:x}, sp",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov {0:x}, sp",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         copy = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     copy
@@ -85,13 +89,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn stack_low() -> u32 {
 // CHECK-NEXT:     let mut low: u32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov {0:w}, wsp",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov {0:w}, wsp",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         low = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     low
@@ -100,9 +106,11 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let value: u32 = call_helper();
 // CHECK-NEXT:     let copy: u64 = stack_copy();
-// CHECK-NEXT:     let direct: u64 = unsafe {
+// CHECK-NEXT:     let direct: u64 = {
 // CHECK-NEXT:         let [[T_0]]: usize;
-// CHECK-NEXT:         core::arch::asm!("mov {0}, sp", lateout(reg) [[T_0]]);
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!("mov {0}, sp", lateout(reg) [[T_0]]);
+// CHECK-NEXT:         }
 // CHECK-NEXT:         [[T_0]] as u64
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

@@ -60,71 +60,83 @@ int main(void) {
 // CHECK-NEXT:     let mut word: word = word { value: 40 };
 // CHECK-NEXT:     let mut half: half = half { value: 9 };
 // CHECK-NEXT:     let mut r#fn: Option<unsafe extern "C-unwind" fn() -> i32> = Some(answer);
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "incb {0:l}",
-// CHECK-NEXT:             inlateout(reg) (byte as u8) as u32 => [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "incb {0:l}",
+// CHECK-NEXT:                 inlateout(reg) (byte as u8) as u32 => [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         byte = unsafe { core::mem::transmute::<u8, i8>([[T_0]] as u8) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "incl {0:e}",
-// CHECK-NEXT:             inlateout(reg) input as u32 => [[T_1]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "incl {0:e}",
+// CHECK-NEXT:                 inlateout(reg) input as u32 => [[T_1]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         tied = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xorb $1, {0:l}",
-// CHECK-NEXT:             inlateout(reg) (flag as u8) as u32 => [[T_2]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "xorb $1, {0:l}",
+// CHECK-NEXT:                 inlateout(reg) (flag as u8) as u32 => [[T_2]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = ([[T_2]] as u8) != 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "incl {0:e}",
-// CHECK-NEXT:             inlateout(reg) number as u32 => [[T_3]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "incl {0:e}",
+// CHECK-NEXT:                 inlateout(reg) number as u32 => [[T_3]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         number = unsafe { core::mem::transmute::<u32, u32>([[T_3]] as u32) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addl $2, {0:e}",
-// CHECK-NEXT:             inlateout(reg) unsafe { core::mem::transmute::<word, u32>(word) } => [[T_4]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "addl $2, {0:e}",
+// CHECK-NEXT:                 inlateout(reg) core::mem::transmute::<word, u32>(word) => [[T_4]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         word = unsafe { core::mem::transmute::<u32, word>([[T_4]] as u32) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]]: u16;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "incw {0:x}",
-// CHECK-NEXT:             inlateout(reg) unsafe { core::mem::transmute::<half, u16>(half) } => [[T_5]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "incw {0:x}",
+// CHECK-NEXT:                 inlateout(reg) core::mem::transmute::<half, u16>(half) => [[T_5]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         half = unsafe { core::mem::transmute::<u16, half>([[T_5]] as u16) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_6:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "\n# {0:r}",
-// CHECK-NEXT:             inlateout(reg) unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, u64>(
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "\n# {0:r}",
+// CHECK-NEXT:                 inlateout(reg) core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, u64>(
 // CHECK-NEXT:                     r#fn,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             } => [[T_6]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:                 ) => [[T_6]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         r#fn = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<u64, Option<unsafe extern "C-unwind" fn() -> i32>>(
 // CHECK-NEXT:                 [[T_6]] as u64,
@@ -144,17 +156,17 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     r#fn = None;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_7:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "\n# {0:r}",
-// CHECK-NEXT:             inlateout(reg) unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, u64>(
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "\n# {0:r}",
+// CHECK-NEXT:                 inlateout(reg) core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, u64>(
 // CHECK-NEXT:                     r#fn,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             } => [[T_7]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:                 ) => [[T_7]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         r#fn = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<u64, Option<unsafe extern "C-unwind" fn() -> i32>>(
 // CHECK-NEXT:                 [[T_7]] as u64,

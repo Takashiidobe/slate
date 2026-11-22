@@ -39,15 +39,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn load(mut dtr: *const desc_ptr) {
 // CHECK-NEXT:     let mut got: u64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movq 2({1:r}), {0:r}\n# {2}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) dtr as u64,
-// CHECK-NEXT:             in(reg) dtr,
-// CHECK-NEXT:             options(nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movq 2({1:r}), {0:r}\n# {2}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) dtr as u64,
+// CHECK-NEXT:                 in(reg) dtr,
+// CHECK-NEXT:                 options(nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         got = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {

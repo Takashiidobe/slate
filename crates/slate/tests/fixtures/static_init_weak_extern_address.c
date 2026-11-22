@@ -90,21 +90,19 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut attributes: __SlateAlign16<[*mut attribute; 4]> = __SlateAlign16(
-// CHECK-NEXT:     [
-// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(present.attr) },
-// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(__slate_weak_address_missing_vendor.attr) },
-// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(__slate_weak_address_missing_runtime.attr) },
-// CHECK-NEXT:         core::ptr::null_mut::<attribute>(),
-// CHECK-NEXT:     ],
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         [
+// CHECK-NEXT:             core::ptr::addr_of_mut!(present.attr),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(__slate_weak_address_missing_vendor.attr),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(__slate_weak_address_missing_runtime.attr),
+// CHECK-NEXT:             core::ptr::null_mut::<attribute>(),
+// CHECK-NEXT:         ]
+// CHECK-NEXT:     },
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut counter: *mut i32 = unsafe {
-// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_weak_address_missing_counter)
-// CHECK-NEXT: };
+// CHECK-NEXT: static mut counter: *mut i32 = core::ptr::addr_of_mut!(__slate_weak_address_missing_counter);
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut whole: *mut kobj_attribute = unsafe {
-// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_weak_address_missing_runtime)
-// CHECK-NEXT: };
+// CHECK-NEXT: static mut whole: *mut kobj_attribute = core::ptr::addr_of_mut!(__slate_weak_address_missing_runtime);
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0u32..4u32 {
@@ -113,7 +111,7 @@ int main(void) {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"attribute %u null %d offset %zu\n".as_ptr(),
 // CHECK-NEXT:                 i,
-// CHECK-NEXT:                 unsafe { attributes.0[i as usize] }.is_null() as i32,
+// CHECK-NEXT:                 attributes.0[i as usize].is_null() as i32,
 // CHECK-NEXT:                 if attributes.0[i as usize] == core::ptr::addr_of_mut!(present.attr) {
 // CHECK-NEXT:                     0u64
 // CHECK-NEXT:                 } else {
@@ -125,13 +123,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "counter {} whole {}",
-// CHECK-NEXT:         unsafe { counter }.is_null() as i32,
-// CHECK-NEXT:         unsafe { whole }.is_null() as i32
+// CHECK-NEXT:         unsafe { counter.is_null() as i32 },
+// CHECK-NEXT:         unsafe { whole.is_null() as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "runtime {} {}",
-// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(*missing_vendor) }.is_null() as i32,
-// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(*missing_counter) }.is_null() as i32
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(*missing_vendor).is_null() as i32 },
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(*missing_counter).is_null() as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -206,7 +206,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn make_opaque() -> *mut opaque {
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(shared) }
+// CHECK-NEXT:     core::ptr::addr_of_mut!(shared)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -216,7 +216,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn quit(code: i32) {
-// CHECK-NEXT:     unsafe { std::process::exit(code as i32) };
+// CHECK-NEXT:     std::process::exit(code as i32);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

@@ -45,8 +45,6 @@ int main(void) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe { log_index };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         log_index = [[V_0]] + 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         calls.0[[[V_0]] as usize] = tag * 10 + g;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { g }

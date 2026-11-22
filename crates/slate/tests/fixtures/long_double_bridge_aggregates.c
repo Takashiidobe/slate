@@ -345,33 +345,27 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let t: tagged = unsafe {
 // CHECK-NEXT:         __slate_icall__rm32_f80_i32(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32) -> tagged>, *const ()>(
-// CHECK-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(make_ptr)),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32) -> tagged>, *const ()>(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(make_ptr)),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 2, 64]),
 // CHECK-NEXT:             2i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let s: big = unsafe {
 // CHECK-NEXT:         __slate_icall__rm32a8_f80_m32a8(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, big) -> big>, *const ()>(
-// CHECK-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(spread_ptr)),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, big) -> big>, *const ()>(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(spread_ptr)),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:             LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]),
 // CHECK-NEXT:             b,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let o: one = unsafe {
 // CHECK-NEXT:         __slate_icall__rs80_s80_m32(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(one, tagged) -> one>, *const ()>(
-// CHECK-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(halve_ptr)),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(one, tagged) -> one>, *const ()>(
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(halve_ptr)),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:             *{
 // CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = one {
 // CHECK-NEXT:                     value: LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 2, 64]),
@@ -386,11 +380,9 @@ int main(void) {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(
 // CHECK-NEXT:             c"%.6Lf\n".as_ptr(),
 // CHECK-NEXT:             __slate_icall__rf80_m32a8_f80(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(big, LongDouble) -> LongDouble>, *const ()>(
-// CHECK-NEXT:                         core::ptr::read_volatile(core::ptr::addr_of!(weigh_ptr)),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(big, LongDouble) -> LongDouble>, *const ()>(
+// CHECK-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(weigh_ptr)),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 b,
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]),
 // CHECK-NEXT:             ),

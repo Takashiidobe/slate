@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { __slate_intrinsic_9e72945d5c6a2d09() }.wrapping_sub(start)
+// CHECK-NEXT:     unsafe { __slate_intrinsic_9e72945d5c6a2d09().wrapping_sub(start) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

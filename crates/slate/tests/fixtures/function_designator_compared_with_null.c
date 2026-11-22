@@ -84,11 +84,11 @@ int main(void) {
 // CHECK-NEXT:             __slate_function
 // CHECK-NEXT:         }) != None) as i32,
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*mut (), u32) -> i32>, *mut ()>(
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*mut (), u32) -> i32>, *mut ()>(
 // CHECK-NEXT:                     Some(notify),
 // CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:             .is_null() as i32,
+// CHECK-NEXT:                 .is_null() as i32
+// CHECK-NEXT:         },
 // CHECK-NEXT:         (fp == Some(notify)) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if ({

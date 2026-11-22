@@ -75,14 +75,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn nr_cpus_bits() -> i32 {
 // CHECK-NEXT:     let mut v: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov ${1}, {0:e}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             const 6i32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov ${1}, {0:e}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 const 6i32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
@@ -90,15 +92,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn popcount_operand(mut x: u32) -> i32 {
 // CHECK-NEXT:     let mut v: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov {1:e}, {0:e}\n# {2}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) (x.count_ones() as i32) as u32,
-// CHECK-NEXT:             const 4i32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov {1:e}, {0:e}\n# {2}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) (x.count_ones() as i32) as u32,
+// CHECK-NEXT:                 const 4i32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v

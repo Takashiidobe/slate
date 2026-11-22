@@ -52,10 +52,10 @@ int main(void) {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
 // CHECK-NEXT:     unsafe { table_scale(values.0.as_mut_slice(), 3i32) };
 // CHECK-NEXT:     let count: i32 = 3;
-// CHECK-NEXT:     let heap: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc((count as u64).wrapping_mul(core::mem::size_of::<i32>() as u64) as usize)
-// CHECK-NEXT:             as *mut ()
-// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:     let heap: *mut i32 = unsafe {
+// CHECK-NEXT:         (malloc((count as u64).wrapping_mul(core::mem::size_of::<i32>() as u64) as usize)
+// CHECK-NEXT:             as *mut ()) as *mut i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *heap.offset(i as isize) = i + 10;

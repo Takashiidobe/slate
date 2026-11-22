@@ -268,7 +268,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c23_never_return() {
-// CHECK-NEXT:     unsafe { std::process::exit(99i32 as i32) };
+// CHECK-NEXT:     std::process::exit(99i32 as i32);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[thread_local]
@@ -353,8 +353,8 @@ int main(void) {
 // CHECK-NEXT:         .wrapping_add(core::mem::align_of::<i32>() as u64)
 // CHECK-NEXT:         .wrapping_add(α as u64)
 // CHECK-NEXT:         .wrapping_add((utf8_character as i32) as u64)
-// CHECK-NEXT:         .wrapping_add((((unsafe { utf8_text[0] }) as u8) as i32) as u64)
-// CHECK-NEXT:         .wrapping_add((((unsafe { utf8_text[1] }) as u8) as i32) as u64)
+// CHECK-NEXT:         .wrapping_add(((utf8_text[0] as u8) as i32) as u64)
+// CHECK-NEXT:         .wrapping_add(((utf8_text[1] as u8) as i32) as u64)
 // CHECK-NEXT:         .wrapping_add(empty_struct.first as u64)
 // CHECK-NEXT:         .wrapping_add(empty_array[0] as u64)
 // CHECK-NEXT:         .wrapping_add(qualified_array[0] as u64)
@@ -370,8 +370,7 @@ int main(void) {
 // CHECK-NEXT:         .wrapping_add(C23_TYPE_KIND!() as u64) as i32;
 // CHECK-NEXT:     let attribute_total: i32 = c23_nodiscard_value();
 // CHECK-NEXT:     let preprocessor_total: i32 = 23 + 29 + 1 + 1 + 0 + 0 + 0 + 0
-// CHECK-NEXT:         + ((unsafe { c23_embedded[0] }) as i32) + ((unsafe { c23_embedded[1] }) as i32)
-// CHECK-NEXT:         + ((unsafe { c23_embedded[2] }) as i32);
+// CHECK-NEXT:         + (c23_embedded[0] as i32) + (c23_embedded[1] as i32) + (c23_embedded[2] as i32);
 // CHECK-NEXT:     let type_total: i32 = (null_value.is_null() as i32) + (null_pointer.is_null() as i32)
 // CHECK-NEXT:         + (boolean_value as i32) + (!false_value as i32) + unsafe { c23_thread_value };
 // CHECK-NEXT:     let control_total: i32 = c23_unnamed_parameter(89i32, 97i32)

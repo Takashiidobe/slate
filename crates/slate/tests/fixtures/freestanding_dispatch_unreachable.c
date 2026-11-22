@@ -51,20 +51,18 @@ int main(void) {
 // CHECK-NEXT:     if x < 0 || x > 2 {
 // CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         match targets.0[x as usize] as usize {
-// CHECK-NEXT:             4 => {
-// CHECK-NEXT:                 return 10;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             5 => {
-// CHECK-NEXT:                 return 20;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             6 => {
-// CHECK-NEXT:                 return 30;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             _ => {
-// CHECK-NEXT:                 core::hint::unreachable_unchecked();
-// CHECK-NEXT:             }
+// CHECK-NEXT:     match unsafe { targets.0[x as usize] as usize } {
+// CHECK-NEXT:         4 => {
+// CHECK-NEXT:             return 10;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         5 => {
+// CHECK-NEXT:             return 20;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         6 => {
+// CHECK-NEXT:             return 30;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         _ => {
+// CHECK-NEXT:             unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }

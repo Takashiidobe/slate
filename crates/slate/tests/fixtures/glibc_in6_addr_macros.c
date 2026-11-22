@@ -94,8 +94,7 @@ int main(void) {
 // CHECK-NEXT:     let __a: *const in6_addr = unsafe { core::ptr::addr_of!((*address).sin6_addr) };
 // CHECK-NEXT:     [[V_1]] = (unsafe { *(*__a).__in6_u.__u6_addr32.as_ptr().add(0) }) == 0
 // CHECK-NEXT:         && (unsafe { *(*__a).__in6_u.__u6_addr32.as_ptr().add(1) }) == 0
-// CHECK-NEXT:         && (unsafe { *(*__a).__in6_u.__u6_addr32.as_ptr().add(2) })
-// CHECK-NEXT:             == unsafe { htonl(65535u32) };
+// CHECK-NEXT:         && unsafe { *(*__a).__in6_u.__u6_addr32.as_ptr().add(2) == htonl(65535u32) };
 // CHECK-NEXT:     if [[V_1]] {
 // CHECK-NEXT:         return 4;
 // CHECK-NEXT:     }
@@ -130,8 +129,10 @@ int main(void) {
 // CHECK-NEXT:         for byte in 0i32..16i32 {
 // CHECK-NEXT:             sum = sum
 // CHECK-NEXT:                 .wrapping_add(
-// CHECK-NEXT:                     ((unsafe { address.sin6_addr.__in6_u.__u6_addr8[byte as usize] })
-// CHECK-NEXT:                         as i32) as u32,
+// CHECK-NEXT:                     unsafe {
+// CHECK-NEXT:                         (address.sin6_addr.__in6_u.__u6_addr8[byte as usize] as i32)
+// CHECK-NEXT:                             as u32
+// CHECK-NEXT:                     },
 // CHECK-NEXT:                 );
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

@@ -38,27 +38,31 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn add_via_rbx(mut a: u32, mut b: u32) -> u32 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xchg %rbx, {1:r}\naddl %ebx, {0:e}\nxchg %rbx, {1:r}",
-// CHECK-NEXT:             inlateout(reg) a as u32 => [[T_0]],
-// CHECK-NEXT:             inout(reg) b as u32 => _,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "xchg %rbx, {1:r}\naddl %ebx, {0:e}\nxchg %rbx, {1:r}",
+// CHECK-NEXT:                 inlateout(reg) a as u32 => [[T_0]],
+// CHECK-NEXT:                 inout(reg) b as u32 => _,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         a = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn double_in_rbx(mut x: u32) -> u32 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xchg %rbx, {0:r}\naddl %ebx, %ebx\nxchg %rbx, {0:r}",
-// CHECK-NEXT:             inout(reg) x as u32 => [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "xchg %rbx, {0:r}\naddl %ebx, %ebx\nxchg %rbx, {0:r}",
+// CHECK-NEXT:                 inout(reg) x as u32 => [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
@@ -67,15 +71,17 @@ int main(void) {
 // CHECK-NEXT: fn scaled_sum(a: i64, b: i64) -> i64 {
 // CHECK-NEXT:     let mut r10: i64 = b;
 // CHECK-NEXT:     let mut r8: i64 = a;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq (%r8,%r10,4), %r8\n\taddb $1, %r8b",
-// CHECK-NEXT:             lateout("r8") [[T_0]],
-// CHECK-NEXT:             in("r8") r8 as u64,
-// CHECK-NEXT:             in("r10") r10 as u64,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "leaq (%r8,%r10,4), %r8\n\taddb $1, %r8b",
+// CHECK-NEXT:                 lateout("r8") [[T_0]],
+// CHECK-NEXT:                 in("r8") r8 as u64,
+// CHECK-NEXT:                 in("r10") r10 as u64,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         r8 = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r8
@@ -83,14 +89,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn low_word(mut x: u32) -> u16 {
 // CHECK-NEXT:     let mut w: u16 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u16;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movw {0:x}, %si",
-// CHECK-NEXT:             in(reg) x as u32,
-// CHECK-NEXT:             lateout("si") [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movw {0:x}, %si",
+// CHECK-NEXT:                 in(reg) x as u32,
+// CHECK-NEXT:                 lateout("si") [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         w = unsafe { core::mem::transmute::<u16, u16>([[T_0]] as u16) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     w

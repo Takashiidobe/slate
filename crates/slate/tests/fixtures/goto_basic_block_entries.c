@@ -82,58 +82,62 @@ int main(void) {
 // CHECK-NEXT:     let mut steps: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     let mut __slate_state: usize = 10usize;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         if mode != 0 {
-// CHECK-NEXT:             __slate_state = 8;
+// CHECK-NEXT:     if mode != 0 {
+// CHECK-NEXT:         __slate_state = 8;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         __slate_state = 9;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         match __slate_state {
+// CHECK-NEXT:             8 => {
+// CHECK-NEXT:                 sum += 3;
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     core::ptr::write_volatile(core::ptr::addr_of_mut!(observed), sum)
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 visits += 1;
+// CHECK-NEXT:                 if visits < 4 {
+// CHECK-NEXT:                     __slate_state = 9;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     break;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 sum += 2;
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     core::ptr::write_volatile(core::ptr::addr_of_mut!(observed), sum)
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 visits += 1;
+// CHECK-NEXT:                 if visits < 4 {
+// CHECK-NEXT:                     __slate_state = 8;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     break;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = checks + 1;
+// CHECK-NEXT:         checks = [[V_0]];
+// CHECK-NEXT:         if [[V_0]] != 0 && i < 4 {
+// CHECK-NEXT:             if i != 1 {
+// CHECK-NEXT:                 let [[T_0:__t[0-9]+]]: i32 = i;
+// CHECK-NEXT:                 if [[T_0]] == 0 {
+// CHECK-NEXT:                     sum += 4;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     if [[T_0]] == 2 {
+// CHECK-NEXT:                         sum += 5;
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         break;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 sum += unsafe {
+// CHECK-NEXT:                     core::ptr::read_volatile(core::ptr::addr_of!(observed))
+// CHECK-NEXT:                 };
+// CHECK-NEXT:             }
+// CHECK-NEXT:             steps += 1;
+// CHECK-NEXT:             i += 1;
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             __slate_state = 9;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 8 => {
-// CHECK-NEXT:                     sum += 3;
-// CHECK-NEXT:                     core::ptr::write_volatile(core::ptr::addr_of_mut!(observed), sum);
-// CHECK-NEXT:                     visits += 1;
-// CHECK-NEXT:                     if visits < 4 {
-// CHECK-NEXT:                         __slate_state = 9;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     sum += 2;
-// CHECK-NEXT:                     core::ptr::write_volatile(core::ptr::addr_of_mut!(observed), sum);
-// CHECK-NEXT:                     visits += 1;
-// CHECK-NEXT:                     if visits < 4 {
-// CHECK-NEXT:                         __slate_state = 8;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = checks + 1;
-// CHECK-NEXT:             checks = [[V_0]];
-// CHECK-NEXT:             if [[V_0]] != 0 && i < 4 {
-// CHECK-NEXT:                 if i != 1 {
-// CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: i32 = i;
-// CHECK-NEXT:                     if [[T_0]] == 0 {
-// CHECK-NEXT:                         sum += 4;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         if [[T_0]] == 2 {
-// CHECK-NEXT:                             sum += 5;
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             break;
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     sum += core::ptr::read_volatile(core::ptr::addr_of!(observed));
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 steps += 1;
-// CHECK-NEXT:                 i += 1;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(

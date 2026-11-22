@@ -130,10 +130,10 @@ int main(void) {
 // CHECK-NEXT:     h.i = 2;
 // CHECK-NEXT:     h.s = 3;
 // CHECK-NEXT:     h.d = 4.0f64;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: *mut u8 = core::ptr::addr_of_mut!(h) as *mut u8;
-// CHECK-NEXT:         [[T_0]].add(1usize).write_bytes(0u8, 3usize);
-// CHECK-NEXT:         [[T_0]].add(10usize).write_bytes(0u8, 6usize);
+// CHECK-NEXT:         unsafe { [[T_0]].add(1usize).write_bytes(0u8, 3usize) };
+// CHECK-NEXT:         unsafe { [[T_0]].add(10usize).write_bytes(0u8, 6usize) };
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"holes".as_ptr(),
@@ -150,13 +150,13 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     n.tail = 9;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: *mut u8 = core::ptr::addr_of_mut!(n) as *mut u8;
-// CHECK-NEXT:         [[T_1]].add(1usize).write_bytes(0u8, 3usize);
-// CHECK-NEXT:         [[T_1]].add(10usize).write_bytes(0u8, 6usize);
-// CHECK-NEXT:         [[T_1]].add(25usize).write_bytes(0u8, 3usize);
-// CHECK-NEXT:         [[T_1]].add(34usize).write_bytes(0u8, 6usize);
-// CHECK-NEXT:         [[T_1]].add(49usize).write_bytes(0u8, 7usize);
+// CHECK-NEXT:         unsafe { [[T_1]].add(1usize).write_bytes(0u8, 3usize) };
+// CHECK-NEXT:         unsafe { [[T_1]].add(10usize).write_bytes(0u8, 6usize) };
+// CHECK-NEXT:         unsafe { [[T_1]].add(25usize).write_bytes(0u8, 3usize) };
+// CHECK-NEXT:         unsafe { [[T_1]].add(34usize).write_bytes(0u8, 6usize) };
+// CHECK-NEXT:         unsafe { [[T_1]].add(49usize).write_bytes(0u8, 7usize) };
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"nested".as_ptr(),
@@ -175,11 +175,13 @@ int main(void) {
 // CHECK-NEXT:     b.__slate_bits_0.__set_a(1i32);
 // CHECK-NEXT:     b.__slate_bits_0.__set_b(2i32);
 // CHECK-NEXT:     b.c = 3;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: *mut u8 = core::ptr::addr_of_mut!(b) as *mut u8;
-// CHECK-NEXT:         *[[T_2]].add(0usize) &= 231u8;
-// CHECK-NEXT:         *[[T_2]].add(1usize) &= 3u8;
-// CHECK-NEXT:         [[T_2]].add(3usize).write_bytes(0u8, 1usize);
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *[[T_2]].add(0usize) &= 231u8;
+// CHECK-NEXT:             *[[T_2]].add(1usize) &= 3u8;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe { [[T_2]].add(3usize).write_bytes(0u8, 1usize) };
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"bits".as_ptr(),

@@ -33,14 +33,13 @@ int main(void) {
 // CHECK-NEXT:     104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 0,
 // CHECK-NEXT: ];
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut greeting: *const i32 = (unsafe {
-// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_str19) as *mut i32
-// CHECK-NEXT: }) as *const i32;
+// CHECK-NEXT: static mut greeting: *const i32 = (core::ptr::addr_of_mut!(__slate_str19) as *mut i32)
+// CHECK-NEXT:     as *const i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let u16: *const u16 = (unsafe { core::ptr::addr_of_mut!(__slate_str20) as *mut u16 })
+// CHECK-NEXT:     let u16: *const u16 = (core::ptr::addr_of_mut!(__slate_str20) as *mut u16)
 // CHECK-NEXT:         as *const u16;
-// CHECK-NEXT:     let u32: *const u32 = (unsafe { core::ptr::addr_of_mut!(__slate_str21) as *mut u32 })
+// CHECK-NEXT:     let u32: *const u32 = (core::ptr::addr_of_mut!(__slate_str21) as *mut u32)
 // CHECK-NEXT:         as *const u32;
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i32; 6]> = __SlateAlign16(
 // CHECK-NEXT:         [108i32, 111i32, 99i32, 97i32, 108i32, 0i32],
@@ -51,8 +50,8 @@ int main(void) {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %d %d\n".as_ptr(),
 // CHECK-NEXT:             wcslen(greeting as *const i32) as u64,
-// CHECK-NEXT:             *unsafe { greeting }.add(5),
-// CHECK-NEXT:             *unsafe { greeting }.add(10),
+// CHECK-NEXT:             *greeting.add(5),
+// CHECK-NEXT:             *greeting.add(10),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -79,9 +78,10 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         unsafe { __slate_str26[1] },
-// CHECK-NEXT:         (unsafe {
+// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *((core::ptr::addr_of_mut!(__slate_str27) as *mut i32) as *const i8).add(4)
-// CHECK-NEXT:         }) as i32
+// CHECK-NEXT:                 as i32
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

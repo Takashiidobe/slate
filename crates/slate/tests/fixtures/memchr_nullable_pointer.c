@@ -23,12 +23,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut buf: [u8; 4] = [10, 20, 30, 40];
-// CHECK-NEXT:     let hit: *mut u8 = (unsafe {
-// CHECK-NEXT:         __builtin_memchr(buf.as_mut_ptr() as *const (), 30i32, 4u64)
-// CHECK-NEXT:     }) as *mut u8;
-// CHECK-NEXT:     let miss: *mut u8 = (unsafe {
-// CHECK-NEXT:         __builtin_memchr(buf.as_mut_ptr() as *const (), 99i32, 4u64)
-// CHECK-NEXT:     }) as *mut u8;
+// CHECK-NEXT:     let hit: *mut u8 = unsafe {
+// CHECK-NEXT:         __builtin_memchr(buf.as_mut_ptr() as *const (), 30i32, 4u64) as *mut u8
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let miss: *mut u8 = unsafe {
+// CHECK-NEXT:         __builtin_memchr(buf.as_mut_ptr() as *const (), 99i32, 4u64) as *mut u8
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

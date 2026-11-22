@@ -80,14 +80,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn load_field() -> i64 {
 // CHECK-NEXT:     let mut v: i64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movq {1}+8(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             sym ops,
-// CHECK-NEXT:             options(nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movq {1}+8(%rip), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 sym ops,
+// CHECK-NEXT:                 options(nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
@@ -95,14 +97,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn load_element() -> i64 {
 // CHECK-NEXT:     let mut v: i64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movq {1}+32(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             sym ops,
-// CHECK-NEXT:             options(nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movq {1}+32(%rip), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 sym ops,
+// CHECK-NEXT:                 options(nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
@@ -131,14 +135,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn load_pointee(mut p: *const i64) -> i64 {
 // CHECK-NEXT:     let mut v: i64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movq ({1:r}), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) p,
-// CHECK-NEXT:             options(nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movq ({1:r}), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) p,
+// CHECK-NEXT:                 options(nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         v = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v

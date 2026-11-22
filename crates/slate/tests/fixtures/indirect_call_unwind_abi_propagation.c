@@ -112,7 +112,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn dispatcher(x: i32, y: i32) {
-// CHECK-NEXT:     unsafe { unsafe { g_callback }.unwrap()(x) };
+// CHECK-NEXT:     unsafe { g_callback.unwrap()(x) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

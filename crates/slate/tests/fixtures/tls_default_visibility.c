@@ -98,17 +98,9 @@ int main(void) {
 // CHECK-NEXT:     let out: *mut i64 = argument as *mut i64;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *out.add(0) = thread_index;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         thread_index = 42;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *out.add(1) = unsafe { reusable_buffer }.is_null() as i64;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *out.add(1) = reusable_buffer.is_null() as i64;
 // CHECK-NEXT:         *out.add(2) = reusable_used as i64;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *out.add(3) = detect() as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     core::ptr::null_mut::<()>()
@@ -117,11 +109,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         thread_index = 7;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         reusable_buffer = core::ptr::addr_of_mut!(storage) as *mut i8;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         reusable_used = 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut seen: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);

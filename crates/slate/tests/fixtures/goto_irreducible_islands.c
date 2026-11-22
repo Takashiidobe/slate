@@ -45,54 +45,52 @@ done:
 // CHECK-NEXT:     let mut x: i32 = 0;
 // CHECK-NEXT:     let mut y: i32 = 0;
 // CHECK-NEXT:     let mut __slate_state: usize = 6usize;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         if core::ptr::read_volatile(core::ptr::addr_of!(pick_a)) != 0 {
-// CHECK-NEXT:             __slate_state = 4;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             __slate_state = 5;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 4 => {
-// CHECK-NEXT:                     x += 2;
-// CHECK-NEXT:                     if x < 4 {
-// CHECK-NEXT:                         __slate_state = 5;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
+// CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(pick_a)) }) != 0 {
+// CHECK-NEXT:         __slate_state = 4;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         __slate_state = 5;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         match __slate_state {
+// CHECK-NEXT:             4 => {
+// CHECK-NEXT:                 x += 2;
+// CHECK-NEXT:                 if x < 4 {
+// CHECK-NEXT:                     __slate_state = 5;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     x += 1;
-// CHECK-NEXT:                     if x < 3 {
-// CHECK-NEXT:                         __slate_state = 4;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 x += 1;
+// CHECK-NEXT:                 if x < 3 {
+// CHECK-NEXT:                     __slate_state = 4;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if core::ptr::read_volatile(core::ptr::addr_of!(pick_b)) != 0 {
-// CHECK-NEXT:             __slate_state = 1;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             __slate_state = 2;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     y += 5;
-// CHECK-NEXT:                     if y < 11 {
-// CHECK-NEXT:                         __slate_state = 2;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(pick_b)) }) != 0 {
+// CHECK-NEXT:         __slate_state = 1;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         __slate_state = 2;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         match __slate_state {
+// CHECK-NEXT:             1 => {
+// CHECK-NEXT:                 y += 5;
+// CHECK-NEXT:                 if y < 11 {
+// CHECK-NEXT:                     __slate_state = 2;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     y += 3;
-// CHECK-NEXT:                     if y < 9 {
-// CHECK-NEXT:                         __slate_state = 1;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 y += 3;
+// CHECK-NEXT:                 if y < 9 {
+// CHECK-NEXT:                     __slate_state = 1;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }

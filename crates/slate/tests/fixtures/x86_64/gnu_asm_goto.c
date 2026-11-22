@@ -35,8 +35,8 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_asm_goto(mut value: i32) -> i32 {
+// CHECK-NEXT:     let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "testl {0:e}, {0:e}\n\tjz {1}",
 // CHECK-NEXT:             in(reg) value as u32,
@@ -45,19 +45,19 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
-// CHECK-NEXT:         if __slate_asm_target {
-// CHECK-NEXT:             return 13;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             return 11;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if __slate_asm_target {
+// CHECK-NEXT:         return 13;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         return 11;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_asm_goto_output(value: i32) -> i32 {
 // CHECK-NEXT:     let mut output: i32 = value;
+// CHECK-NEXT:     let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:     let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "testl {0:e}, {0:e}\n\tjz {1}",
 // CHECK-NEXT:             inlateout(reg) output as u32 => [[T_0]],
@@ -66,12 +66,12 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
-// CHECK-NEXT:         output = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
-// CHECK-NEXT:         if __slate_asm_target {
-// CHECK-NEXT:             return output + 2;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             return output + 1;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     output = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:     if __slate_asm_target {
+// CHECK-NEXT:         return output + 2;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         return output + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

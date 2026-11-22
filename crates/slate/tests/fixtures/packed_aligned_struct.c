@@ -39,12 +39,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut s: PackedAligned = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (core::ptr::addr_of_mut!(s.a) as *mut i8).write_unaligned(7i8);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (core::ptr::addr_of_mut!(s.b) as *mut i32).write_unaligned(4660i32);
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { (core::ptr::addr_of_mut!(s.a) as *mut i8).write_unaligned(7i8) };
+// CHECK-NEXT:     unsafe { (core::ptr::addr_of_mut!(s.b) as *mut i32).write_unaligned(4660i32) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -70,8 +66,8 @@ int main(void) {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!(s.b) as *mut i32)
 // CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 (core::ptr::addr_of!(s.b) as *const i32).read_unaligned() + 1,
-// CHECK-NEXT:             );
-// CHECK-NEXT:     }
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

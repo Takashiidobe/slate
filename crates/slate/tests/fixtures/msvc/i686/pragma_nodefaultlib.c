@@ -38,8 +38,8 @@ int main(void) {
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     if unsafe { GetModuleHandleA(c"ucrtbase.dll".as_ptr()) }.is_null() {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:     if unsafe { GetModuleHandleA(c"ucrtbase.dll".as_ptr()).is_null() } {
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

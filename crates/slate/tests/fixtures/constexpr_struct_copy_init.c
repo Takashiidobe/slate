@@ -88,7 +88,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{} {}", unsafe { alias.a }, unsafe { base.c[1] });
+// CHECK-NEXT:     println!("{} {}", alias.a, base.c[1]);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

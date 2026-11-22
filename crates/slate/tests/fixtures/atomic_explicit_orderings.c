@@ -73,22 +73,24 @@ int main(void) {
 // CHECK-NEXT:             .swap(5i32, core::sync::atomic::Ordering::Acquire)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut expected: i32 = 5;
-// CHECK-NEXT:     let ok: i32 = (unsafe {
+// CHECK-NEXT:     let ok: i32 = ({
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = core::ptr::addr_of_mut!(expected);
-// CHECK-NEXT:         match core::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(a) as *mut i32,
-// CHECK-NEXT:             )
-// CHECK-NEXT:             .compare_exchange(
-// CHECK-NEXT:                 *[[T_0]],
-// CHECK-NEXT:                 8i32,
-// CHECK-NEXT:                 core::sync::atomic::Ordering::AcqRel,
-// CHECK-NEXT:                 core::sync::atomic::Ordering::Acquire,
-// CHECK-NEXT:             ) {
-// CHECK-NEXT:             Ok(_) => true,
-// CHECK-NEXT:             Err([[T_1:__t[0-9]+]]) => {
-// CHECK-NEXT:                 *[[T_0]] = [[T_1]];
-// CHECK-NEXT:                 false
-// CHECK-NEXT:             },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             match core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:                     core::ptr::addr_of_mut!(a) as *mut i32,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:                 .compare_exchange(
+// CHECK-NEXT:                     *[[T_0]],
+// CHECK-NEXT:                     8i32,
+// CHECK-NEXT:                     core::sync::atomic::Ordering::AcqRel,
+// CHECK-NEXT:                     core::sync::atomic::Ordering::Acquire,
+// CHECK-NEXT:                 ) {
+// CHECK-NEXT:                 Ok(_) => true,
+// CHECK-NEXT:                 Err([[T_1:__t[0-9]+]]) => {
+// CHECK-NEXT:                     *[[T_0]] = [[T_1]];
+// CHECK-NEXT:                     false
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }) as i32;
 // CHECK-NEXT:     core::sync::atomic::fence(core::sync::atomic::Ordering::Release);

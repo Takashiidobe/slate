@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT:     n: u64,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*ctx).loaded = unsafe { (*ctx).loaded }.wrapping_sub(n);
+// CHECK-NEXT:         (*ctx).loaded = (*ctx).loaded.wrapping_sub(n);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -61,17 +61,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let ctx: *mut __SlateRecord_heap_box_param_raw_borrow_c_7 = (unsafe {
-// CHECK-NEXT:         calloc(
+// CHECK-NEXT:     let ctx: *mut __SlateRecord_heap_box_param_raw_borrow_c_7 = unsafe {
+// CHECK-NEXT:         (calloc(
 // CHECK-NEXT:             1u64 as usize,
 // CHECK-NEXT:             (core::mem::size_of::<__SlateRecord_heap_box_param_raw_borrow_c_7>() as u64)
 // CHECK-NEXT:                 as usize,
-// CHECK-NEXT:         ) as *mut ()
-// CHECK-NEXT:     }) as *mut __SlateRecord_heap_box_param_raw_borrow_c_7;
+// CHECK-NEXT:         ) as *mut ()) as *mut __SlateRecord_heap_box_param_raw_borrow_c_7
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*ctx).loaded = 5;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*ctx).size = 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

@@ -111,14 +111,16 @@ int main(int argc, char **argv) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn rip_rel__const1(mut p: *mut ()) -> *mut () {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq {1}(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             sym page,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "leaq {1}(%rip), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 sym page,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         p = unsafe { core::mem::transmute::<u64, *mut ()>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     p
@@ -126,14 +128,16 @@ int main(int argc, char **argv) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn rip_rel__const2(mut p: *mut ()) -> *mut () {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq {1}+3(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             sym table,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "leaq {1}+3(%rip), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 sym table,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         p = unsafe { core::mem::transmute::<u64, *mut ()>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     p
@@ -142,14 +146,16 @@ int main(int argc, char **argv) {
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn rip_rel_after__const3(mut p: *mut ()) -> *mut i8 {
 // CHECK-NEXT:     let original: *mut () = p;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq {1}+1(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             sym table,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "leaq {1}+1(%rip), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 sym table,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         p = unsafe { core::mem::transmute::<u64, *mut ()>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { (p as *mut i8).offset(((original == p) as i32) as isize) }
@@ -163,13 +169,12 @@ int main(int argc, char **argv) {
 // CHECK-NEXT:     println!("{} {} {}", test_bit((argc + 2) as i64), test_bit(3i64), test_bit(4i64));
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         (rip_rel__const1(((unsafe { core::ptr::addr_of_mut!(page) }) as u64) as *mut ())
-// CHECK-NEXT:             == ((unsafe { core::ptr::addr_of_mut!(page) }) as *mut ())) as i32,
+// CHECK-NEXT:         (rip_rel__const1((core::ptr::addr_of_mut!(page) as u64) as *mut ())
+// CHECK-NEXT:             == (core::ptr::addr_of_mut!(page) as *mut ())) as i32,
 // CHECK-NEXT:         (rip_rel__const2(
-// CHECK-NEXT:             (unsafe { (core::ptr::addr_of_mut!(table.0) as *mut i8).add(3) }) as *mut (),
-// CHECK-NEXT:         )
-// CHECK-NEXT:             == ((unsafe { (core::ptr::addr_of_mut!(table.0) as *mut i8).add(3) })
-// CHECK-NEXT:                 as *mut ())) as i32
+// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(table.0) as *mut i8).add(3) as *mut () },
+// CHECK-NEXT:         ) == unsafe { (core::ptr::addr_of_mut!(table.0) as *mut i8).add(3) as *mut () })
+// CHECK-NEXT:             as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

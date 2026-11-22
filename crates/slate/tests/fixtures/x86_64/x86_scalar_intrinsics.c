@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn instructions() -> i32 {
-// CHECK-NEXT:     let flags: u64 = (unsafe { __slate_intrinsic_9f2888a0dbec63c7() }) as u64;
+// CHECK-NEXT:     let flags: u64 = unsafe { __slate_intrinsic_9f2888a0dbec63c7() as u64 };
 // CHECK-NEXT:     unsafe { __slate_intrinsic_c6a72ac15744325c(flags as i64) };
 // CHECK-NEXT:     unsafe { __slate_intrinsic_cf7232a07549d448() };
 // CHECK-NEXT:     unsafe { __slate_intrinsic_6f7c5327cf9e8272() };

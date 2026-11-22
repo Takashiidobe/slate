@@ -91,9 +91,10 @@ int main(int argc, char **argv, char **envp) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "environ after argv {}",
-// CHECK-NEXT:         (unsafe { *unsafe { environ }.add(0) }.is_null()
-// CHECK-NEXT:             || (unsafe { *unsafe { environ }.add(0) })
-// CHECK-NEXT:                 > unsafe { *argv.offset((argc - 1) as isize) }) as i32
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             ((*environ.add(0)).is_null()
+// CHECK-NEXT:                 || *environ.add(0) > *argv.offset((argc - 1) as isize)) as i32
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

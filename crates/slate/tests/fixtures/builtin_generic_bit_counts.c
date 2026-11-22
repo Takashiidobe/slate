@@ -66,52 +66,65 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "uc {} {} {}",
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(uc)) }.leading_zeros()
-// CHECK-NEXT:             as i32,
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(uc)) }.trailing_zeros()
-// CHECK-NEXT:             as i32,
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(uc)) }.count_ones() as i32
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(uc)).leading_zeros() as i32
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(uc)).trailing_zeros() as i32
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(uc)).count_ones() as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "us {} {} {}",
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(us)) }.leading_zeros()
-// CHECK-NEXT:             as i32,
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(us)) }.trailing_zeros()
-// CHECK-NEXT:             as i32,
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(us)) }.count_ones() as i32
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(us)).leading_zeros() as i32
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(us)).trailing_zeros() as i32
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(us)).count_ones() as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "ui {} {} {}",
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ui)) }.leading_zeros()
-// CHECK-NEXT:             as i32,
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ui)) }.trailing_zeros()
-// CHECK-NEXT:             as i32,
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ui)) }.count_ones() as i32
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ui)).leading_zeros() as i32
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ui)).trailing_zeros() as i32
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ui)).count_ones() as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "ul {} {} {}",
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ul)) }.leading_zeros()
-// CHECK-NEXT:             as i32,
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ul)) }.trailing_zeros()
-// CHECK-NEXT:             as i32,
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ul)) }.count_ones() as i32
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ul)).leading_zeros() as i32
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ul)).trailing_zeros() as i32
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ul)).count_ones() as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "ull {} {} {}",
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ull)) }.leading_zeros()
-// CHECK-NEXT:             as i32,
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ull)) }.trailing_zeros()
-// CHECK-NEXT:             as i32,
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ull)) }.count_ones() as i32
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ull)).leading_zeros() as i32
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(ull)).trailing_zeros() as i32
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ull)).count_ones() as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "u128 {} {} {}",
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(u128)) }.leading_zeros()
-// CHECK-NEXT:             as i32,
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(u128)) }.trailing_zeros()
-// CHECK-NEXT:             as i32,
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(u128)) }.count_ones()
-// CHECK-NEXT:             as i32
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(u128)).leading_zeros() as i32
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(u128)).trailing_zeros() as i32
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(u128)).count_ones() as i32
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "zero {} {} {}",
@@ -125,8 +138,9 @@ int main(void) {
 // CHECK-NEXT:             let [[T_3:__t[0-9]+]] = 99i32;
 // CHECK-NEXT:             if [[T_2]] == 0 { [[T_3]] } else { [[T_2]].trailing_zeros() as i32 }
 // CHECK-NEXT:         },
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(zero)) }.count_ones()
-// CHECK-NEXT:             as i32
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(zero)).count_ones() as i32
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "nonzero {} {}",

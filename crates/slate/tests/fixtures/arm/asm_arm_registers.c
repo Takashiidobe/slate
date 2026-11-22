@@ -79,32 +79,39 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn pinned_core(mut first: i32, mut second: i32) -> i32 {
+// CHECK-NEXT: fn pinned_core(a: i32, b: i32) -> i32 {
+// CHECK-NEXT:     let mut first: i32 = a;
+// CHECK-NEXT:     let mut second: i32 = b;
 // CHECK-NEXT:     let mut result: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "add r14, r0, r4",
-// CHECK-NEXT:             lateout("r14") [[T_0]],
-// CHECK-NEXT:             in("r0") first as u32,
-// CHECK-NEXT:             in("r4") second as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "add r14, r0, r4",
+// CHECK-NEXT:                 lateout("r14") [[T_0]],
+// CHECK-NEXT:                 in("r0") first as u32,
+// CHECK-NEXT:                 in("r4") second as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn pinned_single(mut r#in: f32) -> f32 {
+// CHECK-NEXT: fn pinned_single(value: f32) -> f32 {
+// CHECK-NEXT:     let mut r#in: f32 = value;
 // CHECK-NEXT:     let mut result: f32 = 0 as f32;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "vadd.f32 {0}, s3, s3",
-// CHECK-NEXT:             lateout(sreg) [[T_0]],
-// CHECK-NEXT:             in("s3") unsafe { core::mem::transmute::<f32, u32>(r#in) },
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "vadd.f32 {0}, s3, s3",
+// CHECK-NEXT:                 lateout(sreg) [[T_0]],
+// CHECK-NEXT:                 in("s3") core::mem::transmute::<f32, u32>(r#in),
+// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, f32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
@@ -112,43 +119,49 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn double_register(mut value: f64) -> f64 {
 // CHECK-NEXT:     let mut result: f64 = 0 as f64;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "vadd.f64 {0}, {1}, {1}",
-// CHECK-NEXT:             lateout(dreg_low16) [[T_0]],
-// CHECK-NEXT:             in(dreg_low16) unsafe { core::mem::transmute::<f64, u64>(value) },
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "vadd.f64 {0}, {1}, {1}",
+// CHECK-NEXT:                 lateout(dreg_low16) [[T_0]],
+// CHECK-NEXT:                 in(dreg_low16) core::mem::transmute::<f64, u64>(value),
+// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, f64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn reserved_clobbers(mut value: i32) -> i32 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov {1}, r6\nmov r6, #0\n\tadd {0}, {0}, #2\nmov r6, {1}",
-// CHECK-NEXT:             inlateout(reg) value as u32 => [[T_0]],
-// CHECK-NEXT:             out(reg) _,
-// CHECK-NEXT:             options(nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov {1}, r6\nmov r6, #0\n\tadd {0}, {0}, #2\nmov r6, {1}",
+// CHECK-NEXT:                 inlateout(reg) value as u32 => [[T_0]],
+// CHECK-NEXT:                 out(reg) _,
+// CHECK-NEXT:                 options(nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn core_clobbers(mut value: i32) -> i32 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov r1, #7\n\tmov ip, #9\n\tadd {0}, {0}, r1\n\tadd {0}, {0}, ip",
-// CHECK-NEXT:             inlateout(reg) value as u32 => [[T_0]],
-// CHECK-NEXT:             out("r1") _,
-// CHECK-NEXT:             out("r12") _,
-// CHECK-NEXT:             options(nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov r1, #7\n\tmov ip, #9\n\tadd {0}, {0}, r1\n\tadd {0}, {0}, ip",
+// CHECK-NEXT:                 inlateout(reg) value as u32 => [[T_0]],
+// CHECK-NEXT:                 out("r1") _,
+// CHECK-NEXT:                 out("r12") _,
+// CHECK-NEXT:                 options(nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
@@ -169,15 +182,17 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn immediates(mut value: i32) -> i32 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "add {0}, {0}, #{1} @ {1} #{2}",
-// CHECK-NEXT:             inlateout(reg) value as u32 => [[T_0]],
-// CHECK-NEXT:             const 255i32,
-// CHECK-NEXT:             const 4i32,
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "add {0}, {0}, #{1} @ {1} #{2}",
+// CHECK-NEXT:                 inlateout(reg) value as u32 => [[T_0]],
+// CHECK-NEXT:                 const 255i32,
+// CHECK-NEXT:                 const 4i32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
@@ -187,18 +202,20 @@ int main(void) {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     let mut f: f32 = 1.0f32;
 // CHECK-NEXT:     let mut d: f64 = 2.0f64;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov {0}, {1}\n@ {2}\n@ {3}\n@ {4}\n@ {5}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) value as u32,
-// CHECK-NEXT:             in(sreg) unsafe { core::mem::transmute::<f32, u32>(f) },
-// CHECK-NEXT:             in(dreg_low16) unsafe { core::mem::transmute::<f64, u64>(d) },
-// CHECK-NEXT:             in(reg) core::ptr::addr_of!(value),
-// CHECK-NEXT:             const 3i32,
-// CHECK-NEXT:             options(pure, readonly, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov {0}, {1}\n@ {2}\n@ {3}\n@ {4}\n@ {5}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) value as u32,
+// CHECK-NEXT:                 in(sreg) core::mem::transmute::<f32, u32>(f),
+// CHECK-NEXT:                 in(dreg_low16) core::mem::transmute::<f64, u64>(d),
+// CHECK-NEXT:                 in(reg) core::ptr::addr_of!(value),
+// CHECK-NEXT:                 const 3i32,
+// CHECK-NEXT:                 options(pure, readonly, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result

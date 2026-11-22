@@ -45,9 +45,9 @@ int main(void) {
 // CHECK-NEXT:         < (core::mem::size_of::<[u64; 7]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<u64>() as u64) {
 // CHECK-NEXT:         let __slate_printf_arg0 = unsafe {
-// CHECK-NEXT:                 core::ptr::read_volatile(values.0.as_mut_ptr().add(i as usize))
-// CHECK-NEXT:             }
-// CHECK-NEXT:             .leading_zeros() as i32;
+// CHECK-NEXT:             core::ptr::read_volatile(values.0.as_mut_ptr().add(i as usize))
+// CHECK-NEXT:                 .leading_zeros() as i32
+// CHECK-NEXT:         };
 // CHECK-NEXT:         print!("{} ", __slate_printf_arg0);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         i = i.wrapping_add(1);
@@ -56,10 +56,12 @@ int main(void) {
 // CHECK-NEXT:     let wide: u64 = 1;
 // CHECK-NEXT:     print!(
 // CHECK-NEXT:         "{} {} {} ",
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(small)) }.leading_zeros()
-// CHECK-NEXT:             as i32,
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(wide)) }.leading_zeros()
-// CHECK-NEXT:             as i32,
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(small)).leading_zeros() as i32
+// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(wide)).leading_zeros() as i32
+// CHECK-NEXT:         },
 // CHECK-NEXT:         next().leading_zeros() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

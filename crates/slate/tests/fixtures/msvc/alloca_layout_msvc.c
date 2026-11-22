@@ -162,8 +162,8 @@ int main(void) {
 // CHECK-NEXT:     let c: *mut i8 = (__slate_alloca::alloca((n as u64) as usize, 16usize) as *mut ())
 // CHECK-NEXT:         as *mut i8;
 // CHECK-NEXT:     let step: i32 = n + 16 - 1 & -16;
-// CHECK-NEXT:     if ((unsafe { a.offset_from(b as *mut i8) }) as i64) != (step as i64)
-// CHECK-NEXT:         || ((unsafe { b.offset_from(c as *mut i8) }) as i64) != (step as i64)
+// CHECK-NEXT:     if (unsafe { a.offset_from(b as *mut i8) as i64 }) != (step as i64)
+// CHECK-NEXT:         || (unsafe { b.offset_from(c as *mut i8) as i64 }) != (step as i64)
 // CHECK-NEXT:         || (c as u64) % 16 != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
@@ -174,7 +174,7 @@ int main(void) {
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (core::mem::size_of::<[i32; 10]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
-// CHECK-NEXT:         probe(unsafe { sizes.0[i as usize] });
+// CHECK-NEXT:         probe(sizes.0[i as usize]);
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

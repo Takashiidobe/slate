@@ -293,7 +293,7 @@ int main(void) {
 // CHECK-NEXT:             core::ptr::addr_of_mut!(eptr),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if ((unsafe { *eptr }) as i32) != 0 || __slate_f80_is_fp_class(value, 3) {
+// CHECK-NEXT:     if (unsafe { *eptr as i32 }) != 0 || __slate_f80_is_fp_class(value, 3) {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if !dp.is_null() {

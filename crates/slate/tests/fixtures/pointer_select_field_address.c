@@ -43,13 +43,15 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn add(isDirect: i32, amount: u64) {
-// CHECK-NEXT:     let target: *mut u64 = if isDirect != 0 {
-// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(acc.direct) }
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(acc.indirect) }
+// CHECK-NEXT:     let target: *mut u64 = unsafe {
+// CHECK-NEXT:         if isDirect != 0 {
+// CHECK-NEXT:             core::ptr::addr_of_mut!(acc.direct)
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             core::ptr::addr_of_mut!(acc.indirect)
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *target = unsafe { *target }.wrapping_add(amount);
+// CHECK-NEXT:         *target = (*target).wrapping_add(amount);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

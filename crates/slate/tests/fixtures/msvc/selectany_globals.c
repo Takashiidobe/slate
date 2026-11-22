@@ -206,28 +206,26 @@ int main(void) { return 0; }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let raw: *const u8 = (unsafe { core::ptr::addr_of!(clsid) }) as *const u8;
-// CHECK-NEXT:     if (unsafe { clsid.Data1 }) != 1010256448
-// CHECK-NEXT:         || ((unsafe { clsid.Data2 }) as i32) != 47844
-// CHECK-NEXT:         || ((unsafe { clsid.Data3 }) as i32) != 4559
-// CHECK-NEXT:         || ((unsafe { clsid.Data4[7] }) as i32) != 238 {
+// CHECK-NEXT:     let raw: *const u8 = core::ptr::addr_of!(clsid) as *const u8;
+// CHECK-NEXT:     if (unsafe { clsid.Data1 }) != 1010256448 || (unsafe { clsid.Data2 as i32 }) != 47844
+// CHECK-NEXT:         || (unsafe { clsid.Data3 as i32 }) != 4559
+// CHECK-NEXT:         || (unsafe { clsid.Data4[7] as i32 }) != 238 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if ((unsafe { *raw.add(0) }) as i32) != 64
-// CHECK-NEXT:         || ((unsafe { *raw.add(4) }) as i32) != 228
-// CHECK-NEXT:         || ((unsafe { *raw.add(15) }) as i32) != 238
+// CHECK-NEXT:     if (unsafe { *raw.add(0) as i32 }) != 64 || (unsafe { *raw.add(4) as i32 }) != 228
+// CHECK-NEXT:         || (unsafe { *raw.add(15) as i32 }) != 238
 // X86_64-PC-WINDOWS-MSVC-NEXT:         || (core::mem::size_of::<__SlateRecord_selectany_globals_c_9>() as u64) != 16 {
 // I686-PC-WINDOWS-MSVC-NEXT:         || (core::mem::size_of::<__SlateRecord_selectany_globals_c_9>() as u32) != 16 {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         || (core::mem::size_of::<__SlateRecord_selectany_globals_c_9>() as u64) != 16 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if bump(unsafe { core::ptr::addr_of_mut!(counter) }) != 42
-// CHECK-NEXT:         || (unsafe { counter }) != 42 || (unsafe { max_buffers }) != 8 {
+// CHECK-NEXT:     if bump(core::ptr::addr_of_mut!(counter)) != 42 || (unsafe { counter }) != 42
+// CHECK-NEXT:         || (unsafe { max_buffers }) != 8 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if ((unsafe { mixed.tag }) as i32) != 109 || (unsafe { mixed.scale }) != -2.5f64
-// CHECK-NEXT:         || ((unsafe { mixed.pair[0] }) as i32) != -7
-// CHECK-NEXT:         || ((unsafe { mixed.pair[1] }) as i32) != 300 {
+// CHECK-NEXT:     if (unsafe { mixed.tag as i32 }) != 109 || (unsafe { mixed.scale }) != -2.5f64
+// CHECK-NEXT:         || (unsafe { mixed.pair[0] as i32 }) != -7
+// CHECK-NEXT:         || (unsafe { mixed.pair[1] as i32 }) != 300 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
@@ -239,7 +237,7 @@ int main(void) { return 0; }
 // CHECK-NEXT:     if (unsafe { word.word }) != 67305985 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if ((unsafe { core::ptr::addr_of_mut!(aligned) }) as u64) & 31 != 0
+// CHECK-NEXT:     if (core::ptr::addr_of_mut!(aligned) as u64) & 31 != 0
 // CHECK-NEXT:         || (unsafe { aligned }) != -1 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
@@ -251,16 +249,15 @@ int main(void) { return 0; }
 // CHECK-NEXT:         partial[5] = 9;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { partial[5] }) != 9 || (unsafe { ratio }) != 0.75f32
-// CHECK-NEXT:         || ((unsafe { zeroed[0] }) as i32) | ((unsafe { zeroed[1] }) as i32)
-// CHECK-NEXT:             | ((unsafe { zeroed[2] }) as i32) != 0 {
+// CHECK-NEXT:         || (unsafe { (zeroed[0] as i32) | (zeroed[1] as i32) | (zeroed[2] as i32) })
+// CHECK-NEXT:             != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT:     if ((const { core::mem::size_of::<[i8; 6]>() }) as u64) != 6
 // I686-PC-WINDOWS-MSVC-NEXT:     if ((const { core::mem::size_of::<[i8; 6]>() }) as u32) != 6
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     if ((const { core::mem::size_of::<[i8; 6]>() }) as u64) != 6
-// CHECK-NEXT:         || ((unsafe { banner[0] }) as i32) != 115
-// CHECK-NEXT:         || ((unsafe { banner[4] }) as i32) != 101
-// CHECK-NEXT:         || ((unsafe { banner[5] }) as i32) != 0 {
+// CHECK-NEXT:         || (unsafe { banner[0] as i32 }) != 115 || (unsafe { banner[4] as i32 }) != 101
+// CHECK-NEXT:         || (unsafe { banner[5] as i32 }) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

@@ -82,12 +82,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *(*(*t).rows.as_mut_ptr().offset(i as isize)).as_mut_ptr().add(0) = (97 + i)
 // CHECK-NEXT:                 as i8;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *(*(*t).rows.as_mut_ptr().offset(i as isize)).as_mut_ptr().add(1) = (48 + i)
 // CHECK-NEXT:                 as i8;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *(*(*t).rows.as_mut_ptr().offset(i as isize)).as_mut_ptr().add(2) = 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

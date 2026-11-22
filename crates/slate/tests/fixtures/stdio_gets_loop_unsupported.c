@@ -71,12 +71,12 @@ int main(void) {
 // CHECK-NEXT:     let mut line: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     let mut count: i32 = 0;
 // CHECK-NEXT:     while !unsafe {
-// CHECK-NEXT:             fgets(line.0.as_mut_ptr(), core::mem::size_of::<[i8; 64]>() as i32, g)
-// CHECK-NEXT:         }
-// CHECK-NEXT:         .is_null() {
-// CHECK-NEXT:         count += (unsafe {
-// CHECK-NEXT:             strlen((line.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as u64
-// CHECK-NEXT:         }) as i32;
+// CHECK-NEXT:         fgets(line.0.as_mut_ptr(), core::mem::size_of::<[i8; 64]>() as i32, g).is_null()
+// CHECK-NEXT:     } {
+// CHECK-NEXT:         count += unsafe {
+// CHECK-NEXT:             (strlen((line.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char)
+// CHECK-NEXT:                 as u64) as i32
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { slate_support::fclose(g) };
 // CHECK-NEXT:     println!("{}", count);

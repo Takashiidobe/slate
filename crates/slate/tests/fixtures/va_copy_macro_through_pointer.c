@@ -56,7 +56,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn emit(vaf: *mut va_format) {
 // CHECK-NEXT:     let mut va: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     va_copy!(va, *unsafe { (*vaf).va });
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         va_copy!(va, *(*vaf).va);
+// CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { vprintf((*vaf).fmt, va.clone()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

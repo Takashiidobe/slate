@@ -166,7 +166,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(target_os = "freebsd")]
 // CHECK-NEXT: fn __getCurrentRuneLocale() -> *const __SlateRecord_runetype_h_82 {
-// CHECK-NEXT:     if !unsafe { _ThreadRuneLocale }.is_null() {
+// CHECK-NEXT:     if !unsafe { _ThreadRuneLocale.is_null() } {
 // CHECK-NEXT:         return unsafe { _ThreadRuneLocale };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { _CurrentRuneLocale }
@@ -255,7 +255,7 @@ int main(void) {
 // CHECK-NEXT:     if _c < 0 || _c >= 1i32 << 8i32 {
 // CHECK-NEXT:         0
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         (((unsafe { _DefaultRuneLocale.__runetype[_c as usize] }) as c_ulong) & _f != 0)
+// CHECK-NEXT:         ((unsafe { _DefaultRuneLocale.__runetype[_c as usize] as c_ulong }) & _f != 0)
 // CHECK-NEXT:             as i32
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -263,7 +263,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(target_os = "macos")]
 // CHECK-NEXT: fn __istype(_c: i32, _f: c_ulong) -> i32 {
 // CHECK-NEXT:     let [[V_0]]: i32 = if isascii(_c) != 0 {
-// CHECK-NEXT:         (((unsafe { _DefaultRuneLocale.__runetype[_c as usize] }) as c_ulong) & _f != 0)
+// CHECK-NEXT:         ((unsafe { _DefaultRuneLocale.__runetype[_c as usize] as c_ulong }) & _f != 0)
 // CHECK-NEXT:             as i32
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         ((unsafe { __maskrune(_c, _f) }) != 0) as i32
@@ -348,8 +348,7 @@ int main(void) {
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ) + unsafe { *(__errno_location() as *mut i32) }
-// CHECK-NEXT:             + ((((unsafe { *unsafe { *__ctype_b_loc() }.add(97) }) as i32) & 32768 != 0)
-// CHECK-NEXT:                 as i32)
+// CHECK-NEXT:             + (((unsafe { *(*__ctype_b_loc()).add(97) as i32 }) & 32768 != 0) as i32)
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_env = "musl")]
 // CHECK-NEXT:     {
@@ -434,7 +433,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *position = [[V_3]] + 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         (((unsafe { *text.offset([[V_3]] as isize) }) as u32).wrapping_sub(33) < 94) as i32
+// CHECK-NEXT:         ((unsafe { (*text.offset([[V_3]] as isize) as u32).wrapping_sub(33) }) < 94) as i32
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ([[V_0]] != 0) as i32
 // CHECK-NEXT: }
@@ -501,7 +500,7 @@ int main(void) {
 // CHECK-NEXT:     let before: i32 = unsafe { *slate_support::errno_location() };
 // CHECK-NEXT:     let [[V_1]]: *mut i32 = unsafe { slate_support::errno_location() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] = *[[V_1]] + 1;
+// CHECK-NEXT:         *[[V_1]] += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let missing: *mut slate_support::FILE = unsafe {
 // CHECK-NEXT:         slate_support::fopen(c"/nonexistent/slate".as_ptr(), c"r".as_ptr())

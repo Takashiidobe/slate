@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if argc == 1 {
 // CHECK-NEXT:         0
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:         0
 // CHECK-NEXT:     };
 // CHECK-NEXT:     r = [[V_0]];

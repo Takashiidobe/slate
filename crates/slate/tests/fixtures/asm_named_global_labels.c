@@ -37,8 +37,8 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         bump(1i32),
-// CHECK-NEXT:         ((unsafe { core::ptr::addr_of!(slate_cs_end) as *const i8 })
-// CHECK-NEXT:             >= unsafe { core::ptr::addr_of!(slate_cs_start) as *const i8 }) as i32
+// CHECK-NEXT:         ((core::ptr::addr_of!(slate_cs_end) as *const i8)
+// CHECK-NEXT:             >= (core::ptr::addr_of!(slate_cs_start) as *const i8)) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

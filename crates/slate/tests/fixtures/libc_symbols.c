@@ -94,11 +94,9 @@ int main(void) {
 // CHECK-NEXT:             (values.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             3u64 as usize,
 // CHECK-NEXT:             (core::mem::size_of::<i32>() as u64) as usize,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>, Option<unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void) -> i32>>(
-// CHECK-NEXT:                     Some(compare),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*const (), *const ()) -> i32>, Option<unsafe extern "C" fn(*const core::ffi::c_void, *const core::ffi::c_void) -> i32>>(
+// CHECK-NEXT:                 Some(compare),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let process_id: Option<unsafe extern "C-unwind" fn() -> i32> = unsafe {

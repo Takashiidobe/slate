@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn offset_aligned(pointer: *mut ()) -> *mut () {
-// CHECK-NEXT:     (unsafe { (pointer as *mut i8).add(4) }) as *mut ()
+// CHECK-NEXT:     unsafe { (pointer as *mut i8).add(4) as *mut () }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -59,8 +59,6 @@ int main(void) {
 // CHECK-NEXT:         as *mut i32;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *values.add(0) = 7;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *values.add(1) = 9;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let second: *mut i32 = offset_aligned(values as *mut ()) as *mut i32;

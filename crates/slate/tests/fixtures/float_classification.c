@@ -72,17 +72,19 @@ int main(void) {
 // CHECK-NEXT:         bits: 2143289345,
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut values: __SlateAlign16<[f64; 9]> = __SlateAlign16(
-// CHECK-NEXT:         [
-// CHECK-NEXT:             0.0f64,
-// CHECK-NEXT:             -0.0f64,
-// CHECK-NEXT:             1.0f64,
-// CHECK-NEXT:             -2.0f64,
-// CHECK-NEXT:             2.2250738585072014e-308f64 / (2i32 as f64),
-// CHECK-NEXT:             unsafe { inf.value },
-// CHECK-NEXT:             -unsafe { inf.value },
-// CHECK-NEXT:             unsafe { nan.value },
-// CHECK-NEXT:             -unsafe { nan.value },
-// CHECK-NEXT:         ],
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             [
+// CHECK-NEXT:                 0.0f64,
+// CHECK-NEXT:                 -0.0f64,
+// CHECK-NEXT:                 1.0f64,
+// CHECK-NEXT:                 -2.0f64,
+// CHECK-NEXT:                 2.2250738585072014e-308f64 / (2i32 as f64),
+// CHECK-NEXT:                 inf.value,
+// CHECK-NEXT:                 -inf.value,
+// CHECK-NEXT:                 nan.value,
+// CHECK-NEXT:                 -nan.value,
+// CHECK-NEXT:             ]
+// CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..9i32 {
 // CHECK-NEXT:         let x: f64 = unsafe {
@@ -113,14 +115,16 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut small: __SlateAlign16<[f32; 6]> = __SlateAlign16(
-// CHECK-NEXT:         [
-// CHECK-NEXT:             0.0f32,
-// CHECK-NEXT:             -0.0f32,
-// CHECK-NEXT:             1.0f32,
-// CHECK-NEXT:             1.1754944e-38f32 / (2i32 as f32),
-// CHECK-NEXT:             unsafe { finf.value },
-// CHECK-NEXT:             unsafe { fnan.value },
-// CHECK-NEXT:         ],
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             [
+// CHECK-NEXT:                 0.0f32,
+// CHECK-NEXT:                 -0.0f32,
+// CHECK-NEXT:                 1.0f32,
+// CHECK-NEXT:                 1.1754944e-38f32 / (2i32 as f32),
+// CHECK-NEXT:                 finf.value,
+// CHECK-NEXT:                 fnan.value,
+// CHECK-NEXT:             ]
+// CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..6i32 {
 // CHECK-NEXT:         let x: f32 = unsafe {

@@ -43,11 +43,9 @@ int main(void) {
 // CHECK-NEXT: macro_rules! ASSIGN {
 // CHECK-NEXT:     ($d:expr, $e:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             if !$d.is_null() && !unsafe { (*$d).chan }.is_null() {
+// CHECK-NEXT:             if !$d.is_null() && !unsafe { (*$d).chan.is_null() } {
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     (*$e).band = (*(*$d).chan).band;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     (*$e).width = (*$d).width;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             } else {

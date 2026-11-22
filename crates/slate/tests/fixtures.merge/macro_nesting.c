@@ -144,8 +144,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     direct(4i32);
-// CHECK-NEXT:     nested(unsafe { core::ptr::addr_of!(tree) as *const code }, 0i32);
-// CHECK-NEXT:     nested(unsafe { core::ptr::addr_of!(tree) as *const code }, 1i32);
+// CHECK-NEXT:     nested(core::ptr::addr_of!(tree) as *const code, 0i32);
+// CHECK-NEXT:     nested(core::ptr::addr_of!(tree) as *const code, 1i32);
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -159,7 +159,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {}",
-// CHECK-NEXT:             (unsafe { buffer }) as i32,
+// CHECK-NEXT:             unsafe { buffer as i32 },
 // CHECK-NEXT:             unsafe { used },
 // CHECK-NEXT:             unsafe { total }
 // CHECK-NEXT:         );
@@ -177,7 +177,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         #[cfg(unix)]
 // CHECK-NEXT:         {
-// CHECK-NEXT:             println!("{}", (unsafe { bytes.0[i as usize] }) as i32);
+// CHECK-NEXT:             println!("{}", unsafe { bytes.0[i as usize] as i32 });
 // CHECK-NEXT:         }
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }
@@ -203,17 +203,13 @@ int main(void) {
 // CHECK-NEXT:         let val: i32 = index + 2;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             buffer = ((buffer as i32) | ((val as u16) as i32)) as u16;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         PUT_SHORT!(unsafe { buffer });
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = total + width;
+// CHECK-NEXT:             PUT_SHORT!(buffer);
+// CHECK-NEXT:             total += width;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             buffer = ((buffer as i32) | (((index + 2) as u16) as i32)) as u16;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = total + width;
+// CHECK-NEXT:             total += width;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     LOCAL_READS!(index);
@@ -295,8 +291,6 @@ int main(void) {
 // CHECK-NEXT:         let __v: i32 = unsafe { used };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             used = __v + 1;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             bytes.0[__v as usize] = ($c) as u8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
@@ -333,17 +327,13 @@ int main(void) {
 // CHECK-NEXT:             let __v: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 buffer = ((__v as i32) | ((val as u16) as i32)) as u16;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             PUT_SHORT!(unsafe { buffer });
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 PUT_SHORT!(buffer);
 // CHECK-NEXT:                 total = total + width;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 buffer = (([[V_0]] as i32) | ((($value) as u16) as i32)) as u16;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 total = total + width;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -352,10 +342,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SEND_CODE {
 // CHECK-NEXT:     ($c:expr, $tree:expr) => {
-// CHECK-NEXT:         SEND__2!(
-// CHECK-NEXT:             unsafe { (*$tree.offset(($c) as isize)).code },
-// CHECK-NEXT:             unsafe { (*$tree.offset(($c) as isize)).len }
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             SEND__2!(
+// CHECK-NEXT:                 (*$tree.offset(($c) as isize)).code,
+// CHECK-NEXT:                 (*$tree.offset(($c) as isize)).len
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -367,17 +359,13 @@ int main(void) {
 // CHECK-NEXT:             let __v: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 buffer = ((__v as i32) | ((val as u16) as i32)) as u16;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             PUT_SHORT!(unsafe { buffer });
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 PUT_SHORT!(buffer);
 // CHECK-NEXT:                 total = total + width;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             let [[V_0]]: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 buffer = (([[V_0]] as i32) | ((($value) as u16) as i32)) as u16;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 total = total + width;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
@@ -400,8 +388,6 @@ int main(void) {
 // CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             total = __v + leaked;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             total = total + leaked * 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };

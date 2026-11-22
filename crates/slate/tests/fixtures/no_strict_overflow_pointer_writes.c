@@ -74,11 +74,9 @@ int main(void) {
 // CHECK-NEXT:                 (b"\x02\x07\0".as_ptr() as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:                 2u64 as usize,
 // CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0 && ((unsafe { *rdesc.wrapping_offset(4 as isize) }) as i32) == 64 {
+// CHECK-NEXT:         }) == 0 && (unsafe { *rdesc.wrapping_offset(4 as isize) as i32 }) == 64 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *rdesc.wrapping_offset(1 as isize) = 255;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *rdesc.wrapping_offset(3 as isize) = 8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -120,13 +118,13 @@ int main(void) {
 // CHECK-NEXT:     let mut buf: [u8; 6] = [1, 2, 7, 4, 64, 0];
 // CHECK-NEXT:     let mut n: u32 = 6;
 // CHECK-NEXT:     let r: *const u8 = unsafe {
-// CHECK-NEXT:         unsafe { drv.fixup }.unwrap()(1i32, buf.as_mut_ptr(), core::ptr::addr_of_mut!(n))
+// CHECK-NEXT:         drv.fixup.unwrap()(1i32, buf.as_mut_ptr(), core::ptr::addr_of_mut!(n))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
-// CHECK-NEXT:         (unsafe { *r.wrapping_offset(1 as isize) }) as i32,
-// CHECK-NEXT:         (unsafe { *r.wrapping_offset(3 as isize) }) as i32,
-// CHECK-NEXT:         (unsafe { *r.wrapping_offset(4 as isize) }) as i32
+// CHECK-NEXT:         unsafe { *r.wrapping_offset(1 as isize) as i32 },
+// CHECK-NEXT:         unsafe { *r.wrapping_offset(3 as isize) as i32 },
+// CHECK-NEXT:         unsafe { *r.wrapping_offset(4 as isize) as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut x: i32 = 3;
 // CHECK-NEXT:     let mut slots: __SlateAlign16<[*mut i32; 3]> = __SlateAlign16([0 as *mut i32; 3]);
@@ -134,7 +132,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = core::ptr::addr_of_mut!(x);
 // CHECK-NEXT:         fill(slots.0.as_mut_slice(), [[T_0]])
 // CHECK-NEXT:     };
-// CHECK-NEXT:     println!("{}", unsafe { *slots.0[0] }.wrapping_add(unsafe { *slots.0[2] }));
+// CHECK-NEXT:     println!("{}", unsafe { (*slots.0[0]).wrapping_add(*slots.0[2]) });
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
 // CHECK-NEXT:     println!("{}", sum(values.0.as_slice()));
 // CHECK-NEXT:     0

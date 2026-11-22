@@ -70,28 +70,26 @@ int main(void) {
 // CHECK-NEXT:         total += i;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut __slate_state: usize = 3usize;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         if start != 0 {
-// CHECK-NEXT:             __slate_state = 1;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             __slate_state = 2;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     total += 2;
-// CHECK-NEXT:                     let [[V_0:__v[0-9]+]]: i32 = n - 1;
-// CHECK-NEXT:                     n = [[V_0]];
-// CHECK-NEXT:                     if [[V_0]] > 0 {
-// CHECK-NEXT:                         __slate_state = 2;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
+// CHECK-NEXT:     if start != 0 {
+// CHECK-NEXT:         __slate_state = 1;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         __slate_state = 2;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         match __slate_state {
+// CHECK-NEXT:             1 => {
+// CHECK-NEXT:                 total += 2;
+// CHECK-NEXT:                 let [[V_0:__v[0-9]+]]: i32 = n - 1;
+// CHECK-NEXT:                 n = [[V_0]];
+// CHECK-NEXT:                 if [[V_0]] > 0 {
+// CHECK-NEXT:                     __slate_state = 2;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     total += 1;
-// CHECK-NEXT:                     __slate_state = 1;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 total += 1;
+// CHECK-NEXT:                 __slate_state = 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -111,65 +109,63 @@ int main(void) {
 // CHECK-NEXT:                 break '[[SLATE_BREAK_0]];
 // CHECK-NEXT:             }
 // CHECK-NEXT:             let mut __slate_state: usize = 7usize;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 loop {
-// CHECK-NEXT:                     match __slate_state {
-// CHECK-NEXT:                         0 => {
-// CHECK-NEXT:                             break;
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         1 => {
-// CHECK-NEXT:                             let [[V_0]]: i32 = k;
-// CHECK-NEXT:                             k = [[V_0]] - 1;
-// CHECK-NEXT:                             if [[V_0]] > 0 {
-// CHECK-NEXT:                                 __slate_state = 6usize;
-// CHECK-NEXT:                                 continue;
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 __slate_state = 0usize;
-// CHECK-NEXT:                                 continue;
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         2 => {
-// CHECK-NEXT:                             break '[[SLATE_CONTINUE_0]];
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         3 => {
-// CHECK-NEXT:                             if sum % 7 == 0 {
-// CHECK-NEXT:                                 __slate_state = 2usize;
-// CHECK-NEXT:                                 continue;
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 __slate_state = 1usize;
-// CHECK-NEXT:                                 continue;
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         4 => {
-// CHECK-NEXT:                             break '[[SLATE_BREAK_0]];
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         5 => {
-// CHECK-NEXT:                             sum += 1;
-// CHECK-NEXT:                             if sum > 200 {
-// CHECK-NEXT:                                 __slate_state = 4usize;
-// CHECK-NEXT:                                 continue;
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 __slate_state = 3usize;
-// CHECK-NEXT:                                 continue;
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         6 => {
-// CHECK-NEXT:                             sum += 10;
-// CHECK-NEXT:                             __slate_state = 5usize;
+// CHECK-NEXT:             loop {
+// CHECK-NEXT:                 match __slate_state {
+// CHECK-NEXT:                     0 => {
+// CHECK-NEXT:                         break;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     1 => {
+// CHECK-NEXT:                         let [[V_0]]: i32 = k;
+// CHECK-NEXT:                         k = [[V_0]] - 1;
+// CHECK-NEXT:                         if [[V_0]] > 0 {
+// CHECK-NEXT:                             __slate_state = 6usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         } else {
+// CHECK-NEXT:                             __slate_state = 0usize;
 // CHECK-NEXT:                             continue;
 // CHECK-NEXT:                         }
-// CHECK-NEXT:                         7 => {
-// CHECK-NEXT:                             if start != 0 {
-// CHECK-NEXT:                                 __slate_state = 5usize;
-// CHECK-NEXT:                                 continue;
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 __slate_state = 6usize;
-// CHECK-NEXT:                                 continue;
-// CHECK-NEXT:                             }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     2 => {
+// CHECK-NEXT:                         break '[[SLATE_CONTINUE_0]];
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     3 => {
+// CHECK-NEXT:                         if sum % 7 == 0 {
+// CHECK-NEXT:                             __slate_state = 2usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         } else {
+// CHECK-NEXT:                             __slate_state = 1usize;
+// CHECK-NEXT:                             continue;
 // CHECK-NEXT:                         }
-// CHECK-NEXT:                         _ => {
-// CHECK-NEXT:                             unreachable!();
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     4 => {
+// CHECK-NEXT:                         break '[[SLATE_BREAK_0]];
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     5 => {
+// CHECK-NEXT:                         sum += 1;
+// CHECK-NEXT:                         if sum > 200 {
+// CHECK-NEXT:                             __slate_state = 4usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         } else {
+// CHECK-NEXT:                             __slate_state = 3usize;
+// CHECK-NEXT:                             continue;
 // CHECK-NEXT:                         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     6 => {
+// CHECK-NEXT:                         sum += 10;
+// CHECK-NEXT:                         __slate_state = 5usize;
+// CHECK-NEXT:                         continue;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     7 => {
+// CHECK-NEXT:                         if start != 0 {
+// CHECK-NEXT:                             __slate_state = 5usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         } else {
+// CHECK-NEXT:                             __slate_state = 6usize;
+// CHECK-NEXT:                             continue;
+// CHECK-NEXT:                         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     _ => {
+// CHECK-NEXT:                         unreachable!();
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
@@ -184,28 +180,26 @@ int main(void) {
 // CHECK-NEXT:     let mut out: i32 = 1;
 // CHECK-NEXT:     let mut seen: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut __slate_state: usize = 4usize;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         if n & 1 != 0 {
-// CHECK-NEXT:             __slate_state = 1;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             __slate_state = 2;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     seen = out + n;
-// CHECK-NEXT:                     let [[V_1:__v[0-9]+]]: i32 = n - 1;
-// CHECK-NEXT:                     n = [[V_1]];
-// CHECK-NEXT:                     if [[V_1]] > 0 {
-// CHECK-NEXT:                         __slate_state = 2;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
+// CHECK-NEXT:     if n & 1 != 0 {
+// CHECK-NEXT:         __slate_state = 1;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         __slate_state = 2;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         match __slate_state {
+// CHECK-NEXT:             1 => {
+// CHECK-NEXT:                 seen = out + n;
+// CHECK-NEXT:                 let [[V_1:__v[0-9]+]]: i32 = n - 1;
+// CHECK-NEXT:                 n = [[V_1]];
+// CHECK-NEXT:                 if [[V_1]] > 0 {
+// CHECK-NEXT:                     __slate_state = 2;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     out *= 2;
-// CHECK-NEXT:                     __slate_state = 1;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 out *= 2;
+// CHECK-NEXT:                 __slate_state = 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

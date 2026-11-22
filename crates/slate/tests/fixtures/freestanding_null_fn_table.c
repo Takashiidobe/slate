@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateConst<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C" fn add_one(value: *mut i32, data: *mut ()) -> i32 {
-// CHECK-NEXT:     (unsafe { *value }) + unsafe { *(data as *mut i32) }
+// CHECK-NEXT:     unsafe { *value + *(data as *mut i32) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static table: __SlateConst<[Option<unsafe extern "C" fn(*mut i32, *mut ()) -> i32>; 1]> = __SlateConst(
@@ -51,7 +51,7 @@ int main(void) {
 // CHECK-NEXT:     if tbl.is_null() {
 // CHECK-NEXT:         return -(count as i32) - 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { unsafe { *tbl.add(0) }.unwrap()(value, data) }
+// CHECK-NEXT:     unsafe { (*tbl.add(0)).unwrap()(value, data) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

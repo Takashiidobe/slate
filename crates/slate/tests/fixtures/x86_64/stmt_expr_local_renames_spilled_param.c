@@ -34,27 +34,31 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: *mut u64;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut __ret: *mut u64 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "mov {1:r},{0:r}",
-// CHECK-NEXT:                 lateout(reg) [[T_0]],
-// CHECK-NEXT:                 in(reg) table_ptr as u64,
-// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:             );
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::arch::asm!(
+// CHECK-NEXT:                     "mov {1:r},{0:r}",
+// CHECK-NEXT:                     lateout(reg) [[T_0]],
+// CHECK-NEXT:                     in(reg) table_ptr as u64,
+// CHECK-NEXT:                     options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:                 );
+// CHECK-NEXT:             }
 // CHECK-NEXT:             __ret = unsafe { core::mem::transmute::<u64, *mut u64>([[T_0]] as u64) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[V_0]] = __ret;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: u64;
 // CHECK-NEXT:     let mut __ret: u64 = hashlen;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "shrl $12,{0:e}",
-// CHECK-NEXT:             inlateout(reg) __ret as u64 => [[T_1]],
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "shrl $12,{0:e}",
+// CHECK-NEXT:                 inlateout(reg) __ret as u64 => [[T_1]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         __ret = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_1]] = __ret;

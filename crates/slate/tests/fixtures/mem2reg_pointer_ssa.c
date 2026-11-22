@@ -22,8 +22,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}",
-// CHECK-NEXT:         (unsafe { *return_global() }) + unsafe { *(*return_global_pointer()) }
-// CHECK-NEXT:             + unsafe { *return_element() }
+// CHECK-NEXT:         unsafe { *return_global() + *(*return_global_pointer()) + *return_element() }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

@@ -28,76 +28,56 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let base: Option<unsafe extern "C-unwind" fn() -> i32> = Some(target);
-// CHECK-NEXT:     let forward: i64 = ((unsafe {
-// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn() -> i32>>(
-// CHECK-NEXT:                         unsafe {
-// CHECK-NEXT:                                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
-// CHECK-NEXT:                                     base,
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                             .wrapping_offset(3 as isize),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) as isize)
-// CHECK-NEXT:         .wrapping_sub(
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
-// CHECK-NEXT:                     base,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }) as isize,
-// CHECK-NEXT:         ) as i64;
-// CHECK-NEXT:     let backward: i64 = ((unsafe {
-// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn() -> i32>>(
-// CHECK-NEXT:                         unsafe {
-// CHECK-NEXT:                                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
-// CHECK-NEXT:                                     base,
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                             .wrapping_offset(-(2 as isize)),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) as isize)
-// CHECK-NEXT:         .wrapping_sub(
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
-// CHECK-NEXT:                     base,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }) as isize,
-// CHECK-NEXT:         ) as i64;
-// CHECK-NEXT:     let difference: i64 = ((unsafe {
-// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
-// CHECK-NEXT:                 base,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) as isize)
-// CHECK-NEXT:         .wrapping_sub(
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn() -> i32>>(
-// CHECK-NEXT:                             unsafe {
-// CHECK-NEXT:                                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
-// CHECK-NEXT:                                         base,
-// CHECK-NEXT:                                     )
-// CHECK-NEXT:                                 }
-// CHECK-NEXT:                                 .wrapping_offset(3 as isize),
+// CHECK-NEXT:     let forward: i64 = unsafe {
+// CHECK-NEXT:         (core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                 core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn() -> i32>>(
+// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                             base,
 // CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }) as isize,
-// CHECK-NEXT:         ) as i64;
+// CHECK-NEXT:                         .wrapping_offset(3 as isize),
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ) as isize)
+// CHECK-NEXT:             .wrapping_sub(
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                     base,
+// CHECK-NEXT:                 ) as isize,
+// CHECK-NEXT:             ) as i64
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let backward: i64 = unsafe {
+// CHECK-NEXT:         (core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                 core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn() -> i32>>(
+// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                             base,
+// CHECK-NEXT:                         )
+// CHECK-NEXT:                         .wrapping_offset(-(2 as isize)),
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ) as isize)
+// CHECK-NEXT:             .wrapping_sub(
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                     base,
+// CHECK-NEXT:                 ) as isize,
+// CHECK-NEXT:             ) as i64
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let difference: i64 = unsafe {
+// CHECK-NEXT:         (core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                 base,
+// CHECK-NEXT:             ) as isize)
+// CHECK-NEXT:             .wrapping_sub(
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                     core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn() -> i32>>(
+// CHECK-NEXT:                         core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                                 base,
+// CHECK-NEXT:                             )
+// CHECK-NEXT:                             .wrapping_offset(3 as isize),
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                 ) as isize,
+// CHECK-NEXT:             ) as i64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let unchanged: i32 = ((unsafe {
 // CHECK-NEXT:         core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn() -> i32>>(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
-// CHECK-NEXT:                         base,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                     base,
+// CHECK-NEXT:                 )
 // CHECK-NEXT:                 .wrapping_offset(0 as isize),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == base) as i32;

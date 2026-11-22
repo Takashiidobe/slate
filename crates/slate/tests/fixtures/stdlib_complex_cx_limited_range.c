@@ -43,9 +43,11 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let real: f64 = 0.5f64;
 // CHECK-NEXT:     let imaginary: f64 = -0.25f64;
-// CHECK-NEXT:     let mut a: num_complex::Complex<f64> = num_complex::Complex {
-// CHECK-NEXT:         re: unsafe { core::ptr::read_volatile(core::ptr::addr_of!(real)) },
-// CHECK-NEXT:         im: unsafe { core::ptr::read_volatile(core::ptr::addr_of!(imaginary)) },
+// CHECK-NEXT:     let mut a: num_complex::Complex<f64> = unsafe {
+// CHECK-NEXT:         num_complex::Complex {
+// CHECK-NEXT:             re: core::ptr::read_volatile(core::ptr::addr_of!(real)),
+// CHECK-NEXT:             im: core::ptr::read_volatile(core::ptr::addr_of!(imaginary)),
+// CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let b: num_complex::Complex<f64> = num_complex::Complex {
 // CHECK-NEXT:         re: unsafe { core::ptr::read_volatile(core::ptr::addr_of!(real)) },

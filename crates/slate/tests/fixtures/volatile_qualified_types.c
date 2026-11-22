@@ -69,9 +69,10 @@ int main(void) {
 // CHECK-NEXT:             input + core::ptr::read_volatile(core::ptr::addr_of!(gain)),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(fields.ratio)) })
-// CHECK-NEXT:         + ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(fields.count)) })
-// CHECK-NEXT:             as f64)
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(fields.ratio))
+// CHECK-NEXT:             + (core::ptr::read_volatile(core::ptr::addr_of!(fields.count)) as f64)
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

@@ -34,8 +34,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut f: f32 = 1.5f32;
-// CHECK-NEXT:     let old_f: f32 = unsafe {
-// CHECK-NEXT:         f32::from_bits(
+// CHECK-NEXT:     let old_f: f32 = f32::from_bits(
+// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::sync::atomic::AtomicU32::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(f) as *mut u32,
 // CHECK-NEXT:                 )
@@ -44,17 +44,17 @@ int main(void) {
 // CHECK-NEXT:                     core::sync::atomic::Ordering::Relaxed,
 // CHECK-NEXT:                     |[[T_0:__t[0-9]+]]| Some((f32::from_bits([[T_0]]) + 2.25f32).to_bits()),
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .unwrap_or_else(|[[T_0]]| [[T_0]]),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let now_f: f32 = unsafe {
-// CHECK-NEXT:         f32::from_bits(
+// CHECK-NEXT:                 .unwrap_or_else(|[[T_0]]| [[T_0]])
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let now_f: f32 = f32::from_bits(
+// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::sync::atomic::AtomicU32::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(f) as *mut u32,
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .load(core::sync::atomic::Ordering::SeqCst),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:                 .load(core::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:         },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16(
 // CHECK-NEXT:         [10i32, 20i32, 30i32, 40i32],
 // CHECK-NEXT:     );

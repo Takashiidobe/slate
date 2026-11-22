@@ -35,10 +35,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let len: i32 = 5;
-// CHECK-NEXT:     let values: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc((len as u64).wrapping_mul(core::mem::size_of::<i32>() as u64) as usize)
-// CHECK-NEXT:             as *mut ()
-// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:     let values: *mut i32 = unsafe {
+// CHECK-NEXT:         (malloc((len as u64).wrapping_mul(core::mem::size_of::<i32>() as u64) as usize)
+// CHECK-NEXT:             as *mut ()) as *mut i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     forward_fill(unsafe { core::slice::from_raw_parts_mut(values, len as usize) });
 // CHECK-NEXT:     println!("{} {}", unsafe { *values.add(1) }, unsafe { *values.add(4) });
 // CHECK-NEXT:     0

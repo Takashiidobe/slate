@@ -32,11 +32,14 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn get(p: &P, slot: &i32) -> i32 {
-// CHECK-NEXT:     if unsafe { *((*p).u.apSub.as_ptr() as *mut *mut B).offset(*slot as isize) }
-// CHECK-NEXT:         .is_null() {
+// CHECK-NEXT:     if unsafe {
+// CHECK-NEXT:         (*((*p).u.apSub.as_ptr() as *mut *mut B).offset(*slot as isize)).is_null()
+// CHECK-NEXT:     } {
 // CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (unsafe { (*(*((*p).u.apSub.as_ptr() as *mut *mut B).offset(*slot as isize))).n })
-// CHECK-NEXT:         + unsafe { (*(*p).next).v }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*(*((*p).u.apSub.as_ptr() as *mut *mut B).offset(*slot as isize))).n
+// CHECK-NEXT:             + (*(*p).next).v
+// CHECK-NEXT:     }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

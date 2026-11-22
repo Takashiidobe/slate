@@ -248,7 +248,7 @@ int main(void) {
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_atoi(s: *const i8) -> i32 {
-// CHECK-NEXT:     let bytes = unsafe { core::ffi::CStr::from_ptr(s) }.to_bytes();
+// CHECK-NEXT:     let bytes = unsafe { core::ffi::CStr::from_ptr(s).to_bytes() };
 // CHECK-NEXT:     let n = bytes.len();
 // CHECK-NEXT:     let mut i = 0usize;
 // CHECK-NEXT:     while i < n && (bytes[i].is_ascii_whitespace() || bytes[i] == 11u8) {
@@ -306,7 +306,7 @@ int main(void) {
 // CHECK-NEXT:     argument: *mut i8,
 // CHECK-NEXT:     state: *mut argp_state,
 // CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     let arguments: *mut GNUArguments = (unsafe { (*state).input }) as *mut GNUArguments;
+// CHECK-NEXT:     let arguments: *mut GNUArguments = unsafe { (*state).input as *mut GNUArguments };
 // CHECK-NEXT:     if key == 110 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (*arguments).number = __slate_atoi(
@@ -393,8 +393,6 @@ int main(void) {
 // CHECK-NEXT:     let mut option: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         optind = 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         opterr = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
@@ -414,11 +412,11 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if option == 110 {
-// CHECK-NEXT:             number_value = unsafe {
-// CHECK-NEXT:                 __slate_atoi(
-// CHECK-NEXT:                     ((optarg as *const i8) as *const core::ffi::c_char) as *const i8,
-// CHECK-NEXT:                 ) as i32
-// CHECK-NEXT:             };
+// CHECK-NEXT:             number_value = __slate_atoi(
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     ((optarg as *const i8) as *const core::ffi::c_char) as *const i8
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             ) as i32;
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if option == 102 {
 // CHECK-NEXT:                 flag_value = 1;
@@ -533,9 +531,10 @@ int main(void) {
 // CHECK-NEXT:         }) == 0) as i32;
 // CHECK-NEXT:     unsafe { hdestroy_r(core::ptr::addr_of_mut!(table)) };
 // CHECK-NEXT:     for index in 0u64..4u64 {
-// CHECK-NEXT:         let value: *mut i32 = (unsafe {
-// CHECK-NEXT:             malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ()
-// CHECK-NEXT:         }) as *mut i32;
+// CHECK-NEXT:         let value: *mut i32 = unsafe {
+// CHECK-NEXT:             (malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ())
+// CHECK-NEXT:                 as *mut i32
+// CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *value = values.0[index as usize];
 // CHECK-NEXT:         }
@@ -548,13 +547,13 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total += !unsafe {
-// CHECK-NEXT:             tfind(
+// CHECK-NEXT:         tfind(
 // CHECK-NEXT:                 values.0.as_mut_ptr().add(2) as *const (),
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(tree) as *const *mut (),
 // CHECK-NEXT:                 Some(gnu_compare_entries),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:         .is_null() as i32;
+// CHECK-NEXT:             .is_null()
+// CHECK-NEXT:     } as i32;
 // CHECK-NEXT:     unsafe { tdestroy(tree, Some(gnu_free_entry)) };
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

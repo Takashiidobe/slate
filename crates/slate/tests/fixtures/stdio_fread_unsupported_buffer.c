@@ -78,7 +78,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let buf: *mut i8 = (unsafe { malloc(16u64 as usize) as *mut () }) as *mut i8;
+// CHECK-NEXT:     let buf: *mut i8 = unsafe { (malloc(16u64 as usize) as *mut ()) as *mut i8 };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *buf.add(0) = 0;
 // CHECK-NEXT:     }

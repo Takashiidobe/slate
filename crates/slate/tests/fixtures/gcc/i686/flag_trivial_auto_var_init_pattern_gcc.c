@@ -231,23 +231,29 @@ int main(void) {
 // CHECK-NEXT:     let mut l: i32 = -16843010i32;
 // CHECK-NEXT:     let mut p: *mut () = 4278124286usize as *mut ();
 // CHECK-NEXT:     let mut ld: LongDouble = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(ld) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 12usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 12usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut lds: [LongDouble; 2] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(lds) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 24usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 10usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(12usize), 254u8, 10usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 24usize) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 10usize)
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(12usize), 254u8, 10usize)
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut tail: tail = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(tail) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 16usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 1usize);
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(4usize), 254u8, 10usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 16usize) };
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 254u8, 1usize) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(4usize), 254u8, 10usize)
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"long".as_ptr(),

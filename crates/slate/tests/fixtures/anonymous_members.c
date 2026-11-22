@@ -68,9 +68,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     value.prefix = 3;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         value.[[SLATE_ANON_0]].integer = 31;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     value.[[SLATE_ANON_0]].integer = 31;
 // CHECK-NEXT:     value.[[SLATE_ANON_1]].x = 37;
 // CHECK-NEXT:     value.[[SLATE_ANON_1]].y = 41;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -85,10 +83,8 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         value.[[SLATE_ANON_0]].real = 2.5f32;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{}", (unsafe { value.[[SLATE_ANON_0]].real }) as i32);
+// CHECK-NEXT:     value.[[SLATE_ANON_0]].real = 2.5f32;
+// CHECK-NEXT:     println!("{}", unsafe { value.[[SLATE_ANON_0]].real as i32 });
 // CHECK-NEXT:     let positional: container = container {
 // CHECK-NEXT:         prefix: 1,
 // CHECK-NEXT:         [[SLATE_ANON_0]]: __SlateRecord_anonymous_members_c_5 {

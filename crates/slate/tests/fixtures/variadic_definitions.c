@@ -179,9 +179,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let extra: i64 = unsafe { ap.next_arg::<i64>() };
 // CHECK-NEXT:     let mask: u64 = unsafe { ap.next_arg::<u64>() };
-// CHECK-NEXT:     (unsafe { sum_longs(3i32, seed as i64, extra, (mask & 255) as i64) })
-// CHECK-NEXT:         + ((unsafe { ignore_rest(seed, 1i32, 2.0f64, c"three".as_ptr() as *mut i8) })
-// CHECK-NEXT:             as i64)
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         sum_longs(3i32, seed as i64, extra, (mask & 255) as i64)
+// CHECK-NEXT:             + (ignore_rest(seed, 1i32, 2.0f64, c"three".as_ptr() as *mut i8) as i64)
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn same_pointer(first: *mut (), mut __va_args: ...) -> *mut () {

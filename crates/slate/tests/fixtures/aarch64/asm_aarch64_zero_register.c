@@ -57,8 +57,6 @@ int main(void) {
 // CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(wide),
 // CHECK-NEXT:             options(nostack, preserves_flags),
 // CHECK-NEXT:         );
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "str wzr, [{0:x}]",
 // CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(narrow),
@@ -80,31 +78,35 @@ int main(void) {
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld %ld\n".as_ptr(), pair[0], pair[1]) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut sum: i64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "add {0:x}, {1:x}, xzr",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) 5i64 as u64,
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "add {0:x}, {1:x}, xzr",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) 5i64 as u64,
+// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         sum = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), sum) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut moved: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov {0:w}, wzr",
-// CHECK-NEXT:             lateout(reg) [[T_1]],
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov {0:w}, wzr",
+// CHECK-NEXT:                 lateout(reg) [[T_1]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         moved = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", moved);
-// CHECK-NEXT:     store_long(unsafe { core::ptr::addr_of_mut!(wide) }, 42i64);
+// CHECK-NEXT:     store_long(core::ptr::addr_of_mut!(wide), 42i64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), wide) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

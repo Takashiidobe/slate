@@ -99,8 +99,7 @@ long sum(int count, ...) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn take_char(mut ap: *mut i8) -> i8 {
-// CHECK-NEXT:     (unsafe { __slate_darwin_arm64_va::arg::<_, i32>(core::ptr::addr_of_mut!(ap)) })
-// CHECK-NEXT:         as i8
+// CHECK-NEXT:     unsafe { __slate_darwin_arm64_va::arg::<_, i32>(core::ptr::addr_of_mut!(ap)) as i8 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

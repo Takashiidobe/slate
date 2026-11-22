@@ -91,7 +91,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let config: mode_config = {
 // CHECK-NEXT:         let mut [[T_0]]: mode_config = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].funcs = unsafe { core::ptr::addr_of!(funcs.0) };
+// CHECK-NEXT:         [[T_0]].funcs = core::ptr::addr_of!(funcs.0);
 // CHECK-NEXT:         [[T_0]].pending = core::ptr::null_mut::<i32>();
 // CHECK-NEXT:         [[T_0]].count = 3i32;
 // CHECK-NEXT:         [[T_0]]
@@ -100,7 +100,7 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d\n".as_ptr(),
 // CHECK-NEXT:             config_score(&config),
-// CHECK-NEXT:             unsafe { (*config.funcs).attach }.unwrap()(config.pending, 2i32),
+// CHECK-NEXT:             (*config.funcs).attach.unwrap()(config.pending, 2i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     0

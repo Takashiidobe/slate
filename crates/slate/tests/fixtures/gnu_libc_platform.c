@@ -369,12 +369,12 @@ int main(void) {
 // CHECK-NEXT:     let directory: *mut i8 = unsafe { get_current_dir_name() };
 // CHECK-NEXT:     let canonical: *mut i8 = unsafe { canonicalize_file_name(c".".as_ptr()) };
 // CHECK-NEXT:     total += !unsafe {
-// CHECK-NEXT:             getcwd(
+// CHECK-NEXT:         (getcwd(
 // CHECK-NEXT:                 current.0.as_mut_ptr() as *mut core::ffi::c_char,
 // CHECK-NEXT:                 (core::mem::size_of::<[i8; 4096]>() as u64) as usize,
-// CHECK-NEXT:             ) as *mut i8
-// CHECK-NEXT:         }
-// CHECK-NEXT:         .is_null() as i32;
+// CHECK-NEXT:             ) as *mut i8)
+// CHECK-NEXT:             .is_null()
+// CHECK-NEXT:     } as i32;
 // CHECK-NEXT:     total += (!directory.is_null()
 // CHECK-NEXT:         && (unsafe {
 // CHECK-NEXT:             strcmp(
@@ -394,19 +394,19 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: *mut i8;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let __old: *const i8 = c"slate".as_ptr();
-// CHECK-NEXT:         let __len: u64 = unsafe { ("slate".len() as u64) as u64 }.wrapping_add(1);
+// CHECK-NEXT:         let __len: u64 = (("slate".len() as u64) as u64).wrapping_add(1);
 // CHECK-NEXT:         let __new: *mut i8 = (__slate_alloca::alloca(__len as usize, 16usize) as *mut ())
 // CHECK-NEXT:             as *mut i8;
-// CHECK-NEXT:         [[V_0]] = (unsafe {
-// CHECK-NEXT:             ({
+// CHECK-NEXT:         [[V_0]] = (({
+// CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:                     ((__old as *const ()) as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:                     ((__new as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:                     (__len as usize) as usize,
-// CHECK-NEXT:                 );
-// CHECK-NEXT:                 (__new as *mut ()) as *mut core::ffi::c_void
-// CHECK-NEXT:             }) as *mut ()
-// CHECK-NEXT:         }) as *mut i8;
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             };
+// CHECK-NEXT:             (__new as *mut ()) as *mut core::ffi::c_void
+// CHECK-NEXT:         }) as *mut ()) as *mut i8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         strcmp(
@@ -416,22 +416,22 @@ int main(void) {
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: *mut i8;
 // CHECK-NEXT:     let __old: *const i8 = c"slate-truncated".as_ptr();
-// CHECK-NEXT:     let __len: u64 = unsafe { 5 };
+// CHECK-NEXT:     let __len: u64 = 5;
 // CHECK-NEXT:     let __new: *mut i8 = (__slate_alloca::alloca(__len.wrapping_add(1) as usize, 16usize)
 // CHECK-NEXT:         as *mut ()) as *mut i8;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *__new.add(__len as usize) = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_1]] = (unsafe {
-// CHECK-NEXT:         ({
+// CHECK-NEXT:     [[V_1]] = (({
+// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:                 ((__old as *const ()) as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:                 ((__new as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:                 (__len as usize) as usize,
-// CHECK-NEXT:             );
-// CHECK-NEXT:             (__new as *mut ()) as *mut core::ffi::c_void
-// CHECK-NEXT:         }) as *mut ()
-// CHECK-NEXT:     }) as *mut i8;
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         (__new as *mut ()) as *mut core::ffi::c_void
+// CHECK-NEXT:     }) as *mut ()) as *mut i8;
 // CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         strcmp(
 // CHECK-NEXT:             ([[V_1]] as *const i8) as *const core::ffi::c_char,
@@ -559,8 +559,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     total += ((unsafe { getauxval(6u64) }) == (page_size as u64)) as i32;
-// CHECK-NEXT:     total += ((unsafe { gettid() })
-// CHECK-NEXT:         == ((unsafe { syscall(186i64 as i64) as i64 }) as i32)) as i32;
+// CHECK-NEXT:     total += unsafe { (gettid() == ((syscall(186i64 as i64) as i64) as i32)) as i32 };
 // CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         getentropy(
 // CHECK-NEXT:             (random_bytes.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void,
@@ -573,18 +572,16 @@ int main(void) {
 // CHECK-NEXT:     total += ((unsafe { backtrace(frames.0.as_mut_ptr(), 8i32) }) > 0) as i32;
 // CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         dladdr(
-// CHECK-NEXT:             (unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *mut ()>(
-// CHECK-NEXT:                     Some(gnu_runtime_extensions),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }) as *const (),
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *mut ()>(
+// CHECK-NEXT:                 Some(gnu_runtime_extensions),
+// CHECK-NEXT:             ) as *const (),
 // CHECK-NEXT:             core::ptr::addr_of_mut!(information),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) != 0) as i32;
 // CHECK-NEXT:     total += !information.dli_fname.is_null() as i32;
-// CHECK-NEXT:     total += (((unsafe { *gnu_get_libc_version().add(0) }) as i32) != 0) as i32;
-// CHECK-NEXT:     total += !unsafe { program_invocation_name }.is_null() as i32;
-// CHECK-NEXT:     total += !unsafe { program_invocation_short_name }.is_null() as i32;
+// CHECK-NEXT:     total += ((unsafe { *gnu_get_libc_version().add(0) as i32 }) != 0) as i32;
+// CHECK-NEXT:     total += !unsafe { program_invocation_name.is_null() } as i32;
+// CHECK-NEXT:     total += !unsafe { program_invocation_short_name.is_null() } as i32;
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:

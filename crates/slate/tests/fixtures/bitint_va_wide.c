@@ -117,30 +117,30 @@ int main(void) {
 // CHECK-NEXT:         match i % 3 {
 // CHECK-NEXT:             0 => {
 // CHECK-NEXT:                 total += unsafe {
-// CHECK-NEXT:                         __slate_sysv_va::arg::<_, bitint::BInt<100, 2, 16, bitint::A8>>(
+// CHECK-NEXT:                     __slate_sysv_va::arg::<_, bitint::BInt<100, 2, 16, bitint::A8>>(
 // CHECK-NEXT:                             core::ptr::addr_of_mut!(ap),
 // CHECK-NEXT:                             5u32,
 // CHECK-NEXT:                         )
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     .to_i128() as i64;
+// CHECK-NEXT:                         .to_i128() as i64
+// CHECK-NEXT:                 };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             1 => {
 // CHECK-NEXT:                 total += unsafe {
-// CHECK-NEXT:                         __slate_sysv_va::arg::<_, bitint::BInt<128, 2, 16, bitint::A8>>(
+// CHECK-NEXT:                     __slate_sysv_va::arg::<_, bitint::BInt<128, 2, 16, bitint::A8>>(
 // CHECK-NEXT:                             core::ptr::addr_of_mut!(ap),
 // CHECK-NEXT:                             5u32,
 // CHECK-NEXT:                         )
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     .to_i128() as i64;
+// CHECK-NEXT:                         .to_i128() as i64
+// CHECK-NEXT:                 };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             _ => {
 // CHECK-NEXT:                 total += unsafe {
-// CHECK-NEXT:                         __slate_sysv_va::arg::<_, bitint::BInt<200, 4, 32, bitint::A8>>(
+// CHECK-NEXT:                     __slate_sysv_va::arg::<_, bitint::BInt<200, 4, 32, bitint::A8>>(
 // CHECK-NEXT:                             core::ptr::addr_of_mut!(ap),
 // CHECK-NEXT:                             0u32,
 // CHECK-NEXT:                         )
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     .to_i128() as i64;
+// CHECK-NEXT:                         .to_i128() as i64
+// CHECK-NEXT:                 };
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

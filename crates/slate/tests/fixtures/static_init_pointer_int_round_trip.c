@@ -54,7 +54,7 @@ int main(void) {
 // CHECK-NEXT:     tag: i32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut direct: *mut () = (unsafe { core::ptr::addr_of_mut!(x) }) as *mut ();
+// CHECK-NEXT: static mut direct: *mut () = core::ptr::addr_of_mut!(x) as *mut ();
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut function: *mut () = unsafe {
 // CHECK-NEXT:     core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *mut ()>(
@@ -62,35 +62,39 @@ int main(void) {
 // CHECK-NEXT:     )
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut unsigned_long: *mut () = (unsafe { core::ptr::addr_of_mut!(x) }) as *mut ();
+// CHECK-NEXT: static mut unsigned_long: *mut () = core::ptr::addr_of_mut!(x) as *mut ();
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut signed_width: *mut i32 = (unsafe { core::ptr::addr_of_mut!(x) }) as *mut i32;
+// CHECK-NEXT: static mut signed_width: *mut i32 = core::ptr::addr_of_mut!(x) as *mut i32;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut nested: *mut () = (unsafe { core::ptr::addr_of_mut!(x) }) as *mut ();
+// CHECK-NEXT: static mut nested: *mut () = core::ptr::addr_of_mut!(x) as *mut ();
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut mixed_sign: *mut () = (unsafe { core::ptr::addr_of_mut!(x) }) as *mut ();
+// CHECK-NEXT: static mut mixed_sign: *mut () = core::ptr::addr_of_mut!(x) as *mut ();
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut element: *mut i32 = unsafe { core::ptr::addr_of_mut!(arr.0) as *mut i32 }
-// CHECK-NEXT:     .wrapping_offset(2i32 as isize) as *mut i32;
+// CHECK-NEXT: static mut element: *mut i32 = unsafe {
+// CHECK-NEXT:     (core::ptr::addr_of_mut!(arr.0) as *mut i32).wrapping_offset(2i32 as isize)
+// CHECK-NEXT:         as *mut i32
+// CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut held: holder = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: holder = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     [[T_0]].p = (unsafe { core::ptr::addr_of_mut!(x) }) as *mut ();
+// CHECK-NEXT:     [[T_0]].p = core::ptr::addr_of_mut!(x) as *mut ();
 // CHECK-NEXT:     [[T_0]].tag = 3i32;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut table: __SlateAlign16<[*mut (); 3]> = __SlateAlign16(
 // CHECK-NEXT:     [
-// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(x) }) as *mut (),
-// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(arr.0) as *mut i32 }
-// CHECK-NEXT:             .wrapping_offset(1i32 as isize) as *mut (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(x) as *mut (),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(arr.0) as *mut i32).wrapping_offset(1i32 as isize)
+// CHECK-NEXT:                 as *mut ()
+// CHECK-NEXT:         },
 // CHECK-NEXT:         core::ptr::null_mut::<()>(),
 // CHECK-NEXT:     ],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[used(compiler)]
-// CHECK-NEXT: static mut __addressable_x: *mut () = (unsafe { core::ptr::addr_of_mut!(x) }) as *mut ();
+// CHECK-NEXT: static mut __addressable_x: *mut () = core::ptr::addr_of_mut!(x) as *mut ();
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
@@ -98,11 +102,9 @@ int main(void) {
 // CHECK-NEXT:             c"%d %d %d %d\n".as_ptr(),
 // CHECK-NEXT:             (direct == (core::ptr::addr_of_mut!(x) as *mut ())) as i32,
 // CHECK-NEXT:             (function
-// CHECK-NEXT:                 == unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *mut ()>(
-// CHECK-NEXT:                         Some(f),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 }) as i32,
+// CHECK-NEXT:                 == core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *mut ()>(
+// CHECK-NEXT:                     Some(f),
+// CHECK-NEXT:                 )) as i32,
 // CHECK-NEXT:             (unsigned_long == (core::ptr::addr_of_mut!(x) as *mut ())) as i32,
 // CHECK-NEXT:             *signed_width,
 // CHECK-NEXT:         )
@@ -127,18 +129,16 @@ int main(void) {
 // CHECK-NEXT:             c"%d %d %d\n".as_ptr(),
 // CHECK-NEXT:             *(table.0[0] as *mut i32),
 // CHECK-NEXT:             *(table.0[1] as *mut i32),
-// CHECK-NEXT:             unsafe { table.0[2] }.is_null() as i32,
+// CHECK-NEXT:             table.0[2].is_null() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d %d\n".as_ptr(),
 // CHECK-NEXT:             (__addressable_x == (core::ptr::addr_of_mut!(x) as *mut ())) as i32,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn() -> i32>>(
-// CHECK-NEXT:                         function,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn() -> i32>>(
+// CHECK-NEXT:                     function,
+// CHECK-NEXT:                 )
 // CHECK-NEXT:                 .unwrap()(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

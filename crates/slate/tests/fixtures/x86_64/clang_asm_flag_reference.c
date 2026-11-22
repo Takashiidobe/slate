@@ -31,15 +31,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn same_as_place(place: i32, mut other: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = place;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u8;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmpl {2:e}, {1:e}\nsetz {0}",
-// CHECK-NEXT:             out(reg_byte) [[T_0]],
-// CHECK-NEXT:             in(reg) flag as u32,
-// CHECK-NEXT:             in(reg) other as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmpl {2:e}, {1:e}\nsetz {0}",
+// CHECK-NEXT:                 out(reg_byte) [[T_0]],
+// CHECK-NEXT:                 in(reg) flag as u32,
+// CHECK-NEXT:                 in(reg) other as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -47,15 +49,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn wide_place(place: i64, mut other: i64) -> i32 {
 // CHECK-NEXT:     let mut flag: i64 = place;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u8;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmpl {2:e}, {1:e}\nsetg {0}",
-// CHECK-NEXT:             out(reg_byte) [[T_0]],
-// CHECK-NEXT:             in(reg) (flag as u64) as u32,
-// CHECK-NEXT:             in(reg) other as u64,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmpl {2:e}, {1:e}\nsetg {0}",
+// CHECK-NEXT:                 out(reg_byte) [[T_0]],
+// CHECK-NEXT:                 in(reg) (flag as u64) as u32,
+// CHECK-NEXT:                 in(reg) other as u64,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (flag != 0) as i32
@@ -63,14 +67,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn scratch_zero() -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u8;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xorl {1:e}, {1:e}\nsetz {0}",
-// CHECK-NEXT:             lateout(reg_byte) [[T_0]],
-// CHECK-NEXT:             out(reg) _,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "xorl {1:e}, {1:e}\nsetz {0}",
+// CHECK-NEXT:                 lateout(reg_byte) [[T_0]],
+// CHECK-NEXT:                 out(reg) _,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag

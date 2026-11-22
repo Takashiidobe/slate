@@ -76,13 +76,10 @@ int main(void) {
 // CHECK-NEXT:     k = 0;
 // CHECK-NEXT:     while (k as i32) < len {
 // CHECK-NEXT:         i = ((i as i32) + 1 & 255) as u8;
-// CHECK-NEXT:         j = ((j as i32) + ((unsafe { *s.offset((i as i32) as isize) }) as i32) & 255)
-// CHECK-NEXT:             as u8;
+// CHECK-NEXT:         j = ((j as i32) + unsafe { *s.offset((i as i32) as isize) as i32 } & 255) as u8;
 // CHECK-NEXT:         tmp = unsafe { *s.offset((i as i32) as isize) };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *s.offset((i as i32) as isize) = *s.offset((j as i32) as isize);
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *s.offset((j as i32) as isize) = tmp;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut u8 = unsafe { blk.add(k as usize) };
@@ -98,8 +95,6 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*ctx).i = i;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*ctx).j = j;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}

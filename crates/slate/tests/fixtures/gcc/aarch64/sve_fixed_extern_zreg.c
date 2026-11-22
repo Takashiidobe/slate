@@ -71,23 +71,25 @@ int main(void) {
 // CHECK-NEXT:     [[ARG_1]]: core::simd::Simd<i32, 16>,
 // CHECK-NEXT:     [[ARG_2]]: i32,
 // CHECK-NEXT: ) -> core::simd::Simd<i32, 16> {
-// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:     return {
 // CHECK-NEXT:         let mut __sve_lanes: [i32; 16] = [0i32; 16];
-// CHECK-NEXT:         core::arch::aarch64::svst1_s32(
-// CHECK-NEXT:             core::arch::aarch64::svptrue_b32(),
-// CHECK-NEXT:             __sve_lanes.as_mut_ptr(),
-// CHECK-NEXT:             __vector_abi_zreg_mul_add(
-// CHECK-NEXT:                 core::arch::aarch64::svld1_s32(
-// CHECK-NEXT:                     core::arch::aarch64::svptrue_b32(),
-// CHECK-NEXT:                     [[ARG_0]].as_array().as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::aarch64::svst1_s32(
+// CHECK-NEXT:                 core::arch::aarch64::svptrue_b32(),
+// CHECK-NEXT:                 __sve_lanes.as_mut_ptr(),
+// CHECK-NEXT:                 __vector_abi_zreg_mul_add(
+// CHECK-NEXT:                     core::arch::aarch64::svld1_s32(
+// CHECK-NEXT:                         core::arch::aarch64::svptrue_b32(),
+// CHECK-NEXT:                         [[ARG_0]].as_array().as_ptr(),
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::arch::aarch64::svld1_s32(
+// CHECK-NEXT:                         core::arch::aarch64::svptrue_b32(),
+// CHECK-NEXT:                         [[ARG_1]].as_array().as_ptr(),
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     [[ARG_2]],
 // CHECK-NEXT:                 ),
-// CHECK-NEXT:                 core::arch::aarch64::svld1_s32(
-// CHECK-NEXT:                     core::arch::aarch64::svptrue_b32(),
-// CHECK-NEXT:                     [[ARG_1]].as_array().as_ptr(),
-// CHECK-NEXT:                 ),
-// CHECK-NEXT:                 [[ARG_2]],
-// CHECK-NEXT:             ),
-// CHECK-NEXT:         );
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         core::simd::Simd::from_array(__sve_lanes)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -97,22 +99,24 @@ int main(void) {
 // CHECK-NEXT:     [[ARG_0]]: core::simd::Simd<f64, 8>,
 // CHECK-NEXT:     [[ARG_1]]: core::simd::Simd<f64, 8>,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 8> {
-// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:     return {
 // CHECK-NEXT:         let mut __sve_lanes: [f64; 8] = [0 as f64; 8];
-// CHECK-NEXT:         core::arch::aarch64::svst1_f64(
-// CHECK-NEXT:             core::arch::aarch64::svptrue_b64(),
-// CHECK-NEXT:             __sve_lanes.as_mut_ptr(),
-// CHECK-NEXT:             __vector_abi_zreg_scale(
-// CHECK-NEXT:                 core::arch::aarch64::svld1_f64(
-// CHECK-NEXT:                     core::arch::aarch64::svptrue_b64(),
-// CHECK-NEXT:                     [[ARG_0]].as_array().as_ptr(),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::aarch64::svst1_f64(
+// CHECK-NEXT:                 core::arch::aarch64::svptrue_b64(),
+// CHECK-NEXT:                 __sve_lanes.as_mut_ptr(),
+// CHECK-NEXT:                 __vector_abi_zreg_scale(
+// CHECK-NEXT:                     core::arch::aarch64::svld1_f64(
+// CHECK-NEXT:                         core::arch::aarch64::svptrue_b64(),
+// CHECK-NEXT:                         [[ARG_0]].as_array().as_ptr(),
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::arch::aarch64::svld1_f64(
+// CHECK-NEXT:                         core::arch::aarch64::svptrue_b64(),
+// CHECK-NEXT:                         [[ARG_1]].as_array().as_ptr(),
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                 ),
-// CHECK-NEXT:                 core::arch::aarch64::svld1_f64(
-// CHECK-NEXT:                     core::arch::aarch64::svptrue_b64(),
-// CHECK-NEXT:                     [[ARG_1]].as_array().as_ptr(),
-// CHECK-NEXT:                 ),
-// CHECK-NEXT:             ),
-// CHECK-NEXT:         );
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         core::simd::Simd::from_array(__sve_lanes)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

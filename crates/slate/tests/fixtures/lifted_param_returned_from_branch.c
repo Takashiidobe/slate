@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT: fn pick_int(fresh: *mut i32, which: i32) -> *mut i32 {
 // CHECK-NEXT:     match which {
 // CHECK-NEXT:         0 => {
-// CHECK-NEXT:             return (unsafe { g_shared }) as *mut i32;
+// CHECK-NEXT:             return unsafe { g_shared as *mut i32 };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         _ => {
 // CHECK-NEXT:             return if which > 1 { fresh } else { core::ptr::null_mut::<i32>() };
@@ -56,7 +56,7 @@ int main(void) {
 // CHECK-NEXT:     let mut b: i32 = 2;
 // CHECK-NEXT:     if pick(core::ptr::addr_of_mut!(a) as *mut ())
 // CHECK-NEXT:         != (core::ptr::addr_of_mut!(a) as *mut ()) {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         g_shared = core::ptr::addr_of_mut!(b) as *mut ();
@@ -66,7 +66,7 @@ int main(void) {
 // CHECK-NEXT:         || pick_int(core::ptr::addr_of_mut!(a), 2i32) != core::ptr::addr_of_mut!(a);
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = [[V_0]] || !pick_int(core::ptr::addr_of_mut!(a), 1i32).is_null();
 // CHECK-NEXT:     if [[V_1]] || pick_int(core::ptr::addr_of_mut!(a), 0i32) != core::ptr::addr_of_mut!(b) {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

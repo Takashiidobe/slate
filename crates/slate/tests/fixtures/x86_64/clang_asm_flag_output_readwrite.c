@@ -23,15 +23,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn equal_rw(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 7;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u8;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmpl {2:e}, {1:e}\nsetz {0}",
-// CHECK-NEXT:             out(reg_byte) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmpl {2:e}, {1:e}\nsetz {0}",
+// CHECK-NEXT:                 out(reg_byte) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -39,16 +41,18 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn carry_rw(mut a: u32, mut b: u32) -> u8 {
 // CHECK-NEXT:     let mut flag: u8 = 9;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u8;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addl {2:e}, {1:e}\nsetc {0}",
-// CHECK-NEXT:             out(reg_byte) [[T_0]],
-// CHECK-NEXT:             inlateout(reg) a as u32 => [[T_1]],
-// CHECK-NEXT:             in(reg) b as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "addl {2:e}, {1:e}\nsetc {0}",
+// CHECK-NEXT:                 out(reg_byte) [[T_0]],
+// CHECK-NEXT:                 inlateout(reg) a as u32 => [[T_1]],
+// CHECK-NEXT:                 in(reg) b as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u8, u8>([[T_0]] as u8) };
 // CHECK-NEXT:         a = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:     }

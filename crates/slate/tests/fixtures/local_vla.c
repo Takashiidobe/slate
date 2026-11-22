@@ -40,9 +40,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64 = length as u64;
 // CHECK-NEXT:     let mut values: Vec<i32> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_0]] as usize);
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_0]] as usize);
-// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe { __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_0]] as usize) };
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for index in 0..length {

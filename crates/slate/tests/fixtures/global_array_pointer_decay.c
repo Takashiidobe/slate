@@ -37,9 +37,9 @@ int main(void) {
 // CHECK-NEXT: fn update(items: *mut u32) -> u32 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u32 = unsafe { items.add(0) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = unsafe { *[[V_0]] }.wrapping_add(10);
+// CHECK-NEXT:         *[[V_0]] = (*[[V_0]]).wrapping_add(10);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { *items.add(0) }.wrapping_add(unsafe { *items.add(2) })
+// CHECK-NEXT:     unsafe { (*items.add(0)).wrapping_add(*items.add(2)) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn middle(items: *mut [u32; 3]) -> u32 {
@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let first: u32 = update(unsafe { core::ptr::addr_of_mut!(values) as *mut u32 });
+// CHECK-NEXT:     let first: u32 = update(core::ptr::addr_of_mut!(values) as *mut u32);
 // CHECK-NEXT:     let second: u32 = update(
 // CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(aligned_values.0) as *mut u32 },
 // CHECK-NEXT:     );

@@ -345,7 +345,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static extra: __SlateConst<sign_extra> = __SlateConst(
 // CHECK-NEXT:     sign_extra {
-// CHECK-NEXT:         hash: unsafe { core::ptr::addr_of!(vt_a.0) },
+// CHECK-NEXT:         hash: core::ptr::addr_of!(vt_a.0),
 // CHECK-NEXT:         fallback: Some(hash_b),
 // CHECK-NEXT:         alg: b"Ed25519\0".as_ptr() as *const i8,
 // CHECK-NEXT:         prefix: ptrlen {
@@ -362,18 +362,17 @@ int main(void) {
 // CHECK-NEXT: static mut buffer_b: [i8; 8] = [115, 101, 99, 111, 110, 100, 0, 0];
 // CHECK-EMPTY:
 // CHECK-NEXT: static pick: __SlateConst<*mut i8> = __SlateConst(
-// X86_64-PC-WINDOWS-MSVC-NEXT:     unsafe { core::ptr::addr_of_mut!(buffer_a) as *mut i8 },
-// I686-PC-WINDOWS-MSVC-NEXT:     unsafe { core::ptr::addr_of_mut!(buffer_b) as *mut i8 }
-// I686-PC-WINDOWS-MSVC-NEXT:         .wrapping_offset(1i32 as isize),
-// AARCH64-PC-WINDOWS-MSVC-NEXT:     unsafe { core::ptr::addr_of_mut!(buffer_a) as *mut i8 },
+// X86_64-PC-WINDOWS-MSVC-NEXT:     core::ptr::addr_of_mut!(buffer_a) as *mut i8,
+// I686-PC-WINDOWS-MSVC-NEXT:     (core::ptr::addr_of_mut!(buffer_b) as *mut i8).wrapping_offset(1i32 as isize),
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     core::ptr::addr_of_mut!(buffer_a) as *mut i8,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: static picks: __SlateAlign16<[*const u32; 2]> = __SlateAlign16(
 // I686-PC-WINDOWS-MSVC-NEXT: static picks: __SlateConst<[*const u32; 2]> = __SlateConst(
 // AARCH64-PC-WINDOWS-MSVC-NEXT: static picks: __SlateConst<[*const u32; 2]> = __SlateConst(
 // CHECK-NEXT:     [
-// CHECK-NEXT:         unsafe { core::ptr::addr_of!(operators.0[3].r#type) },
-// CHECK-NEXT:         unsafe { core::ptr::addr_of!(operators.0[1].r#type) },
+// CHECK-NEXT:         core::ptr::addr_of!(operators.0[3].r#type),
+// CHECK-NEXT:         core::ptr::addr_of!(operators.0[1].r#type),
 // CHECK-NEXT:     ],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
@@ -436,20 +435,14 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[op; 5]>() as u64)
 // X86_64-PC-WINDOWS-MSVC-NEXT:         / (core::mem::size_of::<op>() as u64)) {
+// X86_64-PC-WINDOWS-MSVC-NEXT:         CHECK!((operators.0[i as usize].r#type as u32) == (((i as u32) as u32) as u32));
 // I686-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[op; 5]>() as u32)
 // I686-PC-WINDOWS-MSVC-NEXT:         / (core::mem::size_of::<op>() as u32)) {
+// I686-PC-WINDOWS-MSVC-NEXT:         CHECK!((operators.0[i as usize].r#type as u32) == ((i as u32) as u32));
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[op; 5]>() as u64)
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         / (core::mem::size_of::<op>() as u64)) {
-// CHECK-NEXT:         CHECK!(
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ((unsafe { operators.0[i as usize].r#type }) as u32)
-// X86_64-PC-WINDOWS-MSVC-NEXT:                 == (((i as u32) as u32) as u32)
-// I686-PC-WINDOWS-MSVC-NEXT:             ((unsafe { operators.0[i as usize].r#type }) as u32) == ((i as u32) as u32)
-// AARCH64-PC-WINDOWS-MSVC-NEXT:             ((unsafe { operators.0[i as usize].r#type }) as u32)
-// AARCH64-PC-WINDOWS-MSVC-NEXT:                 == (((i as u32) as u32) as u32)
-// CHECK-NEXT:         );
-// CHECK-NEXT:         CHECK__2!(
-// CHECK-NEXT:             same(unsafe { operators.0[i as usize].text }, unsafe { texts.0[i as usize] })
-// CHECK-NEXT:         );
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         CHECK!((operators.0[i as usize].r#type as u32) == (((i as u32) as u32) as u32));
+// CHECK-NEXT:         CHECK__2!(same(operators.0[i as usize].text, texts.0[i as usize]));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     CHECK!(
 // X86_64-PC-WINDOWS-MSVC-NEXT:         ((const { core::mem::size_of::<[ptrlen; 3]>() }) as u64)
@@ -459,33 +452,32 @@ int main(void) {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         ((const { core::mem::size_of::<[ptrlen; 3]>() }) as u64)
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             / ((const { core::mem::size_of::<ptrlen>() }) as u64) == 3
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = same(unsafe { names.0[0] }, c"ping".as_ptr()) != 0
-// CHECK-NEXT:         && same(unsafe { names.0[1] }, c"query".as_ptr()) != 0;
-// CHECK-NEXT:     if !([[V_0]]
-// CHECK-NEXT:         && same(unsafe { names.0[2] }, c"session-bind@openssh.com".as_ptr()) != 0) {
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = same(names.0[0], c"ping".as_ptr()) != 0
+// CHECK-NEXT:         && same(names.0[1], c"query".as_ptr()) != 0;
+// CHECK-NEXT:     if !([[V_0]] && same(names.0[2], c"session-bind@openssh.com".as_ptr()) != 0) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = (unsafe { extra.0.hash }) == unsafe { core::ptr::addr_of!(vt_a.0) }
-// CHECK-NEXT:         && (unsafe { unsafe { (*extra.0.hash).r#fn }.unwrap()(5i32) }) == 15;
-// CHECK-NEXT:     if !([[V_1]] && (unsafe { unsafe { extra.0.fallback }.unwrap()(5i32) }) == 12) {
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = extra.0.hash == core::ptr::addr_of!(vt_a.0)
+// CHECK-NEXT:         && (unsafe { (*extra.0.hash).r#fn.unwrap()(5i32) }) == 15;
+// CHECK-NEXT:     if !([[V_1]] && (unsafe { extra.0.fallback.unwrap()(5i32) }) == 12) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if !((unsafe { strcmp(extra.0.alg, c"Ed25519".as_ptr()) }) == 0
-// CHECK-NEXT:         && same(unsafe { extra.0.prefix }, c"".as_ptr()) != 0) {
+// CHECK-NEXT:         && same(extra.0.prefix, c"".as_ptr()) != 0) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     CHECK!(
-// CHECK-NEXT:         (unsafe { pick.0 })
+// CHECK-NEXT:         pick.0
 // X86_64-PC-WINDOWS-MSVC-NEXT:             == if (core::mem::size_of::<*mut ()>() as u64) == 8 {
 // I686-PC-WINDOWS-MSVC-NEXT:             == if (core::mem::size_of::<*mut ()>() as u32) == 8 {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             == if (core::mem::size_of::<*mut ()>() as u64) == 8 {
-// CHECK-NEXT:                 unsafe { core::ptr::addr_of_mut!(buffer_a) as *mut i8 }
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(buffer_a) as *mut i8
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 unsafe { (core::ptr::addr_of_mut!(buffer_b) as *mut i8).add(1) }
 // CHECK-NEXT:             }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { pick.0 }.add(0) = 70;
+// CHECK-NEXT:         *pick.0.add(0) = 70;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     CHECK!(
 // CHECK-NEXT:         (unsafe {
@@ -515,20 +507,16 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) == 0
 // CHECK-NEXT:     );
-// CHECK-NEXT:     CHECK!(
-// CHECK-NEXT:         ((unsafe { *picks.0[0] }) as u32) == 3 && ((unsafe { *picks.0[1] }) as u32) == 1
-// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!((unsafe { *picks.0[0] as u32 }) == 3 && (unsafe { *picks.0[1] as u32 }) == 1);
 // X86_64-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[u32; 8]>() as u64)
 // X86_64-PC-WINDOWS-MSVC-NEXT:         / (core::mem::size_of::<u32>() as u64)) {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         CHECK!(
-// X86_64-PC-WINDOWS-MSVC-NEXT:             (unsafe { valid_bitmap.0[i as usize] }) == unsafe { expected.0[i as usize] }
-// X86_64-PC-WINDOWS-MSVC-NEXT:         );
+// X86_64-PC-WINDOWS-MSVC-NEXT:         CHECK!(valid_bitmap.0[i as usize] == expected.0[i as usize]);
 // I686-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[u32; 8]>() as u32)
 // I686-PC-WINDOWS-MSVC-NEXT:         / (core::mem::size_of::<u32>() as u32)) {
-// I686-PC-WINDOWS-MSVC-NEXT:         CHECK!((unsafe { valid_bitmap[i as usize] }) == unsafe { expected[i as usize] });
+// I686-PC-WINDOWS-MSVC-NEXT:         CHECK!(valid_bitmap[i as usize] == expected[i as usize]);
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     for i in 0..((core::mem::size_of::<[u32; 8]>() as u64)
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         / (core::mem::size_of::<u32>() as u64)) {
-// AARCH64-PC-WINDOWS-MSVC-NEXT:         CHECK!((unsafe { valid_bitmap[i as usize] }) == unsafe { expected[i as usize] });
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         CHECK!(valid_bitmap[i as usize] == expected[i as usize]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

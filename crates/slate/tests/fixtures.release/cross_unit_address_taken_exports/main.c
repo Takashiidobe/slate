@@ -54,11 +54,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { bump(core::ptr::addr_of_mut!(c), add(2i32, 3i32)) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         unsafe { api.bump }
-// CHECK-NEXT:             .unwrap()(
-// CHECK-NEXT:             core::ptr::addr_of_mut!(c),
-// CHECK-NEXT:             unsafe { api.sub }.unwrap()(10i32, 4i32),
-// CHECK-NEXT:         )
+// CHECK-NEXT:         api.bump.unwrap()(core::ptr::addr_of_mut!(c), api.sub.unwrap()(10i32, 4i32))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
@@ -74,22 +70,16 @@ int main(void) {
 // CHECK-NEXT:         ),
 // CHECK-NEXT:         apply(unsafe { api.add }, 4i32, 5i32)
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support::printf(
-// CHECK-NEXT:             c"%s %s\n".as_ptr(),
-// CHECK-NEXT:             name(),
-// CHECK-NEXT:             unsafe { api.name }.unwrap()(),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%s %s\n".as_ptr(), name(), api.name.unwrap()()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         (local_add == unsafe { api.add }) as i32,
-// CHECK-NEXT:         ((unsafe {
-// CHECK-NEXT:             core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             (core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(i32, i32) -> i32>>(
 // CHECK-NEXT:                 sub as *const (),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) == unsafe { api.add }) as i32
+// CHECK-NEXT:             ) == api.add) as i32
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

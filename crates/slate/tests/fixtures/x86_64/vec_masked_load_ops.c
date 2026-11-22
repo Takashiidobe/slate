@@ -46,13 +46,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i64, 2>>(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
-// CHECK-NEXT:                         [__i0, __i1, __i2, __i3],
-// CHECK-NEXT:                     );
-// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             *{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
+// CHECK-NEXT:                     [__i0, __i1, __i2, __i3],
+// CHECK-NEXT:                 );
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -71,9 +69,8 @@ int main(void) {
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 2>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_si128)).__v)
-// CHECK-NEXT:             .write_unaligned(__b);
-// CHECK-NEXT:     }
+// CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_si128)).__v).write_unaligned(__b)
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512vl")]
@@ -88,11 +85,9 @@ int main(void) {
 // CHECK-NEXT:             core::simd::Simd::load_select_ptr(
 // CHECK-NEXT:                 (__P as *const core::simd::Simd<i32, 4>) as *const i32,
 // CHECK-NEXT:                 core::simd::Mask::<i32, 4>::from_bitmask((__U as u8) as u64),
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
-// CHECK-NEXT:                         __W,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
+// CHECK-NEXT:                     __W,
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

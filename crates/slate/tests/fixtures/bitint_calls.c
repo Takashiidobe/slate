@@ -165,19 +165,19 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         match i % 5 {
 // CHECK-NEXT:             0 => {
-// CHECK-NEXT:                 total += (unsafe { (ap.next_arg::<i32>() as i16) << 7 >> 7 }) as i64;
+// CHECK-NEXT:                 total += ((unsafe { ap.next_arg::<i32>() as i16 }) << 7 >> 7) as i64;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             1 => {
-// CHECK-NEXT:                 total += ((unsafe { ap.next_arg::<u32>() }) as u64) as i64;
+// CHECK-NEXT:                 total += unsafe { (ap.next_arg::<u32>() as u64) as i64 };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             2 => {
-// CHECK-NEXT:                 total += (unsafe { ap.next_arg::<i64>() }) as i64;
+// CHECK-NEXT:                 total += unsafe { ap.next_arg::<i64>() as i64 };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             3 => {
-// CHECK-NEXT:                 total += ((unsafe { ap.next_arg::<u32>() }) as u64) as i64;
+// CHECK-NEXT:                 total += unsafe { (ap.next_arg::<u32>() as u64) as i64 };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             _ => {
-// CHECK-NEXT:                 total += (unsafe { ap.next_arg::<i64>() }) as i64;
+// CHECK-NEXT:                 total += unsafe { ap.next_arg::<i64>() as i64 };
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

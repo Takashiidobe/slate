@@ -250,7 +250,7 @@ int main(void) {
 // CHECK-NEXT:             c"%d %g %d %d %g %d\n".as_ptr(),
 // CHECK-NEXT:             scalar,
 // CHECK-NEXT:             real,
-// CHECK-NEXT:             unsafe { pointer }.is_null() as i32,
+// CHECK-NEXT:             pointer.is_null() as i32,
 // CHECK-NEXT:             empty,
 // CHECK-NEXT:             empty_f as f64,
 // CHECK-NEXT:             *{

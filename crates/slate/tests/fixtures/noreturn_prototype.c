@@ -21,7 +21,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bail(code: i32) {
 // CHECK-NEXT:     println!("bailing with {}", code);
-// CHECK-NEXT:     unsafe { std::process::exit(code as i32) };
+// CHECK-NEXT:     std::process::exit(code as i32);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

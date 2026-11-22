@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT:     let bytes: *const u8 = p as *const u8;
 // CHECK-NEXT:     let mut sum: u32 = 0;
 // CHECK-NEXT:     for i in 0..size {
-// CHECK-NEXT:         sum |= ((unsafe { *bytes.add(i as usize) }) as i32) as u32;
+// CHECK-NEXT:         sum |= unsafe { (*bytes.add(i as usize) as i32) as u32 };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { printf(c"%s: %u bytes, or=%02x\n".as_ptr(), name, size, sum) };
 // CHECK-NEXT: }
@@ -71,16 +71,16 @@ int main(void) {
 // CHECK-NEXT:     let mut b: bool = false;
 // CHECK-NEXT:     let mut arr: __SlateAlign16<[i32; 64]> = __SlateAlign16([0i32; 64]);
 // CHECK-NEXT:     let mut s: padded = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(s) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 24usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 24usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut many: __SlateAlign16<[padded; 4]> = __SlateAlign16(
 // CHECK-NEXT:         unsafe { core::mem::zeroed() },
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let __slate_auto_bytes = (core::ptr::addr_of_mut!(many.0) as *mut _) as *mut u8;
-// CHECK-NEXT:         core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 96usize);
+// CHECK-NEXT:         unsafe { core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 0u8, 96usize) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"int".as_ptr(),

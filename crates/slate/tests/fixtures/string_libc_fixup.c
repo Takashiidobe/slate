@@ -130,27 +130,25 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let __slate_printf_arg0 = !unsafe {
-// CHECK-NEXT:             strchr(
-// CHECK-NEXT:                 (hay.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 0i32 as i32,
-// CHECK-NEXT:             ) as *mut i8
-// CHECK-NEXT:         }
-// CHECK-NEXT:         .is_null() as i32;
+// CHECK-NEXT:         (strchr((hay.as_mut_ptr() as *const i8) as *const core::ffi::c_char, 0i32 as i32)
+// CHECK-NEXT:                 as *mut i8)
+// CHECK-NEXT:             .is_null()
+// CHECK-NEXT:     } as i32;
 // CHECK-NEXT:     let __slate_printf_arg1 = unsafe {
-// CHECK-NEXT:             strchr(
+// CHECK-NEXT:         (strchr(
 // CHECK-NEXT:                 (hay.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
 // CHECK-NEXT:                 122i32 as i32,
-// CHECK-NEXT:             ) as *mut i8
-// CHECK-NEXT:         }
-// CHECK-NEXT:         .is_null() as i32;
+// CHECK-NEXT:             ) as *mut i8)
+// CHECK-NEXT:             .is_null() as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);
 // CHECK-NEXT:     let __slate_printf_arg0 = !unsafe {
-// CHECK-NEXT:             strchr(
+// CHECK-NEXT:         (strchr(
 // CHECK-NEXT:                 (utf8.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
 // CHECK-NEXT:                 second_byte as i32,
-// CHECK-NEXT:             ) as *mut i8
-// CHECK-NEXT:         }
-// CHECK-NEXT:         .is_null() as i32;
+// CHECK-NEXT:             ) as *mut i8)
+// CHECK-NEXT:             .is_null()
+// CHECK-NEXT:     } as i32;
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

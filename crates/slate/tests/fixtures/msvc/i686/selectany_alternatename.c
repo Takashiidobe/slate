@@ -52,13 +52,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn wmemcpy(_S1: *mut u16, _S2: *const u16, _N: u32) -> *mut u16 {
 // CHECK-NEXT:     // Buffer overrun
-// CHECK-NEXT:     (unsafe {
-// CHECK-NEXT:         memcpy(
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (memcpy(
 // CHECK-NEXT:             (_S1 as *mut ()) as *mut core::ffi::c_void,
 // CHECK-NEXT:             (_S2 as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:             _N.wrapping_mul(core::mem::size_of::<u16>() as u32) as usize,
-// CHECK-NEXT:         ) as *mut ()
-// CHECK-NEXT:     }) as *mut u16
+// CHECK-NEXT:         ) as *mut ()) as *mut u16
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: core::arch::global_asm!(

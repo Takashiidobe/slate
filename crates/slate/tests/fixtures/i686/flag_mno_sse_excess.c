@@ -358,8 +358,9 @@ int main(void) {
 // CHECK-NEXT:     let mut stored: f64 = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(huge)) };
 // CHECK-NEXT:     let mut passed: f64 = 0 as f64;
 // CHECK-NEXT:     let mut compound: f64 = 1e308f64;
-// CHECK-NEXT:     let as_double: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
-// CHECK-NEXT:         as f64;
+// CHECK-NEXT:     let as_double: f64 = unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(big)) as f64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     compound = __slate_f80_to_f64(
 // CHECK-NEXT:         __slate_f80_from_f64(compound)
 // CHECK-NEXT:             * __slate_f80_from_f64(
@@ -482,16 +483,12 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "cond {}",
-// CHECK-NEXT:         if __slate_f80_from_f64(
+// CHECK-NEXT:         (__slate_f80_from_f64(
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) },
 // CHECK-NEXT:         )
 // CHECK-NEXT:             * __slate_f80_from_f64(
 // CHECK-NEXT:                 unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) },
-// CHECK-NEXT:             ) != LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]) {
-// CHECK-NEXT:             1i32
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             0i32
-// CHECK-NEXT:         }
+// CHECK-NEXT:             ) != LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if __slate_f80_from_f64(
 // CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(tiny)) },

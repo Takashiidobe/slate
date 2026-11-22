@@ -82,14 +82,16 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sve")]
 // CHECK-NEXT: unsafe fn lanes_positive() -> i32 {
 // CHECK-NEXT:     let mut lanes: i64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "ptrue p3.d\n\tcntp {0:x}, p3, p3.d",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             out("p3") _,
-// CHECK-NEXT:             options(nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "ptrue p3.d\n\tcntp {0:x}, p3, p3.d",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 out("p3") _,
+// CHECK-NEXT:                 options(nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         lanes = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (lanes > 0) as i32

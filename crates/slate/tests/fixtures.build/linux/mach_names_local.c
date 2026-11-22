@@ -36,8 +36,6 @@ int clock_scale(struct mach_timebase_info *info) {
 // CHECK-NEXT: extern "C-unwind" fn mach_timebase_info(info: *mut mach_timebase_info) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*info).numer = 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*info).denom = 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0

@@ -77,11 +77,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn fields(c: &mut counter) -> u32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*c).hits += 4;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*c).flags |= 1u32 << 3i32;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*c).flags >>= 1i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ((*c).hits as u32).wrapping_add((*c).flags)

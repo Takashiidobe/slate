@@ -110,10 +110,10 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}",
-// CHECK-NEXT:         (unsafe { favorite }) as u32,
-// CHECK-NEXT:         (unsafe { levels[0] }) as i32,
-// CHECK-NEXT:         (unsafe { levels[1] }) as i32,
-// CHECK-NEXT:         (unsafe { levels[2] }) as i32
+// CHECK-NEXT:         unsafe { favorite as u32 },
+// CHECK-NEXT:         unsafe { levels[0] as i32 },
+// CHECK-NEXT:         unsafe { levels[1] as i32 },
+// CHECK-NEXT:         unsafe { levels[2] as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -124,8 +124,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     (((unsafe { levels[0] }) as i32) as u32).wrapping_add((unsafe { favorite }) as u32)
-// CHECK-NEXT:         as i32
+// CHECK-NEXT:     unsafe { ((levels[0] as i32) as u32).wrapping_add(favorite as u32) as i32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

@@ -98,7 +98,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(unix, feature = "alpha", feature = "beta", not(feature = "gamma")))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", (unsafe { widen(1 as c_long) }) as i32);
+// CHECK-NEXT:         println!("{}", unsafe { widen(1 as c_long) as i32 });
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

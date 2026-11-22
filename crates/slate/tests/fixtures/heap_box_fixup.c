@@ -18,13 +18,11 @@ int main(void) {
 // CHECK-NEXT: use slate_support::free;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let p: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ()
-// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:     let p: *mut i32 = unsafe {
+// CHECK-NEXT:         (malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ()) as *mut i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p = 41;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", unsafe { *p });

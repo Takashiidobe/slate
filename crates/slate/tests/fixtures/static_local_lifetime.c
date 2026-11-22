@@ -154,8 +154,6 @@ int main(void) {
 // CHECK-NEXT:     let [[V_0]]: i32 = unsafe { next };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         next = [[V_0]] + 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slots.0[([[V_0]] % 4) as usize] = value;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(slots.0) as *mut i32 }
@@ -170,11 +168,9 @@ int main(void) {
 // CHECK-NEXT: fn moved(dx: i32) -> *mut Point {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         point.x += dx;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         point.y *= 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(point) }
+// CHECK-NEXT:     core::ptr::addr_of_mut!(point)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut point: Point = Point { x: 1i32, y: 2i32 };
@@ -183,7 +179,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { pointer }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut pointer: *mut i32 = unsafe { core::ptr::addr_of_mut!(global_base) };
+// CHECK-NEXT: static mut pointer: *mut i32 = core::ptr::addr_of_mut!(global_base);
 // CHECK-EMPTY:
 // CHECK-NEXT: fn depth(n: i32) -> i32 {
 // CHECK-NEXT:     if n > unsafe { deepest } {
@@ -217,7 +213,7 @@ int main(void) {
 // CHECK-NEXT: static mut samples: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn name_of(index: i32) -> *const i8 {
-// CHECK-NEXT:     unsafe { names.0[index as usize] }
+// CHECK-NEXT:     names.0[index as usize]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static names: __SlateAlign16<[*const i8; 3]> = __SlateAlign16(

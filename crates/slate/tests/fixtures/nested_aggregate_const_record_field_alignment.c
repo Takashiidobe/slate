@@ -100,20 +100,20 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}",
-// CHECK-NEXT:         unsafe { unsafe { g.inner.scanners[0] }.unwrap()(10i32) },
-// CHECK-NEXT:         unsafe { unsafe { g.inner.scanners[1] }.unwrap()(10i32) },
-// CHECK-NEXT:         unsafe { unsafe { g.inner.scanners[2] }.unwrap()(10i32) },
+// CHECK-NEXT:         unsafe { g.inner.scanners[0].unwrap()(10i32) },
+// CHECK-NEXT:         unsafe { g.inner.scanners[1].unwrap()(10i32) },
+// CHECK-NEXT:         unsafe { g.inner.scanners[2].unwrap()(10i32) },
 // CHECK-NEXT:         unsafe { g.inner.tag }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..8i32 {
-// CHECK-NEXT:         print!("{} ", (unsafe { g.bytes[i as usize] }) as i32);
+// CHECK-NEXT:         print!("{} ", unsafe { g.bytes[i as usize] as i32 });
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
-// CHECK-NEXT:         unsafe { unsafe { g.trailing1 }.unwrap()(10i32) },
-// CHECK-NEXT:         unsafe { unsafe { g.trailing2 }.unwrap()(10i32) },
+// CHECK-NEXT:         unsafe { g.trailing1.unwrap()(10i32) },
+// CHECK-NEXT:         unsafe { g.trailing2.unwrap()(10i32) },
 // CHECK-NEXT:         unsafe { g.trailing3 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0

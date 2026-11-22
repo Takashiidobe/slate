@@ -49,12 +49,12 @@ int main(void) {
 // CHECK-NEXT:     if 8 != ((const { core::mem::size_of::<u64>() }) as u64) {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let flexible: *mut FlexibleArray = (unsafe {
-// CHECK-NEXT:         malloc(
+// CHECK-NEXT:     let flexible: *mut FlexibleArray = unsafe {
+// CHECK-NEXT:         (malloc(
 // CHECK-NEXT:             8u64.wrapping_add(3u64.wrapping_mul(core::mem::size_of::<i32>() as u64))
 // CHECK-NEXT:                 as usize,
-// CHECK-NEXT:         ) as *mut ()
-// CHECK-NEXT:     }) as *mut FlexibleArray;
+// CHECK-NEXT:         ) as *mut ()) as *mut FlexibleArray
+// CHECK-NEXT:     };
 // CHECK-NEXT:     if flexible.is_null() {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }

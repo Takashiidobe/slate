@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn class_pause_destructor(p: *mut *mut port) {
-// CHECK-NEXT:     if !unsafe { *p }.is_null() {
+// CHECK-NEXT:     if !unsafe { (*p).is_null() } {
 // CHECK-NEXT:         continue_rx(unsafe { *p });
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

@@ -78,8 +78,6 @@ int main(void) {
 // CHECK-NEXT:             1 => {
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     *total += 5;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     *total += 7;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
@@ -102,7 +100,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn classify(mut s: *const i8) -> i32 {
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         match (unsafe { *s }) as i32 {
+// CHECK-NEXT:         match unsafe { *s as i32 } {
 // CHECK-NEXT:             97 => {
 // CHECK-NEXT:                 return 1;
 // CHECK-NEXT:             }

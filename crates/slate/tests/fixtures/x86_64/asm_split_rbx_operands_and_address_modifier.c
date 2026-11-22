@@ -64,16 +64,18 @@ int main(void) {
 // CHECK-NEXT: fn swap_through_rbx(mut r#in: u64, out_rcx: &mut u64) -> u64 {
 // CHECK-NEXT:     let mut rbx: u64 = 0;
 // CHECK-NEXT:     let mut rcx: u64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "xchg %rbx, {0:r}\nxchgq %rbx, %rcx\nxchg %rbx, {0:r}",
-// CHECK-NEXT:             inout(reg) r#in as u64 => [[T_0]],
-// CHECK-NEXT:             lateout("cx") [[T_1]],
-// CHECK-NEXT:             in("cx") r#in.wrapping_add(1u64) as u64,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "xchg %rbx, {0:r}\nxchgq %rbx, %rcx\nxchg %rbx, {0:r}",
+// CHECK-NEXT:                 inout(reg) r#in as u64 => [[T_0]],
+// CHECK-NEXT:                 lateout("cx") [[T_1]],
+// CHECK-NEXT:                 in("cx") r#in.wrapping_add(1u64) as u64,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         rbx = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:         rcx = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:     }
@@ -82,16 +84,18 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn try_store(mut lock: *mut u32, mut tid: u32, mut pop: *mut u64) -> u32 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "lock cmpxchgl {0:e}, (%rdi)\n\tjnz 1f\n\tmovq {0:r}, (%rdx)\n1:",
-// CHECK-NEXT:             in(reg) 0u64,
-// CHECK-NEXT:             inout("ax") tid as u32 => [[T_0]],
-// CHECK-NEXT:             in("di") lock as u64,
-// CHECK-NEXT:             in("dx") pop as u64,
-// CHECK-NEXT:             options(nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "lock cmpxchgl {0:e}, (%rdi)\n\tjnz 1f\n\tmovq {0:r}, (%rdx)\n1:",
+// CHECK-NEXT:                 in(reg) 0u64,
+// CHECK-NEXT:                 inout("ax") tid as u32 => [[T_0]],
+// CHECK-NEXT:                 in("di") lock as u64,
+// CHECK-NEXT:                 in("dx") pop as u64,
+// CHECK-NEXT:                 options(nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         tid = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     tid
@@ -126,7 +130,7 @@ int main(void) {
 // CHECK-NEXT:             missed,
 // CHECK-NEXT:             lock,
 // CHECK-NEXT:             pop,
-// CHECK-NEXT:             unsafe { slate_abs_ref }.unwrap()(-12i32),
+// CHECK-NEXT:             slate_abs_ref.unwrap()(-12i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

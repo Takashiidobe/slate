@@ -178,8 +178,6 @@ int main(void) {
 // CHECK-NEXT:     let hi: *mut i32 = pair_hi(core::ptr::addr_of_mut!(pair));
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *lo += *hi;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *hi += *lo;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     pair.lo + pair.hi
@@ -271,8 +269,6 @@ int main(void) {
 // CHECK-NEXT:     root.right = core::ptr::addr_of_mut!(right);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*left.parent).val += left.val;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*right.parent).val += right.val;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     root.val + left.val + right.val
@@ -295,7 +291,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] = ((*[[V_0]] as i32) + 1) as i8;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (buf.data[3] as i32) + ((unsafe { *buf.cursor.add(0) }) as i32) - 2 * 97
+// CHECK-NEXT:     (buf.data[3] as i32) + unsafe { *buf.cursor.add(0) as i32 } - 2 * 97
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn reverse_in_place(mut lo: *mut i32, mut hi: *mut i32) {
@@ -303,8 +299,6 @@ int main(void) {
 // CHECK-NEXT:         let t: i32 = unsafe { *lo };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *lo = *hi;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *hi = t;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         lo = unsafe { lo.add(1) };
@@ -316,10 +310,9 @@ int main(void) {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16(
 // CHECK-NEXT:         [1i32, 2i32, 3i32, 4i32, 5i32],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     reverse_in_place(
-// CHECK-NEXT:         unsafe { values.0.as_mut_ptr().add(0) },
-// CHECK-NEXT:         unsafe { values.0.as_mut_ptr().add(4) },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         reverse_in_place(values.0.as_mut_ptr().add(0), values.0.as_mut_ptr().add(4))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     values.0[0] * 10000 + values.0[1] * 1000 + values.0[2] * 100 + values.0[3] * 10
 // CHECK-NEXT:         + values.0[4]
 // CHECK-NEXT: }
@@ -351,14 +344,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn type_punning() -> i32 {
 // CHECK-NEXT:     let mut u: Pun = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         u.f = 1.0f32;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     u.f = 1.0f32;
 // CHECK-NEXT:     let bits: i32 = unsafe { u.i };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         u.i += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if bits == unsafe { u.i } { -1 } else { (unsafe { u.f }) as i32 }
+// CHECK-NEXT:     if bits == unsafe { u.i } { -1 } else { unsafe { u.f as i32 } }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

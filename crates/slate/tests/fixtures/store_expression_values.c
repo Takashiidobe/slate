@@ -127,11 +127,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_3]] += 5;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slots.0[idx() as usize] = slots.0[0] + 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *slot() = 40;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let f: i32 = 40 + 2;
@@ -223,9 +219,9 @@ int main(void) {
 // CHECK-NEXT:         g,
 // CHECK-NEXT:         length
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let __slate_printf_arg3 = ((unsafe {
-// CHECK-NEXT:         out.offset_from(buffer.0.as_mut_ptr() as *mut i32)
-// CHECK-NEXT:     }) as i64) as i32;
+// CHECK-NEXT:     let __slate_printf_arg3 = unsafe {
+// CHECK-NEXT:         (out.offset_from(buffer.0.as_mut_ptr() as *mut i32) as i64) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {}",
 // CHECK-NEXT:         buffer.0[0],

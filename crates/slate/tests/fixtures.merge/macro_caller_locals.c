@@ -169,7 +169,7 @@ int main(void) {
 // CHECK-NEXT:     total += DECAY_FIRST!(table.0) + table.0[1] + table.0[2] + pair.right;
 // CHECK-NEXT:     let address: *mut u32 = ADDRESS_OF!(hold);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *address = unsafe { *address }.wrapping_add(1);
+// CHECK-NEXT:         *address = (*address).wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total += KEYWORD_NAME!(4i32, r#type);
 // CHECK-NEXT:     TEMP_ARG!(total, total);

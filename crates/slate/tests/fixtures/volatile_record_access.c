@@ -115,7 +115,7 @@ int main(void) {
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     if ((unsafe { core::ptr::read_volatile(state.counters.as_mut_ptr().add(2)) }) as i32)
+// CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(state.counters.as_mut_ptr().add(2)) as i32 })
 // CHECK-NEXT:         != 123 || target != 11
 // CHECK-NEXT:         || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(global)) }) != 26
 // CHECK-NEXT:         || (unsafe { calls }) != 1 {

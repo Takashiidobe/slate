@@ -54,11 +54,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn keyword_length(word: &core::ffi::CStr) -> i32 {
 // CHECK-NEXT:     if is_keyword(word) != 0 {
-// CHECK-NEXT:         ((unsafe {
-// CHECK-NEXT:             strlen((word.as_ptr() as *const i8) as *const core::ffi::c_char) as u64
-// CHECK-NEXT:         }) as i32)
-// CHECK-NEXT:             + ((((unsafe { *(word.as_ptr() as *const i8).add(0) }) as i32) == 119)
-// CHECK-NEXT:                 as i32)
+// CHECK-NEXT:         (unsafe {
+// CHECK-NEXT:             (strlen((word.as_ptr() as *const i8) as *const core::ffi::c_char) as u64)
+// CHECK-NEXT:                 as i32
+// CHECK-NEXT:         }) + (((unsafe { *(word.as_ptr() as *const i8).add(0) as i32 }) == 119) as i32)
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         0
 // CHECK-NEXT:     }
@@ -76,14 +75,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn skips(mut word: *const i8) -> i32 {
-// CHECK-NEXT:     while ((unsafe { *word }) as i32) == 32 {
+// CHECK-NEXT:     while (unsafe { *word as i32 }) == 32 {
 // CHECK-NEXT:         word = unsafe { word.add(1) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (unsafe { strlen(word as *const core::ffi::c_char) as u64 }) as i32
+// CHECK-NEXT:     unsafe { (strlen(word as *const core::ffi::c_char) as u64) as i32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn embedded(word: *const i8) -> i32 {
-// CHECK-NEXT:     (unsafe { strlen(word as *const core::ffi::c_char) as u64 }) as i32
+// CHECK-NEXT:     unsafe { (strlen(word as *const core::ffi::c_char) as u64) as i32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

@@ -49,12 +49,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump(t: *mut T) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = 1;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = core::ptr::addr_of!((*t).v).read_unaligned()[[[V_0]] as usize] + 5;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::ptr::addr_of_mut!((*t).v);
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]] = [[T_1]].read_unaligned();
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (unsafe {
+// CHECK-NEXT:             core::ptr::addr_of!((*t).v).read_unaligned()[[[V_0]] as usize]
+// CHECK-NEXT:         }) + 5;
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = unsafe { core::ptr::addr_of_mut!((*t).v) };
+// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]] = unsafe { [[T_1]].read_unaligned() };
 // CHECK-NEXT:         [[T_2]][[[V_0]] as usize] = [[T_0]];
-// CHECK-NEXT:         [[T_1]].write_unaligned([[T_2]]);
+// CHECK-NEXT:         unsafe { [[T_1]].write_unaligned([[T_2]]) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!((*t).words) as *mut i32)
@@ -62,20 +64,21 @@ int main(void) {
 // CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 (core::ptr::addr_of_mut!((*t).words) as *mut i32).add(0).read_unaligned()
 // CHECK-NEXT:                     + 1,
-// CHECK-NEXT:             );
-// CHECK-NEXT:     }
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let t: *mut T = (unsafe { calloc(2u64 as usize, 29u64 as usize) as *mut () })
-// CHECK-NEXT:         as *mut T;
+// CHECK-NEXT:     let t: *mut T = unsafe {
+// CHECK-NEXT:         (calloc(2u64 as usize, 29u64 as usize) as *mut ()) as *mut T
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let seed: core::simd::Simd<i64, 2> = core::simd::Simd::from_array([3i64, 4i64]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*t).v = seed;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (core::ptr::addr_of_mut!((*t).words) as *mut i32).add(0).write_unaligned(9i32);
-// CHECK-NEXT:     }
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*t).words) as *mut i32).add(0).write_unaligned(9i32)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     bump(t);
 // CHECK-NEXT:     let tail: *mut i32 = unsafe { core::ptr::addr_of_mut!((*t).words) as *mut i32 };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

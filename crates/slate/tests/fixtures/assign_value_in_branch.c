@@ -22,13 +22,13 @@ int main() {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump(p: &mut u64, c: i32) -> u64 {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = if c != 0 {
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: u64 = unsafe { *p }.wrapping_add(2);
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: u64 = unsafe { (*p).wrapping_add(2) };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *p = [[V_1]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[V_1]]
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: u64 = unsafe { *p }.wrapping_add(1);
+// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: u64 = unsafe { (*p).wrapping_add(1) };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *p = [[V_2]];
 // CHECK-NEXT:         }

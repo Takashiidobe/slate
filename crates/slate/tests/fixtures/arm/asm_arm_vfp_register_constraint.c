@@ -32,42 +32,48 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN armv7-unknown-linux-gnueabihf
 // CHECK-LABEL: {{^}}fn copy_via_t(mut value: f32) -> f32 {
 // CHECK-NEXT:     let mut result: f32 = 0 as f32;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "vmov.f32 {0}, {1}",
-// CHECK-NEXT:             lateout(sreg) [[T_0]],
-// CHECK-NEXT:             in(sreg) unsafe { core::mem::transmute::<f32, u32>(value) },
-// CHECK-NEXT:             options(nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "vmov.f32 {0}, {1}",
+// CHECK-NEXT:                 lateout(sreg) [[T_0]],
+// CHECK-NEXT:                 in(sreg) core::mem::transmute::<f32, u32>(value),
+// CHECK-NEXT:                 options(nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, f32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn copy_via_w(mut value: f64) -> f64 {
 // CHECK-NEXT:     let mut result: f64 = 0 as f64;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fcpyd {0}, {1}",
-// CHECK-NEXT:             lateout(dreg_low16) [[T_0]],
-// CHECK-NEXT:             in(dreg_low16) unsafe { core::mem::transmute::<f64, u64>(value) },
-// CHECK-NEXT:             options(nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "fcpyd {0}, {1}",
+// CHECK-NEXT:                 lateout(dreg_low16) [[T_0]],
+// CHECK-NEXT:                 in(dreg_low16) core::mem::transmute::<f64, u64>(value),
+// CHECK-NEXT:                 options(nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, f64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn copy_via_x(mut value: f64) -> f64 {
 // CHECK-NEXT:     let mut result: f64 = 0 as f64;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fcpyd {0}, {1}",
-// CHECK-NEXT:             lateout(dreg_low8) [[T_0]],
-// CHECK-NEXT:             in(dreg_low8) unsafe { core::mem::transmute::<f64, u64>(value) },
-// CHECK-NEXT:             options(nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "fcpyd {0}, {1}",
+// CHECK-NEXT:                 lateout(dreg_low8) [[T_0]],
+// CHECK-NEXT:                 in(dreg_low8) core::mem::transmute::<f64, u64>(value),
+// CHECK-NEXT:                 options(nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, f64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result

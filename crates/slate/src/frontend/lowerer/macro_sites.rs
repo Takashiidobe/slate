@@ -595,6 +595,7 @@ impl FunctionLowerer<'_, '_> {
         macro_templates::expand_template_calls(&mut filled, &self.dependencies.macro_templates);
         macro_templates::collapse_address_of_deref(&mut filled);
         macro_templates::erase_binding_names(&mut filled);
+        super::statements::fold_compound_assignments(&mut filled);
         if filled != separately {
             let printed = |stmts: &[Stmt]| {
                 stmts

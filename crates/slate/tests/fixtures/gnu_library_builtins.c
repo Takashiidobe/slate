@@ -61,7 +61,7 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let buffer: *mut i8 = (unsafe { __builtin_malloc(32u64) }) as *mut i8;
+// CHECK-NEXT:     let buffer: *mut i8 = unsafe { __builtin_malloc(32u64) as *mut i8 };
 // CHECK-NEXT:     unsafe { __builtin_strcpy(buffer, c"slate".as_ptr()) };
 // CHECK-NEXT:     let mut copy: [i8; 8] = [0i8; 8];
 // CHECK-NEXT:     unsafe {
@@ -89,13 +89,13 @@ int main(void) {
 // CHECK-NEXT:             formatted.0.as_mut_ptr(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let found: *const i8 = (unsafe {
+// CHECK-NEXT:     let found: *const i8 = unsafe {
 // CHECK-NEXT:         __builtin_memchr(
 // CHECK-NEXT:             formatted.0.as_mut_ptr() as *const (),
 // CHECK-NEXT:             45i32,
 // CHECK-NEXT:             __builtin_strlen(formatted.0.as_mut_ptr() as *const i8),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     }) as *const i8;
+// CHECK-NEXT:         ) as *const i8
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin_printf(

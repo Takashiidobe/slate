@@ -173,7 +173,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*cookie).length = unsafe { (*cookie).length }.wrapping_add(size);
+// CHECK-NEXT:         (*cookie).length = (*cookie).length.wrapping_add(size);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     size as i64
 // CHECK-NEXT: }

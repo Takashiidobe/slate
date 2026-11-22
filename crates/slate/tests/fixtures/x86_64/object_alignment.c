@@ -181,7 +181,7 @@ int main(void) {
 // CHECK-NEXT:         let [[V_2:__v[0-9]+]]: u64 = sum_vectors(values.0.as_mut_ptr() as *const u64, 2i32);
 // CHECK-NEXT:         let [[V_0]]: *mut u64 = unsafe { values.0.as_mut_ptr().add(0) };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *[[V_0]] = unsafe { *[[V_0]] }.wrapping_add([[V_2]]);
+// CHECK-NEXT:             *[[V_0]] = (*[[V_0]]).wrapping_add([[V_2]]);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let [[V_1]]: i32 = count + 1;
 // CHECK-NEXT:         count = [[V_1]];
@@ -204,28 +204,28 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "table {}",
 // CHECK-NEXT:         aligned(
-// CHECK-NEXT:             (unsafe { core::ptr::addr_of_mut!(table.0) as *mut [u64; 64] }) as *const (),
+// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(table.0) as *mut [u64; 64]) as *const () },
 // CHECK-NEXT:             16u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "small {}",
 // CHECK-NEXT:         aligned(
-// CHECK-NEXT:             (unsafe { core::ptr::addr_of_mut!(small.0) as *mut u64 }) as *const (),
+// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(small.0) as *mut u64) as *const () },
 // CHECK-NEXT:             16u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "aligned32 {}",
 // CHECK-NEXT:         aligned(
-// CHECK-NEXT:             (unsafe { core::ptr::addr_of_mut!(aligned32.0) as *mut u32 }) as *const (),
+// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(aligned32.0) as *mut u32) as *const () },
 // CHECK-NEXT:             32u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "bytes {}",
 // CHECK-NEXT:         aligned(
-// CHECK-NEXT:             (unsafe { core::ptr::addr_of_mut!(bytes.0) as *mut u8 }) as *const (),
+// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(bytes.0) as *mut u8) as *const () },
 // CHECK-NEXT:             16u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     );
@@ -252,8 +252,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("locals {}", locals(5i32));
 // CHECK-NEXT:     println!("dispatched {}", dispatched(4i32));
-// CHECK-NEXT:     ((unsafe { pad0 }) as i32) + ((unsafe { pad1 }) as i32) + ((unsafe { pad2 }) as i32)
-// CHECK-NEXT:         + ((unsafe { pad3 }) as i32)
+// CHECK-NEXT:     unsafe { (pad0 as i32) + (pad1 as i32) + (pad2 as i32) + (pad3 as i32) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

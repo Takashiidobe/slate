@@ -64,24 +64,22 @@ int main(void) {
 // CHECK-NEXT:     let mut suite: __SlateRecord_pointer_to_function_pointer_field_c_9 = unsafe {
 // CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     };
-// CHECK-NEXT:     suite.tests = (unsafe {
-// CHECK-NEXT:         malloc(
+// CHECK-NEXT:     suite.tests = unsafe {
+// CHECK-NEXT:         (malloc(
 // CHECK-NEXT:             2u64
 // CHECK-NEXT:                 .wrapping_mul(
 // CHECK-NEXT:                     core::mem::size_of::<Option<unsafe extern "C-unwind" fn()>>() as u64,
 // CHECK-NEXT:                 ) as usize,
-// CHECK-NEXT:         ) as *mut ()
-// CHECK-NEXT:     }) as *mut Option<unsafe extern "C-unwind" fn()>;
+// CHECK-NEXT:         ) as *mut ()) as *mut Option<unsafe extern "C-unwind" fn()>
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *suite.tests.add(0) = Some(test_a);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *suite.tests.add(1) = Some(test_b);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     suite.ntests = 2;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < suite.ntests {
-// CHECK-NEXT:         unsafe { unsafe { *suite.tests.offset(i as isize) }.unwrap()() };
+// CHECK-NEXT:         unsafe { (*suite.tests.offset(i as isize)).unwrap()() };
 // CHECK-NEXT:         println!("{}", unsafe { last_ran });
 // CHECK-NEXT:         i += 1;
 // CHECK-NEXT:     }

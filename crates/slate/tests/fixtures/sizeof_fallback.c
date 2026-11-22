@@ -385,9 +385,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn heap_and_memory() -> i32 {
-// CHECK-NEXT:     let items: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc(3u64.wrapping_mul(core::mem::size_of::<i32>() as u64) as usize) as *mut ()
-// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:     let items: *mut i32 = unsafe {
+// CHECK-NEXT:         (malloc(3u64.wrapping_mul(core::mem::size_of::<i32>() as u64) as usize)
+// CHECK-NEXT:             as *mut ()) as *mut i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut a: Pair = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: Pair = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].left = 1i32;
@@ -417,8 +418,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *items.add(2) = b.left + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let result: i32 = (unsafe { *items.add(0) }) + unsafe { *items.add(1) }
-// CHECK-NEXT:         + unsafe { *items.add(2) };
+// CHECK-NEXT:     let result: i32 = unsafe { *items.add(0) + *items.add(1) + *items.add(2) };
 // CHECK-NEXT:     unsafe { free((items as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     result
 // CHECK-NEXT: }

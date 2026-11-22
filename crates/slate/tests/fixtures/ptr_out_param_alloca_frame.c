@@ -34,10 +34,10 @@ int main(void) {
 // CHECK-NEXT: fn check_target(ptr: *const i8, end: *const i8, tokPtr: &mut i32) -> i32 {
 // CHECK-NEXT:     let mut upper: bool = false;
 // CHECK-NEXT:     *tokPtr = 7;
-// CHECK-NEXT:     if ((unsafe { end.offset_from(ptr as *const i8) }) as i64) != 3 {
+// CHECK-NEXT:     if (unsafe { end.offset_from(ptr as *const i8) as i64 }) != 3 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     match (unsafe { *ptr.add(0) }) as i32 {
+// CHECK-NEXT:     match unsafe { *ptr.add(0) as i32 } {
 // CHECK-NEXT:         120 => {}
 // CHECK-NEXT:         88 => {
 // CHECK-NEXT:             upper = true;

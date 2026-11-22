@@ -396,7 +396,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", core::mem::align_of::<[i32; 5]>() as i32);
 // CHECK-NEXT:     println!("{}", core::mem::align_of::<*mut i8>() as i32);
 // CHECK-NEXT:     println!("{}", core::mem::align_of::<i32>() as i32);
-// CHECK-NEXT:     println!("{}", values.0[0] + ((unsafe { *text.add(0) }) as i32) + pair.left);
+// CHECK-NEXT:     println!("{}", values.0[0] + unsafe { *text.add(0) as i32 } + pair.left);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

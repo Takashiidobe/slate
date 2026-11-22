@@ -159,7 +159,7 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn guard_release(g: *mut guard) {
-// CHECK-NEXT:     if !unsafe { (*g).lock }.is_null() {
+// CHECK-NEXT:     if !unsafe { (*g).lock.is_null() } {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *(*g).lock -= 1;
 // CHECK-NEXT:         }
@@ -244,7 +244,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn free_box(p: *mut *mut i32) {
-// CHECK-NEXT:     if !unsafe { *p }.is_null() {
+// CHECK-NEXT:     if !unsafe { (*p).is_null() } {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *(*p) = -1;
 // CHECK-NEXT:         }
@@ -277,8 +277,6 @@ int main(void) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe { order_len };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         order_len = [[V_0]] + 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         order.0[[[V_0]] as usize] = *c;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -334,8 +332,6 @@ int main(void) {
 // CHECK-NEXT:                     let [[V_1:__v[0-9]+]]: i32 = unsafe { order_len };
 // CHECK-NEXT:                     unsafe {
 // CHECK-NEXT:                         order_len = [[V_1]] + 1;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     unsafe {
 // CHECK-NEXT:                         order.0[[[V_1]] as usize] = 45;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
@@ -347,8 +343,6 @@ int main(void) {
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = unsafe { order_len };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         order_len = [[V_2]] + 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         order.0[[[V_2]] as usize] = 33;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     -2

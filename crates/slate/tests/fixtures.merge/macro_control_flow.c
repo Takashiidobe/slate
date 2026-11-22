@@ -399,11 +399,11 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn hidden_buffer_return(n: i32) -> *mut i32 {
 // CHECK-NEXT:     NEG_NULL!(n);
-// CHECK-NEXT:     let p: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc(
+// CHECK-NEXT:     let p: *mut i32 = unsafe {
+// CHECK-NEXT:         (malloc(
 // CHECK-NEXT:             (n as size_t).wrapping_mul(core::mem::size_of::<i32>() as size_t) as usize,
-// CHECK-NEXT:         ) as *mut ()
-// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:         ) as *mut ()) as *mut i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *p.add(0) = n;
 // CHECK-NEXT:     }
@@ -413,7 +413,7 @@ int main(void) {
 // CHECK-NEXT: fn hidden_null_return(p: *mut i32, n: i32) -> *mut i32 {
 // CHECK-NEXT:     NEG_NULL!(n);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p = *p + n;
+// CHECK-NEXT:         *p += n;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     p
 // CHECK-NEXT: }

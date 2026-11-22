@@ -112,7 +112,7 @@ int main(void) {
 // CHECK-NEXT:     let mut count: i32 = 0;
 // CHECK-NEXT:     while !list.is_null() {
 // CHECK-NEXT:         count += 1;
-// CHECK-NEXT:         list = (unsafe { (*list).next }) as *const Node;
+// CHECK-NEXT:         list = unsafe { (*list).next as *const Node };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     count
 // CHECK-NEXT: }
@@ -164,7 +164,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}",
-// CHECK-NEXT:         length((unsafe { head }) as *const Node),
+// CHECK-NEXT:         length(unsafe { head as *const Node }),
 // CHECK-NEXT:         missing,
 // CHECK-NEXT:         found,
 // CHECK-NEXT:         unsafe { *cursor }
@@ -179,14 +179,12 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
-// CHECK-NEXT:         unsafe { last_key }.is_null() as i32,
-// CHECK-NEXT:         unsafe { opaque }.is_null() as i32,
-// CHECK-NEXT:         unsafe { table.0[1] }.is_null() as i32
+// CHECK-NEXT:         unsafe { last_key.is_null() as i32 },
+// CHECK-NEXT:         unsafe { opaque.is_null() as i32 },
+// CHECK-NEXT:         unsafe { table.0[1].is_null() as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         head = core::ptr::null_mut::<Node>();
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         last_key = entries.0[0].key;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

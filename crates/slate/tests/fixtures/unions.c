@@ -37,20 +37,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pick_left(value: i32) -> i32 {
 // CHECK-NEXT:     let mut p: Pair = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         p.left = value;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     p.left = value;
 // CHECK-NEXT:     unsafe { p.left }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn overwrite(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let mut p: Pair = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         p.left = a;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         p.right = b;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     p.left = a;
+// CHECK-NEXT:     p.right = b;
 // CHECK-NEXT:     unsafe { p.left }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

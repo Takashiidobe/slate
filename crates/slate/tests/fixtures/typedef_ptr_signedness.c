@@ -47,7 +47,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     println!("{}", ((unsafe { b.end.offset_from(b.start as *mut u8) }) as i64) as i32);
+// CHECK-NEXT:     println!("{}", unsafe { (b.end.offset_from(b.start as *mut u8) as i64) as i32 });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

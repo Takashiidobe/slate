@@ -156,17 +156,17 @@ int main(void) {
 // CHECK-NEXT: core::arch::global_asm!(".section .drectve,\"yni\"\n.ascii \" /section:.rdata,W\"");
 // CHECK-EMPTY:
 // CHECK-NEXT: fn characteristics(name: &core::ffi::CStr) -> u32 {
-// CHECK-NEXT:     let base: *mut i8 = (unsafe { GetModuleHandleA(core::ptr::null::<i8>()) })
-// CHECK-NEXT:         as *mut i8;
-// CHECK-NEXT:     let nt: *mut _IMAGE_NT_HEADERS64 = (unsafe {
+// CHECK-NEXT:     let base: *mut i8 = unsafe { GetModuleHandleA(core::ptr::null::<i8>()) as *mut i8 };
+// CHECK-NEXT:     let nt: *mut _IMAGE_NT_HEADERS64 = unsafe {
 // CHECK-NEXT:         base.offset((*(base as *mut _IMAGE_DOS_HEADER)).e_lfanew as isize)
-// CHECK-NEXT:     }) as *mut _IMAGE_NT_HEADERS64;
+// CHECK-NEXT:             as *mut _IMAGE_NT_HEADERS64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let section: *mut _IMAGE_SECTION_HEADER = (nt as u64)
 // CHECK-NEXT:         .wrapping_add(24)
-// CHECK-NEXT:         .wrapping_add(((unsafe { (*nt).FileHeader.SizeOfOptionalHeader }) as i32) as u64)
+// CHECK-NEXT:         .wrapping_add(unsafe { ((*nt).FileHeader.SizeOfOptionalHeader as i32) as u64 })
 // CHECK-NEXT:         as *mut _IMAGE_SECTION_HEADER;
 // CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while i < ((unsafe { (*nt).FileHeader.NumberOfSections }) as i32) {
+// CHECK-NEXT:     while i < unsafe { (*nt).FileHeader.NumberOfSections as i32 } {
 // CHECK-NEXT:         if (unsafe {
 // CHECK-NEXT:             strncmp(
 // CHECK-NEXT:                 ((*section.offset(i as isize)).Name.as_mut_ptr() as *const i8)
@@ -185,7 +185,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let flags: u32 = characteristics(c".rdata");
 // CHECK-NEXT:     if flags == 0 || flags & 2147483648 == 0 {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

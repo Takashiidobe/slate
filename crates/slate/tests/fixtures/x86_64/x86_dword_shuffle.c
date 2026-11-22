@@ -79,9 +79,8 @@ int main(void) {
 // CHECK-NEXT:     __b: core::simd::Simd<i64, 2>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_si128)).__v)
-// CHECK-NEXT:             .write_unaligned(__b);
-// CHECK-NEXT:     }
+// CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_si128)).__v).write_unaligned(__b)
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
@@ -101,9 +100,8 @@ int main(void) {
 // CHECK-NEXT:     __a: core::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_si256)).__v)
-// CHECK-NEXT:             .write_unaligned(__a);
-// CHECK-NEXT:     }
+// CHECK-NEXT:         core::ptr::addr_of_mut!((*(__p as *mut __storeu_si256)).__v).write_unaligned(__a)
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
@@ -114,52 +112,40 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm_storeu_si128(
 // CHECK-NEXT:             out.as_mut_ptr() as *mut core::simd::Simd<i64, 2>,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i64, 2>>(
-// CHECK-NEXT:                     core::simd::simd_swizzle!(
-// CHECK-NEXT:                         unsafe {
-// CHECK-NEXT:                             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
-// CHECK-NEXT:                                 v,
-// CHECK-NEXT:                             )
-// CHECK-NEXT:                         },
-// CHECK-NEXT:                         [3, 2, 1, 0]
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i64, 2>>(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
+// CHECK-NEXT:                         v,
 // CHECK-NEXT:                     ),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:                     [3, 2, 1, 0]
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm_storeu_si128(
 // CHECK-NEXT:             out.as_mut_ptr().add(4) as *mut core::simd::Simd<i64, 2>,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i64, 2>>(
-// CHECK-NEXT:                     core::simd::simd_swizzle!(
-// CHECK-NEXT:                         unsafe {
-// CHECK-NEXT:                             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
-// CHECK-NEXT:                                 v,
-// CHECK-NEXT:                             )
-// CHECK-NEXT:                         },
-// CHECK-NEXT:                         [0, 0, 3, 3]
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i64, 2>>(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
+// CHECK-NEXT:                         v,
 // CHECK-NEXT:                     ),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:                     [0, 0, 3, 3]
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm_storeu_si128(
 // CHECK-NEXT:             out.as_mut_ptr().add(8) as *mut core::simd::Simd<i64, 2>,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i64, 2>>(
-// CHECK-NEXT:                     core::simd::simd_swizzle!(
-// CHECK-NEXT:                         unsafe {
-// CHECK-NEXT:                             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
-// CHECK-NEXT:                                 v,
-// CHECK-NEXT:                             )
-// CHECK-NEXT:                         },
-// CHECK-NEXT:                         [1, 0, 3, 0]
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i64, 2>>(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
+// CHECK-NEXT:                         v,
 // CHECK-NEXT:                     ),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:                     [1, 0, 3, 0]
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -173,18 +159,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm256_storeu_si256(
 // CHECK-NEXT:             (out as *mut i32) as *mut core::simd::Simd<i64, 4>,
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<i64, 4>>(
-// CHECK-NEXT:                     core::simd::simd_swizzle!(
-// CHECK-NEXT:                         unsafe {
-// CHECK-NEXT:                             core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
-// CHECK-NEXT:                                 v,
-// CHECK-NEXT:                             )
-// CHECK-NEXT:                         },
-// CHECK-NEXT:                         [2, 3, 0, 1, 6, 7, 4, 5]
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<i64, 4>>(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
+// CHECK-NEXT:                         v,
 // CHECK-NEXT:                     ),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:                     [2, 3, 0, 1, 6, 7, 4, 5]
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

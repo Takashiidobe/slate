@@ -48,13 +48,15 @@ int main(void) {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         let mut s: padded = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         {
 // CHECK-NEXT:             let __slate_auto_bytes = (core::ptr::addr_of_mut!(s) as *mut _) as *mut u8;
-// CHECK-NEXT:             core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize);
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::ptr::write_bytes(__slate_auto_bytes.add(0usize), 170u8, 8usize)
+// CHECK-NEXT:             };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let n: i32 = -1431655766i32;
 // CHECK-NEXT:         let raw: *const u8 = core::ptr::addr_of_mut!(s) as *const u8;
-// CHECK-NEXT:         total += ((unsafe { *raw.add(0) }) as i32) + ((unsafe { *raw.add(1) }) as i32)
+// CHECK-NEXT:         total += (unsafe { (*raw.add(0) as i32) + (*raw.add(1) as i32) })
 // CHECK-NEXT:             + ((n as u8) as i32);
 // CHECK-NEXT:         round += 1;
 // CHECK-NEXT:         if round < limit {

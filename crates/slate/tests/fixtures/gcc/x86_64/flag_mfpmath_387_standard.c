@@ -365,8 +365,9 @@ int main(void) {
 // CHECK-NEXT:     let mut compound: f64 = __slate_f80_to_f64(
 // CHECK-NEXT:         LongDouble([143, 255, 68, 94, 47, 156, 103, 142, 254, 67]),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let as_double: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
-// CHECK-NEXT:         as f64;
+// CHECK-NEXT:     let as_double: f64 = unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(big)) as f64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     compound = __slate_f80_to_f64(
 // CHECK-NEXT:         __slate_f80_from_f64(compound)
 // CHECK-NEXT:             * __slate_f80_from_f64(

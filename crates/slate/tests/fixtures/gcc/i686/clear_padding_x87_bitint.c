@@ -346,9 +346,9 @@ int main(void) {
 // CHECK-NEXT:             (10u32 as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: *mut u8 = core::ptr::addr_of_mut!(a) as *mut u8;
-// CHECK-NEXT:         [[T_0]].add(10usize).write_bytes(0u8, 2usize);
+// CHECK-NEXT:         unsafe { [[T_0]].add(10usize).write_bytes(0u8, 2usize) };
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"x87".as_ptr(),
@@ -375,11 +375,11 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     m.s = 3;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: *mut u8 = core::ptr::addr_of_mut!(m) as *mut u8;
-// CHECK-NEXT:         [[T_1]].add(1usize).write_bytes(0u8, 3usize);
-// CHECK-NEXT:         [[T_1]].add(14usize).write_bytes(0u8, 2usize);
-// CHECK-NEXT:         [[T_1]].add(18usize).write_bytes(0u8, 2usize);
+// CHECK-NEXT:         unsafe { [[T_1]].add(1usize).write_bytes(0u8, 3usize) };
+// CHECK-NEXT:         unsafe { [[T_1]].add(14usize).write_bytes(0u8, 2usize) };
+// CHECK-NEXT:         unsafe { [[T_1]].add(18usize).write_bytes(0u8, 2usize) };
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"x87_mixed".as_ptr(),
@@ -399,11 +399,13 @@ int main(void) {
 // CHECK-NEXT:         *(core::ptr::addr_of_mut!(b) as *mut u8).add(0) = 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     b.c = 6;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: *mut u8 = core::ptr::addr_of_mut!(b) as *mut u8;
-// CHECK-NEXT:         *[[T_2]].add(2usize) &= 1u8;
-// CHECK-NEXT:         [[T_2]].add(3usize).write_bytes(0u8, 1usize);
-// CHECK-NEXT:         [[T_2]].add(5usize).write_bytes(0u8, 3usize);
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *[[T_2]].add(2usize) &= 1u8;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         unsafe { [[T_2]].add(3usize).write_bytes(0u8, 1usize) };
+// CHECK-NEXT:         unsafe { [[T_2]].add(5usize).write_bytes(0u8, 3usize) };
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump(c"bitint".as_ptr(), core::ptr::addr_of_mut!(b) as *const (), 8u32);
 // CHECK-NEXT:     let mut z: complex_x87 = unsafe { core::mem::zeroed() };
@@ -434,10 +436,10 @@ int main(void) {
 // CHECK-NEXT:             (10u32 as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]]: *mut u8 = core::ptr::addr_of_mut!(z) as *mut u8;
-// CHECK-NEXT:         [[T_3]].add(10usize).write_bytes(0u8, 2usize);
-// CHECK-NEXT:         [[T_3]].add(22usize).write_bytes(0u8, 2usize);
+// CHECK-NEXT:         unsafe { [[T_3]].add(10usize).write_bytes(0u8, 2usize) };
+// CHECK-NEXT:         unsafe { [[T_3]].add(22usize).write_bytes(0u8, 2usize) };
 // CHECK-NEXT:     };
 // CHECK-NEXT:     dump(c"complex_x87".as_ptr(), core::ptr::addr_of_mut!(z) as *const (), 24u32);
 // CHECK-NEXT:     0

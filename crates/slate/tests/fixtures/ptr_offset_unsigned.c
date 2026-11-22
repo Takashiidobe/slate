@@ -51,6 +51,6 @@ int main(void) {
 // CHECK-NEXT:     unsafe { *p.offset(-(i as isize)) }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn constant_offsets(s: *const i8) -> *const i8 {
-// CHECK-NEXT:     if (unsafe { *s.add(2) }) != 0 { unsafe { s.add(8) } } else { unsafe { s.sub(3) } }
+// CHECK-NEXT:     unsafe { if *s.add(2) != 0 { s.add(8) } else { s.sub(3) } }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

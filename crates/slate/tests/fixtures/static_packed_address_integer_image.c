@@ -42,18 +42,21 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::mem::zeroed() },
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut d: core::mem::MaybeUninit<__SlateImage_d> = unsafe {
+// CHECK-NEXT: static mut d: core::mem::MaybeUninit<__SlateImage_d> = {
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: core::mem::MaybeUninit<__SlateImage_d> = core::mem::MaybeUninit::zeroed();
 // CHECK-NEXT:     let [[T_1:__t[0-9]+]] = [[T_0]].as_mut_ptr();
-// CHECK-NEXT:     (*[[T_1]]).size = (core::mem::size_of::<[i32; 16]>() as u64).wrapping_sub(1u64) as u16;
-// CHECK-NEXT:     (core::ptr::addr_of_mut!((*[[T_1]]).address) as *mut *const ())
-// CHECK-NEXT:         .write_unaligned(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*[[T_1]]).size = (core::mem::size_of::<[i32; 16]>() as u64).wrapping_sub(1u64)
+// CHECK-NEXT:             as u16;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!((*[[T_1]]).address) as *mut *const ())
+// CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 core::mem::transmute::<*mut i32, *const ()>(
-// CHECK-NEXT:                     unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         );
+// CHECK-NEXT:                     core::ptr::addr_of_mut!(table.0) as *mut i32,
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
@@ -61,9 +64,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         table.0[3] = 7;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let p: *mut i32 = (unsafe {
-// CHECK-NEXT:         (*(core::ptr::addr_of_mut!(d) as *mut __SlateImage_d)).address
-// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:     let p: *mut i32 = unsafe {
+// CHECK-NEXT:         (*(core::ptr::addr_of_mut!(d) as *mut __SlateImage_d)).address as *mut i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

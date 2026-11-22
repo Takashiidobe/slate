@@ -39,7 +39,7 @@ int defaults_used(void) { return fallback() * 100 + threshold; }
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: #[linkage = "weak"]
 // CHECK-NEXT: extern "C-unwind" fn lone_pointer_weak() -> *mut i32 {
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(default_slot) }
+// CHECK-NEXT:     core::ptr::addr_of_mut!(default_slot)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn defaults_used() -> i32 {

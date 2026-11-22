@@ -32,9 +32,9 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut result: i32 = 11;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:                 let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
+// CHECK-NEXT:             let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::arch::asm!(
 // CHECK-NEXT:                     "testl {0:e}, {0:e}\n\tjz {1}",
 // CHECK-NEXT:                     in(reg) value as u32,
@@ -43,13 +43,13 @@ int main(void) {
 // CHECK-NEXT:                     },
 // CHECK-NEXT:                     options(nostack, att_syntax),
 // CHECK-NEXT:                 );
-// CHECK-NEXT:                 if !__slate_asm_target {
-// CHECK-NEXT:                     if true {
-// CHECK-NEXT:                         break '[[JOIN_0]];
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 result = 13;
 // CHECK-NEXT:             }
+// CHECK-NEXT:             if !__slate_asm_target {
+// CHECK-NEXT:                 if true {
+// CHECK-NEXT:                     break '[[JOIN_0]];
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             result = 13;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[V_0]] = result;
 // CHECK-NEXT:     }

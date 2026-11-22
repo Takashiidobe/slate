@@ -295,7 +295,7 @@ int main(void) {
 // CHECK-NEXT:     format: *const i8,
 // CHECK-NEXT:     __va_args: ...,
 // CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     (((unsafe { *format.add(0) }) as i32) == 102) as i32
+// CHECK-NEXT:     ((unsafe { *format.add(0) as i32 }) == 102) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_format_arg(format: *const i8) -> *const i8 {
@@ -307,7 +307,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_noreturn() {
-// CHECK-NEXT:     unsafe { std::process::exit(99i32 as i32) };
+// CHECK-NEXT:     std::process::exit(99i32 as i32);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_returns_twice() -> i32 {
@@ -364,8 +364,6 @@ int main(void) {
 // CHECK-NEXT:     let never: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         gnu_common_value = 73;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         gnu_nocommon_value = 79;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(never)) }) != 0 {

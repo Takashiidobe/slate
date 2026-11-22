@@ -63,8 +63,6 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         counter += 4;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         hidden.0[2] = 30;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{} {}", unsafe { counter }, unsafe { hidden.0[2] });

@@ -151,7 +151,7 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn exported_bump(value: *mut i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *value = *value + 10;
+// CHECK-NEXT:         *value += 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { *value }
 // CHECK-NEXT: }
@@ -418,7 +418,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump(value: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *value = *value + 1;
+// CHECK-NEXT:         *value += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -431,12 +431,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn make_buffer(count: i32) -> *mut i32 {
-// CHECK-NEXT:     let buffer: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc(
+// CHECK-NEXT:     let buffer: *mut i32 = unsafe {
+// CHECK-NEXT:         (malloc(
 // CHECK-NEXT:             (count as size_t).wrapping_mul(core::mem::size_of::<i32>() as size_t)
 // CHECK-NEXT:                 as usize,
-// CHECK-NEXT:         ) as *mut ()
-// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:         ) as *mut ()) as *mut i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0..count {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *buffer.offset(i as isize) = i + 1;

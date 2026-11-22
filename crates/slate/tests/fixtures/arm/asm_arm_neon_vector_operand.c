@@ -25,22 +25,20 @@ int main(void) {
 // CHECK-NEXT:     mut rhs: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let mut result: core::simd::Simd<f32, 4> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: core::arch::arm::uint8x16_t;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "vadd.f32 {0}, {0}, {0}\n@ {1}",
-// CHECK-NEXT:             inlateout(qreg) unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<f32, 4>, core::arch::arm::uint8x16_t>(
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "vadd.f32 {0}, {0}, {0}\n@ {1}",
+// CHECK-NEXT:                 inlateout(qreg) core::mem::transmute::<core::simd::Simd<f32, 4>, core::arch::arm::uint8x16_t>(
 // CHECK-NEXT:                     lhs,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             } => [[T_0]],
-// CHECK-NEXT:             in(qreg) unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<f32, 4>, core::arch::arm::uint8x16_t>(
+// CHECK-NEXT:                 ) => [[T_0]],
+// CHECK-NEXT:                 in(qreg) core::mem::transmute::<core::simd::Simd<f32, 4>, core::arch::arm::uint8x16_t>(
 // CHECK-NEXT:                     rhs,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             options(nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:                 options(nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::arch::arm::uint8x16_t, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:                 [[T_0]],

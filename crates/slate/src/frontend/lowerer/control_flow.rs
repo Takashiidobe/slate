@@ -746,7 +746,7 @@ impl FunctionLowerer<'_, '_> {
                 ))),
                 args: Vec::new(),
                 binding: CallBinding::Generated,
-                unsafe_: rust::Unsafe(false),
+                unsafe_: rust::Unsafe(true),
             }
         })
     }
@@ -979,7 +979,7 @@ impl FunctionLowerer<'_, '_> {
                 ))),
                 args: Vec::new(),
                 binding: CallBinding::Generated,
-                unsafe_: rust::Unsafe(false),
+                unsafe_: rust::Unsafe(true),
             })],
             false => jump(index),
         };

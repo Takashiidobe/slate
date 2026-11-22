@@ -217,7 +217,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut wide: bitint::BInt<200, 4, 32, bitint::A8> = widen(sixty_five);
 // CHECK-NEXT:     let mut mid: bitint::BUint<100, 2, 16, bitint::A8> = narrow(
-// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(global_wide) })
+// CHECK-NEXT:         core::ptr::addr_of_mut!(global_wide)
 // CHECK-NEXT:             as *const bitint::BInt<200, 4, 32, bitint::A8>,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let flag: bool = true;
@@ -256,23 +256,23 @@ int main(void) {
 // CHECK-NEXT:     dump(c"mid".as_ptr(), core::ptr::addr_of_mut!(mid) as *const (), 16u64);
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"global_wide".as_ptr(),
-// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(global_wide) }) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(global_wide) as *const (),
 // CHECK-NEXT:         32u64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"global_huge".as_ptr(),
-// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(global_huge) }) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(global_huge) as *const (),
 // CHECK-NEXT:         72u64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"global_pair".as_ptr(),
-// CHECK-NEXT:         (unsafe {
-// CHECK-NEXT:             core::ptr::addr_of_mut!(global_pair.0)
-// CHECK-NEXT:                 as *mut bitint::BInt<128, 2, 16, bitint::A8>
-// CHECK-NEXT:         }) as *const (),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(global_pair.0)
+// CHECK-NEXT:                 as *mut bitint::BInt<128, 2, 16, bitint::A8>) as *const ()
+// CHECK-NEXT:         },
 // CHECK-NEXT:         32u64,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let truncated: i16 = (((unsafe { global_huge }.to_u128() as u16) & 511) as i16) << 7
+// CHECK-NEXT:     let truncated: i16 = (((unsafe { global_huge.to_u128() as u16 }) & 511) as i16) << 7
 // CHECK-NEXT:         >> 7;
 // CHECK-NEXT:     let mut widened_huge: bitint::BUint<300, 5, 40, bitint::A8> = <bitint::BUint<300, 5, 40, bitint::A8>>::from_bint(
 // CHECK-NEXT:         <bitint::BInt<300, 5, 40, bitint::A8>>::from_bint(unsafe { global_wide }),

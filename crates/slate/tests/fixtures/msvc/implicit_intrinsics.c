@@ -78,7 +78,7 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // I686-PC-WINDOWS-MSVC-NEXT:     };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     if basic.0[0] == 0 || basic.0[0] != extended.0[0] || basic.0[1] != extended.0[1] {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT: }
 // X86_64-PC-WINDOWS-MSVC-EMPTY:
@@ -93,8 +93,8 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT:     };
 // X86_64-PC-WINDOWS-MSVC-NEXT:     if low != 0 || high != 1 {
 // I686-PC-WINDOWS-MSVC-NEXT:     if basic[0] == 0 || basic[0] != extended[0] || basic[1] != extended[1] {
-// X86_64-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
-// I686-PC-WINDOWS-MSVC-NEXT:         unsafe { std::process::abort() };
+// X86_64-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
+// I686-PC-WINDOWS-MSVC-NEXT:         std::process::abort();
 // X86_64-PC-WINDOWS-MSVC-NEXT:     }
 // I686-PC-WINDOWS-MSVC-NEXT:     }
 // X86_64-PC-WINDOWS-MSVC-NEXT: }

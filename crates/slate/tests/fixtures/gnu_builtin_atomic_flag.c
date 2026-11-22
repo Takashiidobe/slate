@@ -16,18 +16,18 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut flag: bool = false;
-// CHECK-NEXT:     let first: i32 = (unsafe {
+// CHECK-NEXT:     let first: i32 = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(flag) as *mut bool,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .swap(true, core::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:     }) as i32;
-// CHECK-NEXT:     let second: i32 = (unsafe {
+// CHECK-NEXT:             .swap(true, core::sync::atomic::Ordering::SeqCst) as i32
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let second: i32 = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(flag) as *mut bool,
 // CHECK-NEXT:             )
-// CHECK-NEXT:             .swap(true, core::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:     }) as i32;
+// CHECK-NEXT:             .swap(true, core::sync::atomic::Ordering::SeqCst) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(flag) as *mut bool,

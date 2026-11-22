@@ -345,8 +345,10 @@ int main(void) {
 // CHECK-NEXT:                 unsafe { core::ptr::read_volatile(core::ptr::addr_of!(ten)) },
 // CHECK-NEXT:             ),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let h: f32 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(f)) })
-// CHECK-NEXT:         + unsafe { core::ptr::read_volatile(core::ptr::addr_of!(fone)) };
+// CHECK-NEXT:     let h: f32 = unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(f))
+// CHECK-NEXT:             + core::ptr::read_volatile(core::ptr::addr_of!(fone))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let y: f64 = __slate_f80_to_f64(
 // CHECK-NEXT:         __slate_f80_from_f64(
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
@@ -359,8 +361,9 @@ int main(void) {
 // CHECK-NEXT:     let mut assigned: f64 = 0 as f64;
 // CHECK-NEXT:     let mut passed: f64 = 0 as f64;
 // CHECK-NEXT:     let mut compound: f64 = 1e308f64;
-// CHECK-NEXT:     let as_double: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
-// CHECK-NEXT:         as f64;
+// CHECK-NEXT:     let as_double: f64 = unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(big)) as f64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     compound = __slate_f80_to_f64(
 // CHECK-NEXT:         __slate_f80_from_f64(compound)
 // CHECK-NEXT:             * __slate_f80_from_f64(

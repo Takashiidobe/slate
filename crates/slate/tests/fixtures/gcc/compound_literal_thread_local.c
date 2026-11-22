@@ -73,19 +73,19 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn counter() -> *mut i32 {
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(__slate_compound_counter_0) }
+// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_compound_counter_0)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn point() -> *mut Point {
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(__slate_compound_point_0) }
+// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_compound_point_0)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pair_a() -> *mut i32 {
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(__slate_compound_pair_a_0) as *mut i32 }
+// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_compound_pair_a_0) as *mut i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pair_b() -> *mut i32 {
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(__slate_compound_pair_b_0) as *mut i32 }
+// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_compound_pair_b_0) as *mut i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn step(bump: i32) -> i32 {
@@ -96,8 +96,6 @@ int main(void) {
 // CHECK-NEXT:     let p: *mut Point = point();
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*p).x += bump;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*p).y *= 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { pair_a().add(0) };
@@ -141,7 +139,7 @@ int main(void) {
 // CHECK-NEXT:     joined = [[V_2]];
 // CHECK-NEXT:     let c: i32 = step(1i32);
 // CHECK-NEXT:     println!("{} {} {} {} {} {}", a, b, c, worker_result, created, joined);
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = (unsafe { *pair_a().add(0) }) + unsafe { *pair_b().add(1) };
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = unsafe { *pair_a().add(0) + *pair_b().add(1) };
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = unsafe { (*point()).y };
 // CHECK-NEXT:     let [[V_0]]: i32 = unsafe { (*point()).x };
 // CHECK-NEXT:     println!("{} {} {} {}", unsafe { *counter() }, [[V_0]], [[V_4]], [[V_3]]);

@@ -53,15 +53,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn spans(s: *const i8, set: *const i8) -> u64 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:             strspn(s as *const core::ffi::c_char, set as *const core::ffi::c_char) as u64
-// CHECK-NEXT:         }
-// CHECK-NEXT:         .wrapping_mul(100)
-// CHECK-NEXT:         .wrapping_add(
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:         (strspn(s as *const core::ffi::c_char, set as *const core::ffi::c_char) as u64)
+// CHECK-NEXT:             .wrapping_mul(100)
+// CHECK-NEXT:             .wrapping_add(
 // CHECK-NEXT:                 strcspn(s as *const core::ffi::c_char, set as *const core::ffi::c_char)
-// CHECK-NEXT:                     as u64
-// CHECK-NEXT:             },
-// CHECK-NEXT:         )
+// CHECK-NEXT:                     as u64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

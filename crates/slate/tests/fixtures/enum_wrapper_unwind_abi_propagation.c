@@ -121,7 +121,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.content_like")]
 // CHECK-NEXT: extern "C-unwind" fn content_like(x: i32) -> u32 {
-// CHECK-NEXT:     unsafe { unsafe { g_callback }.unwrap()(x) };
+// CHECK-NEXT:     unsafe { g_callback.unwrap()(x) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

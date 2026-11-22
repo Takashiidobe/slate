@@ -45,46 +45,46 @@ int main(void) {
 // CHECK-NEXT:     let mut word: [i8; 4] = [97, 98, 99, 0];
 // CHECK-NEXT:     let needle: i32 = buf[3] as i32;
 // CHECK-NEXT:     let partial_count: u64 = 4;
-// CHECK-NEXT:     let hit: *mut u8 = (unsafe {
-// CHECK-NEXT:         __builtin_memchr(buf.as_mut_ptr() as *const (), needle, 8u64)
-// CHECK-NEXT:     }) as *mut u8;
-// CHECK-NEXT:     let miss: *mut u8 = (unsafe {
-// CHECK-NEXT:         __builtin_memchr(buf.as_mut_ptr() as *const (), 99i32, 8u64)
-// CHECK-NEXT:     }) as *mut u8;
-// CHECK-NEXT:     let zero: *mut u8 = (unsafe {
-// CHECK-NEXT:         __builtin_memchr(buf.as_mut_ptr() as *const (), 10i32, 0u64)
-// CHECK-NEXT:     }) as *mut u8;
-// CHECK-NEXT:     let nul_after: *mut i8 = (unsafe {
+// CHECK-NEXT:     let hit: *mut u8 = unsafe {
+// CHECK-NEXT:         __builtin_memchr(buf.as_mut_ptr() as *const (), needle, 8u64) as *mut u8
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let miss: *mut u8 = unsafe {
+// CHECK-NEXT:         __builtin_memchr(buf.as_mut_ptr() as *const (), 99i32, 8u64) as *mut u8
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let zero: *mut u8 = unsafe {
+// CHECK-NEXT:         __builtin_memchr(buf.as_mut_ptr() as *const (), 10i32, 0u64) as *mut u8
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let nul_after: *mut i8 = unsafe {
 // CHECK-NEXT:         __builtin_memchr(
 // CHECK-NEXT:             word.as_mut_ptr() as *const (),
 // CHECK-NEXT:             0i32,
 // CHECK-NEXT:             core::mem::size_of::<[i8; 4]>() as u64,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     }) as *mut i8;
-// CHECK-NEXT:     let nul_equal: *mut i8 = (unsafe {
-// CHECK-NEXT:         __builtin_memchr(word.as_mut_ptr() as *const (), 0i32, 3u64)
-// CHECK-NEXT:     }) as *mut i8;
-// CHECK-NEXT:     let nul_before: *mut i8 = (unsafe {
-// CHECK-NEXT:         __builtin_memchr(word.as_mut_ptr() as *const (), 0i32, 2u64)
-// CHECK-NEXT:     }) as *mut i8;
-// CHECK-NEXT:     let partial: *mut u8 = (unsafe {
+// CHECK-NEXT:         ) as *mut i8
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let nul_equal: *mut i8 = unsafe {
+// CHECK-NEXT:         __builtin_memchr(word.as_mut_ptr() as *const (), 0i32, 3u64) as *mut i8
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let nul_before: *mut i8 = unsafe {
+// CHECK-NEXT:         __builtin_memchr(word.as_mut_ptr() as *const (), 0i32, 2u64) as *mut i8
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let partial: *mut u8 = unsafe {
 // CHECK-NEXT:         __builtin_memchr(
 // CHECK-NEXT:             buf.as_mut_ptr() as *const (),
 // CHECK-NEXT:             needle,
 // CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(partial_count)),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     }) as *mut u8;
+// CHECK-NEXT:         ) as *mut u8
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let offset_base: *mut u8 = unsafe { buf.as_mut_ptr().add(2) };
-// CHECK-NEXT:     let offset: *mut u8 = (unsafe {
-// CHECK-NEXT:         __builtin_memchr(offset_base as *const (), needle, 2u64)
-// CHECK-NEXT:     }) as *mut u8;
-// CHECK-NEXT:     let const_hit: *const u8 = (unsafe {
+// CHECK-NEXT:     let offset: *mut u8 = unsafe {
+// CHECK-NEXT:         __builtin_memchr(offset_base as *const (), needle, 2u64) as *mut u8
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let const_hit: *const u8 = unsafe {
 // CHECK-NEXT:         __builtin_memchr(
 // CHECK-NEXT:             cbuf.as_ptr() as *const (),
 // CHECK-NEXT:             7i32,
 // CHECK-NEXT:             core::mem::size_of::<[u8; 4]>() as u64,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     }) as *const u8;
+// CHECK-NEXT:         ) as *const u8
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

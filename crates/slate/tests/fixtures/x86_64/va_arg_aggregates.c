@@ -204,7 +204,7 @@ int main(void) {
 // CHECK-NEXT:         total += (t.c as i64) + p.a + p.b + (m.d as i64) + m.l
 // CHECK-NEXT:             + ((f.f[0] + f.f[1] + f.f[2] + f.f[3]) as i64);
 // CHECK-NEXT:         total += b.a + b.b + b.c + ((o.c[0] as i32) as i64) + ((o.c[1] as i32) as i64)
-// CHECK-NEXT:             + ((o.c[2] as i32) as i64) + ((unsafe { u.d }) as i64) + tail;
+// CHECK-NEXT:             + ((o.c[2] as i32) as i64) + unsafe { u.d as i64 } + tail;
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"round %d: %ld\n".as_ptr(), i, total) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };

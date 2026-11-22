@@ -45,49 +45,45 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn lookup(status: i32, found: i32) -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         '__slate_dispatch: {
-// CHECK-NEXT:             let [[T_0:__t[0-9]+]]: i32 = status;
-// CHECK-NEXT:             if [[T_0]] == 12 {
-// CHECK-NEXT:                 return 3;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if [[T_0]] == 0 {
-// CHECK-NEXT:                     if found != 0 {
-// CHECK-NEXT:                         break '__slate_dispatch;
-// CHECK-NEXT:                     }
+// CHECK-NEXT:     '__slate_dispatch: {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: i32 = status;
+// CHECK-NEXT:         if [[T_0]] == 12 {
+// CHECK-NEXT:             return 3;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             if [[T_0]] == 0 {
+// CHECK-NEXT:                 if found != 0 {
+// CHECK-NEXT:                     break '__slate_dispatch;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:             return 2;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn skip_into_else(x: i32, y: i32) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 0;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:             '[[JOIN_1:__join_[0-9]+]]: {
-// CHECK-NEXT:                 let [[T_0]]: i32 = x;
-// CHECK-NEXT:                 if [[T_0]] == 1 {
-// CHECK-NEXT:                     if y > 0 {
-// CHECK-NEXT:                         out += 10;
-// CHECK-NEXT:                         break '[[JOIN_1]];
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     if [[T_0]] != 2 {
-// CHECK-NEXT:                         if [[T_0]] == 3 {
-// CHECK-NEXT:                             out += 30;
-// CHECK-NEXT:                             break '[[JOIN_0]];
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             break '[[JOIN_0]];
-// CHECK-NEXT:                         }
+// CHECK-NEXT:     '[[JOIN_0:__join_[0-9]+]]: {
+// CHECK-NEXT:         '[[JOIN_1:__join_[0-9]+]]: {
+// CHECK-NEXT:             let [[T_0]]: i32 = x;
+// CHECK-NEXT:             if [[T_0]] == 1 {
+// CHECK-NEXT:                 if y > 0 {
+// CHECK-NEXT:                     out += 10;
+// CHECK-NEXT:                     break '[[JOIN_1]];
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 if [[T_0]] != 2 {
+// CHECK-NEXT:                     if [[T_0]] == 3 {
+// CHECK-NEXT:                         out += 30;
+// CHECK-NEXT:                         break '[[JOIN_0]];
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         break '[[JOIN_0]];
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 out += 20;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             out += 1;
+// CHECK-NEXT:             out += 20;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         out += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
 // CHECK-NEXT: }

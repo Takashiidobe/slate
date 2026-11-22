@@ -116,7 +116,7 @@ int main(void) {
 // CHECK-NEXT:             40u64,
 // CHECK-NEXT:             values.0[1].tag as i32,
 // CHECK-NEXT:             values.0[1].inner.prefix,
-// CHECK-NEXT:             unsafe { values.0[1].inner.value }.to_i128() as i64,
+// CHECK-NEXT:             values.0[1].inner.value.to_i128() as i64,
 // CHECK-NEXT:             values.0[1].tail as i32,
 // CHECK-NEXT:             item.bytes[0] as i32,
 // CHECK-NEXT:             item.bytes[1] as i32,

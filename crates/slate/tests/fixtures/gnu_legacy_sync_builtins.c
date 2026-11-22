@@ -138,45 +138,45 @@ int main(void) {
 // CHECK-NEXT:     v = 15;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}",
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         (unsafe {
 // CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(v) as *mut i32,
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .fetch_or(240i32, core::sync::atomic::Ordering::SeqCst) | 240
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 .fetch_or(240i32, core::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:         }) | 240
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
 // CHECK-NEXT:     v = 255;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}",
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         (unsafe {
 // CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(v) as *mut i32,
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .fetch_and(15i32, core::sync::atomic::Ordering::SeqCst) & 15
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 .fetch_and(15i32, core::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:         }) & 15
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
 // CHECK-NEXT:     v = 15;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}",
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         (unsafe {
 // CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(v) as *mut i32,
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .fetch_xor(255i32, core::sync::atomic::Ordering::SeqCst) ^ 255
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 .fetch_xor(255i32, core::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:         }) ^ 255
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
 // CHECK-NEXT:     v = 5;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}",
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             !(core::sync::atomic::AtomicI32::from_ptr(
+// CHECK-NEXT:         !((unsafe {
+// CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
 // CHECK-NEXT:                     core::ptr::addr_of_mut!(v) as *mut i32,
 // CHECK-NEXT:                 )
-// CHECK-NEXT:                 .fetch_nand(3i32, core::sync::atomic::Ordering::SeqCst) & 3)
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 .fetch_nand(3i32, core::sync::atomic::Ordering::SeqCst)
+// CHECK-NEXT:         }) & 3)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", v);
 // CHECK-NEXT:     core::sync::atomic::fence(core::sync::atomic::Ordering::SeqCst);

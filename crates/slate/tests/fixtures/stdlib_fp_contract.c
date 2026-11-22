@@ -32,8 +32,10 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: f64 = 1.9999999999999998f64;
 // CHECK-NEXT:     let y: f64 = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) };
-// CHECK-NEXT:     let z: f64 = -((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) })
-// CHECK-NEXT:         * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) });
+// CHECK-NEXT:     let z: f64 = -unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(x))
+// CHECK-NEXT:             * core::ptr::read_volatile(core::ptr::addr_of!(x))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut contracted: f64 = 0 as f64;
 // CHECK-NEXT:     let mut uncontracted: f64 = 0 as f64;
 // CHECK-NEXT:     contracted = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) }) * y + z;

@@ -69,23 +69,19 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn store(a: *mut i32, v: i32) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         a.write_unaligned(v);
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { a.write_unaligned(v) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum(p: *mut S) -> i64 {
-// CHECK-NEXT:     (unsafe { core::ptr::addr_of!((*p).x).read_unaligned() })
-// CHECK-NEXT:         + ((unsafe { core::ptr::addr_of!((*p).y).read_unaligned() }) as i64)
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::ptr::addr_of!((*p).x).read_unaligned()
+// CHECK-NEXT:             + (core::ptr::addr_of!((*p).y).read_unaligned() as i64)
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn set(p: *mut S) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((*p).x).write_unaligned(7i64);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!((*p).y).write_unaligned(9i32);
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!((*p).x).write_unaligned(7i64) };
+// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!((*p).y).write_unaligned(9i32) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn lane(q: *mut W, i: i32) -> i64 {
@@ -93,13 +89,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn put(q: *mut W, i: i32, v: i64) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = v;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = core::ptr::addr_of_mut!((*q).v);
-// CHECK-NEXT:         let mut [[T_2:__t[0-9]+]] = [[T_1]].read_unaligned();
-// CHECK-NEXT:         [[T_2]][i as usize] = [[T_0]];
-// CHECK-NEXT:         [[T_1]].write_unaligned([[T_2]]);
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[T_0:__t[0-9]+]] = v;
+// CHECK-NEXT:     let [[T_1:__t[0-9]+]] = unsafe { core::ptr::addr_of_mut!((*q).v) };
+// CHECK-NEXT:     let mut [[T_2:__t[0-9]+]] = unsafe { [[T_1]].read_unaligned() };
+// CHECK-NEXT:     [[T_2]][i as usize] = [[T_0]];
+// CHECK-NEXT:     unsafe { [[T_1]].write_unaligned([[T_2]]) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -111,12 +105,10 @@ int main(void) {
 // CHECK-NEXT:             ((core::mem::size_of::<[i8; 64]>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     store((unsafe { buffer.0.as_mut_ptr().add(1) }) as *mut i32, 42i32);
-// CHECK-NEXT:     let __slate_printf_arg0 = load(
-// CHECK-NEXT:         (unsafe { buffer.0.as_mut_ptr().add(1) }) as *mut i32,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     store(unsafe { buffer.0.as_mut_ptr().add(1) as *mut i32 }, 42i32);
+// CHECK-NEXT:     let __slate_printf_arg0 = load(unsafe { buffer.0.as_mut_ptr().add(1) as *mut i32 });
 // CHECK-NEXT:     println!("{}", __slate_printf_arg0);
-// CHECK-NEXT:     set((unsafe { buffer.0.as_mut_ptr().add(3) }) as *mut S);
+// CHECK-NEXT:     set(unsafe { buffer.0.as_mut_ptr().add(3) as *mut S });
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -125,8 +117,8 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     put((unsafe { buffer.0.as_mut_ptr().add(17) }) as *mut W, 1i32, 5i64);
-// CHECK-NEXT:     put((unsafe { buffer.0.as_mut_ptr().add(17) }) as *mut W, 0i32, 4i64);
+// CHECK-NEXT:     put(unsafe { buffer.0.as_mut_ptr().add(17) as *mut W }, 1i32, 5i64);
+// CHECK-NEXT:     put(unsafe { buffer.0.as_mut_ptr().add(17) as *mut W }, 0i32, 4i64);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

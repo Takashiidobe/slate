@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe { printf(c"twice %d\n".as_ptr(), twice(21i32)) };
-// CHECK-NEXT:     if !unsafe { getenv(c"SLATE_NOSTDINC_UNSET".as_ptr()) }.is_null() {
+// CHECK-NEXT:     if !unsafe { getenv(c"SLATE_NOSTDINC_UNSET".as_ptr()).is_null() } {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { exit((twice(21i32) != 42) as i32) };

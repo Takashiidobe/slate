@@ -156,8 +156,6 @@ int main(void) {
 // CHECK-NEXT:     let inner: *mut Inner = inner_of(core::ptr::addr_of_mut!(local));
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*inner).value += 50;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         global_outer.id = 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bump(unsafe { core::ptr::addr_of_mut!(global_outer.id) }, 4i32);
@@ -168,8 +166,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *global_slot = 77;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         global_outer.link = core::ptr::addr_of_mut!(global_outer.inner);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bump(unsafe { core::ptr::addr_of_mut!((*global_outer.link).value) }, 1i32);

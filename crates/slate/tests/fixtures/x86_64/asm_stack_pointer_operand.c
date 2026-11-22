@@ -47,14 +47,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn count(mut w: u32) -> u32 {
 // CHECK-NEXT:     let mut res: u32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "popcntl {1:e}, {0:e}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) w as u32,
-// CHECK-NEXT:             options(pure, nomem, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "popcntl {1:e}, {0:e}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) w as u32,
+// CHECK-NEXT:                 options(pure, nomem, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         res = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     res
@@ -62,13 +64,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn stack_nonzero() -> i32 {
 // CHECK-NEXT:     let mut copy: u64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movq %rsp, {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movq %rsp, {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         copy = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (copy != 0 && copy & 7 == 0) as i32

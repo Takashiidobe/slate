@@ -32,18 +32,14 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let first: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
-// CHECK-NEXT:                 ap.next_arg::<*const u8>(),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }
+// CHECK-NEXT:         core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:             ap.next_arg::<*const u8>(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let second: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
-// CHECK-NEXT:                 ap.next_arg::<*const u8>(),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }
+// CHECK-NEXT:         core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn(i32) -> i32>>(
+// CHECK-NEXT:             ap.next_arg::<*const u8>(),
+// CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe { first.unwrap()(x) };
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = if second != None {
@@ -60,31 +56,23 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             invoke(
 // CHECK-NEXT:                 4i32,
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *const u8>(
-// CHECK-NEXT:                         Some(twice),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *const u8>(
-// CHECK-NEXT:                         Some(twice),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *const u8>(
+// CHECK-NEXT:                     Some(twice),
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *const u8>(
+// CHECK-NEXT:                     Some(twice),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             invoke(
 // CHECK-NEXT:                 7i32,
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *const u8>(
-// CHECK-NEXT:                         Some(twice),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *const u8>(
-// CHECK-NEXT:                         None,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *const u8>(
+// CHECK-NEXT:                     Some(twice),
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *const u8>(
+// CHECK-NEXT:                     None,
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );

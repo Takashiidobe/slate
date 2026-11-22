@@ -23,7 +23,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_atoi(s: *const i8) -> i32 {
-// CHECK-NEXT:     let bytes = unsafe { core::ffi::CStr::from_ptr(s) }.to_bytes();
+// CHECK-NEXT:     let bytes = unsafe { core::ffi::CStr::from_ptr(s).to_bytes() };
 // CHECK-NEXT:     let n = bytes.len();
 // CHECK-NEXT:     let mut i = 0usize;
 // CHECK-NEXT:     while i < n && (bytes[i].is_ascii_whitespace() || bytes[i] == 11u8) {
@@ -48,9 +48,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn parse_num(s: *mut i8) -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __slate_atoi(((s as *const i8) as *const core::ffi::c_char) as *const i8) as i32
-// CHECK-NEXT:     }
+// CHECK-NEXT:     __slate_atoi(((s as *const i8) as *const core::ffi::c_char) as *const i8) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn forward_num(s: *mut i8) -> i32 {
@@ -58,7 +56,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn text_len(s: *mut i8) -> i32 {
-// CHECK-NEXT:     (unsafe { strlen((s as *const i8) as *const core::ffi::c_char) as u64 }) as i32
+// CHECK-NEXT:     unsafe { (strlen((s as *const i8) as *const core::ffi::c_char) as u64) as i32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

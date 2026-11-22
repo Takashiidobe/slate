@@ -192,11 +192,12 @@ int main(void) {
 // CHECK-NEXT:     println!("{} {} {}", unsafe { *old }, at_p, at_next);
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: *mut i32 = p;
 // CHECK-NEXT:     p = unsafe { [[V_11]].sub(1) };
-// CHECK-NEXT:     let was: i32 = ((unsafe { [[V_11]].offset_from(values.0.as_mut_ptr() as *mut i32) })
-// CHECK-NEXT:         as i64) as i32;
-// CHECK-NEXT:     let __slate_printf_arg1 = ((unsafe {
-// CHECK-NEXT:         p.offset_from(values.0.as_mut_ptr() as *mut i32)
-// CHECK-NEXT:     }) as i64) as i32;
+// CHECK-NEXT:     let was: i32 = unsafe {
+// CHECK-NEXT:         ([[V_11]].offset_from(values.0.as_mut_ptr() as *mut i32) as i64) as i32
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let __slate_printf_arg1 = unsafe {
+// CHECK-NEXT:         (p.offset_from(values.0.as_mut_ptr() as *mut i32) as i64) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {}", was, __slate_printf_arg1);
 // CHECK-NEXT:     let [[V_12:__v[0-9]+]]: i32 = unsafe { *p };
 // CHECK-NEXT:     unsafe {
@@ -253,8 +254,6 @@ int main(void) {
 // CHECK-NEXT:     counter.hits += 1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*cp).hits += 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*cp).total += 1i32 as f64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_22:__v[0-9]+]]: i32 = unsafe { (*cp).hits };

@@ -24,8 +24,8 @@ int main(int argc, char **argv) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
 // CHECK-NEXT:         argc,
-// CHECK-NEXT:         !unsafe { *argv.add(0) }.is_null() as i32,
-// CHECK-NEXT:         unsafe { *argv.offset(argc as isize) }.is_null() as i32
+// CHECK-NEXT:         !unsafe { (*argv.add(0)).is_null() } as i32,
+// CHECK-NEXT:         unsafe { (*argv.offset(argc as isize)).is_null() as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let length: u64 = unsafe {
 // CHECK-NEXT:         strlen((*argv.add(0) as *const i8) as *const core::ffi::c_char) as u64

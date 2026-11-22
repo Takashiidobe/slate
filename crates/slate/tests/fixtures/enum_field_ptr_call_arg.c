@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     ((unsafe { *repeatMode }) as u32).wrapping_add(count)
+// CHECK-NEXT:     unsafe { (*repeatMode as u32).wrapping_add(count) }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn run(e: &mut __SlateRecord_enum_field_ptr_call_arg_c_5, count: u32) -> i32 {
 // CHECK-NEXT:     select_type(core::ptr::addr_of_mut!((*e).mode), count) as i32

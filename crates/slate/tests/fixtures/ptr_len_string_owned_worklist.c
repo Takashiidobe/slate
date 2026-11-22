@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { strlen((text as *const i8) as *const core::ffi::c_char) as u64 };
 // CHECK-NEXT:     let mut score: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         score += ((unsafe { *text.offset(i as isize) }) as u8) as i32;
+// CHECK-NEXT:         score += unsafe { (*text.offset(i as isize) as u8) as i32 };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { free((text as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     score
@@ -49,10 +49,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let len: i32 = 4;
-// CHECK-NEXT:     let text: *mut i8 = (unsafe {
-// CHECK-NEXT:         malloc((len as u64).wrapping_mul(core::mem::size_of::<i8>() as u64) as usize)
-// CHECK-NEXT:             as *mut ()
-// CHECK-NEXT:     }) as *mut i8;
+// CHECK-NEXT:     let text: *mut i8 = unsafe {
+// CHECK-NEXT:         (malloc((len as u64).wrapping_mul(core::mem::size_of::<i8>() as u64) as usize)
+// CHECK-NEXT:             as *mut ()) as *mut i8
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             ((b"abc\0".as_ptr() as *const ()) as *const core::ffi::c_void) as *const u8,

@@ -514,11 +514,7 @@ int main(void) {
 // CHECK-NEXT: fn next() -> f64 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         state ^= state << 13i32;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         state ^= state >> 7i32;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         state ^= state << 17i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ((((unsafe { state }) >> 11i32) as i64) as f64) / 1099511627776.0f64 - 4096.0f64
@@ -736,9 +732,9 @@ int main(void) {
 // CHECK-NEXT:                 true,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut f: num_complex::Complex<f32> = ((unsafe {
-// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(one))
-// CHECK-NEXT:     }) as f32)
+// CHECK-NEXT:     let mut f: num_complex::Complex<f32> = (unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(one)) as f32
+// CHECK-NEXT:     })
 // CHECK-NEXT:         + num_complex::Complex {
 // CHECK-NEXT:             re: 0.0f32,
 // CHECK-NEXT:             im: 2.0f32,
@@ -760,9 +756,9 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:         let [[T_0:__t[0-9]+]] = __slate_f80_from_f64(
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
 // I686-UNKNOWN-LINUX-GNU-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(one)) },
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     let mut l: num_complex::Complex<f128> = ((unsafe {
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(one))
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     }) as f128)
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     let mut l: num_complex::Complex<f128> = (unsafe {
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(one)) as f128
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         + num_complex::Complex {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:             re: 0f128,
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:             im: 2f128,

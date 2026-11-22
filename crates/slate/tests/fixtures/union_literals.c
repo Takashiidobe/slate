@@ -413,16 +413,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static bit_static: bit_field_member = {
 // CHECK-NEXT:     let mut [[T_0]]: bit_field_member = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_bits(5u32);
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { [[T_0]].__slate_bits_0.__set_bits(5u32) };
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn zero_after(object: *const (), start: u64, size: u64) -> i32 {
 // CHECK-NEXT:     let bytes: *const u8 = object as *const u8;
 // CHECK-NEXT:     for i in start..size {
-// CHECK-NEXT:         if ((unsafe { *bytes.add(i as usize) }) as i32) != 0 {
+// CHECK-NEXT:         if (unsafe { *bytes.add(i as usize) as i32 }) != 0 {
 // CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -433,8 +431,8 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {}",
-// CHECK-NEXT:             (unsafe { table[i as usize].fc.freq }) as i32,
-// CHECK-NEXT:             (unsafe { table[i as usize].dl.code }) as i32
+// CHECK-NEXT:             unsafe { table[i as usize].fc.freq as i32 },
+// CHECK-NEXT:             unsafe { table[i as usize].dl.code as i32 }
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -450,24 +448,20 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         zero_after(
-// CHECK-NEXT:             (unsafe { core::ptr::addr_of!(partial_static) }) as *const (),
+// CHECK-NEXT:             core::ptr::addr_of!(partial_static) as *const (),
 // CHECK-NEXT:             1u64,
 // CHECK-NEXT:             core::mem::size_of::<partial>() as u64,
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         (unsafe { partial_static.small }) as i32
+// CHECK-NEXT:         unsafe { partial_static.small as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         (unsafe { record_static.record.tag }) as i32,
+// CHECK-NEXT:         unsafe { record_static.record.tag as i32 },
 // CHECK-NEXT:         unsafe { record_static.record.value }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         zero_after(
-// CHECK-NEXT:             (unsafe { core::ptr::addr_of!(record_static) }) as *const (),
-// CHECK-NEXT:             1u64,
-// CHECK-NEXT:             4u64,
-// CHECK-NEXT:         ),
+// CHECK-NEXT:         zero_after(core::ptr::addr_of!(record_static) as *const (), 1u64, 4u64),
 // CHECK-NEXT:         __slate_f80_to_i32(unsafe { wide_static.wide })
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), bit_static.word) };
@@ -491,13 +485,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
-// CHECK-NEXT:         (unsafe { local.code }) as i32,
+// CHECK-NEXT:         unsafe { local.code as i32 },
 // CHECK-NEXT:         zero_after(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(local_partial) as *const (),
 // CHECK-NEXT:             1u64,
 // CHECK-NEXT:             core::mem::size_of::<partial>() as u64,
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         (unsafe { local_partial.small }) as i32
+// CHECK-NEXT:         unsafe { local_partial.small as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

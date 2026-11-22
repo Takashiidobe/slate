@@ -1071,8 +1071,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%lld %llu\n".as_ptr(),
-// CHECK-NEXT:             unsafe { g_add }.to_i128() as i64,
-// CHECK-NEXT:             unsafe { g_cmp }.to_u128() as u64,
+// CHECK-NEXT:             g_add.to_i128() as i64,
+// CHECK-NEXT:             g_cmp.to_u128() as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

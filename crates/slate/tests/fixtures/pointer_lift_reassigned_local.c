@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT:     let mut b: [i32; 2] = [3, 4];
 // CHECK-NEXT:     if pick(a.as_slice(), b.as_slice(), 2i32, 0i32) != 3
 // CHECK-NEXT:         || pick(a.as_slice(), b.as_slice(), 2i32, 1i32) != 7 {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

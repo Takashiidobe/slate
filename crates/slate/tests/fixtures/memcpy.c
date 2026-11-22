@@ -42,14 +42,14 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]][0] = 0u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { full_dst[0usize..8usize].copy_from_slice(&full_src[0usize..8usize]) };
+// CHECK-NEXT:     full_dst[0usize..8usize].copy_from_slice(&full_src[0usize..8usize]);
 // CHECK-NEXT:     let partial_src: [u8; 8] = [9, 8, 7, 6, 5, 4, 3, 2];
 // CHECK-NEXT:     let mut partial_dst: [u8; 8] = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: [u8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]][0] = 0u8;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { partial_dst[0usize..4usize].copy_from_slice(&partial_src[0usize..4usize]) };
+// CHECK-NEXT:     partial_dst[0usize..4usize].copy_from_slice(&partial_src[0usize..4usize]);
 // CHECK-NEXT:     let mut alias_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(

@@ -1661,7 +1661,7 @@ int main(void) {
 // CHECK-NEXT:         < (core::mem::size_of::<[u64; 24]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<u64>() as u64) {
 // CHECK-NEXT:         let mut w: bitint::BUint<100, 2, 16, bitint::A8> = <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(
-// CHECK-NEXT:             (unsafe { seeds.0[i as usize] }) as u128,
+// CHECK-NEXT:             seeds.0[i as usize] as u128,
 // CHECK-NEXT:         );
 // CHECK-NEXT:         REPORT!(bitint::BUint<100, 2, 16, bitint::A8>, w);
 // CHECK-NEXT:         REPORT!(bitint::BUint<100, 2, 16, bitint::A8>, w.shl_bits(30 as usize));
@@ -1669,27 +1669,27 @@ int main(void) {
 // CHECK-NEXT:         REPORT__2!(
 // CHECK-NEXT:             bitint::BUint<65, 2, 16, bitint::A8>,
 // CHECK-NEXT:             <bitint::BUint<65, 2, 16, bitint::A8>>::from_u128(
-// CHECK-NEXT:                 (unsafe { seeds.0[i as usize] }) as u128,
+// CHECK-NEXT:                 seeds.0[i as usize] as u128,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         );
 // CHECK-NEXT:         REPORT__2!(
 // CHECK-NEXT:             bitint::BUint<65, 2, 16, bitint::A8>,
 // CHECK-NEXT:             <bitint::BUint<65, 2, 16, bitint::A8>>::from_u128(
-// CHECK-NEXT:                     (unsafe { seeds.0[i as usize] }) as u128,
+// CHECK-NEXT:                     seeds.0[i as usize] as u128,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .bitnot()
 // CHECK-NEXT:         );
 // CHECK-NEXT:         REPORT__3!(
 // CHECK-NEXT:             bitint::BUint<128, 2, 16, bitint::A8>,
 // CHECK-NEXT:             <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
-// CHECK-NEXT:                     (unsafe { seeds.0[i as usize] }) as u128,
+// CHECK-NEXT:                     seeds.0[i as usize] as u128,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .shl_bits(64 as usize)
 // CHECK-NEXT:         );
 // CHECK-NEXT:         REPORT__3!(
 // CHECK-NEXT:             bitint::BUint<128, 2, 16, bitint::A8>,
 // CHECK-NEXT:             <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
-// CHECK-NEXT:                     (unsafe { seeds.0[i as usize] }) as u128,
+// CHECK-NEXT:                     seeds.0[i as usize] as u128,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .bitnot()
 // CHECK-NEXT:         );
@@ -1702,7 +1702,7 @@ int main(void) {
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (core::mem::size_of::<[u64; 24]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<u64>() as u64) {
-// CHECK-NEXT:         let s: u64 = unsafe { seeds.0[i as usize] };
+// CHECK-NEXT:         let s: u64 = seeds.0[i as usize];
 // CHECK-NEXT:         REPORT__5!(u8, s);
 // CHECK-NEXT:         REPORT__7!(u16, s);
 // CHECK-NEXT:         REPORT__13!(u32, s);

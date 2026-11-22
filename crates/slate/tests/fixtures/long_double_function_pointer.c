@@ -252,11 +252,9 @@ int main(void) {
 // CHECK-NEXT: ) -> LongDouble {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_icall__rf80_f80(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>, *const ()>(
-// CHECK-NEXT:                     f,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>, *const ()>(
+// CHECK-NEXT:                 f,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:             x,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }
@@ -264,33 +262,25 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let table: __SlateAlign16<[Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>; 5]> = __SlateAlign16(
-// CHECK-NEXT:         [
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             [
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>>(
 // CHECK-NEXT:                     __slate_ldfp_long_double_function_pointer_twice as *const (),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>>(
 // CHECK-NEXT:                     __slate_ldfp_long_double_function_pointer_halve as *const (),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>>(
 // CHECK-NEXT:                     __slate_ldfp_long_double_function_pointer_cbrtl as *const (),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>>(
 // CHECK-NEXT:                     __slate_ldfp_long_double_function_pointer_fabsl as *const (),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>>(
 // CHECK-NEXT:                     __slate_ldfp_long_double_function_pointer_twice as *const (),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         ],
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ]
+// CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut x: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 216, 3, 192]);
 // CHECK-NEXT:     for i in 0i32..5i32 {
@@ -300,18 +290,16 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let b: __SlateAlign16<[Option<unsafe extern "C-unwind" fn(LongDouble, i32) -> LongDouble>; 2]> = __SlateAlign16(
-// CHECK-NEXT:         [
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             [
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble, i32) -> LongDouble>>(
 // CHECK-NEXT:                     __slate_ldfp_long_double_function_pointer_shift as *const (),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble, i32) -> LongDouble>>(
 // CHECK-NEXT:                     __slate_ldfp_long_double_function_pointer_ldexpl as *const (),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         ],
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ]
+// CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..2i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -320,11 +308,9 @@ int main(void) {
 // CHECK-NEXT:                 c"b%d %.6Lf\n".as_ptr(),
 // CHECK-NEXT:                 i,
 // CHECK-NEXT:                 __slate_icall__rf80_f80_i32(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32) -> LongDouble>, *const ()>(
-// CHECK-NEXT:                             b.0[i as usize],
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32) -> LongDouble>, *const ()>(
+// CHECK-NEXT:                         b.0[i as usize],
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]),
 // CHECK-NEXT:                     3i32,
 // CHECK-NEXT:                 ),

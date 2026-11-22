@@ -106,13 +106,15 @@ int main(void) {
 // CHECK-NEXT:     let mut receive_message: slate_support::msghdr = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut pair: [i32; 2] = [0i32; 2];
 // CHECK-NEXT:     out.0[0].iov_base = (first.as_mut_ptr() as *mut ()) as _;
-// CHECK-NEXT:     out.0[0].iov_len = (unsafe {
-// CHECK-NEXT:         strlen((first.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as u64
-// CHECK-NEXT:     }) as _;
+// CHECK-NEXT:     out.0[0].iov_len = unsafe {
+// CHECK-NEXT:         (strlen((first.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as u64)
+// CHECK-NEXT:             as _
+// CHECK-NEXT:     };
 // CHECK-NEXT:     out.0[1].iov_base = (second.as_mut_ptr() as *mut ()) as _;
-// CHECK-NEXT:     out.0[1].iov_len = (unsafe {
-// CHECK-NEXT:         strlen((second.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as u64
-// CHECK-NEXT:     }) as _;
+// CHECK-NEXT:     out.0[1].iov_len = unsafe {
+// CHECK-NEXT:         (strlen((second.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as u64)
+// CHECK-NEXT:             as _
+// CHECK-NEXT:     };
 // CHECK-NEXT:     r#in.0[0].iov_base = (a.as_mut_ptr() as *mut ()) as _;
 // CHECK-NEXT:     r#in.0[0].iov_len = 6u64 as _;
 // CHECK-NEXT:     r#in.0[1].iov_base = (b.as_mut_ptr() as *mut ()) as _;

@@ -59,10 +59,8 @@ int main(void) {
 // CHECK-NEXT:             function,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     (address >= unsafe { core::ptr::addr_of_mut!(__start_slate_gnu_text) as *mut i8 }
-// CHECK-NEXT:         && address
-// CHECK-NEXT:             < unsafe { core::ptr::addr_of_mut!(__stop_slate_gnu_text) as *mut i8 })
-// CHECK-NEXT:         as i32
+// CHECK-NEXT:     (address >= (core::ptr::addr_of_mut!(__start_slate_gnu_text) as *mut i8)
+// CHECK-NEXT:         && address < (core::ptr::addr_of_mut!(__stop_slate_gnu_text) as *mut i8)) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

@@ -33,7 +33,7 @@ int main(void) {
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     __SlateAlign16([0i32; 6]);
+// CHECK-NEXT:     let local: __SlateAlign16<[i32; 6]> = __SlateAlign16([0i32; 6]);
 // CHECK-NEXT:     let local_whole: u64 = 24;
 // CHECK-NEXT:     let local_remaining: u64 = 16;
 // CHECK-NEXT:     let global_whole: u64 = 16;

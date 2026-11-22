@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:     line: *mut i8,
 // CHECK-NEXT:     show: i32,
 // CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     show + ((((unsafe { *line.add(0) }) as i32) == 120) as i32)
+// CHECK-NEXT:     show + (((unsafe { *line.add(0) as i32 }) == 120) as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "stdcall-unwind" fn DllMain(

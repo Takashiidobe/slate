@@ -54,17 +54,11 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         small = add_char(small, 3i8);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         byte = ((byte as i32) + 1) as u8;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         ratio = scale(ratio, 2.0f32);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         total = add_double(total, ratio as f64);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{}", (unsafe { small }) as i32);
+// CHECK-NEXT:     println!("{}", unsafe { small as i32 });
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u\n".as_ptr(), byte as i32) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

@@ -48,16 +48,16 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     while !head.is_null() {
 // CHECK-NEXT:         n += unsafe { (*head).v };
-// CHECK-NEXT:         if ((unsafe { (*head).next }) as *mut ()).is_null() {
+// CHECK-NEXT:         if unsafe { ((*head).next as *mut ()).is_null() } {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         head = unsafe { (*head).next };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if head.is_null() || unsafe { (*head).next }.is_null() {
+// CHECK-NEXT:     if head.is_null() || unsafe { (*head).next.is_null() } {
 // CHECK-NEXT:         n += 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { hook }) != None {
-// CHECK-NEXT:         n += unsafe { unsafe { hook }.unwrap()(n) };
+// CHECK-NEXT:         n += unsafe { hook.unwrap()(n) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     n
 // CHECK: {{^}}}

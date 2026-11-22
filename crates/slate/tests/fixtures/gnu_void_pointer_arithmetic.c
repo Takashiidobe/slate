@@ -53,30 +53,30 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let start: *mut () = (unsafe { core::ptr::addr_of_mut!(bytes.0) as *mut u8 })
-// CHECK-NEXT:         as *mut ();
-// CHECK-NEXT:     let end: *mut () = (unsafe {
+// CHECK-NEXT:     let start: *mut () = unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of_mut!(bytes.0) as *mut u8) as *mut ()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let end: *mut () = unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!(bytes.0) as *mut u8)
-// CHECK-NEXT:             .add((core::mem::size_of::<[u8; 16]>() as u64) as usize)
-// CHECK-NEXT:     }) as *mut ();
-// CHECK-NEXT:     let middle: *const () = ((unsafe { (start as *const u8).add(5) }) as *mut ())
-// CHECK-NEXT:         as *const ();
+// CHECK-NEXT:             .add((core::mem::size_of::<[u8; 16]>() as u64) as usize) as *mut ()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let middle: *const () = unsafe {
+// CHECK-NEXT:         ((start as *const u8).add(5) as *mut ()) as *const ()
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut cursor: *mut () = end;
-// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).sub(3) }) as *mut ();
-// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).sub(2) }) as *mut ();
-// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).add(1) }) as *mut ();
-// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).add(1) }) as *mut ();
-// CHECK-NEXT:     cursor = (unsafe { (cursor as *const u8).sub(1) }) as *mut ();
-// CHECK-NEXT:     let span: i64 = (unsafe { (end as *const u8).offset_from(start as *const u8) })
-// CHECK-NEXT:         as i64;
-// CHECK-NEXT:     let back: i64 = (unsafe { (start as *const u8).offset_from(end as *const u8) })
-// CHECK-NEXT:         as i64;
-// CHECK-NEXT:     let offset: i64 = (unsafe {
-// CHECK-NEXT:         (middle as *const u8).offset_from((start as *const ()) as *const u8)
-// CHECK-NEXT:     }) as i64;
-// CHECK-NEXT:     let position: i64 = (unsafe {
-// CHECK-NEXT:         (cursor as *const u8).offset_from(start as *const u8)
-// CHECK-NEXT:     }) as i64;
+// CHECK-NEXT:     cursor = unsafe { (cursor as *const u8).sub(3) as *mut () };
+// CHECK-NEXT:     cursor = unsafe { (cursor as *const u8).sub(2) as *mut () };
+// CHECK-NEXT:     cursor = unsafe { (cursor as *const u8).add(1) as *mut () };
+// CHECK-NEXT:     cursor = unsafe { (cursor as *const u8).add(1) as *mut () };
+// CHECK-NEXT:     cursor = unsafe { (cursor as *const u8).sub(1) as *mut () };
+// CHECK-NEXT:     let span: i64 = unsafe { (end as *const u8).offset_from(start as *const u8) as i64 };
+// CHECK-NEXT:     let back: i64 = unsafe { (start as *const u8).offset_from(end as *const u8) as i64 };
+// CHECK-NEXT:     let offset: i64 = unsafe {
+// CHECK-NEXT:         (middle as *const u8).offset_from((start as *const ()) as *const u8) as i64
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let position: i64 = unsafe {
+// CHECK-NEXT:         (cursor as *const u8).offset_from(start as *const u8) as i64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -98,7 +98,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     ((unsafe { (cursor as *const u8).offset_from(middle as *const u8) }) as i64) as i32
+// CHECK-NEXT:     unsafe { ((cursor as *const u8).offset_from(middle as *const u8) as i64) as i32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

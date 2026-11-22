@@ -84,21 +84,23 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn add64(a: u64, b: u64) -> u64 {
 // CHECK-NEXT:     let mut result: u64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u64 = a as u64;
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]]: u64 = b as u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "adds r0, r2, r4\n\tadc r1, r3, r5",
-// CHECK-NEXT:             out("r0") [[T_0]],
-// CHECK-NEXT:             out("r1") [[T_1]],
-// CHECK-NEXT:             in("r2") [[T_2]] as u32,
-// CHECK-NEXT:             in("r3") ([[T_2]] >> 32) as u32,
-// CHECK-NEXT:             in("r4") [[T_3]] as u32,
-// CHECK-NEXT:             in("r5") ([[T_3]] >> 32) as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "adds r0, r2, r4\n\tadc r1, r3, r5",
+// CHECK-NEXT:                 out("r0") [[T_0]],
+// CHECK-NEXT:                 out("r1") [[T_1]],
+// CHECK-NEXT:                 in("r2") [[T_2]] as u32,
+// CHECK-NEXT:                 in("r3") ([[T_2]] >> 32) as u32,
+// CHECK-NEXT:                 in("r4") [[T_3]] as u32,
+// CHECK-NEXT:                 in("r5") ([[T_3]] >> 32) as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<u64, u64>(
 // CHECK-NEXT:                 (([[T_1]] as u64) << 32 | ([[T_0]] as u64)) as u64,
@@ -109,16 +111,18 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn increment(mut value: i64) -> i64 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64 = value as u64;
 // CHECK-NEXT:         let [[T_1]]: u32;
 // CHECK-NEXT:         let [[T_2]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "adds r0, r0, #1\n\tadc r1, r1, #0",
-// CHECK-NEXT:             inlateout("r0") [[T_0]] as u32 => [[T_1]],
-// CHECK-NEXT:             inlateout("r1") ([[T_0]] >> 32) as u32 => [[T_2]],
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "adds r0, r0, #1\n\tadc r1, r1, #0",
+// CHECK-NEXT:                 inlateout("r0") [[T_0]] as u32 => [[T_1]],
+// CHECK-NEXT:                 inlateout("r1") ([[T_0]] >> 32) as u32 => [[T_2]],
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         value = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<u64, i64>(
 // CHECK-NEXT:                 (([[T_2]] as u64) << 32 | ([[T_1]] as u64)) as u64,
@@ -130,19 +134,21 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn swap_halves(value: u64) -> u64 {
 // CHECK-NEXT:     let mut result: u64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64 = (value >> 1i32) as u64;
 // CHECK-NEXT:         let [[T_1]]: u32;
 // CHECK-NEXT:         let [[T_2]]: u32;
 // CHECK-NEXT:         let [[T_3]]: u64 = value as u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov r0, r3\n\tmov r1, r2",
-// CHECK-NEXT:             inout("r0") [[T_0]] as u32 => [[T_1]],
-// CHECK-NEXT:             inout("r1") ([[T_0]] >> 32) as u32 => [[T_2]],
-// CHECK-NEXT:             in("r2") [[T_3]] as u32,
-// CHECK-NEXT:             in("r3") ([[T_3]] >> 32) as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov r0, r3\n\tmov r1, r2",
+// CHECK-NEXT:                 inout("r0") [[T_0]] as u32 => [[T_1]],
+// CHECK-NEXT:                 inout("r1") ([[T_0]] >> 32) as u32 => [[T_2]],
+// CHECK-NEXT:                 in("r2") [[T_3]] as u32,
+// CHECK-NEXT:                 in("r3") ([[T_3]] >> 32) as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<u64, u64>(
 // CHECK-NEXT:                 (([[T_2]] as u64) << 32 | ([[T_1]] as u64)) as u64,
@@ -154,16 +160,18 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn exclusive_load(mut pointer: *mut u64) -> u64 {
 // CHECK-NEXT:     let mut result: u64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         let [[T_1]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "ldrexd r0, r1, [{0}]\n\tclrex",
-// CHECK-NEXT:             in(reg) pointer as u32,
-// CHECK-NEXT:             out("r0") [[T_0]],
-// CHECK-NEXT:             out("r1") [[T_1]],
-// CHECK-NEXT:             options(nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "ldrexd r0, r1, [{0}]\n\tclrex",
+// CHECK-NEXT:                 in(reg) pointer as u32,
+// CHECK-NEXT:                 out("r0") [[T_0]],
+// CHECK-NEXT:                 out("r1") [[T_1]],
+// CHECK-NEXT:                 options(nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<u64, u64>(
 // CHECK-NEXT:                 (([[T_1]] as u64) << 32 | ([[T_0]] as u64)) as u64,
@@ -175,16 +183,18 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn double_from_pair(value: f64) -> f64 {
 // CHECK-NEXT:     let mut result: f64 = 0 as f64;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         let [[T_1]]: u64 = unsafe { core::mem::transmute::<f64, u64>(value) };
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "vmov {0}, r0, r1",
-// CHECK-NEXT:             lateout(dreg_low16) [[T_0]],
-// CHECK-NEXT:             in("r0") [[T_1]] as u32,
-// CHECK-NEXT:             in("r1") ([[T_1]] >> 32) as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "vmov {0}, r0, r1",
+// CHECK-NEXT:                 lateout(dreg_low16) [[T_0]],
+// CHECK-NEXT:                 in("r0") [[T_1]] as u32,
+// CHECK-NEXT:                 in("r1") ([[T_1]] >> 32) as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, f64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
@@ -192,18 +202,20 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn modifiers(mut pointer: &i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov {0}, #15\n\tmovw r1, #9029\n\tadd {0}, {0}, r1\n\tldr r1, [{3}]\n\tadd {0}, {0}, r1\n\t@ {4}\n@ {1}\n@ {2}",
-// CHECK-NEXT:             out(reg) [[T_0]],
-// CHECK-NEXT:             const -16i32,
-// CHECK-NEXT:             const 74565i32,
-// CHECK-NEXT:             in(reg) (pointer as *const i32) as *mut i32,
-// CHECK-NEXT:             sym counter,
-// CHECK-NEXT:             out("r1") _,
-// CHECK-NEXT:             options(pure, readonly, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov {0}, #15\n\tmovw r1, #9029\n\tadd {0}, {0}, r1\n\tldr r1, [{3}]\n\tadd {0}, {0}, r1\n\t@ {4}\n@ {1}\n@ {2}",
+// CHECK-NEXT:                 out(reg) [[T_0]],
+// CHECK-NEXT:                 const -16i32,
+// CHECK-NEXT:                 const 74565i32,
+// CHECK-NEXT:                 in(reg) (pointer as *const i32) as *mut i32,
+// CHECK-NEXT:                 sym counter,
+// CHECK-NEXT:                 out("r1") _,
+// CHECK-NEXT:                 options(pure, readonly, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result

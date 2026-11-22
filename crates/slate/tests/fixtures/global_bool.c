@@ -12,7 +12,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     println!("{} {}", (unsafe { enabled }) as i32, (unsafe { disabled }) as i32);
+// CHECK-NEXT:     println!("{} {}", unsafe { enabled as i32 }, unsafe { disabled as i32 });
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

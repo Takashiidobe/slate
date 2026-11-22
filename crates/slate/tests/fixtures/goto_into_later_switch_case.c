@@ -41,36 +41,34 @@ int main() {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn classify(c: i32) -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:             '[[JOIN_1:__join_[0-9]+]]: {
-// CHECK-NEXT:                 let [[T_0:__t[0-9]+]]: i32 = c;
-// CHECK-NEXT:                 if [[T_0]] != 1 {
-// CHECK-NEXT:                     if [[T_0]] != 2 {
-// CHECK-NEXT:                         if [[T_0]] == 3 {
-// CHECK-NEXT:                             break '[[JOIN_0]];
+// CHECK-NEXT:     '[[JOIN_0:__join_[0-9]+]]: {
+// CHECK-NEXT:         '[[JOIN_1:__join_[0-9]+]]: {
+// CHECK-NEXT:             let [[T_0:__t[0-9]+]]: i32 = c;
+// CHECK-NEXT:             if [[T_0]] != 1 {
+// CHECK-NEXT:                 if [[T_0]] != 2 {
+// CHECK-NEXT:                     if [[T_0]] == 3 {
+// CHECK-NEXT:                         break '[[JOIN_0]];
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         if [[T_0]] == 4 {
+// CHECK-NEXT:                             break '[[JOIN_1]];
 // CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             if [[T_0]] == 4 {
-// CHECK-NEXT:                                 break '[[JOIN_1]];
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 return -1;
-// CHECK-NEXT:                             }
+// CHECK-NEXT:                             return -1;
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 let [[T_1:__t[0-9]+]]: i32 = c;
-// CHECK-NEXT:                 if [[T_1]] == 5 {
-// CHECK-NEXT:                     break '[[JOIN_0]];
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     if [[T_1]] != 6 {
-// CHECK-NEXT:                         return -2;
-// CHECK-NEXT:                     }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             let [[T_1:__t[0-9]+]]: i32 = c;
+// CHECK-NEXT:             if [[T_1]] == 5 {
+// CHECK-NEXT:                 break '[[JOIN_0]];
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 if [[T_1]] != 6 {
+// CHECK-NEXT:                     return -2;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:             return 200;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return 100;
+// CHECK-NEXT:         return 200;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     return 100;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

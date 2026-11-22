@@ -71,7 +71,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(all(target_pointer_width = "64", unix))]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn read_crossing() -> i32 {
-// CHECK-NEXT:     (unsafe { crossing.0[1] }) as i32
+// CHECK-NEXT:     crossing.0[1] as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(all(target_pointer_width = "64", unix))]
@@ -82,7 +82,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(any(target_arch = "x86", windows))]
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn read_crossing() -> i32 {
-// CHECK-NEXT:     (unsafe { crossing[1] }) as i32
+// CHECK-NEXT:     crossing[1] as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(any(target_arch = "x86", windows))]
@@ -204,8 +204,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn read_table(index: i32) -> i32 {
-// CHECK-NEXT:     ((unsafe { table.0[index as usize].len }) as i32)
-// CHECK-NEXT:         + ((unsafe { (*unsafe { descriptor.0 }.offset(index as isize)).freq }) as i32)
+// CHECK-NEXT:     (table.0[index as usize].len as i32)
+// CHECK-NEXT:         + unsafe { (*descriptor.0.offset(index as isize)).freq as i32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -262,12 +262,7 @@ int main(void) {
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{} {}", read_table(3i32), read_local(10i32));
-// CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {} {}",
-// CHECK-NEXT:             (unsafe { exported.0[15] }) as i32,
-// CHECK-NEXT:             (unsafe { small[1] }) as i32,
-// CHECK-NEXT:             read_crossing()
-// CHECK-NEXT:         );
+// CHECK-NEXT:         println!("{} {} {}", exported.0[15] as i32, small[1] as i32, read_crossing());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(target_arch = "x86_64")]
 // CHECK-NEXT:     {
@@ -292,18 +287,14 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     if ((unsafe { core::ptr::addr_of!(explicit_large.0) as *const c_char }) as uintptr_t)
-// CHECK-NEXT:         % 16 != 0
-// CHECK-NEXT:         || ((unsafe { core::ptr::addr_of!(larger.0) as *const c_char }) as uintptr_t)
-// CHECK-NEXT:             % 32 != 0 {
+// CHECK-NEXT:     if ((core::ptr::addr_of!(explicit_large.0) as *const c_char) as uintptr_t) % 16 != 0
+// CHECK-NEXT:         || ((core::ptr::addr_of!(larger.0) as *const c_char) as uintptr_t) % 32 != 0 {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(all(target_arch = "x86_64", unix))]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         if ((unsafe { core::ptr::addr_of!(table.0) as *const code }) as uintptr_t) % 16
-// CHECK-NEXT:             != 0
-// CHECK-NEXT:             || ((unsafe { core::ptr::addr_of!(exported.0) as *const u8 }) as uintptr_t)
-// CHECK-NEXT:                 % 16 != 0 {
+// CHECK-NEXT:         if ((core::ptr::addr_of!(table.0) as *const code) as uintptr_t) % 16 != 0
+// CHECK-NEXT:             || ((core::ptr::addr_of!(exported.0) as *const u8) as uintptr_t) % 16 != 0 {
 // CHECK-NEXT:             return 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -311,7 +302,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static descriptor: __SlateConst<*const code> = __SlateConst(
-// CHECK-NEXT:     unsafe { core::ptr::addr_of!(table.0) as *const code },
+// CHECK-NEXT:     core::ptr::addr_of!(table.0) as *const code,
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: static small: [u8; 15] = {

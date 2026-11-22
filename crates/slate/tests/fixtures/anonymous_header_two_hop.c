@@ -32,9 +32,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].count = 0i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         state.value.wide = 7;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     state.value.wide = 7;
 // CHECK-NEXT:     state.count + (((unsafe { state.value.wide }) != 7) as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:

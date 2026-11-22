@@ -54,13 +54,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,crc,lse,sve,fcma")]
 // CHECK-NEXT: unsafe fn narrow(v: core::arch::aarch64::svint32_t) -> core::simd::Simd<i32, 16> {
-// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:     return {
 // CHECK-NEXT:         let mut __sve_lanes: [i32; 16] = [0i32; 16];
-// CHECK-NEXT:         core::arch::aarch64::svst1_s32(
-// CHECK-NEXT:             core::arch::aarch64::svptrue_b32(),
-// CHECK-NEXT:             __sve_lanes.as_mut_ptr(),
-// CHECK-NEXT:             v,
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::aarch64::svst1_s32(
+// CHECK-NEXT:                 core::arch::aarch64::svptrue_b32(),
+// CHECK-NEXT:                 __sve_lanes.as_mut_ptr(),
+// CHECK-NEXT:                 v,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         core::simd::Simd::from_array(__sve_lanes)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -75,26 +77,30 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let back: core::simd::Simd<i32, 16> = unsafe { narrow(live) };
-// CHECK-NEXT:     let halves: core::simd::Simd<f64, 8> = unsafe {
+// CHECK-NEXT:     let halves: core::simd::Simd<f64, 8> = {
 // CHECK-NEXT:         let mut __sve_lanes: [f64; 8] = [0 as f64; 8];
-// CHECK-NEXT:         core::arch::aarch64::svst1_f64(
-// CHECK-NEXT:             core::arch::aarch64::svptrue_b64(),
-// CHECK-NEXT:             __sve_lanes.as_mut_ptr(),
-// CHECK-NEXT:             core::arch::aarch64::svdiv_n_f64_x(
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::aarch64::svst1_f64(
 // CHECK-NEXT:                 core::arch::aarch64::svptrue_b64(),
-// CHECK-NEXT:                 core::arch::aarch64::svdup_n_f64(7.0f64),
-// CHECK-NEXT:                 2.0f64,
-// CHECK-NEXT:             ),
-// CHECK-NEXT:         );
+// CHECK-NEXT:                 __sve_lanes.as_mut_ptr(),
+// CHECK-NEXT:                 core::arch::aarch64::svdiv_n_f64_x(
+// CHECK-NEXT:                     core::arch::aarch64::svptrue_b64(),
+// CHECK-NEXT:                     core::arch::aarch64::svdup_n_f64(7.0f64),
+// CHECK-NEXT:                     2.0f64,
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         core::simd::Simd::from_array(__sve_lanes)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let bytes: core::simd::Simd<u8, 64> = unsafe {
+// CHECK-NEXT:     let bytes: core::simd::Simd<u8, 64> = {
 // CHECK-NEXT:         let mut __sve_lanes: [u8; 64] = [0u8; 64];
-// CHECK-NEXT:         core::arch::aarch64::svst1_u8(
-// CHECK-NEXT:             core::arch::aarch64::svptrue_b8(),
-// CHECK-NEXT:             __sve_lanes.as_mut_ptr(),
-// CHECK-NEXT:             core::arch::aarch64::svindex_u8(250u8, 1u8),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::aarch64::svst1_u8(
+// CHECK-NEXT:                 core::arch::aarch64::svptrue_b8(),
+// CHECK-NEXT:                 __sve_lanes.as_mut_ptr(),
+// CHECK-NEXT:                 core::arch::aarch64::svindex_u8(250u8, 1u8),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         core::simd::Simd::from_array(__sve_lanes)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut sum: i64 = 0;

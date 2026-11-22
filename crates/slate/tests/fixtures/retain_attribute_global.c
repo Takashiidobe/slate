@@ -37,10 +37,8 @@ int main(void) {
 // CHECK-NEXT:         counter += 4;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     let mut it: *mut i32 = unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!(__start_slate_gnu_retain) as *mut i32
-// CHECK-NEXT:     };
-// CHECK-NEXT:     while it < unsafe { core::ptr::addr_of_mut!(__stop_slate_gnu_retain) as *mut i32 } {
+// CHECK-NEXT:     let mut it: *mut i32 = core::ptr::addr_of_mut!(__start_slate_gnu_retain) as *mut i32;
+// CHECK-NEXT:     while it < (core::ptr::addr_of_mut!(__stop_slate_gnu_retain) as *mut i32) {
 // CHECK-NEXT:         sum += unsafe { *it };
 // CHECK-NEXT:         it = unsafe { it.add(1) };
 // CHECK-NEXT:     }

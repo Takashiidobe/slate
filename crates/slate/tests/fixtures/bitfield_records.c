@@ -168,22 +168,20 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump(flags: *mut Flags) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_0]] = (*flags).__slate_bits_0.__get_a() + 3;
-// CHECK-NEXT:         (*flags).__slate_bits_0.__set_a([[T_0]]);
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_0]] = (unsafe { (*flags).__slate_bits_0.__get_a() }) + 3;
+// CHECK-NEXT:         unsafe { (*flags).__slate_bits_0.__set_a([[T_0]]) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = (*flags).__slate_bits_2.__get_wide() + 1;
-// CHECK-NEXT:         (*flags).__slate_bits_2.__set_wide([[T_1]]);
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = (unsafe { (*flags).__slate_bits_2.__get_wide() }) + 1;
+// CHECK-NEXT:         unsafe { (*flags).__slate_bits_2.__set_wide([[T_1]]) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = (*flags).__slate_bits_1.__get__flags2() * 2;
-// CHECK-NEXT:         (*flags).__slate_bits_1.__set__flags2([[T_2]]);
+// CHECK-NEXT:     {
+// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = (unsafe { (*flags).__slate_bits_1.__get__flags2() }) * 2;
+// CHECK-NEXT:         unsafe { (*flags).__slate_bits_1.__set__flags2([[T_2]]) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let [[T_3:__t[0-9]+]] = !(*flags).__slate_bits_0.__get_ready();
-// CHECK-NEXT:         (*flags).__slate_bits_0.__set_ready([[T_3]]);
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[T_3:__t[0-9]+]] = !unsafe { (*flags).__slate_bits_0.__get_ready() };
+// CHECK-NEXT:     unsafe { (*flags).__slate_bits_0.__set_ready([[T_3]]) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -226,7 +224,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     bump(core::ptr::addr_of_mut!(local));
-// CHECK-NEXT:     bump(unsafe { core::ptr::addr_of_mut!(global) });
+// CHECK-NEXT:     bump(core::ptr::addr_of_mut!(global));
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -257,9 +255,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut overlay: Overlay = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         overlay.whole = 2882400018;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     overlay.whole = 2882400018;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -270,12 +266,8 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         overlay.parts.__slate_bits_0.__set_high(74565u32);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         overlay.__slate_bits_0.__set_signed_bits(-1i32);
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { overlay.parts.__slate_bits_0.__set_high(74565u32) };
+// CHECK-NEXT:     unsafe { overlay.__slate_bits_0.__set_signed_bits(-1i32) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

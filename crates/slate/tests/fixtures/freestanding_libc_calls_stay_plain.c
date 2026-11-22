@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn text_len(s: *const i8) -> i32 {
-// CHECK-NEXT:     (unsafe { strlen(s as *const core::ffi::c_char) as u64 }) as i32
+// CHECK-NEXT:     unsafe { (strlen(s as *const core::ffi::c_char) as u64) as i32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

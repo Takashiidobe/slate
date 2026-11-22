@@ -97,7 +97,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn __local_stdio_printf_options() -> *mut u64 {
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(_OptionsStorage) }
+// CHECK-NEXT:     core::ptr::addr_of_mut!(_OptionsStorage)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C, align(16))]
@@ -274,11 +274,11 @@ int main(void) {
 // CHECK-NEXT:     let one: big = big { a: 1, b: 2, c: 3 };
 // CHECK-NEXT:     let two: big = big { a: 10, b: 20, c: 30 };
 // CHECK-NEXT:     if (unsafe { sum(4i32, 1i32, 2i32, 3i32, 4i32) }) != 10 {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { mixed(2i32, 0.5f64, one, 1.25f64, two) })
 // CHECK-NEXT:         != 0.5f64 + (6i32 as f64) + 1.25f64 + (60i32 as f64) + 0.5f64 {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut buffer: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     if (unsafe {
@@ -291,7 +291,7 @@ int main(void) {
 // CHECK-NEXT:             9000000000i64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) != 14 {
-// CHECK-NEXT:         unsafe { std::process::abort() };
+// CHECK-NEXT:         std::process::abort();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

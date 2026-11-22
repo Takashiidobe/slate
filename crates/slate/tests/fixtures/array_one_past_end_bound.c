@@ -41,16 +41,18 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*c).p = (*c).buf.as_mut_ptr();
 // CHECK-NEXT:     }
-// CHECK-NEXT:     while (unsafe { (*c).p })
-// CHECK-NEXT:         < unsafe {
-// CHECK-NEXT:             (*c).buf.as_mut_ptr().add((core::mem::size_of::<[u8; 8]>() as u64) as usize)
-// CHECK-NEXT:         } {
+// CHECK-NEXT:     while unsafe {
+// CHECK-NEXT:         (*c).p
+// CHECK-NEXT:             < (*c).buf
+// CHECK-NEXT:                 .as_mut_ptr()
+// CHECK-NEXT:                 .add((core::mem::size_of::<[u8; 8]>() as u64) as usize)
+// CHECK-NEXT:     } {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *(*c).p = n;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         n = ((n as i32) + 1) as u8;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*c).p = unsafe { (*c).p }.add(1);
+// CHECK-NEXT:             (*c).p = (*c).p.add(1);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

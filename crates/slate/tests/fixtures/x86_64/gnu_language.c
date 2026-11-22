@@ -211,20 +211,18 @@ int main(void) {
 // CHECK-NEXT:     if selector > 1 {
 // CHECK-NEXT:         selector = 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         match targets.0[selector as usize] as usize {
-// CHECK-NEXT:             19 => {
-// CHECK-NEXT:                 return 7;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             20 => {
-// CHECK-NEXT:                 return 11;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             21 => {
-// CHECK-NEXT:                 return 13;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             _ => {
-// CHECK-NEXT:                 unreachable!();
-// CHECK-NEXT:             }
+// CHECK-NEXT:     match unsafe { targets.0[selector as usize] as usize } {
+// CHECK-NEXT:         19 => {
+// CHECK-NEXT:             return 7;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         20 => {
+// CHECK-NEXT:             return 11;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         21 => {
+// CHECK-NEXT:             return 13;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         _ => {
+// CHECK-NEXT:             unreachable!();
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
@@ -251,34 +249,29 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.gnu_function_name")]
 // CHECK-NEXT: extern "C-unwind" fn gnu_function_name() -> i32 {
-// CHECK-NEXT:     ((((unsafe { *(c"gnu_function_name".as_ptr() as *mut i8).add(0) }) as i32) == 103)
+// CHECK-NEXT:     (((unsafe { *(c"gnu_function_name".as_ptr() as *mut i8).add(0) as i32 }) == 103)
 // CHECK-NEXT:         as i32)
-// CHECK-NEXT:         + ((((unsafe { *(c"int gnu_function_name(void)".as_ptr() as *mut i8).add(0) })
-// CHECK-NEXT:             as i32) == 105) as i32)
+// CHECK-NEXT:         + (((unsafe {
+// CHECK-NEXT:             *(c"int gnu_function_name(void)".as_ptr() as *mut i8).add(0) as i32
+// CHECK-NEXT:         }) == 105) as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_function_pointer() -> i32 {
-// CHECK-NEXT:     let distance: i64 = ((unsafe {
-// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn() -> i32>>(
-// CHECK-NEXT:                         unsafe {
-// CHECK-NEXT:                                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
-// CHECK-NEXT:                                     Some(gnu_function_name),
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                             .wrapping_offset(3 as isize),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) as isize)
-// CHECK-NEXT:         .wrapping_sub(
-// CHECK-NEXT:             (unsafe {
+// CHECK-NEXT:     let distance: i64 = unsafe {
+// CHECK-NEXT:         (core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                 core::mem::transmute::<*const u8, Option<unsafe extern "C-unwind" fn() -> i32>>(
+// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
+// CHECK-NEXT:                             Some(gnu_function_name),
+// CHECK-NEXT:                         )
+// CHECK-NEXT:                         .wrapping_offset(3 as isize),
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ) as isize)
+// CHECK-NEXT:             .wrapping_sub(
 // CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn() -> i32>, *const u8>(
 // CHECK-NEXT:                     Some(gnu_function_name),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }) as isize,
-// CHECK-NEXT:         ) as i64;
+// CHECK-NEXT:                 ) as isize,
+// CHECK-NEXT:             ) as i64
+// CHECK-NEXT:     };
 // CHECK-NEXT:     (distance == 3) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -325,9 +318,9 @@ int main(void) {
 // CHECK-NEXT:     spelling_total = [[V_2]]
 // CHECK-NEXT:         + (((core::mem::align_of::<i64>() as u64)
 // CHECK-NEXT:             >= (core::mem::align_of::<i32>() as u64)) as i32) + (true as i32)
-// CHECK-NEXT:         + ((((unsafe { *raw.add(0) }) as i32) == 103) as i32)
-// CHECK-NEXT:         + ((((unsafe { *raw.add(3) }) as i32) == 92) as i32)
-// CHECK-NEXT:         + ((((unsafe { *raw.add(4) }) as i32) == 110) as i32) + 6
+// CHECK-NEXT:         + (((unsafe { *raw.add(0) as i32 }) == 103) as i32)
+// CHECK-NEXT:         + (((unsafe { *raw.add(3) as i32 }) == 92) as i32)
+// CHECK-NEXT:         + (((unsafe { *raw.add(4) as i32 }) == 110) as i32) + 6
 // CHECK-NEXT:         + (core::mem::offset_of!(GNUOldInitializer, second) as i32);
 // CHECK-NEXT:     gnu_dollar_dollar + omitted + side_effect + inferred + same_type + macro_total
 // CHECK-NEXT:         + initializer_total + spelling_total
@@ -352,10 +345,9 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let begin: *mut () = values.as_mut_ptr() as *mut ();
-// CHECK-NEXT:     let middle: *mut () = (unsafe { (begin as *const u8).add(3) }) as *mut ();
-// CHECK-NEXT:     ((((unsafe { (middle as *const u8).offset_from(begin as *const u8) }) as i64) == 3)
-// CHECK-NEXT:         as i32)
-// CHECK-NEXT:         + ((middle == ((unsafe { values.as_mut_ptr().add(3) }) as *mut ())) as i32)
+// CHECK-NEXT:     let middle: *mut () = unsafe { (begin as *const u8).add(3) as *mut () };
+// CHECK-NEXT:     (((unsafe { (middle as *const u8).offset_from(begin as *const u8) as i64 }) == 3)
+// CHECK-NEXT:         as i32) + ((middle == unsafe { values.as_mut_ptr().add(3) as *mut () }) as i32)
 // CHECK-NEXT:         + ((1u64 == 1u64) as i32) + gnu_function_pointer()
 // CHECK-NEXT: }
 // CHECK-EMPTY:

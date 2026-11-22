@@ -283,14 +283,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.apply")]
 // CHECK-NEXT: extern "C-unwind" fn apply(f: *mut core::ffi::c_void, v: i32) -> i32 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = f;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32) -> i32>>(
+// CHECK-NEXT:             core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32) -> i32>>(
 // CHECK-NEXT:                     __slate_blocks::invoke([[T_0]]),
 // CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:             .unwrap()([[T_0]], v)
+// CHECK-NEXT:                 .unwrap()([[T_0]], v)
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -300,7 +300,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn chain(inner: *mut core::ffi::c_void) -> *mut core::ffi::c_void {
 // CHECK-NEXT:     let mut __slate_block_0_slot: core::mem::MaybeUninit<__slate_blocks::Block<__slate_block_0_captures>> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     (unsafe {
+// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _Block_copy(
 // CHECK-NEXT:             __slate_blocks::stack(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(__slate_block_0_slot),
@@ -310,8 +310,8 @@ int main(void) {
 // CHECK-NEXT:                     c0: inner,
 // CHECK-NEXT:                 },
 // CHECK-NEXT:             ) as *const (),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     }) as *mut core::ffi::c_void
+// CHECK-NEXT:         ) as *mut core::ffi::c_void
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
@@ -329,8 +329,9 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let copy: *mut core::ffi::c_void = (unsafe { _Block_copy(literal as *const ()) })
-// CHECK-NEXT:         as *mut core::ffi::c_void;
+// CHECK-NEXT:     let copy: *mut core::ffi::c_void = unsafe {
+// CHECK-NEXT:         _Block_copy(literal as *const ()) as *mut core::ffi::c_void
+// CHECK-NEXT:     };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "copy is new object: {}",
 // CHECK-NEXT:         ((copy as *mut ()) != (literal as *mut ())) as i32
@@ -347,7 +348,7 @@ int main(void) {
 // CHECK-NEXT:         ((unsafe { _Block_copy(plain as *const ()) }) == (plain as *mut ())) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut __slate_block_3_slot: core::mem::MaybeUninit<__slate_blocks::Block<__slate_block_3_captures>> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let b: *mut core::ffi::c_void = (unsafe {
+// CHECK-NEXT:     let b: *mut core::ffi::c_void = unsafe {
 // CHECK-NEXT:         _Block_copy(
 // CHECK-NEXT:             __slate_blocks::stack(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(__slate_block_3_slot),
@@ -357,20 +358,20 @@ int main(void) {
 // CHECK-NEXT:                     c0: base,
 // CHECK-NEXT:                 },
 // CHECK-NEXT:             ) as *const (),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     }) as *mut core::ffi::c_void;
+// CHECK-NEXT:         ) as *mut core::ffi::c_void
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let c: *mut core::ffi::c_void = chain(b);
 // CHECK-NEXT:     unsafe { _Block_release(b as *const ()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "chained: {}",
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         {
 // CHECK-NEXT:             let [[T_0]] = c;
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32) -> i32>>(
+// CHECK-NEXT:                 core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32) -> i32>>(
 // CHECK-NEXT:                         __slate_blocks::invoke([[T_0]]),
 // CHECK-NEXT:                     )
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 .unwrap()([[T_0]], 1i32)
+// CHECK-NEXT:                     .unwrap()([[T_0]], 1i32)
+// CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { _Block_release(c as *const ()) };
@@ -384,7 +385,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..100000i32 {
 // CHECK-NEXT:         let k: i32 = i & 7;
 // CHECK-NEXT:         let mut __slate_block_4_slot: core::mem::MaybeUninit<__slate_blocks::Block<__slate_block_4_captures>> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:         sum += (unsafe {
+// CHECK-NEXT:         sum += unsafe {
 // CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(apply_ptr))
 // CHECK-NEXT:                 .unwrap()(
 // CHECK-NEXT:                 __slate_blocks::stack(
@@ -394,8 +395,8 @@ int main(void) {
 // CHECK-NEXT:                     __slate_block_4_captures { c0: k },
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:                 i,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) as i64;
+// CHECK-NEXT:             ) as i64
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let after: u64 = unsafe {
 // CHECK-NEXT:         (*{
@@ -426,19 +427,25 @@ int main(void) {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_0_captures>(__block)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let inner: *mut core::ffi::c_void = __captures.c0;
-// CHECK-NEXT:     (unsafe {
+// CHECK-NEXT:     ({
 // CHECK-NEXT:         let [[T_0]] = inner;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32) -> i32>>(
+// CHECK-NEXT:             core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void, i32) -> i32>>(
 // CHECK-NEXT:                     __slate_blocks::invoke([[T_0]]),
 // CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:             .unwrap()([[T_0]], [[V_0]])
+// CHECK-NEXT:                 .unwrap()([[T_0]], [[V_0]])
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }) * 2
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static __slate_block_0_descriptor: __slate_blocks::Descriptor = __slate_blocks::descriptor::<__slate_block_0_captures>(
-// CHECK-NEXT:     &[__slate_blocks::block_field(core::mem::offset_of!(__slate_block_0_captures, c0))],
+// CHECK-NEXT:     &[
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             __slate_blocks::block_field(
+// CHECK-NEXT:                 core::mem::offset_of!(__slate_block_0_captures, c0),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         },
+// CHECK-NEXT:     ],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
@@ -464,9 +471,9 @@ int main(void) {
 // CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static __slate_block_2_literal: __slate_blocks::Block<()> = __slate_blocks::global(
-// CHECK-NEXT:     __slate_block_2 as *const core::ffi::c_void,
-// CHECK-NEXT: );
+// CHECK-NEXT: static __slate_block_2_literal: __slate_blocks::Block<()> = unsafe {
+// CHECK-NEXT:     __slate_blocks::global(__slate_block_2 as *const core::ffi::c_void)
+// CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]

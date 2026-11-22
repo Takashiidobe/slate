@@ -293,8 +293,8 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]].tag = 97i8;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!([[T_0]].l) as *mut LongDouble)
-// CHECK-NEXT:             .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]));
-// CHECK-NEXT:     }
+// CHECK-NEXT:             .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_k(7u32);
 // CHECK-NEXT:     [[T_0]].__slate_bits_0.__set_j(9u32);
 // CHECK-NEXT:     [[T_0]]
@@ -314,8 +314,8 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].tag = 98i8;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (core::ptr::addr_of_mut!([[T_0]].l) as *mut LongDouble)
-// CHECK-NEXT:                 .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 0, 64]));
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 .write_unaligned(LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 0, 64]))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_k(3u32);
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_j(4u32);
 // CHECK-NEXT:         [[T_0]]
@@ -342,22 +342,22 @@ int main(void) {
 // CHECK-NEXT:                     };
 // CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:                 },
-// CHECK-NEXT:             );
-// CHECK-NEXT:     }
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!(p.l) as *mut LongDouble)
 // CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 (core::ptr::addr_of!(p.l) as *const LongDouble).read_unaligned()
 // CHECK-NEXT:                     + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
-// CHECK-NEXT:             );
-// CHECK-NEXT:     }
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!(gp.l) as *mut LongDouble)
 // CHECK-NEXT:             .write_unaligned(
 // CHECK-NEXT:                 (core::ptr::addr_of!(gp.l) as *const LongDouble).read_unaligned()
 // CHECK-NEXT:                     * __slate_f80_from_i32(3i32),
-// CHECK-NEXT:             );
-// CHECK-NEXT:     }
+// CHECK-NEXT:             )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let mut copy: LongDouble = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(

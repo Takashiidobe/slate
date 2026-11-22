@@ -245,11 +245,9 @@ int main(void) {
 // CHECK-NEXT:     let x: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 255, 63]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_icall__ri32_pi8__f80_i32_f80(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*const i8, ...) -> i32>, *const ()>(
-// CHECK-NEXT:                     print,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(*const i8, ...) -> i32>, *const ()>(
+// CHECK-NEXT:                 print,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:             c"%Lg %d %Lg\n".as_ptr(),
 // CHECK-NEXT:             x,
 // CHECK-NEXT:             7i32,
@@ -261,11 +259,9 @@ int main(void) {
 // CHECK-NEXT:         printf(
 // CHECK-NEXT:             c"%d\n".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             __slate_icall__ri32_i32__f80_f80_f80(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, ...) -> i32>, *const ()>(
-// CHECK-NEXT:                         sum,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, ...) -> i32>, *const ()>(
+// CHECK-NEXT:                     sum,
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 3i32,
 // CHECK-NEXT:                 x,
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64]),

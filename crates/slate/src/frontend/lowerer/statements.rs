@@ -962,6 +962,19 @@ fn peel_unsafe(expr: &Expr) -> &Expr {
     }
 }
 
+pub(super) fn fold_compound_assignments(stmts: &mut [Stmt]) {
+    for stmt in stmts {
+        match stmt {
+            Stmt::Scope { body } => fold_compound_assignments(body),
+            Stmt::Block(body) | Stmt::Unsafe { body } => fold_compound_assignments(&mut body.stmts),
+            _ => {
+                let assignment = std::mem::replace(stmt, Stmt::Break(None));
+                *stmt = compound_assignment(assignment);
+            }
+        }
+    }
+}
+
 fn compound_assignment(assignment: Stmt) -> Stmt {
     match assignment {
         Stmt::Assign {

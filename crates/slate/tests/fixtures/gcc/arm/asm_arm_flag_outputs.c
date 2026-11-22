@@ -55,15 +55,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_eq(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmoveq {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmoveq {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -71,15 +73,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_ne(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovne {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovne {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -87,15 +91,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_cs(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovcs {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovcs {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -103,15 +109,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_cc(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovcc {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovcc {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -119,15 +127,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_hs(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovhs {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovhs {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -135,15 +145,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_lo(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovlo {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovlo {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -151,15 +163,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_mi(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovmi {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovmi {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -167,15 +181,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_pl(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovpl {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovpl {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -183,15 +199,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_vs(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovvs {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovvs {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -199,15 +217,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_vc(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovvc {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovvc {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -215,15 +235,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_hi(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovhi {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovhi {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -231,15 +253,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_ls(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovls {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovls {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -247,15 +271,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_ge(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovge {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovge {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -263,15 +289,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_lt(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovlt {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovlt {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -279,15 +307,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_gt(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovgt {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovgt {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -295,15 +325,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn f_le(mut left: i32, mut right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {1}, {2}\nmov {0}, #0\nmovle {0}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {1}, {2}\nmov {0}, #0\nmovle {0}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -312,16 +344,18 @@ int main(void) {
 // CHECK-NEXT: fn sign_zero(mut value: i32) -> i32 {
 // CHECK-NEXT:     let mut minus: u8 = 0;
 // CHECK-NEXT:     let mut nonzero: bool = false;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {2}, #0\nmov {0}, #0\nmovmi {0}, #1\nmov {1}, #0\nmovne {1}, #1",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             lateout(reg) [[T_1]],
-// CHECK-NEXT:             in(reg) value as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {2}, #0\nmov {0}, #0\nmovmi {0}, #1\nmov {1}, #0\nmovne {1}, #1",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 lateout(reg) [[T_1]],
+// CHECK-NEXT:                 in(reg) value as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         minus = unsafe { core::mem::transmute::<u8, u8>([[T_0]] as u8) };
 // CHECK-NEXT:         nonzero = ([[T_1]] as u8) != 0;
 // CHECK-NEXT:     }
@@ -342,8 +376,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     for i in 0..((core::mem::size_of::<{{\[\[}}i32; 2]; 8]>() as u32)
 // CHECK-NEXT:         / (core::mem::size_of::<[i32; 2]>() as u32)) {
-// CHECK-NEXT:         let a: i32 = unsafe { pairs[i as usize][0] };
-// CHECK-NEXT:         let b: i32 = unsafe { pairs[i as usize][1] };
+// CHECK-NEXT:         let a: i32 = pairs[i as usize][0];
+// CHECK-NEXT:         let b: i32 = pairs[i as usize][1];
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {}: {}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}",
 // CHECK-NEXT:             a,

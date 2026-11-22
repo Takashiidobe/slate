@@ -107,7 +107,7 @@ int main(void) {
 // CHECK-NEXT:                     scaled_sum(pg, v, core::arch::aarch64::svdup_n_s32(1i32)),
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
-// CHECK-NEXT:             i += (unsafe { core::arch::aarch64::svcntw() }) as i32;
+// CHECK-NEXT:             i += unsafe { core::arch::aarch64::svcntw() as i32 };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     for i in 0i32..64i32 {
@@ -130,7 +130,7 @@ int main(void) {
 // CHECK-NEXT:             rotated,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let any: i32 = (unsafe {
+// CHECK-NEXT:     let any: i32 = unsafe {
 // CHECK-NEXT:         core::arch::aarch64::svptest_any(
 // CHECK-NEXT:             core::arch::aarch64::svptrue_b32(),
 // CHECK-NEXT:             core::arch::aarch64::svcmpgt_n_s32(
@@ -138,8 +138,8 @@ int main(void) {
 // CHECK-NEXT:                 acc,
 // CHECK-NEXT:                 20i32,
 // CHECK-NEXT:             ),
-// CHECK-NEXT:         )
-// CHECK-NEXT:     }) as i32;
+// CHECK-NEXT:         ) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld %ld %d\n".as_ptr(), total, first4, any) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

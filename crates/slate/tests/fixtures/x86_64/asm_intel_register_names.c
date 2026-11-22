@@ -59,43 +59,49 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn read_ds() -> u64 {
 // CHECK-NEXT:     let mut r: u64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             ".intel_syntax noprefix\n\tmov ax, ds\n\tmovzx rcx, ax\n\t.att_syntax prefix",
-// CHECK-NEXT:             lateout("cx") [[T_0]],
-// CHECK-NEXT:             out("ax") _,
-// CHECK-NEXT:             options(nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 ".intel_syntax noprefix\n\tmov ax, ds\n\tmovzx rcx, ax\n\t.att_syntax prefix",
+// CHECK-NEXT:                 lateout("cx") [[T_0]],
+// CHECK-NEXT:                 out("ax") _,
+// CHECK-NEXT:                 options(nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         r = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn add_three(mut value: u64) -> u64 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             ".intel_syntax noprefix\n\tmov eax, 3\n\tadd rcx, rax\n\t.att_syntax prefix",
-// CHECK-NEXT:             inlateout("cx") value as u64 => [[T_0]],
-// CHECK-NEXT:             out("ax") _,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 ".intel_syntax noprefix\n\tmov eax, 3\n\tadd rcx, rax\n\t.att_syntax prefix",
+// CHECK-NEXT:                 inlateout("cx") value as u64 => [[T_0]],
+// CHECK-NEXT:                 out("ax") _,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn add_counter(mut value: u64) -> u64 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             ".intel_syntax noprefix\n\tmov eax, DWORD PTR {0}[rip]\n\tadd rcx, rax\n\t.att_syntax prefix",
-// CHECK-NEXT:             sym counter,
-// CHECK-NEXT:             inlateout("cx") value as u64 => [[T_0]],
-// CHECK-NEXT:             out("ax") _,
-// CHECK-NEXT:             options(nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 ".intel_syntax noprefix\n\tmov eax, DWORD PTR {0}[rip]\n\tadd rcx, rax\n\t.att_syntax prefix",
+// CHECK-NEXT:                 sym counter,
+// CHECK-NEXT:                 inlateout("cx") value as u64 => [[T_0]],
+// CHECK-NEXT:                 out("ax") _,
+// CHECK-NEXT:                 options(nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value

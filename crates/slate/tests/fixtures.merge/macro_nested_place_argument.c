@@ -112,9 +112,9 @@ int main(void) {
 // CHECK-NEXT: fn lookup(view: *const view, index: c_long, dim: i32) -> *mut c_char {
 // CHECK-NEXT:     let mut ptr: *mut c_char = unsafe { (*view).buf };
 // CHECK-NEXT:     ptr = unsafe {
-// CHECK-NEXT:         ptr.offset((*unsafe { (*view).strides }.offset(dim as isize) * index) as isize)
+// CHECK-NEXT:         ptr.offset((*(*view).strides.offset(dim as isize) * index) as isize)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     ptr = ADJUST_PTR!(ptr, (*view).suboffsets, dim);
+// CHECK-NEXT:     ptr = unsafe { ADJUST_PTR!(ptr, (*view).suboffsets, dim) };
 // CHECK-NEXT:     ptr
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -122,8 +122,8 @@ int main(void) {
 // CHECK-NEXT:     ($ptr:expr, $suboffsets:expr, $dim:expr) => {
 // CHECK-NEXT:         if HAVE_PTR!($suboffsets, $dim) {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 unsafe { *(($ptr) as *mut *mut c_char) }
-// CHECK-NEXT:                     .offset(*unsafe { $suboffsets }.offset(($dim) as isize) as isize)
+// CHECK-NEXT:                 (*(($ptr) as *mut *mut c_char))
+// CHECK-NEXT:                     .offset(*$suboffsets.offset(($dim) as isize) as isize)
 // CHECK-NEXT:             }
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             $ptr
@@ -133,8 +133,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! HAVE_PTR {
 // CHECK-NEXT:     ($suboffsets:expr, $dim:expr) => {
-// CHECK-NEXT:         !unsafe { $suboffsets }.is_null()
-// CHECK-NEXT:             && (unsafe { *unsafe { $suboffsets }.offset(($dim) as isize) }) >= 0
+// CHECK-NEXT:         !$suboffsets.is_null() && (unsafe { *$suboffsets.offset(($dim) as isize) }) >= 0
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -59,15 +59,15 @@ int main(void) {
 // CHECK-NEXT:     max: *mut (),
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut poisoned: list_head = list_head {
-// CHECK-NEXT:     next: ((unsafe {
-// CHECK-NEXT:         ((256i32 as *mut ()) as *const u8)
-// CHECK-NEXT:             .wrapping_offset(16045481047390945280u64 as isize)
-// CHECK-NEXT:     }) as *mut ()) as *mut list_head,
-// CHECK-NEXT:     prev: ((unsafe {
-// CHECK-NEXT:         ((290i32 as *mut ()) as *const u8)
-// CHECK-NEXT:             .wrapping_offset(16045481047390945280u64 as isize)
-// CHECK-NEXT:     }) as *mut ()) as *mut list_head,
+// CHECK-NEXT: static mut poisoned: list_head = unsafe {
+// CHECK-NEXT:     list_head {
+// CHECK-NEXT:         next: (((256i32 as *mut ()) as *const u8)
+// CHECK-NEXT:             .wrapping_offset(16045481047390945280u64 as isize) as *mut ())
+// CHECK-NEXT:             as *mut list_head,
+// CHECK-NEXT:         prev: (((290i32 as *mut ()) as *const u8)
+// CHECK-NEXT:             .wrapping_offset(16045481047390945280u64 as isize) as *mut ())
+// CHECK-NEXT:             as *mut list_head,
+// CHECK-NEXT:     }
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut skb_next: *mut () = 2048u64.wrapping_add(16045481047390945280u64) as *mut ();
@@ -82,9 +82,9 @@ int main(void) {
 // CHECK-NEXT:     [
 // CHECK-NEXT:         ctl {
 // CHECK-NEXT:             name: b"one\0".as_ptr() as *const i8,
-// CHECK-NEXT:             min: unsafe { core::ptr::addr_of!(sysctl_vals.0) as *const i32 }
+// CHECK-NEXT:             min: (core::ptr::addr_of!(sysctl_vals.0) as *const i32)
 // CHECK-NEXT:                 .wrapping_offset(1i32 as isize) as *mut (),
-// CHECK-NEXT:             max: unsafe { core::ptr::addr_of!(sysctl_vals.0) as *const i32 }
+// CHECK-NEXT:             max: (core::ptr::addr_of!(sysctl_vals.0) as *const i32)
 // CHECK-NEXT:                 .wrapping_offset(3i32 as isize) as *mut (),
 // CHECK-NEXT:         },
 // CHECK-NEXT:         ctl {
@@ -95,10 +95,10 @@ int main(void) {
 // CHECK-NEXT:     ],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut later: *const i32 = unsafe { core::ptr::addr_of!(unsized_vals) as *const i32 }
+// CHECK-NEXT: static mut later: *const i32 = (core::ptr::addr_of!(unsized_vals) as *const i32)
 // CHECK-NEXT:     .wrapping_offset(2i32 as isize);
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut past: *const i32 = unsafe { core::ptr::addr_of!(sysctl_vals.0) as *const i32 }
+// CHECK-NEXT: static mut past: *const i32 = (core::ptr::addr_of!(sysctl_vals.0) as *const i32)
 // CHECK-NEXT:     .wrapping_offset(4i32 as isize);
 // CHECK-EMPTY:
 // CHECK-NEXT: static unsized_vals: [i32; 3] = [7, 8, 9];

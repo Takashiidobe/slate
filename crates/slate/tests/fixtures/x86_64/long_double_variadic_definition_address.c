@@ -324,10 +324,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut f: *const i8 = format;
 // CHECK-NEXT:     while (unsafe { *f }) != 0 {
-// CHECK-NEXT:         if ((unsafe { *f }) as i32) == 105 {
+// CHECK-NEXT:         if (unsafe { *f as i32 }) == 105 {
 // CHECK-NEXT:             base += __slate_f80_from_i32(unsafe { ap.next_arg::<i32>() });
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             if ((unsafe { *f }) as i32) == 100 {
+// CHECK-NEXT:             if (unsafe { *f as i32 }) == 100 {
 // CHECK-NEXT:                 base -= __slate_f80_from_f64(unsafe { ap.next_arg::<f64>() });
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 base *= unsafe { __slate_f80_va_arg(core::ptr::addr_of_mut!(ap)) };
@@ -417,11 +417,9 @@ int main(void) {
 // CHECK-NEXT:         c"pointer".as_ptr(),
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             __slate_icall__rf80_f80_i32__f80_f80(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, *const ()>(
-// CHECK-NEXT:                         sum,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, *const ()>(
+// CHECK-NEXT:                     sum,
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]),
 // CHECK-NEXT:                 2i32,
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 255, 63]),
@@ -433,11 +431,9 @@ int main(void) {
 // CHECK-NEXT:         c"none".as_ptr(),
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             __slate_icall__rf80_f80_i32__(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, *const ()>(
-// CHECK-NEXT:                         sum,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, *const ()>(
+// CHECK-NEXT:                     sum,
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 third,
 // CHECK-NEXT:                 0i32,
 // CHECK-NEXT:             )
@@ -447,11 +443,9 @@ int main(void) {
 // CHECK-NEXT:         c"mixed".as_ptr(),
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             __slate_icall__rf80_f80_pi8__i32_f64_f80_i32(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, *const i8, ...) -> LongDouble>, *const ()>(
-// CHECK-NEXT:                         mix,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, *const i8, ...) -> LongDouble>, *const ()>(
+// CHECK-NEXT:                     mix,
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 third,
 // CHECK-NEXT:                 c"idLi".as_ptr(),
 // CHECK-NEXT:                 7i32,
@@ -463,19 +457,15 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_icall__rv_i32__f80_f80(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, ...)>, *const ()>(
-// CHECK-NEXT:                     print,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32, ...)>, *const ()>(
+// CHECK-NEXT:                 print,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:             2i32,
 // CHECK-NEXT:             third,
 // CHECK-NEXT:             __slate_icall__rf80_f80_i32__f80(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, *const ()>(
-// CHECK-NEXT:                         sum,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, *const ()>(
+// CHECK-NEXT:                     sum,
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]),
 // CHECK-NEXT:                 1i32,
 // CHECK-NEXT:                 third,

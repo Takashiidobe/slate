@@ -517,17 +517,18 @@ int main(void) {
 // CHECK-NEXT:     show_d(c"d_conj".as_ptr(), unsafe { d_conj });
 // CHECK-NEXT:     show_d(
 // CHECK-NEXT:         c"rt_div".as_ptr(),
-// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(num)) }
-// CHECK-NEXT:             .c_div(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(den)) }, false),
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(num))
+// CHECK-NEXT:                 .c_div(core::ptr::read_volatile(core::ptr::addr_of!(den)), false)
+// CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show_d(
 // CHECK-NEXT:         c"rt_divf".as_ptr(),
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_4:__t[0-9]+]] = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(numf)) }
-// CHECK-NEXT:                 .c_div(
-// CHECK-NEXT:                     unsafe { core::ptr::read_volatile(core::ptr::addr_of!(denf)) },
-// CHECK-NEXT:                     false,
-// CHECK-NEXT:                 );
+// CHECK-NEXT:             let [[T_4:__t[0-9]+]] = unsafe {
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(numf))
+// CHECK-NEXT:                     .c_div(core::ptr::read_volatile(core::ptr::addr_of!(denf)), false)
+// CHECK-NEXT:             };
 // CHECK-NEXT:             num_complex::Complex {
 // CHECK-NEXT:                 re: [[T_4]].re as f64,
 // CHECK-NEXT:                 im: [[T_4]].im as f64,

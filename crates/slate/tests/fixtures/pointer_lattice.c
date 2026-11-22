@@ -56,9 +56,9 @@ int main(void) {
 // CHECK-NEXT:     bump(&mut a);
 // CHECK-NEXT:     let b: i32 = 10;
 // CHECK-NEXT:     let peeked: i32 = peek(&b);
-// CHECK-NEXT:     let c: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ()
-// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:     let c: *mut i32 = unsafe {
+// CHECK-NEXT:         (malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ()) as *mut i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *c = 100;
 // CHECK-NEXT:     }

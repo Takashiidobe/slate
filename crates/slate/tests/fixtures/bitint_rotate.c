@@ -83,14 +83,8 @@ int main(void) {
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
-// CHECK-NEXT:         let l: u8 = x
-// CHECK-NEXT:             .rotate_left(
-// CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(8) as u32,
-// CHECK-NEXT:             );
-// CHECK-NEXT:         let r: u8 = x
-// CHECK-NEXT:             .rotate_right(
-// CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(8) as u32,
-// CHECK-NEXT:             );
+// CHECK-NEXT:         let l: u8 = x.rotate_left((counts.0[i as usize] as i64).rem_euclid(8) as u32);
+// CHECK-NEXT:         let r: u8 = x.rotate_right((counts.0[i as usize] as i64).rem_euclid(8) as u32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -104,14 +98,8 @@ int main(void) {
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
-// CHECK-NEXT:         let l: u16 = x
-// CHECK-NEXT:             .rotate_left(
-// CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(16) as u32,
-// CHECK-NEXT:             );
-// CHECK-NEXT:         let r: u16 = x
-// CHECK-NEXT:             .rotate_right(
-// CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(16) as u32,
-// CHECK-NEXT:             );
+// CHECK-NEXT:         let l: u16 = x.rotate_left((counts.0[i as usize] as i64).rem_euclid(16) as u32);
+// CHECK-NEXT:         let r: u16 = x.rotate_right((counts.0[i as usize] as i64).rem_euclid(16) as u32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -125,14 +113,8 @@ int main(void) {
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
-// CHECK-NEXT:         let l: u32 = x
-// CHECK-NEXT:             .rotate_left(
-// CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(32) as u32,
-// CHECK-NEXT:             );
-// CHECK-NEXT:         let r: u32 = x
-// CHECK-NEXT:             .rotate_right(
-// CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(32) as u32,
-// CHECK-NEXT:             );
+// CHECK-NEXT:         let l: u32 = x.rotate_left((counts.0[i as usize] as i64).rem_euclid(32) as u32);
+// CHECK-NEXT:         let r: u32 = x.rotate_right((counts.0[i as usize] as i64).rem_euclid(32) as u32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -146,14 +128,8 @@ int main(void) {
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
-// CHECK-NEXT:         let l: u64 = x
-// CHECK-NEXT:             .rotate_left(
-// CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(64) as u32,
-// CHECK-NEXT:             );
-// CHECK-NEXT:         let r: u64 = x
-// CHECK-NEXT:             .rotate_right(
-// CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(64) as u32,
-// CHECK-NEXT:             );
+// CHECK-NEXT:         let l: u64 = x.rotate_left((counts.0[i as usize] as i64).rem_euclid(64) as u32);
+// CHECK-NEXT:         let r: u64 = x.rotate_right((counts.0[i as usize] as i64).rem_euclid(64) as u32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l, r) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -169,12 +145,12 @@ int main(void) {
 // CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
 // CHECK-NEXT:         let l: u8 = {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]] = x;
-// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(5) as u32;
+// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = (counts.0[i as usize] as i64).rem_euclid(5) as u32;
 // CHECK-NEXT:             (([[T_0]] << [[T_1]] | [[T_0]] >> (5 - [[T_1]]) % 5) as u8) & 31
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let r: u8 = {
 // CHECK-NEXT:             let [[T_2:__t[0-9]+]] = x;
-// CHECK-NEXT:             let [[T_3:__t[0-9]+]] = ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(5) as u32;
+// CHECK-NEXT:             let [[T_3:__t[0-9]+]] = (counts.0[i as usize] as i64).rem_euclid(5) as u32;
 // CHECK-NEXT:             (([[T_2]] >> [[T_3]] | [[T_2]] << (5 - [[T_3]]) % 5) as u8) & 31
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -192,12 +168,12 @@ int main(void) {
 // CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
 // CHECK-NEXT:         let l: u16 = {
 // CHECK-NEXT:             let [[T_0]] = x;
-// CHECK-NEXT:             let [[T_1]] = ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(9) as u32;
+// CHECK-NEXT:             let [[T_1]] = (counts.0[i as usize] as i64).rem_euclid(9) as u32;
 // CHECK-NEXT:             (([[T_0]] << [[T_1]] | [[T_0]] >> (9 - [[T_1]]) % 9) as u16) & 511
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let r: u16 = {
 // CHECK-NEXT:             let [[T_2]] = x;
-// CHECK-NEXT:             let [[T_3]] = ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(9) as u32;
+// CHECK-NEXT:             let [[T_3]] = (counts.0[i as usize] as i64).rem_euclid(9) as u32;
 // CHECK-NEXT:             (([[T_2]] >> [[T_3]] | [[T_2]] << (9 - [[T_3]]) % 9) as u16) & 511
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -215,12 +191,12 @@ int main(void) {
 // CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
 // CHECK-NEXT:         let l: u64 = {
 // CHECK-NEXT:             let [[T_0]] = x;
-// CHECK-NEXT:             let [[T_1]] = ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(33) as u32;
+// CHECK-NEXT:             let [[T_1]] = (counts.0[i as usize] as i64).rem_euclid(33) as u32;
 // CHECK-NEXT:             (([[T_0]] << [[T_1]] | [[T_0]] >> (33 - [[T_1]]) % 33) as u64) & 8589934591
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let r: u64 = {
 // CHECK-NEXT:             let [[T_2]] = x;
-// CHECK-NEXT:             let [[T_3]] = ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(33) as u32;
+// CHECK-NEXT:             let [[T_3]] = (counts.0[i as usize] as i64).rem_euclid(33) as u32;
 // CHECK-NEXT:             (([[T_2]] >> [[T_3]] | [[T_2]] << (33 - [[T_3]]) % 33) as u64) & 8589934591
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -236,14 +212,8 @@ int main(void) {
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
-// CHECK-NEXT:         let l: u64 = x
-// CHECK-NEXT:             .rotate_left(
-// CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(64) as u32,
-// CHECK-NEXT:             );
-// CHECK-NEXT:         let r: u64 = x
-// CHECK-NEXT:             .rotate_right(
-// CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(64) as u32,
-// CHECK-NEXT:             );
+// CHECK-NEXT:         let l: u64 = x.rotate_left((counts.0[i as usize] as i64).rem_euclid(64) as u32);
+// CHECK-NEXT:         let r: u64 = x.rotate_right((counts.0[i as usize] as i64).rem_euclid(64) as u32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%llu %llu\n".as_ptr(), l as u64, r as u64) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -264,13 +234,9 @@ int main(void) {
 // CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
 // CHECK-NEXT:         let mut l: bitint::BUint<100, 2, 16, bitint::A8> = x
-// CHECK-NEXT:             .rotate_left_bits(
-// CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(100) as u32,
-// CHECK-NEXT:             );
+// CHECK-NEXT:             .rotate_left_bits((counts.0[i as usize] as i64).rem_euclid(100) as u32);
 // CHECK-NEXT:         let mut r: bitint::BUint<100, 2, 16, bitint::A8> = x
-// CHECK-NEXT:             .rotate_right_bits(
-// CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(100) as u32,
-// CHECK-NEXT:             );
+// CHECK-NEXT:             .rotate_right_bits((counts.0[i as usize] as i64).rem_euclid(100) as u32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
@@ -297,13 +263,9 @@ int main(void) {
 // CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
 // CHECK-NEXT:         let mut l: bitint::BUint<128, 2, 16, bitint::A8> = x
-// CHECK-NEXT:             .rotate_left_bits(
-// CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(128) as u32,
-// CHECK-NEXT:             );
+// CHECK-NEXT:             .rotate_left_bits((counts.0[i as usize] as i64).rem_euclid(128) as u32);
 // CHECK-NEXT:         let mut r: bitint::BUint<128, 2, 16, bitint::A8> = x
-// CHECK-NEXT:             .rotate_right_bits(
-// CHECK-NEXT:                 ((unsafe { counts.0[i as usize] }) as i64).rem_euclid(128) as u32,
-// CHECK-NEXT:             );
+// CHECK-NEXT:             .rotate_right_bits((counts.0[i as usize] as i64).rem_euclid(128) as u32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(

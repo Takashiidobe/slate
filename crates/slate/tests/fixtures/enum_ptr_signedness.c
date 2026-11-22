@@ -36,7 +36,7 @@ int main(void) {
 // CHECK-NEXT:     p.top = unsafe { data.as_mut_ptr().add(3) };
 // CHECK-NEXT:     let c: u32 = unsafe { *p.start.add(1) };
 // CHECK-NEXT:     println!("{}", (c as u32) as i32);
-// CHECK-NEXT:     println!("{}", ((unsafe { p.top.offset_from(p.start as *mut u32) }) as i64) as i32);
+// CHECK-NEXT:     println!("{}", unsafe { (p.top.offset_from(p.start as *mut u32) as i64) as i32 });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

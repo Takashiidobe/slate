@@ -29,9 +29,9 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {}",
-// CHECK-NEXT:         (unsafe { nonzero_double }) as i32,
-// CHECK-NEXT:         (unsafe { zero_double }) as i32,
-// CHECK-NEXT:         (unsafe { imag_only_float }) as i32,
+// CHECK-NEXT:         unsafe { nonzero_double as i32 },
+// CHECK-NEXT:         unsafe { zero_double as i32 },
+// CHECK-NEXT:         unsafe { imag_only_float as i32 },
 // CHECK-NEXT:         unsafe { equal },
 // CHECK-NEXT:         unsafe { differ }
 // CHECK-NEXT:     );

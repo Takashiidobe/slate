@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT:     let mut pair: FixedPair = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     pair.left = short_value;
 // CHECK-NEXT:     pair.right = unsafe { global_u32 };
-// CHECK-NEXT:     pair.count = unsafe { global_size }.wrapping_add(3);
+// CHECK-NEXT:     pair.count = unsafe { global_size.wrapping_add(3) };
 // CHECK-NEXT:     (((small as i32) + (byte as i32) + (pair.left as i32) + signed_value
 // CHECK-NEXT:             + (ushort_value as i32)) as u64)
 // CHECK-NEXT:         .wrapping_add(pair.count)

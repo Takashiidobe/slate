@@ -241,11 +241,9 @@ int main(void) {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         c"identity".as_ptr(),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         unsafe {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             __slate_icall__rf80_f80(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 unsafe {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>, *const ()>(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         identity,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     )
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 },
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble) -> LongDouble>, *const ()>(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     identity,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 LongDouble([120, 111, 94, 77, 60, 43, 26, 137, 39, 64]),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             )
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         },
@@ -259,11 +257,9 @@ int main(void) {
 // CHECK-NEXT:         c"sum10".as_ptr(),
 // CHECK-NEXT:         unsafe {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             __slate_icall__rf80_f80_f80_f80_f80_f80_f80_f80_f80_f80_f80(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 unsafe {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble, LongDouble, LongDouble, LongDouble, LongDouble, LongDouble, LongDouble, LongDouble, LongDouble) -> LongDouble>, *const ()>(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         sum10,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     )
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 },
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble, LongDouble, LongDouble, LongDouble, LongDouble, LongDouble, LongDouble, LongDouble, LongDouble) -> LongDouble>, *const ()>(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     sum10,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 63]),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 253, 63]),
@@ -290,11 +286,9 @@ int main(void) {
 // CHECK-NEXT:         c"mix".as_ptr(),
 // CHECK-NEXT:         unsafe {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             __slate_icall__rf80_i64_f64_f80_u32_f80_f32_f80_i32_f64_f80(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 unsafe {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i64, f64, LongDouble, u32, LongDouble, f32, LongDouble, i32, f64, LongDouble) -> LongDouble>, *const ()>(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         mix,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     )
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 },
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i64, f64, LongDouble, u32, LongDouble, f32, LongDouble, i32, f64, LongDouble) -> LongDouble>, *const ()>(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     mix,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 -123456789i64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 192.0f64,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 LongDouble([120, 111, 94, 77, 60, 43, 26, 137, 4, 64]),
@@ -320,11 +314,9 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let p: ld_pair = unsafe {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         __slate_icall__rm32_m32(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             unsafe {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(ld_pair) -> ld_pair>, *const ()>(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     pair_swap,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 )
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             },
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(ld_pair) -> ld_pair>, *const ()>(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 pair_swap,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             ),
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         pair_swap
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:             .unwrap()(
 // X86_64-PC-WINDOWS-MSVC-NEXT:         pair_swap
@@ -342,11 +334,9 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (*{
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 [[SLATE_COMPOUND_2]] = __slate_icall__rs80_s80(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     unsafe {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         core::mem::transmute::<Option<unsafe extern "C-unwind" fn(ld_one) -> ld_one>, *const ()>(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                             one_half,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         )
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     },
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(ld_one) -> ld_one>, *const ()>(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         one_half,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     ),
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                 [[SLATE_COMPOUND_2]] = one_half
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:                     .unwrap()(
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 [[SLATE_COMPOUND_2]] = one_half
@@ -362,11 +352,9 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let r#box: ld_box = unsafe {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         __slate_icall__rm48_m48(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             unsafe {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(ld_box) -> ld_box>, *const ()>(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     box_bump,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 )
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:             },
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(ld_box) -> ld_box>, *const ()>(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 box_bump,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:             ),
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         box_bump
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:             .unwrap()(
 // X86_64-PC-WINDOWS-MSVC-NEXT:         box_bump
@@ -394,20 +382,14 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         c"call".as_ptr(),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         unsafe {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             __slate_icall__rf80_fp_f80_f80(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 unsafe {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>, LongDouble, LongDouble) -> LongDouble>, *const ()>(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         call,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     )
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 },
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 unsafe {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>, *const ()>(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         unsafe {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                             core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>>(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                                 __slate_ldfp_main_fused as *const (),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                             )
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         },
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     )
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 },
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>, LongDouble, LongDouble) -> LongDouble>, *const ()>(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     call,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>, *const ()>(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble, LongDouble) -> LongDouble>>(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         __slate_ldfp_main_fused as *const (),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     ),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 a,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 b,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             )
@@ -417,11 +399,9 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         c"vsum".as_ptr(),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         unsafe {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             __slate_icall__rf80_f80_i32__f80_f80_f80(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 unsafe {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, *const ()>(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         vsum,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     )
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 },
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, *const ()>(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     vsum,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63]),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 3i32,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 a,
@@ -434,20 +414,14 @@ int main(void) {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         c"vcall".as_ptr(),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         unsafe {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             __slate_icall__rf80_fp_f80_f80(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 unsafe {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, LongDouble, LongDouble) -> LongDouble>, *const ()>(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         vcall,
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     )
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 },
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 unsafe {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, *const ()>(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         unsafe {
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                             core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>>(
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                                 __slate_ldfp_main_scaled_sum as *const (),
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                             )
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         },
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     )
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 },
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, LongDouble, LongDouble) -> LongDouble>, *const ()>(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     vcall,
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>, *const ()>(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(LongDouble, i32, ...) -> LongDouble>>(
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                         __slate_ldfp_main_scaled_sum as *const (),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                     ),
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:                 ),
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 a,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:                 b,
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:             )

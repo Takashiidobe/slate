@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut f: *mut field = unsafe { core::ptr::addr_of_mut!(fields.0) as *mut field };
-// CHECK-NEXT:     while !unsafe { (*f).name }.is_null() {
+// CHECK-NEXT:     while !unsafe { (*f).name.is_null() } {
 // CHECK-NEXT:         unsafe { printf(c"%s %d %d\n".as_ptr(), (*f).name, (*f).is_signed, (*f).size) };
 // CHECK-NEXT:         f = unsafe { f.add(1) };
 // CHECK-NEXT:     }

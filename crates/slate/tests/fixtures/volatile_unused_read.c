@@ -12,7 +12,7 @@ int main(void) {
 // CHECK-NEXT: static mut reg: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     unsafe { core::ptr::read_volatile(core::ptr::addr_of!(reg)) };
+// CHECK-NEXT:     let unused: i32 = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(reg)) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

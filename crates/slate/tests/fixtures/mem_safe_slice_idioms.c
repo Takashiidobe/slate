@@ -62,14 +62,14 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let src_a: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     unsafe { dst_a[0usize..4usize].copy_from_slice(&src_a[0usize..4usize]) };
+// CHECK-NEXT:     dst_a[0usize..4usize].copy_from_slice(&src_a[0usize..4usize]);
 // CHECK-NEXT:     let mut dst_b: [u8; 8] = [9, 9, 9, 9, 9, 9, 9, 9];
 // CHECK-NEXT:     let src_b: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     unsafe { dst_b[0usize..5usize].copy_from_slice(&src_b[0usize..5usize]) };
+// CHECK-NEXT:     dst_b[0usize..5usize].copy_from_slice(&src_b[0usize..5usize]);
 // CHECK-NEXT:     let mut self_c: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     unsafe { self_c.copy_within(0usize..8usize, 0usize) };
+// CHECK-NEXT:     self_c.copy_within(0usize..8usize, 0usize);
 // CHECK-NEXT:     let mut dst_d: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     unsafe { dst_d[0usize..5usize].fill((65i32 as i32) as u8) };
+// CHECK-NEXT:     dst_d[0usize..5usize].fill((65i32 as i32) as u8);
 // CHECK-NEXT:     let mut dst_e: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     let mut src_e: [u8; 8] = [9, 9, 9, 9, 9, 9, 9, 9];
 // CHECK-NEXT:     unsafe {
@@ -91,7 +91,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut dst_g: [u8; 4] = [0, 0, 0, 0];
-// CHECK-NEXT:     let src_g: *mut u8 = (unsafe { malloc(4u64 as usize) as *mut () }) as *mut u8;
+// CHECK-NEXT:     let src_g: *mut u8 = unsafe { (malloc(4u64 as usize) as *mut ()) as *mut u8 };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_bytes(
 // CHECK-NEXT:             ((src_g as *mut ()) as *mut core::ffi::c_void) as *mut u8,

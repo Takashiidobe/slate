@@ -91,14 +91,16 @@ int main(void) {
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn key_address__const1(key: *mut key, next: bool) -> *const i8 {
 // CHECK-NEXT:     let mut address: *const i8 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq {1}+1(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             sym k1,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "leaq {1}+1(%rip), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 sym k1,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         address = unsafe { core::mem::transmute::<u64, *const i8>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     address
@@ -107,14 +109,16 @@ int main(void) {
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn key_address__const2(key: *mut key, next: bool) -> *const i8 {
 // CHECK-NEXT:     let mut address: *const i8 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq {1}(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             sym k2,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "leaq {1}(%rip), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 sym k2,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         address = unsafe { core::mem::transmute::<u64, *const i8>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     address
@@ -122,8 +126,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn branch__const4(key: *mut key, likely: bool) -> i32 {
+// CHECK-NEXT:     let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection",
 // CHECK-NEXT:             sym k1,
@@ -133,18 +137,18 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
-// CHECK-NEXT:         if __slate_asm_target {
-// CHECK-NEXT:             return 1;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             return 0;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if __slate_asm_target {
+// CHECK-NEXT:         return 1;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn branch__const5(key: *mut key, likely: bool) -> i32 {
+// CHECK-NEXT:     let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection",
 // CHECK-NEXT:             sym k2,
@@ -154,18 +158,18 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
-// CHECK-NEXT:         if __slate_asm_target {
-// CHECK-NEXT:             return 1;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             return 0;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if __slate_asm_target {
+// CHECK-NEXT:         return 1;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn branch__const8(key: *mut key, likely: bool) -> i32 {
+// CHECK-NEXT:     let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "jmp {2}\n\t.pushsection .data.slate_keys,\"aw\"\n\t.quad {0} + {1}\n\t.popsection",
 // CHECK-NEXT:             sym holder,
@@ -175,25 +179,27 @@ int main(void) {
 // CHECK-NEXT:             },
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
-// CHECK-NEXT:         if __slate_asm_target {
-// CHECK-NEXT:             return 1;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             return 0;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if __slate_asm_target {
+// CHECK-NEXT:         return 1;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn bit__const6(nr: i32) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movl ${1}, {0:e}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             const 2i32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movl ${1}, {0:e}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 const 2i32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         out = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
@@ -202,14 +208,16 @@ int main(void) {
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn bit__const7(nr: i32) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movl ${1}, {0:e}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             const 8i32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movl ${1}, {0:e}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 const 8i32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         out = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
@@ -249,23 +257,25 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
-// CHECK-NEXT:         branch__const4(unsafe { core::ptr::addr_of_mut!(k1) }, true),
-// CHECK-NEXT:         branch__const5(unsafe { core::ptr::addr_of_mut!(k2) }, false),
-// CHECK-NEXT:         branch__const4(unsafe { core::ptr::addr_of_mut!(k1) }, true)
+// CHECK-NEXT:         branch__const4(core::ptr::addr_of_mut!(k1), true),
+// CHECK-NEXT:         branch__const5(core::ptr::addr_of_mut!(k2), false),
+// CHECK-NEXT:         branch__const4(core::ptr::addr_of_mut!(k1), true)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {}", bit__const6(9i32), bit__const7(3i32));
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let __flags: i32 = 256 | 3;
 // CHECK-NEXT:         let mut __out: i32 = 0;
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         {
 // CHECK-NEXT:             let [[T_0]]: u32;
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "movl ${1}, {0:e}",
-// CHECK-NEXT:                 lateout(reg) [[T_0]],
-// CHECK-NEXT:                 const 259i32,
-// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:             );
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::arch::asm!(
+// CHECK-NEXT:                     "movl ${1}, {0:e}",
+// CHECK-NEXT:                     lateout(reg) [[T_0]],
+// CHECK-NEXT:                     const 259i32,
+// CHECK-NEXT:                     options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:                 );
+// CHECK-NEXT:             }
 // CHECK-NEXT:             __out = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[V_0]] = __out;
@@ -273,22 +283,24 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: i32;
 // CHECK-NEXT:     let __flags: i32 = 256 | 1i32 << 4i32;
 // CHECK-NEXT:     let mut __out: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movl ${1}, {0:e}",
-// CHECK-NEXT:             lateout(reg) [[T_1]],
-// CHECK-NEXT:             const 272i32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movl ${1}, {0:e}",
+// CHECK-NEXT:                 lateout(reg) [[T_1]],
+// CHECK-NEXT:                 const 272i32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         __out = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_1]] = __out;
 // CHECK-NEXT:     println!("{} {}", [[V_0]], [[V_1]]);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         HOLDER_BRANCH!(unsafe { core::ptr::addr_of_mut!(holder) }),
-// CHECK-NEXT:         KEY_BRANCH!(unsafe { core::ptr::addr_of_mut!(k2) })
+// CHECK-NEXT:         HOLDER_BRANCH!(core::ptr::addr_of_mut!(holder)),
+// CHECK-NEXT:         KEY_BRANCH!(core::ptr::addr_of_mut!(k2))
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

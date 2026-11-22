@@ -142,7 +142,7 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut gl: *mut nested = unsafe { core::ptr::addr_of_mut!(__slate_compound_gl_0) };
+// CHECK-NEXT: static mut gl: *mut nested = core::ptr::addr_of_mut!(__slate_compound_gl_0);
 // CHECK-EMPTY:
 // CHECK-NEXT: fn dump(p: *const (), n: u32) {
 // CHECK-NEXT:     let mut bytes: __SlateAlign16<[u8; 64]> = __SlateAlign16([0u8; 64]);
@@ -165,24 +165,24 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     dump(
-// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(gp) }) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(gp) as *const (),
 // CHECK-NEXT:         core::mem::size_of::<padded>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
-// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(gu) }) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(gu) as *const (),
 // CHECK-NEXT:         core::mem::size_of::<small_first>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
-// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(gn) }) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(gn) as *const (),
 // CHECK-NEXT:         core::mem::size_of::<nested>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
-// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(sn) }) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(sn) as *const (),
 // CHECK-NEXT:         core::mem::size_of::<nested>() as u32,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     dump((unsafe { gl }) as *const (), core::mem::size_of::<nested>() as u32);
+// CHECK-NEXT:     dump(unsafe { gl as *const () }, core::mem::size_of::<nested>() as u32);
 // CHECK-NEXT:     dump(
-// CHECK-NEXT:         (unsafe { core::ptr::addr_of_mut!(lu) }) as *const (),
+// CHECK-NEXT:         core::ptr::addr_of_mut!(lu) as *const (),
 // CHECK-NEXT:         core::mem::size_of::<small_first>() as u32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0

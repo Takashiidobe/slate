@@ -63,7 +63,7 @@ int main(void) {
 // CHECK-NEXT: fn total(mut s: *const i8) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     while (unsafe { *s }) != 0 {
-// CHECK-NEXT:         sum += (unsafe { *s }) as i32;
+// CHECK-NEXT:         sum += unsafe { *s as i32 };
 // CHECK-NEXT:         s = unsafe { s.add(1) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
@@ -73,11 +73,7 @@ int main(void) {
 // CHECK-NEXT:     let mut local: [i8; 6] = [108, 111, 99, 97, 108, 0];
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         greeting[0] = 106;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         padded[2] = 99;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         grid[1][0] = 119;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     local[0] = 76;
@@ -96,19 +92,19 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {}",
-// CHECK-NEXT:         (unsafe { padded[5] }) as i32,
+// CHECK-NEXT:         unsafe { padded[5] as i32 },
 // CHECK-NEXT:         total(unsafe { words.0[1] }),
 // CHECK-NEXT:         total(unsafe { words.0[2] }),
-// CHECK-NEXT:         (unsafe { high[0] }) as i32,
-// CHECK-NEXT:         (unsafe { high[1] }) as i32,
-// CHECK-NEXT:         (unsafe { high[2] }) as i32
+// CHECK-NEXT:         unsafe { high[0] as i32 },
+// CHECK-NEXT:         unsafe { high[1] as i32 },
+// CHECK-NEXT:         unsafe { high[2] as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%s\n".as_ptr(), words.0[i as usize]) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     total((unsafe { core::ptr::addr_of_mut!(greeting) as *mut i8 }) as *const i8) % 256
+// CHECK-NEXT:     total((core::ptr::addr_of_mut!(greeting) as *mut i8) as *const i8) % 256
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

@@ -46,17 +46,23 @@ int main(void) {
 // CHECK-NEXT:     fn fflush([[ARG_0:arg[0-9]+]]: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn syscall3(mut x8: i64, mut x0: i64, mut x1: i64, mut x2: i64) -> i64 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT: fn syscall3(number: i64, a: i64, b: i64, c: i64) -> i64 {
+// CHECK-NEXT:     let mut x8: i64 = number;
+// CHECK-NEXT:     let mut x0: i64 = a;
+// CHECK-NEXT:     let mut x1: i64 = b;
+// CHECK-NEXT:     let mut x2: i64 = c;
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "svc #0",
-// CHECK-NEXT:             inlateout("x0") x0 as u64 => [[T_0]],
-// CHECK-NEXT:             in("x8") x8 as u64,
-// CHECK-NEXT:             in("x1") x1 as u64,
-// CHECK-NEXT:             in("x2") x2 as u64,
-// CHECK-NEXT:             options(nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "svc #0",
+// CHECK-NEXT:                 inlateout("x0") x0 as u64 => [[T_0]],
+// CHECK-NEXT:                 in("x8") x8 as u64,
+// CHECK-NEXT:                 in("x1") x1 as u64,
+// CHECK-NEXT:                 in("x2") x2 as u64,
+// CHECK-NEXT:                 options(nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         x0 = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x0
@@ -64,43 +70,52 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::getpid;
 // CHECK-EMPTY:
-// CHECK-NEXT: fn syscall0(mut x8: i64) -> i64 {
+// CHECK-NEXT: fn syscall0(number: i64) -> i64 {
+// CHECK-NEXT:     let mut x8: i64 = number;
 // CHECK-NEXT:     let mut x0: i64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "svc #0",
-// CHECK-NEXT:             lateout("x0") [[T_0]],
-// CHECK-NEXT:             in("x8") x8 as u64,
-// CHECK-NEXT:             options(nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "svc #0",
+// CHECK-NEXT:                 lateout("x0") [[T_0]],
+// CHECK-NEXT:                 in("x8") x8 as u64,
+// CHECK-NEXT:                 options(nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         x0 = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn add_w1(mut w: i32, mut b: i32) -> i32 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT: fn add_w1(a: i32, mut b: i32) -> i32 {
+// CHECK-NEXT:     let mut w: i32 = a;
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "add w1, w1, {0:w}",
-// CHECK-NEXT:             in(reg) b as u32,
-// CHECK-NEXT:             inlateout("x1") w as u32 => [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "add w1, w1, {0:w}",
+// CHECK-NEXT:                 in(reg) b as u32,
+// CHECK-NEXT:                 inlateout("x1") w as u32 => [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         w = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     w
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn double_d3(mut d: f64) -> f64 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT: fn double_d3(a: f64) -> f64 {
+// CHECK-NEXT:     let mut d: f64 = a;
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fadd d3, d3, d3",
-// CHECK-NEXT:             inlateout("v3") unsafe { core::mem::transmute::<f64, u64>(d) } => [[T_0]],
-// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "fadd d3, d3, d3",
+// CHECK-NEXT:                 inlateout("v3") core::mem::transmute::<f64, u64>(d) => [[T_0]],
+// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         d = unsafe { core::mem::transmute::<u64, f64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     d
@@ -111,7 +126,7 @@ int main(void) {
 // CHECK-NEXT:     let written: i64 = syscall3(
 // CHECK-NEXT:         64i64,
 // CHECK-NEXT:         1i64,
-// CHECK-NEXT:         (unsafe { core::ptr::addr_of!(message) as *const u8 }) as i64,
+// CHECK-NEXT:         (core::ptr::addr_of!(message) as *const u8) as i64,
 // CHECK-NEXT:         (core::mem::size_of::<[u8; 16]>() as u64).wrapping_sub(1) as i64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

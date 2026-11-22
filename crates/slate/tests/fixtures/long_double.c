@@ -1118,12 +1118,14 @@ int main(void) {
 // CHECK-NEXT:         let __v: LongDouble = unsafe {
 // CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(vone))
 // CHECK-NEXT:         };
-// CHECK-NEXT:         [[V_0]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
-// CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) }
-// CHECK-NEXT:             && ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
-// CHECK-NEXT:                 != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) }
-// CHECK-NEXT:                 || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) })
-// CHECK-NEXT:                     != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) });
+// CHECK-NEXT:         [[V_0]] = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:                 != core::ptr::read_volatile(core::ptr::addr_of!(__v))
+// CHECK-NEXT:                 && (core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:                     != core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:                     || core::ptr::read_volatile(core::ptr::addr_of!(__v))
+// CHECK-NEXT:                         != core::ptr::read_volatile(core::ptr::addr_of!(__v)))
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: bool;
 // CHECK-NEXT:     {
@@ -1133,12 +1135,14 @@ int main(void) {
 // CHECK-NEXT:         let __v: LongDouble = unsafe {
 // CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(vzero))
 // CHECK-NEXT:         };
-// CHECK-NEXT:         [[V_1]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
-// CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) }
-// CHECK-NEXT:             && ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
-// CHECK-NEXT:                 != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) }
-// CHECK-NEXT:                 || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) })
-// CHECK-NEXT:                     != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) });
+// CHECK-NEXT:         [[V_1]] = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:                 != core::ptr::read_volatile(core::ptr::addr_of!(__v))
+// CHECK-NEXT:                 && (core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:                     != core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:                     || core::ptr::read_volatile(core::ptr::addr_of!(__v))
+// CHECK-NEXT:                         != core::ptr::read_volatile(core::ptr::addr_of!(__v)))
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "isnan_v={} isinf_v={} isfinite_v={} isnormal_v={} isunordered_v={} isunordered_ok={}",
@@ -1194,15 +1198,19 @@ int main(void) {
 // CHECK-NEXT:         let __v: LongDouble = unsafe {
 // CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(__y))
 // CHECK-NEXT:         };
-// CHECK-NEXT:         [[V_3]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
-// CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) }
-// CHECK-NEXT:             && ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
-// CHECK-NEXT:                 != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) }
-// CHECK-NEXT:                 || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) })
-// CHECK-NEXT:                     != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) });
+// CHECK-NEXT:         [[V_3]] = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:                 != core::ptr::read_volatile(core::ptr::addr_of!(__v))
+// CHECK-NEXT:                 && (core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:                     != core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:                     || core::ptr::read_volatile(core::ptr::addr_of!(__v))
+// CHECK-NEXT:                         != core::ptr::read_volatile(core::ptr::addr_of!(__v)))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[V_2]] = ![[V_3]]
-// CHECK-NEXT:             && (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__x)) })
-// CHECK-NEXT:                 != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__y)) };
+// CHECK-NEXT:             && unsafe {
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(__x))
+// CHECK-NEXT:                     != core::ptr::read_volatile(core::ptr::addr_of!(__y))
+// CHECK-NEXT:             };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_4:__v[0-9]+]]: bool;
 // CHECK-NEXT:     {
@@ -1219,15 +1227,19 @@ int main(void) {
 // CHECK-NEXT:         let __v: LongDouble = unsafe {
 // CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(__y))
 // CHECK-NEXT:         };
-// CHECK-NEXT:         [[V_5]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
-// CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) }
-// CHECK-NEXT:             && ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
-// CHECK-NEXT:                 != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) }
-// CHECK-NEXT:                 || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) })
-// CHECK-NEXT:                     != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) });
+// CHECK-NEXT:         [[V_5]] = unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:                 != core::ptr::read_volatile(core::ptr::addr_of!(__v))
+// CHECK-NEXT:                 && (core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:                     != core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:                     || core::ptr::read_volatile(core::ptr::addr_of!(__v))
+// CHECK-NEXT:                         != core::ptr::read_volatile(core::ptr::addr_of!(__v)))
+// CHECK-NEXT:         };
 // CHECK-NEXT:         [[V_4]] = ![[V_5]]
-// CHECK-NEXT:             && (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__x)) })
-// CHECK-NEXT:                 != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__y)) };
+// CHECK-NEXT:             && unsafe {
+// CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(__x))
+// CHECK-NEXT:                     != core::ptr::read_volatile(core::ptr::addr_of!(__y))
+// CHECK-NEXT:             };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_6:__v[0-9]+]]: bool;
 // CHECK-NEXT:     let __x: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(vnan)) };
@@ -1235,15 +1247,19 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_7:__v[0-9]+]]: bool;
 // CHECK-NEXT:     let __u: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__x)) };
 // CHECK-NEXT:     let __v: LongDouble = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__y)) };
-// CHECK-NEXT:     [[V_7]] = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
-// CHECK-NEXT:         != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) }
-// CHECK-NEXT:         && ((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) })
-// CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__u)) }
-// CHECK-NEXT:             || (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) })
-// CHECK-NEXT:                 != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__v)) });
+// CHECK-NEXT:     [[V_7]] = unsafe {
+// CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:             != core::ptr::read_volatile(core::ptr::addr_of!(__v))
+// CHECK-NEXT:             && (core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:                 != core::ptr::read_volatile(core::ptr::addr_of!(__u))
+// CHECK-NEXT:                 || core::ptr::read_volatile(core::ptr::addr_of!(__v))
+// CHECK-NEXT:                     != core::ptr::read_volatile(core::ptr::addr_of!(__v)))
+// CHECK-NEXT:     };
 // CHECK-NEXT:     [[V_6]] = ![[V_7]]
-// CHECK-NEXT:         && (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__x)) })
-// CHECK-NEXT:             != unsafe { core::ptr::read_volatile(core::ptr::addr_of!(__y)) };
+// CHECK-NEXT:         && unsafe {
+// CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(__x))
+// CHECK-NEXT:                 != core::ptr::read_volatile(core::ptr::addr_of!(__y))
+// CHECK-NEXT:         };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "islessgreater_lt={} islessgreater_eq={} islessgreater_nan={}",
 // CHECK-NEXT:         [[V_2]] as i32,

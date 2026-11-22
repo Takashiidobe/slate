@@ -36,9 +36,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut r#box: FnBox = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         r#box.r#fn = Some(add_one);
-// CHECK-NEXT:     }
+// CHECK-NEXT:     r#box.r#fn = Some(add_one);
 // CHECK-NEXT:     let slot: *mut () = unsafe { r#box.ptr };
 // CHECK-NEXT:     let cb: Option<unsafe extern "C-unwind" fn(i32) -> i32> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<*mut (), Option<unsafe extern "C-unwind" fn(i32) -> i32>>(

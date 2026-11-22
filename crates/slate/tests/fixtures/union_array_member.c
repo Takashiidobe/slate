@@ -28,15 +28,9 @@ int main(void) {
 // CHECK-NEXT:     let mut word: Word = Word { value: 0 };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         word.bytes[0] = 65;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         word.bytes[1] = 66;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         (unsafe { word.bytes[0] }) as i32,
-// CHECK-NEXT:         (unsafe { word.bytes[1] }) as i32
-// CHECK-NEXT:     );
+// CHECK-NEXT:     println!("{} {}", unsafe { word.bytes[0] as i32 }, unsafe { word.bytes[1] as i32 });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -43,10 +43,14 @@ int main(void) {
 // CHECK-NEXT:     let mut p: *mut i32 = core::ptr::null_mut::<i32>();
 // CHECK-NEXT:     let mut q: *mut i32 = core::ptr::null_mut::<i32>();
 // CHECK-NEXT:     if flag != 0 {
-// CHECK-NEXT:         p = (unsafe { malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut () })
-// CHECK-NEXT:             as *mut i32;
-// CHECK-NEXT:         q = (unsafe { malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut () })
-// CHECK-NEXT:             as *mut i32;
+// CHECK-NEXT:         p = unsafe {
+// CHECK-NEXT:             (malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ())
+// CHECK-NEXT:                 as *mut i32
+// CHECK-NEXT:         };
+// CHECK-NEXT:         q = unsafe {
+// CHECK-NEXT:             (malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ())
+// CHECK-NEXT:                 as *mut i32
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if p == q {
 // CHECK-NEXT:         println!("same");

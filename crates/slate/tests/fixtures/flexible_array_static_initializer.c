@@ -139,14 +139,14 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}",
-// CHECK-NEXT:         ((unsafe {
-// CHECK-NEXT:             (core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(tail)
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(tail)
 // CHECK-NEXT:                     as *mut Tail)).name) as *mut i8)
 // CHECK-NEXT:                 .offset_from(
 // CHECK-NEXT:                     (core::ptr::addr_of_mut!(*(core::ptr::addr_of_mut!(tail)
 // CHECK-NEXT:                         as *mut Tail)) as *mut i8) as *mut i8,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:         }) as i64) as i32
+// CHECK-NEXT:                 ) as i64) as i32
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let copy: Tail = unsafe { *(core::ptr::addr_of_mut!(tail) as *mut Tail) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -173,21 +173,21 @@ int main(void) {
 // CHECK-NEXT:     for i in 0i32..5i32 {
 // CHECK-NEXT:         print!(
 // CHECK-NEXT:             "{} ",
-// CHECK-NEXT:             (unsafe {
+// CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 *(core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(bytes)
 // CHECK-NEXT:                         as *mut Bytes)).bytes) as *mut i8)
-// CHECK-NEXT:                     .offset(i as isize)
-// CHECK-NEXT:             }) as i32
+// CHECK-NEXT:                     .offset(i as isize) as i32
+// CHECK-NEXT:             }
 // CHECK-NEXT:         );
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{}",
-// CHECK-NEXT:         (unsafe { (*(core::ptr::addr_of_mut!(bytes) as *mut Bytes)).value }) as i32
+// CHECK-NEXT:         unsafe { (*(core::ptr::addr_of_mut!(bytes) as *mut Bytes)).value as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}",
-// CHECK-NEXT:         (unsafe { (*(core::ptr::addr_of_mut!(packed) as *mut Packed)).a }) as i32,
+// CHECK-NEXT:         unsafe { (*(core::ptr::addr_of_mut!(packed) as *mut Packed)).a as i32 },
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(packed)
 // CHECK-NEXT:                     as *mut Packed)).values) as *mut i32)

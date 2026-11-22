@@ -43,68 +43,80 @@ int main(void) {
 // CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut text: *const i8 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addl ${1}, {0:e}\n\taddl $-4, {0:e}\n\taddl ${1}, {0:e}",
-// CHECK-NEXT:             inlateout(reg) result as u32 => [[T_0]],
-// CHECK-NEXT:             const 4i32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "addl ${1}, {0:e}\n\taddl $-4, {0:e}\n\taddl ${1}, {0:e}",
+// CHECK-NEXT:                 inlateout(reg) result as u32 => [[T_0]],
+// CHECK-NEXT:                 const 4i32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "addl $5, {0:e}\n# {1}",
-// CHECK-NEXT:             inlateout(reg) only_negated as u32 => [[T_1]],
-// CHECK-NEXT:             const -5i32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "addl $5, {0:e}\n# {1}",
+// CHECK-NEXT:                 inlateout(reg) only_negated as u32 => [[T_1]],
+// CHECK-NEXT:                 const -5i32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         only_negated = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq {1}+8(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_2]],
-// CHECK-NEXT:             sym values,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "leaq {1}+8(%rip), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_2]],
+// CHECK-NEXT:                 sym values,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         positive = unsafe { core::mem::transmute::<u64, *mut i32>([[T_2]] as u64) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_3:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq {1}+4(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_3]],
-// CHECK-NEXT:             sym values,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "leaq {1}+4(%rip), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_3]],
+// CHECK-NEXT:                 sym values,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         negative = unsafe { core::mem::transmute::<u64, *mut i32>([[T_3]] as u64) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_4:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq {1}(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_4]],
-// CHECK-NEXT:             sym answer,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "leaq {1}(%rip), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_4]],
+// CHECK-NEXT:                 sym answer,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         r#fn = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<u64, Option<unsafe extern "C-unwind" fn() -> i32>>(
 // CHECK-NEXT:                 [[T_4]] as u64,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_5:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq {1}(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_5]],
-// CHECK-NEXT:             sym __slate_asm_string_main_0,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "leaq {1}(%rip), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_5]],
+// CHECK-NEXT:                 sym __slate_asm_string_main_0,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         text = unsafe { core::mem::transmute::<u64, *const i8>([[T_5]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

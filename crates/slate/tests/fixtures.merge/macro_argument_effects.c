@@ -96,19 +96,13 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*it).index = [[V_0]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let first: c_long = scale(
-// CHECK-NEXT:         (unsafe { *unsafe { (*seq).items }.offset([[V_0]] as isize) }) as c_long,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let first: c_long = scale(unsafe { *(*seq).items.offset([[V_0]] as isize) as c_long });
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = unsafe { (*it).index };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*it).index = [[V_1]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let second: c_long = scale(
-// CHECK-NEXT:         (unsafe { *unsafe { (*seq).items }.offset([[V_1]] as isize) }) as c_long,
-// CHECK-NEXT:     );
-// CHECK-NEXT:     let third: c_long = WRAP!(
-// CHECK-NEXT:         unsafe { *unsafe { (*it).items }.offset((*it).index as isize) }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let second: c_long = scale(unsafe { *(*seq).items.offset([[V_1]] as isize) as c_long });
+// CHECK-NEXT:     let third: c_long = unsafe { WRAP!(*(*it).items.offset((*it).index as isize)) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

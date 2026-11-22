@@ -44,19 +44,21 @@ int main(void) {
 // CHECK-NEXT:     let mut equal: i32 = 0;
 // CHECK-NEXT:     let mut above: i32 = 0;
 // CHECK-NEXT:     let mut less: i32 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u8;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u8;
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u8;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmpl {4:e}, {3:e}\nsete {0}\nseta {1}\nsetl {2}",
-// CHECK-NEXT:             lateout(reg_byte) [[T_0]],
-// CHECK-NEXT:             lateout(reg_byte) [[T_1]],
-// CHECK-NEXT:             lateout(reg_byte) [[T_2]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmpl {4:e}, {3:e}\nsete {0}\nseta {1}\nsetl {2}",
+// CHECK-NEXT:                 lateout(reg_byte) [[T_0]],
+// CHECK-NEXT:                 lateout(reg_byte) [[T_1]],
+// CHECK-NEXT:                 lateout(reg_byte) [[T_2]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         equal = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:         above = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
 // CHECK-NEXT:         less = unsafe { core::mem::transmute::<u32, i32>([[T_2]] as u32) };
@@ -66,16 +68,18 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn compare_flag_widths(mut value: i32) -> i32 {
 // CHECK-NEXT:     let mut sign: u16 = 0;
 // CHECK-NEXT:     let mut nonzero: u64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u8;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u8;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "testl {2:e}, {2:e}\nsets {0}\nsetne {1}",
-// CHECK-NEXT:             lateout(reg_byte) [[T_0]],
-// CHECK-NEXT:             lateout(reg_byte) [[T_1]],
-// CHECK-NEXT:             in(reg) value as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "testl {2:e}, {2:e}\nsets {0}\nsetne {1}",
+// CHECK-NEXT:                 lateout(reg_byte) [[T_0]],
+// CHECK-NEXT:                 lateout(reg_byte) [[T_1]],
+// CHECK-NEXT:                 in(reg) value as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         sign = unsafe { core::mem::transmute::<u16, u16>([[T_0]] as u16) };
 // CHECK-NEXT:         nonzero = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:     }

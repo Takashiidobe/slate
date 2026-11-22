@@ -5,6 +5,7 @@ mod printf_format;
 mod rules;
 pub mod shadow;
 mod unsafe_marks;
+mod unsafe_placement;
 
 use arena::{Arena, FunctionOptimizer, NodeId, NodeKindTag};
 use foldhash::{HashMap, HashMapExt};
@@ -118,6 +119,7 @@ pub(in crate::backend) fn apply_local(
         apply_item(item, &passes);
     }
     macro_templates::finish_place_arguments(program, &place_parameters);
+    unsafe_placement::place(program);
 }
 
 fn apply_item(item: &mut Item, passes: &[RuleRegistry]) {

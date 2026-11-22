@@ -149,7 +149,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn next_id(state: *mut i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *state = *state + 1;
+// CHECK-NEXT:         *state += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { *state }
 // CHECK-NEXT: }

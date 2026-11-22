@@ -97,12 +97,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         counters[1][0] = 5;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "lookup {} {}",
-// CHECK-NEXT:         unsafe { lookup_proto.0.id },
-// CHECK-NEXT:         unsafe { lookup_proto.0.name }.is_null() as i32
-// CHECK-NEXT:     );
-// CHECK-NEXT:     println!("table {}", unsafe { table_proto.0.id });
+// CHECK-NEXT:     println!("lookup {} {}", lookup_proto.0.id, lookup_proto.0.name.is_null() as i32);
+// CHECK-NEXT:     println!("table {}", table_proto.0.id);
 // CHECK-NEXT:     println!("power {}", ((unsafe { power_off }) == None) as i32);
 // CHECK-NEXT:     println!("counters {} {}", unsafe { counters[0][0] }, unsafe { counters[1][0] });
 // CHECK-NEXT:     unsafe {

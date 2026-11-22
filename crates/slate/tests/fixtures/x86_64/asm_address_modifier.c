@@ -62,14 +62,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn read_offset() -> i64 {
 // CHECK-NEXT:     let mut value: i64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movq {1}+16(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             sym arr,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movq {1}+16(%rip), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 sym arr,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
@@ -77,14 +79,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn address_of() -> *mut i64 {
 // CHECK-NEXT:     let mut address: *mut i64 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq {1}+8(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             sym arr,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "leaq {1}+8(%rip), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 sym arr,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         address = unsafe { core::mem::transmute::<u64, *mut i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     address
@@ -92,14 +96,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn immediate() -> i64 {
 // CHECK-NEXT:     let mut value: i64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "leaq {1}, {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             const 8i32,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "leaq {1}, {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 const 8i32,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
@@ -107,14 +113,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn through_register(mut pointer: *mut i64) -> i64 {
 // CHECK-NEXT:     let mut value: i64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movq ({1:r}), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) pointer as u64,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movq ({1:r}), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) pointer as u64,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         value = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
@@ -124,28 +132,32 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i64;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut __val: i64 = 0;
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         {
 // CHECK-NEXT:             let [[T_0]]: u64;
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "movq %gs:{1}(%rip), {0:r}",
-// CHECK-NEXT:                 lateout(reg) [[T_0]],
-// CHECK-NEXT:                 sym word,
-// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:             );
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::arch::asm!(
+// CHECK-NEXT:                     "movq %gs:{1}(%rip), {0:r}",
+// CHECK-NEXT:                     lateout(reg) [[T_0]],
+// CHECK-NEXT:                     sym word,
+// CHECK-NEXT:                     options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:                 );
+// CHECK-NEXT:             }
 // CHECK-NEXT:             __val = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:         [[V_0]] = __val;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: i64;
 // CHECK-NEXT:     let mut __val: i64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "movq %gs:{1}+24(%rip), {0:r}",
-// CHECK-NEXT:             lateout(reg) [[T_1]],
-// CHECK-NEXT:             sym arr,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "movq %gs:{1}+24(%rip), {0:r}",
+// CHECK-NEXT:                 lateout(reg) [[T_1]],
+// CHECK-NEXT:                 sym arr,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         __val = unsafe { core::mem::transmute::<u64, i64>([[T_1]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_1]] = __val;

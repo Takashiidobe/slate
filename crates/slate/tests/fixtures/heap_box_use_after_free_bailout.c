@@ -17,9 +17,9 @@ int main(void) {
 // CHECK-NEXT: use slate_support::free;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let x: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ()
-// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:     let x: *mut i32 = unsafe {
+// CHECK-NEXT:         (malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ()) as *mut i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { free((x as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *x = 4;

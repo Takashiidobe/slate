@@ -49,8 +49,8 @@ int main(void) {
 // CHECK-NEXT:     let mut total: f16 = 0i32 as f16;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         total = ((total as f32)
-// CHECK-NEXT:             + ((unsafe { f16::from_bits(ap.next_arg::<f64>().to_bits() as u16) })
-// CHECK-NEXT:                 as f32)) as f16;
+// CHECK-NEXT:             + (f16::from_bits(unsafe { ap.next_arg::<f64>().to_bits() as u16 }) as f32))
+// CHECK-NEXT:             as f16;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
@@ -60,7 +60,7 @@ int main(void) {
 // CHECK-NEXT:     let b: f16 = 4f16;
 // CHECK-NEXT:     println!("{}", add16(a, b) as i32);
 // CHECK-NEXT:     println!("{}", mul16(a, b) as i32);
-// CHECK-NEXT:     println!("{}", (unsafe { sum_variadic(3i32, 1f16, 2f16, 3f16) }) as i32);
+// CHECK-NEXT:     println!("{}", unsafe { sum_variadic(3i32, 1f16, 2f16, 3f16) as i32 });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

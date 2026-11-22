@@ -102,19 +102,17 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let skipped: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:             let [[T_0:__t[0-9]+]]: i32 = mode;
-// CHECK-NEXT:             if [[T_0]] == 1 {
-// CHECK-NEXT:                 sum += 2;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if !([[T_0]] >= 2 && [[T_0]] <= 4) {
-// CHECK-NEXT:                     sum += 4;
-// CHECK-NEXT:                     break '[[JOIN_0]];
-// CHECK-NEXT:                 }
+// CHECK-NEXT:     '[[JOIN_0:__join_[0-9]+]]: {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: i32 = mode;
+// CHECK-NEXT:         if [[T_0]] == 1 {
+// CHECK-NEXT:             sum += 2;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             if !([[T_0]] >= 2 && [[T_0]] <= 4) {
+// CHECK-NEXT:                 sum += 4;
+// CHECK-NEXT:                 break '[[JOIN_0]];
 // CHECK-NEXT:             }
-// CHECK-NEXT:             sum += 3;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         sum += 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{} {} {} {}", sum, checks, steps, unsafe { initializers });
 // CHECK-NEXT:     sum

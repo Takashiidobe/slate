@@ -13,7 +13,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn first_plus_last(s: *mut i8) -> i32 {
-// CHECK-NEXT:     ((unsafe { *s.add(0) }) as i32) + ((unsafe { *s.add(10) }) as i32)
+// CHECK-NEXT:     unsafe { (*s.add(0) as i32) + (*s.add(10) as i32) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

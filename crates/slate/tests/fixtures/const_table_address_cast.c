@@ -119,8 +119,7 @@ int main(void) {
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: static first: __SlateConst<*const entry> = __SlateConst(
-// CHECK-NEXT:     unsafe { core::ptr::addr_of!(entries.0) as *const entry }
-// CHECK-NEXT:         .wrapping_offset(0i32 as isize),
+// CHECK-NEXT:     (core::ptr::addr_of!(entries.0) as *const entry).wrapping_offset(0i32 as isize),
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: static small: [u8; 2] = [3, 4];
@@ -150,12 +149,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let loose: *mut entry = (unsafe {
-// CHECK-NEXT:         (core::ptr::addr_of!(entries.0) as *const entry).add(1)
-// CHECK-NEXT:     }) as *mut entry;
-// CHECK-NEXT:     let crc: *mut u32 = (unsafe { core::ptr::addr_of!(crc_table.0) as *const u32 })
-// CHECK-NEXT:         as *mut u32;
-// CHECK-NEXT:     let walk: *const entry = unsafe { core::ptr::addr_of!(entries.0) as *const entry };
+// CHECK-NEXT:     let loose: *mut entry = unsafe {
+// CHECK-NEXT:         (core::ptr::addr_of!(entries.0) as *const entry).add(1) as *mut entry
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let crc: *mut u32 = (core::ptr::addr_of!(crc_table.0) as *const u32) as *mut u32;
+// CHECK-NEXT:     let walk: *const entry = core::ptr::addr_of!(entries.0) as *const entry;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -188,10 +186,10 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         read_mutable(
-// CHECK-NEXT:             (unsafe { core::ptr::addr_of!(exported_table) as *const i32 }) as *mut i32,
+// CHECK-NEXT:             (core::ptr::addr_of!(exported_table) as *const i32) as *mut i32,
 // CHECK-NEXT:             2i32,
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         unsafe { exported_table[0] }
+// CHECK-NEXT:         exported_table[0]
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

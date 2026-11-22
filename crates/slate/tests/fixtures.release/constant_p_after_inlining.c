@@ -176,8 +176,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn query(v: i32, d: f64) -> i32 {
-// CHECK-NEXT:     ((unsafe { __slate_intrinsic_a39e427d3b6c2df4(v) }) as i32)
-// CHECK-NEXT:         + ((unsafe { __slate_intrinsic_e1dafd5b681c8e0d(d) }) as i32)
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (__slate_intrinsic_a39e427d3b6c2df4(v) as i32)
+// CHECK-NEXT:             + (__slate_intrinsic_e1dafd5b681c8e0d(d) as i32)
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

@@ -152,7 +152,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut h: i32 = 0;
 // CHECK-NEXT:     while (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(h)) }) < n {
-// CHECK-NEXT:         s += p[(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(h)) }) as usize];
+// CHECK-NEXT:         s += p[unsafe { core::ptr::read_volatile(core::ptr::addr_of!(h)) as usize }];
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::ptr::write_volatile(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(h),

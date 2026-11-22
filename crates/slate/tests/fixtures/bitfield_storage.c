@@ -27,9 +27,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         value.bits.__slate_bits_0.__set_second(1u32);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     (((unsafe { value.bits.__slate_bits_0.__get_second() }) as i32) != 1) as i32
+// CHECK-NEXT:     unsafe { value.bits.__slate_bits_0.__set_second(1u32) };
+// CHECK-NEXT:     ((unsafe { value.bits.__slate_bits_0.__get_second() as i32 }) != 1) as i32
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -269,7 +269,7 @@ int main(void) {
 // CHECK-NEXT:             (16u64 as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     ((unsafe { *buf.add(0) }) as i32) + ((unsafe { *buf.add(15) }) as i32)
+// CHECK-NEXT:     unsafe { (*buf.add(0) as i32) + (*buf.add(15) as i32) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn dyn_alloca(n: i32) -> i32 {
@@ -283,8 +283,7 @@ int main(void) {
 // CHECK-NEXT:             ((n as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     ((unsafe { *buf.add(0) }) as i32)
-// CHECK-NEXT:         + ((unsafe { *buf.offset((n - 1) as isize) }) as i32)
+// CHECK-NEXT:     unsafe { (*buf.add(0) as i32) + (*buf.offset((n - 1) as isize) as i32) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn uninitialized_alloca(n: i32) -> i32 {
@@ -298,8 +297,7 @@ int main(void) {
 // CHECK-NEXT:             ((n as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     ((unsafe { *buf.add(0) }) as i32)
-// CHECK-NEXT:         + ((unsafe { *buf.offset((n - 1) as isize) }) as i32)
+// CHECK-NEXT:     unsafe { (*buf.add(0) as i32) + (*buf.offset((n - 1) as isize) as i32) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn loop_alloca(n: i32) -> i32 {
@@ -380,7 +378,7 @@ int main(void) {
 // CHECK-NEXT:             *buf.offset(i as isize) = i as i8;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     (unsafe { *buf.offset((n - 1) as isize) }) as i32
+// CHECK-NEXT:     unsafe { *buf.offset((n - 1) as isize) as i32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn zero_alloca() -> i32 {
@@ -454,8 +452,7 @@ int main(void) {
 // CHECK-NEXT:                 (600000u64 as usize) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         total += (((unsafe { *a.add(599999) }) as i32) + ((unsafe { *b.add(0) }) as i32))
-// CHECK-NEXT:             as i64;
+// CHECK-NEXT:         total += unsafe { ((*a.add(599999) as i32) + (*b.add(0) as i32)) as i64 };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

@@ -122,17 +122,16 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn owner_tag(d: *mut f64) -> i8 {
-// CHECK-NEXT:     let owner: *mut inner = (unsafe {
+// CHECK-NEXT:     let owner: *mut inner = unsafe {
 // CHECK-NEXT:         (d as *mut i8).sub((core::mem::offset_of!(inner, d) as u64) as usize)
-// CHECK-NEXT:     }) as *mut inner;
+// CHECK-NEXT:             as *mut inner
+// CHECK-NEXT:     };
 // CHECK-NEXT:     (97 + unsafe { (*owner).x }) as i8
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn swap(a: *mut i32, b: *mut i32) {
 // CHECK-NEXT:     let t: i32 = unsafe { *a };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *a = *b;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *b = t;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}

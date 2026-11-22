@@ -31,9 +31,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut v: Value = Value { i: 258 };
 // CHECK-NEXT:     println!("{}", unsafe { v.i });
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         v.f = 1.5f32;
-// CHECK-NEXT:     }
+// CHECK-NEXT:     v.f = 1.5f32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%.1f\n".as_ptr(), v.f as f64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

@@ -28,32 +28,34 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN aarch64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn copy_via_w(mut value: f32) -> f32 {
 // CHECK-NEXT:     let mut result: f32 = 0 as f32;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "fmov {0:s}, {1:s}",
-// CHECK-NEXT:             lateout(vreg) [[T_0]],
-// CHECK-NEXT:             in(vreg) unsafe { core::mem::transmute::<f32, u32>(value) },
-// CHECK-NEXT:             options(nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "fmov {0:s}, {1:s}",
+// CHECK-NEXT:                 lateout(vreg) [[T_0]],
+// CHECK-NEXT:                 in(vreg) core::mem::transmute::<f32, u32>(value),
+// CHECK-NEXT:                 options(nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, f32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn copy_via_x(mut value: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let mut result: core::simd::Simd<f32, 4> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: core::arch::aarch64::uint8x16_t;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "orr {0:v}.16b, {1:v}.16b, {1:v}.16b",
-// CHECK-NEXT:             lateout(vreg_low16) [[T_0]],
-// CHECK-NEXT:             in(vreg_low16) unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<f32, 4>, core::arch::aarch64::uint8x16_t>(
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "orr {0:v}.16b, {1:v}.16b, {1:v}.16b",
+// CHECK-NEXT:                 lateout(vreg_low16) [[T_0]],
+// CHECK-NEXT:                 in(vreg_low16) core::mem::transmute::<core::simd::Simd<f32, 4>, core::arch::aarch64::uint8x16_t>(
 // CHECK-NEXT:                     value,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             options(nostack, preserves_flags),
-// CHECK-NEXT:         );
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:                 options(nostack, preserves_flags),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         result = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::arch::aarch64::uint8x16_t, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:                 [[T_0]],

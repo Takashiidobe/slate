@@ -323,9 +323,9 @@ int main(void) {
 // CHECK-NEXT:     mut __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: core::simd::Simd<f32, 4> = __a;
-// CHECK-NEXT:     return core::simd::simd_swizzle!(
-// CHECK-NEXT:         [[V_0]],
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         core::simd::simd_swizzle!(
+// CHECK-NEXT:             [[V_0]],
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     let [[T_0:__t[0-9]+]] = [[V_0]].to_array();
@@ -337,10 +337,10 @@ int main(void) {
 // CHECK-NEXT:                     );
 // CHECK-NEXT:                     [[T_2]]
 // CHECK-NEXT:                 },
-// CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:         [4, 1, 2, 3]
-// CHECK-NEXT:     );
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             [4, 1, 2, 3]
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse")]
@@ -372,9 +372,9 @@ int main(void) {
 // CHECK-NEXT:     mut __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __a;
-// CHECK-NEXT:     return core::simd::simd_swizzle!(
-// CHECK-NEXT:         [[V_0]],
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         core::simd::simd_swizzle!(
+// CHECK-NEXT:             [[V_0]],
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     let [[T_0]] = [[V_0]].to_array();
@@ -386,10 +386,10 @@ int main(void) {
 // CHECK-NEXT:                     );
 // CHECK-NEXT:                     [[T_2]]
 // CHECK-NEXT:                 },
-// CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:         [4, 1, 2, 3]
-// CHECK-NEXT:     );
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             [4, 1, 2, 3]
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse")]
@@ -421,9 +421,9 @@ int main(void) {
 // CHECK-NEXT:     mut __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __a;
-// CHECK-NEXT:     return core::simd::simd_swizzle!(
-// CHECK-NEXT:         [[V_0]],
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         core::simd::simd_swizzle!(
+// CHECK-NEXT:             [[V_0]],
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     let [[T_0]] = [[V_0]].to_array();
@@ -435,10 +435,10 @@ int main(void) {
 // CHECK-NEXT:                     );
 // CHECK-NEXT:                     [[T_2]]
 // CHECK-NEXT:                 },
-// CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:         [4, 1, 2, 3]
-// CHECK-NEXT:     );
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             [4, 1, 2, 3]
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse")]
@@ -470,11 +470,11 @@ int main(void) {
 // CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __b;
-// CHECK-NEXT:     return core::simd::simd_swizzle!(
-// CHECK-NEXT:         __a,
+// CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::simd::simd_swizzle!(
-// CHECK-NEXT:             [[V_0]],
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:             __a,
+// CHECK-NEXT:             core::simd::simd_swizzle!(
+// CHECK-NEXT:                 [[V_0]],
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:                     {
 // CHECK-NEXT:                         let [[T_0]] = [[V_0]].to_array();
@@ -486,12 +486,12 @@ int main(void) {
 // CHECK-NEXT:                         );
 // CHECK-NEXT:                         [[T_2]]
 // CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:                 [4, 1, 2, 3]
+// CHECK-NEXT:             ),
 // CHECK-NEXT:             [4, 1, 2, 3]
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         [4, 1, 2, 3]
-// CHECK-NEXT:     );
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse")]
@@ -545,9 +545,9 @@ int main(void) {
 // CHECK-NEXT:     mut __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __a;
-// CHECK-NEXT:     return core::simd::simd_swizzle!(
-// CHECK-NEXT:         [[V_0]],
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         core::simd::simd_swizzle!(
+// CHECK-NEXT:             [[V_0]],
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     let [[T_0]] = [[V_0]].to_array();
@@ -559,10 +559,10 @@ int main(void) {
 // CHECK-NEXT:                     );
 // CHECK-NEXT:                     [[T_2]]
 // CHECK-NEXT:                 },
-// CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:         [4, 1, 2, 3]
-// CHECK-NEXT:     );
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             [4, 1, 2, 3]
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse")]
@@ -594,9 +594,9 @@ int main(void) {
 // CHECK-NEXT:     mut __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __a;
-// CHECK-NEXT:     return core::simd::simd_swizzle!(
-// CHECK-NEXT:         [[V_0]],
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         core::simd::simd_swizzle!(
+// CHECK-NEXT:             [[V_0]],
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:                 !{
 // CHECK-NEXT:                     let [[T_0]] = [[V_0]].to_array();
@@ -608,10 +608,10 @@ int main(void) {
 // CHECK-NEXT:                     );
 // CHECK-NEXT:                     [[T_2]]
 // CHECK-NEXT:                 },
-// CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:         [4, 1, 2, 3]
-// CHECK-NEXT:     );
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             [4, 1, 2, 3]
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse")]
@@ -710,9 +710,9 @@ int main(void) {
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: core::simd::Simd<f32, 4> = __b;
-// CHECK-NEXT:     return core::simd::simd_swizzle!(
-// CHECK-NEXT:         [[V_0]],
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         core::simd::simd_swizzle!(
+// CHECK-NEXT:             [[V_0]],
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:                 ({
 // CHECK-NEXT:                     let [[T_0]] = [[V_0]].to_array();
@@ -734,10 +734,10 @@ int main(void) {
 // CHECK-NEXT:                         );
 // CHECK-NEXT:                         [[T_5]]
 // CHECK-NEXT:                     },
-// CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:         [4, 1, 2, 3]
-// CHECK-NEXT:     );
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             [4, 1, 2, 3]
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse")]
@@ -782,9 +782,9 @@ int main(void) {
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:     let mut [[V_1]]: core::simd::Simd<f32, 4> = __b;
-// CHECK-NEXT:     return core::simd::simd_swizzle!(
-// CHECK-NEXT:         [[V_0]],
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         core::simd::simd_swizzle!(
+// CHECK-NEXT:             [[V_0]],
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:                 ({
 // CHECK-NEXT:                     let [[T_0]] = [[V_0]].to_array();
@@ -806,10 +806,10 @@ int main(void) {
 // CHECK-NEXT:                         );
 // CHECK-NEXT:                         [[T_5]]
 // CHECK-NEXT:                     },
-// CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:         [4, 1, 2, 3]
-// CHECK-NEXT:     );
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             [4, 1, 2, 3]
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse")]
@@ -1002,9 +1002,9 @@ int main(void) {
 // CHECK-NEXT:     mut __b: core::simd::Simd<f64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f64, 2> = __a;
-// CHECK-NEXT:     return core::simd::simd_swizzle!(
-// CHECK-NEXT:         [[V_0]],
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         core::simd::simd_swizzle!(
+// CHECK-NEXT:             [[V_0]],
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<f64, 2>>(
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     let [[T_0]] = [[V_0]].to_array();
@@ -1016,10 +1016,10 @@ int main(void) {
 // CHECK-NEXT:                     );
 // CHECK-NEXT:                     [[T_2]]
 // CHECK-NEXT:                 },
-// CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:         [2, 1]
-// CHECK-NEXT:     );
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             [2, 1]
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
@@ -1030,9 +1030,9 @@ int main(void) {
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f64, 2> = __a;
 // CHECK-NEXT:     let mut [[V_1]]: core::simd::Simd<f64, 2> = __b;
-// CHECK-NEXT:     return core::simd::simd_swizzle!(
-// CHECK-NEXT:         [[V_0]],
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     return unsafe {
+// CHECK-NEXT:         core::simd::simd_swizzle!(
+// CHECK-NEXT:             [[V_0]],
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<f64, 2>>(
 // CHECK-NEXT:                 ({
 // CHECK-NEXT:                     let [[T_0]] = [[V_0]].to_array();
@@ -1054,10 +1054,10 @@ int main(void) {
 // CHECK-NEXT:                         );
 // CHECK-NEXT:                         [[T_5]]
 // CHECK-NEXT:                     },
-// CHECK-NEXT:             )
-// CHECK-NEXT:         },
-// CHECK-NEXT:         [2, 1]
-// CHECK-NEXT:     );
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             [2, 1]
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
@@ -1096,13 +1096,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<i64, 2>>(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
-// CHECK-NEXT:                         [__w0, __w1, __w2, __w3, __w4, __w5, __w6, __w7],
-// CHECK-NEXT:                     );
-// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             *{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
+// CHECK-NEXT:                     [__w0, __w1, __w2, __w3, __w4, __w5, __w6, __w7],
+// CHECK-NEXT:                 );
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -1200,13 +1198,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<i64, 4>>(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
-// CHECK-NEXT:                         [__i7, __i6, __i5, __i4, __i3, __i2, __i1, __i0],
-// CHECK-NEXT:                     );
-// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             *{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
+// CHECK-NEXT:                     [__i7, __i6, __i5, __i4, __i3, __i2, __i1, __i0],
+// CHECK-NEXT:                 );
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -1237,30 +1233,28 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i16, 16>, core::simd::Simd<i64, 4>>(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
-// CHECK-NEXT:                         [
-// CHECK-NEXT:                             __w00,
-// CHECK-NEXT:                             __w01,
-// CHECK-NEXT:                             __w02,
-// CHECK-NEXT:                             __w03,
-// CHECK-NEXT:                             __w04,
-// CHECK-NEXT:                             __w05,
-// CHECK-NEXT:                             __w06,
-// CHECK-NEXT:                             __w07,
-// CHECK-NEXT:                             __w08,
-// CHECK-NEXT:                             __w09,
-// CHECK-NEXT:                             __w10,
-// CHECK-NEXT:                             __w11,
-// CHECK-NEXT:                             __w12,
-// CHECK-NEXT:                             __w13,
-// CHECK-NEXT:                             __w14,
-// CHECK-NEXT:                             __w15,
-// CHECK-NEXT:                         ],
-// CHECK-NEXT:                     );
-// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             *{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
+// CHECK-NEXT:                     [
+// CHECK-NEXT:                         __w00,
+// CHECK-NEXT:                         __w01,
+// CHECK-NEXT:                         __w02,
+// CHECK-NEXT:                         __w03,
+// CHECK-NEXT:                         __w04,
+// CHECK-NEXT:                         __w05,
+// CHECK-NEXT:                         __w06,
+// CHECK-NEXT:                         __w07,
+// CHECK-NEXT:                         __w08,
+// CHECK-NEXT:                         __w09,
+// CHECK-NEXT:                         __w10,
+// CHECK-NEXT:                         __w11,
+// CHECK-NEXT:                         __w12,
+// CHECK-NEXT:                         __w13,
+// CHECK-NEXT:                         __w14,
+// CHECK-NEXT:                         __w15,
+// CHECK-NEXT:                     ],
+// CHECK-NEXT:                 );
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -1375,30 +1369,28 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 16>, core::simd::Simd<i64, 8>>(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *{
-// CHECK-NEXT:                     [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
-// CHECK-NEXT:                         [
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                             __s,
-// CHECK-NEXT:                         ],
-// CHECK-NEXT:                     );
-// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             *{
+// CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = core::simd::Simd::from_array(
+// CHECK-NEXT:                     [
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                         __s,
+// CHECK-NEXT:                     ],
+// CHECK-NEXT:                 );
+// CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
 // CHECK-NEXT:             },
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -1452,11 +1444,9 @@ int main(void) {
 // CHECK-NEXT:             core::simd::Simd::load_select_ptr(
 // CHECK-NEXT:                 (__P as *const i32) as *const i32,
 // CHECK-NEXT:                 core::simd::Mask::<i32, 16>::from_bitmask((__U as u16) as u64),
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i32, 16>>(
-// CHECK-NEXT:                         __W,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i32, 16>>(
+// CHECK-NEXT:                     __W,
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -1473,11 +1463,9 @@ int main(void) {
 // CHECK-NEXT:             core::simd::Simd::load_select_ptr(
 // CHECK-NEXT:                 (__P as *const i32) as *const i32,
 // CHECK-NEXT:                 core::simd::Mask::<i32, 16>::from_bitmask((__U as u16) as u64),
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i32, 16>>(
-// CHECK-NEXT:                         unsafe { _mm512_setzero_si512() },
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i32, 16>>(
+// CHECK-NEXT:                     _mm512_setzero_si512(),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -1502,16 +1490,12 @@ int main(void) {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 16>, core::simd::Simd<i64, 8>>(
 // CHECK-NEXT:             core::simd::Select::select(
 // CHECK-NEXT:                 core::simd::Mask::<i32, 16>::from_bitmask((__U as u16) as u64),
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i32, 16>>(
-// CHECK-NEXT:                         __A,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i32, 16>>(
-// CHECK-NEXT:                         __W,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i32, 16>>(
+// CHECK-NEXT:                     __A,
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i32, 16>>(
+// CHECK-NEXT:                     __W,
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -1525,11 +1509,9 @@ int main(void) {
 // CHECK-NEXT:             core::simd::Simd::load_select_ptr(
 // CHECK-NEXT:                 (__P as *const core::simd::Simd<i32, 8>) as *const i32,
 // CHECK-NEXT:                 core::simd::Mask::<i32, 8>::from_bitmask((__U as u8) as u64),
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
-// CHECK-NEXT:                         unsafe { _mm256_setzero_si256() },
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
+// CHECK-NEXT:                     _mm256_setzero_si256(),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -1543,11 +1525,9 @@ int main(void) {
 // CHECK-NEXT:             core::simd::Simd::load_select_ptr(
 // CHECK-NEXT:                 (__P as *const core::simd::Simd<i8, 64>) as *const i8,
 // CHECK-NEXT:                 core::simd::Mask::<i8, 64>::from_bitmask((__U as u64) as u64),
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i8, 64>>(
-// CHECK-NEXT:                         unsafe { _mm512_setzero_si512() },
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 8>, core::simd::Simd<i8, 64>>(
+// CHECK-NEXT:                     _mm512_setzero_si512(),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
@@ -1613,7 +1593,7 @@ int main(void) {
 // CHECK-NEXT:     let p: *const u8 = data as *const u8;
 // CHECK-NEXT:     let mut hash: u32 = 2166136261;
 // CHECK-NEXT:     for i in 0..bytes {
-// CHECK-NEXT:         hash = (hash ^ (((unsafe { *p.offset(i as isize) }) as i32) as u32))
+// CHECK-NEXT:         hash = (hash ^ unsafe { (*p.offset(i as isize) as i32) as u32 })
 // CHECK-NEXT:             .wrapping_mul(16777619);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -1631,282 +1611,221 @@ int main(void) {
 // CHECK-NEXT:     let i: core::simd::Simd<i64, 2> = unsafe {
 // CHECK-NEXT:         _mm_loadu_si128(ia as *const core::simd::Simd<i64, 2>)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     SHOW!(c"sqrt_ps".as_ptr() as *mut i8, unsafe { _mm_sqrt_ps(a) });
-// CHECK-NEXT:     SHOW__4!(c"sqrt_pd".as_ptr() as *mut i8, unsafe { _mm_sqrt_pd(c) });
-// CHECK-NEXT:     SHOW!(c"cmpeq_ps".as_ptr() as *mut i8, unsafe { _mm_cmpeq_ps(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmplt_ps".as_ptr() as *mut i8, unsafe { _mm_cmplt_ps(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmple_ps".as_ptr() as *mut i8, unsafe { _mm_cmple_ps(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpgt_ps".as_ptr() as *mut i8, unsafe { _mm_cmpgt_ps(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpge_ps".as_ptr() as *mut i8, unsafe { _mm_cmpge_ps(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpneq_ps".as_ptr() as *mut i8, unsafe { _mm_cmpneq_ps(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpnlt_ps".as_ptr() as *mut i8, unsafe { _mm_cmpnlt_ps(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpnle_ps".as_ptr() as *mut i8, unsafe { _mm_cmpnle_ps(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpngt_ps".as_ptr() as *mut i8, unsafe { _mm_cmpngt_ps(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpnge_ps".as_ptr() as *mut i8, unsafe { _mm_cmpnge_ps(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpord_ps".as_ptr() as *mut i8, unsafe { _mm_cmpord_ps(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpunord_ps".as_ptr() as *mut i8, unsafe { _mm_cmpunord_ps(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpeq_ss".as_ptr() as *mut i8, unsafe { _mm_cmpeq_ss(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmplt_ss".as_ptr() as *mut i8, unsafe { _mm_cmplt_ss(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmple_ss".as_ptr() as *mut i8, unsafe { _mm_cmple_ss(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpgt_ss".as_ptr() as *mut i8, unsafe { _mm_cmpgt_ss(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpneq_ss".as_ptr() as *mut i8, unsafe { _mm_cmpneq_ss(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpnlt_ss".as_ptr() as *mut i8, unsafe { _mm_cmpnlt_ss(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpord_ss".as_ptr() as *mut i8, unsafe { _mm_cmpord_ss(a, b) });
-// CHECK-NEXT:     SHOW!(c"cmpunord_ss".as_ptr() as *mut i8, unsafe { _mm_cmpunord_ss(a, b) });
-// CHECK-NEXT:     SHOW__4!(c"cmpeq_pd".as_ptr() as *mut i8, unsafe { _mm_cmpeq_pd(c, d) });
-// CHECK-NEXT:     SHOW__4!(c"cmplt_pd".as_ptr() as *mut i8, unsafe { _mm_cmplt_pd(c, d) });
-// CHECK-NEXT:     SHOW__4!(c"cmpneq_pd".as_ptr() as *mut i8, unsafe { _mm_cmpneq_pd(c, d) });
-// CHECK-NEXT:     SHOW__4!(c"cmpord_pd".as_ptr() as *mut i8, unsafe { _mm_cmpord_pd(c, d) });
-// CHECK-NEXT:     SHOW__4!(c"cmpunord_pd".as_ptr() as *mut i8, unsafe { _mm_cmpunord_pd(c, d) });
-// CHECK-NEXT:     SHOW__4!(c"cmplt_sd".as_ptr() as *mut i8, unsafe { _mm_cmplt_sd(c, d) });
-// CHECK-NEXT:     SHOW__4!(c"cmpord_sd".as_ptr() as *mut i8, unsafe { _mm_cmpord_sd(c, d) });
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"insert_epi32".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW!(c"sqrt_ps".as_ptr() as *mut i8, _mm_sqrt_ps(a));
+// CHECK-NEXT:         SHOW__4!(c"sqrt_pd".as_ptr() as *mut i8, _mm_sqrt_pd(c));
+// CHECK-NEXT:         SHOW!(c"cmpeq_ps".as_ptr() as *mut i8, _mm_cmpeq_ps(a, b));
+// CHECK-NEXT:         SHOW!(c"cmplt_ps".as_ptr() as *mut i8, _mm_cmplt_ps(a, b));
+// CHECK-NEXT:         SHOW!(c"cmple_ps".as_ptr() as *mut i8, _mm_cmple_ps(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpgt_ps".as_ptr() as *mut i8, _mm_cmpgt_ps(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpge_ps".as_ptr() as *mut i8, _mm_cmpge_ps(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpneq_ps".as_ptr() as *mut i8, _mm_cmpneq_ps(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpnlt_ps".as_ptr() as *mut i8, _mm_cmpnlt_ps(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpnle_ps".as_ptr() as *mut i8, _mm_cmpnle_ps(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpngt_ps".as_ptr() as *mut i8, _mm_cmpngt_ps(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpnge_ps".as_ptr() as *mut i8, _mm_cmpnge_ps(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpord_ps".as_ptr() as *mut i8, _mm_cmpord_ps(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpunord_ps".as_ptr() as *mut i8, _mm_cmpunord_ps(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpeq_ss".as_ptr() as *mut i8, _mm_cmpeq_ss(a, b));
+// CHECK-NEXT:         SHOW!(c"cmplt_ss".as_ptr() as *mut i8, _mm_cmplt_ss(a, b));
+// CHECK-NEXT:         SHOW!(c"cmple_ss".as_ptr() as *mut i8, _mm_cmple_ss(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpgt_ss".as_ptr() as *mut i8, _mm_cmpgt_ss(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpneq_ss".as_ptr() as *mut i8, _mm_cmpneq_ss(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpnlt_ss".as_ptr() as *mut i8, _mm_cmpnlt_ss(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpord_ss".as_ptr() as *mut i8, _mm_cmpord_ss(a, b));
+// CHECK-NEXT:         SHOW!(c"cmpunord_ss".as_ptr() as *mut i8, _mm_cmpunord_ss(a, b));
+// CHECK-NEXT:         SHOW__4!(c"cmpeq_pd".as_ptr() as *mut i8, _mm_cmpeq_pd(c, d));
+// CHECK-NEXT:         SHOW__4!(c"cmplt_pd".as_ptr() as *mut i8, _mm_cmplt_pd(c, d));
+// CHECK-NEXT:         SHOW__4!(c"cmpneq_pd".as_ptr() as *mut i8, _mm_cmpneq_pd(c, d));
+// CHECK-NEXT:         SHOW__4!(c"cmpord_pd".as_ptr() as *mut i8, _mm_cmpord_pd(c, d));
+// CHECK-NEXT:         SHOW__4!(c"cmpunord_pd".as_ptr() as *mut i8, _mm_cmpunord_pd(c, d));
+// CHECK-NEXT:         SHOW__4!(c"cmplt_sd".as_ptr() as *mut i8, _mm_cmplt_sd(c, d));
+// CHECK-NEXT:         SHOW__4!(c"cmpord_sd".as_ptr() as *mut i8, _mm_cmpord_sd(c, d));
+// CHECK-NEXT:         SHOW__3!(
+// CHECK-NEXT:             c"insert_epi32".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i64, 2>>(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
-// CHECK-NEXT:                             i,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
+// CHECK-NEXT:                         i,
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     core::simd::Simd::splat(77i32),
 // CHECK-NEXT:                     [0, 1, 6, 3]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"insert_epi16".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__3!(
+// CHECK-NEXT:             c"insert_epi16".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<i64, 2>>(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i16, 8>>(
-// CHECK-NEXT:                             i,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i16, 8>>(
+// CHECK-NEXT:                         i,
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     core::simd::Simd::splat(-5 as i16),
 // CHECK-NEXT:                     [0, 1, 2, 3, 4, 5, 6, 15]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"insert_epi8".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__3!(
+// CHECK-NEXT:             c"insert_epi8".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                             i,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                         i,
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     core::simd::Simd::splat(9i8),
 // CHECK-NEXT:                     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 29, 14, 15]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "extract_epi32 {} {}",
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(i)
-// CHECK-NEXT:         }[1],
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
+// CHECK-NEXT:                 i,
+// CHECK-NEXT:             )[1]
+// CHECK-NEXT:         },
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(i)
-// CHECK-NEXT:         }[3]
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i32, 4>>(
+// CHECK-NEXT:                 i,
+// CHECK-NEXT:             )[3]
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "extract_epi16 {}",
-// CHECK-NEXT:         (unsafe {
-// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i16, 8>>(i)
-// CHECK-NEXT:         }[5] as u16) as i32
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             (core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i16, 8>>(
+// CHECK-NEXT:                 i,
+// CHECK-NEXT:             )[5] as u16) as i32
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "extract_epi8 {}",
-// CHECK-NEXT:         (unsafe {
-// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(i)
-// CHECK-NEXT:         }[6] as u8) as i32
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"blend_epi16".as_ptr() as *mut i8,
 // CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             (core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                 i,
+// CHECK-NEXT:             )[6] as u8) as i32
+// CHECK-NEXT:         }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW__3!(
+// CHECK-NEXT:             c"blend_epi16".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<i64, 2>>(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i16, 8>>(
-// CHECK-NEXT:                             i,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i16, 8>>(
-// CHECK-NEXT:                             unsafe { _mm_set1_epi16(-1 as i16) },
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i16, 8>>(
+// CHECK-NEXT:                         i,
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i16, 8>>(
+// CHECK-NEXT:                         _mm_set1_epi16(-1 as i16),
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     [8, 1, 10, 3, 4, 13, 6, 15]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     SHOW!(
 // CHECK-NEXT:         c"blend_ps".as_ptr() as *mut i8,
 // CHECK-NEXT:         core::simd::simd_swizzle!(a, b, [0, 5, 6, 3])
 // CHECK-NEXT:     );
 // CHECK-NEXT:     SHOW__4!(c"blend_pd".as_ptr() as *mut i8, core::simd::simd_swizzle!(c, d, [0, 3]));
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"srli0".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW__3!(
+// CHECK-NEXT:             c"srli0".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                         core::simd::simd_swizzle!(
-// CHECK-NEXT:                             unsafe {
-// CHECK-NEXT:                                 core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
-// CHECK-NEXT:                                     unsafe {
-// CHECK-NEXT:                                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                                             i,
-// CHECK-NEXT:                                         )
-// CHECK-NEXT:                                     },
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                             },
-// CHECK-NEXT:                             core::simd::Simd::splat(0u8),
-// CHECK-NEXT:                             [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                     core::simd::simd_swizzle!(
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
+// CHECK-NEXT:                             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                                 i,
+// CHECK-NEXT:                             ),
 // CHECK-NEXT:                         ),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                         core::simd::Simd::splat(0u8),
+// CHECK-NEXT:                         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"srli3".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__3!(
+// CHECK-NEXT:             c"srli3".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                         core::simd::simd_swizzle!(
-// CHECK-NEXT:                             unsafe {
-// CHECK-NEXT:                                 core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
-// CHECK-NEXT:                                     unsafe {
-// CHECK-NEXT:                                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                                             i,
-// CHECK-NEXT:                                         )
-// CHECK-NEXT:                                     },
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                             },
-// CHECK-NEXT:                             core::simd::Simd::splat(0u8),
-// CHECK-NEXT:                             [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 29, 30, 31]
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                     core::simd::simd_swizzle!(
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
+// CHECK-NEXT:                             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                                 i,
+// CHECK-NEXT:                             ),
 // CHECK-NEXT:                         ),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                         core::simd::Simd::splat(0u8),
+// CHECK-NEXT:                         [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 29, 30, 31]
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"srli15".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__3!(
+// CHECK-NEXT:             c"srli15".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                         core::simd::simd_swizzle!(
-// CHECK-NEXT:                             unsafe {
-// CHECK-NEXT:                                 core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
-// CHECK-NEXT:                                     unsafe {
-// CHECK-NEXT:                                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                                             i,
-// CHECK-NEXT:                                         )
-// CHECK-NEXT:                                     },
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                             },
-// CHECK-NEXT:                             core::simd::Simd::splat(0u8),
-// CHECK-NEXT:                             [
-// CHECK-NEXT:                                 15, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-// CHECK-NEXT:                                 31,
-// CHECK-NEXT:                             ]
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                     core::simd::simd_swizzle!(
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
+// CHECK-NEXT:                             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                                 i,
+// CHECK-NEXT:                             ),
 // CHECK-NEXT:                         ),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                         core::simd::Simd::splat(0u8),
+// CHECK-NEXT:                         [15, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"srli16".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__3!(
+// CHECK-NEXT:             c"srli16".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                         core::simd::simd_swizzle!(
-// CHECK-NEXT:                             unsafe {
-// CHECK-NEXT:                                 core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
-// CHECK-NEXT:                                     unsafe {
-// CHECK-NEXT:                                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                                             i,
-// CHECK-NEXT:                                         )
-// CHECK-NEXT:                                     },
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                             },
-// CHECK-NEXT:                             core::simd::Simd::splat(0u8),
-// CHECK-NEXT:                             [
-// CHECK-NEXT:                                 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-// CHECK-NEXT:                                 31,
-// CHECK-NEXT:                             ]
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                     core::simd::simd_swizzle!(
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
+// CHECK-NEXT:                             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                                 i,
+// CHECK-NEXT:                             ),
 // CHECK-NEXT:                         ),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                         core::simd::Simd::splat(0u8),
+// CHECK-NEXT:                         [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"slli5".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__3!(
+// CHECK-NEXT:             c"slli5".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                         core::simd::simd_swizzle!(
-// CHECK-NEXT:                             unsafe {
-// CHECK-NEXT:                                 core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
-// CHECK-NEXT:                                     unsafe {
-// CHECK-NEXT:                                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                                             i,
-// CHECK-NEXT:                                         )
-// CHECK-NEXT:                                     },
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                             },
-// CHECK-NEXT:                             core::simd::Simd::splat(0u8),
-// CHECK-NEXT:                             [16, 17, 18, 19, 20, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                     core::simd::simd_swizzle!(
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
+// CHECK-NEXT:                             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                                 i,
+// CHECK-NEXT:                             ),
 // CHECK-NEXT:                         ),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                         core::simd::Simd::splat(0u8),
+// CHECK-NEXT:                         [16, 17, 18, 19, 20, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"slli20".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__3!(
+// CHECK-NEXT:             c"slli20".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                         core::simd::simd_swizzle!(
-// CHECK-NEXT:                             unsafe {
-// CHECK-NEXT:                                 core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
-// CHECK-NEXT:                                     unsafe {
-// CHECK-NEXT:                                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                                             i,
-// CHECK-NEXT:                                         )
-// CHECK-NEXT:                                     },
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                             },
-// CHECK-NEXT:                             core::simd::Simd::splat(0u8),
-// CHECK-NEXT:                             [
-// CHECK-NEXT:                                 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-// CHECK-NEXT:                                 31,
-// CHECK-NEXT:                             ]
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                     core::simd::simd_swizzle!(
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
+// CHECK-NEXT:                             core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                                 i,
+// CHECK-NEXT:                             ),
 // CHECK-NEXT:                         ),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                         core::simd::Simd::splat(0u8),
+// CHECK-NEXT:                         [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
@@ -1918,8 +1837,10 @@ int main(void) {
 // CHECK-NEXT:     let mut i: core::simd::Simd<i64, 4> = unsafe {
 // CHECK-NEXT:         _mm256_loadu_si256(ia as *const core::simd::Simd<i64, 4>)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     SHOW__7!(c"sqrt256_ps".as_ptr() as *mut i8, unsafe { _mm256_sqrt_ps(a) });
-// CHECK-NEXT:     SHOW__6!(c"sqrt256_pd".as_ptr() as *mut i8, unsafe { _mm256_sqrt_pd(c) });
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW__7!(c"sqrt256_ps".as_ptr() as *mut i8, _mm256_sqrt_ps(a));
+// CHECK-NEXT:         SHOW__6!(c"sqrt256_pd".as_ptr() as *mut i8, _mm256_sqrt_pd(c));
+// CHECK-NEXT:     }
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut t_: core::simd::Simd<f32, 8> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         t_ = unsafe {
@@ -2602,9 +2523,7 @@ int main(void) {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<f64, 4>>(
 // CHECK-NEXT:                 {
 // CHECK-NEXT:                     let [[T_120:__t[0-9]+]] = c.to_array();
-// CHECK-NEXT:                     let [[T_121:__t[0-9]+]]: core::simd::Simd<f64, 4> = unsafe {
-// CHECK-NEXT:                         _mm256_set1_pd(2.0f64)
-// CHECK-NEXT:                     };
+// CHECK-NEXT:                     let [[T_121:__t[0-9]+]]: core::simd::Simd<f64, 4> = _mm256_set1_pd(2.0f64);
 // CHECK-NEXT:                     let [[T_122:__t[0-9]+]] = [[T_121]].to_array();
 // CHECK-NEXT:                     let [[T_123:__t[0-9]+]]: core::simd::Simd<i64, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                         core::array::from_fn(
@@ -2623,9 +2542,7 @@ int main(void) {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:             !{
 // CHECK-NEXT:                 let [[T_124:__t[0-9]+]] = [[V_18]].to_array();
-// CHECK-NEXT:                 let [[T_125:__t[0-9]+]]: core::simd::Simd<f32, 4> = unsafe {
-// CHECK-NEXT:                     _mm256_castps256_ps128(b)
-// CHECK-NEXT:                 };
+// CHECK-NEXT:                 let [[T_125:__t[0-9]+]]: core::simd::Simd<f32, 4> = _mm256_castps256_ps128(b);
 // CHECK-NEXT:                 let [[T_126:__t[0-9]+]] = [[T_125]].to_array();
 // CHECK-NEXT:                 let [[T_127:__t[0-9]+]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:                     core::array::from_fn(
@@ -2645,156 +2562,130 @@ int main(void) {
 // CHECK-NEXT:         c"permute4x64_pd".as_ptr() as *mut i8,
 // CHECK-NEXT:         core::simd::simd_swizzle!(c, [2, 3, 0, 1])
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"blend_epi32".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW__2!(
+// CHECK-NEXT:             c"blend_epi32".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<i64, 4>>(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
-// CHECK-NEXT:                             i,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
-// CHECK-NEXT:                             unsafe { _mm256_set1_epi32(-1i32) },
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
+// CHECK-NEXT:                         i,
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
+// CHECK-NEXT:                         _mm256_set1_epi32(-1i32),
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     [8, 9, 2, 3, 12, 5, 6, 15]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"blend256_epi16".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__2!(
+// CHECK-NEXT:             c"blend256_epi16".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 16>, core::simd::Simd<i64, 4>>(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i16, 16>>(
-// CHECK-NEXT:                             i,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i16, 16>>(
-// CHECK-NEXT:                             unsafe { _mm256_set1_epi16(7i16) },
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i16, 16>>(
+// CHECK-NEXT:                         i,
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i16, 16>>(
+// CHECK-NEXT:                         _mm256_set1_epi16(7i16),
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     [16, 17, 18, 19, 4, 5, 6, 7, 24, 25, 26, 27, 12, 13, 14, 15]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__6!(
-// CHECK-NEXT:         c"blend256_pd".as_ptr() as *mut i8,
-// CHECK-NEXT:         core::simd::simd_swizzle!(c, unsafe { _mm256_set1_pd(9.0f64) }, [4, 1, 6, 3])
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"srli256".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__6!(
+// CHECK-NEXT:             c"blend256_pd".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::simd::simd_swizzle!(c, _mm256_set1_pd(9.0f64), [4, 1, 6, 3])
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__2!(
+// CHECK-NEXT:             c"srli256".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 32>, core::simd::Simd<i64, 4>>(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<u8, 32>, core::simd::Simd<i8, 32>>(
-// CHECK-NEXT:                         core::simd::simd_swizzle!(
-// CHECK-NEXT:                             unsafe {
-// CHECK-NEXT:                                 core::mem::transmute::<core::simd::Simd<i8, 32>, core::simd::Simd<u8, 32>>(
-// CHECK-NEXT:                                     unsafe {
-// CHECK-NEXT:                                         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i8, 32>>(
-// CHECK-NEXT:                                             i,
-// CHECK-NEXT:                                         )
-// CHECK-NEXT:                                     },
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                             },
-// CHECK-NEXT:                             core::simd::Simd::splat(0u8),
-// CHECK-NEXT:                             [
-// CHECK-NEXT:                                 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 44, 45, 46, 47,
-// CHECK-NEXT:                                 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 60, 61, 62,
-// CHECK-NEXT:                                 63,
-// CHECK-NEXT:                             ]
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<u8, 32>, core::simd::Simd<i8, 32>>(
+// CHECK-NEXT:                     core::simd::simd_swizzle!(
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i8, 32>, core::simd::Simd<u8, 32>>(
+// CHECK-NEXT:                             core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i8, 32>>(
+// CHECK-NEXT:                                 i,
+// CHECK-NEXT:                             ),
 // CHECK-NEXT:                         ),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                         core::simd::Simd::splat(0u8),
+// CHECK-NEXT:                         [
+// CHECK-NEXT:                             4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 44, 45, 46, 47, 20,
+// CHECK-NEXT:                             21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 60, 61, 62, 63,
+// CHECK-NEXT:                         ]
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"slli256".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__2!(
+// CHECK-NEXT:             c"slli256".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 32>, core::simd::Simd<i64, 4>>(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<u8, 32>, core::simd::Simd<i8, 32>>(
-// CHECK-NEXT:                         core::simd::simd_swizzle!(
-// CHECK-NEXT:                             unsafe {
-// CHECK-NEXT:                                 core::mem::transmute::<core::simd::Simd<i8, 32>, core::simd::Simd<u8, 32>>(
-// CHECK-NEXT:                                     unsafe {
-// CHECK-NEXT:                                         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i8, 32>>(
-// CHECK-NEXT:                                             i,
-// CHECK-NEXT:                                         )
-// CHECK-NEXT:                                     },
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                             },
-// CHECK-NEXT:                             core::simd::Simd::splat(0u8),
-// CHECK-NEXT:                             [
-// CHECK-NEXT:                                 32, 33, 34, 35, 36, 37, 38, 39, 40, 0, 1, 2, 3, 4, 5, 6, 48,
-// CHECK-NEXT:                                 49, 50, 51, 52, 53, 54, 55, 56, 16, 17, 18, 19, 20, 21, 22,
-// CHECK-NEXT:                             ]
+// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<u8, 32>, core::simd::Simd<i8, 32>>(
+// CHECK-NEXT:                     core::simd::simd_swizzle!(
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i8, 32>, core::simd::Simd<u8, 32>>(
+// CHECK-NEXT:                             core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i8, 32>>(
+// CHECK-NEXT:                                 i,
+// CHECK-NEXT:                             ),
 // CHECK-NEXT:                         ),
-// CHECK-NEXT:                     )
-// CHECK-NEXT:                 },
+// CHECK-NEXT:                         core::simd::Simd::splat(0u8),
+// CHECK-NEXT:                         [
+// CHECK-NEXT:                             32, 33, 34, 35, 36, 37, 38, 39, 40, 0, 1, 2, 3, 4, 5, 6, 48,
+// CHECK-NEXT:                             49, 50, 51, 52, 53, 54, 55, 56, 16, 17, 18, 19, 20, 21, 22,
+// CHECK-NEXT:                         ]
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "extract256_epi32 {}",
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(i)
-// CHECK-NEXT:         }[6]
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
+// CHECK-NEXT:                 i,
+// CHECK-NEXT:             )[6]
+// CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { slate_support::printf(c"extract256_epi64 %lld\n".as_ptr(), i[3]) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"insert256_epi32".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW__2!(
+// CHECK-NEXT:             c"insert256_epi32".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<i64, 4>>(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
-// CHECK-NEXT:                             i,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
+// CHECK-NEXT:                         i,
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     core::simd::Simd::splat(1234i32),
 // CHECK-NEXT:                     [0, 1, 2, 3, 4, 13, 6, 7]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     let wide: core::simd::Simd<i64, 4> = core::simd::simd_swizzle!(
-// CHECK-NEXT:         unsafe { _mm256_castsi128_si256(_mm256_castsi256_si128(i)) },
-// CHECK-NEXT:         core::simd::simd_swizzle!(core::simd::simd_swizzle!(i, [2, 3]), [0, 1, 0, 0]),
-// CHECK-NEXT:         [0, 1, 4, 5]
-// CHECK-NEXT:     );
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let wide: core::simd::Simd<i64, 4> = unsafe {
+// CHECK-NEXT:         core::simd::simd_swizzle!(
+// CHECK-NEXT:             _mm256_castsi128_si256(_mm256_castsi256_si128(i)),
+// CHECK-NEXT:             core::simd::simd_swizzle!(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(i, [2, 3]),
+// CHECK-NEXT:                 [0, 1, 0, 0]
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             [0, 1, 4, 5]
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     SHOW__2!(c"cast128_256".as_ptr() as *mut i8, wide);
 // CHECK-NEXT:     let undef: core::simd::Simd<i64, 4> = unsafe { _mm256_undefined_si256() };
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"undef_blend".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW__2!(
+// CHECK-NEXT:             c"undef_blend".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<i64, 4>>(
 // CHECK-NEXT:                 core::simd::simd_swizzle!(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
-// CHECK-NEXT:                             undef,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
-// CHECK-NEXT:                             i,
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
+// CHECK-NEXT:                         undef,
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
+// CHECK-NEXT:                         i,
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     [8, 9, 10, 11, 12, 13, 14, 15]
 // CHECK-NEXT:                 ),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f,avx512bw,avx512dq,avx512vl")]
@@ -2903,24 +2794,24 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let tail_mask: u16 = (1u32 << tail).wrapping_sub(1) as u16;
-// CHECK-NEXT:     SHOW__5!(
-// CHECK-NEXT:         c"maskz_loadu_epi32".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe { _mm512_maskz_loadu_epi32(tail_mask, ia as *const ()) }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__5!(
-// CHECK-NEXT:         c"mask_loadu_epi32".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW__5!(
+// CHECK-NEXT:             c"maskz_loadu_epi32".as_ptr() as *mut i8,
+// CHECK-NEXT:             _mm512_maskz_loadu_epi32(tail_mask, ia as *const ())
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__5!(
+// CHECK-NEXT:             c"mask_loadu_epi32".as_ptr() as *mut i8,
 // CHECK-NEXT:             _mm512_mask_loadu_epi32(_mm512_set1_epi32(-3i32), tail_mask, ia as *const ())
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"maskz_loadu256_epi32".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe { _mm256_maskz_loadu_epi32(tail_mask as u8, ia as *const ()) }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__5!(
-// CHECK-NEXT:         c"maskz_loadu_epi8".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe { _mm512_maskz_loadu_epi8(71777214294589695u64, bytes as *const ()) }
-// CHECK-NEXT:     );
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__2!(
+// CHECK-NEXT:             c"maskz_loadu256_epi32".as_ptr() as *mut i8,
+// CHECK-NEXT:             _mm256_maskz_loadu_epi32(tail_mask as u8, ia as *const ())
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__5!(
+// CHECK-NEXT:             c"maskz_loadu_epi8".as_ptr() as *mut i8,
+// CHECK-NEXT:             _mm512_maskz_loadu_epi8(71777214294589695u64, bytes as *const ())
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     let mut v: core::simd::Simd<i64, 8> = unsafe {
 // CHECK-NEXT:         _mm512_loadu_si512(bytes as *const ())
 // CHECK-NEXT:     };
@@ -2940,29 +2831,32 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     SHOW__5!(
-// CHECK-NEXT:         c"movm_epi8".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe { _mm512_movm_epi8(9223372041149743107u64) }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"movm256_epi16".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe { _mm256_movm_epi16(33825u16) }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW__5!(
+// CHECK-NEXT:             c"movm_epi8".as_ptr() as *mut i8,
+// CHECK-NEXT:             _mm512_movm_epi8(9223372041149743107u64)
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__2!(c"movm256_epi16".as_ptr() as *mut i8, _mm256_movm_epi16(33825u16));
+// CHECK-NEXT:     }
 // CHECK-NEXT:     let undef: core::simd::Simd<i64, 8> = unsafe { _mm512_undefined_epi32() };
-// CHECK-NEXT:     SHOW__5!(
-// CHECK-NEXT:         c"undef512_mov".as_ptr() as *mut i8,
-// CHECK-NEXT:         unsafe { _mm512_mask_mov_epi32(undef, 65535u16, v) }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW__5!(
+// CHECK-NEXT:             c"undef512_mov".as_ptr() as *mut i8,
+// CHECK-NEXT:             _mm512_mask_mov_epi32(undef, 65535u16, v)
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     let mut t_: core::simd::Simd<i64, 8> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe { _mm256_setzero_si256() };
-// CHECK-NEXT:     t_ = core::simd::simd_swizzle!(
-// CHECK-NEXT:         unsafe { _mm512_castsi256_si512(_mm512_castsi512_si256(v)) },
+// CHECK-NEXT:     t_ = unsafe {
 // CHECK-NEXT:         core::simd::simd_swizzle!(
-// CHECK-NEXT:             core::simd::simd_swizzle!(v, [4, 5, 6, 7]),
-// CHECK-NEXT:             [0, 1, 2, 3, 0, 0, 0, 0]
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         [0, 1, 2, 3, 8, 9, 10, 11]
-// CHECK-NEXT:     );
+// CHECK-NEXT:             _mm512_castsi256_si512(_mm512_castsi512_si256(v)),
+// CHECK-NEXT:             core::simd::simd_swizzle!(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(v, [4, 5, 6, 7]),
+// CHECK-NEXT:                 [0, 1, 2, 3, 0, 0, 0, 0]
+// CHECK-NEXT:             ),
+// CHECK-NEXT:             [0, 1, 2, 3, 8, 9, 10, 11]
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     show(c"cast256_512".as_ptr(), core::ptr::addr_of_mut!(t_) as *const (), 64i32);
 // CHECK-NEXT: }
 // CHECK-EMPTY:

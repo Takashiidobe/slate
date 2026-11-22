@@ -67,32 +67,20 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let product: core::simd::Simd<i16, 8> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<u16, 8>, core::simd::Simd<i16, 8>>(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<u16, 8>>(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         __slate_intrinsic_a5286b02d489ac9f(
-// CHECK-NEXT:                             unsafe {
-// CHECK-NEXT:                                 core::mem::transmute::<core::simd::Simd<u16, 8>, core::simd::Simd<i16, 8>>(
-// CHECK-NEXT:                                     unsafe {
-// CHECK-NEXT:                                         core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<u16, 8>>(
-// CHECK-NEXT:                                             input(),
-// CHECK-NEXT:                                         )
-// CHECK-NEXT:                                     },
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                             },
-// CHECK-NEXT:                             unsafe {
-// CHECK-NEXT:                                 core::mem::transmute::<core::simd::Simd<u16, 8>, core::simd::Simd<i16, 8>>(
-// CHECK-NEXT:                                     unsafe {
-// CHECK-NEXT:                                         core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<u16, 8>>(
-// CHECK-NEXT:                                             right,
-// CHECK-NEXT:                                         )
-// CHECK-NEXT:                                     },
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                             },
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<u16, 8>>(
+// CHECK-NEXT:                 __slate_intrinsic_a5286b02d489ac9f(
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<u16, 8>, core::simd::Simd<i16, 8>>(
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<u16, 8>>(
+// CHECK-NEXT:                             input(),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<u16, 8>, core::simd::Simd<i16, 8>>(
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<u16, 8>>(
+// CHECK-NEXT:                             right,
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let packed: core::simd::Simd<i32, 4> = unsafe {

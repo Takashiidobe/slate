@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.bump")]
 // CHECK-NEXT: extern "C-unwind" fn bump() {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         sink = sink + 100;
+// CHECK-NEXT:         sink += 100;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -57,14 +57,16 @@ int main(void) {
 // CHECK-NEXT: fn clobbers() -> i32 {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u32 = 0;
 // CHECK-NEXT:     let r: i32 = 5;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov ecx, 3\nmov edx, 4\nadd ecx, edx",
-// CHECK-NEXT:             lateout("ax") [[T_0]],
-// CHECK-NEXT:             out("cx") _,
-// CHECK-NEXT:             out("dx") _,
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov ecx, 3\nmov edx, 4\nadd ecx, edx",
+// CHECK-NEXT:                 lateout("ax") [[T_0]],
+// CHECK-NEXT:                 out("cx") _,
+// CHECK-NEXT:                 out("dx") _,
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r + 1
@@ -73,14 +75,16 @@ int main(void) {
 // CHECK-NEXT: fn stack_balance() -> i32 {
 // CHECK-NEXT:     let mut [[V_0]]: u32 = 0;
 // CHECK-NEXT:     let r: i32 = 9;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "push 7\npush 8\npop ecx\npop edx\nadd ecx, edx",
-// CHECK-NEXT:             lateout("ax") [[T_0]],
-// CHECK-NEXT:             out("cx") _,
-// CHECK-NEXT:             out("dx") _,
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "push 7\npush 8\npop ecx\npop edx\nadd ecx, edx",
+// CHECK-NEXT:                 lateout("ax") [[T_0]],
+// CHECK-NEXT:                 out("cx") _,
+// CHECK-NEXT:                 out("dx") _,
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r

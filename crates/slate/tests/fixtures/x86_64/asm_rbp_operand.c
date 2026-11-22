@@ -27,14 +27,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bp_operand(x: i64) -> i64 {
 // CHECK-NEXT:     let mut r: i64 = x;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov %rbp, {1:r}\nmov {0:r}, %rbp\naddq $5, %rbp\nmov %rbp, {0:r}\nmov {1:r}, %rbp",
-// CHECK-NEXT:             inout(reg) r as u64 => [[T_0]],
-// CHECK-NEXT:             out(reg) _,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov %rbp, {1:r}\nmov {0:r}, %rbp\naddq $5, %rbp\nmov %rbp, {0:r}\nmov {1:r}, %rbp",
+// CHECK-NEXT:                 inout(reg) r as u64 => [[T_0]],
+// CHECK-NEXT:                 out(reg) _,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         r = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r
@@ -42,14 +44,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bp_intel(x: i64) -> i64 {
 // CHECK-NEXT:     let mut r: i64 = x;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "mov %rbp, {1:r}\nmov {0:r}, %rbp\n.intel_syntax noprefix\n\tadd rbp, 7\n\t.att_syntax\nmov %rbp, {0:r}\nmov {1:r}, %rbp",
-// CHECK-NEXT:             inout(reg) r as u64 => [[T_0]],
-// CHECK-NEXT:             out(reg) _,
-// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "mov %rbp, {1:r}\nmov {0:r}, %rbp\n.intel_syntax noprefix\n\tadd rbp, 7\n\t.att_syntax\nmov %rbp, {0:r}\nmov {1:r}, %rbp",
+// CHECK-NEXT:                 inout(reg) r as u64 => [[T_0]],
+// CHECK-NEXT:                 out(reg) _,
+// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         r = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     r

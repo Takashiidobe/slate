@@ -88,7 +88,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { strlen((text as *const i8) as *const core::ffi::c_char) as u64 };
 // CHECK-NEXT:     let mut score: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         score += (unsafe { *text.offset(i as isize) }) as i32;
+// CHECK-NEXT:         score += unsafe { *text.offset(i as isize) as i32 };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     score
 // CHECK: {{^}}}

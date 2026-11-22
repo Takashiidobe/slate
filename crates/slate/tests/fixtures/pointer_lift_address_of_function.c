@@ -17,11 +17,11 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.first")]
 // CHECK-NEXT: extern "C-unwind" fn first(line: *const i8, show: i32) -> i32 {
-// CHECK-NEXT:     show + ((((unsafe { *line.add(0) }) as i32) == 120) as i32)
+// CHECK-NEXT:     show + (((unsafe { *line.add(0) as i32 }) == 120) as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn second(line: *const i8, show: i32) -> i32 {
-// CHECK-NEXT:     show * ((((unsafe { *line.add(1) }) as i32) == 121) as i32)
+// CHECK-NEXT:     show * (((unsafe { *line.add(1) as i32 }) == 121) as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

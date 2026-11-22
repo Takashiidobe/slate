@@ -255,9 +255,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let op: *mut odd_fields = core::ptr::addr_of_mut!(odd);
 // CHECK-NEXT:     SET_FIELD!(op, r#type, 20i32);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*op).__slate_bits_0.__set_flag(1u32);
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { (*op).__slate_bits_0.__set_flag(1u32) };
 // CHECK-NEXT:     SET_FIELD__2!(op, inner_value, 30i32);
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -366,7 +364,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! FIELD__2 {
 // CHECK-NEXT:     ($p:expr) => {
-// CHECK-NEXT:         (unsafe { (*$p).__slate_bits_0.__get_flag() }) as i32
+// CHECK-NEXT:         unsafe { (*$p).__slate_bits_0.__get_flag() as i32 }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

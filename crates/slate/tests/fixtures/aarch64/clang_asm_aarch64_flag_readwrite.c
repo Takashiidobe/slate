@@ -41,43 +41,52 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn carry_in(mut flag: i32) -> i32 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT: fn carry_in(value: i32) -> i32 {
+// CHECK-NEXT:     let mut flag: i32 = value;
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "msr nzcv, {1:x}\nnop\ncset {0:w}, cs",
-// CHECK-NEXT:             out(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) (flag as u32) as u64,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "msr nzcv, {1:x}\nnop\ncset {0:w}, cs",
+// CHECK-NEXT:                 out(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) (flag as u32) as u64,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn zero_in(mut flag: u32) -> i32 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT: fn zero_in(value: u32) -> i32 {
+// CHECK-NEXT:     let mut flag: u32 = value;
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "msr nzcv, {1:x}\nnop\ncset {0:w}, eq",
-// CHECK-NEXT:             out(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) (flag as u32) as u64,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "msr nzcv, {1:x}\nnop\ncset {0:w}, eq",
+// CHECK-NEXT:                 out(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) (flag as u32) as u64,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn wide_in(mut flag: i64) -> i64 {
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT: fn wide_in(value: i64) -> i64 {
+// CHECK-NEXT:     let mut flag: i64 = value;
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "msr nzcv, {1:x}\nnop\ncset {0:w}, mi",
-// CHECK-NEXT:             out(reg) [[T_0]],
-// CHECK-NEXT:             in(reg) flag as u64,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "msr nzcv, {1:x}\nnop\ncset {0:w}, mi",
+// CHECK-NEXT:                 out(reg) [[T_0]],
+// CHECK-NEXT:                 in(reg) flag as u64,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     flag
@@ -86,17 +95,19 @@ int main(void) {
 // CHECK-NEXT: fn flags_name(mut left: i32, mut right: i32) -> u64 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     let mut bits: u64 = 0;
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
-// CHECK-NEXT:         core::arch::asm!(
-// CHECK-NEXT:             "cmp {2:w}, {3:w}\n\tmrs {1:x}, nzcv\ncset {0:w}, eq",
-// CHECK-NEXT:             lateout(reg) [[T_0]],
-// CHECK-NEXT:             lateout(reg) [[T_1]],
-// CHECK-NEXT:             in(reg) left as u32,
-// CHECK-NEXT:             in(reg) right as u32,
-// CHECK-NEXT:             options(pure, nomem, nostack),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             core::arch::asm!(
+// CHECK-NEXT:                 "cmp {2:w}, {3:w}\n\tmrs {1:x}, nzcv\ncset {0:w}, eq",
+// CHECK-NEXT:                 lateout(reg) [[T_0]],
+// CHECK-NEXT:                 lateout(reg) [[T_1]],
+// CHECK-NEXT:                 in(reg) left as u32,
+// CHECK-NEXT:                 in(reg) right as u32,
+// CHECK-NEXT:                 options(pure, nomem, nostack),
+// CHECK-NEXT:             );
+// CHECK-NEXT:         }
 // CHECK-NEXT:         flag = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:         bits = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:     }

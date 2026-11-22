@@ -58,17 +58,14 @@ int main(void) {
 // CHECK-NEXT:     values: *mut i32,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut origin: *mut Point = unsafe {
-// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_compound_origin_0)
-// CHECK-NEXT: };
+// CHECK-NEXT: static mut origin: *mut Point = core::ptr::addr_of_mut!(__slate_compound_origin_0);
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut primes: *mut i32 = unsafe {
-// CHECK-NEXT:     core::ptr::addr_of_mut!(__slate_compound_primes_0) as *mut i32
-// CHECK-NEXT: };
+// CHECK-NEXT: static mut primes: *mut i32 = core::ptr::addr_of_mut!(__slate_compound_primes_0)
+// CHECK-NEXT:     as *mut i32;
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut pair: Pair = Pair {
-// CHECK-NEXT:     first: unsafe { core::ptr::addr_of_mut!(__slate_compound_pair_0) },
-// CHECK-NEXT:     values: unsafe { core::ptr::addr_of_mut!(__slate_compound_pair_1) as *mut i32 },
+// CHECK-NEXT:     first: core::ptr::addr_of_mut!(__slate_compound_pair_0),
+// CHECK-NEXT:     values: core::ptr::addr_of_mut!(__slate_compound_pair_1) as *mut i32,
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum(values: *const i32, count: i32) -> i32 {
@@ -85,22 +82,20 @@ int main(void) {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: [i32; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*origin).x += 10;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { primes }.add(3) = 11;
+// CHECK-NEXT:         *primes.add(3) = 11;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}",
 // CHECK-NEXT:         unsafe { (*origin).x },
 // CHECK-NEXT:         unsafe { (*origin).y },
-// CHECK-NEXT:         unsafe { *unsafe { primes }.add(3) },
-// CHECK-NEXT:         sum((unsafe { primes }) as *const i32, 4i32)
+// CHECK-NEXT:         unsafe { *primes.add(3) },
+// CHECK-NEXT:         sum(unsafe { primes as *const i32 }, 4i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
 // CHECK-NEXT:         unsafe { (*pair.first).x },
 // CHECK-NEXT:         unsafe { (*pair.first).y },
-// CHECK-NEXT:         unsafe { *unsafe { pair.values }.add(1) }
+// CHECK-NEXT:         unsafe { *pair.values.add(1) }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..3i32 {
 // CHECK-NEXT:         let counter: *mut i32 = unsafe {
@@ -127,13 +122,13 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let total: i32 = sum(
-// CHECK-NEXT:         (unsafe {
+// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             (*{
 // CHECK-NEXT:                     [[SLATE_COMPOUND_2]] = [1i32, 2i32, 3i32, copied.y];
 // CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_2]])
 // CHECK-NEXT:                 })
-// CHECK-NEXT:                 .as_mut_ptr()
-// CHECK-NEXT:         }) as *const i32,
+// CHECK-NEXT:                 .as_mut_ptr() as *const i32
+// CHECK-NEXT:         },
 // CHECK-NEXT:         4i32,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {} {}", copied.x, copied.y, total);

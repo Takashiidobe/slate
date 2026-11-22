@@ -146,7 +146,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         sum = sum
 // CHECK-NEXT:             .wrapping_mul(31)
-// CHECK-NEXT:             .wrapping_add(((unsafe { *bytes.add(i as usize) }) as i32) as u32);
+// CHECK-NEXT:             .wrapping_add(unsafe { (*bytes.add(i as usize) as i32) as u32 });
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
@@ -167,8 +167,8 @@ int main(void) {
 // CHECK-NEXT:                     (7usize
 // CHECK-NEXT:                         + (((([[V_0]] as usize) * core::mem::size_of::<i8>()) as isize)
 // CHECK-NEXT:                             as usize)) / 4usize,
-// CHECK-NEXT:                 );
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -198,10 +198,10 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     (unsafe {
+// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *((&raw mut (*(x.as_mut_ptr() as *mut S)).tail as *mut [i8; 0]) as *mut i8)
-// CHECK-NEXT:             .offset((n - 1) as isize)
-// CHECK-NEXT:     }) as i32
+// CHECK-NEXT:             .offset((n - 1) as isize) as i32
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn grid(rows: i32, cols: i32) {
@@ -221,8 +221,8 @@ int main(void) {
 // CHECK-NEXT:                     (7usize
 // CHECK-NEXT:                         + (((([[V_0]] as usize) * ([[V_1]] as usize)
 // CHECK-NEXT:                             * core::mem::size_of::<i32>()) as isize) as usize)) / 4usize,
-// CHECK-NEXT:                 );
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -297,8 +297,8 @@ int main(void) {
 // CHECK-NEXT:                     (3usize
 // CHECK-NEXT:                         + (((1usize * ([[V_0]] as usize) * core::mem::size_of::<i32>())
 // CHECK-NEXT:                             as isize) as usize)) / 4usize,
-// CHECK-NEXT:                 );
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
@@ -308,8 +308,6 @@ int main(void) {
 // CHECK-NEXT:                     0 * ((([[V_0]] as usize) * core::mem::size_of::<i32>()) as isize),
 // CHECK-NEXT:                 ) as *mut i32)
 // CHECK-NEXT:             .add(0) = 7;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(((&raw mut (*(u.as_mut_ptr() as *mut U)).ar as *mut {{\[\[}}i32; 0]; 1])
 // CHECK-NEXT:                     as *mut [i32; 0])
 // CHECK-NEXT:                 .byte_offset(
@@ -358,8 +356,8 @@ int main(void) {
 // CHECK-NEXT:                         (15usize
 // CHECK-NEXT:                             + (((([[V_0]] as usize) * core::mem::size_of::<f64>()) as isize)
 // CHECK-NEXT:                                 as usize)) / 8usize,
-// CHECK-NEXT:                     );
-// CHECK-NEXT:             }
+// CHECK-NEXT:                     )
+// CHECK-NEXT:             };
 // CHECK-NEXT:             __slate_vla
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
@@ -393,10 +391,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn heap(n: i32) {
 // CHECK-NEXT:     let [[V_0]]: u64 = n as u64;
-// CHECK-NEXT:     let h: *mut H = (unsafe {
-// CHECK-NEXT:         malloc((15u64.wrapping_add([[V_0]].wrapping_mul(4)) / 8).wrapping_mul(8) as usize)
-// CHECK-NEXT:             as *mut ()
-// CHECK-NEXT:     }) as *mut H;
+// CHECK-NEXT:     let h: *mut H = unsafe {
+// CHECK-NEXT:         (malloc((15u64.wrapping_add([[V_0]].wrapping_mul(4)) / 8).wrapping_mul(8) as usize)
+// CHECK-NEXT:             as *mut ()) as *mut H
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*h).id = 42;
 // CHECK-NEXT:     }
@@ -441,8 +439,8 @@ int main(void) {
 // CHECK-NEXT:                     (0usize
 // CHECK-NEXT:                         + (((([[V_0]] as usize) * core::mem::size_of::<i8>()) as isize)
 // CHECK-NEXT:                             as usize)) / 1usize,
-// CHECK-NEXT:                 );
-// CHECK-NEXT:         }
+// CHECK-NEXT:                 )
+// CHECK-NEXT:         };
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {

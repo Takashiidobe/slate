@@ -220,10 +220,11 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ok
-// CHECK-NEXT:         * (((unsafe { *small.add(2) }) as i32)
-// CHECK-NEXT:             + ((unsafe { *a.offset((n - 1) as isize) }) as i32)
-// CHECK-NEXT:             + ((unsafe { *b.offset((n - 1) as isize) }) as i32)
-// CHECK-NEXT:             + ((unsafe { *c.offset((n - 1) as isize) }) as i32))
+// CHECK-NEXT:         * unsafe {
+// CHECK-NEXT:             (*small.add(2) as i32) + (*a.offset((n - 1) as isize) as i32)
+// CHECK-NEXT:                 + (*b.offset((n - 1) as isize) as i32)
+// CHECK-NEXT:                 + (*c.offset((n - 1) as isize) as i32)
+// CHECK-NEXT:         }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn with_align_uninitialized(n: i32) -> i32 {
@@ -259,8 +260,8 @@ int main(void) {
 // CHECK-NEXT:                 (1100000u64 as usize) as usize,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
-// CHECK-NEXT:         total += (aligned_to(p as *mut (), 256u64)
-// CHECK-NEXT:             * ((unsafe { *p.add(1099999) }) as i32)) as i64;
+// CHECK-NEXT:         total += (aligned_to(p as *mut (), 256u64) * unsafe { *p.add(1099999) as i32 })
+// CHECK-NEXT:             as i64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total
 // CHECK-NEXT: }

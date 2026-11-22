@@ -19,8 +19,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let alignment: i32 = core::mem::align_of::<i32>() as i32;
-// CHECK-NEXT:     let repeated: i32 = (((unsafe { text[1] }) as u8) as i32)
-// CHECK-NEXT:         + (((unsafe { text[1] }) as u8) as i32);
+// CHECK-NEXT:     let repeated: i32 = ((text[1] as u8) as i32) + ((text[1] as u8) as i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

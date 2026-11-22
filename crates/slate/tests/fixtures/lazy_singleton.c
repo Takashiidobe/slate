@@ -36,8 +36,6 @@ int main(void) {
 // CHECK-NEXT:     if (unsafe { computed }) == 0 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             cached_value = compute();
-// CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             computed = 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

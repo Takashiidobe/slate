@@ -356,8 +356,9 @@ int main(void) {
 // CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         __slate_exp10l__rf80_f80(LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 0, 64]))
 // CHECK-NEXT:     }) == LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 64])) as i32;
-// CHECK-NEXT:     total += ((unsafe { lgamma_r(0.5f64, core::ptr::addr_of_mut!(sign)) })
-// CHECK-NEXT:         == unsafe { lgamma(0.5f64) }) as i32;
+// CHECK-NEXT:     total += unsafe {
+// CHECK-NEXT:         (lgamma_r(0.5f64, core::ptr::addr_of_mut!(sign)) == lgamma(0.5f64)) as i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     total += (sign == 1) as i32;
 // CHECK-NEXT:     total += ((unsafe { significand(12.0f64) }) == 1.5f64) as i32;
 // CHECK-NEXT:     total += ((unsafe { significandf(12.0f32) }) == 1.5f32) as i32;
@@ -370,8 +371,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_bessel_extensions() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     total += ((unsafe { j0(1.0f64) }) == unsafe { j0(1.0f64) }
-// CHECK-NEXT:         && (unsafe { j0(1.0f64) }) > 0.7f64) as i32;
+// CHECK-NEXT:     total += ((unsafe { j0(1.0f64) == j0(1.0f64) }) && (unsafe { j0(1.0f64) }) > 0.7f64)
+// CHECK-NEXT:         as i32;
 // CHECK-NEXT:     total += ((unsafe { j1(1.0f64) }) > 0.4f64) as i32;
 // CHECK-NEXT:     total += ((unsafe { jn(2i32, 1.0f64) }) > 0.1f64) as i32;
 // CHECK-NEXT:     total += ((unsafe { y0(1.0f64) }) > 0.08f64) as i32;

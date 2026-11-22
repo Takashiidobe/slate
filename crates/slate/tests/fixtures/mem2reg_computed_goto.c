@@ -21,28 +21,26 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn walk(mut position: *mut i32) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         match labels.0[*position as usize] as usize {
-// CHECK-NEXT:             4 => {
-// CHECK-NEXT:                 loop {
-// CHECK-NEXT:                     position = position.add(1);
-// CHECK-NEXT:                     match labels.0[*position as usize] as usize {
-// CHECK-NEXT:                         4 => {}
-// CHECK-NEXT:                         5 => {
-// CHECK-NEXT:                             break;
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         _ => {
-// CHECK-NEXT:                             unreachable!();
-// CHECK-NEXT:                         }
+// CHECK-NEXT:     match unsafe { labels.0[*position as usize] as usize } {
+// CHECK-NEXT:         4 => {
+// CHECK-NEXT:             loop {
+// CHECK-NEXT:                 position = unsafe { position.add(1) };
+// CHECK-NEXT:                 match unsafe { labels.0[*position as usize] as usize } {
+// CHECK-NEXT:                     4 => {}
+// CHECK-NEXT:                     5 => {
+// CHECK-NEXT:                         break;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     _ => {
+// CHECK-NEXT:                         unreachable!();
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:             5 => {}
-// CHECK-NEXT:             _ => {
-// CHECK-NEXT:                 unreachable!();
-// CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return;
+// CHECK-NEXT:         5 => {}
+// CHECK-NEXT:         _ => {
+// CHECK-NEXT:             unreachable!();
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-NEXT:     return;
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

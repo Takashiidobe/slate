@@ -100,17 +100,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut name: [i8; 6] = [115, 108, 97, 116, 101, 0];
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut counter_ptr: *mut i32 = unsafe { core::ptr::addr_of_mut!(counter) };
+// CHECK-NEXT: static mut counter_ptr: *mut i32 = core::ptr::addr_of_mut!(counter);
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut table_ptr: *mut i32 = unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut table_third: *mut i32 = unsafe {
-// CHECK-NEXT:         core::ptr::addr_of_mut!(table.0) as *mut i32
-// CHECK-NEXT:     }
-// CHECK-NEXT:     .wrapping_offset(2i32 as isize);
+// CHECK-NEXT:     (core::ptr::addr_of_mut!(table.0) as *mut i32).wrapping_offset(2i32 as isize)
+// CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut table_end: *mut i32 = unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 }
-// CHECK-NEXT:     .wrapping_offset(4i32 as isize);
+// CHECK-NEXT: static mut table_end: *mut i32 = unsafe {
+// CHECK-NEXT:     (core::ptr::addr_of_mut!(table.0) as *mut i32).wrapping_offset(4i32 as isize)
+// CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut table_whole: *mut [i32; 4] = unsafe { core::ptr::addr_of_mut!(table.0) };
 // CHECK-EMPTY:
@@ -120,28 +120,28 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut pair_right: *mut i32 = unsafe { core::ptr::addr_of_mut!(pair.right) };
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut pair_ptr: *mut Pair = unsafe { core::ptr::addr_of_mut!(pair) };
+// CHECK-NEXT: static mut pair_ptr: *mut Pair = core::ptr::addr_of_mut!(pair);
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut name_ptr: *mut i8 = unsafe { core::ptr::addr_of_mut!(name) as *mut i8 };
+// CHECK-NEXT: static mut name_ptr: *mut i8 = core::ptr::addr_of_mut!(name) as *mut i8;
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut name_tail: *const i8 = unsafe { core::ptr::addr_of_mut!(name) as *mut i8 }
+// CHECK-NEXT: static mut name_tail: *const i8 = (core::ptr::addr_of_mut!(name) as *mut i8)
 // CHECK-NEXT:     .wrapping_offset(2i32 as isize) as *const i8;
 // CHECK-EMPTY:
 // CHECK-NEXT: static fixed_counter: __SlateConst<*mut i32> = __SlateConst(
-// CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(counter) },
+// CHECK-NEXT:     core::ptr::addr_of_mut!(counter),
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut counter_ptr_ptr: *mut *mut i32 = unsafe {
-// CHECK-NEXT:     core::ptr::addr_of_mut!(counter_ptr)
-// CHECK-NEXT: };
+// CHECK-NEXT: static mut counter_ptr_ptr: *mut *mut i32 = core::ptr::addr_of_mut!(counter_ptr);
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut slots: __SlateAlign16<[*mut i32; 3]> = __SlateAlign16(
-// CHECK-NEXT:     [
-// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(counter) },
-// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 }
-// CHECK-NEXT:             .wrapping_offset(1i32 as isize),
-// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(pair.left) },
-// CHECK-NEXT:     ],
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         [
+// CHECK-NEXT:             core::ptr::addr_of_mut!(counter),
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(table.0) as *mut i32)
+// CHECK-NEXT:                 .wrapping_offset(1i32 as isize),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(pair.left),
+// CHECK-NEXT:         ]
+// CHECK-NEXT:     },
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
@@ -156,13 +156,15 @@ int main(void) {
 // CHECK-NEXT:     [
 // CHECK-NEXT:         Cursor {
 // CHECK-NEXT:             label: b"counter\0".as_ptr() as *const i8,
-// CHECK-NEXT:             value: unsafe { core::ptr::addr_of_mut!(counter) },
-// CHECK-NEXT:             pair: unsafe { core::ptr::addr_of_mut!(pair) },
+// CHECK-NEXT:             value: core::ptr::addr_of_mut!(counter),
+// CHECK-NEXT:             pair: core::ptr::addr_of_mut!(pair),
 // CHECK-NEXT:         },
 // CHECK-NEXT:         Cursor {
 // CHECK-NEXT:             label: b"table\0".as_ptr() as *const i8,
-// CHECK-NEXT:             value: unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 }
-// CHECK-NEXT:                 .wrapping_offset(3i32 as isize),
+// CHECK-NEXT:             value: unsafe {
+// CHECK-NEXT:                 (core::ptr::addr_of_mut!(table.0) as *mut i32)
+// CHECK-NEXT:                     .wrapping_offset(3i32 as isize)
+// CHECK-NEXT:             },
 // CHECK-NEXT:             pair: core::ptr::null_mut::<Pair>(),
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ],
@@ -171,38 +173,16 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *counter_ptr += 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { table_ptr }.add(0) = 10;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *table_ptr.add(0) = 10;
 // CHECK-NEXT:         *table_third += 20;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(*table_whole).as_mut_ptr().add(3) = 40;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { grid_row }.add(2) = 60;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *grid_row.add(2) = 60;
 // CHECK-NEXT:         *pair_right = 90;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*pair_ptr).left = 80;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *unsafe { name_ptr }.add(0) = 83;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *name_ptr.add(0) = 83;
 // CHECK-NEXT:         *(*counter_ptr_ptr) += 100;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *slots.0[1] = 22;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *slots.0[2] += 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *cursors.0[1].value += 400;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut sum: i32 = 0;
@@ -243,7 +223,7 @@ int main(void) {
 // CHECK-NEXT:             *cursors.0[0].value,
 // CHECK-NEXT:             (*cursors.0[0].pair).right,
 // CHECK-NEXT:             cursors.0[1].label,
-// CHECK-NEXT:             unsafe { cursors.0[1].pair }.is_null() as i32,
+// CHECK-NEXT:             cursors.0[1].pair.is_null() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

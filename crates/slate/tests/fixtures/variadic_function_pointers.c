@@ -61,7 +61,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut result: i32 = unsafe { args.next_arg::<i32>() };
-// CHECK-NEXT:     result += (unsafe { args.next_arg::<f64>() }) as i32;
+// CHECK-NEXT:     result += unsafe { args.next_arg::<f64>() as i32 };
 // CHECK-NEXT:     result += unsafe { args.next_arg::<i32>() };
 // CHECK-NEXT:     count + result
 // CHECK-NEXT: }

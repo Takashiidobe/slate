@@ -80,9 +80,9 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn mode_config_access(config: *mut mode_config, flags: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(*config).pending = unsafe { (*(*config).funcs).access }.unwrap()(flags);
+// CHECK-NEXT:         *(*config).pending = (*(*config).funcs).access.unwrap()(flags);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     ((unsafe { *(*config).pending }) as u32) as i32
+// CHECK-NEXT:     unsafe { (*(*config).pending as u32) as i32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -91,7 +91,7 @@ int main(void) {
 // CHECK-NEXT:     width: i32,
 // CHECK-NEXT:     height: i32,
 // CHECK-NEXT: ) -> i32 {
-// CHECK-NEXT:     (unsafe { unsafe { (*(*config).funcs).mode_valid }.unwrap()(width, height) }) as i32
+// CHECK-NEXT:     unsafe { (*(*config).funcs).mode_valid.unwrap()(width, height) as i32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
@@ -101,16 +101,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: extern "C-unwind" fn mode_config_new() -> *mut mode_config {
-// CHECK-NEXT:     let config: *mut mode_config = (unsafe {
-// CHECK-NEXT:         malloc((core::mem::size_of::<mode_config>() as size_t) as usize) as *mut ()
-// CHECK-NEXT:     }) as *mut mode_config;
+// CHECK-NEXT:     let config: *mut mode_config = unsafe {
+// CHECK-NEXT:         (malloc((core::mem::size_of::<mode_config>() as size_t) as usize) as *mut ())
+// CHECK-NEXT:             as *mut mode_config
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*config).funcs = core::ptr::addr_of!(funcs.0);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*config).pending = core::ptr::addr_of_mut!(pending_access);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*config).count = 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     config
@@ -246,7 +243,7 @@ int main(void) {
 // CHECK-NEXT:     if (unsafe { (*(*config).funcs).mode_valid }) != None {
 // CHECK-NEXT:         score += 100;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if !unsafe { (*config).pending }.is_null() {
+// CHECK-NEXT:     if !unsafe { (*config).pending.is_null() } {
 // CHECK-NEXT:         score += 1000;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     score

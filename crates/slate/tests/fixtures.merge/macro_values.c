@@ -550,7 +550,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn counted_call() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = calls + 1;
+// CHECK-NEXT:         calls += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { calls }) * 10
 // CHECK-NEXT: }
@@ -570,7 +570,7 @@ int main(void) {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %d\n".as_ptr(),
 // CHECK-NEXT:                 r,
-// CHECK-NEXT:                 (unsafe { cursor }
+// CHECK-NEXT:                 (cursor
 // CHECK-NEXT:                     .offset_from(
 // CHECK-NEXT:                         (core::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32,
 // CHECK-NEXT:                     ) as ptrdiff_t) as i32,
@@ -583,12 +583,12 @@ int main(void) {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {}",
 // CHECK-NEXT:             r,
-// CHECK-NEXT:             ((unsafe {
-// CHECK-NEXT:                 unsafe { cursor }
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (cursor
 // CHECK-NEXT:                     .offset_from(
 // CHECK-NEXT:                         (core::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:             }) as ptrdiff_t) as i32
+// CHECK-NEXT:                     ) as ptrdiff_t) as i32
+// CHECK-NEXT:             }
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut local: *mut i32 = unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 };
@@ -619,12 +619,12 @@ int main(void) {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {}",
 // CHECK-NEXT:             sum,
-// CHECK-NEXT:             ((unsafe {
-// CHECK-NEXT:                 local
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (local
 // CHECK-NEXT:                     .offset_from(
 // CHECK-NEXT:                         (core::ptr::addr_of_mut!(table.0) as *mut i32) as *mut i32,
-// CHECK-NEXT:                     )
-// CHECK-NEXT:             }) as ptrdiff_t) as i32
+// CHECK-NEXT:                     ) as ptrdiff_t) as i32
+// CHECK-NEXT:             }
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut count: i32 = 0;
@@ -687,8 +687,6 @@ int main(void) {
 // CHECK-NEXT:     let [[V_0]]: i32 = unsafe { trace_length };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         trace_length = [[V_0]] + 1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         trace.0[[[V_0]] as usize] = value;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
@@ -892,7 +890,7 @@ int main(void) {
 // CHECK-NEXT:                 c"%d %d %d\n".as_ptr(),
 // CHECK-NEXT:                 shifted,
 // CHECK-NEXT:                 global_size,
-// CHECK-NEXT:                 WIDE_MIN!(100 as c_ulong, unsafe { global_size }) as i32,
+// CHECK-NEXT:                 WIDE_MIN!(100 as c_ulong, global_size) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -903,16 +901,16 @@ int main(void) {
 // CHECK-NEXT:             "{} {} {}",
 // CHECK-NEXT:             shifted,
 // CHECK-NEXT:             unsafe { global_size },
-// CHECK-NEXT:             WIDE_MIN!(100 as c_ulong, unsafe { global_size }) as i32
+// CHECK-NEXT:             unsafe { WIDE_MIN!(100 as c_ulong, global_size) as i32 }
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn short_circuit() {
 // CHECK-NEXT:     let mut hit: i32 = 0;
-// CHECK-NEXT:     let zero: i32 = 0;
-// CHECK-NEXT:     let one: i32 = 1;
-// CHECK-NEXT:     let [[V_0]]: bool = if zero != 0 {
+// CHECK-NEXT:     let zero: bool = false;
+// CHECK-NEXT:     let one: bool = true;
+// CHECK-NEXT:     let [[V_0]]: bool = if zero {
 // CHECK-NEXT:         let [[V_1]]: i32 = hit;
 // CHECK-NEXT:         hit = [[V_1]] + 1;
 // CHECK-NEXT:         [[V_1]] != 0
@@ -938,7 +936,7 @@ int main(void) {
 // CHECK-NEXT:         println!("{}", [[V_0]] as i32);
 // CHECK-NEXT:         println!("{}", hit);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_2]]: bool = if one != 0 {
+// CHECK-NEXT:     let [[V_2]]: bool = if one {
 // CHECK-NEXT:         true
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         let [[V_3]]: i32 = hit;
@@ -964,7 +962,7 @@ int main(void) {
 // CHECK-NEXT:         println!("{}", [[V_2]] as i32);
 // CHECK-NEXT:         println!("{}", hit);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_4]]: bool = if zero != 0 {
+// CHECK-NEXT:     let [[V_4]]: bool = if zero {
 // CHECK-NEXT:         let [[V_5]]: i32 = hit;
 // CHECK-NEXT:         hit = [[V_5]] + 1;
 // CHECK-NEXT:         let [[V_6]]: i32 = if [[V_5]] < 5 {
@@ -999,7 +997,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d\n".as_ptr(),
-// CHECK-NEXT:                 (one != 0 || TWICE!(note(4i32)) != 0) as i32,
+// CHECK-NEXT:                 (one || TWICE!(note(4i32)) != 0) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -1011,7 +1009,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d\n".as_ptr(),
-// CHECK-NEXT:                 (one != 0 && TWICE!(note(5i32)) != 0) as i32,
+// CHECK-NEXT:                 (one && TWICE!(note(5i32)) != 0) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -1027,8 +1025,8 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!("{}", [[V_4]] as i32);
 // CHECK-NEXT:         println!("{}", hit);
-// CHECK-NEXT:         println!("{}", (one != 0 || TWICE!(note(4i32)) != 0) as i32);
-// CHECK-NEXT:         println!("{}", (one != 0 && TWICE!(note(5i32)) != 0) as i32);
+// CHECK-NEXT:         println!("{}", (one || TWICE!(note(4i32)) != 0) as i32);
+// CHECK-NEXT:         println!("{}", (one && TWICE!(note(5i32)) != 0) as i32);
 // CHECK-NEXT:         println!("{}", hit);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_8]]: bool = note(1i32) != 0 && note(0i32) != 0;
@@ -1181,7 +1179,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_2]]: *mut holder = unsafe { many.0.as_mut_ptr().add(2) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_2]]).count = (*[[V_2]]).count + 1;
+// CHECK-NEXT:         (*[[V_2]]).count += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

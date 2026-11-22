@@ -263,63 +263,60 @@ int main(void) {
 // CHECK-NEXT:     if copied.count != 2 {
 // CHECK-NEXT:         return 7;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let list: *mut List = (unsafe {
-// CHECK-NEXT:         malloc(
+// CHECK-NEXT:     let list: *mut List = unsafe {
+// CHECK-NEXT:         (malloc(
 // CHECK-NEXT:             8u64.wrapping_add(5u64.wrapping_mul(core::mem::size_of::<Entry>() as u64))
 // CHECK-NEXT:                 as usize,
-// CHECK-NEXT:         ) as *mut ()
-// CHECK-NEXT:     }) as *mut List;
-// CHECK-NEXT:     let bytes: *mut Bytes = (unsafe {
-// CHECK-NEXT:         malloc(16u64.wrapping_add(9u64) as usize) as *mut ()
-// CHECK-NEXT:     }) as *mut Bytes;
-// CHECK-NEXT:     let wide: *mut Wide = (unsafe {
-// CHECK-NEXT:         malloc(
+// CHECK-NEXT:         ) as *mut ()) as *mut List
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let bytes: *mut Bytes = unsafe {
+// CHECK-NEXT:         (malloc(16u64.wrapping_add(9u64) as usize) as *mut ()) as *mut Bytes
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let wide: *mut Wide = unsafe {
+// CHECK-NEXT:         (malloc(
 // CHECK-NEXT:             16u64
 // CHECK-NEXT:                 .wrapping_add(
 // CHECK-NEXT:                     3u64.wrapping_mul(core::mem::size_of::<LongDouble>() as u64),
 // CHECK-NEXT:                 ) as usize,
-// CHECK-NEXT:         ) as *mut ()
-// CHECK-NEXT:     }) as *mut Wide;
+// CHECK-NEXT:         ) as *mut ()) as *mut Wide
+// CHECK-NEXT:     };
 // CHECK-NEXT:     if list.is_null() || bytes.is_null() || wide.is_null() {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (((unsafe {
-// CHECK-NEXT:         ((core::ptr::addr_of_mut!((*list).entries) as *mut Entry) as *mut i8)
-// CHECK-NEXT:             .offset_from((list as *mut i8) as *mut i8)
-// CHECK-NEXT:     }) as i64) as u64) != 8 {
+// CHECK-NEXT:     if (unsafe {
+// CHECK-NEXT:         (((core::ptr::addr_of_mut!((*list).entries) as *mut Entry) as *mut i8)
+// CHECK-NEXT:             .offset_from((list as *mut i8) as *mut i8) as i64) as u64
+// CHECK-NEXT:     }) != 8 {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (((unsafe {
-// CHECK-NEXT:         ((core::ptr::addr_of_mut!((*bytes).bytes) as *mut u8) as *mut i8)
-// CHECK-NEXT:             .offset_from((bytes as *mut i8) as *mut i8)
-// CHECK-NEXT:     }) as i64) as u64) != 12 {
+// CHECK-NEXT:     if (unsafe {
+// CHECK-NEXT:         (((core::ptr::addr_of_mut!((*bytes).bytes) as *mut u8) as *mut i8)
+// CHECK-NEXT:             .offset_from((bytes as *mut i8) as *mut i8) as i64) as u64
+// CHECK-NEXT:     }) != 12 {
 // CHECK-NEXT:         return 3;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (((unsafe {
-// CHECK-NEXT:         ((core::ptr::addr_of_mut!((*wide).values) as *mut LongDouble) as *mut i8)
-// CHECK-NEXT:             .offset_from((wide as *mut i8) as *mut i8)
-// CHECK-NEXT:     }) as i64) as u64) != 16 {
+// CHECK-NEXT:     if (unsafe {
+// CHECK-NEXT:         (((core::ptr::addr_of_mut!((*wide).values) as *mut LongDouble) as *mut i8)
+// CHECK-NEXT:             .offset_from((wide as *mut i8) as *mut i8) as i64) as u64
+// CHECK-NEXT:     }) != 16 {
 // CHECK-NEXT:         return 4;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (((unsafe {
-// CHECK-NEXT:         (bytes.add(1) as *mut i8).offset_from((bytes as *mut i8) as *mut i8)
-// CHECK-NEXT:     }) as i64) as u64) != 16 {
+// CHECK-NEXT:     if (unsafe {
+// CHECK-NEXT:         ((bytes.add(1) as *mut i8).offset_from((bytes as *mut i8) as *mut i8) as i64)
+// CHECK-NEXT:             as u64
+// CHECK-NEXT:     }) != 16 {
 // CHECK-NEXT:         return 5;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (((unsafe { (wide.add(1) as *mut i8).offset_from((wide as *mut i8) as *mut i8) })
-// CHECK-NEXT:         as i64) as u64) != 16 {
+// CHECK-NEXT:     if (unsafe {
+// CHECK-NEXT:         ((wide.add(1) as *mut i8).offset_from((wide as *mut i8) as *mut i8) as i64)
+// CHECK-NEXT:             as u64
+// CHECK-NEXT:     }) != 16 {
 // CHECK-NEXT:         return 6;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*list).count = 5;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*bytes).head = 2.5f64;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*bytes).tag = 17;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*wide).tag = 4;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {
@@ -328,8 +325,6 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 (*(core::ptr::addr_of_mut!((*list).entries) as *mut Entry)
 // CHECK-NEXT:                     .offset(i as isize)).value = (i * 13) as i64;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 (*(core::ptr::addr_of_mut!((*list).entries) as *mut Entry)
 // CHECK-NEXT:                     .offset(i as isize)).tag = i + 7;
 // CHECK-NEXT:             }
@@ -357,13 +352,14 @@ int main(void) {
 // CHECK-NEXT:         || (unsafe {
 // CHECK-NEXT:             (*(core::ptr::addr_of!((*view).entries) as *const Entry).add(3)).tag
 // CHECK-NEXT:         }) != 10
-// CHECK-NEXT:         || ((unsafe { *(core::ptr::addr_of_mut!((*bytes).bytes) as *mut u8).add(8) })
-// CHECK-NEXT:             as i32) != 24 || (unsafe { (*bytes).head }) != 2.5f64
+// CHECK-NEXT:         || (unsafe {
+// CHECK-NEXT:             *(core::ptr::addr_of_mut!((*bytes).bytes) as *mut u8).add(8) as i32
+// CHECK-NEXT:         }) != 24 || (unsafe { (*bytes).head }) != 2.5f64
 // CHECK-NEXT:         || (unsafe { (*bytes).tag }) != 17
 // CHECK-NEXT:         || (unsafe {
 // CHECK-NEXT:             *(core::ptr::addr_of_mut!((*wide).values) as *mut LongDouble).add(2)
 // CHECK-NEXT:         }) != LongDouble([0, 0, 0, 0, 0, 0, 0, 160, 0, 64])
-// CHECK-NEXT:         || ((unsafe { (*wide).tag }) as i32) != 4) as i32;
+// CHECK-NEXT:         || (unsafe { (*wide).tag as i32 }) != 4) as i32;
 // CHECK-NEXT:     unsafe { free((wide as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     unsafe { free((bytes as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     unsafe { free((list as *mut ()) as *mut core::ffi::c_void) };

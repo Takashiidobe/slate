@@ -36,22 +36,34 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(naked)]
 // CHECK-NEXT: extern "C-unwind" fn identity(x: i32) -> i32 {
-// CHECK-NEXT:     core::arch::naked_asm!("movl %edi, %eax\n\tret", options(att_syntax));
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::naked_asm!("movl %edi, %eax\n\tret", options(att_syntax));
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(naked)]
 // CHECK-NEXT: extern "C-unwind" fn add(a: i64, b: i64) -> i64 {
-// CHECK-NEXT:     core::arch::naked_asm!("leaq (%rdi,%rsi), %rax\nret", options(att_syntax));
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::naked_asm!("leaq (%rdi,%rsi), %rax\nret", options(att_syntax));
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(naked)]
 // CHECK-NEXT: extern "C-unwind" fn forty_two() -> i32 {
-// CHECK-NEXT:     core::arch::naked_asm!("movl ${0}, %eax\n\tret", const 42i32, options(att_syntax));
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::naked_asm!(
+// CHECK-NEXT:             "movl ${0}, %eax\n\tret",
+// CHECK-NEXT:             const 42i32,
+// CHECK-NEXT:             options(att_syntax),
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(naked)]
 // CHECK-NEXT: extern "C-unwind" fn declared() -> i32 {
-// CHECK-NEXT:     core::arch::naked_asm!("movl $5, %eax\n\tret # {{[{][{]}}braces}}", options(att_syntax));
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::naked_asm!("movl $5, %eax\n\tret # {{[{][{]}}braces}}", options(att_syntax));
+// CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

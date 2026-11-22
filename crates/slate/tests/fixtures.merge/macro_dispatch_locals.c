@@ -101,35 +101,33 @@ int main(void) {
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut __slate_state: usize = 6usize;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         if k & 1 != 0 {
-// CHECK-NEXT:             __slate_state = 4;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             __slate_state = 5;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match __slate_state {
-// CHECK-NEXT:                 4 => {
-// CHECK-NEXT:                     if flags != 0 {
-// CHECK-NEXT:                         [[V_0]] = crc(check, i);
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         [[V_0]] = adl(check, i);
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     check = [[V_0]];
-// CHECK-NEXT:                     SWAP_LOCAL!(hold, check);
-// CHECK-NEXT:                     let [[V_1:__v[0-9]+]]: i32 = i + 1;
-// CHECK-NEXT:                     i = [[V_1]];
-// CHECK-NEXT:                     if [[V_1]] < k {
-// CHECK-NEXT:                         __slate_state = 5;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
+// CHECK-NEXT:     if k & 1 != 0 {
+// CHECK-NEXT:         __slate_state = 4;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         __slate_state = 5;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         match __slate_state {
+// CHECK-NEXT:             4 => {
+// CHECK-NEXT:                 if (unsafe { flags }) != 0 {
+// CHECK-NEXT:                     [[V_0]] = crc(check, i);
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     [[V_0]] = adl(check, i);
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     DROPBITS!(1i32, hold, bits);
-// CHECK-NEXT:                     BYTEBITS!(hold, bits);
-// CHECK-NEXT:                     __slate_state = 4;
+// CHECK-NEXT:                 check = [[V_0]];
+// CHECK-NEXT:                 SWAP_LOCAL!(hold, check);
+// CHECK-NEXT:                 let [[V_1:__v[0-9]+]]: i32 = i + 1;
+// CHECK-NEXT:                 i = [[V_1]];
+// CHECK-NEXT:                 if [[V_1]] < k {
+// CHECK-NEXT:                     __slate_state = 5;
+// CHECK-NEXT:                 } else {
+// CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 DROPBITS!(1i32, hold, bits);
+// CHECK-NEXT:                 BYTEBITS!(hold, bits);
+// CHECK-NEXT:                 __slate_state = 4;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

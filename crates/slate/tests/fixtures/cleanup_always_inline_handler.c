@@ -46,11 +46,7 @@ int main(void) {
 // CHECK-NEXT: fn unlock(depth: *mut i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!("", options(nostack, att_syntax));
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         released += *depth;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *depth = 0;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

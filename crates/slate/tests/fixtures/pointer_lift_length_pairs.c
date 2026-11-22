@@ -99,10 +99,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let len: i32 = 5;
-// CHECK-NEXT:     let heap: *mut i32 = (unsafe {
-// CHECK-NEXT:         malloc((len as u64).wrapping_mul(core::mem::size_of::<i32>() as u64) as usize)
-// CHECK-NEXT:             as *mut ()
-// CHECK-NEXT:     }) as *mut i32;
+// CHECK-NEXT:     let heap: *mut i32 = unsafe {
+// CHECK-NEXT:         (malloc((len as u64).wrapping_mul(core::mem::size_of::<i32>() as u64) as usize)
+// CHECK-NEXT:             as *mut ()) as *mut i32
+// CHECK-NEXT:     };
 // CHECK-NEXT:     forward(unsafe { core::slice::from_raw_parts_mut(heap, len as usize) });
 // CHECK-NEXT:     let mut local: [i32; 3] = [7, 8, 9];
 // CHECK-NEXT:     bump(local.as_mut_slice());

@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT: extern "C-unwind" fn finish(code: i32) {
 // CHECK-NEXT:     println!("finish {} stage {}", code, unsafe { stage });
 // CHECK-NEXT:     unsafe { fflush(slate_support::stdout()) };
-// CHECK-NEXT:     unsafe { std::process::exit(code as i32) };
+// CHECK-NEXT:     std::process::exit(code as i32);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::exit;
@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:         step(i);
 // CHECK-NEXT:         println!("stage {}", unsafe { stage });
 // CHECK-NEXT:     }
-// CHECK-NEXT:     unsafe { unsafe { finisher }.unwrap()(9i32) };
+// CHECK-NEXT:     unsafe { finisher.unwrap()(9i32) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

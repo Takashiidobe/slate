@@ -308,11 +308,9 @@ int main(void) {
 // CHECK-NEXT: ) -> num_complex::Complex<LongDouble> {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_icall__rcf80_cf80(
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<Option<unsafe extern "C-unwind" fn(num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>>, *const ()>(
-// CHECK-NEXT:                     f,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
+// CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>>, *const ()>(
+// CHECK-NEXT:                 f,
+// CHECK-NEXT:             ),
 // CHECK-NEXT:             z,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }
@@ -320,28 +318,22 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let table: __SlateAlign16<[Option<unsafe extern "C-unwind" fn(num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>>; 4]> = __SlateAlign16(
-// CHECK-NEXT:         [
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             [
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>>>(
 // CHECK-NEXT:                     __slate_ldfp_complex_long_double_function_pointer_twice as *const (),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>>>(
 // CHECK-NEXT:                     __slate_ldfp_complex_long_double_function_pointer_swap as *const (),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>>>(
 // CHECK-NEXT:                     __slate_ldfp_complex_long_double_function_pointer_conjl as *const (),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(num_complex::Complex<LongDouble>) -> num_complex::Complex<LongDouble>>>(
 // CHECK-NEXT:                     __slate_ldfp_complex_long_double_function_pointer_twice as *const (),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         ],
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ]
+// CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut z: num_complex::Complex<LongDouble> = num_complex::Complex {
 // CHECK-NEXT:         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 255, 63])
@@ -362,24 +354,20 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let parts: __SlateAlign16<[Option<unsafe extern "C-unwind" fn(num_complex::Complex<LongDouble>) -> LongDouble>; 3]> = __SlateAlign16(
-// CHECK-NEXT:         [
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             [
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(num_complex::Complex<LongDouble>) -> LongDouble>>(
 // CHECK-NEXT:                     __slate_ldfp_complex_long_double_function_pointer_imag_part
 // CHECK-NEXT:                         as *const (),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(num_complex::Complex<LongDouble>) -> LongDouble>>(
 // CHECK-NEXT:                     __slate_ldfp_complex_long_double_function_pointer_creall as *const (),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 ),
 // CHECK-NEXT:                 core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(num_complex::Complex<LongDouble>) -> LongDouble>>(
 // CHECK-NEXT:                     __slate_ldfp_complex_long_double_function_pointer_cimagl as *const (),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             },
-// CHECK-NEXT:         ],
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             ]
+// CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     for i in 0i32..3i32 {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -388,11 +376,9 @@ int main(void) {
 // CHECK-NEXT:                 c"p%d %.6Lf\n".as_ptr(),
 // CHECK-NEXT:                 i,
 // CHECK-NEXT:                 __slate_icall__rf80_cf80(
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         core::mem::transmute::<Option<unsafe extern "C-unwind" fn(num_complex::Complex<LongDouble>) -> LongDouble>, *const ()>(
-// CHECK-NEXT:                             parts.0[i as usize],
-// CHECK-NEXT:                         )
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                     core::mem::transmute::<Option<unsafe extern "C-unwind" fn(num_complex::Complex<LongDouble>) -> LongDouble>, *const ()>(
+// CHECK-NEXT:                         parts.0[i as usize],
+// CHECK-NEXT:                     ),
 // CHECK-NEXT:                     num_complex::Complex {
 // CHECK-NEXT:                         re: LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 0, 64])
 // CHECK-NEXT:                             - LongDouble([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
