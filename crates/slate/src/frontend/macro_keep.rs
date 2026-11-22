@@ -1,6 +1,6 @@
 use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 
-use slate_parser::ast::{MacroCover, MacroDefinition, MacroExpansionId, MacroInvocations};
+use slate_parser::ast::{MacroCover, MacroDefinition, MacroExpansionId, MacroInvocations, NodeId};
 use slate_parser::ir::{
     BindingId, MacroWrap, Module, Place, PlaceKind, Statement, Type, Value, ValueKind, Visitor,
     walk_body_with_macros,
@@ -257,6 +257,7 @@ struct CallerLocals<'a> {
     open: Vec<(MacroExpansionId, usize)>,
     declared: HashMap<BindingId, Vec<MacroExpansionId>>,
     hidden: HashMap<MacroExpansionId, Vec<BindingId>>,
+    hidden_wraps: HashMap<NodeId, Vec<MacroWrap>>,
 }
 
 impl CallerLocals<'_> {
@@ -348,24 +349,22 @@ impl Visitor for CallerLocals<'_> {
             })
             .map(|(id, _)| *id)
             .collect();
-        for expansion in free {
-            let argument = self.hidden_argument(expansion, binding);
-            *place = Place {
-                ty: place.ty.clone(),
-                access: place.access,
-                kind: PlaceKind::MacroArg {
-                    expansion,
-                    argument,
-                    place: Box::new(place.clone()),
-                },
-            };
+        if free.is_empty() || self.hidden_wraps.contains_key(&place.id) {
+            return;
         }
+        let wraps = free
+            .into_iter()
+            .map(|expansion| MacroWrap::Argument {
+                expansion,
+                argument: self.hidden_argument(expansion, binding),
+            })
+            .collect();
+        self.hidden_wraps.insert(place.id, wraps);
     }
 }
 
 fn writes_bit_field(place: &Place) -> bool {
     match &place.kind {
-        PlaceKind::MacroArg { place, .. } => writes_bit_field(place),
         PlaceKind::Field { bits, .. } => bits.is_some(),
         _ => false,
     }
@@ -376,7 +375,6 @@ fn plain_place(place: &Place) -> bool {
         return false;
     }
     match &place.kind {
-        PlaceKind::MacroArg { place, .. } => plain_place(place),
         PlaceKind::Binding(_) | PlaceKind::Deref(_) | PlaceKind::Index { .. } => true,
         PlaceKind::Field {
             base, bits: None, ..
@@ -400,6 +398,7 @@ fn global_bindings(module: &Module) -> HashSet<BindingId> {
 pub(super) fn pass_caller_locals(module: &mut Module) {
     let globals = global_bindings(module);
     let mut hidden = HashMap::new();
+    let mut hidden_wraps = HashMap::new();
     for function in &mut module.functions {
         let Some(body) = &mut function.value.body else {
             continue;
@@ -410,9 +409,18 @@ pub(super) fn pass_caller_locals(module: &mut Module) {
             open: Vec::new(),
             declared: HashMap::new(),
             hidden: std::mem::take(&mut hidden),
+            hidden_wraps: std::mem::take(&mut hidden_wraps),
         };
         walk_body_with_macros(body, &module.macro_values, &mut locals);
         hidden = locals.hidden;
+        hidden_wraps = locals.hidden_wraps;
+    }
+    for (place, wraps) in hidden_wraps {
+        module
+            .macro_values
+            .entry(place)
+            .or_default()
+            .splice(0..0, wraps);
     }
     module.macro_hidden_arguments = hidden;
 }

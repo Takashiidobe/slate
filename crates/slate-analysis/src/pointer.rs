@@ -423,7 +423,6 @@ impl Walker<'_, '_> {
                 Some(node) => out.roots.push((node, moved)),
                 None => out.opaque = true,
             },
-            PlaceKind::MacroArg { place, .. } => self.collect_read_sources(place, moved, out),
             PlaceKind::Deref(_)
             | PlaceKind::CompoundLiteral { .. }
             | PlaceKind::Temporary { .. }
@@ -443,7 +442,6 @@ impl Walker<'_, '_> {
             | PlaceKind::Field { base, .. }
             | PlaceKind::Lane { base, .. }
             | PlaceKind::Swizzle { base, .. } => self.collect_address_sources(base, true, out),
-            PlaceKind::MacroArg { place, .. } => self.collect_address_sources(place, moved, out),
             PlaceKind::Binding(binding) => {
                 out.objects.push(*binding);
                 out.opaque = true;
@@ -699,7 +697,6 @@ impl Walker<'_, '_> {
                 Some(node) => self.assign(node, value),
                 None => self.mark(value, ESCAPE),
             },
-            PlaceKind::MacroArg { place, .. } => self.store(place, value),
             PlaceKind::Deref(_)
             | PlaceKind::CompoundLiteral { .. }
             | PlaceKind::Temporary { .. }
@@ -719,7 +716,6 @@ impl Walker<'_, '_> {
                     self.flag(node, OFFSET);
                 }
             }
-            PlaceKind::MacroArg { place, .. } => self.rebase(place),
             PlaceKind::Deref(_)
             | PlaceKind::CompoundLiteral { .. }
             | PlaceKind::Temporary { .. }
@@ -773,12 +769,15 @@ impl Walker<'_, '_> {
                     self.mark(base, WRITE);
                 }
             }
-            PlaceKind::MacroArg { place, .. } => {
-                self.place(place, access);
-                let mut named = Named(Vec::new());
-                place_bindings(place, &mut named);
-                self.macro_mentions(named);
-            }
+        }
+        if self.macro_values.get(&place.id).is_some_and(|wraps| {
+            wraps
+                .iter()
+                .any(|wrap| matches!(wrap, MacroWrap::Argument { .. }))
+        }) {
+            let mut named = Named(Vec::new());
+            place_bindings(place, &mut named);
+            self.macro_mentions(named);
         }
     }
 
@@ -1157,11 +1156,7 @@ impl Walker<'_, '_> {
         if tracked_pointer(&place.ty).is_none() {
             return;
         }
-        let mut root = place;
-        while let PlaceKind::MacroArg { place, .. } = &root.kind {
-            root = place;
-        }
-        if let PlaceKind::Binding(binding) = root.kind
+        if let PlaceKind::Binding(binding) = place.kind
             && let Some(node) = self.node(binding)
         {
             match access {
@@ -1358,7 +1353,6 @@ fn place_bindings(place: &Place, named: &mut Named) {
         PlaceKind::Field { base, .. }
         | PlaceKind::ComplexPart { base, .. }
         | PlaceKind::Swizzle { base, .. } => place_bindings(base, named),
-        PlaceKind::MacroArg { place, .. } => place_bindings(place, named),
         PlaceKind::CompoundLiteral { initializer, .. }
         | PlaceKind::Temporary { initializer, .. } => {
             ir::walk_value(&mut initializer.clone(), named)

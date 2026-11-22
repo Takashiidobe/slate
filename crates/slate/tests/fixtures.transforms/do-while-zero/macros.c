@@ -89,8 +89,8 @@ int main(void) {
 // CHECK-NEXT:         do %[[V0:[0-9]+]]
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 let %[[V_T:[0-9]+]] t: i32 [storage=automatic] = read<i32>(%[[V_A:[0-9]+]]);
-// CHECK-NEXT:                 write<i32>(macro_arg(#0, 0, %[[V_A]]), read<i32>(%[[V_B:[0-9]+]]));
-// CHECK-NEXT:                 write<i32>(macro_arg(#0, 1, %[[V_B]]), read<i32>(%[[V_T]]));
+// CHECK-NEXT:                 write<i32>(%[[V_A]], read<i32>(%[[V_B:[0-9]+]]));
+// CHECK-NEXT:                 write<i32>(%[[V_B]], read<i32>(%[[V_T]]));
 // CHECK-NEXT:             }
 // CHECK-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // CHECK-NEXT:     }
@@ -131,11 +131,11 @@ int main(void) {
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 if lt<i32>(read<i32>(%[[V_X:[0-9]+]]), const<i32>(0))
 // CHECK-NEXT:                     {
-// CHECK-NEXT:                         write<i32>(macro_arg(#3, 0, %[[V_X]]), const<i32>(0));
+// CHECK-NEXT:                         write<i32>(%[[V_X]], const<i32>(0));
 // CHECK-NEXT:                         break %[[V0]];
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 if gt<i32>(read<i32>(%[[V_X]]), const<i32>(9))
-// CHECK-NEXT:                     write<i32>(macro_arg(#3, 0, %[[V_X]]), const<i32>(9));
+// CHECK-NEXT:                     write<i32>(%[[V_X]], const<i32>(9));
 // CHECK-NEXT:             }
 // CHECK-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // CHECK-NEXT:     }

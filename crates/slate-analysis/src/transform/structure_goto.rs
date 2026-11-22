@@ -773,11 +773,11 @@ fn extract(range: Body, hoisted: &HashSet<BindingId>, declarations: &mut Body) -
                 if variable.storage == StorageDuration::Automatic
                     && let Some(value) = variable.initializer.take()
                 {
-                    let place = Place {
-                        ty: variable.ty.clone(),
-                        kind: PlaceKind::Binding(variable.id),
-                        access: variable.access,
-                    };
+                    let place = Place::new(
+                        variable.ty.clone(),
+                        PlaceKind::Binding(variable.id),
+                        variable.access,
+                    );
                     kept.push(Span::new(
                         Statement::Write {
                             place,

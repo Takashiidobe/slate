@@ -194,7 +194,10 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! ONCE {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         while !(($a) > 2) {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             if ($a) > 2 {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
 // CHECK-NEXT:             println!("small {}", ($a) as i32);
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
@@ -282,7 +285,10 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! ONCE {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         while !(($a) > 2) {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             if ($a) > 2 {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
 // CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:             unsafe { slate_support::printf(c"small %d\n".as_ptr(), ($a) as i32) };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };

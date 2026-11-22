@@ -54,7 +54,7 @@ impl Visitor for Uses {
     fn value_kind(&mut self, kind: &ValueKind) {
         match kind {
             ValueKind::Read { place, .. } => {
-                if let PlaceKind::Binding(id) = place.without_macro_holes().kind {
+                if let PlaceKind::Binding(id) = place.kind {
                     *self.reads.entry(id).or_default() += 1;
                 }
             }

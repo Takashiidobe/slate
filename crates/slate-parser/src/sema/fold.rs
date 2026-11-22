@@ -253,7 +253,6 @@ fn stored<'a>(place: &Place, depth: usize, env: Env<'a>) -> Option<Stored<'a>> {
             element(base, index, depth, env)
         }
         PlaceKind::Deref(pointer) => element(pointer, BigInt::from(0u8), depth, env),
-        PlaceKind::MacroArg { place, .. } => stored(place, depth, env),
         _ => None,
     }
 }

@@ -883,14 +883,14 @@ impl Lowerer {
                 },
             );
         }
-        Place {
-            ty: ty.clone(),
-            kind: PlaceKind::Deref(Box::new(pointer)),
-            access: Access {
+        Place::new(
+            ty.clone(),
+            PlaceKind::Deref(Box::new(pointer)),
+            Access {
                 align: (align < bytes).then_some(align),
                 ..Access::default()
             },
-        }
+        )
     }
 
     fn neon_store(&mut self, e: &Expr, place: Place, value: Value) -> Value {

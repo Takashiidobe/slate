@@ -143,6 +143,19 @@ impl FunctionLowerer<'_, '_> {
         }))
     }
 
+    pub(super) fn lower_macro_place_wrap(&mut self, place: &ir::Place) -> Option<Result<Expr>> {
+        let ir::MacroWrap::Argument {
+            expansion,
+            argument,
+        } = *self.pending_macro_wraps(place.id).last()?
+        else {
+            return None;
+        };
+        Some(self.with_peeled_wrap(place.id, |this| {
+            this.lower_macro_place_hole(expansion, argument, place)
+        }))
+    }
+
     fn lower_macro_value_site(
         &mut self,
         expansion: MacroExpansionId,

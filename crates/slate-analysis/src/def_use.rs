@@ -318,13 +318,12 @@ impl DefUse {
         self.captures(&place.ty);
         match &place.kind {
             PlaceKind::Binding(id) => self.record(*id, Access::Write),
-            PlaceKind::MacroArg { place, .. } => self.target(place),
             _ => self.place(place),
         }
     }
 
     fn update(&mut self, place: &Place) {
-        if let PlaceKind::Binding(id) = place.without_macro_holes().kind {
+        if let PlaceKind::Binding(id) = place.kind {
             self.record(id, Access::Read);
         }
         self.target(place);
@@ -335,7 +334,6 @@ impl DefUse {
         match &place.kind {
             PlaceKind::Binding(id) => self.record(*id, Access::Escape),
             PlaceKind::Deref(value) => self.value(value),
-            PlaceKind::MacroArg { place, .. } => self.place(place),
             PlaceKind::CompoundLiteral { initializer, .. }
             | PlaceKind::Temporary { initializer, .. } => self.value(initializer),
             PlaceKind::ComplexPart { base, .. }

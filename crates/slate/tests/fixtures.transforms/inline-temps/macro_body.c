@@ -14,12 +14,12 @@ int bump_twice(int x) {
 // CHECK-NEXT:     macro_body #0 {
 // CHECK-NEXT:         do %[[V0:[0-9]+]]
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let %[[V1:[0-9]+]]: i32 [synthetic] = read<i32>(macro_arg(#0, 0, %[[V_X:[0-9]+]]));
+// CHECK-NEXT:                 let %[[V1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[V_X:[0-9]+]]);
 // CHECK-NEXT:                 let %[[V2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[V1]]), const<i32>(1));
-// CHECK-NEXT:                 write<i32>(macro_arg(#0, 0, %[[V_X]]), read<i32>(%[[V2]]));
-// CHECK-NEXT:                 let %[[V3:[0-9]+]]: i32 [synthetic] = read<i32>(macro_arg(#0, 0, %[[V_X]]));
+// CHECK-NEXT:                 write<i32>(%[[V_X]], read<i32>(%[[V2]]));
+// CHECK-NEXT:                 let %[[V3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[V_X]]);
 // CHECK-NEXT:                 let %[[V4:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[V3]]), const<i32>(1));
-// CHECK-NEXT:                 write<i32>(macro_arg(#0, 0, %[[V_X]]), read<i32>(%[[V4]]));
+// CHECK-NEXT:                 write<i32>(%[[V_X]], read<i32>(%[[V4]]));
 // CHECK-NEXT:             }
 // CHECK-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // CHECK-NEXT:     }

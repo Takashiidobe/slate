@@ -1,4 +1,3 @@
-use super::places::without_macro_holes;
 use super::*;
 
 const SUPPORT: &str = "__slate_blocks";
@@ -154,7 +153,7 @@ impl FunctionLowerer<'_, '_> {
         if let Some((array, _)) = self.tables.array_subscript(place) {
             return self.rooted_in_byref(array);
         }
-        match &without_macro_holes(place).kind {
+        match &place.kind {
             PlaceKind::Binding(id) => self.byref.contains(id) || self.captured.contains(id),
             PlaceKind::Field { base, .. }
             | PlaceKind::Lane { base, .. }

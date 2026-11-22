@@ -659,14 +659,14 @@ impl Lowerer {
             e,
             class_pointer_ty,
             ValueKind::ArrayDecay {
-                place: Place {
-                    ty: Type::Array {
+                place: Place::new(
+                    Type::Array {
                         element: Box::new(int_ty.clone()),
                         length: None,
                     },
-                    kind: PlaceKind::Binding(class_id),
-                    access: Access::default(),
-                },
+                    PlaceKind::Binding(class_id),
+                    Access::default(),
+                ),
                 length: None,
             },
         );
@@ -719,11 +719,7 @@ impl Lowerer {
             definition: true,
             common: false,
         }));
-        let place = Place {
-            ty: record_ty,
-            kind: PlaceKind::Binding(id),
-            access: Access::default(),
-        };
+        let place = Place::new(record_ty, PlaceKind::Binding(id), Access::default());
         Ok(self.operand(e, c, ValueKind::AddressOf(place)))
     }
 
@@ -878,11 +874,7 @@ impl Lowerer {
         }));
         Lvalue {
             c,
-            place: Place {
-                ty,
-                kind: PlaceKind::Binding(id),
-                access: Access::default(),
-            },
+            place: Place::new(ty, PlaceKind::Binding(id), Access::default()),
         }
     }
 
@@ -1593,16 +1585,14 @@ impl Lowerer {
             .ctypes
             .pointee(pointer.c)
             .ok_or(ResolveError::Internal("expected C pointer"))?;
+        let ty = (**pointee).clone();
+        let access = Access {
+            align: self.types.reduced_alignment(c),
+            ..*access
+        };
         Ok(Lvalue {
             c,
-            place: Place {
-                ty: (**pointee).clone(),
-                access: Access {
-                    align: self.types.reduced_alignment(c),
-                    ..*access
-                },
-                kind: PlaceKind::Deref(Box::new(pointer.value)),
-            },
+            place: Place::new(ty, PlaceKind::Deref(Box::new(pointer.value)), access),
         })
     }
 
@@ -1742,21 +1732,20 @@ impl Lowerer {
         Ok(Lvalue { c, place })
     }
 
-    fn macro_place_holes(&self, e: &Expr, mut place: Place) -> Place {
+    fn macro_place_holes(&mut self, e: &Expr, place: Place) -> Place {
         if self.macro_value_hole == Some(e.id) {
             return place;
         }
         for hole in self.macro_structure.holes(e.id) {
             if self.open_macros.contains(&hole.expansion) {
-                place = Place {
-                    ty: place.ty.clone(),
-                    access: place.access,
-                    kind: PlaceKind::MacroArg {
+                self.module
+                    .macro_values
+                    .entry(place.id)
+                    .or_default()
+                    .push(MacroWrap::Argument {
                         expansion: hole.expansion,
                         argument: hole.argument,
-                        place: Box::new(place),
-                    },
-                };
+                    });
             }
         }
         place
@@ -1816,11 +1805,11 @@ impl Lowerer {
                 let c = self.lvalue_result(e)?;
                 Ok(Lvalue {
                     c,
-                    place: Place {
-                        ty: self.types.ir_type(c),
-                        kind: PlaceKind::Binding(id),
-                        access: self.types.access_of(c),
-                    },
+                    place: Place::new(
+                        self.types.ir_type(c),
+                        PlaceKind::Binding(id),
+                        self.types.access_of(c),
+                    ),
                 })
             }
             ExprKind::CompoundLiteral {
@@ -1863,16 +1852,16 @@ impl Lowerer {
                     };
                 Ok(Lvalue {
                     c,
-                    place: Place {
+                    place: Place::new(
                         ty,
-                        kind: PlaceKind::CompoundLiteral {
+                        PlaceKind::CompoundLiteral {
                             object,
                             storage,
                             alignment,
                             initializer: Box::new(value),
                         },
                         access,
-                    },
+                    ),
                 })
             }
             ExprKind::Unary {
@@ -1900,12 +1889,12 @@ impl Lowerer {
                     return Err(ResolveError::Rejected("__imag__ of a non-complex place"));
                 };
                 let c = self.lvalue_result(e)?;
+                let access = base.access;
                 Ok(Lvalue {
                     c,
-                    place: Place {
-                        ty: Type::Numeric(component),
-                        access: base.access,
-                        kind: PlaceKind::ComplexPart {
+                    place: Place::new(
+                        Type::Numeric(component),
+                        PlaceKind::ComplexPart {
                             base: Box::new(base.place),
                             imaginary: matches!(
                                 &e.value,
@@ -1915,7 +1904,8 @@ impl Lowerer {
                                 }
                             ),
                         },
-                    },
+                        access,
+                    ),
                 })
             }
             ExprKind::Index { base, index } => match self.subscript(e, base, index)? {
@@ -2005,14 +1995,14 @@ impl Lowerer {
         self.types.entities.declare(object, c, false);
         Lvalue {
             c,
-            place: Place {
-                ty: value.value.ty.clone(),
-                kind: PlaceKind::Temporary {
+            place: Place::new(
+                value.value.ty.clone(),
+                PlaceKind::Temporary {
                     object,
                     initializer: Box::new(value.value),
                 },
-                access: self.types.access_of(c),
-            },
+                self.types.access_of(c),
+            ),
         }
     }
 
@@ -2077,16 +2067,17 @@ impl Lowerer {
             }
             Some(lanes) => {
                 let c = self.lvalue_result(e)?;
+                let access = object.place.access;
                 Ok(Projection::Place(Lvalue {
                     c,
-                    place: Place {
-                        ty: self.types.ir_type(c),
-                        access: object.place.access,
-                        kind: PlaceKind::Swizzle {
+                    place: Place::new(
+                        self.types.ir_type(c),
+                        PlaceKind::Swizzle {
                             base: Box::new(object.place),
                             lanes,
                         },
-                    },
+                        access,
+                    ),
                 }))
             }
             None => {
@@ -2107,16 +2098,17 @@ impl Lowerer {
 
     fn lane(&mut self, e: &Expr, object: Lvalue, index: Operand) -> Result<Lvalue, ResolveError> {
         let c = self.lvalue_result(e)?;
+        let access = object.place.access;
         Ok(Lvalue {
             c,
-            place: Place {
-                ty: self.types.ir_type(c),
-                access: object.place.access,
-                kind: PlaceKind::Lane {
+            place: Place::new(
+                self.types.ir_type(c),
+                PlaceKind::Lane {
                     base: Box::new(object.place),
                     index: Box::new(index.value),
                 },
-            },
+                access,
+            ),
         })
     }
 
@@ -2185,17 +2177,18 @@ impl Lowerer {
             .copied()
             .ok_or(ResolveError::Internal("missing field C type"))?
             .with(self.types.ctypes.quals(base.c));
+        let access = base.access.union(field.access);
         Ok(Lvalue {
             c,
-            place: Place {
-                ty: field.ty.clone(),
-                access: base.access.union(field.access),
-                kind: PlaceKind::Field {
+            place: Place::new(
+                field.ty.clone(),
+                PlaceKind::Field {
                     base: Box::new(base.place),
                     index,
                     bits,
                 },
-            },
+                access,
+            ),
         })
     }
 
@@ -2430,11 +2423,11 @@ impl Lowerer {
             }
             let id = self.fresh();
             self.types.entities.declare(id, rhs.c, false);
-            let place = Place {
-                ty: rhs.value.ty.clone(),
-                kind: PlaceKind::Binding(id),
-                access: self.types.access_of(rhs.c),
-            };
+            let place = Place::new(
+                rhs.value.ty.clone(),
+                PlaceKind::Binding(id),
+                self.types.access_of(rhs.c),
+            );
             let read = self.operand(
                 e,
                 rhs.c,
@@ -2671,11 +2664,11 @@ impl Lowerer {
 
     fn extent_length(&mut self, e: &Expr, extent: BindingId) -> Operand {
         let c = self.types.ctypes.size_type(&self.context.target);
-        let place = Place {
-            ty: self.types.ir_type(c),
-            kind: PlaceKind::Binding(extent),
-            access: Access::default(),
-        };
+        let place = Place::new(
+            self.types.ir_type(c),
+            PlaceKind::Binding(extent),
+            Access::default(),
+        );
         self.operand(
             e,
             c,
@@ -3194,11 +3187,11 @@ impl Lowerer {
                         }
                         let id = self.fresh();
                         self.types.entities.declare(id, shared.c, false);
-                        let place = Place {
-                            ty: shared.value.ty.clone(),
-                            kind: PlaceKind::Binding(id),
-                            access: self.types.access_of(shared.c),
-                        };
+                        let place = Place::new(
+                            shared.value.ty.clone(),
+                            PlaceKind::Binding(id),
+                            self.types.access_of(shared.c),
+                        );
                         let read = |this: &mut Self| {
                             this.operand(
                                 condition,
@@ -3850,21 +3843,18 @@ fn written_cast_hole(
     value: &Value,
     macro_values: &MacroValues,
 ) -> Option<(crate::ast::MacroExpansionId, NodeId)> {
-    if let Some(MacroWrap::Argument { expansion, .. }) = macro_values
-        .get(&value.node.id)
-        .and_then(|wraps| wraps.last())
+    let outermost_argument = |id: NodeId| match macro_values.get(&id).and_then(|wraps| wraps.last())
     {
-        return Some((*expansion, value.node.id));
+        Some(MacroWrap::Argument { expansion, .. }) => Some(*expansion),
+        Some(MacroWrap::Value(_)) | None => None,
+    };
+    if let Some(expansion) = outermost_argument(value.node.id) {
+        return Some((expansion, value.node.id));
     }
     match &value.node.value {
-        ValueKind::Read { place, .. } => match &place.kind {
-            PlaceKind::MacroArg { expansion, .. } => Some((*expansion, value.node.id)),
-            #[expect(
-                slate::sensitive_wildcard,
-                reason = "only a read of a macro argument place is a hole"
-            )]
-            _ => None,
-        },
+        ValueKind::Read { place, .. } => {
+            outermost_argument(place.id).map(|expansion| (expansion, value.node.id))
+        }
         #[expect(
             slate::sensitive_wildcard,
             reason = "a hole is a macro argument read as a value or a place; every other kind is not one"
@@ -3879,8 +3869,7 @@ fn temporary_rooted(place: &Place) -> bool {
         PlaceKind::Field { base, .. }
         | PlaceKind::ComplexPart { base, .. }
         | PlaceKind::Lane { base, .. }
-        | PlaceKind::Swizzle { base, .. }
-        | PlaceKind::MacroArg { place: base, .. } => temporary_rooted(base),
+        | PlaceKind::Swizzle { base, .. } => temporary_rooted(base),
         PlaceKind::Binding(_)
         | PlaceKind::Deref(_)
         | PlaceKind::Index { .. }

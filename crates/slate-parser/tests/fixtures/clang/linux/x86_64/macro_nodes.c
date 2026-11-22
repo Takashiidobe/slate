@@ -99,12 +99,12 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:             write<i32>(deref(addr_of<ptr<i32>>(%[[VALUE_results]])), read<i32>(%[[VALUE_i]]) [macro_arg="#[[#NODE2]].1"] [macro=SET#5 arg1]) [macro=SET#5 body];
 // IR-NEXT:         }
 // IR-NEXT:         macro_body #[[#NODE3:]] { [macro=SETS#6 body]
-// IR-NEXT:             write<i32>(macro_arg(#[[#NODE3]], 0, %[[VALUE_i]]), const<i32>(1) [macro=SETS#6 body]) [macro=SETS#6 body];
-// IR-NEXT:             write<i32>(macro_arg(#[[#NODE3]], 1, %[[VALUE_j]]), const<i32>(2) [macro=SETS#6 body]) [macro=SETS#6 body];
+// IR-NEXT:             write<i32>(%[[VALUE_i]] [macro_arg="#[[#NODE3]].0"], const<i32>(1) [macro=SETS#6 body]) [macro=SETS#6 body];
+// IR-NEXT:             write<i32>(%[[VALUE_j]] [macro_arg="#[[#NODE3]].1"], const<i32>(2) [macro=SETS#6 body]) [macro=SETS#6 body];
 // IR-NEXT:         }
 // IR-NEXT:         macro_body #[[#NODE4:]] { [macro=BOTH#7 body]
-// IR-NEXT:             write<i32>(macro_arg(#[[#NODE4]], 0, %[[VALUE_i]]), const<i32>(1) [macro=BOTH#7 body]) [macro=BOTH#7 body];
-// IR-NEXT:             write<i32>(macro_arg(#[[#NODE4]], 1, %[[VALUE_j]]), const<i32>(2) [macro=BOTH#7 body]) [macro=BOTH#7 body];
+// IR-NEXT:             write<i32>(%[[VALUE_i]] [macro_arg="#[[#NODE4]].0"], const<i32>(1) [macro=BOTH#7 body]) [macro=BOTH#7 body];
+// IR-NEXT:             write<i32>(%[[VALUE_j]] [macro_arg="#[[#NODE4]].1"], const<i32>(2) [macro=BOTH#7 body]) [macro=BOTH#7 body];
 // IR-NEXT:         }
 // IR-NEXT:         ;
 // IR-NEXT:         if ne<i32>(read<i32>(%[[VALUE_i]]), const<i32>(0))
@@ -113,7 +113,7 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:         macro_body #[[#NODE5:]] {
 // IR-NEXT:             do %[[VALUE6:[0-9]+]]
 // IR-NEXT:                 { [macro=WRAP#9 body]
-// IR-NEXT:                     write<i32>(macro_arg(#[[#NODE5]], 0, %[[VALUE_results]]), const<i32>(1) [macro=WRAP#9 body]) [macro=WRAP#9 body];
+// IR-NEXT:                     write<i32>(%[[VALUE_results]] [macro_arg="#[[#NODE5]].0"], const<i32>(1) [macro=WRAP#9 body]) [macro=WRAP#9 body];
 // IR-NEXT:                 }
 // IR-NEXT:             while ne<i32>(const<i32>(0) [macro=WRAP#9 body], const<i32>(0) [macro=WRAP#9 body]) [macro=WRAP#9 body];
 // IR-NEXT:         }
@@ -127,8 +127,8 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:             do %[[VALUE11:[0-9]+]]
 // IR-NEXT:                 { [macro=LOCAL#12 body]
 // IR-NEXT:                     let %[[VALUE_t:[0-9]+]] t: i32 [storage=automatic] = read<i32>(%[[VALUE_i]]) [macro_arg="#[[#NODE8]].1"] [macro=LOCAL#12 arg1] [macro=LOCAL#12 body];
-// IR-NEXT:                     write<i32>(macro_arg(#[[#NODE8]], 1, %[[VALUE_i]]), read<i32>(%[[VALUE_j]]) [macro_arg="#[[#NODE8]].2"] [macro=LOCAL#12 arg2]) [macro=LOCAL#12 body];
-// IR-NEXT:                     write<i32>(macro_arg(#[[#NODE8]], 2, %[[VALUE_j]]), read<i32>(%[[VALUE_t]]) [macro=LOCAL#12 body]) [macro=LOCAL#12 body];
+// IR-NEXT:                     write<i32>(%[[VALUE_i]] [macro_arg="#[[#NODE8]].1"], read<i32>(%[[VALUE_j]]) [macro_arg="#[[#NODE8]].2"] [macro=LOCAL#12 arg2]) [macro=LOCAL#12 body];
+// IR-NEXT:                     write<i32>(%[[VALUE_j]] [macro_arg="#[[#NODE8]].2"], read<i32>(%[[VALUE_t]]) [macro=LOCAL#12 body]) [macro=LOCAL#12 body];
 // IR-NEXT:                 }
 // IR-NEXT:             while ne<i32>(const<i32>(0) [macro=LOCAL#12 body], const<i32>(0) [macro=LOCAL#12 body]) [macro=LOCAL#12 body];
 // IR-NEXT:         }
@@ -136,8 +136,8 @@ int use(struct pair *pair, int i, int j) {
 // IR-NEXT:             do %[[VALUE12:[0-9]+]]
 // IR-NEXT:                 { [macro=LOCAL#13 body]
 // IR-NEXT:                     let %[[VALUE_t_2:[0-9]+]] t: u64 [storage=automatic] = reinterpret<u64>(widen<i64>(read<i32>(%[[VALUE_i]]) [macro_arg="#[[#NODE9]].1"] [macro=LOCAL#13 arg1]) [macro=LOCAL#13 arg1]) [macro=LOCAL#13 arg1] [macro=LOCAL#13 body];
-// IR-NEXT:                     write<i32>(macro_arg(#[[#NODE9]], 1, %[[VALUE_i]]), read<i32>(%[[VALUE_j]]) [macro_arg="#[[#NODE9]].2"] [macro=LOCAL#13 arg2]) [macro=LOCAL#13 body];
-// IR-NEXT:                     write<i32>(macro_arg(#[[#NODE9]], 2, %[[VALUE_j]]), reinterpret<i32>(truncate<u32>(read<u64>(%[[VALUE_t_2]]) [macro=LOCAL#13 body]) [macro=LOCAL#13 body]) [macro=LOCAL#13 body]) [macro=LOCAL#13 body];
+// IR-NEXT:                     write<i32>(%[[VALUE_i]] [macro_arg="#[[#NODE9]].1"], read<i32>(%[[VALUE_j]]) [macro_arg="#[[#NODE9]].2"] [macro=LOCAL#13 arg2]) [macro=LOCAL#13 body];
+// IR-NEXT:                     write<i32>(%[[VALUE_j]] [macro_arg="#[[#NODE9]].2"], reinterpret<i32>(truncate<u32>(read<u64>(%[[VALUE_t_2]]) [macro=LOCAL#13 body]) [macro=LOCAL#13 body]) [macro=LOCAL#13 body]) [macro=LOCAL#13 body];
 // IR-NEXT:                 }
 // IR-NEXT:             while ne<i32>(const<i32>(0) [macro=LOCAL#13 body], const<i32>(0) [macro=LOCAL#13 body]) [macro=LOCAL#13 body];
 // IR-NEXT:         }

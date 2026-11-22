@@ -611,7 +611,7 @@ pub struct NodeId(pub u32);
 static NEXT_NODE_ID: AtomicU32 = AtomicU32::new(0);
 
 impl NodeId {
-    fn next() -> Self {
+    pub fn next() -> Self {
         Self(NEXT_NODE_ID.fetch_add(1, Ordering::Relaxed))
     }
 }

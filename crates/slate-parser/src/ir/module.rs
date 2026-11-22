@@ -3,7 +3,8 @@ use super::{
     InlineAsm, Number, Parameters, Place, Type, TypeDefinition, Value, Variable,
 };
 use crate::ast::{
-    CommentAttach, CommentGroup, MacroExpansionId, MacroInvocations, NodeId, SmeAttribute, Span,
+    CommentAttach, CommentGroup, MacroDefinition, MacroExpansion, MacroExpansionId,
+    MacroInvocations, NodeId, SmeAttribute, Span,
 };
 pub use crate::ast::{OmpScheduleKind, OmpScheduleModifier};
 use crate::target_info::TargetInfo;
@@ -51,6 +52,64 @@ impl MacroWrap {
     pub fn expansion(self) -> MacroExpansionId {
         match self {
             Self::Value(expansion) | Self::Argument { expansion, .. } => expansion,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct MacroProvenance<'a> {
+    pub wraps: &'a [MacroWrap],
+    pub written_cast: Option<&'a WrittenCast>,
+    macros: &'a MacroInvocations,
+    hidden_arguments: &'a HashMap<MacroExpansionId, Vec<BindingId>>,
+}
+
+impl<'a> MacroProvenance<'a> {
+    pub fn is_empty(&self) -> bool {
+        self.wraps.is_empty() && self.written_cast.is_none()
+    }
+
+    pub fn expansions(
+        &self,
+    ) -> impl Iterator<Item = (MacroWrap, &'a MacroExpansion, &'a MacroDefinition)> + 'a {
+        let macros = self.macros;
+        self.wraps.iter().map(move |wrap| {
+            (
+                *wrap,
+                macros.expansion(wrap.expansion()),
+                macros.definition(wrap.expansion()),
+            )
+        })
+    }
+
+    pub fn hidden_argument(&self, wrap: MacroWrap) -> Option<BindingId> {
+        let MacroWrap::Argument {
+            expansion,
+            argument,
+        } = wrap
+        else {
+            return None;
+        };
+        let parameters = self
+            .macros
+            .definition(expansion)
+            .parameters
+            .as_ref()
+            .map_or(0, Vec::len);
+        self.hidden_arguments
+            .get(&expansion)?
+            .get(argument.checked_sub(parameters)?)
+            .copied()
+    }
+}
+
+impl Module {
+    pub fn macro_provenance(&self, id: NodeId) -> MacroProvenance<'_> {
+        MacroProvenance {
+            wraps: self.macro_values.get(&id).map_or(&[], Vec::as_slice),
+            written_cast: self.macro_written_casts.get(&id),
+            macros: &self.macros,
+            hidden_arguments: &self.macro_hidden_arguments,
         }
     }
 }

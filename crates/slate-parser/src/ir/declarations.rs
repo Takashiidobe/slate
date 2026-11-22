@@ -1,5 +1,5 @@
-use super::{BindingId, Type, Value};
-use crate::ast::Span;
+use super::{Annotations, BindingId, Type, Value};
+use crate::ast::{NodeId, Span};
 use crate::target_info::StorageLayout;
 use custom_debug::Debug as CustomDebug;
 
@@ -259,8 +259,10 @@ pub enum Parameters {
     Unprototyped,
 }
 
-#[derive(Debug, Clone)]
+#[derive(CustomDebug, Clone)]
 pub struct Place {
+    #[debug(skip)]
+    pub id: NodeId,
     pub ty: Type,
     pub kind: PlaceKind,
     pub access: Access,
@@ -301,11 +303,6 @@ pub enum PlaceKind {
         base: Box<Place>,
         lanes: Vec<u32>,
     },
-    MacroArg {
-        expansion: crate::ast::MacroExpansionId,
-        argument: usize,
-        place: Box<Place>,
-    },
 }
 
 #[derive(Debug, Clone)]
@@ -318,44 +315,55 @@ pub struct BitFieldAccess {
 }
 
 impl Place {
+    pub fn new(ty: Type, kind: PlaceKind, access: Access) -> Self {
+        Self {
+            id: NodeId::next(),
+            ty,
+            kind,
+            access,
+        }
+    }
+
     pub fn implicit_ordering(&self) -> Option<super::Atomicity> {
         self.access
             .atomic
             .then(|| super::MemoryOrder::SeqCst.into())
     }
 
-    pub(super) fn display_mode(&self, compact: bool) -> impl std::fmt::Display + '_ {
-        struct DisplayPlace<'a>(&'a Place, bool);
+    pub(super) fn display_mode<'a>(
+        &'a self,
+        compact: bool,
+        table: Annotations<'a>,
+    ) -> impl std::fmt::Display + 'a {
+        struct DisplayPlace<'a>(&'a Place, bool, Annotations<'a>);
 
         impl std::fmt::Display for DisplayPlace<'_> {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                self.0.format(f, self.1)
+                self.0.format(f, self.1, self.2)
             }
         }
 
-        DisplayPlace(self, compact)
+        DisplayPlace(self, compact, table)
     }
 
-    pub fn without_macro_holes(&self) -> &Place {
-        let mut place = self;
-        while let PlaceKind::MacroArg { place: inner, .. } = &place.kind {
-            place = inner;
-        }
-        place
+    fn format(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+        compact: bool,
+        table: Annotations<'_>,
+    ) -> std::fmt::Result {
+        self.format_kind(f, compact, table)?;
+        super::module_print::metadata(f, table, self.id)
     }
 
-    fn format(&self, f: &mut std::fmt::Formatter<'_>, compact: bool) -> std::fmt::Result {
+    fn format_kind(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+        compact: bool,
+        table: Annotations<'_>,
+    ) -> std::fmt::Result {
         match &self.kind {
             PlaceKind::Binding(id) => write!(f, "%{}", id.0),
-            PlaceKind::MacroArg {
-                expansion,
-                argument,
-                place,
-            } => {
-                write!(f, "macro_arg(#{}, {argument}, ", expansion.0)?;
-                place.format(f, compact)?;
-                f.write_str(")")
-            }
             PlaceKind::Deref(value) => {
                 write!(f, "deref({})", value.display(false).with_compact(compact))
             }
@@ -391,7 +399,7 @@ impl Place {
             ),
             PlaceKind::ComplexPart { base, imaginary } => {
                 f.write_str(if *imaginary { "imag(" } else { "real(" })?;
-                base.format(f, compact)?;
+                base.format(f, compact, table)?;
                 f.write_str(")")
             }
             PlaceKind::Index { base, index } => write!(
@@ -402,13 +410,13 @@ impl Place {
             ),
             PlaceKind::Lane { base, index } => {
                 f.write_str("lane(")?;
-                base.format(f, compact)?;
+                base.format(f, compact, table)?;
                 write!(f, ", {})", index.display(false).with_compact(compact))
             }
             PlaceKind::Swizzle { base, lanes } => {
                 let lanes: Vec<String> = lanes.iter().map(u32::to_string).collect();
                 write!(f, "swizzle<lanes=[{}]>(", lanes.join(", "))?;
-                base.format(f, compact)?;
+                base.format(f, compact, table)?;
                 f.write_str(")")
             }
             PlaceKind::Field { base, index, bits } => {
@@ -424,7 +432,7 @@ impl Place {
                     )?,
                     None => write!(f, "field{index}(")?,
                 }
-                base.format(f, compact)?;
+                base.format(f, compact, table)?;
                 f.write_str(")")
             }
         }
@@ -433,6 +441,6 @@ impl Place {
 
 impl std::fmt::Display for Place {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        self.format(f, false)
+        self.format(f, false, Annotations::default())
     }
 }

@@ -193,7 +193,7 @@ fn reads(value: &Value, id: BindingId) -> bool {
     matches!(
         &value.node.value,
         ValueKind::Read { place, ordering: None }
-            if matches!(place.without_macro_holes().kind, PlaceKind::Binding(read) if read == id)
+            if matches!(place.kind, PlaceKind::Binding(read) if read == id)
     )
 }
 

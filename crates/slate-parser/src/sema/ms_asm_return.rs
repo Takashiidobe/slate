@@ -177,9 +177,9 @@ impl Lowerer {
 }
 
 fn return_place(id: BindingId) -> Place {
-    Place {
-        ty: Type::integer(32, false),
-        kind: PlaceKind::Binding(id),
-        access: Access::default(),
-    }
+    Place::new(
+        Type::integer(32, false),
+        PlaceKind::Binding(id),
+        Access::default(),
+    )
 }

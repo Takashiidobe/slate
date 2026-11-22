@@ -279,26 +279,30 @@ impl<V: Visitor> Walker<'_, V> {
     }
 
     fn place(&mut self, place: &mut Place) {
+        let wraps = self
+            .macro_values
+            .and_then(|table| table.get(&place.id))
+            .map_or(&[][..], Vec::as_slice);
+        for wrap in wraps.iter().rev() {
+            match *wrap {
+                MacroWrap::Value(expansion) => self.visitor.enter_expansion(expansion),
+                MacroWrap::Argument { expansion, .. } => {
+                    self.visitor.enter_place_hole(expansion, place);
+                }
+            }
+        }
         crate::sema::deep(|| self.place_kind(place));
+        for wrap in wraps {
+            match *wrap {
+                MacroWrap::Value(expansion) => self.visitor.leave_expansion(expansion),
+                MacroWrap::Argument { expansion, .. } => self.visitor.leave_place_hole(expansion),
+            }
+        }
     }
 
     fn place_kind(&mut self, place: &mut Place) {
         self.visitor.place_kind(&place.kind);
         match &mut place.kind {
-            PlaceKind::MacroArg {
-                expansion,
-                place: inner,
-                ..
-            } => {
-                let expansion = *expansion;
-                let keep = self.visitor.keep(expansion);
-                self.visitor.enter_place_hole(expansion, inner);
-                self.place(inner);
-                self.visitor.leave_place_hole(expansion);
-                if !keep {
-                    *place = inner.as_ref().clone();
-                }
-            }
             PlaceKind::Binding(binding) => self.visitor.binding(*binding),
             PlaceKind::Deref(value) => self.value(value),
             PlaceKind::CompoundLiteral { initializer, .. }

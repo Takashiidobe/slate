@@ -98,11 +98,11 @@ impl Hoister {
                         if effects.is_empty() {
                             variable.initializer = Some(value);
                         } else {
-                            let place = Place {
-                                ty: variable.ty.clone(),
-                                kind: PlaceKind::Binding(variable.id),
-                                access: self.access.get(&variable.id).copied().unwrap_or_default(),
-                            };
+                            let place = Place::new(
+                                variable.ty.clone(),
+                                PlaceKind::Binding(variable.id),
+                                self.access.get(&variable.id).copied().unwrap_or_default(),
+                            );
                             out.push(span.clone().with_value(Statement::Let(variable)));
                             out.extend(effects);
                             let ordering = place.implicit_ordering();

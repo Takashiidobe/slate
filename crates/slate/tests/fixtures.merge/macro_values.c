@@ -1201,7 +1201,10 @@ int main(void) {
 // CHECK-NEXT: fn with_jumps(limit: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while !(i >= MIN!(limit, 4i32)) {
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if i >= MIN!(limit, 4i32) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
 // CHECK-NEXT:         total += TWICE!(i);
 // CHECK-NEXT:         let [[V_1]]: *mut i32 = unsafe { cursor };
 // CHECK-NEXT:         unsafe {

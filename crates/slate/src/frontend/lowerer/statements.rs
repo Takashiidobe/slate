@@ -193,11 +193,11 @@ impl FunctionLowerer<'_, '_> {
             ir::Statement::Let(variable) if self.switch_lets.contains(&variable.id) => {
                 match &variable.initializer {
                     Some(value) => {
-                        let place = ir::Place {
-                            ty: variable.ty.clone(),
-                            kind: PlaceKind::Binding(variable.id),
-                            access: variable.access,
-                        };
+                        let place = ir::Place::new(
+                            variable.ty.clone(),
+                            PlaceKind::Binding(variable.id),
+                            variable.access,
+                        );
                         let value = self.lower_value(value)?;
                         self.lower_assignment(&place, value)?
                     }
@@ -329,11 +329,11 @@ impl FunctionLowerer<'_, '_> {
                     None => None,
                 };
                 if let Some(value) = self_initializer {
-                    let place = ir::Place {
-                        ty: variable.ty.clone(),
-                        kind: PlaceKind::Binding(variable.id),
-                        access: variable.access,
-                    };
+                    let place = ir::Place::new(
+                        variable.ty.clone(),
+                        PlaceKind::Binding(variable.id),
+                        variable.access,
+                    );
                     self.after_declaration = Some(self.lower_assignment(&place, value)?);
                 } else if let Some(fill) = in_place_fill {
                     self.after_declaration = Some(fill);

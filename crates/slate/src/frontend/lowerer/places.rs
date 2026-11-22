@@ -1,12 +1,5 @@
 use super::*;
 
-pub(super) fn without_macro_holes(mut place: &ir::Place) -> &ir::Place {
-    while let PlaceKind::MacroArg { place: inner, .. } = &place.kind {
-        place = inner;
-    }
-    place
-}
-
 fn is_null_constant(value: &ir::Value) -> bool {
     match &value.node.value {
         ValueKind::Null => true,
@@ -32,7 +25,7 @@ impl Tables<'_> {
         &self,
         place: &'p ir::Place,
     ) -> Option<(&'p ir::Place, &'p ir::Value)> {
-        let PlaceKind::Deref(pointer) = &without_macro_holes(place).kind else {
+        let PlaceKind::Deref(pointer) = &place.kind else {
             return None;
         };
         let ValueKind::PointerOffset {
@@ -97,7 +90,6 @@ impl Tables<'_> {
         if self.variably_modified(&place.ty) {
             return false;
         }
-        let place = without_macro_holes(place);
         match &place.kind {
             PlaceKind::Binding(id) => {
                 !self.strings.contains_key(id) && !self.register_globals.contains_key(id)
@@ -116,7 +108,6 @@ impl Tables<'_> {
         if let Some((array, _)) = self.array_subscript(place) {
             return self.place_is_unsafe(array);
         }
-        let place = without_macro_holes(place);
         match &place.kind {
             PlaceKind::Deref(_)
             | PlaceKind::CompoundLiteral { .. }
@@ -134,7 +125,7 @@ impl Tables<'_> {
         if let Some((array, _)) = self.array_subscript(place) {
             return self.place_is_read_only(array);
         }
-        match &without_macro_holes(place).kind {
+        match &place.kind {
             PlaceKind::Binding(id) => self.read_only.contains(id),
             PlaceKind::Field { base, .. }
             | PlaceKind::Lane { base, .. }
@@ -147,7 +138,6 @@ impl Tables<'_> {
         if let Some((array, _)) = self.array_subscript(place) {
             return self.place_is_static(array);
         }
-        let place = without_macro_holes(place);
         match &place.kind {
             PlaceKind::Binding(id) => self.statics.contains(id),
             PlaceKind::CompoundLiteral { storage, .. } => {
@@ -166,14 +156,14 @@ impl Tables<'_> {
 
 impl FunctionLowerer<'_, '_> {
     pub(super) fn place_in_packed(&mut self, place: &ir::Place) -> bool {
-        let PlaceKind::Field { base, .. } = &without_macro_holes(place).kind else {
+        let PlaceKind::Field { base, .. } = &place.kind else {
             return false;
         };
         self.packed_record(&base.ty) || self.place_in_packed(base)
     }
 
     pub(super) fn through_union(&self, place: &ir::Place) -> bool {
-        match &without_macro_holes(place).kind {
+        match &place.kind {
             PlaceKind::Field { base, .. } => {
                 matches!(
                     self.tables.resolve_type(&base.ty),
@@ -189,8 +179,7 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn misaligned_in_rust(&mut self, place: &ir::Place) -> bool {
-        let (PlaceKind::Field { base, .. } | PlaceKind::ComplexPart { base, .. }) =
-            &without_macro_holes(place).kind
+        let (PlaceKind::Field { base, .. } | PlaceKind::ComplexPart { base, .. }) = &place.kind
         else {
             return false;
         };
@@ -248,7 +237,7 @@ impl FunctionLowerer<'_, '_> {
 
     fn reduced_place(&mut self, place: &ir::Place) -> bool {
         place.access.align.is_some()
-            || match &without_macro_holes(place).kind {
+            || match &place.kind {
                 PlaceKind::Deref(pointer) => self.reduced_pointer(pointer),
                 PlaceKind::Field { base, .. }
                 | PlaceKind::Lane { base, .. }
@@ -268,7 +257,7 @@ impl FunctionLowerer<'_, '_> {
     }
 
     fn rooted_in_deref(place: &ir::Place) -> bool {
-        match &without_macro_holes(place).kind {
+        match &place.kind {
             PlaceKind::Deref(_) | PlaceKind::Index { .. } => true,
             PlaceKind::Field {
                 base, bits: None, ..
@@ -320,9 +309,8 @@ impl FunctionLowerer<'_, '_> {
         let PlaceKind::Lane { base, index } = &place.kind else {
             return None;
         };
-        let bare = without_macro_holes(base);
-        (matches!(bare.kind, PlaceKind::Deref(_) | PlaceKind::Index { .. })
-            || matches!(bare.kind, PlaceKind::Binding(id) if self.dispatch_bindings.contains(&id))
+        (matches!(base.kind, PlaceKind::Deref(_) | PlaceKind::Index { .. })
+            || matches!(base.kind, PlaceKind::Binding(id) if self.dispatch_bindings.contains(&id))
             || self.reduced_alignment_access(base)
             || self.tables.array_subscript(base).is_some()
             || self.place_in_packed(base))
@@ -428,12 +416,12 @@ impl FunctionLowerer<'_, '_> {
         if self.erased_copy.is_some() {
             return Ok(None);
         }
-        let mut current = without_macro_holes(place);
+        let mut current = place;
         while let PlaceKind::Field { base, .. }
         | PlaceKind::Lane { base, .. }
         | PlaceKind::ComplexPart { base, .. } = &current.kind
         {
-            let base = without_macro_holes(base);
+            let base: &ir::Place = base;
             if self.erased_field_address(base, false)?.is_some() {
                 return Ok(Some(base));
             }
@@ -501,7 +489,7 @@ impl FunctionLowerer<'_, '_> {
             ref base,
             index,
             bits: None,
-        } = without_macro_holes(place).kind
+        } = place.kind
         else {
             return false;
         };
@@ -568,13 +556,8 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_place(&mut self, place: &ir::Place) -> Result<Expr> {
-        if let PlaceKind::MacroArg {
-            expansion,
-            argument,
-            place: inner,
-        } = &place.kind
-        {
-            return self.lower_macro_place_hole(*expansion, *argument, inner);
+        if let Some(hole) = self.lower_macro_place_wrap(place) {
+            return hole;
         }
         if let Some((erased, copy)) = &self.erased_copy
             && std::ptr::eq(*erased, place)
@@ -795,7 +778,7 @@ impl FunctionLowerer<'_, '_> {
         else {
             return false;
         };
-        let mut current = without_macro_holes(base);
+        let mut current: &ir::Place = base;
         while let PlaceKind::Field { base, .. } = &current.kind {
             if self
                 .erased_copy
@@ -807,7 +790,7 @@ impl FunctionLowerer<'_, '_> {
             if self.packed_record(&base.ty) {
                 return true;
             }
-            current = without_macro_holes(base);
+            current = base;
         }
         false
     }

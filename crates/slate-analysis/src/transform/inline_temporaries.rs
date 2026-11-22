@@ -345,7 +345,7 @@ fn own_values(statement: &mut Statement) -> Vec<&mut Value> {
 
 fn place_values<'p>(place: &'p mut Place, values: &mut Vec<&'p mut Value>) {
     match &mut place.kind {
-        PlaceKind::Binding(_) | PlaceKind::MacroArg { .. } => {}
+        PlaceKind::Binding(_) => {}
         PlaceKind::Deref(value)
         | PlaceKind::CompoundLiteral {
             initializer: value, ..
@@ -603,7 +603,7 @@ impl<'c, 'a> Scan<'c, 'a> {
     }
 
     fn target(&mut self, place: &Place) {
-        match &place.without_macro_holes().kind {
+        match &place.kind {
             PlaceKind::Binding(binding) if self.local(*binding) && plain(&place.access) => {
                 self.summary.writes.insert(*binding);
             }
@@ -616,7 +616,7 @@ impl<'c, 'a> Scan<'c, 'a> {
     }
 
     fn update(&mut self, place: &Place) {
-        if let PlaceKind::Binding(binding) = place.without_macro_holes().kind
+        if let PlaceKind::Binding(binding) = place.kind
             && self.local(binding)
             && plain(&place.access)
         {
@@ -626,6 +626,14 @@ impl<'c, 'a> Scan<'c, 'a> {
     }
 
     fn read(&mut self, place: &Place) {
+        if self.context.macro_values.contains_key(&place.id) {
+            self.nested(|scan| scan.read_kind(place));
+        } else {
+            self.read_kind(place);
+        }
+    }
+
+    fn read_kind(&mut self, place: &Place) {
         if !plain(&place.access) {
             self.summary.effects = true;
         }
@@ -643,7 +651,6 @@ impl<'c, 'a> Scan<'c, 'a> {
                 self.summary.reads.insert(*binding);
             }
             PlaceKind::Binding(_) => self.summary.memory = true,
-            PlaceKind::MacroArg { place, .. } => self.nested(|scan| scan.read(place)),
             PlaceKind::Field { base, .. }
             | PlaceKind::ComplexPart { base, .. }
             | PlaceKind::Swizzle { base, .. } => self.read(base),
@@ -662,6 +669,14 @@ impl<'c, 'a> Scan<'c, 'a> {
     }
 
     fn address(&mut self, place: &Place) {
+        if self.context.macro_values.contains_key(&place.id) {
+            self.nested(|scan| scan.address_kind(place));
+        } else {
+            self.address_kind(place);
+        }
+    }
+
+    fn address_kind(&mut self, place: &Place) {
         match &place.kind {
             PlaceKind::Binding(binding) => {
                 if self.temporary == Some(*binding) {
@@ -670,7 +685,6 @@ impl<'c, 'a> Scan<'c, 'a> {
                 }
             }
             PlaceKind::Deref(value) => self.value(value),
-            PlaceKind::MacroArg { place, .. } => self.nested(|scan| scan.address(place)),
             PlaceKind::CompoundLiteral { initializer, .. }
             | PlaceKind::Temporary { initializer, .. } => self.value(initializer),
             PlaceKind::ComplexPart { base, .. }

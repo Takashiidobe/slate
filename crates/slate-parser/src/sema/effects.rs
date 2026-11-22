@@ -60,7 +60,6 @@ fn promoted_store(value: Value) -> Value {
 }
 
 fn assigned_value(place: &Place, value: Value) -> Value {
-    let place = place.without_macro_holes();
     let (
         PlaceKind::Field {
             bits: Some(bits), ..
@@ -218,11 +217,7 @@ impl Hoister {
             self.c_bindings.insert(id, c);
         }
         out.push(temporary);
-        Place {
-            ty: source.ty.clone(),
-            kind: PlaceKind::Binding(id),
-            access: Access::default(),
-        }
+        Place::new(source.ty.clone(), PlaceKind::Binding(id), Access::default())
     }
 
     pub(super) fn discard(
@@ -278,15 +273,6 @@ impl Hoister {
     ) -> Result<Place, ResolveError> {
         let kind = match place.kind {
             PlaceKind::Binding(id) => PlaceKind::Binding(id),
-            PlaceKind::MacroArg {
-                expansion,
-                argument,
-                place,
-            } => PlaceKind::MacroArg {
-                expansion,
-                argument,
-                place: Box::new(self.place(*place, out)?),
-            },
             PlaceKind::Deref(value) => PlaceKind::Deref(Box::new(self.value(*value, out)?)),
             PlaceKind::CompoundLiteral {
                 object,
@@ -328,11 +314,7 @@ impl Hoister {
                 lanes,
             },
         };
-        Ok(Place {
-            ty: place.ty,
-            kind,
-            access: place.access,
-        })
+        Ok(Place { kind, ..place })
     }
 
     fn stable_place(
@@ -342,15 +324,6 @@ impl Hoister {
     ) -> Result<Place, ResolveError> {
         let kind = match place.kind {
             PlaceKind::Binding(id) => PlaceKind::Binding(id),
-            PlaceKind::MacroArg {
-                expansion,
-                argument,
-                place,
-            } => PlaceKind::MacroArg {
-                expansion,
-                argument,
-                place: Box::new(self.stable_place(*place, out)?),
-            },
             PlaceKind::Deref(value) => {
                 let value = self.value(*value, out)?;
                 PlaceKind::Deref(Box::new(self.temporary(value, out)))
@@ -406,11 +379,7 @@ impl Hoister {
                 }
             }
         };
-        Ok(Place {
-            ty: place.ty,
-            kind,
-            access: place.access,
-        })
+        Ok(Place { kind, ..place })
     }
 
     fn memory_order(
@@ -1038,7 +1007,6 @@ impl Hoister {
     fn place_effects(&self, place: &Place) -> bool {
         match &place.kind {
             PlaceKind::Binding(_) => false,
-            PlaceKind::MacroArg { place, .. } => self.place_effects(place),
             PlaceKind::Deref(value) => self.effects(value),
             PlaceKind::CompoundLiteral { initializer, .. } => self.effects(initializer),
             PlaceKind::Temporary { initializer, .. } => self.effects(initializer),

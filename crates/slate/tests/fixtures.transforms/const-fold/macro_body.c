@@ -15,7 +15,7 @@ unsigned char set(void) {
 // CHECK-NEXT:     macro_body #0 {
 // CHECK-NEXT:         do %[[V0:[0-9]+]]
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 write<u8>(macro_arg(#0, 0, %[[V_C]]), reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(300))));
+// CHECK-NEXT:                 write<u8>(%[[V_C]], reinterpret<u8, reason=assign, fits=unknown>(truncate<i8, reason=assign, fits=unknown>(const<i32>(300))));
 // CHECK-NEXT:             }
 // CHECK-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
 // CHECK-NEXT:     }

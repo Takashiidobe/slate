@@ -120,8 +120,9 @@ report.
 - **Caller locals**: Rust hygiene hides a caller's locals from a `macro_rules`
   body, so `pass_caller_locals` turns each one a kept body reads or writes into
   a hidden place parameter after the definition's own, named after the local:
-  `BITS(n)` becomes `BITS!(n, hold)`. It runs on the final IR, wrapping the
-  binding in `PlaceKind::MacroArg` and recording the list in
+  `BITS(n)` becomes `BITS!(n, hold)`. It runs on the final IR, adding an
+  argument wrap for the binding place's id to `Module::macro_values` and
+  recording the list in
   `Module::macro_hidden_arguments`. A nested macro's hidden argument is the
   enclosing template's own local or parameter. Defining the macro inside each
   function was rejected because it gives up sharing across functions, units and

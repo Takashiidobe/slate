@@ -37,11 +37,11 @@ impl FunctionLowerer<'_, '_> {
         let mut outer = Vec::new();
         let mut shared = Vec::new();
         for variable in &region.shared {
-            let place = ir::Place {
-                ty: variable.ty.clone(),
-                kind: PlaceKind::Binding(variable.binding),
-                access: Default::default(),
-            };
+            let place = ir::Place::new(
+                variable.ty.clone(),
+                PlaceKind::Binding(variable.binding),
+                Default::default(),
+            );
             let pointer = self.shared_pointer(variable.binding);
             outer.push(Stmt::Let {
                 origin: rust::LocalOrigin::Synthetic,
@@ -61,11 +61,11 @@ impl FunctionLowerer<'_, '_> {
             );
             body.extend(self.lower_statement(&copy)?);
             if private.firstprivate {
-                let place = ir::Place {
-                    ty: private.copy.ty.clone(),
-                    kind: PlaceKind::Binding(private.original),
-                    access: Default::default(),
-                };
+                let place = ir::Place::new(
+                    private.copy.ty.clone(),
+                    PlaceKind::Binding(private.original),
+                    Default::default(),
+                );
                 let pointer = self.firstprivate_pointer(private.copy.id);
                 outer.push(Stmt::Let {
                     origin: rust::LocalOrigin::Synthetic,

@@ -560,7 +560,7 @@ impl Printer<'_> {
                     " place<{}{}>({})",
                     place.ty,
                     place.access,
-                    place.display_mode(self.compact)
+                    place.display_mode(self.compact, self.table())
                 )?;
             }
             if let Some(value) = input {
@@ -651,7 +651,7 @@ impl Printer<'_> {
                     write!(
                         f,
                         ">({}, {})",
-                        place.display_mode(self.compact),
+                        place.display_mode(self.compact, self.table()),
                         value
                             .display_metadata(false, self.table())
                             .with_compact(self.compact)

@@ -364,7 +364,7 @@ impl Value {
                     f,
                     "array_decay<{}, length={length:?}>({})",
                     self.ty,
-                    place.display_mode(compact)
+                    place.display_mode(compact, metadata)
                 )
             }
             ValueKind::FunctionDecay { place } => {
@@ -372,7 +372,7 @@ impl Value {
                     f,
                     "function_decay<{}>({})",
                     self.ty,
-                    place.display_mode(compact)
+                    place.display_mode(compact, metadata)
                 )
             }
             ValueKind::OldValue => write!(f, "old<{}>", self.ty),
@@ -428,7 +428,7 @@ impl Value {
                 write!(
                     f,
                     ">({}, {})",
-                    place.display_mode(compact),
+                    place.display_mode(compact, metadata),
                     value
                         .display_metadata(show_spans, metadata)
                         .with_compact(compact)
@@ -451,7 +451,7 @@ impl Value {
                 write!(
                     f,
                     ">({}, {})",
-                    place.display_mode(compact),
+                    place.display_mode(compact, metadata),
                     computation
                         .display_metadata(show_spans, metadata)
                         .with_compact(compact)
@@ -475,7 +475,7 @@ impl Value {
                 success.display_mode(compact),
                 failure.display_mode(compact),
                 atomic::SyncScopeAttribute(sync_scope, compact),
-                place.display_mode(compact),
+                place.display_mode(compact, metadata),
                 expected
                     .display_metadata(show_spans, metadata)
                     .with_compact(compact),
@@ -559,7 +559,7 @@ impl Value {
             ValueKind::Read { place, ordering } => {
                 write!(f, "read<{}{}", place.ty, place.access)?;
                 atomic::format_ordering(f, ordering.as_ref(), compact)?;
-                write!(f, ">({})", place.display_mode(compact))
+                write!(f, ">({})", place.display_mode(compact, metadata))
             }
             ValueKind::VaArg {
                 list,
@@ -570,7 +570,7 @@ impl Value {
                 "va_arg<{}{}{passing}>({})",
                 self.ty,
                 va_convention_suffix(*convention),
-                list.display_mode(compact)
+                list.display_mode(compact, metadata)
             ),
             ValueKind::StatementExpression(evaluation) => write!(
                 f,
@@ -616,13 +616,13 @@ impl Value {
                 f,
                 "va_start{}({})",
                 va_convention_marker(*convention),
-                list.display_mode(compact)
+                list.display_mode(compact, metadata)
             ),
             ValueKind::VaEnd { list, convention } => write!(
                 f,
                 "va_end{}({})",
                 va_convention_marker(*convention),
-                list.display_mode(compact)
+                list.display_mode(compact, metadata)
             ),
             ValueKind::VaCopy {
                 destination,
@@ -632,11 +632,16 @@ impl Value {
                 f,
                 "va_copy{}({}, {})",
                 va_convention_marker(*convention),
-                destination.display_mode(compact),
-                source.display_mode(compact)
+                destination.display_mode(compact, metadata),
+                source.display_mode(compact, metadata)
             ),
             ValueKind::AddressOf(place) => {
-                write!(f, "addr_of<{}>({})", self.ty, place.display_mode(compact))
+                write!(
+                    f,
+                    "addr_of<{}>({})",
+                    self.ty,
+                    place.display_mode(compact, metadata)
+                )
             }
             ValueKind::LayoutQuery {
                 query: LayoutQuery::SizeOf { ty, .. },

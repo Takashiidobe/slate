@@ -93,7 +93,6 @@ impl TypeResolver {
 
     fn place_designation(&self, place: &Place) -> Option<Designation> {
         match &place.kind {
-            PlaceKind::MacroArg { place, .. } => self.place_designation(place),
             PlaceKind::Binding(_)
             | PlaceKind::CompoundLiteral { .. }
             | PlaceKind::Temporary { .. } => {

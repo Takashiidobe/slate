@@ -1259,11 +1259,11 @@ impl Lowerer {
                     value: Value {
                         ty: ty.clone(),
                         node: parameter.derive(ValueKind::Read {
-                            place: Place {
-                                ty: ty.clone(),
-                                kind: PlaceKind::Binding(slot),
-                                access: Access::default(),
-                            },
+                            place: Place::new(
+                                ty.clone(),
+                                PlaceKind::Binding(slot),
+                                Access::default(),
+                            ),
                             ordering: None,
                         }),
                     },

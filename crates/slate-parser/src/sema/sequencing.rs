@@ -282,7 +282,6 @@ fn offset_root<'a>(
 
 fn walk_path(place: &Place, write: bool, path: &mut Vec<Step>, found: &mut Touches) {
     match &place.kind {
-        PlaceKind::MacroArg { place, .. } => walk_path(place, write, path, found),
         PlaceKind::Binding(id) => record(Root::Binding(*id), write, path, found),
         PlaceKind::Deref(value) => {
             walk(value, found);

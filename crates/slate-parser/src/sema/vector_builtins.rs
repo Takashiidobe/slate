@@ -30,11 +30,11 @@ impl Lowerer {
                     op,
                     left: Box::new(left),
                     right: Box::new(right),
-                    result: Place {
-                        ty: *pointee.clone(),
-                        kind: PlaceKind::Deref(Box::new(pointer)),
-                        access: Access::default(),
-                    },
+                    result: Place::new(
+                        *pointee.clone(),
+                        PlaceKind::Deref(Box::new(pointer)),
+                        Access::default(),
+                    ),
                 }
             }
             Expansion::Reduce(reduction) => {
@@ -418,11 +418,11 @@ impl Lowerer {
     ) -> Place {
         let id = self.fresh();
         self.types.entities.declare(id, operand.c, false);
-        let place = Place {
-            ty: operand.value.ty.clone(),
-            kind: PlaceKind::Binding(id),
-            access: self.types.access_of(operand.c),
-        };
+        let place = Place::new(
+            operand.value.ty.clone(),
+            PlaceKind::Binding(id),
+            self.types.access_of(operand.c),
+        );
         captures.push((id, operand.value));
         place
     }

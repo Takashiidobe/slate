@@ -140,8 +140,9 @@ and the [cover table](../preprocessor.md#macro-invocations) before lowering:
 - `Statement::MacroExpansion { expansion, body }` wraps the statements an
   expansion covers. Nested expansions nest. It is not a scope: a `let` in `body`
   stays visible to later statements.
-- Value holes and value expansions are not nodes. `Module::macro_values` maps a
-  value's `NodeId` to its `MacroWrap`s, innermost first:
+- Holes and value expansions are not nodes. `Module::macro_values` maps a
+  value's or place's `NodeId` (`Place::new` gives each place its own) to its
+  `MacroWrap`s, innermost first:
   `MacroWrap::Argument { expansion, argument }` marks one argument occurrence
   inside its open expansion, and `MacroWrap::Value(expansion)` marks an
   expansion that covers one expression below statement level, read as a value
@@ -152,8 +153,12 @@ and the [cover table](../preprocessor.md#macro-invocations) before lowering:
   them as `[macro_value="#E"]` and `[macro_arg="#E.k"]` metadata. A walk sees
   them only through `ir::walk_body_with_macros`, which calls
   `Visitor::macro_value` and opens the expansion or hole around the value.
-- `PlaceKind::MacroArg { expansion, argument, .. }` is still a node: it marks an
-  lvalue occurrence (`ir::Place` has no `NodeId`). A conversion the argument
+  An lvalue occurrence is an argument wrap on the place's id, printed on the
+  place (`write<i32>(%i [macro_arg="#E.0"], ...)`); the walker calls
+  `enter_place_hole`/`leave_place_hole` around it.
+  `Module::macro_provenance(id)` is the one query for a node's wraps, written
+  cast, expansions with their definitions, and hidden caller-local bindings.
+- A conversion the argument
   needs is applied by the parent after the hole closes, so `ADD_ONE(c)` on a
   `u8` has its `widen` outside. An explicit integer cast whose operand is a
   hole lowers as it would without macros (`widen`, `truncate`, `reinterpret`,
@@ -163,8 +168,9 @@ and the [cover table](../preprocessor.md#macro-invocations) before lowering:
   `[macro_cast="T"]`). An identity cast names its own node, and the cast sits
   outside that node's wraps. When an argument is passed down to a nested macro
   the inner hole wraps the outer one. Slate's `--merge` also wraps caller
-  locals a kept body uses: an `argument` past the definition's parameters
-  indexes `Module::macro_hidden_arguments[expansion]`.
+  locals a kept body uses, as argument wraps inserted innermost on the binding
+  place's id: an `argument` past the definition's parameters indexes
+  `Module::macro_hidden_arguments[expansion]`.
 - A callee argument gets a hole unless it names a function: that call stays
   `Callee::Direct`, with the name in the body. Each argument of a `f args` list
   gets its own hole. A type or name argument gets no hole.

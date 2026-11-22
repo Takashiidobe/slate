@@ -530,8 +530,9 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
 ## Places
 
 ```ebnf
-place  = binding
-       | "macro_arg(#" digits ", " digits ", " place ")"
+place  = place_kind { metadata } ;
+place_kind
+       = binding
        | "deref(" value ")"
        | "index(" value ", " value ")"
        | "field" digits "(" place ")"

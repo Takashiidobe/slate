@@ -330,7 +330,7 @@ pub(super) fn substitute(value: &Value, known: &HashMap<BindingId, Value>) -> Va
     impl Visitor for Substitute<'_> {
         fn rewrite_value(&mut self, value: &mut Value) {
             if let ValueKind::Read { place, .. } = &value.node.value
-                && let PlaceKind::Binding(id) = place.without_macro_holes().kind
+                && let PlaceKind::Binding(id) = place.kind
                 && let Some(known) = self.0.get(&id)
             {
                 *value = known.clone();
@@ -625,7 +625,6 @@ impl Lowerer {
                 })
             }
             PlaceKind::Deref(pointer) => self.symbol(pointer),
-            PlaceKind::MacroArg { place, .. } => self.symbol_place(place),
             PlaceKind::Field {
                 base,
                 index,
