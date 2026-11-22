@@ -89,6 +89,9 @@ impl FunctionLowerer<'_, '_> {
             Known::Abort if self.tables.runtime.has_std() => {
                 Some(free_call(&["std", "process", "abort"], args.to_vec()))
             }
+            Known::StrCpy | Known::StrCat if discarded => {
+                self.lower_c_string_copy(known, arguments)?
+            }
             Known::Atoi => Some(ato_helper(&site, "__slate_atoi", char_prim)),
             Known::Atol => Some(ato_helper(&site, "__slate_atol", char_prim)),
             Known::Atoll => Some(ato_helper(&site, "__slate_atoll", char_prim)),

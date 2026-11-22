@@ -30,9 +30,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::strcpy;
 // CHECK-NEXT: use slate_support::strncpy;
-// CHECK-NEXT: use slate_support::strcat;
 // CHECK-NEXT: use slate_support::strncat;
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-EMPTY:
@@ -63,18 +61,8 @@ int main(void) {
 // CHECK-NEXT:             0i8, 0i8,
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         strcpy(
-// CHECK-NEXT:             copy.0.as_mut_ptr() as *mut core::ffi::c_char,
-// CHECK-NEXT:             c"abc".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:         ) as *mut i8
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         strcat(
-// CHECK-NEXT:             append.0.as_mut_ptr() as *mut core::ffi::c_char,
-// CHECK-NEXT:             c"bar".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:         ) as *mut i8
-// CHECK-NEXT:     };
+// CHECK-NEXT:     slate_support::__slate_strcpy(&mut copy.0, "abc");
+// CHECK-NEXT:     slate_support::__slate_strcat(&mut append.0, "bar");
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         strncpy(
 // CHECK-NEXT:             trunc_copy.0.as_mut_ptr() as *mut core::ffi::c_char,

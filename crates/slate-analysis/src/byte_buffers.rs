@@ -25,7 +25,7 @@ impl Known {
     }
 }
 
-fn byte_array(ty: &Type) -> Option<u64> {
+pub(crate) fn byte_array(ty: &Type) -> Option<u64> {
     match ty {
         Type::Array {
             element,

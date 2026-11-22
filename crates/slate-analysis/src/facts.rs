@@ -1,4 +1,5 @@
 use crate::byte_buffers::{self, ArrayAlias};
+use crate::c_string_arrays;
 use crate::constant_strings::{self, ConstantString};
 use crate::counted_loops::{self, CountedLoop};
 use crate::identity::{FunctionIdentity, identify};
@@ -13,6 +14,7 @@ pub struct BindingFacts {
     pub pointer: Option<PointerFact>,
     pub constant_string: Option<ConstantString>,
     pub array_alias: Option<ArrayAlias>,
+    pub c_string_array: bool,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
@@ -123,6 +125,17 @@ pub fn analyze(program: &Program<'_>) -> Facts {
         let buffer_callees = constant_strings::known_callees(module, identity, |known| {
             known.buffer_arguments().is_some()
         });
+        let known = constant_strings::known_callees(module, identity, |_| true);
+        let mut c_arrays = HashSet::default();
+        for function in &module.functions {
+            c_string_arrays::analyze(&function.value, &known, &module.macro_values, &mut c_arrays);
+        }
+        for &binding in &c_arrays {
+            bindings
+                .entry(ProgramBinding { unit, binding })
+                .or_default()
+                .c_string_array = true;
+        }
         let mut aliases = HashMap::new();
         for function in &module.functions {
             byte_buffers::analyze(
@@ -149,6 +162,7 @@ pub fn analyze(program: &Program<'_>) -> Facts {
             literals: &literals,
             callees: &callees,
             c_strings: &c_strings,
+            c_arrays: &c_arrays,
             macro_values: &module.macro_values,
         };
         let mut strings = HashMap::new();

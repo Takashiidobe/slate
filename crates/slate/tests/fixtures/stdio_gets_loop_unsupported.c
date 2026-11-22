@@ -73,10 +73,7 @@ int main(void) {
 // CHECK-NEXT:     while !unsafe {
 // CHECK-NEXT:         fgets(line.0.as_mut_ptr(), core::mem::size_of::<[i8; 64]>() as i32, g).is_null()
 // CHECK-NEXT:     } {
-// CHECK-NEXT:         count += unsafe {
-// CHECK-NEXT:             (strlen((line.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char)
-// CHECK-NEXT:                 as u64) as i32
-// CHECK-NEXT:         };
+// CHECK-NEXT:         count += (slate_support::__slate_c_str(&line.0).count_bytes() as u64) as i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { slate_support::fclose(g) };
 // CHECK-NEXT:     println!("{}", count);

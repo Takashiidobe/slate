@@ -78,6 +78,7 @@ pub(crate) struct Context<'a> {
     pub literals: &'a HashMap<BindingId, Vec<u8>>,
     pub callees: &'a HashMap<BindingId, Known>,
     pub c_strings: &'a HashSet<BindingId>,
+    pub c_arrays: &'a HashSet<BindingId>,
     pub macro_values: &'a MacroValues,
 }
 
@@ -208,7 +209,9 @@ impl Uses<'_> {
                         ..
                     },
                 ..
-            } if self.context.literals.contains_key(id) => Argument::Viewed,
+            } if self.context.literals.contains_key(id) || self.context.c_arrays.contains(id) => {
+                Argument::Viewed
+            }
             ValueKind::Read {
                 place:
                     Place {

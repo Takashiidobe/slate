@@ -859,15 +859,9 @@ int main(void) {
 // CHECK-NEXT:                 LongDouble([0, 0, 0, 0, 0, 0, 0, 224, 0, 64]),
 // CHECK-NEXT:             )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     written
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (output.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"1101 21 34".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32) + scanned + ((binary_value == 11) as i32)
-// CHECK-NEXT:         + (((exact_value as i32) == 55) as i32) + ((fast_value == 89) as i32)
-// CHECK-NEXT:         + floating_written
+// CHECK-NEXT:     written + ((slate_support::__slate_c_str(&output.0) == c"1101 21 34") as i32)
+// CHECK-NEXT:         + scanned + ((binary_value == 11) as i32) + (((exact_value as i32) == 55) as i32)
+// CHECK-NEXT:         + ((fast_value == 89) as i32) + floating_written
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             strcmp(
 // CHECK-NEXT:                 (float_output.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char,

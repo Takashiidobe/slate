@@ -405,6 +405,12 @@ impl Tables<'_> {
             .and_then(|fact| fact.borrow)
     }
 
+    fn c_string_array_of(&self, binding: BindingId) -> bool {
+        self.facts
+            .binding(binding)
+            .is_some_and(|facts| facts.c_string_array)
+    }
+
     fn array_alias_of(&self, binding: BindingId) -> Option<slate_analysis::ArrayAlias> {
         self.facts.binding(binding)?.array_alias
     }

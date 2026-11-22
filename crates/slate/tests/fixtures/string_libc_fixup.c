@@ -32,23 +32,20 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::strcmp;
-// CHECK-NEXT: use slate_support::strncmp;
 // CHECK-NEXT: use slate_support::strchr;
 // CHECK-NEXT: use slate_support::strrchr;
 // CHECK-NEXT: use slate_support::strcspn;
 // CHECK-NEXT: use slate_support::strspn;
 // CHECK-NEXT: use slate_support::strpbrk;
 // CHECK-NEXT: use slate_support::strstr;
-// CHECK-NEXT: use slate_support::strlen;
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C" {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut alpha: [i8; 4] = [97, 98, 99, 0];
-// CHECK-NEXT:     let mut beta: [i8; 4] = [97, 98, 100, 0];
+// CHECK-NEXT:     let alpha: [i8; 4] = [97, 98, 99, 0];
+// CHECK-NEXT:     let beta: [i8; 4] = [97, 98, 100, 0];
 // CHECK-NEXT:     let mut bytes_a: [u8; 3] = [255, 1, 0];
 // CHECK-NEXT:     let bytes_b: [u8; 3] = [255, 2, 0];
 // CHECK-NEXT:     let mut hay: [i8; 7] = [97, 98, 97, 99, 97, 100, 0];
@@ -63,20 +60,17 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %d %d %d %d\n".as_ptr(),
-// CHECK-NEXT:             strlen((alpha.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as u64,
-// CHECK-NEXT:             ((strcmp(
-// CHECK-NEXT:                 (alpha.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 (alpha.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32) == 0) as i32,
-// CHECK-NEXT:             ((strcmp(
-// CHECK-NEXT:                 (alpha.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 (beta.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32) < 0) as i32,
-// CHECK-NEXT:             ((strncmp(
-// CHECK-NEXT:                 (alpha.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 (beta.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 2u64 as usize,
-// CHECK-NEXT:             ) as i32) == 0) as i32,
+// CHECK-NEXT:             slate_support::__slate_c_str(&alpha).count_bytes() as u64,
+// CHECK-NEXT:             (slate_support::__slate_c_str(&alpha)
+// CHECK-NEXT:                 == slate_support::__slate_c_str(&alpha)) as i32,
+// CHECK-NEXT:             (slate_support::__slate_c_str(&alpha) < slate_support::__slate_c_str(&beta))
+// CHECK-NEXT:                 as i32,
+// CHECK-NEXT:             slate_support::__slate_c_str(&alpha)
+// CHECK-NEXT:                 .to_bytes()
+// CHECK-NEXT:                 .iter()
+// CHECK-NEXT:                 .take(2usize)
+// CHECK-NEXT:                 .eq(slate_support::__slate_c_str(&beta).to_bytes().iter().take(2usize))
+// CHECK-NEXT:                 as i32,
 // CHECK-NEXT:             ((bytes_a[0usize..1usize].cmp(&bytes_b[0usize..1usize]) as i32) == 0) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

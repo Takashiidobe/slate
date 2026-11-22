@@ -17,6 +17,7 @@
 - [Pointer capabilities](#pointer-capabilities)
 - [String views and libc calls](#string-views-and-libc-calls)
 - [Byte buffers and mem\* calls](#byte-buffers-and-mem-calls)
+- [C-string arrays](#c-string-arrays)
 - [Effect summaries](#effect-summaries)
 - [Def-use](#def-use)
   - [Counted loops](#counted-loops)
@@ -509,6 +510,31 @@ and stays raw.
 
 Freestanding units (`slate-3amj.56`) give plain libc names no identity, so only
 `__builtin_*` forms reach these lowerings; every form above needs only `core`.
+
+## C-string arrays
+
+`c_string_arrays::analyze` sets `BindingFacts::c_string_array` on a plain local
+`char buf[N]` (unique name in the function) when it holds a terminator after
+every write, in any order (no CFG). Its initializer is none (lowering zeroes
+it), a string literal shorter than `N` or containing a NUL, or a zero-filled
+aggregate. Every place naming it, outside macro expansions, is modeled:
+
+- writes that terminate: `strcpy`/`strcat` destination, `fgets`, `snprintf`
+  destination, and an element store of constant `0`;
+- reads: `Known::string_arguments` positions, `strcpy`/`strcat` sources,
+  `printf`/`fprintf`/`snprintf`/`puts`/`fputs` arguments, element reads.
+
+Anything else (memcpy into it, a non-zero element store, `&buf`, an opaque
+callee) leaves it raw. The fact also makes the array a viewed partner for
+`constant_string` readers.
+
+Lowering (`string_views.rs`) gives such an array, when its element is the
+target's `c_char`, a `&CStr` view `slate_support::__slate_c_str(&buf)`, so the
+string peepholes above apply (`.count_bytes()`, `== c"x"`, `<`, `.cmp()`). A
+discarded `strcpy`/`strcat` into it becomes
+`slate_support::__slate_strcpy`/`__slate_strcat(&mut buf, src)`, with `src`
+as a `&str` or byte slice from its view; they panic where C would overflow.
+Storage stays `[c_char; N]`: retyping to `[u8; N]` would cast every other use.
 
 ## Effect summaries
 

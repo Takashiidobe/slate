@@ -28,30 +28,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::strcpy;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut a: __SlateAlign16<[i8; 32]> = __SlateAlign16([0i8; 32]);
 // CHECK-NEXT:     let mut b: __SlateAlign16<[i8; 32]> = __SlateAlign16([0i8; 32]);
 // CHECK-NEXT:     let mut c: __SlateAlign16<[i8; 32]> = __SlateAlign16([0i8; 32]);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         strcpy(
-// CHECK-NEXT:             a.0.as_mut_ptr() as *mut core::ffi::c_char,
-// CHECK-NEXT:             c"  -42abc".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:         ) as *mut i8
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         strcpy(
-// CHECK-NEXT:             b.0.as_mut_ptr() as *mut core::ffi::c_char,
-// CHECK-NEXT:             c"+1000000000000zzz".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:         ) as *mut i8
-// CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         strcpy(
-// CHECK-NEXT:             c.0.as_mut_ptr() as *mut core::ffi::c_char,
-// CHECK-NEXT:             c"9000000000000".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:         ) as *mut i8
-// CHECK-NEXT:     };
+// CHECK-NEXT:     slate_support::__slate_strcpy(&mut a.0, "  -42abc");
+// CHECK-NEXT:     slate_support::__slate_strcpy(&mut b.0, "+1000000000000zzz");
+// CHECK-NEXT:     slate_support::__slate_strcpy(&mut c.0, "9000000000000");
 // CHECK-NEXT:     let __slate_printf_arg0 = unsafe {
 // CHECK-NEXT:         slate_support::__slate_atoi(
 // CHECK-NEXT:             ((a.0.as_mut_ptr() as *const i8) as *const core::ffi::c_char) as *const i8,

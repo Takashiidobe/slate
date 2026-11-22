@@ -239,7 +239,7 @@ impl FunctionLowerer<'_, '_> {
         }
     }
 
-    fn string_view(&self, value: &ir::Value) -> Option<View> {
+    fn string_view(&mut self, value: &ir::Value) -> Option<View> {
         if self.tables.macro_values.contains_key(&value.node.id) {
             return None;
         }
@@ -258,10 +258,13 @@ impl FunctionLowerer<'_, '_> {
                     },
                 ..
             } => {
-                let (0, content) = self.tables.strings.get(id)?.split_last()? else {
-                    return None;
-                };
-                Some(View::Literal(c_content(content).to_vec()))
+                if let Some(units) = self.tables.strings.get(id) {
+                    let (0, content) = units.split_last()? else {
+                        return None;
+                    };
+                    return Some(View::Literal(c_content(content).to_vec()));
+                }
+                self.c_string_array(value).map(View::CStr)
             }
             ValueKind::Read {
                 place:
@@ -286,7 +289,7 @@ impl FunctionLowerer<'_, '_> {
         }
     }
 
-    fn string_views(&self, known: Known, arguments: &[ir::Value]) -> Option<Vec<View>> {
+    fn string_views(&mut self, known: Known, arguments: &[ir::Value]) -> Option<Vec<View>> {
         let (strings, arity) = known.string_arguments()?;
         if arguments.len() != arity {
             return None;
@@ -295,6 +298,95 @@ impl FunctionLowerer<'_, '_> {
             .iter()
             .map(|&index| self.string_view(&arguments[index]))
             .collect()
+    }
+
+    fn c_string_array(&mut self, value: &ir::Value) -> Option<Expr> {
+        let (array, _) = self.c_string_array_place(value)?;
+        Some(support_call(
+            "__slate_c_str",
+            vec![Expr::Ref {
+                mutable: false,
+                expr: Box::new(array),
+            }],
+            false,
+        ))
+    }
+
+    fn c_string_array_place(&mut self, value: &ir::Value) -> Option<(Expr, BindingId)> {
+        match &value.node.value {
+            ValueKind::Copy { operand, .. }
+            | ValueKind::Convert {
+                kind: ir::ConversionKind::PointerCast,
+                operand,
+                ..
+            } => self.c_string_array_place(operand),
+            ValueKind::ArrayDecay {
+                place:
+                    place @ ir::Place {
+                        kind: PlaceKind::Binding(id),
+                        ..
+                    },
+                ..
+            } if !self.unborrowed.contains(id)
+                && !self.switch_lets.contains(id)
+                && self.tables.c_string_array_of(*id) =>
+            {
+                let ir::Type::Array { element, .. } = self.tables.resolve_type(&place.ty) else {
+                    return None;
+                };
+                let element = self.lower_type(element).ok()?;
+                let char_prim = crate::backend::engine::char_prim(self.tables.target);
+                (element == rust::Type::Prim(char_prim))
+                    .then(|| Some((self.lower_place(place).ok()?, *id)))
+                    .flatten()
+            }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only a decayed C-string array has an array view"
+            )]
+            _ => None,
+        }
+    }
+
+    pub(super) fn lower_c_string_copy(
+        &mut self,
+        known: Known,
+        arguments: &[ir::Value],
+    ) -> Result<Option<Expr>> {
+        let [dst, src] = arguments else {
+            return Ok(None);
+        };
+        let Some((array, root)) = self.c_string_array_place(dst) else {
+            return Ok(None);
+        };
+        if self
+            .c_string_array_place(src)
+            .is_some_and(|(_, source)| source == root)
+        {
+            return Ok(None);
+        }
+        let Some(source) = self.string_view(src) else {
+            return Ok(None);
+        };
+        let source = match mode(&[&source]) {
+            Mode::Str => render(&source, Mode::Str),
+            Mode::CStr | Mode::Bytes => render(&source, Mode::Bytes),
+        };
+        Ok(Some(support_call(
+            if known == Known::StrCat {
+                "__slate_strcat"
+            } else {
+                "__slate_strcpy"
+            },
+            vec![
+                Expr::Ref {
+                    mutable: true,
+                    expr: Box::new(array),
+                },
+                source,
+            ],
+            false,
+        )))
     }
 
     fn string_bound(&mut self, value: &ir::Value, stmts: &mut Vec<Stmt>) -> Result<Expr> {

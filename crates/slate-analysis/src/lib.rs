@@ -10,6 +10,7 @@
 )]
 
 mod byte_buffers;
+mod c_string_arrays;
 mod constant_strings;
 mod counted_loops;
 mod def_use;

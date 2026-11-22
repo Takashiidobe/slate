@@ -50,3 +50,24 @@ pub fn __slate_strcspn(s: impl AsRef<[u8]>, reject: impl AsRef<[u8]>) -> usize {
         .take_while(|byte| !reject.contains(byte))
         .count()
 }
+
+pub fn __slate_c_str(bytes: &[c_char]) -> &CStr {
+    let bytes = unsafe { core::slice::from_raw_parts(bytes.as_ptr().cast::<u8>(), bytes.len()) };
+    match CStr::from_bytes_until_nul(bytes) {
+        Ok(string) => string,
+        Err(_) => panic!("C string array without a terminator"),
+    }
+}
+
+pub fn __slate_strcpy(dst: &mut [c_char], src: impl AsRef<[u8]>) {
+    let src = src.as_ref();
+    for (to, from) in dst[..src.len()].iter_mut().zip(src) {
+        *to = *from as c_char;
+    }
+    dst[src.len()] = 0;
+}
+
+pub fn __slate_strcat(dst: &mut [c_char], src: impl AsRef<[u8]>) {
+    let end = __slate_c_str(dst).count_bytes();
+    __slate_strcpy(&mut dst[end..], src);
+}

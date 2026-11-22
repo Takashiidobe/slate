@@ -368,8 +368,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin_strncpy(second.0.as_mut_ptr(), first.0.as_mut_ptr() as *const i8, 6u64)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     unsafe { __builtin_strcpy(third.0.as_mut_ptr(), c"memory".as_ptr()) };
-// CHECK-NEXT:     unsafe { __builtin_strcat(third.0.as_mut_ptr(), c"-ok".as_ptr()) };
+// CHECK-NEXT:     slate_support::__slate_strcpy(&mut third.0, "memory");
+// CHECK-NEXT:     slate_support::__slate_strcat(&mut third.0, "-ok");
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin___strcpy_chk(
 // CHECK-NEXT:             second.0.as_mut_ptr(),
@@ -393,9 +393,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     (unsafe { __builtin_strlen(first.0.as_mut_ptr() as *const i8) as i32 })
 // CHECK-NEXT:         + ((end == unsafe { first.0.as_mut_ptr().add(11) }) as i32)
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             __builtin_strcmp(third.0.as_mut_ptr() as *const i8, c"memory-ok".as_ptr())
-// CHECK-NEXT:         }) == 0) as i32)
+// CHECK-NEXT:         + ((slate_support::__slate_c_str(&third.0) == c"memory-ok") as i32)
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             __builtin_strncmp(
 // CHECK-NEXT:                 second.0.as_mut_ptr() as *const i8,
