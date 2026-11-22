@@ -71,9 +71,9 @@ impl FunctionLowerer<'_, '_> {
         }
         let known = self.known_callee(callee);
         if let Some(known) = known
-            && let Some(folded) = self.fold_known_call(known, arguments, signature)?
+            && let Some(lowered) = self.lower_string_call(known, arguments, signature)?
         {
-            return Ok(folded);
+            return Ok(lowered);
         }
         let names = &self.tables.names;
         let func = match callee {

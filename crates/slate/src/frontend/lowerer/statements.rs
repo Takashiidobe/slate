@@ -198,6 +198,25 @@ impl FunctionLowerer<'_, '_> {
                 if variable.register.is_some() {
                     self.register_locals.insert(variable.id);
                 }
+                if let Some(local) = self.string_local(variable.id) {
+                    let (ty, init) = match local {
+                        LocalString::Str(text) => (
+                            rust::Type::Ref {
+                                mutable: false,
+                                inner: Box::new(rust::Type::Custom("str".into())),
+                            },
+                            Expr::Str(text),
+                        ),
+                        LocalString::CStr(bytes) => (borrows::c_string_type(), Expr::CStr(bytes)),
+                    };
+                    return Ok(Stmt::Let {
+                        origin: rust::LocalOrigin::Source,
+                        name: self.binding_name(variable.id),
+                        mutable: false,
+                        ty: Some(ty),
+                        init: Some(init),
+                    });
+                }
                 let alignment = self.tables.over_alignment(&variable.ty, variable.alignment);
                 if let Some(borrow) = self.borrow_of(variable.id) {
                     if let Some(initializer) = &variable.initializer

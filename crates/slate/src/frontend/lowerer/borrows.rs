@@ -260,7 +260,11 @@ impl FunctionLowerer<'_, '_> {
             let initializer = initializer.clone();
             return self.lower_value(&initializer).map(Some);
         }
-        if self.c_string_of(*id) {
+        let local = self.string_local(*id);
+        if matches!(local, Some(LocalString::Str(_))) {
+            return Err(Invariant::UnprovenBorrow(value.to_string()).into());
+        }
+        if self.c_string_of(*id) || local.is_some() {
             return Ok(Some(Expr::Cast {
                 expr: Box::new(Expr::MethodCall {
                     recv: Box::new(Expr::var(self.binding_name(*id).as_str().into())),

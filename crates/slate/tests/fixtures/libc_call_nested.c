@@ -69,37 +69,39 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn count_alpha() -> i32 {
-// CHECK-NEXT:     let alpha: *const i8 = c"alpha".as_ptr();
-// CHECK-NEXT:     let beta: *const i8 = c"beta".as_ptr();
+// CHECK-NEXT:     let alpha: &str = "alpha";
+// CHECK-NEXT:     let beta: &str = "beta";
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     total += (0i32 == 0) as i32;
-// CHECK-NEXT:     total += (1i32 == 0) as i32;
+// CHECK-NEXT:     total += (alpha == "alpha") as i32;
+// CHECK-NEXT:     total += (beta == "alpha") as i32;
 // CHECK-NEXT:     total
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn same_prefix() -> i32 {
-// CHECK-NEXT:     let a: *const i8 = c"abx".as_ptr();
-// CHECK-NEXT:     if 0i32 == 0 {
+// CHECK-NEXT:     let a: &str = "abx";
+// CHECK-NEXT:     if a.starts_with("ab") {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn long_word() -> i32 {
-// CHECK-NEXT:     let s: *const i8 = c"lengthy".as_ptr();
-// CHECK-NEXT:     ((7u64 as i32) > 4) as i32
+// CHECK-NEXT:     let s: &str = "lengthy";
+// CHECK-NEXT:     (((s.len() as u64) as i32) > 4) as i32
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn spans() -> i32 {
-// CHECK-NEXT:     let s: *const i8 = c"  word".as_ptr();
-// CHECK-NEXT:     (2u64 as i32) + (4u64 as i32)
+// CHECK-NEXT:     let s: &str = "  word";
+// CHECK-NEXT:     ((slate_support::__slate_strspn(s, " ") as u64) as i32)
+// CHECK-NEXT:         + ((slate_support::__slate_strcspn(s, "r") as u64) as i32)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn parsed() -> i32 {
-// CHECK-NEXT:     3 + 12i32 * 2
+// CHECK-NEXT:     3 + "12".parse::<i32>().unwrap() * 2
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn embedded(n: i32) -> i32 {
-// CHECK-NEXT:     let s: *const i8 = b"ab\0cd\0".as_ptr() as *const i8;
-// CHECK-NEXT:     (2u64 as i32)
-// CHECK-NEXT:         + (((b"ab"[0usize..((n as u64) as usize).min(2usize)]
-// CHECK-NEXT:             .cmp(&b"abz"[0usize..((n as u64) as usize).min(3usize)]) as i32) == 0)
-// CHECK-NEXT:             as i32)
+// CHECK-NEXT:     let s: &str = "ab";
+// CHECK-NEXT:     ((slate_support::__slate_strspn(s, "abcd") as u64) as i32)
+// CHECK-NEXT:         + (s
+// CHECK-NEXT:             .bytes()
+// CHECK-NEXT:             .take((n as u64) as usize)
+// CHECK-NEXT:             .eq("abz".bytes().take((n as u64) as usize)) as i32)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn effectful() -> i32 {
 // CHECK-NEXT:     if (unsafe {

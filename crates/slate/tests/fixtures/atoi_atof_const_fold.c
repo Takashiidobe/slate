@@ -27,20 +27,58 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let s: *const i8 = c"-7xyz".as_ptr();
-// CHECK-NEXT:     println!("{}", 42i32);
-// CHECK-NEXT:     println!("{}", 13i32);
-// CHECK-NEXT:     println!("{}", -7i32);
-// CHECK-NEXT:     println!("{}", 0i32);
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%ld\n".as_ptr(), 1000000000000i64) };
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::__slate_atoi(
+// CHECK-NEXT:                 (c"42abc".as_ptr() as *const core::ffi::c_char) as *const i8,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::__slate_atoi(
+// CHECK-NEXT:                 (c"  +13 ".as_ptr() as *const core::ffi::c_char) as *const i8,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::__slate_atoi((s as *const core::ffi::c_char) as *const i8)
+// CHECK-NEXT:         }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{}",
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::__slate_atoi(
+// CHECK-NEXT:                 (c"nope".as_ptr() as *const core::ffi::c_char) as *const i8,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(c"%ld\n".as_ptr(), "1000000000000".parse::<i64>().unwrap())
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%lld\n".as_ptr(), -9000000000000i64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%lld\n".as_ptr(),
+// CHECK-NEXT:             "-9000000000000".parse::<i64>().unwrap(),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%.2f\n".as_ptr(), 3.14) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%.2f\n".as_ptr(),
+// CHECK-NEXT:             atof(c"  3.14  ".as_ptr() as *const core::ffi::c_char) as f64,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::printf(c"%.1f\n".as_ptr(), 2.0) };
+// CHECK-NEXT:     unsafe { slate_support::printf(c"%.1f\n".as_ptr(), "2".parse::<f64>().unwrap()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {

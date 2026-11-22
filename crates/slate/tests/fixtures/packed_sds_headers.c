@@ -274,9 +274,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sdsnew(init: &core::ffi::CStr, r#type: i32) -> *mut i8 {
-// CHECK-NEXT:     let len: u64 = unsafe {
-// CHECK-NEXT:         strlen((init.as_ptr() as *const i8) as *const core::ffi::c_char) as u64
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let len: u64 = init.count_bytes() as u64;
 // CHECK-NEXT:     let header: u64 = if r#type == 1 { 3 } else if r#type == 2 { 5 } else { 17 };
 // CHECK-NEXT:     let memory: *mut i8 = unsafe {
 // CHECK-NEXT:         (malloc(header.wrapping_add(len).wrapping_add(16) as usize) as *mut ())
@@ -359,7 +357,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::malloc;
 // CHECK-NEXT: use slate_support::free;
-// CHECK-NEXT: use slate_support::strlen;
 // CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]

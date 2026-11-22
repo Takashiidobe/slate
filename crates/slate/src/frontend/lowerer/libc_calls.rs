@@ -4,7 +4,6 @@ use rust::RustValue;
 
 struct Site<'c> {
     args: &'c [Expr],
-    strings: Vec<Option<Vec<u8>>>,
     slices: Vec<Option<Expr>>,
     arrays: Vec<Option<(Expr, rust::Type, u64)>>,
     discarded: bool,
@@ -23,7 +22,7 @@ impl FunctionLowerer<'_, '_> {
         (name.rust.trim_start_matches("__builtin_") == known.symbol()).then_some(known)
     }
 
-    fn call_result(&mut self, signature: &ir::Type) -> Result<rust::Type> {
+    pub(super) fn call_result(&mut self, signature: &ir::Type) -> Result<rust::Type> {
         Ok(match self.tables.resolve_type(signature) {
             ir::Type::Function {
                 return_type: Some(ret),
@@ -31,96 +30,6 @@ impl FunctionLowerer<'_, '_> {
             } => self.lower_type(ret)?,
             _ => rust::Type::Unit,
         })
-    }
-
-    pub(super) fn fold_known_call(
-        &mut self,
-        known: Known,
-        arguments: &[ir::Value],
-        signature: &ir::Type,
-    ) -> Result<Option<Expr>> {
-        let (strings, bound) = match known {
-            Known::StrLen | Known::Atoi | Known::Atol | Known::Atoll | Known::Atof => (1, None),
-            Known::StrCmp | Known::StrSpn | Known::StrCSpn => (2, None),
-            Known::StrNLen => (1, Some(1)),
-            Known::StrNCmp => (2, Some(2)),
-            #[expect(
-                slate::sensitive_wildcard,
-                reason = "only string functions fold from constant arguments"
-            )]
-            _ => return Ok(None),
-        };
-        if arguments.len() != strings + usize::from(bound.is_some())
-            || arguments
-                .iter()
-                .any(|argument| self.macro_argument(argument))
-        {
-            return Ok(None);
-        }
-        let constants: Vec<Option<Vec<u8>>> = arguments
-            .iter()
-            .map(|argument| self.constant_string(argument))
-            .collect();
-        if constants[..strings].iter().any(Option::is_none)
-            || (known == Known::Atof && fold_atof_bytes(constants[0].as_deref()).is_none())
-        {
-            return Ok(None);
-        }
-        let result = self.call_result(signature)?;
-        let mut args = vec![Expr::Value(RustValue::NullPtr); arguments.len()];
-        let mut stmts = Vec::new();
-        if let Some(index) = bound {
-            let lowered = self.lower_value(&arguments[index])?;
-            args[index] = if const_len(&lowered).is_none() && !duplicable(&lowered) {
-                let temp = self.next_temp();
-                stmts.push(Stmt::Let {
-                    origin: rust::LocalOrigin::Synthetic,
-                    name: temp.clone(),
-                    mutable: false,
-                    ty: None,
-                    init: Some(lowered),
-                });
-                Expr::var(temp.as_str().into())
-            } else {
-                lowered
-            };
-        }
-        let long_prim = crate::backend::engine::long_prim(self.tables.target);
-        let site = Site {
-            args: &args,
-            strings: constants,
-            slices: Vec::new(),
-            arrays: Vec::new(),
-            discarded: false,
-            result,
-        };
-        let folded = match known {
-            Known::StrLen => str_len(&site),
-            Known::StrNLen => str_n_len(&site),
-            Known::StrCmp => str_cmp(&site),
-            Known::StrNCmp => str_n_cmp(&site),
-            Known::StrSpn => str_span(&site, true),
-            Known::StrCSpn => str_span(&site, false),
-            Known::Atoi => fold_atoi(&site, Prim::I32),
-            Known::Atol => fold_atoi(&site, long_prim),
-            Known::Atoll => fold_atoi(&site, Prim::I64),
-            Known::Atof => fold_atof_bytes(string(&site, 0)),
-            #[expect(
-                slate::sensitive_wildcard,
-                reason = "the match above returned for every other function"
-            )]
-            _ => None,
-        };
-        Ok(folded.map(|folded| {
-            if stmts.is_empty() {
-                folded
-            } else {
-                Expr::Block(Box::new(rust::Block {
-                    stmts,
-                    tail: Some(Box::new(folded)),
-                }))
-            }
-        }))
     }
 
     pub(super) fn lower_known_call(
@@ -167,7 +76,6 @@ impl FunctionLowerer<'_, '_> {
         }
         let site = Site {
             args,
-            strings: Vec::new(),
             slices: arguments
                 .iter()
                 .map(|argument| self.byte_slice(argument))
@@ -184,9 +92,9 @@ impl FunctionLowerer<'_, '_> {
             Known::Abort if self.tables.runtime.has_std() => {
                 Some(free_call(&["std", "process", "abort"], args.to_vec()))
             }
-            Known::Atoi => Some(ato_helper(&site, crate::backend::engine::ATOI, char_prim)),
-            Known::Atol => Some(ato_helper(&site, crate::backend::engine::ATOL, char_prim)),
-            Known::Atoll => Some(ato_helper(&site, crate::backend::engine::ATOLL, char_prim)),
+            Known::Atoi => Some(ato_helper(&site, "__slate_atoi", char_prim)),
+            Known::Atol => Some(ato_helper(&site, "__slate_atol", char_prim)),
+            Known::Atoll => Some(ato_helper(&site, "__slate_atoll", char_prim)),
             Known::MemCpy => mem_copy(&site, false),
             Known::MemMove => mem_copy(&site, true),
             Known::MemSet => mem_set(&site),
@@ -197,64 +105,6 @@ impl FunctionLowerer<'_, '_> {
             )]
             _ => None,
         })
-    }
-
-    fn macro_argument(&self, value: &ir::Value) -> bool {
-        self.tables
-            .macro_values
-            .get(&value.node.id)
-            .is_some_and(|wraps| {
-                wraps
-                    .iter()
-                    .any(|wrap| matches!(wrap, ir::MacroWrap::Argument { .. }))
-            })
-            || match &value.node.value {
-                ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. } => {
-                    self.macro_argument(operand)
-                }
-                #[expect(
-                    slate::sensitive_wildcard,
-                    reason = "a macro argument reaches a call through conversions only"
-                )]
-                _ => false,
-            }
-    }
-
-    fn constant_string(&self, value: &ir::Value) -> Option<Vec<u8>> {
-        match &value.node.value {
-            ValueKind::Copy { operand, .. }
-            | ValueKind::Convert {
-                kind: ir::ConversionKind::PointerCast,
-                operand,
-                ..
-            } => self.constant_string(operand),
-            ValueKind::ArrayDecay {
-                place:
-                    ir::Place {
-                        kind: PlaceKind::Binding(id),
-                        ..
-                    },
-                ..
-            } => {
-                let (0, content) = self.tables.strings.get(id)?.split_last()? else {
-                    return None;
-                };
-                Some(content.to_vec())
-            }
-            ValueKind::Read {
-                place:
-                    ir::Place {
-                        kind: PlaceKind::Binding(id),
-                        ..
-                    },
-                ordering: None,
-            } => self.tables.constant_string_of(*id),
-            #[expect(
-                slate::sensitive_wildcard,
-                reason = "only literals and locals bound once to one are constant strings"
-            )]
-            _ => None,
-        }
     }
 
     fn byte_slice(&self, value: &ir::Value) -> Option<Expr> {
@@ -326,7 +176,7 @@ impl FunctionLowerer<'_, '_> {
     }
 }
 
-fn c_content(bytes: &[u8]) -> &[u8] {
+pub(super) fn c_content(bytes: &[u8]) -> &[u8] {
     let end = bytes
         .iter()
         .position(|&byte| byte == 0)
@@ -334,18 +184,7 @@ fn c_content(bytes: &[u8]) -> &[u8] {
     &bytes[..end]
 }
 
-fn sized(n: u64, ty: &rust::Type) -> Expr {
-    match ty {
-        rust::Type::Prim(prim) => Expr::Value(RustValue::TypedUInt(u128::from(n), *prim)),
-        other => cast(Expr::Value(RustValue::Usize(n as usize)), other.clone()),
-    }
-}
-
-fn ordering(order: std::cmp::Ordering) -> Expr {
-    Expr::Value(RustValue::TypedInt(order as i128, Prim::I32))
-}
-
-fn const_len(expr: &Expr) -> Option<u64> {
+pub(super) fn const_len(expr: &Expr) -> Option<u64> {
     match expr {
         Expr::Cast { expr, .. } => const_len(expr),
         Expr::Value(RustValue::I64(n)) => u64::try_from(*n).ok(),
@@ -361,7 +200,7 @@ fn const_len(expr: &Expr) -> Option<u64> {
     }
 }
 
-fn duplicable(expr: &Expr) -> bool {
+pub(super) fn duplicable(expr: &Expr) -> bool {
     match expr {
         Expr::Var { .. } | Expr::Value(_) | Expr::LayoutQuery { .. } => true,
         Expr::Cast { expr, .. } => duplicable(expr),
@@ -381,7 +220,7 @@ fn duplicable(expr: &Expr) -> bool {
     }
 }
 
-fn method_call(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
+pub(super) fn method_call(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
     Expr::MethodCall {
         recv: Box::new(recv),
         method: method.to_string(),
@@ -390,14 +229,14 @@ fn method_call(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
     }
 }
 
-fn cast(expr: Expr, ty: rust::Type) -> Expr {
+pub(super) fn cast(expr: Expr, ty: rust::Type) -> Expr {
     Expr::Cast {
         expr: Box::new(expr),
         ty,
     }
 }
 
-fn usize_lit(n: u64) -> Expr {
+pub(super) fn usize_lit(n: u64) -> Expr {
     Expr::Value(RustValue::Usize(n as usize))
 }
 
@@ -436,70 +275,6 @@ fn free_call(path: &[&str], args: Vec<Expr>) -> Expr {
     }
 }
 
-fn string<'s>(site: &'s Site<'_>, index: usize) -> Option<&'s [u8]> {
-    site.strings.get(index)?.as_deref().map(c_content)
-}
-
-fn str_len(site: &Site) -> Option<Expr> {
-    Some(sized(string(site, 0)?.len() as u64, &site.result))
-}
-
-fn str_n_len(site: &Site) -> Option<Expr> {
-    let length = string(site, 0)?.len() as u64;
-    let bound = site.args.get(1)?;
-    Some(match const_len(bound) {
-        Some(bound) => sized(length.min(bound), &site.result),
-        None => cast(
-            method_call(
-                cast(bound.clone(), rust::Type::Prim(Prim::Usize)),
-                "min",
-                vec![usize_lit(length)],
-            ),
-            site.result.clone(),
-        ),
-    })
-}
-
-fn str_cmp(site: &Site) -> Option<Expr> {
-    Some(ordering(string(site, 0)?.cmp(string(site, 1)?)))
-}
-
-fn str_n_cmp(site: &Site) -> Option<Expr> {
-    let a = string(site, 0)?;
-    let b = string(site, 1)?;
-    let bound = site.args.get(2)?;
-    if let Some(bound) = const_len(bound) {
-        let bound = usize::try_from(bound).unwrap_or(usize::MAX);
-        return Some(ordering(
-            a[..a.len().min(bound)].cmp(&b[..b.len().min(bound)]),
-        ));
-    }
-    if !duplicable(bound) {
-        return None;
-    }
-    let bound = cast(bound.clone(), rust::Type::Prim(Prim::Usize));
-    let prefix = |bytes: &[u8]| {
-        upto(
-            Expr::ByteStr(bytes.to_vec()),
-            method_call(bound.clone(), "min", vec![usize_lit(bytes.len() as u64)]),
-        )
-    };
-    Some(cast(
-        method_call(prefix(a), "cmp", vec![borrowed(prefix(b))]),
-        rust::Type::Prim(Prim::I32),
-    ))
-}
-
-fn str_span(site: &Site, accepted: bool) -> Option<Expr> {
-    let input = string(site, 0)?;
-    let set = string(site, 1)?;
-    let span = input
-        .iter()
-        .position(|byte| set.contains(byte) != accepted)
-        .unwrap_or(input.len());
-    Some(sized(span as u64, &site.result))
-}
-
 fn mem_cmp(site: &Site) -> Option<Expr> {
     let a = site.slices.first()?.clone()?;
     let b = site.slices.get(1)?.clone()?;
@@ -514,40 +289,6 @@ fn mem_cmp(site: &Site) -> Option<Expr> {
     ))
 }
 
-fn c_atoi_prefix(text: &[u8]) -> i128 {
-    let text = String::from_utf8_lossy(text);
-    let trimmed = text.trim_start();
-    let bytes = trimmed.as_bytes();
-    let mut end = 0;
-    if end < bytes.len() && matches!(bytes[end], b'+' | b'-') {
-        end += 1;
-    }
-    let digits = end;
-    while end < bytes.len() && bytes[end].is_ascii_digit() {
-        end += 1;
-    }
-    if end == digits {
-        return 0;
-    }
-    trimmed[..end].parse::<i128>().unwrap_or(0)
-}
-
-fn fold_atoi(site: &Site, prim: Prim) -> Option<Expr> {
-    let value = c_atoi_prefix(string(site, 0)?);
-    let value = match prim {
-        Prim::I32 => value.clamp(i128::from(i32::MIN), i128::from(i32::MAX)),
-        Prim::I64 => value.clamp(i128::from(i64::MIN), i128::from(i64::MAX)),
-        _ => value,
-    };
-    Some(Expr::Value(RustValue::TypedInt(value, prim)))
-}
-
-fn fold_atof_bytes(bytes: Option<&[u8]>) -> Option<Expr> {
-    let text = std::str::from_utf8(c_content(bytes?)).ok()?;
-    let value = text.trim().parse::<f64>().ok().filter(|v| v.is_finite())?;
-    Some(Expr::Value(RustValue::from(value)))
-}
-
 fn ato_helper(site: &Site, name: &str, char_prim: Prim) -> Expr {
     let pointer = rust::Type::Ptr {
         mutable: false,
@@ -558,11 +299,17 @@ fn ato_helper(site: &Site, name: &str, char_prim: Prim) -> Expr {
         Some(arg) => cast(arg.clone(), pointer),
         None => Expr::Value(RustValue::NullPtr),
     };
+    support_call(name, vec![arg], true)
+}
+
+pub(super) fn support_call(name: &str, args: Vec<Expr>, unsafe_: bool) -> Expr {
     Expr::Call {
         binding: CallBinding::Generated,
-        func: Box::new(Expr::var(name.into())),
-        args: vec![arg],
-        unsafe_: rust::Unsafe(false),
+        func: Box::new(Expr::Path(rust::Path::new(
+            ["slate_support", name].map(rust::Ident::from),
+        ))),
+        args,
+        unsafe_: rust::Unsafe(unsafe_),
     }
 }
 

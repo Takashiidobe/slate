@@ -247,31 +247,6 @@ int main(void) {
 // CHECK-NEXT: #[repr(C, align(16))]
 // CHECK-NEXT: struct __SlateAlign16<T>(T);
 // CHECK-EMPTY:
-// CHECK-NEXT: fn __slate_atoi(s: *const i8) -> i32 {
-// CHECK-NEXT:     let bytes = unsafe { core::ffi::CStr::from_ptr(s).to_bytes() };
-// CHECK-NEXT:     let n = bytes.len();
-// CHECK-NEXT:     let mut i = 0usize;
-// CHECK-NEXT:     while i < n && (bytes[i].is_ascii_whitespace() || bytes[i] == 11u8) {
-// CHECK-NEXT:         i += 1usize;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     let start = i;
-// CHECK-NEXT:     if i < n && (bytes[i] == 43u8 || bytes[i] == 45u8) {
-// CHECK-NEXT:         i += 1usize;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     let digits = i;
-// CHECK-NEXT:     while i < n && bytes[i].is_ascii_digit() {
-// CHECK-NEXT:         i += 1usize;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     if i == digits {
-// CHECK-NEXT:         return 0i32;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     return core::str::from_utf8(&bytes[start..i])
-// CHECK-NEXT:         .unwrap()
-// CHECK-NEXT:         .parse::<i128>()
-// CHECK-NEXT:         .unwrap_or(0i128)
-// CHECK-NEXT:         .clamp(i32::MIN as i128, i32::MAX as i128) as i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::getopt_long;
@@ -308,7 +283,7 @@ int main(void) {
 // CHECK-NEXT:     let arguments: *mut GNUArguments = unsafe { (*state).input as *mut GNUArguments };
 // CHECK-NEXT:     if key == 110 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*arguments).number = __slate_atoi(
+// CHECK-NEXT:             (*arguments).number = slate_support::__slate_atoi(
 // CHECK-NEXT:                 ((argument as *const i8) as *const core::ffi::c_char) as *const i8,
 // CHECK-NEXT:             );
 // CHECK-NEXT:         }
@@ -411,11 +386,11 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if option == 110 {
-// CHECK-NEXT:             number_value = __slate_atoi(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     ((optarg as *const i8) as *const core::ffi::c_char) as *const i8
-// CHECK-NEXT:                 },
-// CHECK-NEXT:             );
+// CHECK-NEXT:             number_value = unsafe {
+// CHECK-NEXT:                 slate_support::__slate_atoi(
+// CHECK-NEXT:                     ((optarg as *const i8) as *const core::ffi::c_char) as *const i8,
+// CHECK-NEXT:                 )
+// CHECK-NEXT:             };
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             if option == 102 {
 // CHECK-NEXT:                 flag_value = 1;

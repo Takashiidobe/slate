@@ -1,7 +1,7 @@
 mod arena;
 pub mod macro_templates;
 mod prelude;
-pub(crate) use prelude::{ATOI, ATOL, ATOLL, char_prim, long_prim};
+pub(crate) use prelude::{char_prim, long_prim};
 mod printf_format;
 mod rules;
 pub mod shadow;
@@ -108,7 +108,6 @@ pub(in crate::backend) fn apply_local(
         apply_item(item, &passes);
     }
     rules::literal_casts::bare_initializers(&mut program.items);
-    prelude::inject(program, target);
     let place_parameters = macro_templates::finish_holes(program);
     if program.runtime.has_std() {
         printf_format::rewrite(program, target);

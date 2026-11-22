@@ -1,16 +1,16 @@
-use crate::constant_strings;
+use crate::constant_strings::{self, ConstantString};
 use crate::counted_loops::{self, CountedLoop};
 use crate::identity::{FunctionIdentity, identify};
 use crate::pointer::{self, PointerFact};
 use crate::program::{Program, ProgramBinding, UnitId};
-use foldhash::{HashMap, HashMapExt};
+use foldhash::{HashMap, HashMapExt, HashSet};
 use slate_parser::ast::NodeId;
 use slate_parser::ir::BindingId;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct BindingFacts {
     pub pointer: Option<PointerFact>,
-    pub constant_string: Option<Vec<u8>>,
+    pub constant_string: Option<ConstantString>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
@@ -109,10 +109,30 @@ pub fn analyze(program: &Program<'_>) -> Facts {
         })
         .collect();
     for (unit, program_unit) in program.units() {
-        let literals = constant_strings::literals(program_unit.module);
+        let module = program_unit.module;
+        let literals = constant_strings::literals(module);
+        let callees = constant_strings::string_callees(module, |binding| {
+            match identities.get(&ProgramBinding { unit, binding }) {
+                Some(FunctionIdentity::Known(known)) => Some(*known),
+                _ => None,
+            }
+        });
+        let c_strings: HashSet<BindingId> = bindings
+            .iter()
+            .filter(|(key, facts)| {
+                key.unit == unit && facts.pointer.is_some_and(|pointer| pointer.c_string)
+            })
+            .map(|(key, _)| key.binding)
+            .collect();
+        let context = constant_strings::Context {
+            literals: &literals,
+            callees: &callees,
+            c_strings: &c_strings,
+            macro_values: &module.macro_values,
+        };
         let mut strings = HashMap::new();
-        for function in &program_unit.module.functions {
-            constant_strings::analyze(&function.value, &literals, &mut strings);
+        for function in &module.functions {
+            constant_strings::analyze(&function.value, &context, &mut strings);
         }
         for (binding, bytes) in strings {
             bindings

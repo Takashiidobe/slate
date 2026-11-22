@@ -15,6 +15,7 @@
 - [Call resolution](#call-resolution)
 - [Scaling rule](#scaling-rule)
 - [Pointer capabilities](#pointer-capabilities)
+- [String views and libc calls](#string-views-and-libc-calls)
 - [Effect summaries](#effect-summaries)
 - [Def-use](#def-use)
   - [Counted loops](#counted-loops)
@@ -428,32 +429,60 @@ Measured (`SLATE_INTERPROC_TIMING`, pass `ir_pointer`): N=800 on every
 extract 2-4 ms); sqlite 10.9 ms for 17,957 nodes (Rust-side extract 144 ms,
 validate 245 ms).
 
-## Constant strings and libc calls
+## String views and libc calls
 
-`constant_strings::analyze` (`slate-8ge7.24.12`) gives a pointer local
-`BindingFacts::constant_string` (the literal's bytes, terminator dropped) when
-it is a plain automatic local, DefUse sees exactly one write (its initializer)
-and only reads besides, and the initializer resolves through pointer casts and
-other such locals to a decayed string literal. An address-taken local
-(`pick(&word)`) records an escape and gets no fact.
+Libc idioms lift to Rust methods on a string view; they never fold to the
+result. `strlen(s)` becomes `s.len()`, not `7u64`. The plan for byte buffers in
+general is `slate-8ge7.24.19`; stage 1 (`slate-8ge7.24.19.1`) covers borrowed,
+static strings.
 
-Lowering (`frontend/lowerer/libc_calls.rs`) picks the Rust form for a call
-whose callee has a `Known` identity and is spelled as that symbol or its
-`__builtin_` form. `bcopy`/`bzero`/`bit_cast` carry family identities with
-different argument orders, so they stay plain calls:
+`constant_strings::analyze` gives a pointer local
+`BindingFacts::constant_string` when it is a plain automatic local, DefUse sees
+exactly one write (its initializer) and only reads besides, and the initializer
+resolves through pointer casts and other such locals to a decayed string
+literal, with no macro wrap on the way. The fact carries:
 
-- Before arguments are lowered: `strlen`, `strcmp`, `strspn`, `strcspn`,
-  `ato*` and `atof` with constant-string arguments fold to constants;
-  `strncmp`/`strnlen` with a runtime bound slice byte literals. Folding first
-  keeps the literal's `__slate_strN` static from being emitted, and a call
-  whose argument is a macro argument is never folded.
-- After: `exit`/`abort` become `std::process` calls, non-constant `ato*` call
-  the `__slate_ato*` prelude helper, `memcpy`/`memmove`/`memset` on decayed
-  local byte arrays with a constant length become
-  `copy_from_slice`/`copy_within`/`fill` (otherwise `core::ptr` copies), and
-  `memcmp` of borrowed `&[u8]` parameters becomes a slice `cmp`.
+- `bytes`: the literal, terminator dropped (interior NULs kept).
+- `readers`: the string functions (`Known::string_arguments`: `strlen`,
+  `strnlen`, `strcmp`, `strncmp`, `strspn`, `strcspn`, `ato*`, `atof`) the local
+  is passed to outside a macro expansion, where every other string argument of
+  that call also has a view (a literal, a constant-string local, or a
+  `c_string` parameter). A local with no such reader gets no fact.
+- `only_read_as_string`: every read is one of those arguments.
 
-The Rust-side `libc_call` and `getenv_var` rules are deleted.
+A local whose literal has an interior NUL keeps the fact only when it is only
+read as a string, since nothing else could observe the bytes after the NUL;
+partners settle by fixpoint.
+
+Lowering (`frontend/lowerer/string_views.rs`) picks the local's type from the
+fact and declares it from the bytes:
+
+- `&str` when only read as a string, the content (up to the first NUL) is
+  UTF-8, and every `ato*` reader's content parses cleanly as that type.
+- `&CStr` when some reader is not `ato*` and the literal has no interior NUL
+  (or the local is only read as a string). Every other read lowers to
+  `s.as_ptr()`.
+- otherwise the raw pointer, as before.
+
+A call to a string function whose string arguments all have views lowers by
+mode: all `&str` or UTF-8 literals use `str` methods, all `&CStr` or literals
+use `CStr` (`count_bytes`, `c"..."`), a mix compares bytes
+(`as_bytes`/`to_bytes`). `strcmp(a, b) <op> 0` fuses to `a <op> b`; a bare
+`strcmp` is `a.cmp(b) as i32`. `strncmp(a, lit, n) == 0` with a constant `n`
+becomes `a.starts_with(&lit[..n])` (or `a == lit` when `n` passes the
+terminator), else `a.bytes().take(n).eq(..)`. `strspn`/`strcspn` call
+`slate_support::__slate_strspn`/`__slate_strcspn`, and `ato*` on a clean
+literal or `&str` is `s.parse::<T>().unwrap()`.
+
+Other libc lowering stays in `frontend/lowerer/libc_calls.rs`: `exit`/`abort`
+become `std::process` calls, remaining `ato*` call
+`slate_support::__slate_ato*` (core-only, ungated in `slate_support`; the
+per-file prelude is gone), `memcpy`/`memmove`/`memset` on decayed local byte
+arrays with a constant length become `copy_from_slice`/`copy_within`/`fill`,
+and `memcmp` of borrowed `&[u8]` parameters becomes a slice `cmp`.
+
+Freestanding units (`slate-3amj.56`) give plain libc names no identity, so only
+`__builtin_*` forms reach these lowerings; every form above needs only `core`.
 
 ## Effect summaries
 

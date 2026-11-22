@@ -40,8 +40,17 @@ int main(void) {
 // CHECK-NEXT:         unsafe { (strlen(word as *const core::ffi::c_char) as u64) as i32 }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let fixed: *const i8 = c"alpha".as_ptr();
-// CHECK-NEXT:     let alias: *const i8 = fixed;
-// CHECK-NEXT:     println!("{} {} {}", (0i32 == 0) as i32, 5u64 as i32, -42i32);
+// CHECK-NEXT:     let alias: &str = "alpha";
+// CHECK-NEXT:     println!(
+// CHECK-NEXT:         "{} {} {}",
+// CHECK-NEXT:         (alias == "alpha") as i32,
+// CHECK-NEXT:         (alias.len() as u64) as i32,
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::__slate_atoi(
+// CHECK-NEXT:                 (c"  -42x".as_ptr() as *const core::ffi::c_char) as *const i8,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         }
+// CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

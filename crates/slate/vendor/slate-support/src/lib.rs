@@ -1,6 +1,9 @@
 #![no_std]
 #![allow(non_camel_case_types, non_upper_case_globals)]
 
+mod strings;
+pub use strings::*;
+
 #[cfg(feature = "hosted")]
 mod hosted;
 #[cfg(feature = "hosted")]

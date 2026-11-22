@@ -30,7 +30,7 @@ second)";
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let plain: *const i8 = c"gnu\\n".as_ptr();
+// CHECK-NEXT:     let plain: &core::ffi::CStr = c"gnu\\n";
 // CHECK-NEXT:     let delimited: *const i8 = c"a)\"b".as_ptr();
 // CHECK-NEXT:     let multiline: *const i8 = c"first\nsecond".as_ptr();
 // CHECK-NEXT:     let utf8: *const i8 = c"A".as_ptr();
@@ -40,7 +40,7 @@ second)";
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%s|%s|%s|%s|%s|%s\n".as_ptr(),
-// CHECK-NEXT:             plain,
+// CHECK-NEXT:             plain.as_ptr() as *const i8,
 // CHECK-NEXT:             delimited,
 // CHECK-NEXT:             multiline,
 // CHECK-NEXT:             utf8,
@@ -53,7 +53,7 @@ second)";
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"%zu %zu %zu %d\n".as_ptr(),
-// CHECK-NEXT:             5u64,
+// CHECK-NEXT:             plain.count_bytes() as u64,
 // CHECK-NEXT:             core::mem::size_of::<[i8; 3]>() as u64,
 // CHECK-NEXT:             wcslen(wide as *const i32) as u64,
 // CHECK-NEXT:             *wide.add(1) as i32,

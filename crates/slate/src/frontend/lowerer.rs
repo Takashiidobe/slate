@@ -42,6 +42,7 @@ mod pointers;
 mod selectany;
 mod statements;
 mod stdio;
+mod string_views;
 mod structure;
 mod sve;
 mod sve_table;
@@ -62,6 +63,7 @@ use functions::*;
 use globals::*;
 use names::*;
 use pointers::*;
+use string_views::LocalString;
 use types::*;
 use values::*;
 
@@ -402,8 +404,8 @@ impl Tables<'_> {
             .and_then(|fact| fact.borrow)
     }
 
-    fn constant_string_of(&self, binding: BindingId) -> Option<Vec<u8>> {
-        self.facts.binding(binding)?.constant_string.clone()
+    fn constant_string_of(&self, binding: BindingId) -> Option<&slate_analysis::ConstantString> {
+        self.facts.binding(binding)?.constant_string.as_ref()
     }
 
     fn c_string_of(&self, binding: BindingId) -> bool {

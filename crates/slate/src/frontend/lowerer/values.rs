@@ -1697,6 +1697,9 @@ impl FunctionLowerer<'_, '_> {
             }
             ValueKind::Compare {
                 op, left, right, ..
+            } if let Some(fused) = self.string_comparison(*op, left, right).transpose() => fused?,
+            ValueKind::Compare {
+                op, left, right, ..
             } => {
                 let is_decay = |operand: &ir::Value| {
                     matches!(operand.node.value, ValueKind::FunctionDecay { .. })

@@ -19,6 +19,7 @@ mod pointer;
 mod program;
 pub mod transform;
 
+pub use constant_strings::ConstantString;
 pub use counted_loops::CountedLoop;
 pub use facts::{BindingFacts, Facts, UnitFacts, ValueFacts, analyze};
 pub use identity::{FunctionIdentity, Known};

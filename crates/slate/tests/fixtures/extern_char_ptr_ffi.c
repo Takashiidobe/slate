@@ -13,10 +13,10 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let msg: *const i8 = c"hello".as_ptr();
-// CHECK-NEXT:     let n: u64 = 5u64;
+// CHECK-NEXT:     let msg: &core::ffi::CStr = c"hello";
+// CHECK-NEXT:     let n: u64 = msg.count_bytes() as u64;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     unsafe { slate_support::puts(msg) };
+// CHECK-NEXT:     unsafe { slate_support::puts(msg.as_ptr() as *const i8) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%zu\n".as_ptr(), n) };

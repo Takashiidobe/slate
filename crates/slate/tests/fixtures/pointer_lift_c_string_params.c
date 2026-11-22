@@ -33,31 +33,17 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: use slate_support::strncmp;
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn is_keyword(word: &core::ffi::CStr) -> i32 {
-// CHECK-NEXT:     ((unsafe {
-// CHECK-NEXT:         strcmp(
-// CHECK-NEXT:             (word.as_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:             c"if".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:         ) as i32
-// CHECK-NEXT:     }) == 0
-// CHECK-NEXT:         || (unsafe {
-// CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (word.as_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:                 c"while".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32
+// CHECK-NEXT:     (word == c"if" || word == c"while") as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn keyword_length(word: &core::ffi::CStr) -> i32 {
 // CHECK-NEXT:     if is_keyword(word) != 0 {
-// CHECK-NEXT:         (unsafe {
-// CHECK-NEXT:             (strlen((word.as_ptr() as *const i8) as *const core::ffi::c_char) as u64)
-// CHECK-NEXT:                 as i32
-// CHECK-NEXT:         }) + (((unsafe { *(word.as_ptr() as *const i8).add(0) as i32 }) == 119) as i32)
+// CHECK-NEXT:         ((word.count_bytes() as u64) as i32)
+// CHECK-NEXT:             + (((unsafe { *(word.as_ptr() as *const i8).add(0) as i32 }) == 119) as i32)
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         0
 // CHECK-NEXT:     }
@@ -68,8 +54,7 @@ int main(void) {
 // CHECK-NEXT:         strncmp(
 // CHECK-NEXT:             word as *const core::ffi::c_char,
 // CHECK-NEXT:             (start.as_ptr() as *const i8) as *const core::ffi::c_char,
-// CHECK-NEXT:             (strlen((start.as_ptr() as *const i8) as *const core::ffi::c_char) as u64)
-// CHECK-NEXT:                 as usize,
+// CHECK-NEXT:             (start.count_bytes() as u64) as usize,
 // CHECK-NEXT:         ) as i32
 // CHECK-NEXT:     }) == 0) as i32
 // CHECK-NEXT: }

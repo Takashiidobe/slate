@@ -988,6 +988,10 @@ fn write_slate_support(crate_dir: &Path) -> Result<(), String> {
     write_file(
         &src_dir.join("hosted.rs"),
         include_str!("../vendor/slate-support/src/hosted.rs"),
+    )?;
+    write_file(
+        &src_dir.join("strings.rs"),
+        include_str!("../vendor/slate-support/src/strings.rs"),
     )
 }
 
