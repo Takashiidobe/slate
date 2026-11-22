@@ -62,7 +62,7 @@ fn suffixed_literal(expr: &Expr, ty: &Type) -> Option<String> {
 
 fn starts_with_brace_expr(expr: &Expr) -> bool {
     match expr {
-        Expr::Var(name) => name.as_str().starts_with('$'),
+        Expr::Var { name, .. } => name.as_str().starts_with('$'),
         _ => matches!(
             expr,
             Expr::Block(_)
@@ -145,7 +145,7 @@ const FLAT_MARGIN: isize = 0x8000;
 
 fn macro_list_hole(expr: &Expr) -> Option<&str> {
     match expr {
-        Expr::Var(name) => name.as_str().strip_prefix(MACRO_LIST_HOLE),
+        Expr::Var { name, .. } => name.as_str().strip_prefix(MACRO_LIST_HOLE),
         _ => None,
     }
 }
@@ -1439,12 +1439,15 @@ impl Codegen {
 
     fn chain_segment(&mut self, expr: &Expr) {
         let (recv, method, type_args, args) = match expr {
-            Expr::MethodCall { recv, method, args } => (recv, method, None, args),
+            Expr::MethodCall {
+                recv, method, args, ..
+            } => (recv, method, None, args),
             Expr::MethodCallGeneric {
                 recv,
                 method,
                 type_args,
                 args,
+                ..
             } => (recv, method, Some(type_args), args),
             _ => unreachable!(),
         };
@@ -1526,7 +1529,7 @@ impl Codegen {
                 self.word(fields);
                 self.word(")");
             }
-            Expr::Var(s) => match macro_list_hole(expr) {
+            Expr::Var { name: s, .. } => match macro_list_hole(expr) {
                 Some(name) => self.word(format!("$(${name}),*")),
                 None => self.ident(s.as_str()),
             },
@@ -1563,7 +1566,7 @@ impl Codegen {
                 self.call_tail(args);
             }
             Expr::MethodCall { .. } | Expr::MethodCallGeneric { .. } => self.method_chain(expr),
-            Expr::Field { base, field } => {
+            Expr::Field { base, field, .. } => {
                 self.expr_prec(base, Precedence::Call.level());
                 self.word(".");
                 self.ident(field);

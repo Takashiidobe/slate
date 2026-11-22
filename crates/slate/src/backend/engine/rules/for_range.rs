@@ -29,7 +29,7 @@ pub(super) fn int_value(expr: &Expr) -> Option<i128> {
 }
 
 fn is_var(expr: &Expr, name: Ident) -> bool {
-    matches!(expr, Expr::Var(v) if *v == name)
+    matches!(expr, Expr::Var { name: v, .. } if *v == name)
 }
 
 fn is_unit_increment(arena: &Arena, id: NodeId, ind_var: Ident) -> bool {
@@ -50,7 +50,9 @@ fn is_unit_increment(arena: &Arena, id: NodeId, ind_var: Ident) -> bool {
         }) => is_var(target, ind_var) && is_var(lhs, ind_var) && int_value(rhs) == Some(1),
         Some(NodeKind::Assign {
             target,
-            value: Expr::MethodCall { recv, method, args },
+            value: Expr::MethodCall {
+                recv, method, args, ..
+            },
         }) => {
             is_var(target, ind_var)
                 && is_var(recv, ind_var)
@@ -94,7 +96,7 @@ pub(super) fn subtree_ids(arena: &Arena, id: NodeId, out: &mut Vec<NodeId>) {
 fn loop_invariant(arena: &FunctionOptimizer, expr: &Expr, region: &[NodeId]) -> bool {
     match expr {
         Expr::Value(_) => true,
-        Expr::Var(name) => invariant_within(arena, *name, region),
+        Expr::Var { name, .. } => invariant_within(arena, *name, region),
         Expr::Cast { expr, .. }
         | Expr::Unary {
             op: UnaryOp::Neg | UnaryOp::Not,
@@ -142,7 +144,7 @@ fn plan(arena: &FunctionOptimizer, while_id: NodeId) -> Option<RecoveredFor> {
     else {
         return None;
     };
-    let Expr::Var(ind_var) = **lhs else {
+    let Expr::Var { name: ind_var, .. } = **lhs else {
         return None;
     };
     let (&increment_id, body) = stmts.split_last()?;
@@ -172,7 +174,7 @@ fn plan(arena: &FunctionOptimizer, while_id: NodeId) -> Option<RecoveredFor> {
     }
     let (start, start_id, decl_id) = match arena.get(*earlier.last()?)? {
         NodeKind::Assign {
-            target: Expr::Var(name),
+            target: Expr::Var { name, .. },
             value: start,
         } if *name == ind_var => {
             if init

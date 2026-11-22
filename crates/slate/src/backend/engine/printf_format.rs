@@ -4,7 +4,7 @@ use slate_parser::target_info::{TargetInfo, TargetOs};
 
 use crate::backend::rust_ast::{
     Block, CLibType, Expr, ExternDecl, ExternFnDecl, FnParam, Ident, ImplItem, Item, Path, Program,
-    RustValue, Stmt, Type,
+    RustValue, Stmt, Type, Unsafe,
 };
 use crate::function_identity::{CallBinding, FunctionIdentity, Known};
 
@@ -27,7 +27,9 @@ fn literal_c_string(expr: &Expr) -> Option<Vec<u8>> {
     loop {
         match current {
             Expr::Cast { expr, .. } => current = expr,
-            Expr::MethodCall { recv, method, args } if method == "as_ptr" && args.is_empty() => {
+            Expr::MethodCall {
+                recv, method, args, ..
+            } if method == "as_ptr" && args.is_empty() => {
                 return match recv.as_ref() {
                     Expr::CStr(bytes) => Some(bytes.clone()),
                     Expr::ByteStr(bytes) => {
@@ -127,7 +129,7 @@ fn is_stdout_writer_call(expr: &Expr, writer_names: &HashSet<String>) -> bool {
             true
         }
         Expr::Call { func, binding, .. } => match func.as_ref() {
-            Expr::Var(name) => {
+            Expr::Var { name, .. } => {
                 writer_names.contains(name.as_str())
                     || (binding.is_header_inline() && is_stdout_writer_symbol(name.as_str()))
             }
@@ -239,6 +241,7 @@ fn path_call(segments: &[&str], args: Vec<Expr>) -> Expr {
             segments.iter().copied().map(Ident::from),
         ))),
         args,
+        unsafe_: Unsafe(false),
     }
 }
 
@@ -274,8 +277,9 @@ fn fflush_all_stmt() -> Stmt {
             trusted_declaration: None,
             trusted_headers: Default::default(),
         },
-        func: Box::new(Expr::Var("fflush".into())),
+        func: Box::new(Expr::var("fflush".into())),
         args: vec![Expr::Value(RustValue::NullPtr)],
+        unsafe_: Unsafe(true),
     };
     Stmt::Expr(Expr::Unsafe(Box::new(Block {
         stmts: Vec::new(),
@@ -330,7 +334,7 @@ fn try_convert(stmt: &Stmt) -> Option<Vec<Stmt>> {
                 ty: None,
                 init: Some(arg),
             });
-            macro_args.push(Expr::Var(Ident::from(name)));
+            macro_args.push(Expr::var(Ident::from(name)));
         } else {
             macro_args.push(arg);
         }
@@ -360,7 +364,7 @@ fn wrap_stdout_writer_preserving_tail(stmt: Stmt) -> Vec<Stmt> {
             init: Some(inner_expr),
         },
         fflush_all_stmt(),
-        Stmt::Expr(Expr::Var(STDOUT_TAIL_TEMP.into())),
+        Stmt::Expr(Expr::var(STDOUT_TAIL_TEMP.into())),
     ]
 }
 

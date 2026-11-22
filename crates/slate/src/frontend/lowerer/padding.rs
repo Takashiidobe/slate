@@ -138,12 +138,13 @@ impl FunctionLowerer<'_, '_> {
             }),
         }];
         let at = |offset: usize| Expr::MethodCall {
-            recv: Box::new(Expr::Var(bytes.as_str().into())),
+            recv: Box::new(Expr::var(bytes.as_str().into())),
             method: "add".into(),
             args: vec![Expr::Value(rust::RustValue::TypedUInt(
                 offset as u128,
                 Prim::Usize,
             ))],
+            unsafe_: rust::Unsafe(true),
         };
         let mut start = 0;
         while start < keep.len() {
@@ -161,10 +162,11 @@ impl FunctionLowerer<'_, '_> {
                         Expr::Value(rust::RustValue::TypedUInt(0, Prim::U8)),
                         Expr::Value(rust::RustValue::TypedUInt(length as u128, Prim::Usize)),
                     ],
+                    unsafe_: rust::Unsafe(true),
                 })),
                 mask => stmts.extend((start..start + length).map(|offset| Stmt::CompoundAssign {
                     target: Expr::Unary {
-                        op: rust::UnaryOp::Deref,
+                        op: rust::UnaryOp::Deref(rust::Pointee::Raw),
                         expr: Box::new(at(offset)),
                     },
                     op: rust::BinOp::BitAnd,

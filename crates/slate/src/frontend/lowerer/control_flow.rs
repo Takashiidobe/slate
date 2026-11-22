@@ -703,7 +703,7 @@ pub(super) fn state(index: usize) -> Expr {
 fn jump(index: usize) -> Vec<Stmt> {
     vec![
         Stmt::Assign {
-            target: Expr::Var("__slate_state".into()),
+            target: Expr::var("__slate_state".into()),
             value: state(index),
         },
         Stmt::Continue(Some(rust::Label::new("__slate_dispatch"))),
@@ -746,6 +746,7 @@ impl FunctionLowerer<'_, '_> {
                 ))),
                 args: Vec::new(),
                 binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(false),
             }
         })
     }
@@ -755,7 +756,7 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn slot_pointer(&self, id: BindingId) -> Expr {
-        Expr::Var(self.slot_name(id).into())
+        Expr::var(self.slot_name(id).into())
     }
 
     fn vla_name(&self, id: BindingId) -> String {
@@ -763,11 +764,11 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn vla_storage(&self, id: BindingId) -> Expr {
-        Expr::Var(self.vla_name(id).into())
+        Expr::var(self.vla_name(id).into())
     }
 
     fn cleanup_armed(&self, id: BindingId) -> Expr {
-        Expr::Var(format!("__slate_cleanup_armed_{}", self.local_index(id)).into())
+        Expr::var(format!("__slate_cleanup_armed_{}", self.local_index(id)).into())
     }
 
     fn set_cleanup_armed(&self, id: BindingId, armed: bool) -> Stmt {
@@ -775,6 +776,7 @@ impl FunctionLowerer<'_, '_> {
             recv: Box::new(self.cleanup_armed(id)),
             method: "set".into(),
             args: vec![Expr::Value(rust::RustValue::Bool(armed))],
+            unsafe_: rust::Unsafe(false),
         })
     }
 
@@ -784,13 +786,10 @@ impl FunctionLowerer<'_, '_> {
             .ok_or(Invariant::UnknownCallee(variable.id))?;
         let index = self.local_index(variable.id);
         let pointer = format!("__slate_cleanup_ptr_{index}");
-        let call = self.cleanup_call(cleanup, Expr::Var(pointer.as_str().into()))?;
+        let call = self.cleanup_call(cleanup, Expr::var(pointer.as_str().into()))?;
         let call = match call {
             call @ Expr::Unsafe(_) => call,
-            call => Expr::Unsafe(Box::new(rust::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(call)),
-            })),
+            call => unsafe_op(call),
         };
         Ok([
             Stmt::Let {
@@ -806,9 +805,10 @@ impl FunctionLowerer<'_, '_> {
                 mutable: false,
                 ty: None,
                 init: Some(Expr::Call {
-                    func: Box::new(Expr::Var("core::cell::Cell::new".into())),
+                    func: Box::new(Expr::var("core::cell::Cell::new".into())),
                     args: vec![Expr::Value(rust::RustValue::Bool(false))],
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 }),
             },
             Stmt::Let {
@@ -817,7 +817,7 @@ impl FunctionLowerer<'_, '_> {
                 mutable: false,
                 ty: None,
                 init: Some(Expr::Call {
-                    func: Box::new(Expr::Var("::slate_support::Guard".into())),
+                    func: Box::new(Expr::var("::slate_support::Guard".into())),
                     args: vec![Expr::Ref {
                         mutable: true,
                         expr: Box::new(Expr::Closure {
@@ -828,6 +828,7 @@ impl FunctionLowerer<'_, '_> {
                                         recv: Box::new(self.cleanup_armed(variable.id)),
                                         method: "get".into(),
                                         args: Vec::new(),
+                                        unsafe_: rust::Unsafe(false),
                                     },
                                     then_body: vec![Stmt::Expr(call)],
                                     else_body: Vec::new(),
@@ -837,6 +838,7 @@ impl FunctionLowerer<'_, '_> {
                         }),
                     }],
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 }),
             },
         ])
@@ -906,9 +908,10 @@ impl FunctionLowerer<'_, '_> {
                     mutable: true,
                     ty: Some(self.vla_vec_type(ir_ty)?),
                     init: Some(Expr::Call {
-                        func: Box::new(Expr::Var("Vec::new".into())),
+                        func: Box::new(Expr::var("Vec::new".into())),
                         args: Vec::new(),
                         binding: CallBinding::Generated,
+                        unsafe_: rust::Unsafe(false),
                     }),
                 });
                 continue;
@@ -936,9 +939,10 @@ impl FunctionLowerer<'_, '_> {
                     args: vec![stored],
                 }),
                 init: Some(Expr::Call {
-                    func: Box::new(Expr::Var("core::mem::MaybeUninit::uninit".into())),
+                    func: Box::new(Expr::var("core::mem::MaybeUninit::uninit".into())),
                     args: Vec::new(),
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 }),
             });
             let pointer = rust::Type::Ptr {
@@ -953,7 +957,7 @@ impl FunctionLowerer<'_, '_> {
                 init: Some(Expr::Cast {
                     expr: Box::new(Expr::AddrOf {
                         mutable: true,
-                        expr: Box::new(Expr::Var(storage.into())),
+                        expr: Box::new(Expr::var(storage.into())),
                     }),
                     ty: pointer,
                 }),
@@ -975,6 +979,7 @@ impl FunctionLowerer<'_, '_> {
                 ))),
                 args: Vec::new(),
                 binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(false),
             })],
             false => jump(index),
         };
@@ -1044,9 +1049,10 @@ impl FunctionLowerer<'_, '_> {
                                 }]
                             }
                             Some((id, Some(initializer))) => vec![Stmt::Expr(Expr::Call {
-                                func: Box::new(Expr::Var("core::ptr::write".into())),
+                                func: Box::new(Expr::var("core::ptr::write".into())),
                                 args: vec![self.slot_pointer(id), self.lower_value(initializer)?],
                                 binding: CallBinding::Generated,
+                                unsafe_: rust::Unsafe(true),
                             })],
                             Some((_, None))
                                 if let ir::Statement::Let(variable) = &statement.value
@@ -1054,9 +1060,10 @@ impl FunctionLowerer<'_, '_> {
                             {
                                 if let Some(value) = self.auto_init_value(&variable.ty, auto)? {
                                     vec![Stmt::Expr(Expr::Call {
-                                        func: Box::new(Expr::Var("core::ptr::write".into())),
+                                        func: Box::new(Expr::var("core::ptr::write".into())),
                                         args: vec![self.slot_pointer(variable.id), value],
                                         binding: CallBinding::Generated,
+                                        unsafe_: rust::Unsafe(true),
                                     })]
                                 } else {
                                     let target = Expr::Cast {
@@ -1114,7 +1121,7 @@ impl FunctionLowerer<'_, '_> {
                         let name = self.next_temp();
                         let mut dispatch = jump(default);
                         for case in cases {
-                            let discriminant = Expr::Var(name.as_str().into());
+                            let discriminant = Expr::var(name.as_str().into());
                             let start = self.lower_switch_operand(case.start)?.0;
                             let cond = match case.end {
                                 Some(end) => Expr::Binary {
@@ -1195,7 +1202,7 @@ impl FunctionLowerer<'_, '_> {
                         ];
                         let mut dispatch = jump(next);
                         for (index, label) in labels.iter().enumerate().rev() {
-                            let target = Expr::Var(ASM_TARGET.into());
+                            let target = Expr::var(ASM_TARGET.into());
                             dispatch = vec![Stmt::If {
                                 cond: if single {
                                     target
@@ -1275,7 +1282,7 @@ impl FunctionLowerer<'_, '_> {
                 stmts: vec![Stmt::Loop {
                     label: Some(rust::Label::new("__slate_dispatch")),
                     body: vec![Stmt::Match {
-                        expr: Expr::Var("__slate_state".into()),
+                        expr: Expr::var("__slate_state".into()),
                         arms,
                     }],
                 }],

@@ -186,15 +186,36 @@ pub(super) fn prim_width(prim: Prim) -> u32 {
     }
 }
 
-pub(super) fn zeroed() -> Expr {
+pub(super) fn mark_unsafe(expr: &mut Expr) {
+    match expr {
+        Expr::Cast { expr, .. } => mark_unsafe(expr),
+        Expr::Var { unsafe_, .. }
+        | Expr::Call { unsafe_, .. }
+        | Expr::MethodCall { unsafe_, .. }
+        | Expr::MethodCallGeneric { unsafe_, .. } => *unsafe_ = rust::Unsafe(true),
+        _ => {}
+    }
+}
+
+pub(super) fn unsafe_wrap(expr: Expr) -> Expr {
     Expr::Unsafe(Box::new(rust::Block {
         stmts: Vec::new(),
-        tail: Some(Box::new(Expr::Call {
-            func: Box::new(Expr::Var("core::mem::zeroed".into())),
-            args: Vec::new(),
-            binding: CallBinding::Generated,
-        })),
+        tail: Some(Box::new(expr)),
     }))
+}
+
+pub(super) fn unsafe_op(mut expr: Expr) -> Expr {
+    mark_unsafe(&mut expr);
+    unsafe_wrap(expr)
+}
+
+pub(super) fn zeroed() -> Expr {
+    unsafe_op(Expr::Call {
+        func: Box::new(Expr::var("core::mem::zeroed".into())),
+        args: Vec::new(),
+        binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(false),
+    })
 }
 
 impl FunctionLowerer<'_, '_> {
@@ -222,10 +243,7 @@ impl FunctionLowerer<'_, '_> {
             .is_some_and(|name| name.weak_extern)
         {
             let name = &self.tables.names[&id];
-            return Ok(Expr::Unsafe(Box::new(rust::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(Expr::Var(name.rust.as_str().into()))),
-            })));
+            return Ok(unsafe_op(Expr::var(name.rust.as_str().into())));
         }
         self.dependencies.taken_functions.insert(id);
         if self.tables.names.contains_key(&id)
@@ -239,9 +257,10 @@ impl FunctionLowerer<'_, '_> {
                     self.dependencies.address_taken.insert(name.rust.clone());
                 }
                 Expr::Call {
-                    func: Box::new(Expr::Var("Some".into())),
-                    args: vec![Expr::Var(name.rust.as_str().into())],
+                    func: Box::new(Expr::var("Some".into())),
+                    args: vec![Expr::var(name.rust.as_str().into())],
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 }
             }
             Some(name) => {
@@ -253,7 +272,7 @@ impl FunctionLowerer<'_, '_> {
                     from: address.clone(),
                     to: self.lower_type(&value.ty)?,
                     expr: Box::new(Expr::Cast {
-                        expr: Box::new(Expr::Var(name.rust.as_str().into())),
+                        expr: Box::new(Expr::var(name.rust.as_str().into())),
                         ty: address,
                     }),
                 }
@@ -285,7 +304,7 @@ impl FunctionLowerer<'_, '_> {
             _ => return Err(unsupported_value(value)),
         };
         let [bits, otherwise] = [self.next_temp(), self.next_temp()];
-        let var = |name: &String| Expr::Var(name.as_str().into());
+        let var = |name: &String| Expr::var(name.as_str().into());
         let bind = |name: &String, init: Expr| Stmt::Let {
             origin: rust::LocalOrigin::Synthetic,
             name: name.clone(),
@@ -323,7 +342,7 @@ impl FunctionLowerer<'_, '_> {
             return Err(unsupported_value(value));
         };
         let bits = self.next_temp();
-        let var = || Expr::Var(bits.as_str().into());
+        let var = || Expr::var(bits.as_str().into());
         let result = self.lower_type(&value.ty)?;
         let one = || Expr::Cast {
             expr: Box::new(Expr::Value(rust::RustValue::U128(1))),
@@ -340,6 +359,7 @@ impl FunctionLowerer<'_, '_> {
                 recv: Box::new(var()),
                 method: "redundant_sign_bits".into(),
                 args: Vec::new(),
+                unsafe_: rust::Unsafe(false),
             }
         } else {
             Expr::Binary {
@@ -388,7 +408,7 @@ impl FunctionLowerer<'_, '_> {
             return Err(unsupported_value(value));
         };
         let bits = self.next_temp();
-        let var = || Expr::Var(bits.as_str().into());
+        let var = || Expr::var(bits.as_str().into());
         let result = self.lower_type(&value.ty)?;
         Ok(Expr::Block(Box::new(rust::Block {
             stmts: vec![Stmt::Let {
@@ -554,25 +574,21 @@ impl FunctionLowerer<'_, '_> {
                     return Err(unsupported_value(value));
                 }
                 self.dependencies.win64_va = true;
-                Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::Call {
-                        func: Box::new(Expr::GenericPath {
-                            path: rust::Path::new(
-                                ["__slate_win64_va", "arg"].map(rust::Ident::from),
-                            ),
-                            type_args: vec![
-                                rust::Type::Custom("_".into()),
-                                self.lower_type(&value.ty)?,
-                            ],
-                        }),
-                        args: vec![Expr::AddrOf {
-                            mutable: true,
-                            expr: Box::new(self.lower_place(list)?),
-                        }],
-                        binding: CallBinding::Generated,
-                    })),
-                }))
+                unsafe_op(Expr::Call {
+                    func: Box::new(Expr::GenericPath {
+                        path: rust::Path::new(["__slate_win64_va", "arg"].map(rust::Ident::from)),
+                        type_args: vec![
+                            rust::Type::Custom("_".into()),
+                            self.lower_type(&value.ty)?,
+                        ],
+                    }),
+                    args: vec![Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(self.lower_place(list)?),
+                    }],
+                    binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
+                })
             }
             ValueKind::VaArg { list, passing, .. }
                 if self.tables.target.family == TargetFamily::AArch64
@@ -584,25 +600,23 @@ impl FunctionLowerer<'_, '_> {
                 } else {
                     "arg"
                 };
-                Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::Call {
-                        func: Box::new(Expr::GenericPath {
-                            path: rust::Path::new(
-                                ["__slate_darwin_arm64_va", function].map(rust::Ident::from),
-                            ),
-                            type_args: vec![
-                                rust::Type::Custom("_".into()),
-                                self.lower_type(&value.ty)?,
-                            ],
-                        }),
-                        args: vec![Expr::AddrOf {
-                            mutable: true,
-                            expr: Box::new(self.lower_place(list)?),
-                        }],
-                        binding: CallBinding::Generated,
-                    })),
-                }))
+                unsafe_op(Expr::Call {
+                    func: Box::new(Expr::GenericPath {
+                        path: rust::Path::new(
+                            ["__slate_darwin_arm64_va", function].map(rust::Ident::from),
+                        ),
+                        type_args: vec![
+                            rust::Type::Custom("_".into()),
+                            self.lower_type(&value.ty)?,
+                        ],
+                    }),
+                    args: vec![Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(self.lower_place(list)?),
+                    }],
+                    binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
+                })
             }
             ValueKind::VaArg { list, passing, .. } if *passing != ir::VaPassing::Scalar => {
                 let usize_arg = |n: u8| Expr::Value(rust::RustValue::Usize(usize::from(n)));
@@ -661,20 +675,18 @@ impl FunctionLowerer<'_, '_> {
                     expr: Box::new(self.lower_place(list)?),
                 }];
                 args.extend(extra);
-                Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::Call {
-                        func: Box::new(Expr::GenericPath {
-                            path: rust::Path::new([module, function].map(rust::Ident::from)),
-                            type_args: vec![
-                                rust::Type::Custom("_".into()),
-                                self.lower_type(&value.ty)?,
-                            ],
-                        }),
-                        args,
-                        binding: CallBinding::Generated,
-                    })),
-                }))
+                unsafe_op(Expr::Call {
+                    func: Box::new(Expr::GenericPath {
+                        path: rust::Path::new([module, function].map(rust::Ident::from)),
+                        type_args: vec![
+                            rust::Type::Custom("_".into()),
+                            self.lower_type(&value.ty)?,
+                        ],
+                    }),
+                    args,
+                    binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
+                })
             }
             ValueKind::VaArg { list, .. }
                 if let Some((fits_registers, read_ty)) = self.tables.wide_va_arg(&value.ty) =>
@@ -704,17 +716,15 @@ impl FunctionLowerer<'_, '_> {
                     expr: Box::new(self.lower_place(list)?),
                 }];
                 args.extend(extra);
-                Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::Call {
-                        func: Box::new(Expr::GenericPath {
-                            path: rust::Path::new([module, function].map(rust::Ident::from)),
-                            type_args: vec![rust::Type::Custom("_".into()), read_ty],
-                        }),
-                        args,
-                        binding: CallBinding::Generated,
-                    })),
-                }))
+                unsafe_op(Expr::Call {
+                    func: Box::new(Expr::GenericPath {
+                        path: rust::Path::new([module, function].map(rust::Ident::from)),
+                        type_args: vec![rust::Type::Custom("_".into()), read_ty],
+                    }),
+                    args,
+                    binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
+                })
             }
             ValueKind::VaArg { list, .. }
                 if self.tables.target.family == TargetFamily::X86
@@ -722,25 +732,21 @@ impl FunctionLowerer<'_, '_> {
             {
                 self.dependencies.long_double = true;
                 self.dependencies.i386_va = true;
-                Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::Call {
-                        func: Box::new(Expr::GenericPath {
-                            path: rust::Path::new(
-                                ["__slate_i386_va", "arg"].map(rust::Ident::from),
-                            ),
-                            type_args: vec![
-                                rust::Type::Custom("_".into()),
-                                self.lower_type(&value.ty)?,
-                            ],
-                        }),
-                        args: vec![Expr::AddrOf {
-                            mutable: true,
-                            expr: Box::new(self.lower_place(list)?),
-                        }],
-                        binding: CallBinding::Generated,
-                    })),
-                }))
+                unsafe_op(Expr::Call {
+                    func: Box::new(Expr::GenericPath {
+                        path: rust::Path::new(["__slate_i386_va", "arg"].map(rust::Ident::from)),
+                        type_args: vec![
+                            rust::Type::Custom("_".into()),
+                            self.lower_type(&value.ty)?,
+                        ],
+                    }),
+                    args: vec![Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(self.lower_place(list)?),
+                    }],
+                    binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
+                })
             }
             ValueKind::VaArg { list, .. }
                 if self.tables.target.family == TargetFamily::Arm32
@@ -750,37 +756,33 @@ impl FunctionLowerer<'_, '_> {
                     ) =>
             {
                 self.dependencies.arm_va = true;
-                Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::Call {
-                        func: Box::new(Expr::GenericPath {
-                            path: rust::Path::new(["__slate_arm_va", "arg"].map(rust::Ident::from)),
-                            type_args: vec![
-                                rust::Type::Custom("_".into()),
-                                self.lower_type(&value.ty)?,
-                            ],
-                        }),
-                        args: vec![Expr::AddrOf {
-                            mutable: true,
-                            expr: Box::new(self.lower_place(list)?),
-                        }],
-                        binding: CallBinding::Generated,
-                    })),
-                }))
+                unsafe_op(Expr::Call {
+                    func: Box::new(Expr::GenericPath {
+                        path: rust::Path::new(["__slate_arm_va", "arg"].map(rust::Ident::from)),
+                        type_args: vec![
+                            rust::Type::Custom("_".into()),
+                            self.lower_type(&value.ty)?,
+                        ],
+                    }),
+                    args: vec![Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(self.lower_place(list)?),
+                    }],
+                    binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
+                })
             }
             ValueKind::VaArg { list, .. } if self.tables.is_long_double(&value.ty) => {
                 self.dependencies.long_double = true;
-                Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::Call {
-                        func: Box::new(Expr::Var("__slate_f80_va_arg".into())),
-                        args: vec![Expr::AddrOf {
-                            mutable: true,
-                            expr: Box::new(self.lower_place(list)?),
-                        }],
-                        binding: CallBinding::Generated,
-                    })),
-                }))
+                unsafe_op(Expr::Call {
+                    func: Box::new(Expr::var("__slate_f80_va_arg".into())),
+                    args: vec![Expr::AddrOf {
+                        mutable: true,
+                        expr: Box::new(self.lower_place(list)?),
+                    }],
+                    binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
+                })
             }
             ValueKind::VaArg { list, .. }
                 if self.tables.target.family == TargetFamily::AArch64
@@ -790,29 +792,25 @@ impl FunctionLowerer<'_, '_> {
                     ) =>
             {
                 self.dependencies.aapcs_va = true;
-                Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::Call {
-                        func: Box::new(Expr::GenericPath {
-                            path: rust::Path::new(
-                                ["__slate_aapcs_va", "hfa"].map(rust::Ident::from),
-                            ),
-                            type_args: vec![
-                                rust::Type::Custom("_".into()),
-                                self.lower_type(&value.ty)?,
-                            ],
-                        }),
-                        args: vec![
-                            Expr::AddrOf {
-                                mutable: true,
-                                expr: Box::new(self.lower_place(list)?),
-                            },
-                            Expr::Value(rust::RustValue::Usize(1)),
-                            Expr::Value(rust::RustValue::Usize(16)),
+                unsafe_op(Expr::Call {
+                    func: Box::new(Expr::GenericPath {
+                        path: rust::Path::new(["__slate_aapcs_va", "hfa"].map(rust::Ident::from)),
+                        type_args: vec![
+                            rust::Type::Custom("_".into()),
+                            self.lower_type(&value.ty)?,
                         ],
-                        binding: CallBinding::Generated,
-                    })),
-                }))
+                    }),
+                    args: vec![
+                        Expr::AddrOf {
+                            mutable: true,
+                            expr: Box::new(self.lower_place(list)?),
+                        },
+                        Expr::Value(rust::RustValue::Usize(1)),
+                        Expr::Value(rust::RustValue::Usize(16)),
+                    ],
+                    binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
+                })
             }
             ValueKind::VaArg { list, .. } => {
                 if let ir::Type::Defined(id) = *self.tables.resolve_type(&value.ty)
@@ -868,6 +866,7 @@ impl FunctionLowerer<'_, '_> {
                             expr: Box::new(self.lower_place(list)?),
                         }],
                         binding: CallBinding::Generated,
+                        unsafe_: rust::Unsafe(true),
                     }
                 } else {
                     let recv = if self.place_is_unsafe(list) {
@@ -880,31 +879,31 @@ impl FunctionLowerer<'_, '_> {
                         method: "next_arg".into(),
                         type_args: vec![read_ty.clone()],
                         args: Vec::new(),
+                        unsafe_: rust::Unsafe(true),
                     }
                 };
-                Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(if read_ty == ty {
-                        read
-                    } else if ty == rust::Type::Prim(Prim::F16) {
-                        Expr::Call {
-                            func: Box::new(Expr::Var("f16::from_bits".into())),
-                            args: vec![Expr::Cast {
-                                expr: Box::new(Expr::MethodCall {
-                                    recv: Box::new(read),
-                                    method: "to_bits".into(),
-                                    args: Vec::new(),
-                                }),
-                                ty: rust::Type::Prim(Prim::U16),
-                            }],
-                            binding: CallBinding::Generated,
-                        }
-                    } else if matches!(ty, rust::Type::Prim(_)) {
-                        self.narrow_integer(read, &value.ty)?
-                    } else {
-                        convert_function_pointer(read_ty, ty, Box::new(read))
-                    })),
-                }))
+                unsafe_wrap(if read_ty == ty {
+                    read
+                } else if ty == rust::Type::Prim(Prim::F16) {
+                    Expr::Call {
+                        func: Box::new(Expr::var("f16::from_bits".into())),
+                        args: vec![Expr::Cast {
+                            expr: Box::new(Expr::MethodCall {
+                                recv: Box::new(read),
+                                method: "to_bits".into(),
+                                args: Vec::new(),
+                                unsafe_: rust::Unsafe(false),
+                            }),
+                            ty: rust::Type::Prim(Prim::U16),
+                        }],
+                        binding: CallBinding::Generated,
+                        unsafe_: rust::Unsafe(false),
+                    }
+                } else if matches!(ty, rust::Type::Prim(_)) {
+                    self.narrow_integer(read, &value.ty)?
+                } else {
+                    convert_function_pointer(read_ty, ty, Box::new(read))
+                })
             }
             ValueKind::Fence { ordering, scope } => self
                 .lower_fence(*scope, ordering)
@@ -978,16 +977,14 @@ impl FunctionLowerer<'_, '_> {
                         })),
                         method: getter,
                         args: Vec::new(),
+                        unsafe_: rust::Unsafe(false),
                     },
                     None => {
                         self.reject_unaligned_volatile(place)?;
                         places::volatile_read(self.lower_address(place, false)?)
                     }
                 };
-                Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(read)),
-                }))
+                unsafe_op(read)
             }
             ValueKind::Read {
                 place,
@@ -1010,20 +1007,19 @@ impl FunctionLowerer<'_, '_> {
                                 recv: Box::new(address),
                                 method: "read_unaligned".into(),
                                 args: Vec::new(),
+                                unsafe_: rust::Unsafe(true),
                             }),
                         }],
                         tail: Some(Box::new(read)),
                     })));
                 }
                 if let Some(address) = self.erased_field_address(place, false)? {
-                    return Ok(Expr::Unsafe(Box::new(rust::Block {
-                        stmts: Vec::new(),
-                        tail: Some(Box::new(Expr::MethodCall {
-                            recv: Box::new(address),
-                            method: "read_unaligned".into(),
-                            args: Vec::new(),
-                        })),
-                    })));
+                    return Ok(unsafe_op(Expr::MethodCall {
+                        recv: Box::new(address),
+                        method: "read_unaligned".into(),
+                        args: Vec::new(),
+                        unsafe_: rust::Unsafe(true),
+                    }));
                 }
                 if let Some(unaligned) = self.lower_unaligned_read(place)? {
                     return Ok(unaligned);
@@ -1038,6 +1034,7 @@ impl FunctionLowerer<'_, '_> {
                         }),
                         method: getter,
                         args: Vec::new(),
+                        unsafe_: rust::Unsafe(false),
                     },
                     None if self.support_scalar_field(place) => Expr::Cast {
                         expr: Box::new(self.lower_place(place)?),
@@ -1055,10 +1052,7 @@ impl FunctionLowerer<'_, '_> {
                     lowered
                 };
                 if self.place_is_unsafe(place) {
-                    Expr::Unsafe(Box::new(rust::Block {
-                        stmts: Vec::new(),
-                        tail: Some(Box::new(lowered)),
-                    }))
+                    unsafe_op(lowered)
                 } else {
                     lowered
                 }
@@ -1079,13 +1073,10 @@ impl FunctionLowerer<'_, '_> {
             ValueKind::AddressOf(place) | ValueKind::ArrayDecay { place, .. }
                 if let Some(address) = self.erased_field_address(place, true)? =>
             {
-                Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::Cast {
-                        expr: Box::new(address),
-                        ty: self.lower_value_type(value)?,
-                    })),
-                }))
+                unsafe_op(Expr::Cast {
+                    expr: Box::new(address),
+                    ty: self.lower_value_type(value)?,
+                })
             }
             ValueKind::AddressOf(place) | ValueKind::ArrayDecay { place, .. }
                 if let PlaceKind::Field { bits: None, .. } = place.kind
@@ -1114,10 +1105,7 @@ impl FunctionLowerer<'_, '_> {
                         expr: Box::new(self.lower_place(place)?),
                     };
                     if self.place_is_unsafe(place) {
-                        Expr::Unsafe(Box::new(rust::Block {
-                            stmts: Vec::new(),
-                            tail: Some(Box::new(address)),
-                        }))
+                        unsafe_op(address)
                     } else {
                         address
                     }
@@ -1133,6 +1121,7 @@ impl FunctionLowerer<'_, '_> {
                     func: Box::new(vectors::vector_constructor(&ty, "splat")),
                     args: vec![self.lower_value(operand)?],
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 }
             }
             ValueKind::Convert {
@@ -1430,6 +1419,7 @@ impl FunctionLowerer<'_, '_> {
                             recv: Box::new(array),
                             method: if mutable { "as_mut_ptr" } else { "as_ptr" }.into(),
                             args: Vec::new(),
+                            unsafe_: rust::Unsafe(false),
                         };
                         if element.is_some_and(|element| {
                             ty == rust::Type::Ptr {
@@ -1446,10 +1436,7 @@ impl FunctionLowerer<'_, '_> {
                         }
                     };
                     return Ok(if self.place_is_unsafe(place) {
-                        Expr::Unsafe(Box::new(rust::Block {
-                            stmts: Vec::new(),
-                            tail: Some(Box::new(decayed)),
-                        }))
+                        unsafe_op(decayed)
                     } else {
                         decayed
                     });
@@ -1459,6 +1446,7 @@ impl FunctionLowerer<'_, '_> {
                         recv: Box::new(Expr::ByteStr(bytes.clone())),
                         method: "as_ptr".into(),
                         args: Vec::new(),
+                        unsafe_: rust::Unsafe(false),
                     }),
                     ty: self.lower_value_type(value)?,
                 }
@@ -1505,6 +1493,7 @@ impl FunctionLowerer<'_, '_> {
                         overflow_method(*op).ok_or_else(|| unsupported_value(value))?
                     ),
                     args: vec![self.lower_value(right)?],
+                    unsafe_: rust::Unsafe(false),
                 }
             }
             ValueKind::Arith {
@@ -1594,6 +1583,7 @@ impl FunctionLowerer<'_, '_> {
                     }
                     .into(),
                     args: Vec::new(),
+                    unsafe_: rust::Unsafe(false),
                 }
             }
             ValueKind::Unary { op, operand, .. }
@@ -1605,6 +1595,7 @@ impl FunctionLowerer<'_, '_> {
                         recv: Box::new(operand),
                         method: "wrapping_neg".into(),
                         args: Vec::new(),
+                        unsafe_: rust::Unsafe(false),
                     },
                     ir::UnaryArithOp::Not => Expr::Unary {
                         op: rust::UnaryOp::Not,
@@ -1642,6 +1633,7 @@ impl FunctionLowerer<'_, '_> {
                         recv: Box::new(operand),
                         method: "wrapping_neg".into(),
                         args: Vec::new(),
+                        unsafe_: rust::Unsafe(false),
                     },
                     _ => {
                         return Err(unsupported_value(value));
@@ -1679,7 +1671,7 @@ impl FunctionLowerer<'_, '_> {
                                 ty: Some(ty),
                                 init: Some(select),
                             }],
-                            tail: Some(Box::new(Expr::Var(temp.into()))),
+                            tail: Some(Box::new(Expr::var(temp.into()))),
                         }))
                     }
                     _ => select,
@@ -1697,9 +1689,10 @@ impl FunctionLowerer<'_, '_> {
                 ..
             } if let Some(pointer) = self.opaque_null_operand(left, right) => {
                 let is_null = Expr::Call {
-                    func: Box::new(Expr::Var("::slate_support::opaque_is_null".into())),
+                    func: Box::new(Expr::var("::slate_support::opaque_is_null".into())),
                     args: vec![self.lower_value(pointer)?],
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 };
                 match op {
                     ir::CompareOp::Eq => is_null,
@@ -1792,9 +1785,10 @@ impl FunctionLowerer<'_, '_> {
                     ir::FloatClassTest::Zero => 0x60,
                 };
                 Expr::Call {
-                    func: Box::new(Expr::Var("__slate_f80_is_fp_class".into())),
+                    func: Box::new(Expr::var("__slate_f80_is_fp_class".into())),
                     args: vec![lowered, Expr::Value(rust::RustValue::I64(mask))],
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 }
             }
             ValueKind::FloatClass { operand, test }
@@ -1832,6 +1826,7 @@ impl FunctionLowerer<'_, '_> {
                     recv: Box::new(lowered),
                     method: method.into(),
                     args: Vec::new(),
+                    unsafe_: rust::Unsafe(false),
                 }
             }
             ValueKind::Null => self.lower_null(value)?,
@@ -1874,6 +1869,7 @@ impl FunctionLowerer<'_, '_> {
                         expr: Box::new(self.lower_value(count)?),
                         ty: rust::Type::Prim(Prim::U32),
                     }],
+                    unsafe_: rust::Unsafe(false),
                 }
             }
             ValueKind::Call {
@@ -1922,6 +1918,7 @@ impl FunctionLowerer<'_, '_> {
                             }),
                             method: "max".into(),
                             args: vec![usize_value(layout.alignment)],
+                            unsafe_: rust::Unsafe(false),
                         },
                     ),
                     _ => return Err(unsupported_value(value)),
@@ -1930,9 +1927,10 @@ impl FunctionLowerer<'_, '_> {
                 self.dependencies.alloca = true;
                 Expr::Cast {
                     expr: Box::new(Expr::Call {
-                        func: Box::new(Expr::Var("__slate_alloca::alloca".into())),
+                        func: Box::new(Expr::var("__slate_alloca::alloca".into())),
                         args: vec![size, align],
                         binding: CallBinding::Generated,
+                        unsafe_: rust::Unsafe(false),
                     }),
                     ty: self.lower_value_type(value)?,
                 }
@@ -1966,21 +1964,19 @@ impl FunctionLowerer<'_, '_> {
                         inner: Box::new(rust::Type::Prim(Prim::U8)),
                     },
                 };
-                Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::Call {
-                        func: Box::new(Expr::Var("core::ptr::copy_nonoverlapping".into())),
-                        args: vec![
-                            bytes(false, self.lower_value(src)?),
-                            bytes(true, self.lower_value(dst)?),
-                            Expr::Cast {
-                                expr: Box::new(self.lower_value(size)?),
-                                ty: rust::Type::Prim(Prim::Usize),
-                            },
-                        ],
-                        binding: CallBinding::Generated,
-                    })),
-                }))
+                unsafe_op(Expr::Call {
+                    func: Box::new(Expr::var("core::ptr::copy_nonoverlapping".into())),
+                    args: vec![
+                        bytes(false, self.lower_value(src)?),
+                        bytes(true, self.lower_value(dst)?),
+                        Expr::Cast {
+                            expr: Box::new(self.lower_value(size)?),
+                            ty: rust::Type::Prim(Prim::Usize),
+                        },
+                    ],
+                    binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
+                })
             }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),
@@ -1994,7 +1990,7 @@ impl FunctionLowerer<'_, '_> {
                 self.dependencies.builtin_setjmp = true;
                 let buffer_type = rust::Type::Custom("__slate_builtin_setjmp::Buffer".into());
                 let slot = |buf| Expr::Unary {
-                    op: rust::UnaryOp::Deref,
+                    op: rust::UnaryOp::Deref(rust::Pointee::Raw),
                     expr: Box::new(Expr::Cast {
                         expr: Box::new(buf),
                         ty: rust::Type::Ptr {
@@ -2007,11 +2003,12 @@ impl FunctionLowerer<'_, '_> {
                     }),
                 };
                 let call = |function: &str, args| Expr::Call {
-                    func: Box::new(Expr::Var(
+                    func: Box::new(Expr::var(
                         format!("__slate_builtin_setjmp::{function}").into(),
                     )),
                     args,
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 };
                 match arguments.as_slice() {
                     [buf] => {
@@ -2025,7 +2022,7 @@ impl FunctionLowerer<'_, '_> {
                         });
                         let env_ptr = || Expr::AddrOf {
                             mutable: true,
-                            expr: Box::new(Expr::Var(env.as_str().into())),
+                            expr: Box::new(Expr::var(env.as_str().into())),
                         };
                         Expr::Unsafe(Box::new(rust::Block {
                             stmts: vec![Stmt::Assign {
@@ -2038,19 +2035,16 @@ impl FunctionLowerer<'_, '_> {
                             })),
                         }))
                     }
-                    [buf, result] => Expr::Unsafe(Box::new(rust::Block {
-                        stmts: Vec::new(),
-                        tail: Some(Box::new(call(
-                            "_longjmp",
-                            vec![
-                                slot(self.lower_value(buf)?),
-                                Expr::Cast {
-                                    expr: Box::new(self.lower_value(result)?),
-                                    ty: rust::Type::Prim(Prim::I32),
-                                },
-                            ],
-                        ))),
-                    })),
+                    [buf, result] => unsafe_op(call(
+                        "_longjmp",
+                        vec![
+                            slot(self.lower_value(buf)?),
+                            Expr::Cast {
+                                expr: Box::new(self.lower_value(result)?),
+                                ty: rust::Type::Prim(Prim::I32),
+                            },
+                        ],
+                    )),
                     _ => return Err(unsupported_value(value)),
                 }
             }
@@ -2116,6 +2110,7 @@ impl FunctionLowerer<'_, '_> {
                     recv: Box::new(self.lower_value(operand)?),
                     method: "wrapping_abs".into(),
                     args: Vec::new(),
+                    unsafe_: rust::Unsafe(false),
                 }
             }
             ValueKind::Call {
@@ -2176,14 +2171,12 @@ impl FunctionLowerer<'_, '_> {
                     ),
                     _ => return Err(unsupported_value(value)),
                 };
-                Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::Call {
-                        func: Box::new(Expr::Var(hint.into())),
-                        args,
-                        binding: CallBinding::Generated,
-                    })),
-                }))
+                unsafe_op(Expr::Call {
+                    func: Box::new(Expr::var(hint.into())),
+                    args,
+                    binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
+                })
             }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),
@@ -2417,9 +2410,11 @@ impl FunctionLowerer<'_, '_> {
                     recv: Box::new(Expr::Field {
                         base: Box::new(base.clone()),
                         field: bit_unit_name(unit),
+                        union: rust::UnsafeCmp(self.tables.is_union(ty)),
                     }),
                     method: format!("__set_{}", field_name(index)?),
                     args: vec![self.lower_value(&member.value)?],
+                    unsafe_: rust::Unsafe(false),
                 });
                 stmts.push(if self.tables.is_union(ty) {
                     Stmt::Unsafe {
@@ -2446,6 +2441,7 @@ impl FunctionLowerer<'_, '_> {
                                     expr: Box::new(Expr::Field {
                                         base: Box::new(base.clone()),
                                         field: field_name(index)?,
+                                        union: rust::UnsafeCmp(false),
                                     }),
                                 }),
                                 ty: rust::Type::Ptr {
@@ -2455,6 +2451,7 @@ impl FunctionLowerer<'_, '_> {
                             }),
                             method: "write_unaligned".into(),
                             args: vec![self.lower_value(&member.value)?],
+                            unsafe_: rust::Unsafe(true),
                         })],
                         tail: None,
                     },
@@ -2465,6 +2462,7 @@ impl FunctionLowerer<'_, '_> {
                 ir::AggregateTarget::Field(index) => Expr::Field {
                     base: Box::new(base.clone()),
                     field: field_name(index)?,
+                    union: rust::UnsafeCmp(false),
                 },
                 ir::AggregateTarget::Index(index) => Expr::Index {
                     base: Box::new(base.clone()),
@@ -2473,7 +2471,7 @@ impl FunctionLowerer<'_, '_> {
                 ir::AggregateTarget::Range { start, end } => {
                     let element = self.next_temp();
                     let index = self.next_temp();
-                    let position = || Expr::Var(index.as_str().into());
+                    let position = || Expr::var(index.as_str().into());
                     stmts.extend([
                         Stmt::Let {
                             origin: rust::LocalOrigin::Synthetic,
@@ -2503,7 +2501,7 @@ impl FunctionLowerer<'_, '_> {
                                             base: Box::new(base.clone()),
                                             index: Box::new(position()),
                                         },
-                                        value: Expr::Var(element.as_str().into()),
+                                        value: Expr::var(element.as_str().into()),
                                     },
                                     Stmt::CompoundAssign {
                                         target: position(),
@@ -2572,6 +2570,7 @@ impl FunctionLowerer<'_, '_> {
                 func: Box::new(vectors::vector_constructor(&vector, "from_array")),
                 args: vec![self.lower_aggregate(&array, members, zero_fill)?],
                 binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(false),
             });
         }
         let lowered_ty = self.lower_type(ty)?;
@@ -2649,13 +2648,13 @@ impl FunctionLowerer<'_, '_> {
         self.fill_aggregate(
             ty,
             members,
-            &Expr::Var(target.as_str().into()),
+            &Expr::var(target.as_str().into()),
             false,
             &mut stmts,
         )?;
         Ok(Expr::Block(Box::new(rust::Block {
             stmts,
-            tail: Some(Box::new(Expr::Var(target.as_str().into()))),
+            tail: Some(Box::new(Expr::var(target.as_str().into()))),
         })))
     }
 
@@ -2729,11 +2728,12 @@ impl FunctionLowerer<'_, '_> {
             self.dependencies.rounding = true;
             let sign = if signed { "i" } else { "u" };
             return Ok(Some(Expr::Call {
-                func: Box::new(Expr::Var(
+                func: Box::new(Expr::var(
                     format!("__slate_rounding::{sign}128_to_{suffix}").into(),
                 )),
-                args: vec![lowered, Expr::Var(shim.into())],
+                args: vec![lowered, Expr::var(shim.into())],
                 binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(false),
             }));
         }
         let args = vec![Expr::Cast {
@@ -2886,7 +2886,7 @@ impl FunctionLowerer<'_, '_> {
                     } else {
                         "INFINITY"
                     };
-                    return Ok(Expr::Var(format!("{name}::{constant}").into()));
+                    return Ok(Expr::var(format!("{name}::{constant}").into()));
                 }
                 if !finite {
                     return Ok(Expr::HexFloat(format!("{name}::from_bits({bits:#x})")));

@@ -23,7 +23,7 @@ fn is_pure(expr: &Expr) -> bool {
         | Expr::HexFloat(_)
         | Expr::ByteStr(_)
         | Expr::CStr(_)
-        | Expr::Var(_)
+        | Expr::Var { .. }
         | Expr::LayoutQuery { .. }
         | Expr::Path(_) => true,
         Expr::Unary {

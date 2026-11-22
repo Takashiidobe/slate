@@ -1171,6 +1171,13 @@ impl Path {
 }
 
 impl Expr {
+    pub fn var(name: Ident) -> Expr {
+        Expr::Var {
+            name,
+            unsafe_: Unsafe(false),
+        }
+    }
+
     pub fn typed_null(mutable: bool, pointee: Type) -> Expr {
         let function = if mutable { "null_mut" } else { "null" };
         Expr::Call {
@@ -1180,6 +1187,7 @@ impl Expr {
             }),
             args: Vec::new(),
             binding: CallBinding::Generated,
+            unsafe_: Unsafe(false),
         }
     }
 
@@ -1227,6 +1235,36 @@ impl From<&str> for Label {
     }
 }
 
+#[derive(Debug, Clone, Copy, Default)]
+pub struct Unsafe(pub bool);
+
+impl PartialEq for Unsafe {
+    fn eq(&self, _: &Self) -> bool {
+        true
+    }
+}
+
+impl Eq for Unsafe {}
+
+impl PartialOrd for Unsafe {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Unsafe {
+    fn cmp(&self, _: &Self) -> std::cmp::Ordering {
+        std::cmp::Ordering::Equal
+    }
+}
+
+impl std::hash::Hash for Unsafe {
+    fn hash<H: std::hash::Hasher>(&self, _: &mut H) {}
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct UnsafeCmp(pub bool);
+
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Expr {
     Value(RustValue),
@@ -1234,7 +1272,10 @@ pub enum Expr {
     HexFloat(String),
     ByteStr(Vec<u8>),
     CStr(Vec<u8>),
-    Var(Ident),
+    Var {
+        name: Ident,
+        unsafe_: Unsafe,
+    },
     Unary {
         op: UnaryOp,
         expr: Box<Expr>,
@@ -1252,21 +1293,25 @@ pub enum Expr {
         func: Box<Expr>,
         args: Vec<Expr>,
         binding: CallBinding,
+        unsafe_: Unsafe,
     },
     MethodCall {
         recv: Box<Expr>,
         method: String,
         args: Vec<Expr>,
+        unsafe_: Unsafe,
     },
     MethodCallGeneric {
         recv: Box<Expr>,
         method: String,
         type_args: Vec<Type>,
         args: Vec<Expr>,
+        unsafe_: Unsafe,
     },
     Field {
         base: Box<Expr>,
         field: String,
+        union: UnsafeCmp,
     },
     MacroName(String),
     MacroType(Type),
@@ -1764,8 +1809,14 @@ impl Precedence {
 pub enum UnaryOp {
     Neg,
     Not,
-    Deref,
+    Deref(Pointee),
     Raw(Raw),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum Pointee {
+    Ref,
+    Raw,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -1779,7 +1830,7 @@ impl UnaryOp {
         match self {
             UnaryOp::Neg => "-",
             UnaryOp::Not => "!",
-            UnaryOp::Deref => "*",
+            UnaryOp::Deref(_) => "*",
             UnaryOp::Raw(Raw::Const) => "&raw const ",
             UnaryOp::Raw(Raw::Mut) => "&raw mut ",
         }
@@ -1881,7 +1932,7 @@ impl Expr {
 
     pub fn reads_var(&self, name: &str) -> bool {
         match self {
-            Expr::Var(v) => v.as_str() == name,
+            Expr::Var { name: v, .. } => v.as_str() == name,
             Expr::Path(path) => name.strip_prefix("slate_support::").is_some_and(|item| {
                 matches!(
                     path.segments.as_slice(),
@@ -1970,7 +2021,7 @@ impl Expr {
 
     pub fn collect_vars(&self, out: &mut Vec<Ident>) {
         match self {
-            Expr::Var(v) => out.push(*v),
+            Expr::Var { name: v, .. } => out.push(*v),
             Expr::Value(_)
             | Expr::Str(_)
             | Expr::MacroName(_)
@@ -2113,15 +2164,19 @@ impl Expr {
     }
 
     pub fn collect_offset_calls<'a>(&'a self, out: &mut Vec<(&'a Ident, &'a str, &'a Expr)>) {
-        if let Expr::MethodCall { recv, method, args } = self
-            && let Expr::Var(recv_name) = &**recv
+        if let Expr::MethodCall {
+            recv, method, args, ..
+        } = self
+            && let Expr::Var {
+                name: recv_name, ..
+            } = &**recv
             && matches!(method.as_str(), "offset" | "add" | "wrapping_add")
             && let [index] = args.as_slice()
         {
             out.push((recv_name, method.as_str(), index));
         }
         match self {
-            Expr::Var(_)
+            Expr::Var { .. }
             | Expr::Value(_)
             | Expr::Str(_)
             | Expr::MacroName(_)
@@ -2259,12 +2314,12 @@ impl Expr {
 
     pub fn collect_calls<'a>(&'a self, out: &mut Vec<(&'a Ident, &'a [Expr])>) {
         if let Expr::Call { func, args, .. } = self
-            && let Expr::Var(callee) = &**func
+            && let Expr::Var { name: callee, .. } = &**func
         {
             out.push((callee, args));
         }
         match self {
-            Expr::Var(_)
+            Expr::Var { .. }
             | Expr::Value(_)
             | Expr::Str(_)
             | Expr::MacroName(_)
@@ -2400,7 +2455,7 @@ impl Expr {
 
     pub fn substitute_var(&mut self, name: &str, replacement: &Expr) -> bool {
         match self {
-            Expr::Var(v) if v.as_str() == name => {
+            Expr::Var { name: v, .. } if v.as_str() == name => {
                 *self = replacement.clone();
                 true
             }
@@ -2412,7 +2467,7 @@ impl Expr {
             | Expr::ByteStr(_)
             | Expr::ConstBlock(_)
             | Expr::CStr(_)
-            | Expr::Var(_)
+            | Expr::Var { .. }
             | Expr::Path(_)
             | Expr::LayoutQuery { .. }
             | Expr::GenericPath { .. } => false,

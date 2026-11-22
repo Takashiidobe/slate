@@ -1274,7 +1274,7 @@ impl FunctionLowerer<'_, '_> {
             self.dependencies
                 .address_taken
                 .insert(function.rust.clone());
-            return Ok(Expr::Var(function.rust.as_str().into()));
+            return Ok(Expr::var(function.rust.as_str().into()));
         }
         if let Some(bytes) = self.tables.strings.get(&id) {
             let name = format!("__slate_asm_string_{}_{}", self.owner, self.local_index(id));
@@ -1292,14 +1292,14 @@ impl FunctionLowerer<'_, '_> {
                         len: bytes.len() as u64,
                     },
                     init: Expr::Unary {
-                        op: rust::UnaryOp::Deref,
+                        op: rust::UnaryOp::Deref(rust::Pointee::Ref),
                         expr: Box::new(Expr::ByteStr(bytes.clone())),
                     },
                 });
-            return Ok(Expr::Var(name.as_str().into()));
+            return Ok(Expr::var(name.as_str().into()));
         }
         if self.tables.statics.contains(&id) {
-            return Ok(Expr::Var(self.binding_name(id).as_str().into()));
+            return Ok(Expr::var(self.binding_name(id).as_str().into()));
         }
         Err(unsupported_asm(format!("symbol binding {id:?}")))
     }
@@ -1878,7 +1878,7 @@ impl FunctionLowerer<'_, '_> {
                     ty: Some(wide.clone()),
                     init: Some(input),
                 });
-                let whole = Expr::Var(temp.as_str().into());
+                let whole = Expr::var(temp.as_str().into());
                 Some([
                     cast(whole.clone(), &half),
                     cast(shift(BinOp::Shr, whole), &half),
@@ -1899,7 +1899,7 @@ impl FunctionLowerer<'_, '_> {
                     });
                 }
                 let [low_value, high_value] =
-                    [&low_temp, &high_temp].map(|temp| Expr::Var(temp.as_str().into()));
+                    [&low_temp, &high_temp].map(|temp| Expr::var(temp.as_str().into()));
                 let combined = Expr::Binary {
                     op: BinOp::BitOr,
                     lhs: Box::new(shift(BinOp::Shl, cast(high_value.clone(), &wide))),
@@ -2006,7 +2006,7 @@ impl FunctionLowerer<'_, '_> {
                 reg: rust::AsmReg::Class("reg".into()),
                 value: Expr::AddrOf {
                     mutable,
-                    expr: Box::new(Expr::Var(temp.as_str().into())),
+                    expr: Box::new(Expr::var(temp.as_str().into())),
                 },
             });
             Ok::<_, Failure>((
@@ -2025,7 +2025,7 @@ impl FunctionLowerer<'_, '_> {
         let store = match output {
             Some(place) => {
                 let (store, temp) = spill(self, &place.ty, zeroed(), true)?;
-                writebacks.push(self.lower_assignment(place, Expr::Var(temp.as_str().into()))?);
+                writebacks.push(self.lower_assignment(place, Expr::var(temp.as_str().into()))?);
                 Some(store)
             }
             None => None,
@@ -2234,7 +2234,7 @@ impl FunctionLowerer<'_, '_> {
                         ty: Some(rust::Type::Prim(if x86 { Prim::U8 } else { Prim::U32 })),
                         init: None,
                     });
-                    let output = Expr::Var(temp.as_str().into());
+                    let output = Expr::var(temp.as_str().into());
                     let decoded = self.asm_decode(output.clone(), &place.ty)?;
                     writebacks.push(self.lower_assignment(place, decoded)?);
                     let set = operands.len();
@@ -2264,7 +2264,7 @@ impl FunctionLowerer<'_, '_> {
                             rust::AsmOperand::Out {
                                 reg: rust::AsmReg::Class("reg".into()),
                                 late: false,
-                                value: Expr::Var("_".into()),
+                                value: Expr::var("_".into()),
                             }
                         });
                     }
@@ -2335,7 +2335,7 @@ impl FunctionLowerer<'_, '_> {
                             });
                             Expr::AddrOf {
                                 mutable: false,
-                                expr: Box::new(Expr::Var(temp.as_str().into())),
+                                expr: Box::new(Expr::var(temp.as_str().into())),
                             }
                         }
                         _ => {
@@ -2572,7 +2572,7 @@ impl FunctionLowerer<'_, '_> {
                         ty: Some(ty.clone()),
                         init: None,
                     });
-                    let output = Expr::Var(temp.as_str().into());
+                    let output = Expr::var(temp.as_str().into());
                     let decoded = self.asm_decode(output.clone(), &place.ty)?;
                     writebacks.push(self.lower_assignment(place, decoded)?);
                     let late = matches!(
@@ -2639,8 +2639,7 @@ impl FunctionLowerer<'_, '_> {
             }
             if merged_rbx {
                 let slot = saved_rbx.ok_or(Invariant::AsmOperandIndex(index))?;
-                let discarded =
-                    |output: &Expr| matches!(output, Expr::Var(name) if name.as_str() == "_");
+                let discarded = |output: &Expr| matches!(output, Expr::Var { name, .. } if name.as_str() == "_");
                 let current = self.asm_scratch_type(operand)?;
                 let saved = saved_rbx_scratch
                     .clone()
@@ -2668,7 +2667,7 @@ impl FunctionLowerer<'_, '_> {
                     }
                 } else {
                     if rank(&input_ty) > rank(&output_ty)
-                        && let Expr::Var(temp) = &output
+                        && let Expr::Var { name: temp, .. } = &output
                     {
                         for statement in &mut prefix {
                             if let Stmt::Let { name, ty, .. } = statement
@@ -2697,7 +2696,7 @@ impl FunctionLowerer<'_, '_> {
                             reg,
                             late: false,
                             input: value,
-                            output: Expr::Var("_".into()),
+                            output: Expr::var("_".into()),
                         },
                         rust::AsmOperand::Out { reg, value, .. } => rust::AsmOperand::Out {
                             reg,
@@ -2755,7 +2754,7 @@ impl FunctionLowerer<'_, '_> {
             operands.push(rust::AsmOperand::Out {
                 reg: rust::AsmReg::Class("reg".into()),
                 late: false,
-                value: Expr::Var("_".into()),
+                value: Expr::var("_".into()),
             });
         }
         let position = |spill: &Spill| match spill.register {
@@ -2802,7 +2801,7 @@ impl FunctionLowerer<'_, '_> {
         explicit.extend(spilled.into_iter().map(|name| rust::AsmOperand::Out {
             reg: rust::AsmReg::Explicit(name),
             late: true,
-            value: Expr::Var("_".into()),
+            value: Expr::var("_".into()),
         }));
         for clobber in &asm.clobbers {
             if let ir::AsmClobber::Register(register) = clobber {
@@ -2819,7 +2818,7 @@ impl FunctionLowerer<'_, '_> {
                             operands.push(rust::AsmOperand::Out {
                                 reg: rust::AsmReg::Class("reg".into()),
                                 late: false,
-                                value: Expr::Var("_".into()),
+                                value: Expr::var("_".into()),
                             });
                         }
                         continue;
@@ -2829,7 +2828,7 @@ impl FunctionLowerer<'_, '_> {
                             explicit.push(rust::AsmOperand::Out {
                                 reg: rust::AsmReg::Explicit(name.into()),
                                 late: false,
-                                value: Expr::Var("_".into()),
+                                value: Expr::var("_".into()),
                             });
                         }
                     }
@@ -2844,7 +2843,7 @@ impl FunctionLowerer<'_, '_> {
                         operands.push(rust::AsmOperand::Out {
                             reg: rust::AsmReg::Class("reg".into()),
                             late: false,
-                            value: Expr::Var("_".into()),
+                            value: Expr::var("_".into()),
                         });
                     }
                     continue;
@@ -2888,7 +2887,7 @@ impl FunctionLowerer<'_, '_> {
                         operands.push(rust::AsmOperand::Out {
                             reg: rust::AsmReg::Class("reg".into()),
                             late: false,
-                            value: Expr::Var("_".into()),
+                            value: Expr::var("_".into()),
                         });
                     }
                     continue;
@@ -2896,14 +2895,14 @@ impl FunctionLowerer<'_, '_> {
                 explicit.push(rust::AsmOperand::Out {
                     reg: rust::AsmReg::Explicit(canonical.into()),
                     late: false,
-                    value: Expr::Var("_".into()),
+                    value: Expr::var("_".into()),
                 });
             }
         }
         let label_slots: Vec<_> = (0..labels)
             .map(|index| {
                 operands.push(rust::AsmOperand::Label {
-                    state: Expr::Var(control_flow::ASM_TARGET.into()),
+                    state: Expr::var(control_flow::ASM_TARGET.into()),
                     value: control_flow::asm_target_value(labels, index),
                 });
                 operands.len() - 1

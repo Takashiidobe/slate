@@ -46,13 +46,14 @@ impl WideInt {
                 recv: Box::new(expr),
                 method: method.into(),
                 args: Vec::new(),
+                unsafe_: rust::Unsafe(false),
             },
             rust::Type::Prim(prim),
         )
     }
 
     fn function(self, name: &str) -> Expr {
-        Expr::Var(
+        Expr::var(
             format!(
                 "<{}>::{name}",
                 crate::backend::codegen::type_to_string(&self.rust_type())
@@ -63,7 +64,7 @@ impl WideInt {
 
     fn bytes_literal(self, bytes: &[u8]) -> Expr {
         Expr::Call {
-            func: Box::new(Expr::Var(
+            func: Box::new(Expr::var(
                 format!(
                     "<{}>::from_le_bytes::<{}, {}>",
                     crate::backend::codegen::type_to_string(&self.rust_type()),
@@ -79,6 +80,7 @@ impl WideInt {
                     .collect(),
             )],
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         }
     }
 
@@ -87,6 +89,7 @@ impl WideInt {
             func: Box::new(self.function(name)),
             args,
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         }
     }
 }
@@ -179,7 +182,7 @@ impl FunctionLowerer<'_, '_> {
         };
         let operation = builtin.trim_start_matches("__builtin_stdc_");
         let bits = self.next_temp();
-        let var = |name: &str| Expr::Var(name.into());
+        let var = |name: &str| Expr::var(name.into());
         let u32_literal = |value: u32| Expr::Cast {
             expr: Box::new(Expr::Value(rust::RustValue::U128(u128::from(value)))),
             ty: rust::Type::Prim(Prim::U32),
@@ -246,6 +249,7 @@ impl FunctionLowerer<'_, '_> {
                         expr: Box::new(amount),
                         ty: rust::Type::Prim(Prim::Usize),
                     }],
+                    unsafe_: rust::Unsafe(false),
                 });
             }
             let zero = this.lower_number(&Number::Integer(0u32.into()), &operand.ty)?;
@@ -254,9 +258,11 @@ impl FunctionLowerer<'_, '_> {
                     recv: Box::new(one),
                     method: "checked_shl".into(),
                     args: vec![amount],
+                    unsafe_: rust::Unsafe(false),
                 }),
                 method: "unwrap_or".into(),
                 args: vec![zero],
+                unsafe_: rust::Unsafe(false),
             };
             this.narrow_integer(shifted, &operand.ty)
         };
@@ -327,6 +333,7 @@ impl FunctionLowerer<'_, '_> {
             recv: Box::new(recv),
             method: method.into(),
             args,
+            unsafe_: rust::Unsafe(false),
         };
         let modulus = |width: u32| Expr::Cast {
             expr: Box::new(Expr::Value(rust::RustValue::U128(u128::from(width)))),
@@ -376,7 +383,7 @@ impl FunctionLowerer<'_, '_> {
                     (BinOp::Shr, BinOp::Shl)
                 };
                 let (operand_name, shift_name) = (self.next_temp(), self.next_temp());
-                let var = |name: &str| Expr::Var(name.into());
+                let var = |name: &str| Expr::var(name.into());
                 let literal = |value: u32| Expr::Cast {
                     expr: Box::new(Expr::Value(rust::RustValue::U128(u128::from(value)))),
                     ty: rust::Type::Prim(Prim::U32),
@@ -464,6 +471,7 @@ impl FunctionLowerer<'_, '_> {
             recv: Box::new(recv),
             method: name.into(),
             args,
+            unsafe_: rust::Unsafe(false),
         };
         let ieee = |expr: Expr, frac: i64, exp: i64| {
             method(
@@ -477,9 +485,10 @@ impl FunctionLowerer<'_, '_> {
             )
         };
         let from_bits = |prim: &str, bits: Expr| Expr::Call {
-            func: Box::new(Expr::Var(format!("{prim}::from_bits").into())),
+            func: Box::new(Expr::var(format!("{prim}::from_bits").into())),
             args: vec![bits],
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         };
         match kind {
             ir::FloatType::F32 => method(expr, "to_f32", Vec::new()),
@@ -493,9 +502,10 @@ impl FunctionLowerer<'_, '_> {
             ),
             ir::FloatType::F128 => from_bits("f128", ieee(expr, 112, 15)),
             _ => Expr::Call {
-                func: Box::new(Expr::Var(long_double::LONG_DOUBLE_TY.into())),
+                func: Box::new(Expr::var(long_double::LONG_DOUBLE_TY.into())),
                 args: vec![method(expr, "to_f80_bytes", Vec::new())],
                 binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(false),
             },
         }
     }
@@ -507,6 +517,7 @@ impl FunctionLowerer<'_, '_> {
                     recv: Box::new(expr.clone()),
                     method: "to_bits".into(),
                     args: Vec::new(),
+                    unsafe_: rust::Unsafe(false),
                 }),
                 ty: rust::Type::Prim(Prim::U128),
             };
@@ -592,6 +603,7 @@ impl FunctionLowerer<'_, '_> {
                     recv: Box::new(lowered),
                     method: if source.signed { "to_i128" } else { "to_u128" }.into(),
                     args: Vec::new(),
+                    unsafe_: rust::Unsafe(false),
                 };
                 self.narrow_integer(wide, &value.ty)
             }
@@ -625,6 +637,7 @@ impl FunctionLowerer<'_, '_> {
                     }
                     .into(),
                     args: vec![amount],
+                    unsafe_: rust::Unsafe(false),
                 }));
             }
             _ => return Ok(None),
@@ -633,6 +646,7 @@ impl FunctionLowerer<'_, '_> {
             recv: Box::new(self.lower_value(left)?),
             method: method.into(),
             args: vec![self.lower_value(right)?],
+            unsafe_: rust::Unsafe(false),
         }))
     }
 
@@ -643,6 +657,7 @@ impl FunctionLowerer<'_, '_> {
                 recv: Box::new(lowered),
                 method: if wide.signed { "to_i128" } else { "to_u128" }.into(),
                 args: Vec::new(),
+                unsafe_: rust::Unsafe(false),
             },
             None => lowered,
         };
@@ -689,6 +704,7 @@ impl FunctionLowerer<'_, '_> {
             recv: Box::new(expr),
             method: "to_i128".into(),
             args: Vec::new(),
+            unsafe_: rust::Unsafe(false),
         };
         self.narrow_integer(low, ty)
     }
@@ -725,7 +741,7 @@ impl FunctionLowerer<'_, '_> {
             self.next_temp(),
             self.next_temp(),
         ];
-        let var = |name: &String| Expr::Var(name.as_str().into());
+        let var = |name: &String| Expr::var(name.as_str().into());
         let bind = |name: &String, ty: Option<rust::Type>, init: Expr| Stmt::Let {
             origin: rust::LocalOrigin::Synthetic,
             name: name.clone(),
@@ -752,6 +768,7 @@ impl FunctionLowerer<'_, '_> {
                         recv: Box::new(var(&lhs)),
                         method: format!("wrapping_{method}"),
                         args: vec![var(&rhs)],
+                        unsafe_: rust::Unsafe(false),
                     },
                 ),
                 bind(&narrowed, Some(result_type), narrowed_init),
@@ -763,6 +780,7 @@ impl FunctionLowerer<'_, '_> {
                     recv: Box::new(var(&exact)),
                     method: "compare".into(),
                     args: vec![back],
+                    unsafe_: rust::Unsafe(false),
                 }),
                 rhs: Box::new(Expr::Value(rust::RustValue::I64(0))),
             })),
@@ -784,7 +802,7 @@ impl FunctionLowerer<'_, '_> {
                 return Err(unsupported_value(value));
             }
             return Ok(Expr::Call {
-                func: Box::new(Expr::Var(
+                func: Box::new(Expr::var(
                     format!(
                         "core::simd::num::{}::{method}",
                         if signed { "SimdInt" } else { "SimdUint" }
@@ -793,6 +811,7 @@ impl FunctionLowerer<'_, '_> {
                 )),
                 args: vec![self.lower_value(left)?, self.lower_value(right)?],
                 binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(false),
             });
         }
         let ir::Type::Numeric(ir::NumericType::Integer { signed, .. }) =
@@ -804,6 +823,7 @@ impl FunctionLowerer<'_, '_> {
             recv: Box::new(self.lower_value(left)?),
             method: method.into(),
             args: vec![self.lower_value(right)?],
+            unsafe_: rust::Unsafe(false),
         };
         let Some((width, _, container)) = odd_width(self.tables.resolve_type(&value.ty)) else {
             return Ok(saturated);
@@ -821,6 +841,7 @@ impl FunctionLowerer<'_, '_> {
             recv: Box::new(saturated),
             method: "clamp".into(),
             args: vec![bound(low), bound(high)],
+            unsafe_: rust::Unsafe(false),
         })
     }
 
@@ -862,6 +883,7 @@ impl FunctionLowerer<'_, '_> {
                         expr: Box::new(amount),
                         ty: rust::Type::Prim(Prim::U32),
                     }],
+                    unsafe_: rust::Unsafe(false),
                 };
                 return if op == ir::ArithOp::Shl {
                     self.narrow_integer(shifted, &value.ty).map(Some)
@@ -875,6 +897,7 @@ impl FunctionLowerer<'_, '_> {
             recv: Box::new(self.lower_value(left)?),
             method: method.into(),
             args: vec![self.lower_value(right)?],
+            unsafe_: rust::Unsafe(false),
         };
         self.narrow_integer(wrapped, &value.ty).map(Some)
     }
@@ -898,6 +921,7 @@ impl FunctionLowerer<'_, '_> {
                 recv: Box::new(self.lower_value(left)?),
                 method: "compare".into(),
                 args: vec![self.lower_value(right)?],
+                unsafe_: rust::Unsafe(false),
             }),
             rhs: Box::new(Expr::Value(rust::RustValue::I64(0))),
         })
@@ -939,6 +963,7 @@ pub(super) fn bit_count_expr(shape: BitShape, recv: Expr, method: &str) -> Expr 
         recv: Box::new(recv),
         method: method.into(),
         args,
+        unsafe_: rust::Unsafe(false),
     };
     let BitShape::Small { width, container } = shape else {
         return call(recv, method, Vec::new());

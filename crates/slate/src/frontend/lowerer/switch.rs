@@ -451,7 +451,7 @@ impl FunctionLowerer<'_, '_> {
         let mut renames = Vec::new();
         self.rename_temps(body, &mut renames);
         for (old, new) in renames {
-            let replacement = Expr::Var(new.as_str().into());
+            let replacement = Expr::var(new.as_str().into());
             for stmt in body.iter_mut() {
                 stmt.substitute_var(&old, &replacement);
             }
@@ -528,9 +528,10 @@ impl FunctionLowerer<'_, '_> {
             Ok(Expr::Binary {
                 op,
                 lhs: Box::new(Expr::MethodCall {
-                    recv: Box::new(Expr::Var(selector.into())),
+                    recv: Box::new(Expr::var(selector.into())),
                     method: "compare".into(),
                     args: vec![this.lower_value(bound)?],
+                    unsafe_: rust::Unsafe(false),
                 }),
                 rhs: Box::new(Expr::Value(rust::RustValue::I64(0))),
             })
@@ -618,7 +619,7 @@ fn case_loop(
         if falls_through(arm) {
             if index + 1 < arms.len() {
                 body.push(Stmt::Assign {
-                    target: Expr::Var(case.clone().into()),
+                    target: Expr::var(case.clone().into()),
                     value: case_index(index + 1),
                 });
                 body.push(Stmt::Continue(Some(label.clone())));
@@ -643,7 +644,7 @@ fn case_loop(
         init: Some(init),
     });
     let mut body = vec![Stmt::Match {
-        expr: Expr::Var(case.into()),
+        expr: Expr::var(case.into()),
         arms: match_arms,
     }];
     body_prefix.push(Stmt::Loop {

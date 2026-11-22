@@ -333,10 +333,8 @@ impl FunctionLowerer<'_, '_> {
                 trusted_declaration: None,
                 trusted_headers: Default::default(),
             },
+            unsafe_: rust::Unsafe(false),
         };
-        Ok(Some(Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(call)),
-        }))))
+        Ok(Some(unsafe_op(call)))
     }
 }

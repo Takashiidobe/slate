@@ -17,10 +17,10 @@ fn inside_unsafe(arena: &Arena, id: NodeId) -> bool {
 fn is_place(expr: &Expr) -> bool {
     matches!(
         expr,
-        Expr::Var(_)
+        Expr::Var { .. }
             | Expr::Path(_)
             | Expr::Unary {
-                op: UnaryOp::Deref,
+                op: UnaryOp::Deref(_),
                 ..
             }
             | Expr::Field { .. }

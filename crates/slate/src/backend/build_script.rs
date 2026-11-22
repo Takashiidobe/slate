@@ -1,5 +1,7 @@
 use super::codegen::item_to_string;
-use super::rust_ast::{BinOp, Cfg, Expr, FnDef, Ident, Item, RustValue, Stmt, UnaryOp, Visibility};
+use super::rust_ast::{
+    BinOp, Cfg, Expr, FnDef, Ident, Item, RustValue, Stmt, UnaryOp, Unsafe, Visibility,
+};
 use crate::function_identity::CallBinding;
 
 #[derive(Debug, Clone, Default)]
@@ -82,9 +84,10 @@ fn cargo_directive(key: &str, value: &str) -> Stmt {
 
 fn call(path: &str, args: Vec<Expr>) -> Expr {
     Expr::Call {
-        func: Box::new(Expr::Var(Ident::new(path))),
+        func: Box::new(Expr::var(Ident::new(path))),
         args,
         binding: CallBinding::Generated,
+        unsafe_: Unsafe(false),
     }
 }
 
@@ -93,11 +96,12 @@ fn method(recv: Expr, name: &str, args: Vec<Expr>) -> Expr {
         recv: Box::new(recv),
         method: name.into(),
         args,
+        unsafe_: Unsafe(false),
     }
 }
 
 fn var(name: &str) -> Expr {
-    Expr::Var(Ident::new(name))
+    Expr::var(Ident::new(name))
 }
 
 fn binary(op: BinOp, lhs: Expr, rhs: Expr) -> Expr {

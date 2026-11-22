@@ -16,7 +16,7 @@ fn reborrow(mutable: bool, expr: Expr) -> Expr {
     Expr::Ref {
         mutable,
         expr: Box::new(Expr::Unary {
-            op: rust::UnaryOp::Deref,
+            op: rust::UnaryOp::Deref(rust::Pointee::Ref),
             expr: Box::new(expr),
         }),
     }
@@ -34,7 +34,7 @@ fn first_element(mutable: bool, slice: Expr) -> Expr {
 
 fn one_element_slice(mutable: bool, element: Expr) -> Expr {
     Expr::Call {
-        func: Box::new(Expr::Var(
+        func: Box::new(Expr::var(
             if mutable {
                 "core::slice::from_mut"
             } else {
@@ -44,6 +44,7 @@ fn one_element_slice(mutable: bool, element: Expr) -> Expr {
         )),
         args: vec![element],
         binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(false),
     }
 }
 
@@ -92,7 +93,7 @@ impl FunctionLowerer<'_, '_> {
                         ..
                     },
                 ordering: None,
-            } if self.c_string_of(*id) => Ok(Expr::Var(self.binding_name(*id).as_str().into())),
+            } if self.c_string_of(*id) => Ok(Expr::var(self.binding_name(*id).as_str().into())),
             _ => Err(Invariant::UnprovenBorrow(value.to_string()).into()),
         }
     }
@@ -212,10 +213,10 @@ impl FunctionLowerer<'_, '_> {
         let Some((id, borrow, index)) = self.borrowed_place(place) else {
             return Ok(None);
         };
-        let binding = Expr::Var(self.binding_name(id).as_str().into());
+        let binding = Expr::var(self.binding_name(id).as_str().into());
         if !borrow.many {
             return Ok(Some(Expr::Unary {
-                op: rust::UnaryOp::Deref,
+                op: rust::UnaryOp::Deref(rust::Pointee::Ref),
                 expr: Box::new(binding),
             }));
         }
@@ -262,9 +263,10 @@ impl FunctionLowerer<'_, '_> {
         if self.c_string_of(*id) {
             return Ok(Some(Expr::Cast {
                 expr: Box::new(Expr::MethodCall {
-                    recv: Box::new(Expr::Var(self.binding_name(*id).as_str().into())),
+                    recv: Box::new(Expr::var(self.binding_name(*id).as_str().into())),
                     method: "as_ptr".into(),
                     args: Vec::new(),
+                    unsafe_: rust::Unsafe(false),
                 }),
                 ty: self.lower_type(&value.ty)?,
             }));
@@ -272,7 +274,7 @@ impl FunctionLowerer<'_, '_> {
         let Some(borrow) = self.borrow_of(*id) else {
             return Ok(None);
         };
-        let binding = Expr::Var(self.binding_name(*id).as_str().into());
+        let binding = Expr::var(self.binding_name(*id).as_str().into());
         let raw = self.lower_type(&value.ty)?;
         if !borrow.many {
             let binding = match &raw {
@@ -302,6 +304,7 @@ impl FunctionLowerer<'_, '_> {
             }
             .into(),
             args: Vec::new(),
+            unsafe_: rust::Unsafe(false),
         };
         Ok(Some(match raw {
             rust::Type::Ptr { mutable, .. } if mutable != borrow.mutable => Expr::Cast {
@@ -357,27 +360,25 @@ impl FunctionLowerer<'_, '_> {
         }
         let raw = self.lower_value(pointer)?;
         let count = self.lower_value(length)?;
-        Ok(Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(Expr::Call {
-                func: Box::new(Expr::Var(
-                    if target.mutable {
-                        "core::slice::from_raw_parts_mut"
-                    } else {
-                        "core::slice::from_raw_parts"
-                    }
-                    .into(),
-                )),
-                args: vec![
-                    raw,
-                    Expr::Cast {
-                        expr: Box::new(count),
-                        ty: rust::Type::Prim(Prim::Usize),
-                    },
-                ],
-                binding: CallBinding::Generated,
-            })),
-        })))
+        Ok(unsafe_op(Expr::Call {
+            func: Box::new(Expr::var(
+                if target.mutable {
+                    "core::slice::from_raw_parts_mut"
+                } else {
+                    "core::slice::from_raw_parts"
+                }
+                .into(),
+            )),
+            args: vec![
+                raw,
+                Expr::Cast {
+                    expr: Box::new(count),
+                    ty: rust::Type::Prim(Prim::Usize),
+                },
+            ],
+            binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
+        }))
     }
 
     pub(super) fn lower_borrow(&mut self, value: &ir::Value, target: Borrow) -> Result<Expr> {
@@ -415,10 +416,7 @@ impl FunctionLowerer<'_, '_> {
                     expr: Box::new(self.lower_place(place)?),
                 };
                 if self.through_union(place) {
-                    object = Expr::Unsafe(Box::new(rust::Block {
-                        stmts: Vec::new(),
-                        tail: Some(Box::new(object)),
-                    }));
+                    object = unsafe_op(object);
                 }
                 Ok(if target.many {
                     one_element_slice(target.mutable, object)
@@ -445,6 +443,7 @@ impl FunctionLowerer<'_, '_> {
                         }
                         .into(),
                         args: Vec::new(),
+                        unsafe_: rust::Unsafe(false),
                     }
                 } else {
                     first_element(target.mutable, array)
@@ -453,7 +452,7 @@ impl FunctionLowerer<'_, '_> {
             _ if let Some((id, source)) = self.borrowed_binding(value)
                 && (source.mutable || !target.mutable) =>
             {
-                let binding = Expr::Var(self.binding_name(id).as_str().into());
+                let binding = Expr::var(self.binding_name(id).as_str().into());
                 Ok(match (source.many, target.many) {
                     (false, false) | (true, true) => binding,
                     (true, false) => first_element(target.mutable, binding),
@@ -465,10 +464,7 @@ impl FunctionLowerer<'_, '_> {
             }
             _ if !target.many => {
                 let raw = self.lower_value(value)?;
-                Ok(Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(reborrow(target.mutable, raw))),
-                })))
+                Ok(unsafe_op(reborrow(target.mutable, raw)))
             }
             _ => Err(Invariant::UnprovenBorrow(value.to_string()).into()),
         }

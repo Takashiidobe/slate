@@ -6,7 +6,7 @@ use crate::backend::rust_ast::{Expr, Ident, LocalOrigin, Type, UnaryOp};
 
 fn source_var(expr: &Expr) -> Option<Ident> {
     match expr {
-        Expr::Var(v) => Some(*v),
+        Expr::Var { name: v, .. } => Some(*v),
         Expr::Cast { expr, .. } => source_var(expr),
         _ => None,
     }
@@ -14,15 +14,15 @@ fn source_var(expr: &Expr) -> Option<Ident> {
 
 fn expr_only_deref(expr: &Expr, name: Ident) -> bool {
     if let Expr::Unary {
-        op: UnaryOp::Deref,
+        op: UnaryOp::Deref(_),
         expr: inner,
     } = expr
-        && matches!(&**inner, Expr::Var(v) if *v == name)
+        && matches!(&**inner, Expr::Var { name: v, .. } if *v == name)
     {
         return true;
     }
     match expr {
-        Expr::Var(v) => *v != name,
+        Expr::Var { name: v, .. } => *v != name,
         Expr::Unary { expr, .. }
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }
@@ -96,14 +96,14 @@ fn bare_replacement(arena: &FunctionOptimizer, source: Ident, declared_ty: &Type
     else {
         return None;
     };
-    (ref_inner.as_ref() == ptr_inner.as_ref()).then_some(Expr::Var(source))
+    (ref_inner.as_ref() == ptr_inner.as_ref()).then_some(Expr::var(source))
 }
 
 fn is_bare_rebind_of(kind: &NodeKind, name: Ident) -> bool {
     matches!(
         kind,
-        NodeKind::Assign { target: Expr::Var(v), .. }
-        | NodeKind::CompoundAssign { target: Expr::Var(v), .. }
+        NodeKind::Assign { target: Expr::Var { name: v, .. }, .. }
+        | NodeKind::CompoundAssign { target: Expr::Var { name: v, .. }, .. }
         if *v == name
     )
 }
@@ -121,12 +121,12 @@ fn pure_rename_target(arena: &Arena, kind: &NodeKind, id: NodeId, name: Ident) -
     match kind {
         NodeKind::Let {
             name: temp,
-            init: Some(Expr::Var(v)),
+            init: Some(Expr::Var { name: v, .. }),
             ..
         } if *v == name => Some(*temp),
         NodeKind::Assign {
-            target: Expr::Var(temp),
-            value: Expr::Var(v),
+            target: Expr::Var { name: temp, .. },
+            value: Expr::Var { name: v, .. },
         } if *v == name && is_single_assignment(arena, *temp, id) => Some(*temp),
         _ => None,
     }

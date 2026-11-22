@@ -53,6 +53,7 @@ pub(super) fn sve_zero(name: &str) -> Option<Expr> {
         ))),
         args,
         binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(false),
     };
     let base = name.strip_prefix("sv")?.strip_suffix("_t")?;
     let (vector, count) = match base.split_once('x') {
@@ -60,12 +61,7 @@ pub(super) fn sve_zero(name: &str) -> Option<Expr> {
         None => (base, 1),
     };
     if vector == "bool" {
-        return (count == 1).then(|| {
-            Expr::Unsafe(Box::new(rust::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(call("svpfalse_b".into(), Vec::new()))),
-            }))
-        });
+        return (count == 1).then(|| unsafe_op(call("svpfalse_b".into(), Vec::new())));
     }
     let (suffix, literal) = [
         ("uint", "u", "0u"),
@@ -77,16 +73,13 @@ pub(super) fn sve_zero(name: &str) -> Option<Expr> {
         let bits = vector.strip_prefix(prefix)?;
         Some((format!("{short}{bits}"), format!("{literal}{bits}")))
     })?;
-    let zero = call(format!("svdup_n_{suffix}"), vec![Expr::Var(literal.into())]);
+    let zero = call(format!("svdup_n_{suffix}"), vec![Expr::var(literal.into())]);
     let value = if count == 1 {
         zero
     } else {
         call(format!("svcreate{count}_{suffix}"), vec![zero; count])
     };
-    Some(Expr::Unsafe(Box::new(rust::Block {
-        stmts: Vec::new(),
-        tail: Some(Box::new(value)),
-    })))
+    Some(unsafe_op(value))
 }
 
 fn arch_call(function: &str, args: Vec<Expr>) -> Expr {
@@ -96,6 +89,7 @@ fn arch_call(function: &str, args: Vec<Expr>) -> Expr {
         ))),
         args,
         binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(true),
     }
 }
 
@@ -141,9 +135,11 @@ pub(super) fn sve_convert(
                             recv: Box::new(operand),
                             method: "as_array".into(),
                             args: Vec::new(),
+                            unsafe_: rust::Unsafe(false),
                         }),
                         method: "as_ptr".into(),
                         args: Vec::new(),
+                        unsafe_: rust::Unsafe(false),
                     },
                 ],
             ))),
@@ -173,9 +169,10 @@ pub(super) fn sve_convert(
                     vec![
                         ptrue,
                         Expr::MethodCall {
-                            recv: Box::new(Expr::Var(lanes_name.into())),
+                            recv: Box::new(Expr::var(lanes_name.into())),
                             method: "as_mut_ptr".into(),
                             args: Vec::new(),
+                            unsafe_: rust::Unsafe(false),
                         },
                         operand,
                     ],
@@ -183,8 +180,9 @@ pub(super) fn sve_convert(
             ],
             tail: Some(Box::new(Expr::Call {
                 func: Box::new(vectors::vector_constructor(simd, "from_array")),
-                args: vec![Expr::Var(lanes_name.into())],
+                args: vec![Expr::var(lanes_name.into())],
                 binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(false),
             })),
         }
     };
@@ -257,17 +255,15 @@ impl FunctionLowerer<'_, '_> {
                 type_args: generics,
             }
         };
-        Ok(Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(Expr::Call {
-                func: Box::new(func),
-                args: operands
-                    .iter()
-                    .map(|operand| self.lower_value(operand))
-                    .collect::<Result<Vec<_>>>()?,
-                binding: CallBinding::Generated,
-            })),
-        })))
+        Ok(unsafe_op(Expr::Call {
+            func: Box::new(func),
+            args: operands
+                .iter()
+                .map(|operand| self.lower_value(operand))
+                .collect::<Result<Vec<_>>>()?,
+            binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
+        }))
     }
 }
 

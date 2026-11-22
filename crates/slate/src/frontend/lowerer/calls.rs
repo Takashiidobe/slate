@@ -5,9 +5,11 @@ pub(super) const VA_ARGS: &str = "__va_args";
 fn independent_argument(arg: &Expr, unborrowed: &dyn Fn(&rust::Ident) -> bool) -> bool {
     match arg {
         Expr::Value(_) | Expr::Str(_) | Expr::CStr(_) | Expr::ByteStr(_) => true,
-        Expr::Var(name) => unborrowed(name),
+        Expr::Var { name, .. } => unborrowed(name),
         Expr::Cast { expr, .. } => independent_argument(expr, unborrowed),
-        Expr::MethodCall { recv, method, args } => {
+        Expr::MethodCall {
+            recv, method, args, ..
+        } => {
             method.as_str() == "as_ptr"
                 && args.is_empty()
                 && matches!(**recv, Expr::Str(_) | Expr::CStr(_) | Expr::ByteStr(_))
@@ -21,22 +23,20 @@ fn independent_argument(arg: &Expr, unborrowed: &dyn Fn(&rust::Ident) -> bool) -
 }
 
 pub(super) fn static_va_list(list: Expr, target: rust::Type) -> Expr {
-    Expr::Unsafe(Box::new(rust::Block {
-        stmts: Vec::new(),
-        tail: Some(Box::new(Expr::Call {
-            func: Box::new(Expr::GenericPath {
-                path: rust::Path::new(["core", "mem", "transmute"].map(rust::Ident::from)),
-                type_args: vec![rust::Type::Custom("core::ffi::VaList<'_>".into()), target],
-            }),
-            args: vec![clone_va_list(list)],
-            binding: CallBinding::Generated,
-        })),
-    }))
+    unsafe_op(Expr::Call {
+        func: Box::new(Expr::GenericPath {
+            path: rust::Path::new(["core", "mem", "transmute"].map(rust::Ident::from)),
+            type_args: vec![rust::Type::Custom("core::ffi::VaList<'_>".into()), target],
+        }),
+        args: vec![clone_va_list(list)],
+        binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(false),
+    })
 }
 
 pub(super) fn through_raw_pointer(place: Expr) -> Expr {
     Expr::Unary {
-        op: rust::UnaryOp::Deref,
+        op: rust::UnaryOp::Deref(rust::Pointee::Raw),
         expr: Box::new(Expr::AddrOf {
             mutable: true,
             expr: Box::new(place),
@@ -49,6 +49,7 @@ pub(super) fn clone_va_list(list: Expr) -> Expr {
         recv: Box::new(list),
         method: "clone".into(),
         args: Vec::new(),
+        unsafe_: rust::Unsafe(false),
     }
 }
 
@@ -87,12 +88,13 @@ impl FunctionLowerer<'_, '_> {
                 }
                 if name.weak_extern {
                     Expr::MethodCall {
-                        recv: Box::new(Expr::Var(name.rust.as_str().into())),
+                        recv: Box::new(Expr::var(name.rust.as_str().into())),
                         method: "unwrap".into(),
                         args: Vec::new(),
+                        unsafe_: rust::Unsafe(false),
                     }
                 } else {
-                    Expr::Var(name.rust.as_str().into())
+                    Expr::var(name.rust.as_str().into())
                 }
             }
             ir::Callee::Indirect(pointer) => {
@@ -132,6 +134,7 @@ impl FunctionLowerer<'_, '_> {
                     recv: Box::new(recv),
                     method: "unwrap".into(),
                     args: Vec::new(),
+                    unsafe_: rust::Unsafe(false),
                 }
             }
         };
@@ -228,7 +231,7 @@ impl FunctionLowerer<'_, '_> {
                     name: temp.clone(),
                     mutable: false,
                     ty: None,
-                    init: Some(std::mem::replace(arg, Expr::Var(temp.as_str().into()))),
+                    init: Some(std::mem::replace(arg, Expr::var(temp.as_str().into()))),
                 });
             }
         }
@@ -245,6 +248,7 @@ impl FunctionLowerer<'_, '_> {
                 },
                 ir::Callee::Indirect(_) => CallBinding::Indirect,
             },
+            unsafe_: rust::Unsafe(false),
         };
         let call = if matches!(callee, ir::Callee::Direct(id) if self.tables.support_functions.contains_key(id))
         {
@@ -302,14 +306,7 @@ impl FunctionLowerer<'_, '_> {
             ir::Callee::Direct(id) => names.get(id).is_some_and(|name| name.is_unsafe),
             ir::Callee::Indirect(_) => true,
         };
-        let call = if unsafe_call {
-            Expr::Unsafe(Box::new(rust::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(call)),
-            }))
-        } else {
-            call
-        };
+        let call = if unsafe_call { unsafe_op(call) } else { call };
         Ok(if evaluated.is_empty() {
             call
         } else {
@@ -355,24 +352,22 @@ impl FunctionLowerer<'_, '_> {
         identity: FunctionIdentity,
     ) -> Expr {
         self.declare_c_bridge(name.clone(), params, ret, identity);
-        Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(Expr::Call {
-                func: Box::new(Expr::Var(name.into())),
-                args,
-                binding: match identity {
-                    FunctionIdentity::Known(_) => CallBinding::Direct {
-                        identity,
-                        canonical_type: None,
-                        trusted_declaration: None,
-                        trusted_headers: Default::default(),
-                    },
-                    FunctionIdentity::HeaderInline | FunctionIdentity::Unknown => {
-                        CallBinding::Generated
-                    }
+        unsafe_op(Expr::Call {
+            func: Box::new(Expr::var(name.into())),
+            args,
+            binding: match identity {
+                FunctionIdentity::Known(_) => CallBinding::Direct {
+                    identity,
+                    canonical_type: None,
+                    trusted_declaration: None,
+                    trusted_headers: Default::default(),
                 },
-            })),
-        }))
+                FunctionIdentity::HeaderInline | FunctionIdentity::Unknown => {
+                    CallBinding::Generated
+                }
+            },
+            unsafe_: rust::Unsafe(false),
+        })
     }
 
     pub(super) fn declare_c_bridge(

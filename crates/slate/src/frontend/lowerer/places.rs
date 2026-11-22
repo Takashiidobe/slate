@@ -14,9 +14,10 @@ fn is_null_constant(value: &ir::Value) -> bool {
 
 pub(super) fn volatile_read(address: Expr) -> Expr {
     Expr::Call {
-        func: Box::new(Expr::Var("core::ptr::read_volatile".into())),
+        func: Box::new(Expr::var("core::ptr::read_volatile".into())),
         args: vec![address],
         binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(true),
     }
 }
 
@@ -272,14 +273,12 @@ impl FunctionLowerer<'_, '_> {
         if !self.reduced_alignment_access(place) || matches!(place.kind, PlaceKind::Lane { .. }) {
             return Ok(None);
         }
-        Ok(Some(Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(Expr::MethodCall {
-                recv: Box::new(self.lower_address(place, false)?),
-                method: "read_unaligned".into(),
-                args: Vec::new(),
-            })),
-        }))))
+        Ok(Some(unsafe_op(Expr::MethodCall {
+            recv: Box::new(self.lower_address(place, false)?),
+            method: "read_unaligned".into(),
+            args: Vec::new(),
+            unsafe_: rust::Unsafe(true),
+        })))
     }
 
     pub(super) fn lower_unaligned_write(
@@ -296,6 +295,7 @@ impl FunctionLowerer<'_, '_> {
                     recv: Box::new(self.lower_address(place, true)?),
                     method: "write_unaligned".into(),
                     args: vec![value.clone()],
+                    unsafe_: rust::Unsafe(true),
                 })],
                 tail: None,
             },
@@ -325,14 +325,12 @@ impl FunctionLowerer<'_, '_> {
             recv: Box::new(self.lower_address(base, false)?),
             method: "read_unaligned".into(),
             args: Vec::new(),
+            unsafe_: rust::Unsafe(true),
         };
-        Ok(Some(Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(Expr::Index {
-                base: Box::new(vector),
-                index: Box::new(self.lower_index(index)?),
-            })),
-        }))))
+        Ok(Some(unsafe_op(Expr::Index {
+            base: Box::new(vector),
+            index: Box::new(self.lower_index(index)?),
+        })))
     }
 
     pub(super) fn lower_index(&mut self, index: &ir::Value) -> Result<Expr> {
@@ -362,7 +360,7 @@ impl FunctionLowerer<'_, '_> {
         let vector = self.next_temp();
         let operand = self.next_temp();
         let index = self.lower_index(index)?;
-        let pointer_var = || Expr::Var(pointer.as_str().into());
+        let pointer_var = || Expr::var(pointer.as_str().into());
         Ok(Some(Stmt::Unsafe {
             body: rust::Block {
                 stmts: vec![
@@ -389,19 +387,21 @@ impl FunctionLowerer<'_, '_> {
                             recv: Box::new(pointer_var()),
                             method: "read_unaligned".into(),
                             args: Vec::new(),
+                            unsafe_: rust::Unsafe(true),
                         }),
                     },
                     Stmt::Assign {
                         target: Expr::Index {
-                            base: Box::new(Expr::Var(vector.as_str().into())),
+                            base: Box::new(Expr::var(vector.as_str().into())),
                             index: Box::new(index),
                         },
-                        value: Expr::Var(operand.as_str().into()),
+                        value: Expr::var(operand.as_str().into()),
                     },
                     Stmt::Expr(Expr::MethodCall {
                         recv: Box::new(pointer_var()),
                         method: "write_unaligned".into(),
-                        args: vec![Expr::Var(vector.as_str().into())],
+                        args: vec![Expr::var(vector.as_str().into())],
+                        unsafe_: rust::Unsafe(true),
                     }),
                 ],
                 tail: None,
@@ -475,6 +475,7 @@ impl FunctionLowerer<'_, '_> {
                 expr: Box::new(Expr::Field {
                     base: Box::new(self.lower_place(base)?),
                     field: field_name(field, index),
+                    union: rust::UnsafeCmp(false),
                 }),
             }),
             ty: rust::Type::Ptr {
@@ -546,6 +547,7 @@ impl FunctionLowerer<'_, '_> {
                     }),
                     method: "cast_mut".into(),
                     args: Vec::new(),
+                    unsafe_: rust::Unsafe(false),
                 })
             }
             _ => Ok(Expr::AddrOf {
@@ -562,7 +564,7 @@ impl FunctionLowerer<'_, '_> {
         if let Some((erased, copy)) = &self.erased_copy
             && std::ptr::eq(*erased, place)
         {
-            return Ok(Expr::Var(copy.as_str().into()));
+            return Ok(Expr::var(copy.as_str().into()));
         }
         let tables = self.tables;
         if let PlaceKind::Binding(id) = place.kind
@@ -575,7 +577,7 @@ impl FunctionLowerer<'_, '_> {
             && let Some(address) = self.vla_address(place)?
         {
             return Ok(Expr::Unary {
-                op: rust::UnaryOp::Deref,
+                op: rust::UnaryOp::Deref(rust::Pointee::Raw),
                 expr: Box::new(address),
             });
         }
@@ -600,7 +602,7 @@ impl FunctionLowerer<'_, '_> {
                     self.dependencies.null_deref = true;
                 }
                 Ok(Expr::Unary {
-                    op: rust::UnaryOp::Deref,
+                    op: rust::UnaryOp::Deref(rust::Pointee::Raw),
                     expr: Box::new(self.lower_value(pointer)?),
                 })
             }
@@ -637,6 +639,7 @@ impl FunctionLowerer<'_, '_> {
                 Ok(Expr::Field {
                     base: Box::new(self.lower_place(base)?),
                     field: field_name(field, index),
+                    union: rust::UnsafeCmp(tables.is_union(&base.ty)),
                 })
             }
             PlaceKind::ComplexPart {
@@ -647,6 +650,7 @@ impl FunctionLowerer<'_, '_> {
                 Ok(Expr::Field {
                     base: Box::new(self.lower_place(base)?),
                     field: if imaginary { "im" } else { "re" }.into(),
+                    union: rust::UnsafeCmp(false),
                 })
             }
             PlaceKind::CompoundLiteral {
@@ -696,23 +700,28 @@ impl FunctionLowerer<'_, '_> {
         }
         if let Some(pointer) = self.shared_pointers.get(&id) {
             return Expr::Unary {
-                op: rust::UnaryOp::Deref,
-                expr: Box::new(Expr::Var(pointer.as_str().into())),
+                op: rust::UnaryOp::Deref(rust::Pointee::Raw),
+                expr: Box::new(Expr::var(pointer.as_str().into())),
             };
         }
         if self.dispatch_bindings.contains(&id) {
             return Expr::Unary {
-                op: rust::UnaryOp::Deref,
+                op: rust::UnaryOp::Deref(rust::Pointee::Raw),
                 expr: Box::new(self.slot_pointer(id)),
             };
         }
         if self.dispatch_vlas.contains(&id) {
             return self.vla_storage(id);
         }
-        let mut binding = Expr::Var(self.binding_name(id).as_str().into());
+        let mut binding = Expr::Var {
+            name: self.binding_name(id).as_str().into(),
+            unsafe_: rust::Unsafe(
+                self.tables.statics.contains(&id) && !self.tables.read_only.contains(&id),
+            ),
+        };
         if self.tables.address_images.contains(&id) {
             binding = Expr::Unary {
-                op: rust::UnaryOp::Deref,
+                op: rust::UnaryOp::Deref(rust::Pointee::Raw),
                 expr: Box::new(Expr::Cast {
                     expr: Box::new(Expr::AddrOf {
                         mutable: true,
@@ -729,7 +738,7 @@ impl FunctionLowerer<'_, '_> {
         }
         if self.in_static_initializer && self.tables.weak_address_globals.contains(&id) {
             self.dependencies.weak_addresses.borrow_mut().insert(id);
-            return Expr::Var(
+            return Expr::var(
                 super::globals::weak_address_name(&self.binding_name(id))
                     .as_str()
                     .into(),
@@ -737,13 +746,13 @@ impl FunctionLowerer<'_, '_> {
         }
         if self.tables.indirect_globals.contains(&id) {
             return Expr::Unary {
-                op: rust::UnaryOp::Deref,
+                op: rust::UnaryOp::Deref(rust::Pointee::Raw),
                 expr: Box::new(binding),
             };
         }
         if let Some(record) = self.tables.flexible_globals.get(&id) {
             return Expr::Unary {
-                op: rust::UnaryOp::Deref,
+                op: rust::UnaryOp::Deref(rust::Pointee::Raw),
                 expr: Box::new(Expr::Cast {
                     expr: Box::new(Expr::AddrOf {
                         mutable: true,
@@ -796,17 +805,15 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn unaligned_bit_unit_read(storage: Expr) -> Expr {
-        Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(Expr::Call {
-                func: Box::new(Expr::Var("core::ptr::read_unaligned".into())),
-                args: vec![Expr::AddrOf {
-                    mutable: false,
-                    expr: Box::new(storage),
-                }],
-                binding: CallBinding::Generated,
-            })),
-        }))
+        unsafe_op(Expr::Call {
+            func: Box::new(Expr::var("core::ptr::read_unaligned".into())),
+            args: vec![Expr::AddrOf {
+                mutable: false,
+                expr: Box::new(storage),
+            }],
+            binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(true),
+        })
     }
 
     pub(super) fn bit_unit_write(
@@ -847,20 +854,23 @@ impl FunctionLowerer<'_, '_> {
                                 mutable: true,
                                 ty: None,
                                 init: Some(Expr::Call {
-                                    func: Box::new(Expr::Var(read.into())),
+                                    func: Box::new(Expr::var(read.into())),
                                     args: vec![address.clone()],
                                     binding: CallBinding::Generated,
+                                    unsafe_: rust::Unsafe(true),
                                 }),
                             },
                             Stmt::Expr(Expr::MethodCall {
-                                recv: Box::new(Expr::Var(unit.as_str().into())),
+                                recv: Box::new(Expr::var(unit.as_str().into())),
                                 method: setter,
-                                args: vec![Expr::Var(operand.into())],
+                                args: vec![Expr::var(operand.into())],
+                                unsafe_: rust::Unsafe(false),
                             }),
                             Stmt::Expr(Expr::Call {
-                                func: Box::new(Expr::Var(write.into())),
-                                args: vec![address, Expr::Var(unit.into())],
+                                func: Box::new(Expr::var(write.into())),
+                                args: vec![address, Expr::var(unit.into())],
                                 binding: CallBinding::Generated,
+                                unsafe_: rust::Unsafe(true),
                             }),
                         ],
                         tail: None,
@@ -896,10 +906,11 @@ impl FunctionLowerer<'_, '_> {
         let storage = Expr::Field {
             base: Box::new(self.lower_place(base)?),
             field: bit_unit_name(bits.unit),
+            union: rust::UnsafeCmp(self.tables.is_union(&base.ty)),
         };
         let storage = if self.tables.place_is_static(base) {
             Expr::Unary {
-                op: rust::UnaryOp::Deref,
+                op: rust::UnaryOp::Deref(rust::Pointee::Raw),
                 expr: Box::new(Expr::AddrOf {
                     mutable: kind == "set",
                     expr: Box::new(storage),
@@ -938,10 +949,11 @@ impl FunctionLowerer<'_, '_> {
         };
         let slot = match wrapper {
             Some(_) => Expr::Field {
-                base: Box::new(Expr::Var(name.as_str().into())),
+                base: Box::new(Expr::var(name.as_str().into())),
                 field: "0".into(),
+                union: rust::UnsafeCmp(false),
             },
-            None => Expr::Var(name.as_str().into()),
+            None => Expr::var(name.as_str().into()),
         };
         if !persistent
             && let ValueKind::Aggregate { members, .. } = &initializer.node.value
@@ -967,7 +979,7 @@ impl FunctionLowerer<'_, '_> {
                 stmts.push(Stmt::Expr(clear));
             }
             return Ok(Expr::Unary {
-                op: rust::UnaryOp::Deref,
+                op: rust::UnaryOp::Deref(rust::Pointee::Raw),
                 expr: Box::new(Expr::Block(Box::new(rust::Block {
                     stmts,
                     tail: Some(Box::new(Expr::AddrOf {
@@ -1012,7 +1024,7 @@ impl FunctionLowerer<'_, '_> {
             init: Some(zeroed()),
         });
         Ok(Expr::Unary {
-            op: rust::UnaryOp::Deref,
+            op: rust::UnaryOp::Deref(rust::Pointee::Raw),
             expr: Box::new(Expr::Block(Box::new(rust::Block {
                 stmts: vec![Stmt::Assign {
                     target: slot.clone(),

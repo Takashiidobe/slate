@@ -38,8 +38,8 @@ pub(crate) fn long_double_prelude(vis: Visibility, align: u32) -> Vec<Item> {
 
 fn f80_assign_impl(trait_: StdTrait, shim: &str) -> Item {
     let self_value = Expr::Unary {
-        op: UnaryOp::Deref,
-        expr: Box::new(Expr::Var("self".into())),
+        op: UnaryOp::Deref(crate::backend::rust_ast::Pointee::Ref),
+        expr: Box::new(Expr::var("self".into())),
     };
     let method = Method {
         is_const: false,
@@ -55,7 +55,7 @@ fn f80_assign_impl(trait_: StdTrait, shim: &str) -> Item {
         body: Expr::Block(Box::new(crate::backend::rust_ast::Block {
             stmts: vec![Stmt::Assign {
                 target: self_value.clone(),
-                value: f80_call(shim, vec![self_value, Expr::Var(shim_param("o").into())]),
+                value: f80_call(shim, vec![self_value, Expr::var(shim_param("o").into())]),
             }],
             tail: None,
         })),
@@ -82,7 +82,7 @@ fn f80_binop_impl(trait_: StdTrait, shim: &str) -> Item {
         ret: Some(Type::LongDouble),
         body: f80_call(
             shim,
-            vec![Expr::Var("self".into()), Expr::Var(shim_param("o").into())],
+            vec![Expr::var("self".into()), Expr::var(shim_param("o").into())],
         ),
     };
     Item::Impl(ImplBlock {
@@ -106,7 +106,7 @@ fn f80_neg_impl() -> Item {
         self_kind: SelfKind::Value,
         params: vec![],
         ret: Some(Type::LongDouble),
-        body: f80_call("__slate_f80_neg", vec![Expr::Var("self".into())]),
+        body: f80_call("__slate_f80_neg", vec![Expr::var("self".into())]),
     };
     Item::Impl(ImplBlock {
         generics: vec![],
@@ -141,12 +141,12 @@ fn f80_partial_eq_impl() -> Item {
             "__slate_f80_eq",
             vec![
                 Expr::Unary {
-                    op: UnaryOp::Deref,
-                    expr: Box::new(Expr::Var("self".into())),
+                    op: UnaryOp::Deref(crate::backend::rust_ast::Pointee::Ref),
+                    expr: Box::new(Expr::var("self".into())),
                 },
                 Expr::Unary {
-                    op: UnaryOp::Deref,
-                    expr: Box::new(Expr::Var(shim_param("other").into())),
+                    op: UnaryOp::Deref(crate::backend::rust_ast::Pointee::Ref),
+                    expr: Box::new(Expr::var(shim_param("other").into())),
                 },
             ],
         ),
@@ -170,18 +170,19 @@ fn f80_partial_ord_impl() -> Item {
         args: vec![Expr::Path(Path::new(
             ["core", "cmp", "Ordering", ordering].map(Ident::from),
         ))],
+        unsafe_: crate::backend::rust_ast::Unsafe(false),
     };
     let cmp = |shim: &str| {
         f80_call(
             shim,
             vec![
                 Expr::Unary {
-                    op: UnaryOp::Deref,
-                    expr: Box::new(Expr::Var("self".into())),
+                    op: UnaryOp::Deref(crate::backend::rust_ast::Pointee::Ref),
+                    expr: Box::new(Expr::var("self".into())),
                 },
                 Expr::Unary {
-                    op: UnaryOp::Deref,
-                    expr: Box::new(Expr::Var(shim_param("other").into())),
+                    op: UnaryOp::Deref(crate::backend::rust_ast::Pointee::Ref),
+                    expr: Box::new(Expr::var(shim_param("other").into())),
                 },
             ],
         )
@@ -226,8 +227,9 @@ fn f80_partial_ord_impl() -> Item {
 fn f80_call(name: &str, args: Vec<Expr>) -> Expr {
     Expr::Call {
         binding: CallBinding::Generated,
-        func: Box::new(Expr::Var(name.into())),
+        func: Box::new(Expr::var(name.into())),
         args,
+        unsafe_: crate::backend::rust_ast::Unsafe(false),
     }
 }
 

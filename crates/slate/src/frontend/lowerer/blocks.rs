@@ -18,16 +18,17 @@ fn byref_type(value: rust::Type) -> rust::Type {
 
 pub(super) fn byref_value(binding: Expr) -> Expr {
     Expr::Unary {
-        op: rust::UnaryOp::Deref,
+        op: rust::UnaryOp::Deref(rust::Pointee::Raw),
         expr: Box::new(support_call("value", vec![binding])),
     }
 }
 
 fn support_call(function: &str, args: Vec<Expr>) -> Expr {
     Expr::Call {
-        func: Box::new(Expr::Var(format!("{SUPPORT}::{function}").into())),
+        func: Box::new(Expr::var(format!("{SUPPORT}::{function}").into())),
         args,
         binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(function != "scope"),
     }
 }
 
@@ -92,7 +93,7 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn byref_pointer(&self, id: BindingId) -> Expr {
-        let name = Expr::Var(self.binding_name(id).as_str().into());
+        let name = Expr::var(self.binding_name(id).as_str().into());
         if self.byref_slots.contains(&id) {
             support_call(
                 "slot",
@@ -118,7 +119,7 @@ impl FunctionLowerer<'_, '_> {
                 name: format!("{SUPPORT}::ByrefSlot"),
                 args: vec![value],
             }),
-            init: Some(Expr::Var(
+            init: Some(Expr::var(
                 format!("{SUPPORT}::ByrefSlot::new()").as_str().into(),
             )),
         })
@@ -129,7 +130,7 @@ impl FunctionLowerer<'_, '_> {
             "init",
             vec![Expr::AddrOf {
                 mutable: true,
-                expr: Box::new(Expr::Var(self.binding_name(variable.id).as_str().into())),
+                expr: Box::new(Expr::var(self.binding_name(variable.id).as_str().into())),
             }],
         );
         self.store_byref(header, variable)
@@ -140,10 +141,10 @@ impl FunctionLowerer<'_, '_> {
             Some(value) => self.lower_value(value)?,
             None => zeroed(),
         };
-        Ok(Stmt::Expr(Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(support_call("store", vec![byref, initial]))),
-        }))))
+        Ok(Stmt::Expr(unsafe_op(support_call(
+            "store",
+            vec![byref, initial],
+        ))))
     }
 
     fn rooted_in_byref(&self, place: &ir::Place) -> bool {
@@ -175,14 +176,14 @@ impl FunctionLowerer<'_, '_> {
                 name: "core::mem::MaybeUninit".into(),
                 args: vec![ty.clone()],
             }),
-            init: Some(Expr::Var("core::mem::MaybeUninit::uninit()".into())),
+            init: Some(Expr::var("core::mem::MaybeUninit::uninit()".into())),
         });
         self.after_declaration = Some(Stmt::Let {
             origin: rust::LocalOrigin::Synthetic,
             name: format!("{name}_scope").as_str().into(),
             mutable: false,
             ty: None,
-            init: Some(support_call("scope", vec![Expr::Var(name.as_str().into())])),
+            init: Some(support_call("scope", vec![Expr::var(name.as_str().into())])),
         });
         self.pending.push(Stmt::Let {
             origin: rust::LocalOrigin::Source,
@@ -192,18 +193,15 @@ impl FunctionLowerer<'_, '_> {
                 mutable: true,
                 inner: Box::new(ty),
             }),
-            init: Some(Expr::Unsafe(Box::new(rust::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(support_call(
-                    "byref",
-                    vec![Expr::AddrOf {
-                        mutable: true,
-                        expr: Box::new(Expr::Var(slot.as_str().into())),
-                    }],
-                ))),
-            }))),
+            init: Some(unsafe_op(support_call(
+                "byref",
+                vec![Expr::AddrOf {
+                    mutable: true,
+                    expr: Box::new(Expr::var(slot.as_str().into())),
+                }],
+            ))),
         });
-        self.store_byref(Expr::Var(name.as_str().into()), variable)
+        self.store_byref(Expr::var(name.as_str().into()), variable)
     }
 
     pub(super) fn lower_block_literal(&mut self, block: &ir::BlockLiteral) -> Result<Expr> {
@@ -234,8 +232,8 @@ impl FunctionLowerer<'_, '_> {
                     vec![Expr::Macro {
                         name: "core::mem::offset_of".into(),
                         args: vec![
-                            Expr::Var(captures_name.as_str().into()),
-                            Expr::Var(field.as_str().into()),
+                            Expr::var(captures_name.as_str().into()),
+                            Expr::var(field.as_str().into()),
                         ],
                     }],
                 ));
@@ -258,8 +256,9 @@ impl FunctionLowerer<'_, '_> {
                 mutable: true,
                 ty: Some(ty.clone()),
                 init: Some(Expr::Field {
-                    base: Box::new(Expr::Var("__captures".into())),
+                    base: Box::new(Expr::var("__captures".into())),
                     field: field.clone(),
+                    union: rust::UnsafeCmp(false),
                 }),
             });
             fields.push(rust::RecordField {
@@ -299,7 +298,7 @@ impl FunctionLowerer<'_, '_> {
         };
         self.dependencies.block_items.push(item);
         let invoke = Expr::Cast {
-            expr: Box::new(Expr::Var(function_name.as_str().into())),
+            expr: Box::new(Expr::var(function_name.as_str().into())),
             ty: void_pointer(false),
         };
         if block.captures.is_empty() {
@@ -317,7 +316,7 @@ impl FunctionLowerer<'_, '_> {
                 expr: Box::new(Expr::Cast {
                     expr: Box::new(Expr::AddrOf {
                         mutable: false,
-                        expr: Box::new(Expr::Var(literal.into())),
+                        expr: Box::new(Expr::var(literal.into())),
                     }),
                     ty: void_pointer(false),
                 }),
@@ -342,6 +341,7 @@ impl FunctionLowerer<'_, '_> {
                     expr: Box::new(Expr::ArrayLit(retained)),
                 }],
                 binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(false),
             },
         });
         let slot = format!("{function_name}_slot");
@@ -352,29 +352,26 @@ impl FunctionLowerer<'_, '_> {
             ty: Some(rust::Type::Custom(format!(
                 "core::mem::MaybeUninit<{SUPPORT}::Block<{captures_name}>>"
             ))),
-            init: Some(Expr::Var("core::mem::MaybeUninit::uninit()".into())),
+            init: Some(Expr::var("core::mem::MaybeUninit::uninit()".into())),
         });
-        Ok(Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(support_call(
-                "stack",
-                vec![
-                    Expr::AddrOf {
-                        mutable: true,
-                        expr: Box::new(Expr::Var(slot.as_str().into())),
-                    },
-                    invoke,
-                    Expr::Ref {
-                        mutable: false,
-                        expr: Box::new(Expr::Var(descriptor.as_str().into())),
-                    },
-                    Expr::StructLit {
-                        name: captures_name,
-                        fields: inits,
-                    },
-                ],
-            ))),
-        })))
+        Ok(unsafe_op(support_call(
+            "stack",
+            vec![
+                Expr::AddrOf {
+                    mutable: true,
+                    expr: Box::new(Expr::var(slot.as_str().into())),
+                },
+                invoke,
+                Expr::Ref {
+                    mutable: false,
+                    expr: Box::new(Expr::var(descriptor.as_str().into())),
+                },
+                Expr::StructLit {
+                    name: captures_name,
+                    fields: inits,
+                },
+            ],
+        )))
     }
 
     fn lower_block_function(
@@ -426,17 +423,15 @@ impl FunctionLowerer<'_, '_> {
             name: "__captures".into(),
             mutable: false,
             ty: Some(captures_ty.clone()),
-            init: Some(Expr::Unsafe(Box::new(rust::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(Expr::Call {
-                    func: Box::new(Expr::GenericPath {
-                        path: rust::Path::new([SUPPORT, "captures"].map(rust::Ident::from)),
-                        type_args: vec![captures_ty.clone()],
-                    }),
-                    args: vec![Expr::Var("__block".into())],
-                    binding: CallBinding::Generated,
-                })),
-            }))),
+            init: Some(unsafe_op(Expr::Call {
+                func: Box::new(Expr::GenericPath {
+                    path: rust::Path::new([SUPPORT, "captures"].map(rust::Ident::from)),
+                    type_args: vec![captures_ty.clone()],
+                }),
+                args: vec![Expr::var("__block".into())],
+                binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(false),
+            })),
         }];
         statements.extend(loads);
         self.dispatch_params = params.clone();
@@ -494,7 +489,7 @@ impl FunctionLowerer<'_, '_> {
             Some(ret) => self.lower_type(ret)?,
             None => rust::Type::Unit,
         };
-        let mut args = vec![Expr::Var(temp.as_str().into())];
+        let mut args = vec![Expr::var(temp.as_str().into())];
         for (index, argument) in arguments.iter().enumerate() {
             args.push(self.lower_call_argument(argument, index >= parameters.len())?);
         }
@@ -518,14 +513,16 @@ impl FunctionLowerer<'_, '_> {
                         },
                         expr: Box::new(support_call(
                             "invoke",
-                            vec![Expr::Var(temp.as_str().into())],
+                            vec![Expr::var(temp.as_str().into())],
                         )),
                     }),
                     method: "unwrap".into(),
                     args: Vec::new(),
+                    unsafe_: rust::Unsafe(false),
                 }),
                 args,
                 binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(true),
             })),
         })))
     }

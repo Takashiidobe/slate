@@ -49,7 +49,7 @@ pub(super) fn vector_constructor(ty: &rust::Type, method: &str) -> Expr {
     } else {
         "core::simd::Simd"
     };
-    Expr::Var(format!("{base}::{method}").into())
+    Expr::var(format!("{base}::{method}").into())
 }
 
 impl Tables<'_> {
@@ -97,6 +97,7 @@ impl FunctionLowerer<'_, '_> {
                 recv: Box::new(recv),
                 method: method.into(),
                 args: Vec::new(),
+                unsafe_: rust::Unsafe(false),
             })
         };
         let lowered = self.lower_value(operand)?;
@@ -108,6 +109,7 @@ impl FunctionLowerer<'_, '_> {
             recv: Box::new(lowered),
             method: "to_array".into(),
             args: Vec::new(),
+            unsafe_: rust::Unsafe(false),
         };
         Ok(Expr::Call {
             func: Box::new(constructor),
@@ -116,10 +118,12 @@ impl FunctionLowerer<'_, '_> {
                 method: "map".into(),
                 args: vec![Expr::Closure {
                     params: vec!["__lane".into()],
-                    body: Box::new(lane(Expr::Var("__lane".into()))?),
+                    body: Box::new(lane(Expr::var("__lane".into()))?),
                 }],
+                unsafe_: rust::Unsafe(false),
             }],
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         })
     }
 
@@ -154,6 +158,7 @@ impl FunctionLowerer<'_, '_> {
                     recv: Box::new(lowered),
                     method: "to_array".into(),
                     args: Vec::new(),
+                    unsafe_: rust::Unsafe(false),
                 };
                 sources.push(self.bind(&mut stmts, array));
             }
@@ -178,6 +183,7 @@ impl FunctionLowerer<'_, '_> {
                     func: Box::new(vector_constructor(&result, "from_array")),
                     args: vec![Expr::ArrayLit(lanes)],
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 })),
             })));
         }
@@ -214,7 +220,7 @@ impl FunctionLowerer<'_, '_> {
         let mut arrays = Vec::new();
         for operand in [left, right] {
             let lowered = self.lower_value(operand)?;
-            let recv = if matches!(lowered, Expr::Var(_)) {
+            let recv = if matches!(lowered, Expr::Var { .. }) {
                 lowered
             } else {
                 let vector = self.next_temp();
@@ -225,18 +231,19 @@ impl FunctionLowerer<'_, '_> {
                     ty: Some(self.lower_type(&operand.ty)?),
                     init: Some(lowered),
                 });
-                Expr::Var(vector.into())
+                Expr::var(vector.into())
             };
             let array = Expr::MethodCall {
                 recv: Box::new(recv),
                 method: "to_array".into(),
                 args: Vec::new(),
+                unsafe_: rust::Unsafe(false),
             };
             arrays.push(self.bind(&mut stmts, array));
         }
         let at = |array: &Expr| Expr::Index {
             base: Box::new(array.clone()),
-            index: Box::new(Expr::Var("__lane".into())),
+            index: Box::new(Expr::var("__lane".into())),
         };
         let compare = Expr::Binary {
             op: match op {
@@ -266,19 +273,21 @@ impl FunctionLowerer<'_, '_> {
             init: Some(Expr::Call {
                 func: Box::new(vector_constructor(&result, "from_array")),
                 args: vec![Expr::Call {
-                    func: Box::new(Expr::Var("core::array::from_fn".into())),
+                    func: Box::new(Expr::var("core::array::from_fn".into())),
                     args: vec![Expr::Closure {
                         params: vec!["__lane".into()],
                         body: Box::new(mask),
                     }],
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 }],
                 binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(false),
             }),
         });
         Ok(Expr::Block(Box::new(rust::Block {
             stmts,
-            tail: Some(Box::new(Expr::Var(temp.into()))),
+            tail: Some(Box::new(Expr::var(temp.into()))),
         })))
     }
 
@@ -305,9 +314,10 @@ impl FunctionLowerer<'_, '_> {
                 Expr::Binary {
                     op: BinOp::Sub,
                     lhs: Box::new(Expr::Call {
-                        func: Box::new(Expr::Var("core::simd::Simd::splat".into())),
+                        func: Box::new(Expr::var("core::simd::Simd::splat".into())),
                         args: vec![Expr::Value(rust::RustValue::I64(0))],
                         binding: CallBinding::Generated,
+                        unsafe_: rust::Unsafe(false),
                     }),
                     rhs: Box::new(lowered),
                 }
@@ -352,6 +362,7 @@ impl FunctionLowerer<'_, '_> {
                 recv: Box::new(self.lower_value(operand)?),
                 method: "to_array".into(),
                 args: Vec::new(),
+                unsafe_: rust::Unsafe(false),
             };
             return Ok(Expr::Call {
                 func: Box::new(vector_constructor(&target, "from_array")),
@@ -361,12 +372,14 @@ impl FunctionLowerer<'_, '_> {
                     args: vec![Expr::Closure {
                         params: vec!["__lane".into()],
                         body: Box::new(Expr::Cast {
-                            expr: Box::new(Expr::Var("__lane".into())),
+                            expr: Box::new(Expr::var("__lane".into())),
                             ty: lane,
                         }),
                     }],
+                    unsafe_: rust::Unsafe(false),
                 }],
                 binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(false),
             });
         }
         let trait_name = match from {
@@ -383,6 +396,7 @@ impl FunctionLowerer<'_, '_> {
             }),
             args: vec![self.lower_value(operand)?],
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         })
     }
 
@@ -431,16 +445,18 @@ impl FunctionLowerer<'_, '_> {
             ty: rust::Type::Prim(Prim::U64),
         };
         let mask = Expr::Call {
-            func: Box::new(Expr::Var(
+            func: Box::new(Expr::var(
                 format!("core::simd::Mask::<i{lane_width}, {lanes}>::from_bitmask").into(),
             )),
             args: vec![bits],
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         };
         Ok(Expr::Call {
-            func: Box::new(Expr::Var("core::simd::Select::select".into())),
+            func: Box::new(Expr::var("core::simd::Select::select".into())),
             args: vec![mask, self.lower_value(left)?, self.lower_value(right)?],
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         })
     }
 
@@ -475,24 +491,27 @@ impl FunctionLowerer<'_, '_> {
             return Err(unsupported_value(value));
         }
         let negative = Expr::Call {
-            func: Box::new(Expr::Var("core::simd::cmp::SimdPartialOrd::simd_lt".into())),
+            func: Box::new(Expr::var("core::simd::cmp::SimdPartialOrd::simd_lt".into())),
             args: vec![
                 self.lower_value(vector)?,
                 Expr::Call {
-                    func: Box::new(Expr::Var(
+                    func: Box::new(Expr::var(
                         format!("core::simd::Simd::<i{width}, {lanes}>::default").into(),
                     )),
                     args: vec![],
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 },
             ],
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         };
         Ok(Expr::Cast {
             expr: Box::new(Expr::MethodCall {
                 recv: Box::new(negative),
                 method: "to_bitmask".into(),
                 args: vec![],
+                unsafe_: rust::Unsafe(false),
             }),
             ty: self.lower_type(&value.ty)?,
         })
@@ -515,9 +534,10 @@ impl FunctionLowerer<'_, '_> {
             },
         };
         Ok(Expr::Call {
-            func: Box::new(Expr::Var("core::simd::Simd::load_select_ptr".into())),
+            func: Box::new(Expr::var("core::simd::Simd::load_select_ptr".into())),
             args: vec![pointer, enable, self.lower_value(passthrough)?],
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         })
     }
 
@@ -538,9 +558,10 @@ impl FunctionLowerer<'_, '_> {
             },
         };
         Ok(Expr::Call {
-            func: Box::new(Expr::Var("core::simd::Simd::store_select_ptr".into())),
+            func: Box::new(Expr::var("core::simd::Simd::store_select_ptr".into())),
             args: vec![self.lower_value(vector)?, pointer, enable],
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         })
     }
 
@@ -586,11 +607,12 @@ impl FunctionLowerer<'_, '_> {
             ty: rust::Type::Prim(Prim::U64),
         };
         let enable = Expr::Call {
-            func: Box::new(Expr::Var(
+            func: Box::new(Expr::var(
                 format!("core::simd::Mask::<i{lane_width}, {lanes}>::from_bitmask").into(),
             )),
             args: vec![bits],
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         };
         Ok((enable, lane))
     }

@@ -1,7 +1,7 @@
 use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKindTag};
-use crate::backend::rust_ast::{CLibType, Expr, Prim, Type};
+use crate::backend::rust_ast::{CLibType, Expr, Prim, Type, Unsafe};
 
 fn is_const_c_char_ptr(ty: &Type, c_char: Prim) -> bool {
     matches!(ty, Type::Ptr { mutable: false, inner } if **inner == Type::CLib(CLibType::CHAR) || matches!(**inner, Type::Prim(prim) if prim.resolved() == c_char))
@@ -32,7 +32,10 @@ fn cstr_content(expr: &Expr) -> Option<Vec<u8>> {
         }
         inner = next.as_ref();
     }
-    let Expr::MethodCall { recv, method, args } = inner else {
+    let Expr::MethodCall {
+        recv, method, args, ..
+    } = inner
+    else {
         return None;
     };
     if method.as_str() != "as_ptr" || !args.is_empty() {
@@ -57,6 +60,7 @@ fn rewrite_of(expr: &Expr, c_char: Prim) -> Option<Expr> {
         recv: Box::new(Expr::CStr(content)),
         method: "as_ptr".into(),
         args: Vec::new(),
+        unsafe_: Unsafe(false),
     };
     let rewritten = if is_const_c_char_ptr(ty, c_char) {
         ptr

@@ -15,9 +15,10 @@ pub(super) fn long_double_literal(bits: u128) -> Expr {
 
 pub(super) fn long_double_shim(name: &str, operand: Expr) -> Expr {
     Expr::Call {
-        func: Box::new(Expr::Var(name.into())),
+        func: Box::new(Expr::var(name.into())),
         args: vec![operand],
         binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(false),
     }
 }
 
@@ -291,7 +292,7 @@ impl FunctionLowerer<'_, '_> {
             inner: Box::new(rust::Type::Unit),
         };
         let args = std::iter::once(Ok(Expr::Cast {
-            expr: Box::new(Expr::Var(callee.into())),
+            expr: Box::new(Expr::var(callee.into())),
             ty: code_pointer.clone(),
         }))
         .chain(arguments.iter().map(|argument| self.lower_value(argument)))
@@ -419,7 +420,7 @@ impl FunctionLowerer<'_, '_> {
                 safe: false,
             });
         Ok(Expr::Cast {
-            expr: Box::new(Expr::Var(entry.into())),
+            expr: Box::new(Expr::var(entry.into())),
             ty: code_pointer(),
         })
     }

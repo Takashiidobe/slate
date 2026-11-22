@@ -96,12 +96,12 @@ pub(super) fn runtime_export(
         })
         .collect::<Vec<_>>();
     let call = Expr::Call {
-        func: Box::new(Expr::Var(definition.name.as_str().into())),
+        func: Box::new(Expr::var(definition.name.as_str().into())),
         args: definition
             .params
             .iter()
             .map(|param| Expr::Cast {
-                expr: Box::new(Expr::Var(param.name.as_str().into())),
+                expr: Box::new(Expr::var(param.name.as_str().into())),
                 ty: param.ty.clone(),
             })
             .collect(),
@@ -111,12 +111,10 @@ pub(super) fn runtime_export(
             trusted_declaration: None,
             trusted_headers: Default::default(),
         },
+        unsafe_: rust::Unsafe(false),
     };
     let call = if definition.unsafe_ {
-        Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(call)),
-        }))
+        unsafe_op(call)
     } else {
         call
     };
@@ -166,18 +164,16 @@ pub(super) fn main_wrapper(arity: usize, huge_stack: bool, returns_void: bool) -
     let args = params[..arity]
         .iter()
         .map(|param| Expr::Cast {
-            expr: Box::new(Expr::Var(param.name.as_str().into())),
+            expr: Box::new(Expr::var(param.name.as_str().into())),
             ty: rust::Type::Custom("_".into()),
         })
         .collect();
-    let call = Expr::Unsafe(Box::new(rust::Block {
-        stmts: Vec::new(),
-        tail: Some(Box::new(Expr::Call {
-            func: Box::new(Expr::Var("__slate_main".into())),
-            args,
-            binding: CallBinding::Generated,
-        })),
-    }));
+    let call = unsafe_op(Expr::Call {
+        func: Box::new(Expr::var("__slate_main".into())),
+        args,
+        binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(false),
+    });
     let mut body = Vec::new();
     let call = if huge_stack {
         for name in &params[1..arity.max(1)] {
@@ -187,7 +183,7 @@ pub(super) fn main_wrapper(arity: usize, huge_stack: bool, returns_void: bool) -
                 mutable: false,
                 ty: None,
                 init: Some(Expr::Cast {
-                    expr: Box::new(Expr::Var(name.name.as_str().into())),
+                    expr: Box::new(Expr::var(name.name.as_str().into())),
                     ty: rust::Type::Prim(rust::Prim::Usize),
                 }),
             });
@@ -196,12 +192,14 @@ pub(super) fn main_wrapper(arity: usize, huge_stack: bool, returns_void: bool) -
             recv: Box::new(recv),
             method: method.into(),
             args,
+            unsafe_: rust::Unsafe(false),
         };
         let builder = method(
             Expr::Call {
-                func: Box::new(Expr::Var("std::thread::Builder::new".into())),
+                func: Box::new(Expr::var("std::thread::Builder::new".into())),
                 args: Vec::new(),
                 binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(false),
             },
             "stack_size",
             vec![Expr::Value(rust::RustValue::Usize(1 << 30))],
@@ -210,7 +208,7 @@ pub(super) fn main_wrapper(arity: usize, huge_stack: bool, returns_void: bool) -
             builder,
             "spawn_scoped",
             vec![
-                Expr::Var("s".into()),
+                Expr::var("s".into()),
                 Expr::Closure {
                     params: Vec::new(),
                     body: Box::new(call),
@@ -218,7 +216,7 @@ pub(super) fn main_wrapper(arity: usize, huge_stack: bool, returns_void: bool) -
             ],
         );
         Expr::Call {
-            func: Box::new(Expr::Var("std::thread::scope".into())),
+            func: Box::new(Expr::var("std::thread::scope".into())),
             args: vec![Expr::Closure {
                 params: vec!["s".into()],
                 body: Box::new(method(
@@ -228,6 +226,7 @@ pub(super) fn main_wrapper(arity: usize, huge_stack: bool, returns_void: bool) -
                 )),
             }],
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         }
     } else {
         call
@@ -567,7 +566,7 @@ impl FunctionLowerer<'_, '_> {
         let ret = decl.ret.clone();
         let mut args = Vec::new();
         for ((param, declared), source) in params.iter().zip(&mut decl.params).zip(fixed) {
-            let arg = Expr::Var(param.name.as_str().into());
+            let arg = Expr::var(param.name.as_str().into());
             args.push(match self.tables.scalable_name(&source.ty) {
                 Some(sizeless) => {
                     declared.ty = self.lower_type(&ir::Type::Sizeless(sizeless.to_owned()))?;
@@ -576,14 +575,12 @@ impl FunctionLowerer<'_, '_> {
                 None => arg,
             });
         }
-        let mut call = Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(Expr::Call {
-                func: Box::new(Expr::Var(decl.name.as_str().into())),
-                args,
-                binding: CallBinding::Generated,
-            })),
-        }));
+        let mut call = unsafe_op(Expr::Call {
+            func: Box::new(Expr::var(decl.name.as_str().into())),
+            args,
+            binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
+        });
         if let Some(sizeless) = function
             .return_type
             .as_ref()
@@ -694,7 +691,7 @@ impl FunctionLowerer<'_, '_> {
                     name: name.clone(),
                     mutable: true,
                     ty: None,
-                    init: Some(Expr::Var(name.as_str().into())),
+                    init: Some(Expr::var(name.as_str().into())),
                 }
             })
             .collect();
@@ -718,9 +715,10 @@ impl FunctionLowerer<'_, '_> {
                 ty: Some(ty.clone()),
                 init: Some(Expr::Cast {
                     expr: Box::new(Expr::MethodCall {
-                        recv: Box::new(Expr::Var(params[pointer].name.as_str().into())),
+                        recv: Box::new(Expr::var(params[pointer].name.as_str().into())),
                         method: "len".into(),
                         args: Vec::new(),
+                        unsafe_: rust::Unsafe(false),
                     }),
                     ty,
                 }),
@@ -743,9 +741,10 @@ impl FunctionLowerer<'_, '_> {
                     mutable: false,
                     ty: None,
                     init: Some(Expr::Call {
-                        func: Box::new(Expr::Var("__slate_alloca::Mark::new".into())),
+                        func: Box::new(Expr::var("__slate_alloca::Mark::new".into())),
                         args: Vec::new(),
                         binding: CallBinding::Generated,
+                        unsafe_: rust::Unsafe(false),
                     }),
                 },
             );
@@ -769,7 +768,7 @@ impl FunctionLowerer<'_, '_> {
                     }),
                     init: Some(Expr::AddrOf {
                         mutable: true,
-                        expr: Box::new(Expr::Var("__slate_interrupt_frame".into())),
+                        expr: Box::new(Expr::var("__slate_interrupt_frame".into())),
                     }),
                 },
             );

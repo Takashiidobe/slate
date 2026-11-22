@@ -206,6 +206,7 @@ impl FunctionLowerer<'_, '_> {
                         recv: Box::new(lowered),
                         method: "to_bits".into(),
                         args: Vec::new(),
+                        unsafe_: rust::Unsafe(false),
                     },
                     _ => return Err(overlap()),
                 };

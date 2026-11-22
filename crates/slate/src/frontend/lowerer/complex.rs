@@ -14,6 +14,7 @@ fn method(recv: Expr, name: &str, args: Vec<Expr>) -> Expr {
         recv: Box::new(recv),
         method: name.into(),
         args,
+        unsafe_: rust::Unsafe(false),
     }
 }
 
@@ -31,7 +32,7 @@ fn is_f80(component: ir::NumericType) -> bool {
 
 fn duplicable(expr: &Expr) -> bool {
     match expr {
-        Expr::Var(_) | Expr::Value(_) | Expr::HexFloat(_) => true,
+        Expr::Var { .. } | Expr::Value(_) | Expr::HexFloat(_) => true,
         Expr::Cast { expr, .. } | Expr::Unary { expr, .. } | Expr::Field { base: expr, .. } => {
             duplicable(expr)
         }
@@ -53,14 +54,16 @@ fn part(base: &Expr, field: &str) -> Expr {
     Expr::Field {
         base: Box::new(base.clone()),
         field: field.into(),
+        union: rust::UnsafeCmp(false),
     }
 }
 
 fn shim(name: &str, args: Vec<Expr>) -> Expr {
     Expr::Call {
-        func: Box::new(Expr::Var(name.into())),
+        func: Box::new(Expr::var(name.into())),
         args,
         binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(false),
     }
 }
 
@@ -130,7 +133,7 @@ fn pure(expr: &Expr) -> bool {
     match expr {
         Expr::Binary { lhs, rhs, .. } => pure(lhs) && pure(rhs),
         Expr::Call { func, args, .. } => {
-            matches!(func.as_ref(), Expr::Var(name) if name.as_str().starts_with("__slate_f80_"))
+            matches!(func.as_ref(), Expr::Var { name, .. } if name.as_str().starts_with("__slate_f80_"))
                 && args.iter().all(pure)
         }
         Expr::Cast { expr, .. } | Expr::Unary { expr, .. } | Expr::Field { base: expr, .. } => {
@@ -179,7 +182,7 @@ impl FunctionLowerer<'_, '_> {
             ty: None,
             init: Some(init),
         });
-        Expr::Var(temp.as_str().into())
+        Expr::var(temp.as_str().into())
     }
 
     fn conjugate(&mut self, operand: Expr) -> Expr {
@@ -387,6 +390,7 @@ impl FunctionLowerer<'_, '_> {
                         "im"
                     }
                     .into(),
+                    union: rust::UnsafeCmp(false),
                 }))
             }
             ValueKind::Convert {
@@ -556,6 +560,7 @@ impl FunctionLowerer<'_, '_> {
                     field => Expr::Field {
                         base: Box::new(operand),
                         field: field.into(),
+                        union: rust::UnsafeCmp(false),
                     },
                 }))
             }

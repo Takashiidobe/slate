@@ -220,7 +220,7 @@ fn warning_items(message: &str, index: usize) -> Vec<rust_ast::Item> {
             attrs: Vec::new(),
             name: "_".into(),
             ty: rust_ast::Type::Unit,
-            init: rust_ast::Expr::Var(format!("__SLATE_WARNING_{index}").into()),
+            init: rust_ast::Expr::var(format!("__SLATE_WARNING_{index}").into()),
         },
     ]
 }

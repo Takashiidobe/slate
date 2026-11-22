@@ -5,7 +5,7 @@ use crate::backend::rust_ast::{Expr, Ident, Stmt, Type, UnaryOp, macro_template_
 
 fn place_root(expr: &Expr) -> Option<Ident> {
     match expr {
-        Expr::Var(name) => Some(*name),
+        Expr::Var { name, .. } => Some(*name),
         Expr::Field { base, .. } | Expr::TupleField { base, .. } | Expr::Index { base, .. } => {
             place_root(base)
         }
@@ -28,14 +28,14 @@ struct Binding<'a> {
 impl Binding<'_> {
     fn roots(&self, place: &Expr) -> bool {
         match self.ty {
-            Some(Type::Ref { .. }) => matches!(place, Expr::Var(name) if *name == self.name),
+            Some(Type::Ref { .. }) => matches!(place, Expr::Var { name, .. } if *name == self.name),
             _ => place_root(place) == Some(self.name),
         }
     }
 
     fn derefs_owner(&self, place: &Expr) -> bool {
         !matches!(self.ty, Some(Type::Ptr { .. } | Type::Ref { .. }))
-            && matches!(place, Expr::Unary { op: UnaryOp::Deref, expr } if self.roots(expr))
+            && matches!(place, Expr::Unary { op: UnaryOp::Deref(_), expr } if self.roots(expr))
     }
 
     fn expr_mutates(&self, expr: &Expr) -> bool {
@@ -57,7 +57,8 @@ impl Binding<'_> {
                 array: expr,
             } => self.roots(expr),
             Expr::MethodCall { recv, .. } | Expr::MethodCallGeneric { recv, .. } => {
-                self.roots(recv) && !(matches!(**recv, Expr::Var(_)) && by_value_receiver(self.ty))
+                self.roots(recv)
+                    && !(matches!(**recv, Expr::Var { .. }) && by_value_receiver(self.ty))
             }
             Expr::Macro { name, args } => {
                 macro_template_base(name).is_none() && args.iter().any(|arg| self.roots(arg))

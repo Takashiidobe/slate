@@ -1,6 +1,6 @@
 use crate::backend::rust_ast::{
     BinOp, Block, Expr, FnDef, FnParam, Ident, ImplItem, Item, Path, Prim, Program, RustValue,
-    Stmt, Type, Visibility,
+    Stmt, Type, Unsafe, Visibility,
 };
 use crate::function_identity::CallBinding;
 
@@ -94,7 +94,7 @@ pub(in crate::backend) fn long_prim(target: &slate_parser::target_info::TargetIn
 }
 
 fn var(name: &str) -> Expr {
-    Expr::Var(name.into())
+    Expr::var(name.into())
 }
 
 fn byte(b: u8) -> Expr {
@@ -125,6 +125,7 @@ fn mcall(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
         recv: Box::new(recv),
         method: method.into(),
         args,
+        unsafe_: Unsafe(false),
     }
 }
 
@@ -184,6 +185,7 @@ fn ato_int_prelude(name: &str, ret: Prim, target: &slate_parser::target_info::Ta
             ["core", "ffi", "CStr", "from_ptr"].map(Ident::from),
         ))),
         args: vec![var("s")],
+        unsafe_: Unsafe(true),
     };
     let bytes = mcall(
         Expr::Unsafe(Box::new(Block {
@@ -210,6 +212,7 @@ fn ato_int_prelude(name: &str, ret: Prim, target: &slate_parser::target_info::Ta
             ["core", "str", "from_utf8"].map(Ident::from),
         ))),
         args: vec![slice],
+        unsafe_: Unsafe(false),
     };
     let parsed_i128 = mcall(
         Expr::MethodCallGeneric {
@@ -217,6 +220,7 @@ fn ato_int_prelude(name: &str, ret: Prim, target: &slate_parser::target_info::Ta
             method: "parse".into(),
             type_args: vec![Type::Prim(Prim::I128)],
             args: Vec::new(),
+            unsafe_: Unsafe(false),
         },
         "unwrap_or",
         vec![Expr::Value(RustValue::TypedInt(0, Prim::I128))],

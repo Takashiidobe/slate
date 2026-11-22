@@ -2,10 +2,10 @@ use super::for_range::{int_value, subtree_ids};
 use super::remove_mut::invariant_within;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Expr, Ident, Type};
+use crate::backend::rust_ast::{Expr, Ident, Type, Unsafe};
 
 fn is_var(expr: &Expr, name: Ident) -> bool {
-    matches!(expr, Expr::Var(v) if *v == name)
+    matches!(expr, Expr::Var { name: v, .. } if *v == name)
 }
 
 fn is_ind_var_chain(expr: &Expr, ind_var: Ident) -> bool {
@@ -17,9 +17,9 @@ fn is_ind_var_chain(expr: &Expr, ind_var: Ident) -> bool {
 
 fn array_var(base: &Expr) -> Option<Ident> {
     match base {
-        Expr::Var(arr) => Some(*arr),
+        Expr::Var { name: arr, .. } => Some(*arr),
         Expr::TupleField { base, index: 0 } => match base.as_ref() {
-            Expr::Var(arr) => Some(*arr),
+            Expr::Var { name: arr, .. } => Some(*arr),
             _ => None,
         },
         _ => None,
@@ -41,11 +41,11 @@ fn slate_aligned(ty: &Type) -> Option<&Type> {
 fn array_base(arena: &FunctionOptimizer, arr: Ident) -> Expr {
     if arena.var_type(arr).and_then(slate_aligned).is_some() {
         Expr::TupleField {
-            base: Box::new(Expr::Var(arr)),
+            base: Box::new(Expr::var(arr)),
             index: 0,
         }
     } else {
-        Expr::Var(arr)
+        Expr::var(arr)
     }
 }
 
@@ -131,7 +131,7 @@ fn array_len(arena: &FunctionOptimizer, name: Ident) -> Option<u64> {
 
 fn replace_index_use(expr: &mut Expr, arr: Ident, ind_var: Ident) -> bool {
     if direct_index_match(expr, ind_var) == Some(arr) {
-        *expr = Expr::Var(ind_var);
+        *expr = Expr::var(ind_var);
         return true;
     }
     index_search_children_mut(expr)
@@ -288,9 +288,11 @@ impl NodeRule for ForArrayIterRecover {
                 recv: Box::new(base),
                 method: "iter".to_string(),
                 args: Vec::new(),
+                unsafe_: Unsafe(false),
             }),
             method: "copied".to_string(),
             args: Vec::new(),
+            unsafe_: Unsafe(false),
         };
         arena.touch(id);
         true

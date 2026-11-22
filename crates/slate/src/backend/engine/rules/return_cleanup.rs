@@ -45,21 +45,21 @@ fn synthetic_slot(arena: &Arena, name: Ident) -> bool {
         .iter()
         .all(|&use_id| match arena.get(use_id) {
             Some(NodeKind::Assign {
-                target: Expr::Var(target),
+                target: Expr::Var { name: target, .. },
                 value,
             }) => *target == name && !value.reads_var(name.as_str()),
-            Some(NodeKind::Return(Some(Expr::Var(returned)))) => *returned == name,
+            Some(NodeKind::Return(Some(Expr::Var { name: returned, .. }))) => *returned == name,
             Some(NodeKind::Let {
                 name: temp,
                 mutable: false,
-                init: Some(Expr::Var(source)),
+                init: Some(Expr::Var { name: source, .. }),
                 ..
             }) if *source == name => matches!(
                 arena.def_use_neighbors(*temp),
                 [return_id]
                     if matches!(
                         arena.get(*return_id),
-                        Some(NodeKind::Return(Some(Expr::Var(returned)))) if *returned == *temp
+                        Some(NodeKind::Return(Some(Expr::Var { name: returned, .. }))) if *returned == *temp
                     )
             ),
             _ => false,
@@ -67,7 +67,7 @@ fn synthetic_slot(arena: &Arena, name: Ident) -> bool {
 }
 
 fn preceding_slot_store(arena: &Arena, id: NodeId) -> Option<(NodeId, usize, usize, Expr)> {
-    let NodeKind::Return(Some(Expr::Var(name))) = arena.get(id)? else {
+    let NodeKind::Return(Some(Expr::Var { name, .. })) = arena.get(id)? else {
         return None;
     };
     if !synthetic_slot(arena, *name) {
@@ -80,7 +80,7 @@ fn preceding_slot_store(arena: &Arena, id: NodeId) -> Option<(NodeId, usize, usi
         .get(list_index)?
         .get(pos.checked_sub(1)?)?;
     let NodeKind::Assign {
-        target: Expr::Var(target),
+        target: Expr::Var { name: target, .. },
         value,
     } = arena.get(store)?
     else {

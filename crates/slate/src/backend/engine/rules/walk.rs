@@ -80,7 +80,7 @@ pub(in crate::backend::engine) fn child_exprs(expr: &Expr) -> Vec<&Expr> {
         | Expr::ByteStr(_)
         | Expr::ConstBlock(_)
         | Expr::CStr(_)
-        | Expr::Var(_)
+        | Expr::Var { .. }
         | Expr::Path(_)
         | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. }
@@ -170,7 +170,7 @@ pub(in crate::backend::engine) fn child_exprs_mut(expr: &mut Expr) -> Vec<&mut E
         | Expr::ByteStr(_)
         | Expr::ConstBlock(_)
         | Expr::CStr(_)
-        | Expr::Var(_)
+        | Expr::Var { .. }
         | Expr::Path(_)
         | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. }

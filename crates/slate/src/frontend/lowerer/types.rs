@@ -748,8 +748,9 @@ impl FunctionLowerer<'_, '_> {
         let bytes = |mutable: bool| Expr::Ref {
             mutable,
             expr: Box::new(Expr::Field {
-                base: Box::new(Expr::Var("self".into())),
+                base: Box::new(Expr::var("self".into())),
                 field: "bytes".into(),
+                union: rust::UnsafeCmp(false),
             }),
         };
         let mut methods = Vec::new();
@@ -768,14 +769,15 @@ impl FunctionLowerer<'_, '_> {
             let member = field_name(field, index);
             let range = [literal(start), literal(u64::from(width))];
             let call = |function: &str, mut args: Vec<Expr>| Expr::Call {
-                func: Box::new(Expr::Var(function.into())),
+                func: Box::new(Expr::var(function.into())),
                 args: {
                     args.extend(range.clone());
                     args
                 },
                 binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(false),
             };
-            let value = || Expr::Var("value".into());
+            let value = || Expr::var("value".into());
             let (getter, setter) = if self.tables.wide_int(&field.ty).is_some() {
                 let type_name = crate::backend::codegen::type_to_string(&member_type);
                 (
@@ -787,6 +789,7 @@ impl FunctionLowerer<'_, '_> {
                         recv: Box::new(value()),
                         method: "write_bit_range".into(),
                         args: [bytes(true)].into_iter().chain(range).collect(),
+                        unsafe_: rust::Unsafe(false),
                     },
                 )
             } else {
@@ -818,7 +821,7 @@ impl FunctionLowerer<'_, '_> {
                     }
                 };
                 let setter = Expr::Call {
-                    func: Box::new(Expr::Var("bitint::store_bits".into())),
+                    func: Box::new(Expr::var("bitint::store_bits".into())),
                     args: vec![
                         bytes(true),
                         literal(start),
@@ -829,6 +832,7 @@ impl FunctionLowerer<'_, '_> {
                         },
                     ],
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 };
                 (getter, setter)
             };

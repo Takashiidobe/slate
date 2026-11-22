@@ -15,7 +15,7 @@ fn is_dead_let(arena: &Arena, id: NodeId) -> bool {
 pub(super) fn is_drop_guard(expr: &Expr) -> bool {
     matches!(
         expr,
-        Expr::Call { func, .. } if matches!(&**func, Expr::Var(name) if matches!(name.as_str(), "__slate_alloca::Mark::new" | "::slate_support::Guard" | "__slate_blocks::scope"))
+        Expr::Call { func, .. } if matches!(&**func, Expr::Var { name, .. } if matches!(name.as_str(), "__slate_alloca::Mark::new" | "::slate_support::Guard" | "__slate_blocks::scope"))
     )
 }
 
@@ -25,13 +25,13 @@ fn is_inert_init(expr: &Expr) -> bool {
             block.tail.as_deref().is_some_and(is_inert_init)
         }
         Expr::Call { func, args, .. } => match &**func {
-            Expr::Var(name) if args.is_empty() => {
+            Expr::Var { name, .. } if args.is_empty() => {
                 matches!(
                     name.as_str(),
                     "core::mem::MaybeUninit::uninit" | "core::mem::zeroed"
                 )
             }
-            Expr::Var(name) if args.len() == 1 => {
+            Expr::Var { name, .. } if args.len() == 1 => {
                 crate::backend::rust_ast::is_storage_wrapper(name.as_str())
                     && args.iter().all(is_inert_init)
             }

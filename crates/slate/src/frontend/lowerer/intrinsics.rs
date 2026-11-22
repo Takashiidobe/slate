@@ -311,17 +311,15 @@ impl FunctionLowerer<'_, '_> {
             &types[1..],
             (types[0] != rust::Type::Unit).then_some(&types[0]),
         ) {
-            return Ok(Expr::Unsafe(Box::new(rust::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(Expr::Call {
-                    func: Box::new(Expr::Var(shim.into())),
-                    args: arguments
-                        .iter()
-                        .map(|argument| self.lower_value(argument))
-                        .collect::<Result<Vec<_>>>()?,
-                    binding: CallBinding::Generated,
-                })),
-            })));
+            return Ok(unsafe_op(Expr::Call {
+                func: Box::new(Expr::var(shim.into())),
+                args: arguments
+                    .iter()
+                    .map(|argument| self.lower_value(argument))
+                    .collect::<Result<Vec<_>>>()?,
+                binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(false),
+            }));
         }
         let overloads: Vec<_> = intrinsic
             .overloaded_positions
@@ -413,14 +411,12 @@ impl FunctionLowerer<'_, '_> {
                 noreturn: false,
                 safe: false,
             });
-        let call = Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(Expr::Call {
-                func: Box::new(Expr::Var(name.into())),
-                args,
-                binding: CallBinding::Generated,
-            })),
-        }));
+        let call = unsafe_op(Expr::Call {
+            func: Box::new(Expr::var(name.into())),
+            args,
+            binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
+        });
         Ok(adapt_type(call, &shim_types[0], &types[0]))
     }
 }

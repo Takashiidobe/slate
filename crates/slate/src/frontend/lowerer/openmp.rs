@@ -77,9 +77,10 @@ impl FunctionLowerer<'_, '_> {
                 body.push(Stmt::Assign {
                     target: self.lower_binding(private.copy.id),
                     value: Expr::Call {
-                        func: Box::new(Expr::Var("core::ptr::read".into())),
-                        args: vec![Expr::Var(pointer.into())],
+                        func: Box::new(Expr::var("core::ptr::read".into())),
+                        args: vec![Expr::var(pointer.into())],
                         binding: CallBinding::Generated,
+                        unsafe_: rust::Unsafe(true),
                     },
                 });
             }
@@ -92,7 +93,7 @@ impl FunctionLowerer<'_, '_> {
         self.shared_pointers = enclosing;
         body.extend(lowered?);
         outer.push(Stmt::Expr(Expr::Call {
-            func: Box::new(Expr::Var("__slate_libgomp::parallel".into())),
+            func: Box::new(Expr::var("__slate_libgomp::parallel".into())),
             args: vec![
                 num_threads,
                 Expr::Closure {
@@ -104,6 +105,7 @@ impl FunctionLowerer<'_, '_> {
                 },
             ],
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         }));
         Ok(Stmt::Scope { body: outer })
     }

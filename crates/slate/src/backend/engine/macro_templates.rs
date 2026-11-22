@@ -6,8 +6,8 @@ use super::shadow::visit_names;
 use crate::backend::codegen::MACRO_LIST_HOLE;
 use crate::backend::codegen::is_rust_keyword;
 use crate::backend::rust_ast::{
-    Block, Expr, Ident, ImplItem, Item, Label, LayoutQuery, MacroParam, Program, Stmt, Type,
-    UnaryOp, macro_template_base,
+    Block, Expr, Ident, ImplItem, Item, Label, LayoutQuery, MacroParam, Pointee, Program, Stmt,
+    Type, UnaryOp, Unsafe, macro_template_base,
 };
 use crate::function_identity::CallBinding;
 
@@ -72,19 +72,21 @@ pub fn calls_template(stmts: &[Stmt], names: &BTreeSet<String>) -> bool {
 
 pub fn hole(parameter: &str) -> Expr {
     Expr::Call {
-        func: Box::new(Expr::Var(format!("${parameter}").into())),
+        func: Box::new(Expr::var(format!("${parameter}").into())),
         args: Vec::new(),
         binding: CallBinding::Generated,
+        unsafe_: Unsafe(false),
     }
 }
 
 pub fn place_hole(parameter: &str) -> Expr {
     Expr::Unary {
-        op: UnaryOp::Deref,
+        op: UnaryOp::Deref(Pointee::Raw),
         expr: Box::new(Expr::Call {
-            func: Box::new(Expr::Var(format!("$*{parameter}").into())),
+            func: Box::new(Expr::var(format!("$*{parameter}").into())),
             args: Vec::new(),
             binding: CallBinding::Generated,
+            unsafe_: Unsafe(false),
         }),
     }
 }
@@ -270,7 +272,7 @@ fn any_hole_name(expr: &Expr) -> Option<&str> {
     let Expr::Call { func, args, .. } = expr else {
         return None;
     };
-    let Expr::Var(name) = &**func else {
+    let Expr::Var { name, .. } = &**func else {
         return None;
     };
     if args.is_empty() {
@@ -290,7 +292,7 @@ fn place_pointer_parameter(expr: &Expr) -> Option<&str> {
 
 fn place_hole_parameter(expr: &Expr) -> Option<&str> {
     let Expr::Unary {
-        op: UnaryOp::Deref,
+        op: UnaryOp::Deref(_),
         expr,
     } = expr
     else {
@@ -303,7 +305,7 @@ fn place_of_argument(argument: &Expr) -> Expr {
     match argument {
         Expr::AddrOf { expr, .. } | Expr::Ref { expr, .. } => (**expr).clone(),
         other => Expr::Unary {
-            op: UnaryOp::Deref,
+            op: UnaryOp::Deref(Pointee::Raw),
             expr: Box::new(other.clone()),
         },
     }
@@ -439,7 +441,7 @@ pub fn fill_holes(template: &mut [Stmt], params: &[MacroParam], args: &[Expr]) {
             hole_parameter(expr)
                 .and_then(argument)
                 .map(|argument| match argument {
-                    Expr::MacroName(name) => Expr::Var(name.as_str().into()),
+                    Expr::MacroName(name) => Expr::var(name.as_str().into()),
                     other => other.clone(),
                 })
         };
@@ -453,7 +455,7 @@ pub fn collapse_address_of_deref(stmts: &mut [Stmt]) {
     visit_exprs_mut(stmts, &mut |expr| {
         if let Expr::AddrOf { expr: inner, .. } = expr
             && let Expr::Unary {
-                op: UnaryOp::Deref,
+                op: UnaryOp::Deref(_),
                 expr: pointer,
             } = &**inner
         {
@@ -652,16 +654,16 @@ fn place_parameter_indices(params: &[MacroParam], body: &mut [Stmt]) -> Vec<usiz
 
 fn finish_expr(expr: &mut Expr) {
     let finished = if let Some(parameter) = repeat_hole_parameter(expr) {
-        Some(Expr::Var(format!("{MACRO_LIST_HOLE}{parameter}").into()))
+        Some(Expr::var(format!("{MACRO_LIST_HOLE}{parameter}").into()))
     } else if let Some(parameter) = place_hole_parameter(expr) {
-        Some(Expr::Var(format!("${parameter}").into()))
+        Some(Expr::var(format!("${parameter}").into()))
     } else if let Some(parameter) = place_pointer_parameter(expr) {
         Some(Expr::AddrOf {
             mutable: true,
-            expr: Box::new(Expr::Var(format!("${parameter}").into())),
+            expr: Box::new(Expr::var(format!("${parameter}").into())),
         })
     } else {
-        hole_parameter(expr).map(|parameter| Expr::Var(format!("${parameter}").into()))
+        hole_parameter(expr).map(|parameter| Expr::var(format!("${parameter}").into()))
     };
     if let Some(finished) = finished {
         *expr = finished;

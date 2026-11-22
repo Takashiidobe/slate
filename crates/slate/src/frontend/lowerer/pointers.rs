@@ -204,43 +204,40 @@ impl FunctionLowerer<'_, '_> {
                     lhs: Box::new(offset),
                     rhs: Box::new(self.runtime_stride(element)?),
                 }],
+                unsafe_: rust::Unsafe(false),
             },
-            _ if self.tables.variably_modified(element) => Expr::Unsafe(Box::new(rust::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(Expr::MethodCall {
-                    recv: Box::new(self.lower_value(pointer)?),
-                    method: "byte_offset".into(),
-                    args: vec![Expr::Binary {
-                        op: BinOp::Mul,
-                        lhs: Box::new(offset),
-                        rhs: Box::new(self.runtime_stride(element)?),
-                    }],
-                })),
-            })),
+            _ if self.tables.variably_modified(element) => unsafe_op(Expr::MethodCall {
+                recv: Box::new(self.lower_value(pointer)?),
+                method: "byte_offset".into(),
+                args: vec![Expr::Binary {
+                    op: BinOp::Mul,
+                    lhs: Box::new(offset),
+                    rhs: Box::new(self.runtime_stride(element)?),
+                }],
+                unsafe_: rust::Unsafe(true),
+            }),
             ir::Type::Void => Expr::Cast {
-                expr: Box::new(Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::MethodCall {
-                        recv: Box::new(self.byte_pointer(pointer)?),
-                        method: if wrap
-                            || self.in_static_initializer
-                            || matches!(pointer.node.value, ValueKind::LabelAddress(_))
-                        {
-                            "wrapping_offset"
-                        } else {
-                            method
-                        }
-                        .into(),
-                        args: vec![if wrap
-                            || self.in_static_initializer
-                            || matches!(pointer.node.value, ValueKind::LabelAddress(_))
-                        {
-                            offset
-                        } else {
-                            index
-                        }],
-                    })),
-                }))),
+                expr: Box::new(unsafe_op(Expr::MethodCall {
+                    recv: Box::new(self.byte_pointer(pointer)?),
+                    method: if wrap
+                        || self.in_static_initializer
+                        || matches!(pointer.node.value, ValueKind::LabelAddress(_))
+                    {
+                        "wrapping_offset"
+                    } else {
+                        method
+                    }
+                    .into(),
+                    args: vec![if wrap
+                        || self.in_static_initializer
+                        || matches!(pointer.node.value, ValueKind::LabelAddress(_))
+                    {
+                        offset
+                    } else {
+                        index
+                    }],
+                    unsafe_: rust::Unsafe(false),
+                })),
                 ty: self.lower_value_type(value)?,
             },
             ir::Type::Function { .. } => Expr::Transmute {
@@ -250,21 +247,21 @@ impl FunctionLowerer<'_, '_> {
                     recv: Box::new(self.byte_pointer(pointer)?),
                     method: "wrapping_offset".into(),
                     args: vec![offset],
+                    unsafe_: rust::Unsafe(false),
                 }),
             },
             _ if wrap || self.in_static_initializer => Expr::MethodCall {
                 recv: Box::new(self.lower_value(pointer)?),
                 method: "wrapping_offset".into(),
                 args: vec![offset],
+                unsafe_: rust::Unsafe(false),
             },
-            _ => Expr::Unsafe(Box::new(rust::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(Expr::MethodCall {
-                    recv: Box::new(self.lower_value(pointer)?),
-                    method: method.into(),
-                    args: vec![index],
-                })),
-            })),
+            _ => unsafe_op(Expr::MethodCall {
+                recv: Box::new(self.lower_value(pointer)?),
+                method: method.into(),
+                args: vec![index],
+                unsafe_: rust::Unsafe(false),
+            }),
         })
     }
 
@@ -303,27 +300,23 @@ impl FunctionLowerer<'_, '_> {
             _ if self.tables.variably_modified(element) => Expr::Cast {
                 expr: Box::new(Expr::Binary {
                     op: BinOp::Div,
-                    lhs: Box::new(Expr::Unsafe(Box::new(rust::Block {
-                        stmts: Vec::new(),
-                        tail: Some(Box::new(Expr::MethodCall {
-                            recv: Box::new(self.byte_pointer(left)?),
-                            method: "offset_from".into(),
-                            args: vec![self.byte_pointer(right)?],
-                        })),
-                    }))),
+                    lhs: Box::new(unsafe_op(Expr::MethodCall {
+                        recv: Box::new(self.byte_pointer(left)?),
+                        method: "offset_from".into(),
+                        args: vec![self.byte_pointer(right)?],
+                        unsafe_: rust::Unsafe(true),
+                    })),
                     rhs: Box::new(self.runtime_stride(element)?),
                 }),
                 ty: self.lower_value_type(value)?,
             },
             ir::Type::Void => Expr::Cast {
-                expr: Box::new(Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::MethodCall {
-                        recv: Box::new(self.byte_pointer(left)?),
-                        method: "offset_from".into(),
-                        args: vec![self.byte_pointer(right)?],
-                    })),
-                }))),
+                expr: Box::new(unsafe_op(Expr::MethodCall {
+                    recv: Box::new(self.byte_pointer(left)?),
+                    method: "offset_from".into(),
+                    args: vec![self.byte_pointer(right)?],
+                    unsafe_: rust::Unsafe(true),
+                })),
                 ty: self.lower_value_type(value)?,
             },
             ir::Type::Function { .. } => Expr::Cast {
@@ -337,21 +330,20 @@ impl FunctionLowerer<'_, '_> {
                         expr: Box::new(self.byte_pointer(right)?),
                         ty: rust::Type::Prim(Prim::Isize),
                     }],
+                    unsafe_: rust::Unsafe(false),
                 }),
                 ty: self.lower_value_type(value)?,
             },
             _ => Expr::Cast {
-                expr: Box::new(Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::MethodCall {
-                        recv: Box::new(self.lower_value(left)?),
-                        method: "offset_from".into(),
-                        args: vec![Expr::Cast {
-                            expr: Box::new(self.lower_value(right)?),
-                            ty: self.lower_value_type(left)?,
-                        }],
-                    })),
-                }))),
+                expr: Box::new(unsafe_op(Expr::MethodCall {
+                    recv: Box::new(self.lower_value(left)?),
+                    method: "offset_from".into(),
+                    args: vec![Expr::Cast {
+                        expr: Box::new(self.lower_value(right)?),
+                        ty: self.lower_value_type(left)?,
+                    }],
+                    unsafe_: rust::Unsafe(true),
+                })),
                 ty: self.lower_value_type(value)?,
             },
         })
@@ -359,7 +351,7 @@ impl FunctionLowerer<'_, '_> {
 
     pub(super) fn lower_typed_function_address(&mut self, value: &ir::Value) -> Result<Expr> {
         let lowered = self.lower_value(value)?;
-        let names_function_item = matches!(&lowered, Expr::Call { func, .. } if matches!(&**func, Expr::Var(name) if name.as_str() == "Some"));
+        let names_function_item = matches!(&lowered, Expr::Call { func, .. } if matches!(&**func, Expr::Var { name, .. } if name.as_str() == "Some"));
         if !names_function_item && self.outer_macro_argument(value).is_none() {
             return Ok(lowered);
         }
@@ -371,7 +363,7 @@ impl FunctionLowerer<'_, '_> {
                 ty: Some(self.lower_type(&value.ty)?),
                 init: Some(lowered),
             }],
-            tail: Some(Box::new(Expr::Var("__slate_function".into()))),
+            tail: Some(Box::new(Expr::var("__slate_function".into()))),
         })))
     }
 
@@ -379,7 +371,7 @@ impl FunctionLowerer<'_, '_> {
         if matches!(&value.ty, ir::Type::Pointer { pointee, .. } if matches!(**pointee, ir::Type::Function { .. }))
         {
             self.lower_type(&value.ty)?;
-            return Ok(Expr::Var("None".into()));
+            return Ok(Expr::var("None".into()));
         }
         let rust::Type::Ptr { mutable, inner } = self.lower_value_type(value)? else {
             return Err(unsupported_value(value));

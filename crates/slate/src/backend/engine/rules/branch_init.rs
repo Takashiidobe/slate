@@ -90,7 +90,7 @@ struct Plan {
 fn closing_assign(arena: &Arena, body: &[NodeId], name: Ident) -> Option<NodeId> {
     let (&last, earlier) = body.split_last()?;
     let Some(NodeKind::Assign {
-        target: Expr::Var(target),
+        target: Expr::Var { name: target, .. },
         value,
     }) = arena.get(last)
     else {

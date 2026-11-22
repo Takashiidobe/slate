@@ -33,7 +33,7 @@ impl FunctionLowerer<'_, '_> {
         }
         let wide = rust::Type::Prim(Prim::I128);
         let [lhs, rhs, exact] = [self.next_temp(), self.next_temp(), self.next_temp()];
-        let var = |name: &String| Expr::Var(name.as_str().into());
+        let var = |name: &String| Expr::var(name.as_str().into());
         let bind = |name: &String, init: Expr| Stmt::Let {
             origin: rust::LocalOrigin::Synthetic,
             name: name.clone(),
@@ -45,6 +45,7 @@ impl FunctionLowerer<'_, '_> {
             recv: Box::new(var(&lhs)),
             method,
             args: vec![var(&rhs)],
+            unsafe_: rust::Unsafe(false),
         };
         let truncated = self.narrow_integer(var(&exact), &result.ty)?;
         Ok(Expr::Block(Box::new(rust::Block {
@@ -72,6 +73,7 @@ impl FunctionLowerer<'_, '_> {
                     recv: Box::new(call(format!("checked_{method}"))),
                     method: "is_none".into(),
                     args: Vec::new(),
+                    unsafe_: rust::Unsafe(false),
                 }),
                 rhs: Box::new(Expr::Binary {
                     op: BinOp::Ne,

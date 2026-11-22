@@ -3,7 +3,7 @@ use super::{inline_temps, walk};
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{
-    BinOp, Block, Expr, Ident, Path, Prim, Runtime, RustValue, Stmt, Type, UnaryOp,
+    BinOp, Block, Expr, Ident, Path, Pointee, Prim, Runtime, RustValue, Stmt, Type, UnaryOp, Unsafe,
 };
 use crate::function_identity::{CallBinding, Known};
 
@@ -43,7 +43,7 @@ impl CallCtx<'_> {
         if let Some(literal) = const_str_literal(peeled) {
             return Some(literal);
         }
-        let Expr::Var(name) = peeled else {
+        let Expr::Var { name, .. } = peeled else {
             return None;
         };
         let ty = self.var_type(*name)?;
@@ -63,12 +63,12 @@ impl CallCtx<'_> {
         {
             return Some(Expr::Str(literal));
         }
-        let Expr::Var(name) = peeled else {
+        let Expr::Var { name, .. } = peeled else {
             return None;
         };
         let ty = self.var_type(*name)?;
         if want(&ty) {
-            return Some(Expr::Var(*name));
+            return Some(Expr::var(*name));
         }
         if is_raw_ptr(&ty) && !self.is_reassigned(*name) {
             return self.resolve_lifted(&self.var_init(*name)?, want, depth + 1);
@@ -91,7 +91,7 @@ impl CallCtx<'_> {
             return None;
         }
         let peeled = peel_ptr_view(expr);
-        let Expr::Var(name) = peeled else {
+        let Expr::Var { name, .. } = peeled else {
             return None;
         };
         let ty = self.var_type(*name)?;
@@ -137,10 +137,11 @@ impl CallCtx<'_> {
 fn peel_wrapper(expr: &Expr, through_ptr_methods: bool) -> &Expr {
     match expr {
         Expr::Cast { expr, .. } => peel_wrapper(expr, through_ptr_methods),
-        Expr::MethodCall { recv, method, args }
-            if through_ptr_methods
-                && args.is_empty()
-                && (method == "as_ptr" || method == "as_mut_ptr") =>
+        Expr::MethodCall {
+            recv, method, args, ..
+        } if through_ptr_methods
+            && args.is_empty()
+            && (method == "as_ptr" || method == "as_mut_ptr") =>
         {
             peel_wrapper(recv, through_ptr_methods)
         }
@@ -159,7 +160,7 @@ fn peel_ptr_view(expr: &Expr) -> &Expr {
 
 fn assign_root_var(expr: &Expr) -> Option<Ident> {
     match expr {
-        Expr::Var(name) => Some(*name),
+        Expr::Var { name, .. } => Some(*name),
         Expr::Unary { expr, .. }
         | Expr::Field { base: expr, .. }
         | Expr::Index { base: expr, .. } => assign_root_var(expr),
@@ -240,6 +241,7 @@ fn method_call(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
         recv: Box::new(recv),
         method: method.to_string(),
         args,
+        unsafe_: Unsafe(false),
     }
 }
 
@@ -333,17 +335,17 @@ fn safe_mem_copy_like(ctx: &CallCtx, allow_self: bool) -> Option<Expr> {
             return None;
         }
         method_call(
-            Expr::Var(dst_name),
+            Expr::var(dst_name),
             "copy_within",
             vec![range_upto(n), usize_lit(0)],
         )
     } else {
         method_call(
-            slice_upto(Expr::Var(dst_name), n),
+            slice_upto(Expr::var(dst_name), n),
             "copy_from_slice",
             vec![Expr::Ref {
                 mutable: false,
-                expr: Box::new(slice_upto(Expr::Var(src_name), n)),
+                expr: Box::new(slice_upto(Expr::var(src_name), n)),
             }],
         )
     };
@@ -360,7 +362,7 @@ fn safe_mem_set(ctx: &CallCtx) -> Option<Expr> {
         return None;
     }
     let effect = method_call(
-        slice_upto(Expr::Var(dst_name), n),
+        slice_upto(Expr::var(dst_name), n),
         "fill",
         vec![cast(val.clone(), dst_elem)],
     );
@@ -388,14 +390,12 @@ fn lifted_bytes(ctx: &CallCtx, i: usize) -> Option<Expr> {
 
 fn literal_len(bytes: &Expr) -> Option<usize> {
     match bytes {
-        Expr::MethodCall { recv, method, args }
-            if method.as_str() == "as_bytes" && args.is_empty() =>
-        {
-            match recv.as_ref() {
-                Expr::Str(text) if !text.contains('\0') => Some(text.len()),
-                _ => None,
-            }
-        }
+        Expr::MethodCall {
+            recv, method, args, ..
+        } if method.as_str() == "as_bytes" && args.is_empty() => match recv.as_ref() {
+            Expr::Str(text) if !text.contains('\0') => Some(text.len()),
+            _ => None,
+        },
         _ => None,
     }
 }
@@ -433,8 +433,8 @@ fn c_string_len(bytes: Expr, bound: Option<Expr>) -> Expr {
     let is_nul = Expr::Binary {
         op: BinOp::Eq,
         lhs: Box::new(Expr::Unary {
-            op: UnaryOp::Deref,
-            expr: Box::new(Expr::Var(byte)),
+            op: UnaryOp::Deref(Pointee::Ref),
+            expr: Box::new(Expr::var(byte)),
         }),
         rhs: Box::new(Expr::Value(RustValue::TypedUInt(0, Prim::U8))),
     };
@@ -492,7 +492,7 @@ fn str_span(ctx: &CallCtx, accepted: bool) -> Option<Expr> {
     let input = c_string_bytes(input, None);
     let set = c_string_bytes(set, None);
     let byte = Ident::new("__slate_byte");
-    let contains = method_call(set, "contains", vec![Expr::Var(byte)]);
+    let contains = method_call(set, "contains", vec![Expr::var(byte)]);
     let stop = if accepted {
         Expr::Unary {
             op: UnaryOp::Not,
@@ -586,8 +586,9 @@ fn ato_helper(ctx: &CallCtx, name: &str, char_prim: Prim) -> Option<Expr> {
     };
     Some(Expr::Call {
         binding: CallBinding::Generated,
-        func: Box::new(Expr::Var(name.into())),
+        func: Box::new(Expr::var(name.into())),
         args: vec![arg],
+        unsafe_: Unsafe(false),
     })
 }
 
@@ -596,6 +597,7 @@ fn free_call(path: &[&str], args: Vec<Expr>) -> Expr {
         binding: CallBinding::Generated,
         func: Box::new(Expr::Path(Path::new(path.iter().copied().map(Ident::from)))),
         args,
+        unsafe_: Unsafe(false),
     }
 }
 

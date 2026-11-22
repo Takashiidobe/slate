@@ -29,14 +29,12 @@ impl FunctionLowerer<'_, '_> {
                 return Ok(write);
             }
             self.reject_unaligned_volatile(place)?;
-            return Ok(Stmt::Expr(Expr::Unsafe(Box::new(rust::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(Expr::Call {
-                    func: Box::new(Expr::Var("core::ptr::write_volatile".into())),
-                    args: vec![self.lower_address(place, true)?, value],
-                    binding: CallBinding::Generated,
-                })),
-            }))));
+            return Ok(Stmt::Expr(unsafe_op(Expr::Call {
+                func: Box::new(Expr::var("core::ptr::write_volatile".into())),
+                args: vec![self.lower_address(place, true)?, value],
+                binding: CallBinding::Generated,
+                unsafe_: rust::Unsafe(true),
+            })));
         }
         if let Some(lane) = self.lower_lane_write(place, &value)? {
             return Ok(lane);
@@ -46,9 +44,9 @@ impl FunctionLowerer<'_, '_> {
             let pointer = self.next_temp();
             let address = self.lower_address(erased, true)?;
             let (copy, assignment) = self.with_erased_copy(erased, |lowerer| {
-                lowerer.lower_assignment(place, Expr::Var(operand.as_str().into()))
+                lowerer.lower_assignment(place, Expr::var(operand.as_str().into()))
             })?;
-            let pointer_var = || Expr::Var(pointer.as_str().into());
+            let pointer_var = || Expr::var(pointer.as_str().into());
             return Ok(Stmt::Unsafe {
                 body: rust::Block {
                     stmts: vec![
@@ -75,13 +73,15 @@ impl FunctionLowerer<'_, '_> {
                                 recv: Box::new(pointer_var()),
                                 method: "read_unaligned".into(),
                                 args: Vec::new(),
+                                unsafe_: rust::Unsafe(true),
                             }),
                         },
                         assignment,
                         Stmt::Expr(Expr::MethodCall {
                             recv: Box::new(pointer_var()),
                             method: "write_unaligned".into(),
-                            args: vec![Expr::Var(copy.as_str().into())],
+                            args: vec![Expr::var(copy.as_str().into())],
+                            unsafe_: rust::Unsafe(true),
                         }),
                     ],
                     tail: None,
@@ -95,6 +95,7 @@ impl FunctionLowerer<'_, '_> {
                         recv: Box::new(address),
                         method: "write_unaligned".into(),
                         args: vec![value],
+                        unsafe_: rust::Unsafe(true),
                     })],
                     tail: None,
                 },
@@ -113,6 +114,7 @@ impl FunctionLowerer<'_, '_> {
                 recv: Box::new(storage),
                 method: setter,
                 args: vec![value],
+                unsafe_: rust::Unsafe(false),
             }),
             Some((storage, setter)) => {
                 let operand = self.next_temp();
@@ -128,7 +130,8 @@ impl FunctionLowerer<'_, '_> {
                         Stmt::Expr(Expr::MethodCall {
                             recv: Box::new(storage),
                             method: setter,
-                            args: vec![Expr::Var(operand.into())],
+                            args: vec![Expr::var(operand.into())],
+                            unsafe_: rust::Unsafe(false),
                         }),
                     ],
                 }
@@ -381,7 +384,7 @@ impl FunctionLowerer<'_, '_> {
                     convention: ir::VaConvention::Target,
                 } => {
                     let target = self.lower_type(&list.ty)?;
-                    self.lower_assignment(list, static_va_list(Expr::Var(VA_ARGS.into()), target))?
+                    self.lower_assignment(list, static_va_list(Expr::var(VA_ARGS.into()), target))?
                 }
                 ValueKind::VaCopy {
                     destination,
@@ -392,10 +395,7 @@ impl FunctionLowerer<'_, '_> {
                     let source = self.lower_place(source)?;
                     let source = match convention {
                         ir::VaConvention::Target if unsafe_source => {
-                            Expr::Unsafe(Box::new(rust::Block {
-                                stmts: Vec::new(),
-                                tail: Some(Box::new(clone_va_list(through_raw_pointer(source)))),
-                            }))
+                            unsafe_op(clone_va_list(through_raw_pointer(source)))
                         }
                         ir::VaConvention::Target => clone_va_list(source),
                         ir::VaConvention::Win64 => source,
@@ -418,7 +418,7 @@ impl FunctionLowerer<'_, '_> {
             {
                 self.reassigned_borrows.insert(*id);
                 Stmt::Assign {
-                    target: Expr::Var(self.binding_name(*id).as_str().into()),
+                    target: Expr::var(self.binding_name(*id).as_str().into()),
                     value: self.lower_borrow(value, borrow)?,
                 }
             }
@@ -731,7 +731,7 @@ impl FunctionLowerer<'_, '_> {
             .get(&cleanup)
             .ok_or(Invariant::UnknownCallee(cleanup))?;
         let call = Expr::Call {
-            func: Box::new(Expr::Var(handler.rust.as_str().into())),
+            func: Box::new(Expr::var(handler.rust.as_str().into())),
             args: vec![Expr::Cast {
                 expr: Box::new(pointer),
                 ty: rust::Type::Custom("*mut _".into()),
@@ -742,12 +742,10 @@ impl FunctionLowerer<'_, '_> {
                 trusted_declaration: None,
                 trusted_headers: Default::default(),
             },
+            unsafe_: rust::Unsafe(false),
         };
         Ok(if handler.is_unsafe {
-            Expr::Unsafe(Box::new(rust::Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(call)),
-            }))
+            unsafe_op(call)
         } else {
             call
         })
@@ -756,7 +754,7 @@ impl FunctionLowerer<'_, '_> {
     fn cleanup_guard(&mut self, variable: &ir::Variable, cleanup: BindingId) -> Result<[Stmt; 2]> {
         let target = self.binding_name(variable.id);
         let pointer = format!("__slate_cleanup_ptr_{}", self.local_index(variable.id));
-        let call = self.cleanup_call(cleanup, Expr::Var(pointer.as_str().into()))?;
+        let call = self.cleanup_call(cleanup, Expr::var(pointer.as_str().into()))?;
         Ok([
             Stmt::Let {
                 origin: rust::LocalOrigin::Synthetic,
@@ -766,7 +764,7 @@ impl FunctionLowerer<'_, '_> {
                 init: Some(Expr::Cast {
                     expr: Box::new(Expr::AddrOf {
                         mutable: true,
-                        expr: Box::new(Expr::Var(target.as_str().into())),
+                        expr: Box::new(Expr::var(target.as_str().into())),
                     }),
                     ty: rust::Type::Custom("*mut _".into()),
                 }),
@@ -777,7 +775,7 @@ impl FunctionLowerer<'_, '_> {
                 mutable: false,
                 ty: None,
                 init: Some(Expr::Call {
-                    func: Box::new(Expr::Var("::slate_support::Guard".into())),
+                    func: Box::new(Expr::var("::slate_support::Guard".into())),
                     args: vec![Expr::Ref {
                         mutable: true,
                         expr: Box::new(Expr::Closure {
@@ -786,6 +784,7 @@ impl FunctionLowerer<'_, '_> {
                         }),
                     }],
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 }),
             },
         ])
@@ -822,14 +821,12 @@ impl FunctionLowerer<'_, '_> {
             .chain(std::iter::once(lowered))
             .chain(self.after_declaration.take())
             .chain(diverges.then(|| {
-                Stmt::Expr(Expr::Unsafe(Box::new(rust::Block {
-                    stmts: Vec::new(),
-                    tail: Some(Box::new(Expr::Call {
-                        func: Box::new(Expr::Var("core::hint::unreachable_unchecked".into())),
-                        args: Vec::new(),
-                        binding: CallBinding::Generated,
-                    })),
-                })))
+                Stmt::Expr(unsafe_op(Expr::Call {
+                    func: Box::new(Expr::var("core::hint::unreachable_unchecked".into())),
+                    args: Vec::new(),
+                    binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(true),
+                }))
             }))
             .collect())
     }
@@ -859,7 +856,7 @@ fn collect_lets(
 
 fn is_trivial_operand(value: &Expr) -> bool {
     match value {
-        Expr::Value(_) | Expr::Var(_) => true,
+        Expr::Value(_) | Expr::Var { .. } => true,
         Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => is_trivial_operand(expr),
         _ => false,
     }

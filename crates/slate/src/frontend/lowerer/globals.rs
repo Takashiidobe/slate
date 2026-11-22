@@ -92,14 +92,14 @@ impl FunctionLowerer<'_, '_> {
                     operands: vec![rust::AsmOperand::Out {
                         reg: rust::AsmReg::Class("reg".into()),
                         late: true,
-                        value: Expr::Var(temp.as_str().into()),
+                        value: Expr::var(temp.as_str().into()),
                     }],
                     options: Vec::new(),
                     kind: rust::AsmKind::Statement,
                 }),
             ],
             tail: Some(Box::new(Expr::Cast {
-                expr: Box::new(Expr::Var(temp.as_str().into())),
+                expr: Box::new(Expr::var(temp.as_str().into())),
                 ty,
             })),
         })))
@@ -465,9 +465,10 @@ impl FunctionLowerer<'_, '_> {
                 mutable: true,
                 ty: Some(maybe_uninit(image)),
                 init: Some(Expr::Call {
-                    func: Box::new(Expr::Var("core::mem::MaybeUninit::zeroed".into())),
+                    func: Box::new(Expr::var("core::mem::MaybeUninit::zeroed".into())),
                     args: Vec::new(),
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 }),
             },
             Stmt::Let {
@@ -476,15 +477,16 @@ impl FunctionLowerer<'_, '_> {
                 mutable: false,
                 ty: None,
                 init: Some(Expr::MethodCall {
-                    recv: Box::new(Expr::Var(storage.as_str().into())),
+                    recv: Box::new(Expr::var(storage.as_str().into())),
                     method: "as_mut_ptr".into(),
                     args: Vec::new(),
+                    unsafe_: rust::Unsafe(false),
                 }),
             },
         ];
         let mut base = Expr::Unary {
-            op: rust::UnaryOp::Deref,
-            expr: Box::new(Expr::Var(pointer.as_str().into())),
+            op: rust::UnaryOp::Deref(rust::Pointee::Raw),
+            expr: Box::new(Expr::var(pointer.as_str().into())),
         };
         if wrapped {
             base = Expr::TupleField {
@@ -514,7 +516,7 @@ impl FunctionLowerer<'_, '_> {
         filled?;
         Ok(Expr::Unsafe(Box::new(rust::Block {
             stmts,
-            tail: Some(Box::new(Expr::Var(storage.as_str().into()))),
+            tail: Some(Box::new(Expr::var(storage.as_str().into()))),
         })))
     }
 
@@ -536,6 +538,7 @@ impl FunctionLowerer<'_, '_> {
             }),
             method: "write_unaligned".into(),
             args: vec![self.lower_address_integer(value)?],
+            unsafe_: rust::Unsafe(true),
         }))
     }
 
@@ -544,6 +547,7 @@ impl FunctionLowerer<'_, '_> {
             recv: Box::new(address),
             method: "wrapping_byte_offset".into(),
             args: vec![Expr::Value(rust::RustValue::TypedInt(amount, Prim::Isize))],
+            unsafe_: rust::Unsafe(false),
         };
         let tables = self.tables;
         match &value.node.value {
@@ -670,9 +674,10 @@ impl FunctionLowerer<'_, '_> {
                     args: vec![ty],
                 },
                 Some(Expr::Call {
-                    func: Box::new(Expr::Var(rust::SYNC_WRAPPER.into())),
+                    func: Box::new(Expr::var(rust::SYNC_WRAPPER.into())),
                     args: vec![init],
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 }),
             ));
         }
@@ -786,8 +791,9 @@ fn maybe_uninit(ty: rust::Type) -> rust::Type {
 
 pub(super) fn align_wrap(wrapper: AlignWrapper, value: Expr) -> Expr {
     Expr::Call {
-        func: Box::new(Expr::Var(wrapper.name().into())),
+        func: Box::new(Expr::var(wrapper.name().into())),
         args: vec![value],
         binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(false),
     }
 }

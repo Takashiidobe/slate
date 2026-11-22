@@ -167,7 +167,7 @@ fn tail_diverges(body: &[Stmt]) -> bool {
 impl Dispatch<'_> {
     fn assigned_state(&self, stmt: &Stmt) -> Option<i64> {
         let Stmt::Assign {
-            target: Expr::Var(target),
+            target: Expr::Var { name: target, .. },
             value,
         } = stmt
         else {
@@ -568,7 +568,7 @@ fn split_irreducible(blocks: &mut Vec<Block>, entry: usize, state: Ident) -> Opt
                 state: next_state,
                 prefix: Vec::new(),
                 term: Term::Switch {
-                    selector: Expr::Var(state),
+                    selector: Expr::var(state),
                     arms,
                 },
             });
@@ -584,7 +584,7 @@ fn split_irreducible(blocks: &mut Vec<Block>, entry: usize, state: Ident) -> Opt
                     blocks.push(Block {
                         state: next_state,
                         prefix: vec![Stmt::Assign {
-                            target: Expr::Var(state),
+                            target: Expr::var(state),
                             value: Expr::Value(RustValue::I64(blocks[target].state)),
                         }],
                         term: Term::Jump(header),
@@ -633,7 +633,7 @@ fn build(dispatch: &Dispatch, arms: &[(i64, Vec<Stmt>)], entry_state: i64) -> Op
         let split = split_irreducible(&mut blocks, entry, dispatch.state)?;
         if split != entry {
             preamble.push(Stmt::Assign {
-                target: Expr::Var(dispatch.state),
+                target: Expr::var(dispatch.state),
                 value: Expr::Value(RustValue::I64(entry_state)),
             });
             entry = split;

@@ -98,7 +98,7 @@ impl FunctionLowerer<'_, '_> {
         let mut factors = Vec::new();
         let element = self.vla_layout(ty, &mut factors)?;
         factors.push(Expr::Call {
-            func: Box::new(Expr::Var(
+            func: Box::new(Expr::var(
                 format!(
                     "core::mem::size_of::<{}>",
                     crate::backend::codegen::type_to_string(&element)
@@ -107,6 +107,7 @@ impl FunctionLowerer<'_, '_> {
             )),
             args: Vec::new(),
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         });
         Ok(Expr::Cast {
             expr: Box::new(product(factors)),
@@ -210,18 +211,20 @@ impl FunctionLowerer<'_, '_> {
                         mutable: true,
                         ty: Some(storage),
                         init: Some(Expr::Call {
-                            func: Box::new(Expr::Var("Vec::with_capacity".into())),
+                            func: Box::new(Expr::var("Vec::with_capacity".into())),
                             args: vec![count.clone()],
                             binding: CallBinding::Generated,
+                            unsafe_: rust::Unsafe(false),
                         }),
                     },
                     Stmt::Unsafe {
                         body: rust::Block {
                             stmts: vec![Stmt::Expr(Expr::MethodCall {
                                 recv: Box::new(Expr::MethodCall {
-                                    recv: Box::new(Expr::Var(buffer.into())),
+                                    recv: Box::new(Expr::var(buffer.into())),
                                     method: "as_mut_ptr".into(),
                                     args: Vec::new(),
+                                    unsafe_: rust::Unsafe(false),
                                 }),
                                 method: "write_bytes".into(),
                                 args: vec![
@@ -231,12 +234,13 @@ impl FunctionLowerer<'_, '_> {
                                     )),
                                     count,
                                 ],
+                                unsafe_: rust::Unsafe(true),
                             })],
                             tail: None,
                         },
                     },
                 ],
-                tail: Some(Box::new(Expr::Var(buffer.into()))),
+                tail: Some(Box::new(Expr::var(buffer.into()))),
             })),
         ))
     }
@@ -247,13 +251,14 @@ impl FunctionLowerer<'_, '_> {
         }
         Ok(match place.kind {
             PlaceKind::Binding(id) if let Some(pointer) = self.shared_pointers.get(&id) => {
-                Some(Expr::Var(pointer.as_str().into()))
+                Some(Expr::var(pointer.as_str().into()))
             }
             PlaceKind::Binding(id) => Some(Expr::Cast {
                 expr: Box::new(Expr::MethodCall {
                     recv: Box::new(self.lower_binding(id)),
                     method: "as_mut_ptr".into(),
                     args: Vec::new(),
+                    unsafe_: rust::Unsafe(false),
                 }),
                 ty: rust::Type::Ptr {
                     mutable: true,

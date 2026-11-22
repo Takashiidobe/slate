@@ -394,9 +394,10 @@ fn emit(writes: &[Write], base: &str, depth: usize) -> Vec<Stmt> {
         .map(|write| match write {
             Write::Bytes { offset, len, byte } => Stmt::Expr(Expr::WriteBytes {
                 dst: Box::new(Expr::MethodCall {
-                    recv: Box::new(Expr::Var(base.into())),
+                    recv: Box::new(Expr::var(base.into())),
                     method: "add".into(),
                     args: vec![usize_value(*offset)],
+                    unsafe_: rust::Unsafe(true),
                 }),
                 val: Box::new(byte_value(*byte)),
                 count: Box::new(usize_value(*len)),
@@ -415,17 +416,18 @@ fn emit(writes: &[Write], base: &str, depth: usize) -> Vec<Stmt> {
                     mutable: false,
                     ty: None,
                     init: Some(Expr::MethodCall {
-                        recv: Box::new(Expr::Var(base.into())),
+                        recv: Box::new(Expr::var(base.into())),
                         method: "add".into(),
                         args: vec![Expr::Binary {
                             op: rust::BinOp::Add,
                             lhs: Box::new(usize_value(*offset)),
                             rhs: Box::new(Expr::Binary {
                                 op: rust::BinOp::Mul,
-                                lhs: Box::new(Expr::Var(index.as_str().into())),
+                                lhs: Box::new(Expr::var(index.as_str().into())),
                                 rhs: Box::new(usize_value(*stride)),
                             }),
                         }],
+                        unsafe_: rust::Unsafe(true),
                     }),
                 }];
                 stmts.extend(emit(body, &element, depth + 1));
@@ -513,12 +515,13 @@ impl FunctionLowerer<'_, '_> {
                     _ => (Prim::U64, 8, "f64::from_bits"),
                 };
                 Some(Expr::Call {
-                    func: Box::new(Expr::Var(method.into())),
+                    func: Box::new(Expr::var(method.into())),
                     args: vec![Expr::Value(rust::RustValue::TypedUInt(
                         repeated(leaf, width),
                         bits,
                     ))],
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 })
             }
             rust::Type::Prim(prim) => {

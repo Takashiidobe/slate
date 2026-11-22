@@ -344,7 +344,7 @@ pub fn hoist(variants: &[&FnDef]) -> Option<Hoisted> {
     walk_fn(&mut function, &mut |slot| match slot {
         Slot::Expr(expr, _) if is_literal(expr) => {
             if sites.contains(&position) {
-                *expr = Expr::Var(Ident::new(bound));
+                *expr = Expr::var(Ident::new(bound));
             }
             position += 1;
         }
@@ -362,7 +362,7 @@ pub fn hoist(variants: &[&FnDef]) -> Option<Hoisted> {
 pub fn expand(function: &mut FnDef, bindings: &BTreeMap<&str, &Item>) {
     walk_fn(function, &mut |slot| match slot {
         Slot::Expr(expr, _) => {
-            if let Expr::Var(name) = expr
+            if let Expr::Var { name, .. } = expr
                 && let Some(Item::Const { init, .. }) = bindings.get(name.as_str())
             {
                 *expr = init.clone();

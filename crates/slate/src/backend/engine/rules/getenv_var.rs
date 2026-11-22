@@ -3,7 +3,7 @@ use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{
     Arena, FunctionOptimizer, MatchArmNode, NodeId, NodeKind, NodeKindTag,
 };
-use crate::backend::rust_ast::{BinOp, Expr, Ident, Path, Pattern, RustValue};
+use crate::backend::rust_ast::{BinOp, Expr, Ident, Path, Pattern, RustValue, Unsafe};
 use crate::function_identity::{CallBinding, Known};
 
 struct RecoveredGetenv {
@@ -30,7 +30,7 @@ fn writes_var(kind: &NodeKind, name: Ident) -> bool {
     match kind {
         NodeKind::Let { name: decl, .. } => *decl == name,
         NodeKind::Assign {
-            target: Expr::Var(target),
+            target: Expr::Var { name: target, .. },
             ..
         } => *target == name,
         _ => false,
@@ -71,7 +71,7 @@ fn is_null_like(arena: &Arena, expr: &Expr, depth: u32) -> bool {
     if matches!(peeled, Expr::Value(RustValue::NullPtr)) {
         return true;
     }
-    let Expr::Var(name) = peeled else {
+    let Expr::Var { name, .. } = peeled else {
         return false;
     };
     let Some(def_id) = arena.definition(*name) else {
@@ -97,12 +97,12 @@ fn extract_null_check(arena: &Arena, cond: &Expr) -> Option<(Ident, bool)> {
         BinOp::Eq => false,
         _ => return None,
     };
-    if let Expr::Var(v) = lhs.as_ref()
+    if let Expr::Var { name: v, .. } = lhs.as_ref()
         && is_null_like(arena, rhs, 0)
     {
         return Some((*v, is_ne));
     }
-    if let Expr::Var(v) = rhs.as_ref()
+    if let Expr::Var { name: v, .. } = rhs.as_ref()
         && is_null_like(arena, lhs, 0)
     {
         return Some((*v, is_ne));
@@ -123,7 +123,10 @@ fn peel_wrapper(expr: &Expr) -> &Expr {
 }
 
 fn const_c_str_arg(expr: &Expr) -> Option<String> {
-    let Expr::MethodCall { recv, method, args } = peel_wrapper(expr) else {
+    let Expr::MethodCall {
+        recv, method, args, ..
+    } = peel_wrapper(expr)
+    else {
         return None;
     };
     if method != "as_ptr" || !args.is_empty() {
@@ -153,7 +156,7 @@ fn getenv_site_init(arena: &Arena, id: NodeId, ptr_var: Ident) -> Option<&Expr> 
             ..
         } if *name == ptr_var => Some(init),
         NodeKind::Assign {
-            target: Expr::Var(name),
+            target: Expr::Var { name, .. },
             value,
         } if *name == ptr_var => Some(value),
         _ => None,
@@ -170,7 +173,7 @@ fn plan(arena: &Arena, if_id: NodeId) -> Option<RecoveredGetenv> {
         return None;
     };
 
-    let (ptr_var, is_ne, bool_let_id, getenv_site_id) = if let Expr::Var(flag) = cond
+    let (ptr_var, is_ne, bool_let_id, getenv_site_id) = if let Expr::Var { name: flag, .. } = cond
         && let Some(bool_let_id) = arena.definition(*flag)
         && arena.def_use_neighbors(*flag) == [if_id]
         && let Some(NodeKind::Let {
@@ -289,6 +292,7 @@ impl NodeRule for GetenvVar {
                 ["std", "env", "var"].into_iter().map(Ident::from),
             ))),
             args: vec![Expr::Str(plan.name)],
+            unsafe_: Unsafe(false),
         };
         arena.set_kind(
             id,

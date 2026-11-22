@@ -3,7 +3,7 @@ use foldhash::HashMap;
 use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKindTag};
-use crate::backend::rust_ast::{BinOp, Expr, Ident, RustValue, Type, UnaryOp};
+use crate::backend::rust_ast::{BinOp, Expr, Ident, RustValue, Type, UnaryOp, Unsafe};
 
 type VarTypes = HashMap<Ident, Type>;
 
@@ -39,7 +39,7 @@ fn peel_ptr_cast(expr: Expr, vars: &VarTypes) -> Expr {
         Expr::Cast {
             expr: inner,
             ty: Type::Ptr { .. },
-        } if matches!(&*inner, Expr::Var(name) if matches!(vars.get(name), Some(Type::Ptr { .. }))) => {
+        } if matches!(&*inner, Expr::Var { name, .. } if matches!(vars.get(name), Some(Type::Ptr { .. }))) => {
             *inner
         }
         other => other,
@@ -71,6 +71,7 @@ fn rewrite_here(expr: &mut Expr, vars: &VarTypes) -> bool {
         recv: Box::new(peel_ptr_cast(operand, vars)),
         method: "is_null".into(),
         args: Vec::new(),
+        unsafe_: Unsafe(false),
     };
     *expr = if negated {
         Expr::Unary {

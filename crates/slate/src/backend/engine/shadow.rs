@@ -173,7 +173,7 @@ fn walk_place(place: &mut AtomicPlace, names: &mut impl Names) {
 
 fn walk_expr(expr: &mut Expr, names: &mut impl Names) {
     match expr {
-        Expr::Var(name) => names.var(name),
+        Expr::Var { name, .. } => names.var(name),
         Expr::Value(_)
         | Expr::Str(_)
         | Expr::MacroName(_)

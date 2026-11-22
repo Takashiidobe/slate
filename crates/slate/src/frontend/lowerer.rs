@@ -576,7 +576,7 @@ impl<'m> ModuleLowerer<'m> {
             });
         self.items.push(Item::GlobalAsm(rust::InlineAsm {
             template,
-            operands: vec![rust::AsmOperand::Sym(Expr::Var(
+            operands: vec![rust::AsmOperand::Sym(Expr::var(
                 resolver.rust.as_str().into(),
             ))],
             options: Vec::new(),
@@ -649,7 +649,7 @@ impl<'m> ModuleLowerer<'m> {
         });
         self.items.push(Item::GlobalAsm(rust::InlineAsm {
             template,
-            operands: vec![rust::AsmOperand::Sym(Expr::Var(target.into()))],
+            operands: vec![rust::AsmOperand::Sym(Expr::var(target.into()))],
             options: Vec::new(),
             kind: rust::AsmKind::Global,
         }));
@@ -698,9 +698,10 @@ impl<'m> ModuleLowerer<'m> {
                 ret: None,
                 noreturn: false,
                 body: vec![Stmt::Expr(Expr::Call {
-                    func: Box::new(Expr::Var(target.as_str().into())),
+                    func: Box::new(Expr::var(target.as_str().into())),
                     args: Vec::new(),
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 })],
             }));
             self.items.push(Item::Static {
@@ -719,9 +720,10 @@ impl<'m> ModuleLowerer<'m> {
                     ret: Box::new(rust::Type::Unit),
                 },
                 init: Expr::Call {
-                    func: Box::new(Expr::Var("Some".into())),
-                    args: vec![Expr::Var(wrapper.as_str().into())],
+                    func: Box::new(Expr::var("Some".into())),
+                    args: vec![Expr::var(wrapper.as_str().into())],
                     binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
                 },
             });
         }
@@ -1223,7 +1225,7 @@ impl<'m> ModuleLowerer<'m> {
                             Item::GlobalAsm(rust::InlineAsm {
                                 template: AsmTemplate::new()
                                     .with(Directive::Weak(asm_out::Operand::new(0).into())),
-                                operands: vec![rust::AsmOperand::Sym(Expr::Var(
+                                operands: vec![rust::AsmOperand::Sym(Expr::var(
                                     alias.as_str().into(),
                                 ))],
                                 options: Vec::new(),

@@ -8,7 +8,7 @@ use crate::function_identity::CallBinding;
 
 fn expr_ident(expr: &Expr) -> Option<Ident> {
     match expr {
-        Expr::Var(name) => Some(*name),
+        Expr::Var { name, .. } => Some(*name),
         _ => None,
     }
 }
@@ -64,16 +64,18 @@ fn is_movable_pure_bit_operand(expr: &Expr) -> bool {
 
 fn is_movable_pure_expr(expr: &Expr) -> bool {
     match expr {
-        Expr::Value(_) | Expr::Var(_) | Expr::LayoutQuery { .. } => true,
+        Expr::Value(_) | Expr::Var { .. } | Expr::LayoutQuery { .. } => true,
         Expr::Cast { expr, .. } => is_movable_pure_expr(expr),
         Expr::Unary { op, expr } => !matches!(op, UnaryOp::Not) && is_movable_pure_expr(expr),
         Expr::Binary { lhs, rhs, .. } => is_movable_pure_expr(lhs) && is_movable_pure_expr(rhs),
-        Expr::MethodCall { recv, method, args } if is_pure_primitive_bit_method(method) => {
+        Expr::MethodCall {
+            recv, method, args, ..
+        } if is_pure_primitive_bit_method(method) => {
             is_movable_pure_bit_operand(recv) && args.iter().all(is_movable_pure_expr)
         }
-        Expr::MethodCall { recv, method, args } if is_pure_static_ptr_method(method, recv) => {
-            args.iter().all(is_movable_pure_expr)
-        }
+        Expr::MethodCall {
+            recv, method, args, ..
+        } if is_pure_static_ptr_method(method, recv) => args.iter().all(is_movable_pure_expr),
         Expr::Field { base, .. } | Expr::TupleField { base, .. } => is_movable_pure_expr(base),
         Expr::Index { base, index } => is_movable_pure_expr(base) && is_movable_pure_expr(index),
         Expr::StructLit { fields, .. } => {
@@ -166,7 +168,7 @@ fn call_effects(expr: &Expr) -> Effects {
             ..Default::default()
         };
     };
-    let Expr::Var(name) = &**func else {
+    let Expr::Var { name, .. } = &**func else {
         return Effects {
             unknown_call: true,
             ..Default::default()
@@ -198,7 +200,7 @@ pub(super) fn expr_effects(expr: &Expr) -> Effects {
         | Expr::ByteStr(_)
         | Expr::ConstBlock(_)
         | Expr::CStr(_)
-        | Expr::Var(_)
+        | Expr::Var { .. }
         | Expr::Path(_)
         | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. }
@@ -220,7 +222,9 @@ pub(super) fn expr_effects(expr: &Expr) -> Effects {
             }
             effects
         }
-        Expr::MethodCall { recv, method, args } => {
+        Expr::MethodCall {
+            recv, method, args, ..
+        } => {
             let mut effects = expr_effects(recv);
             for arg in args {
                 effects = effects.union(expr_effects(arg));
@@ -386,7 +390,7 @@ fn expr_any(expr: &Expr, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
         | Expr::ByteStr(_)
         | Expr::ConstBlock(_)
         | Expr::CStr(_)
-        | Expr::Var(_)
+        | Expr::Var { .. }
         | Expr::Path(_)
         | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. }
@@ -612,12 +616,12 @@ fn stmt_e_ident_count(stmt: &Stmt, name: Ident) -> usize {
 
 fn root_var(expr: &Expr) -> Option<&str> {
     match expr {
-        Expr::Var(name) => Some(name.as_str()),
+        Expr::Var { name, .. } => Some(name.as_str()),
         Expr::Field { base, .. } | Expr::TupleField { base, .. } | Expr::Index { base, .. } => {
             root_var(base)
         }
         Expr::Unary {
-            op: UnaryOp::Deref,
+            op: UnaryOp::Deref(_),
             expr,
         }
         | Expr::Cast { expr, .. } => root_var(expr),
@@ -635,7 +639,7 @@ fn is_obviously_pure_expr(expr: &Expr) -> bool {
         | Expr::ByteStr(_)
         | Expr::CStr(_)
         | Expr::HexFloat(_)
-        | Expr::Var(_)
+        | Expr::Var { .. }
         | Expr::Path(_)
         | Expr::LayoutQuery { .. }
         | Expr::GenericPath { .. } => true,
@@ -646,7 +650,7 @@ fn is_obviously_pure_expr(expr: &Expr) -> bool {
 
 fn simple_macro_arg_uses_name(expr: &Expr, name: Ident) -> bool {
     match expr {
-        Expr::Var(var) => *var == name,
+        Expr::Var { name: var, .. } => *var == name,
         Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => {
             simple_macro_arg_uses_name(expr, name)
         }
@@ -680,7 +684,7 @@ fn is_option_like_type(ty: &Type) -> bool {
 
 fn e_ident_count(expr: &Expr, name: Ident) -> usize {
     match expr {
-        Expr::Var(v) => usize::from(*v == name),
+        Expr::Var { name: v, .. } => usize::from(*v == name),
         Expr::Value(_)
         | Expr::Str(_)
         | Expr::MacroName(_)
@@ -901,7 +905,7 @@ fn is_receiver_use(arena: &Arena, id: NodeId, name: Ident) -> bool {
             Expr::Field { base, .. } | Expr::TupleField { base, .. } => Some(&**base),
             _ => None,
         };
-        matches!(receiver, Some(Expr::Var(value)) if *value == name)
+        matches!(receiver, Some(Expr::Var { name: value, .. }) if *value == name)
     })
 }
 
@@ -918,10 +922,10 @@ fn is_option_receiver_use(
     node_expr_any(arena, id, &mut |expr| {
         matches!(
             expr,
-            Expr::MethodCall { recv, method, args }
+            Expr::MethodCall { recv, method, args, .. }
                 if matches!(method.as_str(), "is_some" | "is_none" | "unwrap")
                     && args.is_empty()
-                    && matches!(&**recv, Expr::Var(value) if *value == name)
+                    && matches!(&**recv, Expr::Var { name: value, .. } if *value == name)
         )
     })
 }
@@ -978,7 +982,7 @@ fn expr_is_type_anchored(expr: &Expr) -> bool {
                 | RustValue::NullPtr
                 | RustValue::None
         ),
-        Expr::Var(_) => true,
+        Expr::Var { .. } => true,
         Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => expr_is_type_anchored(expr),
         Expr::Binary {
             op: BinOp::Shl | BinOp::Shr,
@@ -1163,7 +1167,7 @@ fn contains_integer_literal(expr: &Expr) -> bool {
 
 fn type_stable_arg_init(init: &Expr, ty: Option<&Type>) -> bool {
     match init {
-        Expr::Var(_) | Expr::Cast { .. } => true,
+        Expr::Var { .. } | Expr::Cast { .. } => true,
         Expr::Unary { .. } => ty.is_some(),
         Expr::Binary { .. } => ty.is_some() && !contains_integer_literal(init),
         Expr::Index { .. } => ty.is_some(),
@@ -1187,7 +1191,7 @@ fn asm_operand_read_expr(op: &AsmOperand) -> Option<&Expr> {
 
 fn call_arg_uses_name(expr: &Expr, name: Ident) -> bool {
     match expr {
-        Expr::Var(var) => *var == name,
+        Expr::Var { name: var, .. } => *var == name,
         Expr::Cast { expr, .. } => call_arg_uses_name(expr, name),
         Expr::Block(block) | Expr::Unsafe(block) if block.stmts.is_empty() => block
             .tail
@@ -1397,7 +1401,8 @@ impl NodeRule for LateInlineTemps {
         if consumer_effects.has_call() && !(allowed_receiver || allowed_argument) {
             return false;
         }
-        let by_value_receiver = matches!(ty, Some(Type::Prim(_))) && matches!(init, Expr::Var(_));
+        let by_value_receiver =
+            matches!(ty, Some(Type::Prim(_))) && matches!(init, Expr::Var { .. });
         if is_receiver_use(arena, found.consumer_id, name)
             && !(allowed_receiver || by_value_receiver)
         {
@@ -1442,11 +1447,11 @@ struct AsmOutputFold {
 fn asm_operand_bound_temp(op: &AsmOperand) -> Option<Ident> {
     match op {
         AsmOperand::Out {
-            value: Expr::Var(name),
+            value: Expr::Var { name, .. },
             ..
         }
         | AsmOperand::InOut {
-            output: Expr::Var(name),
+            output: Expr::Var { name, .. },
             ..
         } => is_temp_name(name.as_str()).then_some(*name),
         _ => None,
@@ -1455,8 +1460,8 @@ fn asm_operand_bound_temp(op: &AsmOperand) -> Option<Ident> {
 
 fn locate_asm_output_fold(arena: &Arena, assign_id: NodeId) -> Option<AsmOutputFold> {
     let Some(NodeKind::Assign {
-        target: Expr::Var(named),
-        value: Expr::Var(tmp),
+        target: Expr::Var { name: named, .. },
+        value: Expr::Var { name: tmp, .. },
     }) = arena.get(assign_id)
     else {
         return None;
@@ -1552,10 +1557,10 @@ impl NodeRule for AsmOutputTempFold {
                     AsmOperand::InOut { output, .. } => output,
                     _ => return None,
                 };
-                matches!(value, Expr::Var(name) if *name == found.tmp).then_some(value)
+                matches!(value, Expr::Var { name, .. } if *name == found.tmp).then_some(value)
             })
             .unwrap_or_else(|| unreachable!("asm_output_fold: operand invalidated since locate"));
-        *bound = Expr::Var(found.named);
+        *bound = Expr::var(found.named);
 
         arena.retire(id, Some(found.asm_id));
         arena.retire(found.let_id, Some(found.asm_id));
@@ -1655,7 +1660,7 @@ enum ArgPos {
 
 fn expr_arg_pos(expr: &Expr, name: Ident, ty: Option<&Type>) -> Option<ArgPos> {
     match expr {
-        Expr::Var(var) => (*var == name).then_some(ArgPos::NonArg),
+        Expr::Var { name: var, .. } => (*var == name).then_some(ArgPos::NonArg),
         Expr::Cast { expr, ty: cast_ty } => expr_arg_pos(expr, name, ty).map(|pos| match pos {
             ArgPos::NonArg if ty == Some(cast_ty) => ArgPos::Fixed,
             ArgPos::NonArg => ArgPos::Cast,
@@ -1678,6 +1683,7 @@ fn expr_arg_pos(expr: &Expr, name: Ident, ty: Option<&Type>) -> Option<ArgPos> {
             func,
             args,
             binding,
+            ..
         } => {
             for (index, arg) in args.iter().enumerate() {
                 if let Some(pos) = expr_arg_pos(arg, name, ty) {

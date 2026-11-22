@@ -809,7 +809,7 @@ impl FunctionOptimizer {
     fn bound_type<'s>(&'s self, bound: &'s Expr) -> Option<&'s Type> {
         match bound {
             Expr::Cast { ty, .. } => Some(ty),
-            Expr::Var(name) => self.var_type(*name),
+            Expr::Var { name, .. } => self.var_type(*name),
             _ => None,
         }
     }

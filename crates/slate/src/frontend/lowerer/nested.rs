@@ -115,7 +115,7 @@ impl FunctionLowerer<'_, '_> {
             .captures
             .iter()
             .map(|capture| match self.shared_pointers.get(&capture.id) {
-                Some(pointer) => Ok(Expr::Var(pointer.as_str().into())),
+                Some(pointer) => Ok(Expr::var(pointer.as_str().into())),
                 None => self.lower_address(
                     &ir::Place::new(
                         capture.ty.clone(),

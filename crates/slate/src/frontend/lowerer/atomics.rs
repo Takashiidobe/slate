@@ -9,7 +9,7 @@ fn ordering(order: &ir::MemoryOrder) -> Option<Expr> {
         ir::MemoryOrder::SeqCst => "SeqCst",
         ir::MemoryOrder::Dynamic(_) => return None,
     };
-    Some(Expr::Var(
+    Some(Expr::var(
         format!("core::sync::atomic::Ordering::{name}").into(),
     ))
 }
@@ -23,10 +23,19 @@ fn load_ordering(order: &ir::MemoryOrder) -> Option<Expr> {
 }
 
 fn call(name: &str, args: Vec<Expr>) -> Expr {
+    let takes_raw_pointer = [
+        "from_ptr",
+        "from_ptr_raw",
+        "load_volatile",
+        "store_volatile",
+    ]
+    .iter()
+    .any(|suffix| name.ends_with(&format!("::{suffix}")));
     Expr::Call {
-        func: Box::new(Expr::Var(name.into())),
+        func: Box::new(Expr::var(name.into())),
         args,
         binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(takes_raw_pointer),
     }
 }
 
@@ -35,11 +44,12 @@ fn method(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
         recv: Box::new(recv),
         method: method.into(),
         args,
+        unsafe_: rust::Unsafe(false),
     }
 }
 
 fn var(name: &str) -> Expr {
-    Expr::Var(name.into())
+    Expr::var(name.into())
 }
 
 fn let_stmt(name: &str, init: Expr) -> Stmt {
@@ -436,6 +446,7 @@ impl FunctionLowerer<'_, '_> {
                     recv: Box::new(recv),
                     method: method.into(),
                     args,
+                    unsafe_: rust::Unsafe(false),
                 }
             }
         };
@@ -455,10 +466,7 @@ impl FunctionLowerer<'_, '_> {
         } else {
             lowered
         };
-        Ok(Expr::Unsafe(Box::new(rust::Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(lowered)),
-        })))
+        Ok(unsafe_op(lowered))
     }
 
     fn atomic_target(&mut self, ty: &ir::Type) -> Result<Option<AtomicTarget>> {
@@ -684,7 +692,7 @@ impl FunctionLowerer<'_, '_> {
         };
         let expected_value = if write_back {
             Expr::Unary {
-                op: rust::UnaryOp::Deref,
+                op: rust::UnaryOp::Deref(rust::Pointee::Raw),
                 expr: Box::new(expected),
             }
         } else {

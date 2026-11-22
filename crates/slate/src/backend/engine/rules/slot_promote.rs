@@ -3,7 +3,7 @@ use super::remove_mut::invariant_within;
 use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Block, Expr, Ident, LocalOrigin, Type, UnaryOp};
+use crate::backend::rust_ast::{Block, Expr, Ident, LocalOrigin, Type, UnaryOp, Unsafe};
 use crate::function_identity::CallBinding;
 
 struct Slot {
@@ -22,16 +22,16 @@ fn zeroable(ty: &Type) -> bool {
 }
 
 fn is_var(expr: &Expr, name: Ident) -> bool {
-    matches!(expr, Expr::Var(v) if *v == name)
+    matches!(expr, Expr::Var { name: v, .. } if *v == name)
 }
 
 fn is_call_to(expr: &Expr, path: &str) -> bool {
-    matches!(expr, Expr::Call { func, .. } if matches!(func.as_ref(), Expr::Var(v) if v.as_str() == path))
+    matches!(expr, Expr::Call { func, .. } if matches!(func.as_ref(), Expr::Var { name: v, .. } if v.as_str() == path))
 }
 
 fn slot_write(expr: &Expr, slot: Ident) -> Option<&Expr> {
     match expr {
-        Expr::Call { func, args, .. } if matches!(func.as_ref(), Expr::Var(v) if v.as_str() == "core::ptr::write") => {
+        Expr::Call { func, args, .. } if matches!(func.as_ref(), Expr::Var { name: v, .. } if v.as_str() == "core::ptr::write") => {
             match &args[..] {
                 [target, value] if is_var(target, slot) => Some(value),
                 _ => None,
@@ -52,7 +52,7 @@ fn occurrences(expr: &Expr, slot: Ident) -> usize {
 fn derefs(expr: &Expr, slot: Ident) -> usize {
     match expr {
         Expr::Unary {
-            op: UnaryOp::Deref,
+            op: UnaryOp::Deref(_),
             expr,
         } if is_var(expr, slot) => 1,
         _ => walk::child_exprs(expr)
@@ -101,7 +101,7 @@ fn plan(arena: &FunctionOptimizer, id: NodeId) -> Option<Slot> {
     else {
         return None;
     };
-    let Expr::Var(storage) = **storage else {
+    let Expr::Var { name: storage, .. } = **storage else {
         return None;
     };
     let storage_id = arena.definition(storage)?;
@@ -140,10 +140,10 @@ fn plan(arena: &FunctionOptimizer, id: NodeId) -> Option<Slot> {
 fn replace_derefs(expr: &mut Expr, slot: Ident, storage: Ident) -> bool {
     walk::fold_bottom_up(expr, &mut |expr| match expr {
         Expr::Unary {
-            op: UnaryOp::Deref,
+            op: UnaryOp::Deref(_),
             expr: inner,
         } if is_var(inner, slot) => {
-            *expr = Expr::Var(storage);
+            *expr = Expr::var(storage);
             true
         }
         _ => false,
@@ -154,9 +154,10 @@ fn zeroed() -> Expr {
     Expr::Unsafe(Box::new(Block {
         stmts: Vec::new(),
         tail: Some(Box::new(Expr::Call {
-            func: Box::new(Expr::Var("core::mem::zeroed".into())),
+            func: Box::new(Expr::var("core::mem::zeroed".into())),
             args: Vec::new(),
             binding: CallBinding::Generated,
+            unsafe_: Unsafe(true),
         })),
     }))
 }
@@ -321,7 +322,7 @@ impl NodeRule for SlotPromote {
                 arena.set_kind(
                     user,
                     NodeKind::Assign {
-                        target: Expr::Var(plan.storage),
+                        target: Expr::var(plan.storage),
                         value,
                     },
                 );

@@ -447,6 +447,7 @@ impl FunctionLowerer<'_, '_> {
             func: Box::new(support_path(name)),
             args: Vec::new(),
             binding: CallBinding::Generated,
+            unsafe_: rust::Unsafe(false),
         })
     }
 }
