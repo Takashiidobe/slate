@@ -21,6 +21,12 @@ pub(super) fn transform(module: &mut Module) {
         if survey.indirect {
             continue;
         }
+        let mut forwards = Forwards::default();
+        walk_body(body, &mut forwards);
+        let resolved = forwards.resolve();
+        if !resolved.is_empty() {
+            forward(body, &resolved, &mut survey.gotos);
+        }
         let mut threads = HashMap::default();
         scan_threads(body, &mut Vec::new(), &mut threads);
         if !threads.is_empty() {
@@ -67,6 +73,71 @@ impl Visitor for Survey {
     }
 }
 
+#[derive(Default)]
+struct Forwards(HashMap<BindingId, BindingId>);
+
+impl Visitor for Forwards {
+    fn statement(&mut self, statement: &Statement) {
+        let Statement::Label { id, body, .. } = statement else {
+            return;
+        };
+        let mut first = body.first();
+        while let Some(Statement::Label { body, .. }) = first.map(|first| &first.value) {
+            first = body.first();
+        }
+        if let Some(Statement::Goto(target)) = first.map(|first| &first.value)
+            && target != id
+        {
+            self.0.insert(*id, *target);
+        }
+    }
+}
+
+impl Forwards {
+    fn resolve(&self) -> HashMap<BindingId, BindingId> {
+        let mut resolved = HashMap::default();
+        for &label in self.0.keys() {
+            let mut seen = HashSet::default();
+            let mut target = label;
+            while let Some(&next) = self.0.get(&target) {
+                if !seen.insert(target) {
+                    break;
+                }
+                target = next;
+            }
+            if !self.0.contains_key(&target) {
+                resolved.insert(label, target);
+            }
+        }
+        resolved
+    }
+}
+
+fn forward(
+    body: &mut Body,
+    resolved: &HashMap<BindingId, BindingId>,
+    gotos: &mut HashMap<BindingId, usize>,
+) {
+    for statement in body {
+        if let Statement::Goto(label) = statement.value
+            && let Some(&target) = resolved.get(&label)
+        {
+            statement.value = Statement::Goto(target);
+            if let Some(count) = gotos.get_mut(&label) {
+                *count -= 1;
+            }
+            *gotos.entry(target).or_default() += 1;
+            continue;
+        }
+        for child in children(&mut statement.value) {
+            forward(child, resolved, gotos);
+        }
+        for evaluation in evaluations(&mut statement.value) {
+            forward(&mut evaluation.statements, resolved, gotos);
+        }
+    }
+}
+
 struct StructureGoto<'a> {
     module: &'a mut Module,
     gotos: HashMap<BindingId, usize>,
@@ -83,7 +154,131 @@ impl StructureGoto<'_> {
                 self.list(&mut evaluation.statements);
             }
         }
+        self.lift(body);
         self.labels(body);
+    }
+
+    fn lift(&mut self, body: &mut Body) {
+        let mut index = 0;
+        while index < body.len() {
+            if !self.lift_at(body, index) {
+                index += 1;
+            }
+        }
+    }
+
+    fn escaping(&self, list: &[Span<Statement>]) -> Option<usize> {
+        list.iter().position(|statement| {
+            matches!(statement.value, Statement::Label { id, .. }
+                if self.gotos.get(&id).copied().unwrap_or(0)
+                    > list.iter().map(|statement| jumps(statement, id)).sum())
+        })
+    }
+
+    fn lift_at(&mut self, body: &mut Body, index: usize) -> bool {
+        let container = &body[index];
+        let (spelling, expansion) = (container.spelling, container.expansion);
+        match &container.value {
+            Statement::Block(inner) => {
+                let Some(split) = self.escaping(inner) else {
+                    return false;
+                };
+                let Some(hoisted) = movable(&inner[..split], &inner[split..]) else {
+                    return false;
+                };
+                let Statement::Block(inner) = &mut body[index].value else {
+                    return false;
+                };
+                let tail = scoped(inner.split_off(split));
+                let mut declarations = Vec::new();
+                *inner = extract(std::mem::take(inner), &hoisted, &mut declarations);
+                if inner.is_empty() {
+                    self.retired.push(body[index].id);
+                    body.splice(index..=index, tail);
+                } else {
+                    body.splice(index + 1..index + 1, tail);
+                }
+                body.splice(index..index, declarations);
+                true
+            }
+            Statement::If {
+                then_body,
+                else_body,
+                folded: None,
+                ..
+            } => {
+                let (in_then, split) = match self.escaping(then_body) {
+                    Some(split) => (true, split),
+                    None => match else_body.as_ref().and_then(|arm| self.escaping(arm)) {
+                        Some(split) => (false, split),
+                        None => return false,
+                    },
+                };
+                let arm = if in_then {
+                    then_body
+                } else {
+                    else_body.as_ref().unwrap_or(then_body)
+                };
+                let Statement::Label { id, .. } = arm[split].value else {
+                    return false;
+                };
+                if body[index + 1..]
+                    .iter()
+                    .any(|statement| jumps(statement, id) != 0)
+                {
+                    return false;
+                }
+                let Some(hoisted) = movable(&arm[..split], &arm[split..]) else {
+                    return false;
+                };
+                let Statement::If {
+                    then_body,
+                    else_body,
+                    ..
+                } = &mut body[index].value
+                else {
+                    return false;
+                };
+                let (arm, other) = if in_then {
+                    (then_body, else_body.get_or_insert_with(Vec::new))
+                } else {
+                    let Some(arm) = else_body.as_mut() else {
+                        return false;
+                    };
+                    (arm, then_body)
+                };
+                let mut tail = scoped(arm.split_off(split));
+                let mut declarations = Vec::new();
+                *arm = extract(std::mem::take(arm), &hoisted, &mut declarations);
+                if !other.last().is_some_and(|last| ends_in_jump(&last.value)) {
+                    let join = self.module.fresh_binding();
+                    other.push(Span::new(Statement::Goto(join), spelling, expansion));
+                    self.gotos.insert(join, 1);
+                    tail.push(Span::new(
+                        Statement::Label {
+                            id: join,
+                            name: "join".to_owned(),
+                            body: Vec::new(),
+                        },
+                        spelling,
+                        expansion,
+                    ));
+                }
+                if let Statement::If { else_body, .. } = &mut body[index].value
+                    && else_body.as_ref().is_some_and(Vec::is_empty)
+                {
+                    *else_body = None;
+                }
+                body.splice(index + 1..index + 1, tail);
+                body.splice(index..index, declarations);
+                true
+            }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "labels move out of plain blocks and if arms only"
+            )]
+            _ => false,
+        }
     }
 
     fn labels(&mut self, body: &mut Body) {
@@ -605,6 +800,36 @@ fn extract(range: Body, hoisted: &HashSet<BindingId>, declarations: &mut Body) -
         kept.push(statement);
     }
     kept
+}
+
+fn scoped(mut tail: Body) -> Body {
+    let labeled = match tail.first() {
+        Some(Span {
+            value: Statement::Label { body, .. },
+            ..
+        }) => body.as_slice(),
+        _ => &[],
+    };
+    let scoped = tail.iter().chain(labeled).any(|statement| {
+        matches!(&statement.value, Statement::Let(variable)
+            if variable.cleanup.is_some() || variable.ty.is_variably_modified())
+    });
+    if !scoped {
+        return tail;
+    }
+    let rest: Body = tail.drain(1..).collect();
+    if let Some(Span {
+        value: Statement::Label { body, .. },
+        spelling,
+        expansion,
+        ..
+    }) = tail.first_mut()
+    {
+        let mut inner = std::mem::take(body);
+        inner.extend(rest);
+        *body = vec![Span::new(Statement::Block(inner), *spelling, *expansion)];
+    }
+    tail
 }
 
 fn declarations(range: &[Span<Statement>], declared: &mut HashMap<BindingId, bool>) -> bool {

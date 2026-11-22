@@ -87,16 +87,19 @@ int main(void) {
 // CHECK-NEXT:         body:
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 let %[[V_HELD:[0-9]+]] held: i32 [storage=automatic] [cleanup=%[[V3:[0-9]+]]] = read<i32>(%[[V_I]]);
-// CHECK-NEXT:                 if eq<i32>(read<i32>(%[[V_I]]), const<i32>(2))
-// CHECK-NEXT:                     goto %[[V_STOP:[0-9]+]];
-// CHECK-NEXT:                 let %[[V4:[0-9]+]]: i32 [synthetic] = read<i32>(%[[V_TOTAL]]);
-// CHECK-NEXT:                 let %[[V5:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[V4]]), read<i32>(%[[V_HELD]]));
-// CHECK-NEXT:                 write<i32>(%[[V_TOTAL]], read<i32>(%[[V5]]));
-// CHECK-NEXT:                 if ne<i32>(const<i32>(0), const<i32>(0))
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         label %[[V_STOP]] stop:
-// CHECK-NEXT:                             break %[[V0]];
+// CHECK-NEXT:                 block %[[V4:[0-9]+]] {
+// CHECK-NEXT:                     block %[[V5:[0-9]+]] {
+// CHECK-NEXT:                         if eq<i32>(read<i32>(%[[V_I]]), const<i32>(2))
+// CHECK-NEXT:                             break %[[V5]];
+// CHECK-NEXT:                         let %[[V6:[0-9]+]]: i32 [synthetic] = read<i32>(%[[V_TOTAL]]);
+// CHECK-NEXT:                         let %[[V7:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[V6]]), read<i32>(%[[V_HELD]]));
+// CHECK-NEXT:                         write<i32>(%[[V_TOTAL]], read<i32>(%[[V7]]));
+// CHECK-NEXT:                         if ne<i32>(const<i32>(0), const<i32>(0))
+// CHECK-NEXT:                         else
+// CHECK-NEXT:                             break %[[V4]];
 // CHECK-NEXT:                     }
+// CHECK-NEXT:                     break %[[V0]];
+// CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:     return read<i32>(%[[V_TOTAL]]);
 // CHECK: {{^}}}

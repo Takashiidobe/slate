@@ -69,15 +69,15 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         saved = core::ptr::addr_of_mut!(result);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut value: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut value: i32 = 0;
+// CHECK-NEXT:     if skip == 0 {
+// CHECK-NEXT:         value = mark(2i32);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     value = mark(3i32);
+// CHECK-NEXT:     result += value;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = mark(4i32);
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = unsafe { saved };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         if skip == 0 {
-// CHECK-NEXT:             value = mark(2i32);
-// CHECK-NEXT:         }
-// CHECK-NEXT:         value = mark(3i32);
-// CHECK-NEXT:         result += value;
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = mark(4i32);
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: *mut i32 = saved;
 // CHECK-NEXT:         *[[V_1]] = *[[V_1]] + [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {

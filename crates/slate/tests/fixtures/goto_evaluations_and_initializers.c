@@ -64,43 +64,45 @@ int main(void) {
 // CHECK-NEXT:     let mut checks: i32 = 0;
 // CHECK-NEXT:     let mut steps: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     let mut value: i32 = 0;
+// CHECK-NEXT:     if mode == 0 {
+// CHECK-NEXT:         value = initialize();
+// CHECK-NEXT:     }
+// CHECK-NEXT:     value = 3;
+// CHECK-NEXT:     sum += value;
+// CHECK-NEXT:     i = 0;
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = checks + 1;
+// CHECK-NEXT:         checks = [[V_0]];
+// CHECK-NEXT:         if !([[V_0]] != 0 && i < 4) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             if i == 0 {
+// CHECK-NEXT:                 i = 1;
+// CHECK-NEXT:                 continue;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         if i != 2 {
+// CHECK-NEXT:             sum += i;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         steps += 1;
+// CHECK-NEXT:         i += 1;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         sum += 1;
+// CHECK-NEXT:         if !(sum < 10) {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = checks + 1;
+// CHECK-NEXT:         checks = [[V_1]];
+// CHECK-NEXT:         if [[V_1]] >= 20 {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
 // CHECK-NEXT:     let skipped: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut value: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         if mode == 0 {
-// CHECK-NEXT:             value = initialize();
-// CHECK-NEXT:         }
-// CHECK-NEXT:         value = 3;
-// CHECK-NEXT:         sum += value;
-// CHECK-NEXT:         i = 0;
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = checks + 1;
-// CHECK-NEXT:             checks = [[V_0]];
-// CHECK-NEXT:             if [[V_0]] != 0 && i < 4 {
-// CHECK-NEXT:                 while i == 0 {
-// CHECK-NEXT:                     i = 1;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 if i != 2 {
-// CHECK-NEXT:                     sum += i;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 steps += 1;
-// CHECK-NEXT:                 i += 1;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             sum += 1;
-// CHECK-NEXT:             if sum < 10 {
-// CHECK-NEXT:                 let [[V_1:__v[0-9]+]]: i32 = checks + 1;
-// CHECK-NEXT:                 checks = [[V_1]];
-// CHECK-NEXT:                 if !([[V_1]] < 20) {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
 // CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]]: i32 = mode;
 // CHECK-NEXT:             if [[T_0]] == 1 {
