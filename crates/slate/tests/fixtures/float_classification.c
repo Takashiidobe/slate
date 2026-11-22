@@ -150,8 +150,8 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let result: i32 = once(unsafe { nan.value }).is_nan() as i32;
-// CHECK-NEXT:     println!("{} {}", (result != 0) as i32, unsafe { calls });
+// CHECK-NEXT:     let result: bool = once(unsafe { nan.value }).is_nan();
+// CHECK-NEXT:     println!("{} {}", result as i32, unsafe { calls });
 // CHECK-NEXT:     ((unsafe { calls }) != 1) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -76,7 +76,7 @@ int main(void) {
 // CHECK-NEXT: fn flags(mut c: i32) -> i32 {
 // CHECK-NEXT:     let mut fl: i32 = 0;
 // CHECK-NEXT:     let mut w: i32 = 0;
-// CHECK-NEXT:     let mut done: i32 = 0;
+// CHECK-NEXT:     let mut done: bool = false;
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         match c {
 // CHECK-NEXT:             45 => {
@@ -94,7 +94,7 @@ int main(void) {
 // CHECK-NEXT:                     c += 1;
 // CHECK-NEXT:                     fl = 4;
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 done = 1;
+// CHECK-NEXT:                 done = true;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             49 | 50 => {
 // CHECK-NEXT:                 let mut wx: u32 = (c - 48) as u32;
@@ -108,16 +108,16 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 w = wx as i32;
 // CHECK-NEXT:                 if c != 46 && c != 108 {
-// CHECK-NEXT:                     done = 1;
+// CHECK-NEXT:                     done = true;
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     c -= 1;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:             _ => {
-// CHECK-NEXT:                 done = 1;
+// CHECK-NEXT:                 done = true;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if done != 0 {
+// CHECK-NEXT:         if done {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }

@@ -159,15 +159,15 @@ int main(void) {
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = aligned(row.0.as_mut_ptr() as *const (), 16u64) != 0
 // CHECK-NEXT:         && aligned(line.0.as_mut_ptr() as *const (), 64u64) != 0;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = [[V_0]] && aligned(block.0.as_mut_ptr() as *const (), 16u64) != 0;
-// CHECK-NEXT:     let mut ok: i32 = ([[V_1]]
-// CHECK-NEXT:         && aligned(core::ptr::addr_of_mut!(word.0) as *const (), 16u64) != 0) as i32;
-// CHECK-NEXT:     ok = (ok != 0
+// CHECK-NEXT:     let mut ok: bool = [[V_1]]
+// CHECK-NEXT:         && aligned(core::ptr::addr_of_mut!(word.0) as *const (), 16u64) != 0;
+// CHECK-NEXT:     ok = ok
 // CHECK-NEXT:         && sum_vectors(row.0.as_mut_ptr() as *const u64, 4i32)
-// CHECK-NEXT:             == 6u64.wrapping_add(depth as u64)) as i32;
+// CHECK-NEXT:             == 6u64.wrapping_add(depth as u64);
 // CHECK-NEXT:     if depth > 0 {
-// CHECK-NEXT:         ok = (ok != 0 && locals(depth - 1) != 0) as i32;
+// CHECK-NEXT:         ok = ok && locals(depth - 1) != 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     ok + (tag2 as i32) - (tag as i32) + (marker as i32) - 7 + (line.0[0] as i32)
+// CHECK-NEXT:     (ok as i32) + (tag2 as i32) - (tag as i32) + (marker as i32) - 7 + (line.0[0] as i32)
 // CHECK-NEXT:         + (block.0[0] as i32) - depth + (word.0 as i32) - 5
 // CHECK-NEXT: }
 // CHECK-EMPTY:

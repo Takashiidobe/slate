@@ -38,19 +38,19 @@ int main(void) {
 // CHECK-NEXT:         unsafe { slate_support::putchar(data[i as usize] as i32) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let framed_ok: i32 = ((core::mem::size_of::<[u8; 8]>() as u64) == 8
+// CHECK-NEXT:     let framed_ok: bool = (core::mem::size_of::<[u8; 8]>() as u64) == 8
 // CHECK-NEXT:         && ((unsafe { framed[0] }) as i32) == 170
 // CHECK-NEXT:         && ((unsafe { framed[1] }) as i32) == 187
 // CHECK-NEXT:         && ((unsafe { framed[2] }) as i32) == 67 && ((unsafe { framed[3] }) as i32) == 50
 // CHECK-NEXT:         && ((unsafe { framed[4] }) as i32) == 51 && ((unsafe { framed[5] }) as i32) == 10
 // CHECK-NEXT:         && ((unsafe { framed[6] }) as i32) == 204
-// CHECK-NEXT:         && ((unsafe { framed[7] }) as i32) == 221) as i32;
-// CHECK-NEXT:     let empty_ok: i32 = ((core::mem::size_of::<[u8; 1]>() as u64) == 1
-// CHECK-NEXT:         && ((unsafe { empty[0] }) as i32) == 238) as i32;
+// CHECK-NEXT:         && ((unsafe { framed[7] }) as i32) == 221;
+// CHECK-NEXT:     let empty_ok: bool = (core::mem::size_of::<[u8; 1]>() as u64) == 1
+// CHECK-NEXT:         && ((unsafe { empty[0] }) as i32) == 238;
 // CHECK-NEXT:     !((core::mem::size_of::<[u8; 4]>() as u64) == 4
 // CHECK-NEXT:         && ((unsafe { data[0] }) as i32) == 67 && ((unsafe { data[1] }) as i32) == 50
 // CHECK-NEXT:         && ((unsafe { data[2] }) as i32) == 51 && ((unsafe { data[3] }) as i32) == 10
-// CHECK-NEXT:         && framed_ok != 0 && empty_ok != 0) as i32
+// CHECK-NEXT:         && framed_ok && empty_ok) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static data: [u8; 4] = [67, 50, 51, 10];

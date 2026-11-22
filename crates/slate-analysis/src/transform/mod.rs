@@ -6,6 +6,7 @@ mod inline_temporaries;
 mod labeled_blocks;
 mod structure_goto;
 mod truth_canonicalize;
+mod truth_locals;
 
 use slate_parser::ir::Module;
 pub use truth_canonicalize::negation;
@@ -62,6 +63,11 @@ pub static PASSES: &[Pass] = &[
         name: "decl-init",
         slots: &[Slot::AfterMacroStrip],
         run: decl_init::transform,
+    },
+    Pass {
+        name: "truth-locals",
+        slots: &[Slot::AfterMacroStrip],
+        run: truth_locals::transform,
     },
 ];
 

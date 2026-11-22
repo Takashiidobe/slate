@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-NEXT:             (core::mem::size_of::<[i8; 8]>() as u64) as usize,
 // CHECK-NEXT:         ) as *mut ()
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let same: i32 = ((unsafe {
+// CHECK-NEXT:     let same: bool = (unsafe {
 // CHECK-NEXT:         memcmp(
 // CHECK-NEXT:             (dst.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:             (b"1234567\0".as_ptr() as *const ()) as *const core::ffi::c_void,
@@ -65,8 +65,8 @@ int main(void) {
 // CHECK-NEXT:                 (dst.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
 // CHECK-NEXT:                 c"1234567".as_ptr() as *const core::ffi::c_char,
 // CHECK-NEXT:             ) as i32
-// CHECK-NEXT:         }) == 0) as i32;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = same != 0 && (src[0] as i32) == 0
+// CHECK-NEXT:         }) == 0;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = same && (src[0] as i32) == 0
 // CHECK-NEXT:         && text_len(dst.as_mut_ptr() as *const i8) == 7;
 // CHECK-NEXT:     !([[V_0]] && parse_num(dst.as_mut_ptr()) == 1234567) as i32
 // CHECK-NEXT: }

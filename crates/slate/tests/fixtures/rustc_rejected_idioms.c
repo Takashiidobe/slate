@@ -74,12 +74,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let a: i32 = 0;
+// CHECK-NEXT:     let a: bool = false;
 // CHECK-NEXT:     let b: i32 = 2;
 // CHECK-NEXT:     let c: i32 = -1;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (a != 0 || b < 0 || b > 1) as i32;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (a || b < 0 || b > 1) as i32;
 // CHECK-NEXT:     let elvis: i32 = if [[V_0]] != 0 { [[V_0]] } else { c };
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = (a != 0 || b < 0) as i32;
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = (a || b < 0) as i32;
 // CHECK-NEXT:     let other: i32 = if [[V_1]] != 0 { [[V_1]] } else { c };
 // CHECK-NEXT:     let tail: u64 = 13;
 // CHECK-NEXT:     let tag: u64 = 12;

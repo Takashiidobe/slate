@@ -47,9 +47,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let useAdd: i32 = 1;
+// CHECK-NEXT:     let useAdd: bool = true;
 // CHECK-NEXT:     let op: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = {
-// CHECK-NEXT:         let [[T_0]]: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = if useAdd != 0 {
+// CHECK-NEXT:         let [[T_0]]: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = if useAdd {
 // CHECK-NEXT:             Some(add)
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             Some(sub)
@@ -63,8 +63,7 @@ int main(void) {
 // CHECK-NEXT:         apply(1i32, 4i32, 4i32),
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             {
-// CHECK-NEXT:                     let [[T_1:__t[0-9]+]]: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = if useAdd
-// CHECK-NEXT:                         != 0 {
+// CHECK-NEXT:                     let [[T_1:__t[0-9]+]]: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = if useAdd {
 // CHECK-NEXT:                         Some(sub)
 // CHECK-NEXT:                     } else {
 // CHECK-NEXT:                         Some(add)

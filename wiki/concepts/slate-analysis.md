@@ -6,6 +6,7 @@
 - [Transform stage](#transform-stage)
   - [Const-fold](#const-fold)
   - [Truth canonicalization](#truth-canonicalization)
+  - [Truth locals](#truth-locals)
   - [Labeled blocks](#labeled-blocks)
   - [Casts are lowering, not a
     transform](#casts-are-lowering-not-a-transform)
@@ -166,6 +167,32 @@ has hoisted statements; a head test with none lowers to `while c` directly. A
 `break` the C source wrote at the loop head stays `if c { break }`: no rule
 folds it into the condition. Negations that the backend's goto structuring builds
 (`if !(i < 5) { break }` from `if (i < 5) goto top`) are not canonicalized.
+
+### Truth locals
+
+`truth-locals` (`transform/truth_locals.rs`, `slate-8ge7.24.15`) runs last in
+`Slot::AfterMacroStrip`, after `decl-init`, and retypes an automatic integer
+`let` to `bool` when C only ever stores 0 or 1 in it (`int found = 0; ...
+found = 1;`, `int lt = a < b;`). The retyped local is declared `bool`, each
+`ne(read, 0)` becomes `read<bool>`, each `eq(read, 0)` becomes `not`, and any
+other read becomes `from_bool<int>(read<bool>)`.
+
+- Every definition (initializer, `auto_init` zero, or a plain `write`) must be
+  `const` 0 or 1, a `from_bool`, a `conditional` whose arms all qualify, or a
+  read of another truth local. Locals that read each other are solved with an
+  optimistic fixpoint. Anything else keeps the local `int`, so calls
+  (`int r = rand()`), arithmetic, `++`, a stored 2, or a missing initializer
+  all do.
+- Every reference has to be a plain read or write. Address-taken, `Store`
+  (`if ((x = a < b))`), `Update`, atomic access, `volatile`, `register`,
+  `cleanup`, `__block`, statics, and any reference inside a macro region, a
+  nested function or an OpenMP region keep the local `int`. A definition whose
+  node is a `Module::macro_values` key does not count as proven.
+- Truth uses must strictly outnumber integer reads, because a tie only moves
+  the cast. A copy into another truth local (`int same = lt;`) counts as a
+  truth use.
+
+Fixtures: `fixtures.transforms/truth-locals/`, `fixtures/int_truth_locals.c`.
 
 ### Labeled blocks
 

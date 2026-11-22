@@ -32,13 +32,13 @@ int main(void) {
 // CHECK-NEXT:             malloc as *const (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let matches: i32 = (h.malloc_fn
+// CHECK-NEXT:     let matches: bool = h.malloc_fn
 // CHECK-NEXT:         == unsafe {
 // CHECK-NEXT:             core::mem::transmute::<*const (), Option<unsafe extern "C-unwind" fn(u64) -> *mut ()>>(
 // CHECK-NEXT:                 malloc as *const (),
 // CHECK-NEXT:             )
-// CHECK-NEXT:         }) as i32;
-// CHECK-NEXT:     (matches == 0) as i32
+// CHECK-NEXT:         };
+// CHECK-NEXT:     !matches as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
