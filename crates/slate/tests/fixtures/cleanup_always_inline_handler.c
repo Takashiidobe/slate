@@ -69,11 +69,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn skipped(n: i32) -> i32 {
-// CHECK-NEXT:     if !(n > 2) {
+// CHECK-NEXT:     if n <= 2 {
 // CHECK-NEXT:         let mut held: i32 = n;
-// CHECK-NEXT:         let __slate_cleanup_ptr_1 = core::ptr::addr_of_mut!(held) as *mut _;
-// CHECK-NEXT:         let __slate_cleanup_1 = ::slate_support::Guard(
-// CHECK-NEXT:             &mut || unlock(__slate_cleanup_ptr_1 as *mut _),
+// CHECK-NEXT:         let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(held) as *mut _;
+// CHECK-NEXT:         let __slate_cleanup_0 = ::slate_support::Guard(
+// CHECK-NEXT:             &mut || unlock(__slate_cleanup_ptr_0 as *mut _),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             released = released + 100;

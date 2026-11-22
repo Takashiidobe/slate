@@ -3,6 +3,7 @@ mod dead_temporaries;
 mod decl_init;
 mod do_while_zero;
 mod inline_temporaries;
+mod labeled_blocks;
 mod structure_goto;
 mod truth_canonicalize;
 
@@ -46,6 +47,11 @@ pub static PASSES: &[Pass] = &[
         name: "do-while-zero",
         slots: &[Slot::AfterMacroStrip],
         run: do_while_zero::transform,
+    },
+    Pass {
+        name: "labeled-blocks",
+        slots: &[Slot::AfterMacroStrip],
+        run: labeled_blocks::transform,
     },
     Pass {
         name: "dead-temporaries",

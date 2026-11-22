@@ -128,17 +128,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn into_returning_arm(a: i32, b: i32) -> i32 {
-// CHECK-NEXT:     '[[SLATE_BREAK_0]]: {
-// CHECK-NEXT:         if b == 0 {
-// CHECK-NEXT:             if a != 0 {
-// CHECK-NEXT:                 println!("a");
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 break '[[SLATE_BREAK_0]];
-// CHECK-NEXT:             }
+// CHECK-NEXT:     if b == 0 {
+// CHECK-NEXT:         if a != 0 {
+// CHECK-NEXT:             println!("a");
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             return a;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     a
+// CHECK-NEXT:     -1
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn into_scoped_tail(a: i32) -> i32 {
@@ -147,9 +144,9 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut guard: i32 = a;
-// CHECK-NEXT:         let __slate_cleanup_ptr_1 = core::ptr::addr_of_mut!(guard) as *mut _;
-// CHECK-NEXT:         let __slate_cleanup_1 = ::slate_support::Guard(
-// CHECK-NEXT:             &mut || release(__slate_cleanup_ptr_1 as *mut _),
+// CHECK-NEXT:         let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(guard) as *mut _;
+// CHECK-NEXT:         let __slate_cleanup_0 = ::slate_support::Guard(
+// CHECK-NEXT:             &mut || release(__slate_cleanup_ptr_0 as *mut _),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         println!("tail");
 // CHECK-NEXT:     }

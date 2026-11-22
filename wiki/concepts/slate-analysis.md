@@ -6,6 +6,7 @@
 - [Transform stage](#transform-stage)
   - [Const-fold](#const-fold)
   - [Truth canonicalization](#truth-canonicalization)
+  - [Labeled blocks](#labeled-blocks)
   - [Casts are lowering, not a
     transform](#casts-are-lowering-not-a-transform)
 - [Keys](#keys)
@@ -164,6 +165,34 @@ Lowering uses the same rules through `transform::negation` for loop exit tests
 has hoisted statements; a head test with none keeps `!c` so `LoopToWhile`
 recovers `while c`. Negations that the backend's goto structuring builds
 (`if !(i < 5) { break }` from `if (i < 5) goto top`) are not canonicalized.
+
+### Labeled blocks
+
+`labeled-blocks` (`transform/labeled_blocks.rs`, `slate-8ge7.24.10.7`) runs in
+`Slot::AfterMacroStrip` after `do-while-zero`. It recovers if/else and `match`
+arms from the labeled blocks that `structure-goto` and `do-while-zero` build:
+
+- sink: a `block L { ... }` whose body ends in a jump and has exactly one
+  `break L` takes the statements after it, up to the first jump (or up to the
+  end of an enclosing block or loop body, plus that exit's jump), in place of
+  that break. The block itself disappears. It is skipped when the block has a
+  cleanup or VLA `Let` or a `__try`, or declares a C name that is also used
+  outside the block, since lowering keeps C names and the moved code could
+  read the wrong one.
+- else arm: `if c { A; break X } B...` becomes `if c { A } else { B... }` when
+  falling off the list also reaches `X`, or when the list ends in `break X`.
+  A then arm left empty is swapped with the else arm under
+  `transform::negation`. `continue` exits are left alone, so `if (c) continue;`
+  keeps its early `continue`.
+- a trailing `break` to the enclosing block is dropped, a block with no breaks
+  left is removed, a switch's case siblings move into the `Case` body, and
+  after sinking finishes, case arms that end in `break L` with the switch at
+  `L`'s end switch to `break switch`.
+
+The tail moves and is never duplicated, so a label reached by two gotos stays
+a block, and a `--merge` variant with a different goto count gets a different
+shape (`fixtures.merge/splice_statements.c`). Fixture:
+`fixtures.transforms/structure-goto,labeled-blocks/diamonds.c`.
 
 ### Casts are lowering, not a transform
 

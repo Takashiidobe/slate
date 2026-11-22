@@ -24,21 +24,18 @@ overflow:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     let mut sum: i32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             sum += i;
-// CHECK-NEXT:             if sum > 100 {
-// CHECK-NEXT:                 break '[[SLATE_BREAK_0]];
-// CHECK-NEXT:             }
-// CHECK-NEXT:             i += 1;
-// CHECK-NEXT:             if i >= 5 {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         sum += i;
+// CHECK-NEXT:         if sum > 100 {
+// CHECK-NEXT:             println!("overflow");
+// CHECK-NEXT:             return 0;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         println!("{}", sum);
-// CHECK-NEXT:         return 0;
+// CHECK-NEXT:         i += 1;
+// CHECK-NEXT:         if i >= 5 {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("overflow");
+// CHECK-NEXT:     println!("{}", sum);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

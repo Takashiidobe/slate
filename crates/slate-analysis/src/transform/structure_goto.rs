@@ -590,7 +590,7 @@ fn breakable(statement: &Statement) -> Option<BindingId> {
     }
 }
 
-fn jump_lists(statement: &Statement) -> Vec<&Body> {
+pub(super) fn jump_lists(statement: &Statement) -> Vec<&Body> {
     match statement {
         Statement::Block(body)
         | Statement::LabeledBlock { body, .. }

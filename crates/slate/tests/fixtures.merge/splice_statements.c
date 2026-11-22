@@ -303,14 +303,28 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         for i in 0..limit {
 // CHECK-NEXT:             if i * 2 == value {
-// CHECK-NEXT:                 break '[[SLATE_BREAK_0]];
+// CHECK-NEXT:                 #[cfg(feature = "alpha")]
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     break '[[SLATE_BREAK_0]];
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 #[cfg(not(feature = "alpha"))]
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     result += 1000;
+// CHECK-NEXT:                     return result;
+// CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:             result += i;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         result += 7;
-// CHECK-NEXT:         return result;
+// CHECK-NEXT:         #[cfg(feature = "alpha")]
+// CHECK-NEXT:         {
+// CHECK-NEXT:             return result;
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     result += 1000;
+// CHECK-NEXT:     #[cfg(feature = "alpha")]
+// CHECK-NEXT:     {
+// CHECK-NEXT:         result += 1000;
+// CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:

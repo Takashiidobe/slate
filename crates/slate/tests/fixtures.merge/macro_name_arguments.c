@@ -207,7 +207,7 @@ int main(void) {
 // CHECK-NEXT:     let mut s: slot = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let mut func: Option<unsafe extern "C-unwind" fn(i32) -> i32> = None;
-// CHECK-NEXT:     if !(n > 5) {
+// CHECK-NEXT:     if n <= 5 {
 // CHECK-NEXT:         func = Some(twice);
 // CHECK-NEXT:         if func != None {
 // CHECK-NEXT:             PUSH!(core::ptr::addr_of_mut!(s), func);
