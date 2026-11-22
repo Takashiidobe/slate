@@ -173,7 +173,7 @@ impl FunctionLowerer<'_, '_> {
         }
         let temp = self.next_temp();
         stmts.push(Stmt::Let {
-            synthetic: true,
+            origin: rust::LocalOrigin::Synthetic,
             name: temp.clone(),
             mutable: false,
             ty: None,

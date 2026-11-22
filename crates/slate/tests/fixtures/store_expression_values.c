@@ -112,21 +112,16 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut a: i32 = 0;
-// CHECK-NEXT:     let mut b: i32 = 0;
-// CHECK-NEXT:     let mut c: i32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = produce();
-// CHECK-NEXT:     c = [[V_0]];
+// CHECK-NEXT:     let mut c: i32 = [[V_0]];
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = [[V_0]];
-// CHECK-NEXT:     b = [[V_1]];
-// CHECK-NEXT:     a = [[V_1]];
-// CHECK-NEXT:     let mut d: i32 = 0;
+// CHECK-NEXT:     let mut b: i32 = [[V_1]];
+// CHECK-NEXT:     let mut a: i32 = [[V_1]];
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = a + 3;
 // CHECK-NEXT:     a = [[V_2]];
-// CHECK-NEXT:     d = [[V_2]] * 2;
-// CHECK-NEXT:     let mut e: i32 = 0;
+// CHECK-NEXT:     let d: i32 = [[V_2]] * 2;
 // CHECK-NEXT:     b = 11;
-// CHECK-NEXT:     e = twice(11i32);
+// CHECK-NEXT:     let e: i32 = twice(11i32);
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut i32 = unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!(slots.0) as *mut i32).offset(idx() as isize)
 // CHECK-NEXT:     };
@@ -136,17 +131,16 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slots.0[idx() as usize] = slots.0[0] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let f: i32 = 40 + 2;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *slot() = 40;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut g: i32 = 0;
+// CHECK-NEXT:     let f: i32 = 40 + 2;
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: *mut i32 = slot();
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = (unsafe { *[[V_4]] }) + 1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_4]] = [[V_5]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     g = [[V_5]];
+// CHECK-NEXT:     let g: i32 = [[V_5]];
 // CHECK-NEXT:     let text: *const i8 = c"store".as_ptr();
 // CHECK-NEXT:     let mut cursor: *const i8 = text;
 // CHECK-NEXT:     let mut ch: i8 = 0;

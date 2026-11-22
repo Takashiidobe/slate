@@ -1,8 +1,8 @@
 use foldhash::{HashMap, HashMapExt};
 
 use crate::backend::rust_ast::{
-    BinOp, Block, Comment, CommentAttach, Expr, FnParam, Ident, InlineAsm, Label, MatchArm,
-    Pattern, Stmt, Type,
+    BinOp, Block, Comment, CommentAttach, Expr, FnParam, Ident, InlineAsm, Label, LocalOrigin,
+    MatchArm, Pattern, Stmt, Type,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -103,7 +103,7 @@ impl NodeKindTag {
 pub(in crate::backend) enum NodeKind {
     Comment(Comment),
     Let {
-        synthetic: bool,
+        origin: LocalOrigin,
         name: Ident,
         mutable: bool,
         ty: Option<Type>,
@@ -914,13 +914,13 @@ fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
         Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(comment) => NodeKind::Comment(comment),
         Stmt::Let {
-            synthetic,
+            origin,
             name,
             mutable,
             ty,
             init,
         } => NodeKind::Let {
-            synthetic,
+            origin,
             name: name.into(),
             mutable,
             ty,
@@ -1048,13 +1048,13 @@ fn reify_stmt(arena: &Arena, id: NodeId, out: &mut Vec<Stmt>) {
     let stmt = match kind {
         NodeKind::Comment(comment) => Stmt::Comment(comment.clone()),
         NodeKind::Let {
-            synthetic,
+            origin,
             name,
             mutable,
             ty,
             init,
         } => Stmt::Let {
-            synthetic: *synthetic,
+            origin: *origin,
             name: name.as_str().to_string(),
             mutable: *mutable,
             ty: ty.clone(),

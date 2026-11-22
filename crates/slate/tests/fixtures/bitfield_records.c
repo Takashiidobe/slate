@@ -203,8 +203,8 @@ int main(void) {
 // CHECK-NEXT:     local.__slate_bits_2.__set_wide(549755813887i64);
 // CHECK-NEXT:     local.__slate_bits_2.__set_last(true);
 // CHECK-NEXT:     local.after = -2;
-// CHECK-NEXT:     let assigned: i32 = 4;
 // CHECK-NEXT:     local.__slate_bits_0.__set_x(12u32);
+// CHECK-NEXT:     let assigned: i32 = 4;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

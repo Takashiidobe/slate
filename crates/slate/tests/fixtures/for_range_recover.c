@@ -184,6 +184,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn find(a: &[i32], x: i32) -> i32 {
 // CHECK-NEXT:     let n: i32 = a.len() as i32;
 // CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     i = 0;
 // CHECK-NEXT:     while i < n {
 // CHECK-NEXT:         if a[i as usize] == x {
 // CHECK-NEXT:             break;

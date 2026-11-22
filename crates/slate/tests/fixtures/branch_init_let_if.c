@@ -80,11 +80,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn zeroed(a: i32) -> i32 {
-// CHECK-NEXT:     let r: i32 = if a > 3 {
-// CHECK-NEXT:         a * 2
+// CHECK-NEXT:     let mut r: i32 = 0;
+// CHECK-NEXT:     if a > 3 {
+// CHECK-NEXT:         r = a * 2;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         a + 7
-// CHECK-NEXT:     };
+// CHECK-NEXT:         r = a + 7;
+// CHECK-NEXT:     }
 // CHECK-NEXT:     r + 1
 // CHECK-NEXT: }
 // CHECK-EMPTY:

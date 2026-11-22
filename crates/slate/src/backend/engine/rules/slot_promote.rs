@@ -3,7 +3,7 @@ use super::remove_mut::invariant_within;
 use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Block, Expr, Ident, Type, UnaryOp};
+use crate::backend::rust_ast::{Block, Expr, Ident, LocalOrigin, Type, UnaryOp};
 use crate::function_identity::CallBinding;
 
 struct Slot {
@@ -254,11 +254,14 @@ impl NodeRule for DeclSink {
         let Some((name, assign)) = sole_assignment(arena, id) else {
             return false;
         };
-        let Some(NodeKind::Let { ty, synthetic, .. }) = arena.get(id) else {
+        let Some(NodeKind::Let { ty, origin, .. }) = arena.get(id) else {
             return false;
         };
         let ty = ty.clone();
-        let synthetic = *synthetic;
+        let origin = match origin {
+            LocalOrigin::Synthetic => *origin,
+            _ => LocalOrigin::Source,
+        };
         let Some(NodeKind::Assign { value, .. }) = arena.get(assign) else {
             return false;
         };
@@ -267,7 +270,7 @@ impl NodeRule for DeclSink {
         arena.set_kind(
             assign,
             NodeKind::Let {
-                synthetic,
+                origin,
                 name,
                 mutable: true,
                 ty,
@@ -305,6 +308,10 @@ impl NodeRule for SlotPromote {
         let Some(plan) = plan(arena, id) else {
             return false;
         };
+        let Some(NodeKind::Let { origin, .. }) = arena.get(plan.storage_id) else {
+            return false;
+        };
+        let origin = *origin;
         let users = arena.def_use_neighbors(plan.slot).to_vec();
         for user in users {
             if let Some(NodeKind::Expr(expr)) = arena.get(user)
@@ -326,17 +333,10 @@ impl NodeRule for SlotPromote {
             }
             arena.touch(user);
         }
-        let synthetic = matches!(
-            arena.get(plan.storage_id),
-            Some(NodeKind::Let {
-                synthetic: true,
-                ..
-            })
-        );
         arena.set_kind(
             plan.storage_id,
             NodeKind::Let {
-                synthetic,
+                origin,
                 name: plan.storage,
                 mutable: true,
                 ty: Some(plan.ty),

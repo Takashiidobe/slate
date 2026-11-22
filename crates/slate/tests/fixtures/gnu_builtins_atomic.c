@@ -69,7 +69,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_builtin_atomic() -> i32 {
 // CHECK-NEXT:     let mut value: i32 = 0;
-// CHECK-NEXT:     let mut expected: i32 = 20;
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let mut flag: bool = false;
 // CHECK-NEXT:     unsafe {
@@ -90,6 +89,7 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .swap(20i32, core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
+// CHECK-NEXT:     let mut expected: i32 = 20;
 // CHECK-NEXT:     total += (unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = core::ptr::addr_of_mut!(expected);
 // CHECK-NEXT:         match core::sync::atomic::AtomicI32::from_ptr(

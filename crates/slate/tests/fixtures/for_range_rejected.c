@@ -119,6 +119,7 @@ int main(void) {
 // CHECK-NEXT:         b += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut c: i32 = 0;
+// CHECK-NEXT:     c = 0;
 // CHECK-NEXT:     while c < n {
 // CHECK-NEXT:         s += p[c as usize];
 // CHECK-NEXT:         c += 1;

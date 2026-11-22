@@ -598,12 +598,13 @@ int main(void) {
 // CHECK-NEXT:     let count: u64 = 1;
 // CHECK-NEXT:     let number: i32 = 1;
 // CHECK-NEXT:     let real: f64 = 1.0f64;
-// CHECK-NEXT:     let mut ptr: *mut () = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut thread: u64 = 1;
 // CHECK-NEXT:     let strlen_call: Option<unsafe extern "C-unwind" fn(*const i8) -> u64> = Some(
 // CHECK-NEXT:         strlen,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     ptr = malloc(unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) });
+// CHECK-NEXT:     let mut ptr: *mut () = malloc(
+// CHECK-NEXT:         unsafe { core::ptr::read_volatile(core::ptr::addr_of!(count)) },
+// CHECK-NEXT:     );
 // CHECK-NEXT:     CHECK!(ptr, 16i32 as *mut (), 2i32);
 // CHECK-NEXT:     CHECK!(
 // CHECK-NEXT:         calloc(

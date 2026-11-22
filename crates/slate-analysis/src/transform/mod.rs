@@ -1,5 +1,6 @@
 mod const_fold;
 mod dead_temporaries;
+mod decl_init;
 mod inline_temporaries;
 mod truth_canonicalize;
 
@@ -38,6 +39,11 @@ pub static PASSES: &[Pass] = &[
         name: "dead-temporaries",
         slots: &[Slot::AfterMacroStrip],
         run: dead_temporaries::transform,
+    },
+    Pass {
+        name: "decl-init",
+        slots: &[Slot::AfterMacroStrip],
+        run: decl_init::transform,
     },
 ];
 

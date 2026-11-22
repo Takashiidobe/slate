@@ -631,8 +631,7 @@ int main(void) {
 // CHECK-NEXT:     let first: i32 = try_claim(core::ptr::addr_of_mut!(slot), 42u64);
 // CHECK-NEXT:     let second: i32 = try_claim(core::ptr::addr_of_mut!(slot), 43u64);
 // CHECK-NEXT:     let mut seen: u64 = 5;
-// CHECK-NEXT:     let mut strong: bool = false;
-// CHECK-NEXT:     strong = unsafe {
+// CHECK-NEXT:     let strong: bool = unsafe {
 // CHECK-NEXT:         let [[T_19:__t[0-9]+]] = core::ptr::addr_of_mut!(seen);
 // CHECK-NEXT:         match core::sync::atomic::AtomicU64::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(slot) as *mut u64,
@@ -710,15 +709,13 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{} {} {} {} {}", swapped, observed, fetched, lock, legacy);
 // CHECK-NEXT:     let mut flag: bool = false;
-// CHECK-NEXT:     let mut was: bool = false;
-// CHECK-NEXT:     was = unsafe {
+// CHECK-NEXT:     let was: bool = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(flag) as *mut bool,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .swap(true, core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut now: bool = false;
-// CHECK-NEXT:     now = unsafe {
+// CHECK-NEXT:     let now: bool = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicBool::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(flag) as *mut bool,
 // CHECK-NEXT:             )

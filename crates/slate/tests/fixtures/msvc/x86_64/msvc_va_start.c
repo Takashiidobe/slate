@@ -174,13 +174,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn mixed(n: i32, mut __va_args: ...) -> f64 {
 // CHECK-NEXT:     let mut ap: *mut i8 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut copy: *mut i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *core::ptr::addr_of_mut!(ap) = core::mem::transmute::<core::ffi::VaList<'_>, *mut i8>(
 // CHECK-NEXT:             __va_args.clone(),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
-// CHECK-NEXT:     copy = ap;
+// CHECK-NEXT:     let mut copy: *mut i8 = ap;
 // CHECK-NEXT:     let mut total: f64 = 0i32 as f64;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         let [[V_0]]: f64 = if (core::mem::size_of::<f64>() as u64)

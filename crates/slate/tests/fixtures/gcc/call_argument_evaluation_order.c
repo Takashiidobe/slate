@@ -74,33 +74,28 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     let [[V_0]]: i32 = observe(1i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         g = 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     sum = [[V_0]] + 1;
-// CHECK-NEXT:     let mut args: i32 = 0;
+// CHECK-NEXT:     let sum: i32 = [[V_0]] + 1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         g = 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     args = pair(observe(2i32), 2i32);
-// CHECK-NEXT:     let mut both: i32 = 0;
+// CHECK-NEXT:     let args: i32 = pair(observe(2i32), 2i32);
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = observe(4i32);
-// CHECK-NEXT:     both = pair(observe(3i32), [[V_1]]);
-// CHECK-NEXT:     let mut indirect: i32 = 0;
+// CHECK-NEXT:     let both: i32 = pair(observe(3i32), [[V_1]]);
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: Option<unsafe extern "C-unwind" fn(i32, i32) -> i32> = pick(5i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         g = 3;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     indirect = unsafe { [[V_2]].unwrap()(observe(6i32), 3i32) };
-// CHECK-NEXT:     let mut nested: i32 = 0;
+// CHECK-NEXT:     let indirect: i32 = unsafe { [[V_2]].unwrap()(observe(6i32), 3i32) };
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = observe(8i32);
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = observe(7i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         g = 4;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     nested = pair([[V_4]] + 4, [[V_3]]);
+// CHECK-NEXT:     let nested: i32 = pair([[V_4]] + 4, [[V_3]]);
 // CHECK-NEXT:     let mut arr: [i32; 2] = [0i32; 2];
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = observe(9i32);
 // CHECK-NEXT:     unsafe {

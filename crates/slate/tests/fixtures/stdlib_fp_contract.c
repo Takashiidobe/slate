@@ -34,10 +34,10 @@ int main(void) {
 // CHECK-NEXT:     let y: f64 = unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) };
 // CHECK-NEXT:     let z: f64 = -((unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) })
 // CHECK-NEXT:         * unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) });
-// CHECK-NEXT:     let contracted: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) })
-// CHECK-NEXT:         * y + z;
-// CHECK-NEXT:     let uncontracted: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) })
-// CHECK-NEXT:         * y + z;
+// CHECK-NEXT:     let mut contracted: f64 = 0 as f64;
+// CHECK-NEXT:     let mut uncontracted: f64 = 0 as f64;
+// CHECK-NEXT:     contracted = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) }) * y + z;
+// CHECK-NEXT:     uncontracted = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) }) * y + z;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%.20e %.20e\n".as_ptr(), contracted, uncontracted)

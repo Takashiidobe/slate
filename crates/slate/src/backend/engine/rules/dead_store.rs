@@ -7,7 +7,7 @@ use super::inline_temps::expr_effects;
 fn is_dead_let(arena: &Arena, id: NodeId) -> bool {
     matches!(
         arena.get(id),
-        Some(NodeKind::Let { synthetic: true, name, init: Some(init), .. })
+        Some(NodeKind::Let { origin: crate::backend::rust_ast::LocalOrigin::Synthetic, name, init: Some(init), .. })
             if arena.def_use_neighbors(*name).is_empty() && !is_drop_guard(init)
     )
 }

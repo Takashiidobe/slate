@@ -54,6 +54,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn xor_block(vblk: *mut (), len: i32) {
 // CHECK-NEXT:     let blk: *mut u8 = vblk as *mut u8;
 // CHECK-NEXT:     let mut k: u32 = 0;
+// CHECK-NEXT:     k = 0;
 // CHECK-NEXT:     while (k as i32) < len {
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut u8 = unsafe { blk.add(k as usize) };
 // CHECK-NEXT:         unsafe {
@@ -67,13 +68,16 @@ int main(void) {
 // CHECK-NEXT:     let blk: *mut u8 = vblk as *mut u8;
 // CHECK-NEXT:     let mut k: u32 = 0;
 // CHECK-NEXT:     let mut tmp: u8 = 0;
-// CHECK-NEXT:     let mut i: u8 = 0;
-// CHECK-NEXT:     let mut j: u8 = 0;
 // CHECK-NEXT:     let s: *mut u8 = unsafe {
 // CHECK-NEXT:         (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).s.as_mut_ptr()
 // CHECK-NEXT:     };
-// CHECK-NEXT:     i = unsafe { (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).i };
-// CHECK-NEXT:     j = unsafe { (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).j };
+// CHECK-NEXT:     let mut i: u8 = unsafe {
+// CHECK-NEXT:         (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).i
+// CHECK-NEXT:     };
+// CHECK-NEXT:     let mut j: u8 = unsafe {
+// CHECK-NEXT:         (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).j
+// CHECK-NEXT:     };
+// CHECK-NEXT:     k = 0;
 // CHECK-NEXT:     while (k as i32) < len {
 // CHECK-NEXT:         i = ((i as i32) + 1 & 255) as u8;
 // CHECK-NEXT:         j = ((j as i32) + ((unsafe { *s.offset((i as i32) as isize) }) as i32) & 255)

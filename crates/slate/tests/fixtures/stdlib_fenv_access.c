@@ -39,10 +39,10 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let x: f64 = 3.0f64;
 // CHECK-NEXT:     let y: f64 = 7.0f64;
-// CHECK-NEXT:     let before: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) })
-// CHECK-NEXT:         + unsafe { core::ptr::read_volatile(core::ptr::addr_of!(y)) };
 // CHECK-NEXT:     let mut contended: f64 = 0 as f64;
 // CHECK-NEXT:     let mut after: f64 = 0 as f64;
+// CHECK-NEXT:     let before: f64 = (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(x)) })
+// CHECK-NEXT:         + unsafe { core::ptr::read_volatile(core::ptr::addr_of!(y)) };
 // CHECK-NEXT:     unsafe { fesetround(1024i32) };
 // CHECK-NEXT:     contended = unsafe {
 // CHECK-NEXT:         __slate_fenv_div_f64(

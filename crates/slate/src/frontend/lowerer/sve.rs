@@ -153,7 +153,7 @@ pub(super) fn sve_convert(
         rust::Block {
             stmts: vec![
                 Stmt::Let {
-                    synthetic: true,
+                    origin: rust::LocalOrigin::Synthetic,
                     name: lanes_name.into(),
                     mutable: true,
                     ty: Some(rust::Type::Array {

@@ -498,32 +498,41 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut automatic_value: i32 = 2;
-// CHECK-NEXT:     let register_value: i32 = 3;
-// CHECK-NEXT:     let signed_value: i32 = -5;
-// CHECK-NEXT:     let unsigned_value: u64 = 29;
-// CHECK-NEXT:     let signed_character: i8 = -7;
-// CHECK-NEXT:     let float_value: f32 = 2.5f32;
-// CHECK-NEXT:     let double_value: f64 = 3.5f64;
-// CHECK-NEXT:     let wide_character: i32 = 90;
-// CHECK-NEXT:     let color: u32 = 5;
+// CHECK-NEXT:     let mut automatic_value: i32 = 0;
+// CHECK-NEXT:     let mut register_value: i32 = 0;
+// CHECK-NEXT:     let mut signed_value: i32 = 0;
+// CHECK-NEXT:     let mut unsigned_value: u64 = 0;
+// CHECK-NEXT:     let mut signed_character: i8 = 0;
+// CHECK-NEXT:     let mut float_value: f32 = 0 as f32;
+// CHECK-NEXT:     let mut double_value: f64 = 0 as f64;
+// CHECK-NEXT:     let mut wide_character: i32 = 0;
+// CHECK-NEXT:     let mut color: u32 = 0;
 // CHECK-NEXT:     let mut point: C89Point = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut bits: C89Bits = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut number: C89Number = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut array: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32; 4]);
 // CHECK-NEXT:     let mut copied_value: i32 = 0;
-// CHECK-NEXT:     let mut source_value: i32 = 43;
+// CHECK-NEXT:     let mut source_value: i32 = 0;
 // CHECK-NEXT:     let mut arithmetic: i32 = 0;
-// CHECK-NEXT:     let mut bitwise: i32 = (1i32 << 5i32 | 3) ^ 2;
+// CHECK-NEXT:     let mut bitwise: i32 = 0;
 // CHECK-NEXT:     let mut logical: i32 = 0;
 // CHECK-NEXT:     let mut conditional: i32 = 0;
 // CHECK-NEXT:     let mut comma_value: i32 = 0;
-// CHECK-NEXT:     let string_length: i32 = (core::mem::size_of::<[i8; 3]>() as i32) - 1;
+// CHECK-NEXT:     let mut string_length: i32 = 0;
 // CHECK-NEXT:     let mut static_calls: i32 = 0;
 // CHECK-NEXT:     let mut variadic_total: i32 = 0;
 // CHECK-NEXT:     let mut control_total: i32 = 0;
-// CHECK-NEXT:     let standard_macro: i32 = 1;
+// CHECK-NEXT:     let mut standard_macro: i32 = 0;
+// CHECK-NEXT:     automatic_value = 2;
+// CHECK-NEXT:     register_value = 3;
+// CHECK-NEXT:     signed_value = -5;
+// CHECK-NEXT:     unsigned_value = 29;
+// CHECK-NEXT:     signed_character = -7;
+// CHECK-NEXT:     float_value = 2.5f32;
+// CHECK-NEXT:     double_value = 3.5f64;
 // CHECK-NEXT:     let long_double_value: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 144, 1, 64]);
+// CHECK-NEXT:     wide_character = 90;
+// CHECK-NEXT:     color = 5;
 // CHECK-NEXT:     point.x = 31;
 // CHECK-NEXT:     point.y = 37;
 // CHECK-NEXT:     bits.__slate_bits_0.__set_low(6u32);
@@ -537,6 +546,8 @@ int main(void) {
 // CHECK-NEXT:     array.0[3] = 4;
 // CHECK-NEXT:     let pointer: *mut i32 = array.0.as_mut_ptr();
 // CHECK-NEXT:     let const_pointer: *const i32 = pointer as *const i32;
+// CHECK-NEXT:     source_value = 43;
+// CHECK-NEXT:     copied_value = 0;
 // CHECK-NEXT:     c89_store(
 // CHECK-NEXT:         core::ptr::addr_of_mut!(copied_value) as *mut (),
 // CHECK-NEXT:         core::ptr::addr_of_mut!(source_value) as *const (),
@@ -545,14 +556,17 @@ int main(void) {
 // CHECK-NEXT:     arithmetic = (automatic_value + register_value) * 4 - 3;
 // CHECK-NEXT:     arithmetic /= 17;
 // CHECK-NEXT:     arithmetic %= 3;
+// CHECK-NEXT:     bitwise = (1i32 << 5i32 | 3) ^ 2;
 // CHECK-NEXT:     bitwise &= 31;
 // CHECK-NEXT:     logical = (signed_value < 0 && unsigned_value > 0 || false) as i32;
 // CHECK-NEXT:     conditional = if logical != 0 { 47 } else { 0 };
 // CHECK-NEXT:     automatic_value += 1;
 // CHECK-NEXT:     comma_value = automatic_value + 49;
+// CHECK-NEXT:     string_length = (core::mem::size_of::<[i8; 3]>() as i32) - 1;
 // CHECK-NEXT:     static_calls = c89_static_local() * 10 + c89_static_local();
 // CHECK-NEXT:     variadic_total = unsafe { c89_variadic_sum(4i32, 2i32, 3i32, 5i32, 7i32) };
 // CHECK-NEXT:     control_total = c89_control_flow(4i32);
+// CHECK-NEXT:     standard_macro = 1;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
 // CHECK-NEXT:         unsafe { c89_external_value },

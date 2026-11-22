@@ -390,7 +390,7 @@ impl FunctionLowerer<'_, '_> {
             }
         }
         let prelude = vec![Stmt::Let {
-            synthetic: true,
+            origin: rust::LocalOrigin::Synthetic,
             name: selector,
             mutable: false,
             ty: Some(selector_type),
@@ -459,7 +459,7 @@ impl FunctionLowerer<'_, '_> {
             body: vec![Stmt::Break(Some(label.clone()))],
         });
         body_prefix.push(Stmt::Let {
-            synthetic: true,
+            origin: rust::LocalOrigin::Synthetic,
             name: case.clone(),
             mutable: true,
             ty: Some(rust::Type::Prim(Prim::I64)),

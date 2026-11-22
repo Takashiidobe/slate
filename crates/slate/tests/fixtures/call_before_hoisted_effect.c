@@ -57,31 +57,27 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     let [[V_0]]: i32 = observe(1i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         g = 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     sum = [[V_0]] + 1;
-// CHECK-NEXT:     let mut cmp: i32 = 0;
+// CHECK-NEXT:     let sum: i32 = [[V_0]] + 1;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = observe(2i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         g = 5;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     cmp = ([[V_1]] < 5) as i32;
-// CHECK-NEXT:     let mut args: i32 = 0;
+// CHECK-NEXT:     let cmp: i32 = ([[V_1]] < 5) as i32;
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = observe(3i32);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         g = 7;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     args = pair([[V_2]], 7i32);
-// CHECK-NEXT:     let mut post: i32 = 0;
+// CHECK-NEXT:     let args: i32 = pair([[V_2]], 7i32);
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = observe(4i32);
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: i32 = unsafe { g };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         g = [[V_4]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     post = [[V_3]] + [[V_4]];
+// CHECK-NEXT:     let post: i32 = [[V_3]] + [[V_4]];
 // CHECK-NEXT:     let mut arr: [i32; 2] = [0i32; 2];
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: i32 = observe(5i32);
 // CHECK-NEXT:     unsafe {

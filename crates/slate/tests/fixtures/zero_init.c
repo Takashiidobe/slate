@@ -8,7 +8,10 @@ int main(void) {
   int z = getchar();
   y     = z + 1;
 
-  printf("%d %d %d\n", x, y, z);
+  int fused;
+  fused = z + 2;
+
+  printf("%d %d %d %d\n", x, y, z, fused);
   return 0;
 }
 
@@ -19,11 +22,13 @@ int main(void) {
 // CHECK-NEXT: use slate_support::getchar;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let x: i32 = 42;
+// CHECK-NEXT:     let mut x: i32 = 0;
+// CHECK-NEXT:     x = 42;
 // CHECK-NEXT:     let mut y: i32 = 0;
 // CHECK-NEXT:     let z: i32 = unsafe { getchar() as i32 };
 // CHECK-NEXT:     y = z + 1;
-// CHECK-NEXT:     println!("{} {} {}", x, y, z);
+// CHECK-NEXT:     let fused: i32 = z + 2;
+// CHECK-NEXT:     println!("{} {} {} {}", x, y, z, fused);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

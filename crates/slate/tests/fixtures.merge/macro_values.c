@@ -594,10 +594,9 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut local: *mut i32 = unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 };
-// CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     let [[V_1]]: *mut i32 = local;
 // CHECK-NEXT:     local = unsafe { [[V_1]].add(1) };
-// CHECK-NEXT:     sum = unsafe { *[[V_1]] };
+// CHECK-NEXT:     let mut sum: i32 = unsafe { *[[V_1]] };
 // CHECK-NEXT:     let [[V_2]]: *mut i32 = local;
 // CHECK-NEXT:     local = unsafe { [[V_2]].add(1) };
 // CHECK-NEXT:     sum = sum * 2 + unsafe { *[[V_2]] };
@@ -631,9 +630,8 @@ int main(void) {
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut count: i32 = 0;
-// CHECK-NEXT:     let mut value: i32 = 0;
 // CHECK-NEXT:     count += 1;
-// CHECK-NEXT:     value = count + 10;
+// CHECK-NEXT:     let value: i32 = count + 10;
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -646,10 +644,10 @@ int main(void) {
 // CHECK-NEXT:         println!("{} {}", value, count);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut target: i32 = 0;
-// CHECK-NEXT:     let stored: i32 = 42 + 1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *core::ptr::addr_of_mut!(target) = 42;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     let stored: i32 = 42 + 1;
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]

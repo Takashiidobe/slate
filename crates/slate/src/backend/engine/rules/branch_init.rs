@@ -1,7 +1,85 @@
-use super::zero_init::{expr_is_pure_and_closed, node_touches_name};
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Expr, Ident, Type};
+use crate::backend::rust_ast::{Expr, Ident, LocalOrigin, Pattern, Type};
+
+fn expr_is_pure_and_closed(expr: &Expr) -> bool {
+    match expr {
+        Expr::Value(_)
+        | Expr::Str(_)
+        | Expr::HexFloat(_)
+        | Expr::ByteStr(_)
+        | Expr::CStr(_)
+        | Expr::LayoutQuery { .. } => true,
+        Expr::Unary { expr, .. } | Expr::Cast { expr, .. } => expr_is_pure_and_closed(expr),
+        Expr::Binary { lhs, rhs, .. }
+        | Expr::Range {
+            start: lhs,
+            end: rhs,
+        } => expr_is_pure_and_closed(lhs) && expr_is_pure_and_closed(rhs),
+        _ => false,
+    }
+}
+
+fn kind_reads_var(kind: &NodeKind, name: Ident) -> bool {
+    let name_str = name.as_str();
+    match kind {
+        NodeKind::Comment(_) => false,
+        NodeKind::Let {
+            name: declared,
+            init,
+            ..
+        } => *declared == name || init.as_ref().is_some_and(|expr| expr.reads_var(name_str)),
+        NodeKind::LetIf {
+            name: declared,
+            cond,
+            then_value,
+            else_value,
+            ..
+        } => {
+            *declared == name
+                || cond.reads_var(name_str)
+                || then_value.reads_var(name_str)
+                || else_value.reads_var(name_str)
+        }
+        NodeKind::Assign { target, value } | NodeKind::CompoundAssign { target, value, .. } => {
+            target.reads_var(name_str) || value.reads_var(name_str)
+        }
+        NodeKind::InlineAsm(asm) => {
+            let mut found = false;
+            for operand in &asm.operands {
+                operand.visit_exprs(&mut |expr| found |= expr.reads_var(name_str));
+            }
+            found
+        }
+        NodeKind::Expr(expr) => expr.reads_var(name_str),
+        NodeKind::Return(expr) => expr.as_ref().is_some_and(|expr| expr.reads_var(name_str)),
+        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => {
+            tail.as_ref().is_some_and(|tail| tail.reads_var(name_str))
+        }
+        NodeKind::While { cond, tail, .. } => {
+            cond.reads_var(name_str) || tail.as_ref().is_some_and(|tail| tail.reads_var(name_str))
+        }
+        NodeKind::If { cond, .. } => cond.reads_var(name_str),
+        NodeKind::For { pat, iter, .. } => *pat == name || iter.reads_var(name_str),
+        NodeKind::Loop { .. } | NodeKind::Scope { .. } | NodeKind::LabeledBlock { .. } => false,
+        NodeKind::Match { expr, arms } => expr.reads_var(name_str)
+            || arms.iter().any(
+                |arm| matches!(&arm.pattern, Pattern::Guarded { cond, .. } if cond.reads_var(name_str)),
+            ),
+        NodeKind::Break(_) | NodeKind::Continue(_) => false,
+    }
+}
+
+fn node_touches_name(arena: &Arena, id: NodeId, name: Ident) -> bool {
+    let Some(kind) = arena.get(id) else {
+        return false;
+    };
+    kind_reads_var(kind, name)
+        || kind.child_lists().iter().any(|list| {
+            list.iter()
+                .any(|&child| node_touches_name(arena, child, name))
+        })
+}
 
 struct Plan {
     let_id: NodeId,
@@ -50,6 +128,7 @@ fn plan(arena: &Arena, id: NodeId) -> Option<Plan> {
     let let_id = preceding_sibling(arena, id)?;
     let Some(NodeKind::Let {
         name,
+        origin,
         ty: Some(_),
         init,
         ..
@@ -57,11 +136,12 @@ fn plan(arena: &Arena, id: NodeId) -> Option<Plan> {
     else {
         return None;
     };
-    if init
-        .as_ref()
-        .is_some_and(|init| !expr_is_pure_and_closed(init))
-        || cond.reads_var(name.as_str())
-    {
+    let uninitialized = match origin {
+        LocalOrigin::Synthetic => init.is_none(),
+        LocalOrigin::Source => false,
+        LocalOrigin::SourceUninitialized => init.as_ref().is_none_or(expr_is_pure_and_closed),
+    };
+    if !uninitialized || cond.reads_var(name.as_str()) {
         return None;
     }
     Some(Plan {

@@ -169,7 +169,7 @@ fn while_stmt(cond: Expr) -> Stmt {
 
 fn let_stmt(name: &str, mutable: bool, init: Expr) -> Stmt {
     Stmt::Let {
-        synthetic: true,
+        origin: crate::backend::rust_ast::LocalOrigin::Synthetic,
         name: name.into(),
         mutable,
         ty: None,

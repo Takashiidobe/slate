@@ -751,6 +751,15 @@ int main(void) {
 // CHECK-NEXT:     let mut thread_result: i32 = 0;
 // CHECK-NEXT:     let mut thread_created: i32 = 0;
 // CHECK-NEXT:     let mut thread_joined: i32 = 0;
+// CHECK-NEXT:     let mut atomic_total: i32 = 0;
+// CHECK-NEXT:     let mut thread_total: i32 = 0;
+// CHECK-NEXT:     let mut concurrency_total: i32 = 0;
+// CHECK-NEXT:     let mut conversion_total: i32 = 0;
+// CHECK-NEXT:     let mut quick_total: i32 = 0;
+// CHECK-NEXT:     let mut exclusive_total: i32 = 0;
+// CHECK-NEXT:     let mut timespec_total: i32 = 0;
+// CHECK-NEXT:     let mut complex_total: i32 = 0;
+// CHECK-NEXT:     let mut limits_total: i32 = 0;
 // CHECK-NEXT:     let mut alignment_total: i32 = (core::mem::align_of::<i32>() as i32)
 // CHECK-NEXT:         + (core::mem::align_of::<C11OverAligned>() as i32)
 // CHECK-NEXT:         + ((((unsafe { core::ptr::addr_of_mut!(c11_aligned_buffer.0) as *mut u8 })
@@ -762,33 +771,19 @@ int main(void) {
 // CHECK-NEXT:         + (utf16_character as i32) + (utf32_character as i32);
 // CHECK-NEXT:     let generic_total: i32 = C11_TYPE_KIND__2!() + C11_TYPE_KIND!()
 // CHECK-NEXT:         + C11_TYPE_KIND__3!();
-// CHECK-NEXT:     let mut anonymous_total: i32 = 0;
-// CHECK-NEXT:     let mut evaluation_total: i32 = 0;
-// CHECK-NEXT:     let mut temporary_total: i32 = 0;
-// CHECK-NEXT:     let static_assert_total: i32 = 1;
-// CHECK-NEXT:     let optional_total: i32 = 0 + 0 + 1 + 1 + 1 + 1;
-// CHECK-NEXT:     let mut atomic_total: i32 = 0;
-// CHECK-NEXT:     let mut thread_total: i32 = 0;
-// CHECK-NEXT:     let mut concurrency_total: i32 = 0;
-// CHECK-NEXT:     let mut conversion_total: i32 = 0;
-// CHECK-NEXT:     let mut quick_total: i32 = 0;
-// CHECK-NEXT:     let mut exclusive_total: i32 = 0;
-// CHECK-NEXT:     let mut timespec_total: i32 = 0;
-// CHECK-NEXT:     let mut complex_total: i32 = 0;
-// CHECK-NEXT:     let mut limits_total: i32 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         anonymous.[[SLATE_ANON_0]].integer = 31;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     anonymous.[[SLATE_ANON_1]].x = 37;
 // CHECK-NEXT:     anonymous.[[SLATE_ANON_1]].y = 41;
-// CHECK-NEXT:     anonymous_total = (unsafe { anonymous.[[SLATE_ANON_0]].integer })
+// CHECK-NEXT:     let anonymous_total: i32 = (unsafe { anonymous.[[SLATE_ANON_0]].integer })
 // CHECK-NEXT:         + anonymous.[[SLATE_ANON_1]].x + anonymous.[[SLATE_ANON_1]].y;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         c11_evaluation_total = 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     evaluation_total = c11_evaluation_step(2i32) + c11_evaluation_step(3i32)
+// CHECK-NEXT:     let evaluation_total: i32 = c11_evaluation_step(2i32) + c11_evaluation_step(3i32)
 // CHECK-NEXT:         + unsafe { c11_evaluation_total };
-// CHECK-NEXT:     temporary_total = unsafe {
+// CHECK-NEXT:     let temporary_total: i32 = unsafe {
 // CHECK-NEXT:         *(*{
 // CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = c11_make_temporary(43i32);
 // CHECK-NEXT:                 core::ptr::addr_of_mut!([[SLATE_COMPOUND_0]])
@@ -796,6 +791,8 @@ int main(void) {
 // CHECK-NEXT:             .as_mut_ptr()
 // CHECK-NEXT:             .add(1)
 // CHECK-NEXT:     };
+// CHECK-NEXT:     let static_assert_total: i32 = 1;
+// CHECK-NEXT:     let optional_total: i32 = 0 + 0 + 1 + 1 + 1 + 1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *core::ptr::addr_of_mut!(c11_atomic_total) = 5;
 // CHECK-NEXT:     }
@@ -827,6 +824,7 @@ int main(void) {
 // CHECK-NEXT:     thread_total = ((thread_created == 0) as i32) + ((thread_joined == 0) as i32)
 // CHECK-NEXT:         + thread_result + unsafe { c11_thread_local_value }
 // CHECK-NEXT:         + (((unsafe { *slate_support::errno_location() }) == 0) as i32);
+// CHECK-NEXT:     concurrency_total = 0;
 // CHECK-NEXT:     if (unsafe { mtx_init(core::ptr::addr_of_mut!(mutex), 0i32) }) == 0 {
 // CHECK-NEXT:         concurrency_total += 1;
 // CHECK-NEXT:         concurrency_total += ((unsafe { mtx_lock(core::ptr::addr_of_mut!(mutex)) }) == 0)
@@ -855,6 +853,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe { tss_delete(thread_key) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     concurrency_total += true as i32;
+// CHECK-NEXT:     converted16 = 0;
+// CHECK-NEXT:     converted32 = 0;
 // CHECK-NEXT:     conversion_total = ((unsafe {
 // CHECK-NEXT:         mbrtoc16(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(converted16),

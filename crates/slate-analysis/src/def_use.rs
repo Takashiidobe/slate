@@ -63,6 +63,10 @@ impl DefUse {
         uses.len() == count && uses.iter().all(|(_, access)| *access == Access::Write)
     }
 
+    pub fn straight_line_write(&self, binding: BindingId, statements: usize) -> bool {
+        self.next as usize == statements && self.only_writes(binding, 1)
+    }
+
     pub fn touched_in(&self, binding: BindingId, region: &Range<u32>) -> bool {
         self.uses.get(&binding).is_some_and(|uses| {
             uses.iter().any(|(position, access)| {

@@ -44,7 +44,7 @@ fn var(name: &str) -> Expr {
 
 fn let_stmt(name: &str, init: Expr) -> Stmt {
     Stmt::Let {
-        synthetic: true,
+        origin: rust::LocalOrigin::Synthetic,
         name: name.into(),
         mutable: false,
         ty: None,

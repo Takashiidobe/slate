@@ -54,8 +54,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn zeroed(n: i32) -> i32 {
-// CHECK-NEXT:     // trailing zeroed init
-// CHECK-NEXT:     let mut s: i32 = 0;
+// CHECK-NEXT:     let mut s: i32 = 0; // trailing zeroed init
 // CHECK-NEXT:     // leading zeroed loop
 // CHECK-NEXT:     for j in 0..n {
 // CHECK-NEXT:         s += j;

@@ -117,7 +117,7 @@ impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_vla_let(&mut self, variable: &ir::Variable) -> Result<Stmt> {
         let (storage, buffer) = self.vla_buffer(variable)?;
         Ok(Stmt::Let {
-            synthetic: false,
+            origin: rust::LocalOrigin::Source,
             name: self.binding_name(variable.id),
             mutable: true,
             ty: Some(storage),
@@ -205,7 +205,7 @@ impl FunctionLowerer<'_, '_> {
             Expr::Block(Box::new(rust::Block {
                 stmts: vec![
                     Stmt::Let {
-                        synthetic: true,
+                        origin: rust::LocalOrigin::Synthetic,
                         name: buffer.into(),
                         mutable: true,
                         ty: Some(storage),

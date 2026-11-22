@@ -288,11 +288,10 @@ int main(void) {
 // CHECK-NEXT: fn gnu_syntax() -> i32 {
 // CHECK-NEXT:     let gnu_dollar_dollar: i32 = 29;
 // CHECK-NEXT:     let mut side_effect: i32 = 0;
-// CHECK-NEXT:     let mut omitted: i32 = 0;
 // CHECK-NEXT:     let [[V_0]]: i32 = side_effect + 1;
 // CHECK-NEXT:     side_effect = [[V_0]];
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = [[V_0]];
-// CHECK-NEXT:     omitted = if [[V_1]] != 0 { [[V_1]] } else { 31 };
+// CHECK-NEXT:     let omitted: i32 = if [[V_1]] != 0 { [[V_1]] } else { 31 };
 // CHECK-NEXT:     let inferred: i32 = 37;
 // CHECK-NEXT:     let same_type: i32 = 41;
 // CHECK-NEXT:     let raw: *const i8 = c"gnu\\n".as_ptr();

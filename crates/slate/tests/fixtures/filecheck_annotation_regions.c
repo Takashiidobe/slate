@@ -16,9 +16,9 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let value: i32 = 40 + 2;
 // CHECK-NEXT:     let lowered_value: i32 = 6 * 7;
 // CHECK-NEXT:     let lowered_absence: i32 = 5 + 6;
+// CHECK-NEXT:     let value: i32 = 40 + 2;
 // CHECK-NEXT:     println!("{} {} {}", value, lowered_value, lowered_absence);
 // CHECK-NEXT:     unsafe { slate_support::puts(c"_v9 anon_4 anon_struct_i32".as_ptr()) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

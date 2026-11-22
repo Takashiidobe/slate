@@ -218,9 +218,8 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut value: i32 = 37;
 // CHECK-NEXT:     let address: *mut i32 = core::ptr::addr_of_mut!(value);
-// CHECK-NEXT:     let mut up: u64 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = 16u64.wrapping_sub(1u64);
-// CHECK-NEXT:     up = 65u64.wrapping_add([[V_0]]) & ![[V_0]];
+// CHECK-NEXT:     let up: u64 = 65u64.wrapping_add([[V_0]]) & ![[V_0]];
 // CHECK-NEXT:     let down: u64 = 79 & !16u64.wrapping_sub(1u64);
 // CHECK-NEXT:     24 + 24 + 12 + ((address == core::ptr::addr_of_mut!(value)) as i32) + (up as i32)
 // CHECK-NEXT:         + (down as i32) + ((up & 16u64.wrapping_sub(1u64) == 0) as i32)

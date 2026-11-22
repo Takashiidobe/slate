@@ -92,18 +92,18 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let it: *mut cursor = core::ptr::addr_of_mut!(state);
-// CHECK-NEXT:     let mut first: c_long = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe { (*it).index };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*it).index = [[V_0]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     first = scale((unsafe { *unsafe { (*seq).items }.offset([[V_0]] as isize) }) as c_long);
-// CHECK-NEXT:     let mut second: c_long = 0;
+// CHECK-NEXT:     let first: c_long = scale(
+// CHECK-NEXT:         (unsafe { *unsafe { (*seq).items }.offset([[V_0]] as isize) }) as c_long,
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = unsafe { (*it).index };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*it).index = [[V_1]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     second = scale(
+// CHECK-NEXT:     let second: c_long = scale(
 // CHECK-NEXT:         (unsafe { *unsafe { (*seq).items }.offset([[V_1]] as isize) }) as c_long,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let third: c_long = WRAP!(

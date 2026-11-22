@@ -921,6 +921,13 @@ pub enum AsmKind {
     Global,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum LocalOrigin {
+    Synthetic,
+    Source,
+    SourceUninitialized,
+}
+
 #[expect(
     clippy::large_enum_variant,
     reason = "statement payloads vary by kind; boxed variants would add indirection on the hot lowering path"
@@ -929,7 +936,7 @@ pub enum AsmKind {
 pub enum Stmt {
     Comment(Comment),
     Let {
-        synthetic: bool,
+        origin: LocalOrigin,
         name: String,
         mutable: bool,
         ty: Option<Type>,

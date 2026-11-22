@@ -70,9 +70,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     #[cfg(all(feature = "alpha", feature = "beta", not(feature = "gamma")))]
-// CHECK-NEXT:     let mut value: i32 = 7;
+// CHECK-NEXT:     let mut value: i32 = 0;
 // CHECK-NEXT:     #[cfg(all(feature = "alpha", feature = "beta", not(feature = "gamma")))]
 // CHECK-NEXT:     {
+// CHECK-NEXT:         value = 7;
 // CHECK-NEXT:         if ({
 // CHECK-NEXT:             let __slate_function: Option<unsafe extern "C-unwind" fn()> = Some(first);
 // CHECK-NEXT:             __slate_function

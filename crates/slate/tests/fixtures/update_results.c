@@ -126,15 +126,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut u: u32 = 2147483647u32.wrapping_mul(2u32).wrapping_add(1);
-// CHECK-NEXT:     let mut before: u32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u32 = u;
 // CHECK-NEXT:     u = [[V_0]].wrapping_add(1);
-// CHECK-NEXT:     before = [[V_0]];
+// CHECK-NEXT:     let before: u32 = [[V_0]];
 // CHECK-NEXT:     let after: u32 = u;
-// CHECK-NEXT:     let mut back: u32 = 0;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u32 = u.wrapping_sub(1);
 // CHECK-NEXT:     u = [[V_1]];
-// CHECK-NEXT:     back = [[V_1]];
+// CHECK-NEXT:     let back: u32 = [[V_1]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u %u %u\n".as_ptr(), before, after, back) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -142,46 +140,39 @@ int main(void) {
 // CHECK-NEXT:     sc = ((sc as i32) + 1) as i8;
 // CHECK-NEXT:     println!("{}", sc as i32);
 // CHECK-NEXT:     let mut us: u16 = 0;
-// CHECK-NEXT:     let mut old_us: i32 = 0;
 // CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u16 = us;
 // CHECK-NEXT:     us = (([[V_2]] as i32) - 1) as u16;
-// CHECK-NEXT:     old_us = [[V_2]] as i32;
+// CHECK-NEXT:     let old_us: i32 = [[V_2]] as i32;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d %u\n".as_ptr(), old_us, us as u32) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut ll: i64 = -9223372036854775807 - 1 + 1;
-// CHECK-NEXT:     let mut old_ll: i64 = 0;
 // CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i64 = ll;
 // CHECK-NEXT:     ll = [[V_3]] - 1;
-// CHECK-NEXT:     old_ll = [[V_3]];
+// CHECK-NEXT:     let old_ll: i64 = [[V_3]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld %lld\n".as_ptr(), old_ll, ll) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut d: f64 = 1.5f64;
-// CHECK-NEXT:     let mut d1: f64 = 0 as f64;
 // CHECK-NEXT:     let [[V_4:__v[0-9]+]]: f64 = d;
 // CHECK-NEXT:     d = [[V_4]] + (1i32 as f64);
-// CHECK-NEXT:     d1 = [[V_4]];
-// CHECK-NEXT:     let mut d2: f64 = 0 as f64;
+// CHECK-NEXT:     let d1: f64 = [[V_4]];
 // CHECK-NEXT:     let [[V_5:__v[0-9]+]]: f64 = d + (1i32 as f64);
 // CHECK-NEXT:     d = [[V_5]];
-// CHECK-NEXT:     d2 = [[V_5]];
-// CHECK-NEXT:     let mut d3: f64 = 0 as f64;
+// CHECK-NEXT:     let d2: f64 = [[V_5]];
 // CHECK-NEXT:     let [[V_6:__v[0-9]+]]: f64 = d;
 // CHECK-NEXT:     d = [[V_6]] - (1i32 as f64);
-// CHECK-NEXT:     d3 = [[V_6]];
+// CHECK-NEXT:     let d3: f64 = [[V_6]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%g %g %g %g\n".as_ptr(), d1, d2, d3, d) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let mut f: f32 = -0.5f32;
-// CHECK-NEXT:     let mut f1: f32 = 0 as f32;
 // CHECK-NEXT:     let [[V_7:__v[0-9]+]]: f32 = f + (1i32 as f32);
 // CHECK-NEXT:     f = [[V_7]];
-// CHECK-NEXT:     f1 = [[V_7]];
-// CHECK-NEXT:     let mut f2: f32 = 0 as f32;
+// CHECK-NEXT:     let f1: f32 = [[V_7]];
 // CHECK-NEXT:     let [[V_8:__v[0-9]+]]: f32 = f;
 // CHECK-NEXT:     f = [[V_8]] + (1i32 as f32);
-// CHECK-NEXT:     f2 = [[V_8]];
+// CHECK-NEXT:     let f2: f32 = [[V_8]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%g %g %g\n".as_ptr(), f1 as f64, f2 as f64, f as f64)
@@ -194,16 +185,14 @@ int main(void) {
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: *mut i32 = p;
 // CHECK-NEXT:     p = unsafe { [[V_9]].add(1) };
 // CHECK-NEXT:     let at_p: i32 = unsafe { *p };
-// CHECK-NEXT:     let mut at_next: i32 = 0;
 // CHECK-NEXT:     let [[V_10:__v[0-9]+]]: *mut i32 = unsafe { p.add(1) };
 // CHECK-NEXT:     p = [[V_10]];
-// CHECK-NEXT:     at_next = unsafe { *[[V_10]] };
+// CHECK-NEXT:     let at_next: i32 = unsafe { *[[V_10]] };
 // CHECK-NEXT:     println!("{} {} {}", unsafe { *[[V_9]] }, at_p, at_next);
-// CHECK-NEXT:     let mut was: i32 = 0;
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: *mut i32 = p;
 // CHECK-NEXT:     p = unsafe { [[V_11]].sub(1) };
-// CHECK-NEXT:     was = ((unsafe { [[V_11]].offset_from(values.0.as_mut_ptr() as *mut i32) }) as i64)
-// CHECK-NEXT:         as i32;
+// CHECK-NEXT:     let was: i32 = ((unsafe { [[V_11]].offset_from(values.0.as_mut_ptr() as *mut i32) })
+// CHECK-NEXT:         as i64) as i32;
 // CHECK-NEXT:     let __slate_printf_arg1 = ((unsafe {
 // CHECK-NEXT:         p.offset_from(values.0.as_mut_ptr() as *mut i32)
 // CHECK-NEXT:     }) as i64) as i32;
@@ -218,7 +207,6 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", unsafe { *[[V_13]] });
 // CHECK-NEXT:     println!("{}", values.0[1]);
 // CHECK-NEXT:     let mut i: i32 = 1;
-// CHECK-NEXT:     let mut r: i32 = 0;
 // CHECK-NEXT:     let [[V_14:__v[0-9]+]]: i32 = i;
 // CHECK-NEXT:     i = [[V_14]] + 1;
 // CHECK-NEXT:     let [[V_15:__v[0-9]+]]: *mut i32 = unsafe { values.0.as_mut_ptr().offset([[V_14]] as isize) };
@@ -226,7 +214,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_15]] = [[V_16]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     r = [[V_16]];
+// CHECK-NEXT:     let mut r: i32 = [[V_16]];
 // CHECK-NEXT:     println!("{} {} {}", r, i, values.0[1]);
 // CHECK-NEXT:     let [[V_17:__v[0-9]+]]: i32 = i;
 // CHECK-NEXT:     i = [[V_17]] - 1;
@@ -268,36 +256,32 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*cp).total = (*cp).total + (1i32 as f64);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut hits: i32 = 0;
 // CHECK-NEXT:     let [[V_22:__v[0-9]+]]: i32 = unsafe { (*cp).hits };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         (*cp).hits = [[V_22]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     hits = [[V_22]];
+// CHECK-NEXT:     let hits: i32 = [[V_22]];
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(c"%d %d %g\n".as_ptr(), hits, counter.hits, counter.total)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut g1: i32 = 0;
 // CHECK-NEXT:     let [[V_23:__v[0-9]+]]: i32 = unsafe { global_count };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         global_count = [[V_23]] - 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     g1 = [[V_23]];
-// CHECK-NEXT:     let mut g2: i32 = 0;
+// CHECK-NEXT:     let g1: i32 = [[V_23]];
 // CHECK-NEXT:     let [[V_24:__v[0-9]+]]: i32 = (unsafe { global_count }) - 1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         global_count = [[V_24]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     g2 = [[V_24]];
+// CHECK-NEXT:     let g2: i32 = [[V_24]];
 // CHECK-NEXT:     println!("{} {}", g1, g2);
 // CHECK-NEXT:     let mut flag: bool = false;
 // CHECK-NEXT:     flag = (flag as i32) + 1 != 0;
-// CHECK-NEXT:     let mut still: bool = false;
 // CHECK-NEXT:     let [[V_25:__v[0-9]+]]: bool = flag;
 // CHECK-NEXT:     flag = ([[V_25]] as i32) + 1 != 0;
-// CHECK-NEXT:     still = [[V_25]];
+// CHECK-NEXT:     let still: bool = [[V_25]];
 // CHECK-NEXT:     println!("{} {}", flag as i32, still as i32);
 // CHECK-NEXT:     flag = (flag as i32) - 1 != 0;
 // CHECK-NEXT:     println!("{}", flag as i32);

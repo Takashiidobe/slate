@@ -39,21 +39,21 @@ impl FunctionLowerer<'_, '_> {
                 body: rust::Block {
                     stmts: vec![
                         Stmt::Let {
-                            synthetic: true,
+                            origin: rust::LocalOrigin::Synthetic,
                             name: operand.clone(),
                             mutable: false,
                             ty: None,
                             init: Some(value),
                         },
                         Stmt::Let {
-                            synthetic: true,
+                            origin: rust::LocalOrigin::Synthetic,
                             name: pointer.clone(),
                             mutable: false,
                             ty: None,
                             init: Some(address),
                         },
                         Stmt::Let {
-                            synthetic: true,
+                            origin: rust::LocalOrigin::Synthetic,
                             name: copy.clone(),
                             mutable: true,
                             ty: None,
@@ -105,7 +105,7 @@ impl FunctionLowerer<'_, '_> {
                 Stmt::Scope {
                     body: vec![
                         Stmt::Let {
-                            synthetic: true,
+                            origin: rust::LocalOrigin::Synthetic,
                             name: operand.clone(),
                             mutable: false,
                             ty: None,
@@ -167,7 +167,7 @@ impl FunctionLowerer<'_, '_> {
                 initializer,
                 ..
             } => Stmt::Let {
-                synthetic: true,
+                origin: rust::LocalOrigin::Synthetic,
                 name: self.binding_name(*id),
                 mutable: true,
                 ty: Some(self.lower_binding_type(ty, *id)?),
@@ -205,7 +205,7 @@ impl FunctionLowerer<'_, '_> {
                         && variable.register.is_none()
                     {
                         return Ok(Stmt::Let {
-                            synthetic: false,
+                            origin: rust::LocalOrigin::Source,
                             name: self.binding_name(variable.id),
                             mutable: true,
                             ty: Some(self.borrow_type(&variable.ty, borrow)?),
@@ -345,7 +345,15 @@ impl FunctionLowerer<'_, '_> {
                     }
                 }
                 Stmt::Let {
-                    synthetic: false,
+                    origin: if variable.initializer.is_none()
+                        && variable.auto_init.is_none()
+                        && variable.cleanup.is_none()
+                        && self.after_declaration.is_none()
+                    {
+                        rust::LocalOrigin::SourceUninitialized
+                    } else {
+                        rust::LocalOrigin::Source
+                    },
                     name: self.binding_name(variable.id),
                     mutable: true,
                     ty: Some(ty),
@@ -680,7 +688,7 @@ impl FunctionLowerer<'_, '_> {
         let call = self.cleanup_call(cleanup, Expr::Var(pointer.as_str().into()))?;
         Ok([
             Stmt::Let {
-                synthetic: true,
+                origin: rust::LocalOrigin::Synthetic,
                 name: pointer,
                 mutable: false,
                 ty: None,
@@ -693,7 +701,7 @@ impl FunctionLowerer<'_, '_> {
                 }),
             },
             Stmt::Let {
-                synthetic: true,
+                origin: rust::LocalOrigin::Synthetic,
                 name: format!("__slate_cleanup_{}", self.local_index(variable.id)),
                 mutable: false,
                 ty: None,

@@ -723,14 +723,14 @@ impl FunctionLowerer<'_, '_> {
         };
         Ok([
             Stmt::Let {
-                synthetic: true,
+                origin: rust::LocalOrigin::Synthetic,
                 name: pointer,
                 mutable: false,
                 ty: None,
                 init: Some(self.slot_pointer(variable.id)),
             },
             Stmt::Let {
-                synthetic: true,
+                origin: rust::LocalOrigin::Synthetic,
                 name: format!("__slate_cleanup_armed_{index}"),
                 mutable: false,
                 ty: None,
@@ -741,7 +741,7 @@ impl FunctionLowerer<'_, '_> {
                 }),
             },
             Stmt::Let {
-                synthetic: true,
+                origin: rust::LocalOrigin::Synthetic,
                 name: format!("__slate_cleanup_{index}"),
                 mutable: false,
                 ty: None,
@@ -824,7 +824,11 @@ impl FunctionLowerer<'_, '_> {
             if self.tables.variably_modified(ir_ty) {
                 storage_positions.insert(id, lowered.len());
                 lowered.push(Stmt::Let {
-                    synthetic: !self.tables.bindings.contains_key(&id),
+                    origin: if self.tables.bindings.contains_key(&id) {
+                        rust::LocalOrigin::Source
+                    } else {
+                        rust::LocalOrigin::Synthetic
+                    },
                     name: self.vla_name(id),
                     mutable: true,
                     ty: Some(self.vla_vec_type(ir_ty)?),
@@ -847,7 +851,11 @@ impl FunctionLowerer<'_, '_> {
             let storage = parameter_free_name(self.binding_name(id), params);
             storage_positions.insert(id, lowered.len());
             lowered.push(Stmt::Let {
-                synthetic: !self.tables.bindings.contains_key(&id),
+                origin: if self.tables.bindings.contains_key(&id) {
+                    rust::LocalOrigin::Source
+                } else {
+                    rust::LocalOrigin::Synthetic
+                },
                 name: storage.clone(),
                 mutable: true,
                 ty: Some(rust::Type::Generic {
@@ -865,7 +873,7 @@ impl FunctionLowerer<'_, '_> {
                 inner: Box::new(ty),
             };
             lowered.push(Stmt::Let {
-                synthetic: true,
+                origin: rust::LocalOrigin::Synthetic,
                 name: self.slot_name(id),
                 mutable: false,
                 ty: Some(pointer.clone()),
@@ -1063,7 +1071,7 @@ impl FunctionLowerer<'_, '_> {
                         }
                         let (init, ty) = self.lower_switch_operand(value)?;
                         let mut body = vec![Stmt::Let {
-                            synthetic: true,
+                            origin: rust::LocalOrigin::Synthetic,
                             name,
                             mutable: false,
                             ty: Some(ty),
@@ -1096,7 +1104,7 @@ impl FunctionLowerer<'_, '_> {
                         let single = labels.len() == 1;
                         let mut body = vec![
                             Stmt::Let {
-                                synthetic: true,
+                                origin: rust::LocalOrigin::Synthetic,
                                 name: ASM_TARGET.into(),
                                 mutable: true,
                                 ty: Some(rust::Type::Prim(if single {
@@ -1152,7 +1160,7 @@ impl FunctionLowerer<'_, '_> {
             lowered.splice(position..position, comments.into_iter().map(Stmt::Comment));
         }
         lowered.push(Stmt::Let {
-            synthetic: true,
+            origin: rust::LocalOrigin::Synthetic,
             name: "__slate_state".into(),
             mutable: true,
             ty: Some(rust::Type::Prim(Prim::Usize)),

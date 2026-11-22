@@ -182,7 +182,7 @@ pub(super) fn main_wrapper(arity: usize, huge_stack: bool, returns_void: bool) -
     let call = if huge_stack {
         for name in &params[1..arity.max(1)] {
             body.push(Stmt::Let {
-                synthetic: true,
+                origin: rust::LocalOrigin::Synthetic,
                 name: name.name.clone(),
                 mutable: false,
                 ty: None,
@@ -693,7 +693,7 @@ impl FunctionLowerer<'_, '_> {
             .map(|param| {
                 let name = self.binding_name(param.value.id);
                 Stmt::Let {
-                    synthetic: true,
+                    origin: rust::LocalOrigin::Synthetic,
                     name: name.clone(),
                     mutable: true,
                     ty: None,
@@ -715,7 +715,7 @@ impl FunctionLowerer<'_, '_> {
             }
             let ty = params[index].ty.clone();
             lengths.push(Stmt::Let {
-                synthetic: false,
+                origin: rust::LocalOrigin::Source,
                 name: self.binding_name(param.value.id),
                 mutable: false,
                 ty: Some(ty.clone()),
@@ -741,7 +741,7 @@ impl FunctionLowerer<'_, '_> {
             statements.insert(
                 0,
                 Stmt::Let {
-                    synthetic: true,
+                    origin: rust::LocalOrigin::Synthetic,
                     name: "__slate_alloca_mark".into(),
                     mutable: false,
                     ty: None,
@@ -763,7 +763,7 @@ impl FunctionLowerer<'_, '_> {
             statements.insert(
                 0,
                 Stmt::Let {
-                    synthetic: false,
+                    origin: rust::LocalOrigin::Source,
                     name: original,
                     mutable: false,
                     ty: Some(rust::Type::Ptr {

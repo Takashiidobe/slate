@@ -90,11 +90,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn set_flags(dev: &mut dev, flags: u32) -> i32 {
-// CHECK-NEXT:     let mut ret: i32 = 0;
 // CHECK-NEXT:     let mut changes: u32 = 0;
 // CHECK-NEXT:     let old_flags: u32 = (*dev).flags;
 // CHECK-NEXT:     let old_gflags: u32 = (*dev).gflags as u32;
-// CHECK-NEXT:     ret = change_flags(dev, flags);
+// CHECK-NEXT:     let ret: i32 = change_flags(dev, flags);
 // CHECK-NEXT:     if ret < 0 {
 // CHECK-NEXT:         return ret;
 // CHECK-NEXT:     }

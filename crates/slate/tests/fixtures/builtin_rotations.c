@@ -142,12 +142,11 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut x: u32 = 3;
 // CHECK-NEXT:     let mut n: u32 = 1;
-// CHECK-NEXT:     let mut r: u32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u32 = x;
 // CHECK-NEXT:     x = [[V_0]].wrapping_add(1);
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u32 = n;
 // CHECK-NEXT:     n = [[V_1]].wrapping_add(1);
-// CHECK-NEXT:     r = [[V_0]].rotate_left([[V_1]] as u32);
+// CHECK-NEXT:     let r: u32 = [[V_0]].rotate_left([[V_1]] as u32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%u %u %u\n".as_ptr(), r, x, n) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

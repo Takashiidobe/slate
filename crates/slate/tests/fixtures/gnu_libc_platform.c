@@ -450,12 +450,11 @@ int main(void) {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: slate_support::tm = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut timestamp: i64 = 0;
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     epoch.tm_year = 70;
 // CHECK-NEXT:     epoch.tm_mon = 0;
 // CHECK-NEXT:     epoch.tm_mday = 1;
-// CHECK-NEXT:     timestamp = unsafe {
+// CHECK-NEXT:     let timestamp: i64 = unsafe {
 // CHECK-NEXT:         timegm(core::ptr::addr_of_mut!(epoch) as *mut slate_support::tm) as i64
 // CHECK-NEXT:     };
 // CHECK-NEXT:     total += (timestamp == 0) as i32;

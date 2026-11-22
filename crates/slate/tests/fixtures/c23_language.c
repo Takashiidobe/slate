@@ -310,15 +310,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn c23_relaxed_variadic(mut __va_args: ...) -> i32 {
 // CHECK-NEXT:     let mut arguments: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut first: i32 = 0;
-// CHECK-NEXT:     let mut second: i32 = 0;
 // CHECK-NEXT:     arguments = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::ffi::VaList<'_>, core::ffi::VaList<'static>>(
 // CHECK-NEXT:             __va_args.clone(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     first = unsafe { arguments.next_arg::<i32>() };
-// CHECK-NEXT:     second = unsafe { arguments.next_arg::<i32>() };
+// CHECK-NEXT:     let first: i32 = unsafe { arguments.next_arg::<i32>() };
+// CHECK-NEXT:     let second: i32 = unsafe { arguments.next_arg::<i32>() };
 // CHECK-NEXT:     first + second
 // CHECK-NEXT: }
 // CHECK-EMPTY:

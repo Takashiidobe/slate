@@ -42,38 +42,36 @@ int main(void) {
 // CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
 // CHECK-NEXT:             .load(core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     // returns 100, a = 105
 // CHECK-NEXT:     let fa: i32 = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
 // CHECK-NEXT:             .fetch_add(5i32, core::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     // returns 105, a = 95
-// CHECK-NEXT:     let fs: i32 = unsafe {
+// CHECK-NEXT:     }; // returns 100, a = 105
+// CHECK-NEXT:     let mut fs: i32 = 0;
+// CHECK-NEXT:     fs = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
 // CHECK-NEXT:             .fetch_sub(10i32, core::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     // 95 & 60 = 28
-// CHECK-NEXT:     let fand: i32 = unsafe {
+// CHECK-NEXT:     }; // returns 105, a = 95
+// CHECK-NEXT:     let mut fand: i32 = 0;
+// CHECK-NEXT:     fand = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
 // CHECK-NEXT:             .fetch_and(60i32, core::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     // 28 | 1 = 29
-// CHECK-NEXT:     let forr: i32 = unsafe {
+// CHECK-NEXT:     }; // 95 & 60 = 28
+// CHECK-NEXT:     let mut forr: i32 = 0;
+// CHECK-NEXT:     forr = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
 // CHECK-NEXT:             .fetch_or(1i32, core::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     // 29 ^ 15 = 18
-// CHECK-NEXT:     let fxor: i32 = unsafe {
+// CHECK-NEXT:     }; // 28 | 1 = 29
+// CHECK-NEXT:     let mut fxor: i32 = 0;
+// CHECK-NEXT:     fxor = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
 // CHECK-NEXT:             .fetch_xor(15i32, core::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     // returns 18, a = 7
-// CHECK-NEXT:     let xchg_old: i32 = unsafe {
+// CHECK-NEXT:     }; // 29 ^ 15 = 18
+// CHECK-NEXT:     let mut xchg_old: i32 = 0;
+// CHECK-NEXT:     xchg_old = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicI32::from_ptr(core::ptr::addr_of_mut!(a) as *mut i32)
 // CHECK-NEXT:             .swap(7i32, core::sync::atomic::Ordering::SeqCst)
-// CHECK-NEXT:     };
+// CHECK-NEXT:     }; // returns 18, a = 7
 // CHECK-NEXT:     let mut expected: i32 = 7;
-// CHECK-NEXT:     // success, a = 42
 // CHECK-NEXT:     let ok: i32 = (unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = core::ptr::addr_of_mut!(expected);
 // CHECK-NEXT:         match core::sync::atomic::AtomicI32::from_ptr(
@@ -91,9 +89,8 @@ int main(void) {
 // CHECK-NEXT:                 false
 // CHECK-NEXT:             },
 // CHECK-NEXT:         }
-// CHECK-NEXT:     }) as i32;
+// CHECK-NEXT:     }) as i32; // success, a = 42
 // CHECK-NEXT:     let mut expected2: i32 = 999;
-// CHECK-NEXT:     // fail, a stays 42
 // CHECK-NEXT:     let bad: i32 = (unsafe {
 // CHECK-NEXT:         let [[T_2:__t[0-9]+]] = core::ptr::addr_of_mut!(expected2);
 // CHECK-NEXT:         match core::sync::atomic::AtomicI32::from_ptr(
@@ -111,7 +108,7 @@ int main(void) {
 // CHECK-NEXT:                 false
 // CHECK-NEXT:             },
 // CHECK-NEXT:         }
-// CHECK-NEXT:     }) as i32;
+// CHECK-NEXT:     }) as i32; // fail, a stays 42
 // CHECK-NEXT:     core::sync::atomic::fence(core::sync::atomic::Ordering::SeqCst);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {} {} {} {} {} {} {}",

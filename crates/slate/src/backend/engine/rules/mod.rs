@@ -25,7 +25,6 @@ mod slot_promote;
 mod structure_dispatch;
 mod structure_goto;
 pub(super) mod walk;
-mod zero_init;
 
 use super::NodeRule;
 use crate::backend::rust_ast::Prim;
@@ -58,7 +57,6 @@ pub(super) fn registry(
         Box::new(slot_promote::SlotPromote),
         Box::new(slot_promote::DeclSink),
         Box::new(branch_init::BranchInitFold),
-        Box::new(zero_init::ZeroInitFold),
         Box::new(param_spills::ParamSpillFold),
         Box::new(raw_ptr_alias::RawPtrAliasElide),
         Box::new(array_iter::ForArrayIterRecover),

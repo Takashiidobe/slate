@@ -35,7 +35,7 @@ impl FunctionLowerer<'_, '_> {
         let [lhs, rhs, exact] = [self.next_temp(), self.next_temp(), self.next_temp()];
         let var = |name: &String| Expr::Var(name.as_str().into());
         let bind = |name: &String, init: Expr| Stmt::Let {
-            synthetic: true,
+            origin: rust::LocalOrigin::Synthetic,
             name: name.clone(),
             mutable: false,
             ty: Some(wide.clone()),

@@ -232,6 +232,7 @@ int main(void) {
 // CHECK-NEXT:             ((core::mem::size_of::<ld_union>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     i = 0;
 // CHECK-NEXT:     while i < 10 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             src.bytes[i as usize] = (i * 17 + 3) as u8;

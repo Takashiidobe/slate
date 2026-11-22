@@ -44,9 +44,12 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let elifdef_value: i32 = 23;
-// CHECK-NEXT:     let elifndef_value: i32 = 29;
-// CHECK-NEXT:     let inactive_value: i32 = 31;
+// CHECK-NEXT:     let mut elifdef_value: i32 = 0;
+// CHECK-NEXT:     let mut elifndef_value: i32 = 0;
+// CHECK-NEXT:     let mut inactive_value: i32 = 0;
+// CHECK-NEXT:     elifdef_value = 23;
+// CHECK-NEXT:     elifndef_value = 29;
+// CHECK-NEXT:     inactive_value = 31;
 // CHECK-NEXT:     println!("{} {} {}", elifdef_value, elifndef_value, inactive_value);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

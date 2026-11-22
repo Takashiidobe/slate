@@ -379,21 +379,21 @@ impl FunctionLowerer<'_, '_> {
             body: rust::Block {
                 stmts: vec![
                     Stmt::Let {
-                        synthetic: true,
+                        origin: rust::LocalOrigin::Synthetic,
                         name: operand.clone(),
                         mutable: false,
                         ty: None,
                         init: Some(value.clone()),
                     },
                     Stmt::Let {
-                        synthetic: true,
+                        origin: rust::LocalOrigin::Synthetic,
                         name: pointer.clone(),
                         mutable: false,
                         ty: None,
                         init: Some(self.lower_address(base, true)?),
                     },
                     Stmt::Let {
-                        synthetic: true,
+                        origin: rust::LocalOrigin::Synthetic,
                         name: vector.clone(),
                         mutable: true,
                         ty: None,
@@ -849,7 +849,7 @@ impl FunctionLowerer<'_, '_> {
         Ok(Some(Stmt::Scope {
             body: vec![
                 Stmt::Let {
-                    synthetic: true,
+                    origin: rust::LocalOrigin::Synthetic,
                     name: operand.clone(),
                     mutable: false,
                     ty: None,
@@ -859,7 +859,7 @@ impl FunctionLowerer<'_, '_> {
                     body: rust::Block {
                         stmts: vec![
                             Stmt::Let {
-                                synthetic: true,
+                                origin: rust::LocalOrigin::Synthetic,
                                 name: unit.clone(),
                                 mutable: true,
                                 ty: None,
@@ -969,7 +969,7 @@ impl FunctionLowerer<'_, '_> {
             )
         {
             self.hoisted.push(Stmt::Let {
-                synthetic: true,
+                origin: rust::LocalOrigin::Synthetic,
                 name: name.clone(),
                 mutable: true,
                 ty: Some(ty),
@@ -1022,7 +1022,7 @@ impl FunctionLowerer<'_, '_> {
             return Ok(slot);
         }
         self.hoisted.push(Stmt::Let {
-            synthetic: true,
+            origin: rust::LocalOrigin::Synthetic,
             name,
             mutable: true,
             ty: Some(ty),
