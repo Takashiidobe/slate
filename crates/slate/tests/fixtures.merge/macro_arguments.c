@@ -255,13 +255,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let op: *mut odd_fields = core::ptr::addr_of_mut!(odd);
 // CHECK-NEXT:     SET_FIELD!(op, r#type, 20i32);
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*op).__slate_bits_0.__set_flag(1u32);
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         (*op).__slate_bits_0.__set_flag(1u32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     SET_FIELD__2!(op, inner_value, 30i32);
 // CHECK-NEXT:     #[cfg(windows)]

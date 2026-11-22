@@ -21,7 +21,6 @@ mod representable;
 mod return_cleanup;
 mod singleton_scopes;
 mod slot_promote;
-mod structure_goto;
 pub(super) mod walk;
 
 use super::NodeRule;
@@ -30,7 +29,6 @@ pub(super) use remove_mut::demote_params;
 
 pub(super) fn control_flow_registry() -> Vec<Box<dyn NodeRule>> {
     vec![
-        Box::new(structure_goto::reducible::StructureReducible),
         Box::new(label_elide::BreakToElse),
         Box::new(label_elide::TailBreakDrop),
         Box::new(label_elide::LoopTailBreak),

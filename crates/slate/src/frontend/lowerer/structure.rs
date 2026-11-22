@@ -1,13 +1,35 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use super::{Dispatch, assigned_state, collect_uses, parse, state_literal, successors};
-use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{
-    self, Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag,
+use crate::backend::rust_ast::{
+    Block as RustBlock, Expr, Ident, Label, MatchArm, Pattern, RustValue, Stmt, UnaryOp,
 };
-use crate::backend::rust_ast::{Expr, Ident, Label, MatchArm, Pattern, RustValue, Stmt, UnaryOp};
 
-pub(in crate::backend::engine) struct StructureReducible;
+pub(super) struct Structured {
+    pub(super) body: Vec<Stmt>,
+    pub(super) keeps_state: bool,
+}
+
+pub(super) fn structure(
+    arms: &[(i64, Vec<Stmt>)],
+    entry_state: i64,
+    label: &Label,
+    state: Ident,
+) -> Option<Structured> {
+    let dispatch = Dispatch { label, state };
+    if !dispatch.state_only_steers(arms) {
+        return None;
+    }
+    let graph = build(&dispatch, arms, entry_state)?;
+    Some(Structured {
+        keeps_state: graph.keeps_state,
+        body: graph.emit(),
+    })
+}
+
+struct Dispatch<'a> {
+    label: &'a Label,
+    state: Ident,
+}
 
 enum Term {
     Diverge,
@@ -50,6 +72,45 @@ struct Graph {
     keeps_state: bool,
 }
 
+fn bodies(stmt: &Stmt) -> Vec<&Vec<Stmt>> {
+    match stmt {
+        Stmt::Cfg { body, .. } => vec![body],
+        Stmt::LetIf {
+            then_body,
+            else_body,
+            ..
+        }
+        | Stmt::If {
+            then_body,
+            else_body,
+            ..
+        } => vec![then_body, else_body],
+        Stmt::Loop { body, .. }
+        | Stmt::For { body, .. }
+        | Stmt::Scope { body, .. }
+        | Stmt::LabeledBlock { body, .. } => vec![body],
+        Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => vec![&body.stmts],
+        Stmt::Match { arms, .. } => arms.iter().map(|arm| &arm.body).collect(),
+        Stmt::Comment(_)
+        | Stmt::Let { .. }
+        | Stmt::Assign { .. }
+        | Stmt::CompoundAssign { .. }
+        | Stmt::InlineAsm(_)
+        | Stmt::Expr(_)
+        | Stmt::Return(_)
+        | Stmt::Break(_)
+        | Stmt::Continue(_) => Vec::new(),
+    }
+}
+
+fn state_literal(expr: &Expr) -> Option<i64> {
+    match expr {
+        Expr::Value(RustValue::I64(value)) => Some(*value),
+        Expr::Value(RustValue::Usize(value)) => i64::try_from(*value).ok(),
+        _ => None,
+    }
+}
+
 fn negate(cond: &Expr) -> Expr {
     match cond {
         Expr::Unary {
@@ -79,152 +140,168 @@ fn is_exit_path(expr: &Expr) -> bool {
     )
 }
 
-fn diverges(arena: &Arena, id: NodeId) -> bool {
-    let Some(kind) = arena.get(id) else {
-        return false;
-    };
-    match kind {
-        NodeKind::Return(_) => true,
-        NodeKind::Expr(Expr::Macro { name, .. }) => name == "unreachable" || name == "panic",
-        NodeKind::Expr(expr) => is_exit_path(expr),
-        NodeKind::If {
+fn diverges(stmt: &Stmt) -> bool {
+    match stmt {
+        Stmt::Return(_) => true,
+        Stmt::Expr(Expr::Macro { name, .. }) => name == "unreachable" || name == "panic",
+        Stmt::Expr(expr) => is_exit_path(expr),
+        Stmt::If {
             then_body,
             else_body,
             ..
-        } => tail_diverges(arena, then_body) && tail_diverges(arena, else_body),
-        NodeKind::Match { arms, .. } => arms.iter().all(|arm| tail_diverges(arena, &arm.body)),
-        NodeKind::Unsafe { stmts, tail: None } => tail_diverges(arena, stmts),
-        NodeKind::Block { stmts, tail: None } | NodeKind::Scope { body: stmts, .. } => {
-            tail_diverges(arena, stmts)
+        } => tail_diverges(then_body) && tail_diverges(else_body),
+        Stmt::Match { arms, .. } => arms.iter().all(|arm| tail_diverges(&arm.body)),
+        Stmt::Unsafe {
+            body: RustBlock { stmts, tail: None },
         }
+        | Stmt::Block(RustBlock { stmts, tail: None })
+        | Stmt::Scope { body: stmts, .. } => tail_diverges(stmts),
         _ => false,
     }
 }
 
-fn tail_diverges(arena: &Arena, body: &[NodeId]) -> bool {
-    body.last().is_some_and(|&id| diverges(arena, id))
+fn tail_diverges(body: &[Stmt]) -> bool {
+    body.last().is_some_and(diverges)
 }
 
-fn escapes_dispatch(arena: &Arena, dispatch: &Dispatch, body: &[NodeId]) -> bool {
-    body.iter().any(|&id| {
-        let Some(kind) = arena.get(id) else {
-            return true;
+impl Dispatch<'_> {
+    fn assigned_state(&self, stmt: &Stmt) -> Option<i64> {
+        let Stmt::Assign {
+            target: Expr::Var(target),
+            value,
+        } = stmt
+        else {
+            return None;
         };
-        match kind {
-            NodeKind::Break(label) | NodeKind::Continue(label) => {
-                label.as_ref().is_none_or(|label| *label == dispatch.label)
+        (*target == self.state).then(|| state_literal(value))?
+    }
+
+    fn state_only_steers(&self, arms: &[(i64, Vec<Stmt>)]) -> bool {
+        arms.iter().all(|(_, body)| self.steers(body))
+    }
+
+    fn steers(&self, body: &[Stmt]) -> bool {
+        body.iter().all(|stmt| {
+            if self.assigned_state(stmt).is_some() {
+                return true;
             }
-            NodeKind::Loop { .. } | NodeKind::While { .. } | NodeKind::For { .. } => kind
-                .child_lists()
+            let mut own = stmt.clone();
+            for nested in own.child_bodies_mut() {
+                nested.clear();
+            }
+            let mut reads = Vec::new();
+            own.collect_vars(&mut reads);
+            !reads.contains(&self.state) && bodies(stmt).into_iter().all(|list| self.steers(list))
+        })
+    }
+
+    fn successors(&self, body: &[Stmt], out: &mut BTreeSet<i64>) {
+        for stmt in body {
+            if let Some(target) = self.assigned_state(stmt) {
+                out.insert(target);
+            }
+            for list in bodies(stmt) {
+                self.successors(list, out);
+            }
+        }
+    }
+
+    fn escapes(&self, body: &[Stmt]) -> bool {
+        body.iter().any(|stmt| match stmt {
+            Stmt::Break(label) | Stmt::Continue(label) => {
+                label.as_ref().is_none_or(|label| label == self.label)
+            }
+            Stmt::Loop { .. } | Stmt::While { .. } | Stmt::For { .. } => bodies(stmt)
                 .into_iter()
                 .flatten()
-                .any(|&child| labelled_escape(arena, dispatch, child)),
-            _ => kind
-                .child_lists()
-                .into_iter()
-                .any(|list| escapes_dispatch(arena, dispatch, list)),
-        }
-    })
-}
+                .any(|child| self.labelled_escape(child)),
+            _ => bodies(stmt).into_iter().any(|list| self.escapes(list)),
+        })
+    }
 
-fn labelled_escape(arena: &Arena, dispatch: &Dispatch, id: NodeId) -> bool {
-    let Some(kind) = arena.get(id) else {
-        return true;
-    };
-    match kind {
-        NodeKind::Break(Some(label)) | NodeKind::Continue(Some(label)) => *label == dispatch.label,
-        _ => kind
-            .child_lists()
-            .into_iter()
-            .flatten()
-            .any(|&child| labelled_escape(arena, dispatch, child)),
+    fn labelled_escape(&self, stmt: &Stmt) -> bool {
+        match stmt {
+            Stmt::Break(Some(label)) | Stmt::Continue(Some(label)) => label == self.label,
+            _ => bodies(stmt)
+                .into_iter()
+                .flatten()
+                .any(|child| self.labelled_escape(child)),
+        }
+    }
+
+    fn is_continue(&self, stmt: &Stmt) -> bool {
+        matches!(stmt, Stmt::Continue(Some(label)) if label == self.label)
     }
 }
 
 struct Extractor<'a> {
-    arena: &'a Arena,
-    dispatch: &'a Dispatch,
+    dispatch: &'a Dispatch<'a>,
     index_of: &'a BTreeMap<i64, usize>,
 }
 
 impl Extractor<'_> {
-    fn target(&self, body: &[NodeId]) -> Option<Term> {
+    fn target(&self, body: &[Stmt]) -> Option<Term> {
         let assign = match body {
-            [assign] => Some(*assign),
-            [assign, jump] if matches!(self.arena.get(*jump), Some(NodeKind::Continue(Some(label))) if *label == self.dispatch.label) => {
-                Some(*assign)
-            }
+            [assign] => Some(assign),
+            [assign, jump] if self.dispatch.is_continue(jump) => Some(assign),
             _ => None,
         };
         if let Some(assign) = assign
-            && let Some(state) = assigned_state(self.arena, assign, self.dispatch.state)
+            && let Some(state) = self.dispatch.assigned_state(assign)
         {
             return self.index_of.get(&state).copied().map(Term::Jump);
         }
-        if tail_diverges(self.arena, body) {
+        if tail_diverges(body) {
             return self.prefix(body).map(Term::Escape);
         }
         let (prefix_len, term) = self.terminator(body)?;
         (prefix_len == 0).then_some(term)
     }
 
-    fn prefix(&self, body: &[NodeId]) -> Option<Vec<Stmt>> {
+    fn prefix(&self, body: &[Stmt]) -> Option<Vec<Stmt>> {
         let mut writes = BTreeSet::new();
-        successors(self.arena, self.dispatch, body, &mut writes);
-        if !writes.is_empty() || escapes_dispatch(self.arena, self.dispatch, body) {
+        self.dispatch.successors(body, &mut writes);
+        if !writes.is_empty() || self.dispatch.escapes(body) {
             return None;
         }
-        Some(arena::reify_bodies(self.arena, body))
+        Some(body.to_vec())
     }
 
-    fn terminator(&self, body: &[NodeId]) -> Option<(usize, Term)> {
-        let (&last, head) = body.split_last()?;
-        if tail_diverges(self.arena, body) {
+    fn terminator(&self, body: &[Stmt]) -> Option<(usize, Term)> {
+        let (last, head) = body.split_last()?;
+        if tail_diverges(body) {
             return Some((body.len(), Term::Diverge));
         }
-        if matches!(self.arena.get(last), Some(NodeKind::Break(Some(label))) if *label == self.dispatch.label)
-        {
+        if matches!(last, Stmt::Break(Some(label)) if label == self.dispatch.label) {
             return Some((head.len(), Term::Exit));
         }
-        let continues = matches!(self.arena.get(last), Some(NodeKind::Continue(Some(label))) if *label == self.dispatch.label);
+        let continues = self.dispatch.is_continue(last);
         let (exit, prefix) = if continues {
-            let (&exit, prefix) = head.split_last()?;
+            let (exit, prefix) = head.split_last()?;
             (exit, prefix)
         } else {
             (last, head)
         };
-        let term = match self.arena.get(exit)? {
-            NodeKind::Assign { .. } if continues => Term::Jump(
-                *self
-                    .index_of
-                    .get(&assigned_state(self.arena, exit, self.dispatch.state)?)?,
-            ),
-            NodeKind::If {
+        let term = match exit {
+            Stmt::Assign { .. } if continues => {
+                Term::Jump(*self.index_of.get(&self.dispatch.assigned_state(exit)?)?)
+            }
+            Stmt::If {
                 cond,
                 then_body,
                 else_body,
-            } => {
-                let cond = cond.clone();
-                let then_body = then_body.clone();
-                let else_body = else_body.clone();
-                Term::Branch {
-                    cond,
-                    then_term: Box::new(self.target(&then_body)?),
-                    else_term: Box::new(self.target(&else_body)?),
-                }
-            }
-            NodeKind::Match { expr, arms } => {
-                let selector = expr.clone();
-                let arms: Vec<_> = arms
-                    .iter()
-                    .map(|arm| (arm.pattern.clone(), arm.body.clone()))
-                    .collect();
+            } => Term::Branch {
+                cond: cond.clone(),
+                then_term: Box::new(self.target(then_body)?),
+                else_term: Box::new(self.target(else_body)?),
+            },
+            Stmt::Match { expr, arms } => {
                 let mut targets = Vec::with_capacity(arms.len());
-                for (pattern, body) in arms {
-                    targets.push((pattern, self.target(&body)?));
+                for arm in arms {
+                    targets.push((arm.pattern.clone(), self.target(&arm.body)?));
                 }
                 Term::Switch {
-                    selector,
+                    selector: expr.clone(),
                     arms: targets,
                 }
             }
@@ -512,9 +589,9 @@ fn split_irreducible(blocks: &mut Vec<Block>, entry: usize, state: Ident) -> Opt
     (new_entry != entry || blocks.len() > preds.len()).then_some(new_entry)
 }
 
-fn build(arena: &Arena, dispatch: &Dispatch, entry_state: i64) -> Option<Graph> {
+fn build(dispatch: &Dispatch, arms: &[(i64, Vec<Stmt>)], entry_state: i64) -> Option<Graph> {
     let mut index_of = BTreeMap::new();
-    for (index, (state, _)) in dispatch.arms.iter().enumerate() {
+    for (index, (state, _)) in arms.iter().enumerate() {
         if index_of.insert(*state, index).is_some() {
             return None;
         }
@@ -522,12 +599,11 @@ fn build(arena: &Arena, dispatch: &Dispatch, entry_state: i64) -> Option<Graph> 
     let entry = index_of.get(&entry_state).copied()?;
 
     let extractor = Extractor {
-        arena,
         dispatch,
         index_of: &index_of,
     };
-    let mut blocks = Vec::with_capacity(dispatch.arms.len());
-    for (state, body) in &dispatch.arms {
+    let mut blocks = Vec::with_capacity(arms.len());
+    for (state, body) in arms {
         let (prefix_len, term) = extractor.terminator(body)?;
         blocks.push(Block {
             state: *state,
@@ -574,21 +650,22 @@ fn build(arena: &Arena, dispatch: &Dispatch, entry_state: i64) -> Option<Graph> 
     }
 
     let headers: BTreeSet<usize> = tails.keys().copied().collect();
-    let bodies: BTreeMap<usize, BTreeSet<usize>> = tails
+    let loop_bodies: BTreeMap<usize, BTreeSet<usize>> = tails
         .iter()
         .map(|(&header, tails)| (header, natural_loop(&preds, header, tails)))
         .collect();
 
     let mut labeled = vec![false; blocks.len()];
     for &node in &order {
-        labeled[node] = forward[node] > 1 || escapes_a_loop(&bodies, &preds, &idom, entry, node);
+        labeled[node] =
+            forward[node] > 1 || escapes_a_loop(&loop_bodies, &preds, &idom, entry, node);
     }
     labeled[entry] = false;
 
     let mut owner = vec![None; blocks.len()];
     for &node in &order {
         if labeled[node] {
-            owner[node] = Some(owner_of(&bodies, &idom, node));
+            owner[node] = Some(owner_of(&loop_bodies, &idom, node));
         }
     }
     inline_secondary_exits(&blocks, &headers, &rank, &forward, &mut labeled, &mut owner);
@@ -661,13 +738,13 @@ fn reducible(blocks: &[Block], idom: &[usize], entry: usize) -> bool {
 }
 
 fn escapes_a_loop(
-    bodies: &BTreeMap<usize, BTreeSet<usize>>,
+    loop_bodies: &BTreeMap<usize, BTreeSet<usize>>,
     preds: &[Vec<usize>],
     idom: &[usize],
     entry: usize,
     node: usize,
 ) -> bool {
-    bodies.iter().any(|(_, body)| {
+    loop_bodies.iter().any(|(_, body)| {
         !body.contains(&node)
             && preds[node]
                 .iter()
@@ -675,9 +752,9 @@ fn escapes_a_loop(
     })
 }
 
-fn owner_of(bodies: &BTreeMap<usize, BTreeSet<usize>>, idom: &[usize], node: usize) -> Owner {
+fn owner_of(loop_bodies: &BTreeMap<usize, BTreeSet<usize>>, idom: &[usize], node: usize) -> Owner {
     let home = idom[node];
-    let mut enclosing: Vec<(usize, usize)> = bodies
+    let mut enclosing: Vec<(usize, usize)> = loop_bodies
         .iter()
         .filter(|(_, body)| body.contains(&home))
         .map(|(&header, body)| (body.len(), header))
@@ -685,7 +762,7 @@ fn owner_of(bodies: &BTreeMap<usize, BTreeSet<usize>>, idom: &[usize], node: usi
     enclosing.sort_unstable();
     enclosing.reverse();
     for (_, header) in enclosing {
-        if !bodies[&header].contains(&node) {
+        if !loop_bodies[&header].contains(&node) {
             return Owner::AfterLoop(header);
         }
     }
@@ -771,11 +848,10 @@ fn elide_local_label(body: &mut [Stmt], label: &Label, blocked: bool) {
     }
 }
 
-fn uses_label(body: &mut [Stmt], label: &Label) -> bool {
-    body.iter_mut().any(|stmt| {
-        matches!(&*stmt, Stmt::Break(Some(target)) | Stmt::Continue(Some(target)) if target == label)
-            || stmt
-                .child_bodies_mut()
+fn uses_label(body: &[Stmt], label: &Label) -> bool {
+    body.iter().any(|stmt| {
+        matches!(stmt, Stmt::Break(Some(target)) | Stmt::Continue(Some(target)) if target == label)
+            || bodies(stmt)
                 .into_iter()
                 .any(|nested| uses_label(nested, label))
     })
@@ -829,7 +905,7 @@ impl Graph {
         drop_tail_continue(&mut body);
         fold_empty_branches(&mut body);
         let core = Stmt::Loop {
-            label: uses_label(&mut body, &label).then(|| label.clone()),
+            label: uses_label(&body, &label).then(|| label.clone()),
             body,
         };
         self.wrap(vec![core], &self.owned(node, Owner::AfterLoop(node)), loops)
@@ -927,76 +1003,5 @@ impl Graph {
         let mut out = self.preamble.clone();
         out.extend(self.tree(self.entry, &[]));
         out
-    }
-}
-
-fn remove_stmt(arena: &mut FunctionOptimizer, id: NodeId) {
-    if let Some(parent) = arena.parent(id)
-        && let Some(kind) = arena.get_mut(parent)
-    {
-        for list in kind.child_lists_mut() {
-            if let Some(position) = list.iter().position(|&child| child == id) {
-                list.remove(position);
-                break;
-            }
-        }
-    }
-    arena.discard_subtree(id);
-}
-
-fn graph_of(arena: &Arena, id: NodeId) -> Option<(Dispatch, NodeId, Graph)> {
-    let dispatch = parse(arena, id)?;
-    let uses = collect_uses(arena, &dispatch)?;
-    let NodeKind::Let {
-        init: Some(init), ..
-    } = arena.get(uses.entry)?
-    else {
-        return None;
-    };
-    let graph = build(arena, &dispatch, state_literal(init)?)?;
-    Some((dispatch, uses.entry, graph))
-}
-
-impl NodeRule for StructureReducible {
-    fn name(&self) -> &'static str {
-        "structure_goto::reducible"
-    }
-
-    fn priority(&self) -> u32 {
-        2
-    }
-
-    fn kinds(&self) -> &'static [NodeKindTag] {
-        &[NodeKindTag::Loop]
-    }
-
-    fn requeues_moved_nodes(&self) -> bool {
-        true
-    }
-
-    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
-        graph_of(arena, id).is_some()
-    }
-
-    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
-        let Some((dispatch, entry, graph)) = graph_of(arena, id) else {
-            return false;
-        };
-        let keeps_state = graph.keeps_state;
-        let stmts = graph.emit();
-        arena.discard_subtree(dispatch.match_id);
-        let body = arena::insert_stmts(arena, Some(id), stmts);
-        arena.set_kind(
-            id,
-            NodeKind::LabeledBlock {
-                label: dispatch.label,
-                body,
-            },
-        );
-        if !keeps_state {
-            remove_stmt(arena, entry);
-        }
-        arena.touch_subtree(id);
-        true
     }
 }

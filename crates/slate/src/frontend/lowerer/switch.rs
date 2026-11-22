@@ -653,8 +653,10 @@ fn case_loop(
 }
 
 fn is_temp(name: &str) -> bool {
-    name.strip_prefix("__t")
-        .is_some_and(|index| index.parse::<u32>().is_ok())
+    rust::is_temp_name(name)
+        || name
+            .strip_prefix("__t")
+            .is_some_and(|index| index.parse::<u32>().is_ok())
 }
 
 fn breaks_to(body: &mut [Stmt], label: &rust::Label) -> bool {

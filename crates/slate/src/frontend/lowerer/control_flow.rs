@@ -1232,6 +1232,37 @@ impl FunctionLowerer<'_, '_> {
         for (position, comments) in positioned {
             lowered.splice(position..position, comments.into_iter().map(Stmt::Comment));
         }
+        let label = rust::Label::new("__slate_dispatch");
+        let numbered: Vec<(i64, Vec<Stmt>)> = arms
+            .iter()
+            .filter_map(|arm| match arm.pattern {
+                rust::Pattern::I64(state) => Some((state, arm.body.clone())),
+                _ => None,
+            })
+            .collect();
+        if let Some(structured) =
+            super::structure::structure(&numbered, entry as i64, &label, "__slate_state".into())
+        {
+            if structured.keeps_state {
+                lowered.push(Stmt::Let {
+                    origin: rust::LocalOrigin::Synthetic,
+                    name: "__slate_state".into(),
+                    mutable: true,
+                    ty: Some(rust::Type::Prim(Prim::Usize)),
+                    init: Some(state(entry)),
+                });
+            }
+            lowered.push(Stmt::Unsafe {
+                body: rust::Block {
+                    stmts: vec![Stmt::LabeledBlock {
+                        label,
+                        body: structured.body,
+                    }],
+                    tail: None,
+                },
+            });
+            return Ok(lowered);
+        }
         lowered.push(Stmt::Let {
             origin: rust::LocalOrigin::Synthetic,
             name: "__slate_state".into(),

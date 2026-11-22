@@ -135,11 +135,10 @@ flowchart LR
   transfers, and void exits.
 - Nested decisions stay in their original blocks to preserve selector scope and
   evaluation order. Loop transfers retain labels across labeled joins.
-- Generic algorithms are reused:
-  [structure_goto.rs](../../crates/slate/src/backend/engine/rules/structure_goto.rs)
-  and
-  [reducible.rs](../../crates/slate/src/backend/engine/rules/structure_goto/reducible.rs);
-  switch fallthrough is emitted directly by
+- Generic algorithms are reused: the dominator, natural-loop and
+  irreducible-SCC structurer in
+  [structure.rs](../../crates/slate/src/frontend/lowerer/structure.rs) (run by
+  `lower_dispatch`); switch fallthrough is emitted directly by
   [switch.rs](../../crates/slate/src/frontend/lowerer/switch.rs).
 - VDBE has zero transfers through the function-wide dispatcher; one localized
   selector remains. It still has the original SQLite opcode dispatch.

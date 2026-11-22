@@ -282,32 +282,18 @@ int main(void) {
 // CHECK-NEXT:         4u32,
 // CHECK-NEXT:         || unsafe {
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let mut __slate_state: usize = 2usize;
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     '__slate_dispatch: loop {
-// CHECK-NEXT:                         match __slate_state {
-// CHECK-NEXT:                             0 => {
-// CHECK-NEXT:                                 {}
-// CHECK-NEXT:                                 break '__slate_dispatch;
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                             1 => {
+// CHECK-NEXT:                     '__slate_dispatch: {
+// CHECK-NEXT:                         '[[JOIN_0:__join_[0-9]+]]: {
+// CHECK-NEXT:                             if omp_get_thread_num() != 3 {
+// CHECK-NEXT:                                 break '[[JOIN_0]];
+// CHECK-NEXT:                             } else {
 // CHECK-NEXT:                                 *__slate_omp_1 = 1i32;
-// CHECK-NEXT:                                 __slate_state = 0usize;
-// CHECK-NEXT:                                 continue '__slate_dispatch;
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                             2 => {
-// CHECK-NEXT:                                 if omp_get_thread_num() != 3 {
-// CHECK-NEXT:                                     __slate_state = 0usize;
-// CHECK-NEXT:                                     continue '__slate_dispatch;
-// CHECK-NEXT:                                 } else {
-// CHECK-NEXT:                                     __slate_state = 1usize;
-// CHECK-NEXT:                                     continue '__slate_dispatch;
-// CHECK-NEXT:                                 }
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                             _ => {
-// CHECK-NEXT:                                 unreachable!();
+// CHECK-NEXT:                                 break '[[JOIN_0]];
 // CHECK-NEXT:                             }
 // CHECK-NEXT:                         }
+// CHECK-NEXT:                         {}
+// CHECK-NEXT:                         break '__slate_dispatch;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }

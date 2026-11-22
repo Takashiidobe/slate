@@ -94,32 +94,32 @@ int main(void) {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     out *= 3;
-// CHECK-NEXT:                     let [[V_1:_v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_1]] - 1;
-// CHECK-NEXT:                     if [[V_1]] == 0 {
+// CHECK-NEXT:                     let [[T_0:__t[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[T_0]] - 1;
+// CHECK-NEXT:                     if [[T_0]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     out += 5;
 // CHECK-NEXT:                     out ^= 7;
-// CHECK-NEXT:                     let [[V_2:_v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_2]] - 1;
-// CHECK-NEXT:                     if [[V_2]] == 0 {
+// CHECK-NEXT:                     let [[T_1:__t[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[T_1]] - 1;
+// CHECK-NEXT:                     if [[T_1]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 4;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 1 => {
 // CHECK-NEXT:                     out *= 3;
-// CHECK-NEXT:                     let [[V_3:__v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_3]] - 1;
-// CHECK-NEXT:                     if [[V_3]] == 0 {
+// CHECK-NEXT:                     let [[V_1:__v[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[V_1]] - 1;
+// CHECK-NEXT:                     if [[V_1]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     out += 5;
 // CHECK-NEXT:                     out ^= 7;
-// CHECK-NEXT:                     let [[V_4:_v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_4]] - 1;
-// CHECK-NEXT:                     if [[V_4]] == 0 {
+// CHECK-NEXT:                     let [[T_2:__t[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[T_2]] - 1;
+// CHECK-NEXT:                     if [[T_2]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 4;
@@ -127,32 +127,32 @@ int main(void) {
 // CHECK-NEXT:                 2 => {
 // CHECK-NEXT:                     out += 5;
 // CHECK-NEXT:                     out ^= 7;
-// CHECK-NEXT:                     let [[V_5:_v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_5]] - 1;
-// CHECK-NEXT:                     if [[V_5]] == 0 {
+// CHECK-NEXT:                     let [[T_3:__t[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[T_3]] - 1;
+// CHECK-NEXT:                     if [[T_3]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 4;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 3 => {
 // CHECK-NEXT:                     out ^= 7;
-// CHECK-NEXT:                     let [[V_6:__v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_6]] - 1;
-// CHECK-NEXT:                     if [[V_6]] == 0 {
+// CHECK-NEXT:                     let [[V_2:__v[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[V_2]] - 1;
+// CHECK-NEXT:                     if [[V_2]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 4;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 4 => {
 // CHECK-NEXT:                     out -= 2;
-// CHECK-NEXT:                     let [[V_7:__v[0-9]+]]: bool = if out < -50 {
+// CHECK-NEXT:                     let [[V_3:__v[0-9]+]]: bool = if out < -50 {
 // CHECK-NEXT:                         true
 // CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         let [[V_8:__v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                         n = [[V_8]] - 1;
-// CHECK-NEXT:                         [[V_8]] == 0
+// CHECK-NEXT:                         let [[V_4:__v[0-9]+]]: i32 = n;
+// CHECK-NEXT:                         n = [[V_4]] - 1;
+// CHECK-NEXT:                         [[V_4]] == 0
 // CHECK-NEXT:                     };
-// CHECK-NEXT:                     if [[V_7]] {
+// CHECK-NEXT:                     if [[V_3]] {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 0;
@@ -160,18 +160,18 @@ int main(void) {
 // CHECK-NEXT:                 5 => {
 // CHECK-NEXT:                     out += 11;
 // CHECK-NEXT:                     out *= 2;
-// CHECK-NEXT:                     let [[V_9:_v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_9]] - 1;
-// CHECK-NEXT:                     if [[V_9]] == 0 {
+// CHECK-NEXT:                     let [[T_4:__t[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[T_4]] - 1;
+// CHECK-NEXT:                     if [[T_4]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 3;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 6 => {
 // CHECK-NEXT:                     out *= 2;
-// CHECK-NEXT:                     let [[V_10:__v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_10]] - 1;
-// CHECK-NEXT:                     if [[V_10]] == 0 {
+// CHECK-NEXT:                     let [[V_5:__v[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[V_5]] - 1;
+// CHECK-NEXT:                     if [[V_5]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 3;
@@ -186,38 +186,38 @@ int main(void) {
 // CHECK-NEXT:             match mode {
 // CHECK-NEXT:                 0 => {
 // CHECK-NEXT:                     out += 1;
-// CHECK-NEXT:                     let [[V_11:__v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_11]] - 1;
-// CHECK-NEXT:                     if [[V_11]] == 0 {
+// CHECK-NEXT:                     let [[V_6:__v[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[V_6]] - 1;
+// CHECK-NEXT:                     if [[V_6]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     out *= 3;
-// CHECK-NEXT:                     let [[V_1]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_1]] - 1;
-// CHECK-NEXT:                     if [[V_1]] == 0 {
+// CHECK-NEXT:                     let [[T_5:__t[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[T_5]] - 1;
+// CHECK-NEXT:                     if [[T_5]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     out += 5;
 // CHECK-NEXT:                     out ^= 7;
-// CHECK-NEXT:                     let [[V_2]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_2]] - 1;
-// CHECK-NEXT:                     if [[V_2]] == 0 {
+// CHECK-NEXT:                     let [[T_6:__t[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[T_6]] - 1;
+// CHECK-NEXT:                     if [[T_6]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 4;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 1 => {
 // CHECK-NEXT:                     out *= 3;
-// CHECK-NEXT:                     let [[V_12:__v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_12]] - 1;
-// CHECK-NEXT:                     if [[V_12]] == 0 {
+// CHECK-NEXT:                     let [[V_7:__v[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[V_7]] - 1;
+// CHECK-NEXT:                     if [[V_7]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     out += 5;
 // CHECK-NEXT:                     out ^= 7;
-// CHECK-NEXT:                     let [[V_4]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_4]] - 1;
-// CHECK-NEXT:                     if [[V_4]] == 0 {
+// CHECK-NEXT:                     let [[T_7:__t[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[T_7]] - 1;
+// CHECK-NEXT:                     if [[T_7]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 4;
@@ -225,9 +225,64 @@ int main(void) {
 // CHECK-NEXT:                 2 => {
 // CHECK-NEXT:                     out += 5;
 // CHECK-NEXT:                     out ^= 7;
-// CHECK-NEXT:                     let [[V_5]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_5]] - 1;
-// CHECK-NEXT:                     if [[V_5]] == 0 {
+// CHECK-NEXT:                     let [[T_8:__t[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[T_8]] - 1;
+// CHECK-NEXT:                     if [[T_8]] == 0 {
+// CHECK-NEXT:                         break;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     mode = 4;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 3 => {
+// CHECK-NEXT:                     out ^= 7;
+// CHECK-NEXT:                     let [[V_8:__v[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[V_8]] - 1;
+// CHECK-NEXT:                     if [[V_8]] == 0 {
+// CHECK-NEXT:                         break;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     mode = 4;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 4 => {
+// CHECK-NEXT:                     out -= 2;
+// CHECK-NEXT:                     let [[V_9:__v[0-9]+]]: bool = if out < -50 {
+// CHECK-NEXT:                         true
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         let [[V_10:__v[0-9]+]]: i32 = n;
+// CHECK-NEXT:                         n = [[V_10]] - 1;
+// CHECK-NEXT:                         [[V_10]] == 0
+// CHECK-NEXT:                     };
+// CHECK-NEXT:                     if [[V_9]] {
+// CHECK-NEXT:                         break;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     mode = 0;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 6 => {
+// CHECK-NEXT:                     out *= 2;
+// CHECK-NEXT:                     let [[V_11:__v[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[V_11]] - 1;
+// CHECK-NEXT:                     if [[V_11]] == 0 {
+// CHECK-NEXT:                         break;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     mode = 3;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 _ => {
+// CHECK-NEXT:                     break;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:         #[cfg(all(not(feature = "alpha"), feature = "beta"))]
+// CHECK-NEXT:         {
+// CHECK-NEXT:             match mode {
+// CHECK-NEXT:                 0 => {
+// CHECK-NEXT:                     out += 1;
+// CHECK-NEXT:                     let [[V_12:__v[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[V_12]] - 1;
+// CHECK-NEXT:                     if [[V_12]] == 0 {
+// CHECK-NEXT:                         break;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     out ^= 7;
+// CHECK-NEXT:                     let [[T_9:__t[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[T_9]] - 1;
+// CHECK-NEXT:                     if [[T_9]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 4;
@@ -255,6 +310,16 @@ int main(void) {
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 0;
 // CHECK-NEXT:                 }
+// CHECK-NEXT:                 5 => {
+// CHECK-NEXT:                     out += 11;
+// CHECK-NEXT:                     out *= 2;
+// CHECK-NEXT:                     let [[T_10:__t[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[T_10]] - 1;
+// CHECK-NEXT:                     if [[T_10]] == 0 {
+// CHECK-NEXT:                         break;
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     mode = 3;
+// CHECK-NEXT:                 }
 // CHECK-NEXT:                 6 => {
 // CHECK-NEXT:                     out *= 2;
 // CHECK-NEXT:                     let [[V_16:__v[0-9]+]]: i32 = n;
@@ -269,7 +334,7 @@ int main(void) {
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(all(not(feature = "alpha"), feature = "beta"))]
+// CHECK-NEXT:         #[cfg(all(not(feature = "alpha"), not(feature = "beta")))]
 // CHECK-NEXT:         {
 // CHECK-NEXT:             match mode {
 // CHECK-NEXT:                 0 => {
@@ -280,106 +345,41 @@ int main(void) {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     out ^= 7;
-// CHECK-NEXT:                     let [[V_18:_v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_18]] - 1;
-// CHECK-NEXT:                     if [[V_18]] == 0 {
+// CHECK-NEXT:                     let [[T_11:__t[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[T_11]] - 1;
+// CHECK-NEXT:                     if [[T_11]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 4;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 3 => {
 // CHECK-NEXT:                     out ^= 7;
-// CHECK-NEXT:                     let [[V_19:__v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_19]] - 1;
-// CHECK-NEXT:                     if [[V_19]] == 0 {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     mode = 4;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 4 => {
-// CHECK-NEXT:                     out -= 2;
-// CHECK-NEXT:                     let [[V_20:__v[0-9]+]]: bool = if out < -50 {
-// CHECK-NEXT:                         true
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         let [[V_21:__v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                         n = [[V_21]] - 1;
-// CHECK-NEXT:                         [[V_21]] == 0
-// CHECK-NEXT:                     };
-// CHECK-NEXT:                     if [[V_20]] {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     mode = 0;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 5 => {
-// CHECK-NEXT:                     out += 11;
-// CHECK-NEXT:                     out *= 2;
-// CHECK-NEXT:                     let [[V_1]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_1]] - 1;
-// CHECK-NEXT:                     if [[V_1]] == 0 {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     mode = 3;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 6 => {
-// CHECK-NEXT:                     out *= 2;
-// CHECK-NEXT:                     let [[V_22:__v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_22]] - 1;
-// CHECK-NEXT:                     if [[V_22]] == 0 {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     mode = 3;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:         #[cfg(all(not(feature = "alpha"), not(feature = "beta")))]
-// CHECK-NEXT:         {
-// CHECK-NEXT:             match mode {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     out += 1;
-// CHECK-NEXT:                     let [[V_23:__v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_23]] - 1;
-// CHECK-NEXT:                     if [[V_23]] == 0 {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     out ^= 7;
-// CHECK-NEXT:                     let [[V_18]]: i32 = n;
+// CHECK-NEXT:                     let [[V_18:__v[0-9]+]]: i32 = n;
 // CHECK-NEXT:                     n = [[V_18]] - 1;
 // CHECK-NEXT:                     if [[V_18]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 4;
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 3 => {
-// CHECK-NEXT:                     out ^= 7;
-// CHECK-NEXT:                     let [[V_24:__v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_24]] - 1;
-// CHECK-NEXT:                     if [[V_24]] == 0 {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     mode = 4;
-// CHECK-NEXT:                 }
 // CHECK-NEXT:                 4 => {
 // CHECK-NEXT:                     out -= 2;
-// CHECK-NEXT:                     let [[V_25:__v[0-9]+]]: bool = if out < -50 {
+// CHECK-NEXT:                     let [[V_19:__v[0-9]+]]: bool = if out < -50 {
 // CHECK-NEXT:                         true
 // CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         let [[V_26:__v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                         n = [[V_26]] - 1;
-// CHECK-NEXT:                         [[V_26]] == 0
+// CHECK-NEXT:                         let [[V_20:__v[0-9]+]]: i32 = n;
+// CHECK-NEXT:                         n = [[V_20]] - 1;
+// CHECK-NEXT:                         [[V_20]] == 0
 // CHECK-NEXT:                     };
-// CHECK-NEXT:                     if [[V_25]] {
+// CHECK-NEXT:                     if [[V_19]] {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 0;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 6 => {
 // CHECK-NEXT:                     out *= 2;
-// CHECK-NEXT:                     let [[V_27:__v[0-9]+]]: i32 = n;
-// CHECK-NEXT:                     n = [[V_27]] - 1;
-// CHECK-NEXT:                     if [[V_27]] == 0 {
+// CHECK-NEXT:                     let [[V_21:__v[0-9]+]]: i32 = n;
+// CHECK-NEXT:                     n = [[V_21]] - 1;
+// CHECK-NEXT:                     if [[V_21]] == 0 {
 // CHECK-NEXT:                         break;
 // CHECK-NEXT:                     }
 // CHECK-NEXT:                     mode = 3;

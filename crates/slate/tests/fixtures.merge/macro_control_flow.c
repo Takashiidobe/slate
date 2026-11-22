@@ -469,19 +469,16 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn with_goto(a: i32) -> i32 {
-// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         i = 0;
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             CHECK!(a);
-// CHECK-NEXT:             let [[V_0]]: i32 = i + 1;
-// CHECK-NEXT:             i = [[V_0]];
-// CHECK-NEXT:             if !([[V_0]] < 2) {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         CHECK!(a);
+// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = i + 1;
+// CHECK-NEXT:         i = [[V_1]];
+// CHECK-NEXT:         if [[V_1]] >= 2 {
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return i;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     i
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! BAIL {

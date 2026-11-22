@@ -41,6 +41,7 @@ mod pointers;
 mod selectany;
 mod statements;
 mod stdio;
+mod structure;
 mod sve;
 mod sve_table;
 mod switch;

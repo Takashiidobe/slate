@@ -868,17 +868,6 @@ fn build_stmts(arena: &mut Arena, parent: Option<NodeId>, stmts: Vec<Stmt>) -> V
         .collect()
 }
 
-pub(in crate::backend) fn insert_stmts(
-    arena: &mut Arena,
-    parent: Option<NodeId>,
-    stmts: Vec<Stmt>,
-) -> Vec<NodeId> {
-    stmts
-        .into_iter()
-        .map(|stmt| build_stmt(arena, parent, stmt))
-        .collect()
-}
-
 fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
     let id = arena.reserve(parent);
     let kind = match stmt {
@@ -991,12 +980,6 @@ pub(in crate::backend) fn reify(arena: &Arena, root: NodeId) -> Vec<Stmt> {
     };
     let mut out = Vec::new();
     reify_stmts(arena, stmts, &mut out);
-    out
-}
-
-pub(in crate::backend) fn reify_bodies(arena: &Arena, ids: &[NodeId]) -> Vec<Stmt> {
-    let mut out = Vec::new();
-    reify_stmts(arena, ids, &mut out);
     out
 }
 

@@ -635,26 +635,23 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn with_goto(a: i32, b: i32) -> i32 {
-// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         i = 0;
-// CHECK-NEXT:         LOG!(slate_support::stdout(), c"goto entry\n".as_ptr() as *mut c_char);
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             ASSERT!(a == b, c"goto mismatch".as_ptr() as *mut c_char);
-// CHECK-NEXT:             LOG!(slate_support::stdout(), c"goto %d\n".as_ptr() as *mut c_char, i);
-// CHECK-NEXT:             NOTE!(
-// CHECK-NEXT:                 i > 0,
-// CHECK-NEXT:                 slate_support::stdout(),
-// CHECK-NEXT:                 c"goto note %d\n".as_ptr() as *mut c_char,
-// CHECK-NEXT:                 i
-// CHECK-NEXT:             );
-// CHECK-NEXT:             i += 1;
-// CHECK-NEXT:             if !(i < 2) {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     LOG!(slate_support::stdout(), c"goto entry\n".as_ptr() as *mut c_char);
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         ASSERT!(a == b, c"goto mismatch".as_ptr() as *mut c_char);
+// CHECK-NEXT:         LOG!(slate_support::stdout(), c"goto %d\n".as_ptr() as *mut c_char, i);
+// CHECK-NEXT:         NOTE!(
+// CHECK-NEXT:             i > 0,
+// CHECK-NEXT:             slate_support::stdout(),
+// CHECK-NEXT:             c"goto note %d\n".as_ptr() as *mut c_char,
+// CHECK-NEXT:             i
+// CHECK-NEXT:         );
+// CHECK-NEXT:         i += 1;
+// CHECK-NEXT:         if i >= 2 {
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return i;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     i
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn with_switch(mode: i32, mut count: i32) -> i32 {

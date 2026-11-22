@@ -65,10 +65,10 @@ conversions and layout remain slate-parser responsibilities.
 | Natural loop                            | Labeled `loop`; existing loop/while/for peepholes refine it                           |
 | Multi-entry cyclic region               | Existing SCC-local dispatch; explicit-tail-call helpers are an optimization candidate |
 
-- Retained rules: `engine/rules/structure_goto.rs` and
-  `structure_goto/reducible.rs` provide normalization, dominators, natural
-  loops, and irreducible-SCC handling. Switch fallthrough is no longer a rule:
-  `frontend/lowerer/switch.rs` emits the duplicated-tail `match` directly.
+- Goto structuring is no longer a rule: `lower_dispatch` runs
+  `frontend/lowerer/structure.rs` (dominators, natural loops, irreducible-SCC
+  selectors) on its own block graph, and `frontend/lowerer/switch.rs` emits the
+  switch fallthrough `match` directly.
 - Reuse the retained algorithms and registry; the removed frontend was
   CIR-specific, but these passes consume Rust AST. See
   [pass porting](pass-porting-workflow.md).
