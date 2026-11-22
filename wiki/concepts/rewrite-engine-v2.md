@@ -5,6 +5,7 @@
 - [Scheduling and facts](#scheduling-and-facts)
 - [Control-flow rewrites](#control-flow-rewrites)
   - [Explicit-tail-call candidate](#explicit-tail-call-candidate)
+- [Unsafe placement](#unsafe-placement)
 - [Macro boundaries](#macro-boundaries)
 - [Validation](#validation)
 - [Design history](#design-history)
@@ -136,6 +137,50 @@ are structured before Rust exists:
 - Work: `slate-cgqg.3.1` coalescing, `slate-cgqg.3.3` retained-pass connection,
   `slate-cgqg.3.4` tail-call evaluation; retained structuring history:
   `slate-04q.85`.
+
+## Unsafe placement
+
+Decided in `slate-8ge7.24.11.9` (epic `slate-8ge7.24.17`). Unsafe is a marker
+on the operation that needs it, not a node in the tree. The lowerer emits no
+`unsafe` blocks, rules match and rewrite an unsafe-free tree, and one placement
+pass before codegen adds the blocks.
+
+Markers. Only the lowerer knows types, so it sets them; a rule that moves or
+copies an expression carries them along, and two equal operations compare equal
+(`*p = *p * x` folds to `*p *= x` with no peeling).
+
+| Operation | Marker |
+| --- | --- |
+| Raw-pointer deref | `UnaryOp::Deref(Pointee::Raw)`; reference deref is `Deref(Pointee::Ref)` |
+| `static mut`, extern static, weak extern read | `unsafe_` flag on `Expr::Var`; `Expr::var(name)` builds the safe case |
+| Unsafe callee, fn-pointer call, `zeroed`, `va_arg` | `unsafe_` on `Expr::Call` |
+| `.add`, `.offset`, `.read`, `.write`, volatile access | `unsafe_` on `MethodCall` / `MethodCallGeneric` |
+| Union field | `union` on `Expr::Field` (a C fact; `&raw const u.f` is safe) |
+| `Transmute`, `CopyNonoverlapping`, `PtrCopy`, `WriteBytes`, `InlineAsm` | none: unsafe by variant |
+
+A side table was rejected: Rust AST expressions have no ids and rules rebuild
+them freely. A missing marker fails the fixture with E0133; a spurious one is an
+`unused_unsafe` warning.
+
+Placement runs after the rule engine and after interproc/link, so a call that
+link binds to a safe Rust path (its flag cleared) gets no block. It is local to
+one function and never makes a function `unsafe fn`; that stays the
+`FunctionName::is_unsafe` fact (`slate-eep4.6`, `slate-eep4.11`). Per statement:
+
+- A marked operation in an assignment target wraps the statement:
+  `unsafe { *p = v; }`.
+- Otherwise each expression slot (let initializer, assigned value, condition,
+  return value, expression statement) wraps the lowest common ancestor of its
+  marked operations: `x = unsafe { *p };`, `if unsafe { *p } != 0 {`.
+- Place contexts (`&raw`, field base, method receiver) follow the rules
+  `nested_unsafe` used. A closure body is placed inside the closure.
+- Never a whole function body.
+
+A separate post-pass then merges runs of adjacent whole-statement unsafe blocks
+that contain no `let`. Macro bodies are placed from their own contents only.
+
+Placement replaces `nested_unsafe` and `NodeKind::Unsafe`, and covers
+`slate-o3gw.21`, `slate-o3gw.18` and `slate-y0qs.13`.
 
 ## Macro boundaries
 
