@@ -136,10 +136,11 @@ flowchart LR
 - Nested decisions stay in their original blocks to preserve selector scope and
   evaluation order. Loop transfers retain labels across labeled joins.
 - Generic algorithms are reused:
-  [structure_goto.rs](../../crates/slate/src/backend/engine/rules/structure_goto.rs),
-  [reducible.rs](../../crates/slate/src/backend/engine/rules/structure_goto/reducible.rs),
+  [structure_goto.rs](../../crates/slate/src/backend/engine/rules/structure_goto.rs)
   and
-  [structure_dispatch.rs](../../crates/slate/src/backend/engine/rules/structure_dispatch.rs).
+  [reducible.rs](../../crates/slate/src/backend/engine/rules/structure_goto/reducible.rs);
+  switch fallthrough is emitted directly by
+  [switch.rs](../../crates/slate/src/frontend/lowerer/switch.rs).
 - VDBE has zero transfers through the function-wide dispatcher; one localized
   selector remains. It still has the original SQLite opcode dispatch.
 - Direct control-flow edges expose narrower joins and natural loops to LLVM. The

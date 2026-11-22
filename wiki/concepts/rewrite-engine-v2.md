@@ -67,8 +67,8 @@ conversions and layout remain slate-parser responsibilities.
 
 - Retained rules: `engine/rules/structure_goto.rs` and
   `structure_goto/reducible.rs` provide normalization, dominators, natural
-  loops, and irreducible-SCC handling. `structure_dispatch.rs` handles switch
-  recovery.
+  loops, and irreducible-SCC handling. Switch fallthrough is no longer a rule:
+  `frontend/lowerer/switch.rs` emits the duplicated-tail `match` directly.
 - Reuse the retained algorithms and registry; the removed frontend was
   CIR-specific, but these passes consume Rust AST. See
   [pass porting](pass-porting-workflow.md).

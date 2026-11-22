@@ -338,15 +338,138 @@ impl FunctionLowerer<'_, '_> {
                 None => Expr::Value(rust::RustValue::I64(-1)),
             },
         });
+        let selector =
+            self.lower_folded(discriminant, folded.is_some(), Self::lower_match_scrutinee)?;
+        let mut bodies = Vec::new();
+        for arm in arms {
+            bodies.push(Some(self.lower_switch_arm(arm)?));
+        }
+        let label = self.break_label(id);
+        if let Some(duplicated) = self.duplicated_switch(&label, &selector, arms, &bodies)? {
+            return Ok(duplicated);
+        }
         let init = Expr::Match {
-            expr: Box::new(self.lower_folded(
-                discriminant,
-                folded.is_some(),
-                Self::lower_match_scrutinee,
-            )?),
+            expr: Box::new(selector),
             arms: dispatch,
         };
-        self.lower_case_loop(id, case, init, arms, 0..arms.len(), Vec::new())
+        Ok(case_loop(label, case, init, arms, bodies, Vec::new()))
+    }
+
+    fn duplicated_switch(
+        &mut self,
+        label: &rust::Label,
+        selector: &Expr,
+        arms: &[SwitchArm],
+        bodies: &[Option<Vec<Stmt>>],
+    ) -> Result<Option<Stmt>> {
+        let mut patterns = Vec::new();
+        let mut kept = Vec::new();
+        let mut through = Vec::new();
+        let mut needs_label = false;
+        for (index, (arm, body)) in arms.iter().zip(bodies).enumerate() {
+            let Some(body) = body else {
+                return Ok(None);
+            };
+            let mut body = body.clone();
+            let falls = falls_through(arm) && index + 1 < arms.len();
+            if !falls && matches!(body.last(), Some(Stmt::Break(Some(last))) if last == label) {
+                body.pop();
+            }
+            needs_label |= breaks_to(&mut body, label);
+            patterns.push(switch_arm_pattern(arm)?);
+            kept.push(body);
+            through.push(falls);
+        }
+        for index in 0..arms.len() {
+            if kept[index].is_empty() && through[index] && !arms[index].default {
+                let merged = patterns[index].take();
+                patterns[index + 1] = match (merged, patterns[index + 1].take()) {
+                    (Some(rust::Pattern::Or(mut left)), Some(right)) => {
+                        left.push(right);
+                        Some(rust::Pattern::Or(left))
+                    }
+                    (Some(left), Some(right)) => Some(rust::Pattern::Or(vec![left, right])),
+                    (left, right) => left.or(right),
+                };
+            }
+        }
+        let mut duplicated = 0;
+        let mut match_arms = Vec::new();
+        let mut wildcard = None;
+        for index in 0..arms.len() {
+            let pattern = if arms[index].default {
+                rust::Pattern::Wildcard
+            } else {
+                match patterns[index].clone() {
+                    Some(pattern) => pattern,
+                    None => continue,
+                }
+            };
+            let mut body = kept[index].clone();
+            let mut cursor = index;
+            while through[cursor] {
+                cursor += 1;
+                duplicated += kept[cursor]
+                    .iter()
+                    .filter(|stmt| !matches!(stmt, Stmt::Let { name, .. } if is_temp(name)))
+                    .count();
+                let mut copy = kept[cursor].clone();
+                self.freshen(&mut copy);
+                body.extend(copy);
+            }
+            let arm = rust::MatchArm { pattern, body };
+            match arm.pattern {
+                rust::Pattern::Wildcard => wildcard = Some(arm),
+                _ => match_arms.push(arm),
+            }
+        }
+        if duplicated > MAX_DUPLICATED_STMTS {
+            return Ok(None);
+        }
+        match_arms.push(wildcard.unwrap_or(rust::MatchArm {
+            pattern: rust::Pattern::Wildcard,
+            body: Vec::new(),
+        }));
+        let dispatch = Stmt::Match {
+            expr: selector.clone(),
+            arms: match_arms,
+        };
+        let statement = if needs_label {
+            Stmt::LabeledBlock {
+                label: label.clone(),
+                body: vec![dispatch],
+            }
+        } else {
+            dispatch
+        };
+        Ok(Some(Stmt::Scope {
+            body: vec![statement],
+        }))
+    }
+
+    fn freshen(&mut self, body: &mut [Stmt]) {
+        let mut renames = Vec::new();
+        self.rename_temps(body, &mut renames);
+        for (old, new) in renames {
+            let replacement = Expr::Var(new.as_str().into());
+            for stmt in body.iter_mut() {
+                stmt.substitute_var(&old, &replacement);
+            }
+        }
+    }
+
+    fn rename_temps(&mut self, body: &mut [Stmt], renames: &mut Vec<(String, String)>) {
+        for stmt in body.iter_mut() {
+            if let Some(name) = stmt.declared_name_mut()
+                && is_temp(name)
+            {
+                let fresh = self.next_temp();
+                renames.push((std::mem::replace(name, fresh.clone()), fresh));
+            }
+            for nested in stmt.child_bodies_mut() {
+                self.rename_temps(nested, renames);
+            }
+        }
     }
 
     fn lower_indexed_switch(
@@ -429,51 +552,18 @@ impl FunctionLowerer<'_, '_> {
         init: Expr,
         arms: &[SwitchArm],
         reachable: std::ops::Range<usize>,
-        mut body_prefix: Vec<Stmt>,
+        body_prefix: Vec<Stmt>,
     ) -> Result<Stmt> {
         let label = self.break_label(id);
-        let case_index = |index: usize| Expr::Value(rust::RustValue::I64(index as i64));
-        let mut match_arms = Vec::new();
+        let mut bodies = Vec::new();
         for (index, arm) in arms.iter().enumerate() {
-            if !reachable.contains(&index) {
-                continue;
-            }
-            let mut body = self.lower_switch_arm(arm)?;
-            if falls_through(arm) {
-                if index + 1 < arms.len() {
-                    body.push(Stmt::Assign {
-                        target: Expr::Var(case.clone().into()),
-                        value: case_index(index + 1),
-                    });
-                    body.push(Stmt::Continue(Some(label.clone())));
-                } else {
-                    body.push(Stmt::Break(Some(label.clone())));
-                }
-            }
-            match_arms.push(rust::MatchArm {
-                pattern: rust::Pattern::I64(index as i64),
-                body,
+            bodies.push(if reachable.contains(&index) {
+                Some(self.lower_switch_arm(arm)?)
+            } else {
+                None
             });
         }
-        match_arms.push(rust::MatchArm {
-            pattern: rust::Pattern::Wildcard,
-            body: vec![Stmt::Break(Some(label.clone()))],
-        });
-        body_prefix.push(Stmt::Let {
-            origin: rust::LocalOrigin::Synthetic,
-            name: case.clone(),
-            mutable: true,
-            ty: Some(rust::Type::Prim(Prim::I64)),
-            init: Some(init),
-        });
-        body_prefix.push(Stmt::Loop {
-            label: Some(label),
-            body: vec![Stmt::Match {
-                expr: Expr::Var(case.into()),
-                arms: match_arms,
-            }],
-        });
-        Ok(Stmt::Scope { body: body_prefix })
+        Ok(case_loop(label, case, init, arms, bodies, body_prefix))
     }
 
     pub(super) fn lower_switch_operand(&mut self, value: &ir::Value) -> Result<(Expr, rust::Type)> {
@@ -507,6 +597,74 @@ impl FunctionLowerer<'_, '_> {
         }
         Ok(lowered)
     }
+}
+
+const MAX_DUPLICATED_STMTS: usize = 24;
+
+fn case_loop(
+    label: rust::Label,
+    case: String,
+    init: Expr,
+    arms: &[SwitchArm],
+    bodies: Vec<Option<Vec<Stmt>>>,
+    mut body_prefix: Vec<Stmt>,
+) -> Stmt {
+    let case_index = |index: usize| Expr::Value(rust::RustValue::I64(index as i64));
+    let mut match_arms = Vec::new();
+    for (index, (arm, body)) in arms.iter().zip(bodies).enumerate() {
+        let Some(mut body) = body else {
+            continue;
+        };
+        if falls_through(arm) {
+            if index + 1 < arms.len() {
+                body.push(Stmt::Assign {
+                    target: Expr::Var(case.clone().into()),
+                    value: case_index(index + 1),
+                });
+                body.push(Stmt::Continue(Some(label.clone())));
+            } else {
+                body.push(Stmt::Break(Some(label.clone())));
+            }
+        }
+        match_arms.push(rust::MatchArm {
+            pattern: rust::Pattern::I64(index as i64),
+            body,
+        });
+    }
+    match_arms.push(rust::MatchArm {
+        pattern: rust::Pattern::Wildcard,
+        body: vec![Stmt::Break(Some(label.clone()))],
+    });
+    body_prefix.push(Stmt::Let {
+        origin: rust::LocalOrigin::Synthetic,
+        name: case.clone(),
+        mutable: true,
+        ty: Some(rust::Type::Prim(Prim::I64)),
+        init: Some(init),
+    });
+    body_prefix.push(Stmt::Loop {
+        label: Some(label),
+        body: vec![Stmt::Match {
+            expr: Expr::Var(case.into()),
+            arms: match_arms,
+        }],
+    });
+    Stmt::Scope { body: body_prefix }
+}
+
+fn is_temp(name: &str) -> bool {
+    name.strip_prefix("__t")
+        .is_some_and(|index| index.parse::<u32>().is_ok())
+}
+
+fn breaks_to(body: &mut [Stmt], label: &rust::Label) -> bool {
+    body.iter_mut().any(|stmt| {
+        matches!(stmt, Stmt::Break(Some(target)) if target == label)
+            || stmt
+                .child_bodies_mut()
+                .into_iter()
+                .any(|nested| breaks_to(nested, label))
+    })
 }
 
 fn live_arm(arms: &[SwitchArm], folded: &ir::Number) -> Option<Option<usize>> {
