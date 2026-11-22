@@ -4,6 +4,7 @@
 - [Boundary](#boundary)
 - [Where a rewrite belongs](#where-a-rewrite-belongs)
 - [Transform stage](#transform-stage)
+  - [Pass scopes](#pass-scopes)
   - [Const-fold](#const-fold)
   - [Truth canonicalization](#truth-canonicalization)
   - [Truth locals](#truth-locals)
@@ -91,6 +92,36 @@ order. `frontend::lower_parsed` calls two slots per unit:
 
 A pass that needs callee summaries from other units would run at a
 whole-target slot after `project::merge::without_definitions`; none does yet.
+
+### Pass scopes
+
+A `Pass` declares `decls: fn(&mut Module)` for globals and types, `function:
+fn(&mut Function, &mut PassContext)`, or both (`slate-8ge7.24.17.1`). The
+runner iterates; a pass never loops over `module.functions` itself.
+
+- Each top-level function runs first, then each inner function (a `^{}` block
+  literal or a GNU nested function) runs as a function of its own, with its
+  parameters, and its captures as names it does not own. The runner recurses,
+  so a block inside a block runs after its enclosing block.
+- Inside a function, passes walk with `walk_function_body` /
+  `walk_function_value` (and the `_with_macros` forms). These stop at an inner
+  function and call `Visitor::capture(binding, kind)` once per captured outer
+  binding at the literal: `CaptureKind::Escape` for a `__block` capture and
+  every GNU nested-function capture, `CaptureKind::Read` for a by-value block
+  capture. The plain `walk_body` still descends into inner bodies, because
+  sema, macro strip and the lowerer need that.
+- `PassContext` carries the module (with `functions` taken out), `captured`
+  (bindings a record field type or a macro hidden argument names), `visible`
+  (names visible from enclosing scopes: globals, function names, and for an
+  inner function its enclosing functions' parameters and locals), and
+  `retire(nodes)` for side tables.
+- Passes treat a capture conservatively: truth-locals keeps any captured local
+  `int`, because `BlockCapture::ty` and the inner body keep its type.
+  inline-temps rejects a captured temporary. Nested-function captures are
+  always `Escape` until nested functions lower (`slate-8ge7.24.17`); then a
+  capture never written after the definition could become `Read`.
+
+Fixtures: `fixtures.transforms/{truth-locals,decl-init,structure-goto}/block.c`.
 
 Invariants: a pass moves nodes and never clones or rebuilds them, so every
 surviving node keeps its `NodeId` (side tables such as `macro_written_casts`
@@ -185,8 +216,9 @@ other read becomes `from_bool<int>(read<bool>)`.
   all do.
 - Every reference has to be a plain read or write. Address-taken, `Store`
   (`if ((x = a < b))`), `Update`, atomic access, `volatile`, `register`,
-  `cleanup`, `__block`, statics, and any reference inside a macro region, a
-  nested function or an OpenMP region keep the local `int`. A definition whose
+  `cleanup`, `__block`, statics, a capture by a block literal or nested
+  function, and any reference inside a macro region or an OpenMP region keep
+  the local `int`. A definition whose
   node is a `Module::macro_values` key does not count as proven.
 - Truth uses must strictly outnumber integer reads, because a tie only moves
   the cast. A copy into another truth local (`int same = lt;`) counts as a
@@ -323,8 +355,10 @@ and `string_params` passes and the `SLATE_IR_POINTERS` gate were deleted in
   collects use flags from its members: write through `*p`, `p[i]` and
   `p->f = ..`; offset from `p[i]`, `p + n`, `p - q`; escape from stores into
   memory or globals, aggregates, pointer-to-integer conversions, `&p`, opaque
-  calls, intrinsics, atomics, and anything inside OpenMP and nested
-  functions; nullable from comparisons with null and null assignments.
+  calls, intrinsics, atomics, anything inside OpenMP, and every capture of a
+  block literal or nested function (a by-value block capture copies the
+  pointer into the block, which can write through it later); nullable from
+  comparisons with null and null assignments.
 - An `asm` statement is an opaque call over its operands, the bound gcc, clang
   and Rust's `asm!` all assume. A pointer value as an operand (`"r"(p)`,
   `"D"(dst)`) escapes, unless the template is empty (the barrier idiom
@@ -404,7 +438,9 @@ questions of the same shape (`slate-8ge7.17`, purity for `slate-8ge7.9`).
   names (`Summary.reads` and `written`), its direct callees, and `opaque`.
   `opaque` is set by an indirect call, a call to an undefined function without
   a libc identity, an undefined call passing a function pointer (a callback),
-  asm with a non-empty template, and OpenMP or nested-function bodies.
+  asm with a non-empty template, and OpenMP bodies. A nested function or block
+  literal only marks its captures; calling it is an unresolved call, which is
+  opaque.
 - `opaque` closes over callers in one reverse pass. Who reaches S is a reverse
   search from S's direct namers, run once per static that appears as a proof,
   so cost is linear per queried static.
@@ -433,8 +469,11 @@ benchmark showed no analysis that SSA would make asymptotically cheaper.
 - Positions number statements in pre-order, so a statement's subtree is a
   contiguous range. Each use records its binding, its position, and its access:
   `Read`, `Write` (assignment target, initializer, update), `Escape` (address
-  taken, place operand, asm operand, OpenMP clause, nested-function capture,
-  `cleanup`), or `Capture` (a VLA extent named by a type). An update (`x += 1`,
+  taken, place operand, asm operand, OpenMP clause, nested-function or
+  `__block` capture, `cleanup`), or `Capture` (a VLA extent named by a type, or
+  a by-value block capture: a read with no value site, so never a
+  `single_read`). DefUse stops at inner functions; it sees their captures at
+  the literal, not their bodies. An update (`x += 1`,
   compare-exchange) is both a read and a write. `single_read(b)` is true when
   `b`'s only use is one `Read`.
 - Each loop and switch records its body's range, so "inside this loop" is a

@@ -1318,8 +1318,15 @@ impl Walker<'_, '_> {
                 }
             }
             Statement::Asm(asm) => self.asm(asm),
-            Statement::OmpParallel(_) | Statement::OmpFor(_) | Statement::NestedFunction(_) => {
-                self.escape_all(statement)
+            Statement::OmpParallel(_) | Statement::OmpFor(_) => self.escape_all(statement),
+            Statement::NestedFunction(nested) => {
+                for capture in &nested.captures {
+                    if let Some(node) = self.node(capture.id) {
+                        self.flag(node, ESCAPE | WRITE);
+                    }
+                    self.leaked.insert(capture.id);
+                    self.written.insert(capture.id);
+                }
             }
         }
     }

@@ -2,41 +2,38 @@ use crate::def_use::DefUse;
 use foldhash::{HashMap, HashSet};
 use slate_parser::ast::{MacroExpansionId, NodeId, Span};
 use slate_parser::ir::{
-    BindingId, Module, PlaceKind, Statement, Type, Visitor, walk_body_with_macros,
+    BindingId, Function, PlaceKind, Statement, Type, Visitor, walk_function_body_with_macros,
 };
 
-use super::inline_temporaries::record_captures;
+use super::PassContext;
 
-pub(super) fn transform(module: &mut Module) {
-    let mut captured = record_captures(module);
-    captured.extend(module.macro_hidden_arguments.values().flatten().copied());
-    let mut retired = Vec::new();
-    for function in &mut module.functions {
-        if let Some(body) = &mut function.value.body {
-            let def_use = DefUse::of(body);
-            let mut scan = Candidates::default();
-            walk_body_with_macros(body, &module.macro_values, &mut scan);
-            scan.temporaries.retain(|id| {
-                !captured.contains(id)
-                    && def_use.only_writes(*id, scan.writes.get(id).copied().unwrap_or(0))
-            });
-            if !scan.temporaries.is_empty() {
-                walk_body_with_macros(
-                    body,
-                    &module.macro_values,
-                    &mut Discard {
-                        dead: &scan.temporaries,
-                        retired: &mut retired,
-                        depth: 0,
-                    },
-                );
-            }
-        }
+pub(super) fn transform(function: &mut Function, cx: &mut PassContext) {
+    let Some(body) = &mut function.body else {
+        return;
+    };
+    let def_use = DefUse::of(body);
+    let mut scan = Candidates::default();
+    walk_function_body_with_macros(body, &cx.module.macro_values, &mut scan);
+    scan.temporaries.retain(|id| {
+        !cx.captured.contains(id)
+            && def_use.only_writes(*id, scan.writes.get(id).copied().unwrap_or(0))
+    });
+    if scan.temporaries.is_empty() {
+        return;
     }
+    let mut retired = Vec::new();
+    walk_function_body_with_macros(
+        body,
+        &cx.module.macro_values,
+        &mut Discard {
+            dead: &scan.temporaries,
+            retired: &mut retired,
+            depth: 0,
+        },
+    );
     for (node, binding) in retired {
-        module.c_types.bindings.remove(&binding);
-        module.c_types.nodes.remove(&node);
-        module.metadata.remove(&node);
+        cx.module.c_types.bindings.remove(&binding);
+        cx.retire([node]);
     }
 }
 

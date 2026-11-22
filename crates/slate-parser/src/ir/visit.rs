@@ -1,6 +1,12 @@
 use super::*;
 use crate::ast::{MacroExpansionId, Span};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CaptureKind {
+    Escape,
+    Read,
+}
+
 pub trait Visitor {
     fn keep(&self, _expansion: MacroExpansionId) -> bool {
         true
@@ -15,6 +21,7 @@ pub trait Visitor {
     fn enter_place_hole(&mut self, _expansion: MacroExpansionId, _place: &Place) {}
     fn leave_place_hole(&mut self, _expansion: MacroExpansionId) {}
     fn binding(&mut self, _binding: BindingId) {}
+    fn capture(&mut self, _binding: BindingId, _kind: CaptureKind) {}
     fn macro_value(&mut self, _wrap: MacroWrap, _value: &Value) {}
     fn rewrite_place(&mut self, _place: &mut Place) {}
     fn rewrite_value(&mut self, _value: &mut Value) {}
@@ -25,22 +32,35 @@ pub trait Visitor {
 struct Walker<'a, V> {
     visitor: &'a mut V,
     macro_values: Option<&'a MacroValues>,
+    inner_functions: InnerFunctions,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum InnerFunctions {
+    Descend,
+    Capture,
+}
+
+impl<'a, V: Visitor> Walker<'a, V> {
+    fn new(
+        visitor: &'a mut V,
+        macro_values: Option<&'a MacroValues>,
+        inner_functions: InnerFunctions,
+    ) -> Self {
+        Self {
+            visitor,
+            macro_values,
+            inner_functions,
+        }
+    }
 }
 
 pub fn walk_body<V: Visitor>(body: &mut Vec<Span<Statement>>, visitor: &mut V) {
-    Walker {
-        visitor,
-        macro_values: None,
-    }
-    .statements(body);
+    Walker::new(visitor, None, InnerFunctions::Descend).statements(body);
 }
 
 pub fn walk_value<V: Visitor>(value: &mut Value, visitor: &mut V) {
-    Walker {
-        visitor,
-        macro_values: None,
-    }
-    .value(value);
+    Walker::new(visitor, None, InnerFunctions::Descend).value(value);
 }
 
 pub fn walk_body_with_macros<V: Visitor>(
@@ -48,11 +68,7 @@ pub fn walk_body_with_macros<V: Visitor>(
     macro_values: &MacroValues,
     visitor: &mut V,
 ) {
-    Walker {
-        visitor,
-        macro_values: Some(macro_values),
-    }
-    .statements(body);
+    Walker::new(visitor, Some(macro_values), InnerFunctions::Descend).statements(body);
 }
 
 pub fn walk_value_with_macros<V: Visitor>(
@@ -60,11 +76,52 @@ pub fn walk_value_with_macros<V: Visitor>(
     macro_values: &MacroValues,
     visitor: &mut V,
 ) {
-    Walker {
-        visitor,
-        macro_values: Some(macro_values),
+    Walker::new(visitor, Some(macro_values), InnerFunctions::Descend).value(value);
+}
+
+pub fn walk_function_body<V: Visitor>(body: &mut Vec<Span<Statement>>, visitor: &mut V) {
+    Walker::new(visitor, None, InnerFunctions::Capture).statements(body);
+}
+
+pub fn walk_function_value<V: Visitor>(value: &mut Value, visitor: &mut V) {
+    Walker::new(visitor, None, InnerFunctions::Capture).value(value);
+}
+
+pub fn walk_function_body_with_macros<V: Visitor>(
+    body: &mut Vec<Span<Statement>>,
+    macro_values: &MacroValues,
+    visitor: &mut V,
+) {
+    Walker::new(visitor, Some(macro_values), InnerFunctions::Capture).statements(body);
+}
+
+pub fn walk_function_value_with_macros<V: Visitor>(
+    value: &mut Value,
+    macro_values: &MacroValues,
+    visitor: &mut V,
+) {
+    Walker::new(visitor, Some(macro_values), InnerFunctions::Capture).value(value);
+}
+
+pub fn for_each_inner_function(
+    body: &mut Vec<Span<Statement>>,
+    each: &mut impl FnMut(&mut Function),
+) {
+    struct Inner<'a, F>(&'a mut F);
+    impl<F: FnMut(&mut Function)> Visitor for Inner<'_, F> {
+        fn rewrite_statement(&mut self, statement: &mut Statement) {
+            if let Statement::NestedFunction(nested) = statement {
+                (self.0)(&mut nested.function);
+            }
+        }
+
+        fn rewrite_value(&mut self, value: &mut Value) {
+            if let ValueKind::Block(block) = &mut value.node.value {
+                (self.0)(&mut block.function);
+            }
+        }
     }
-    .value(value);
+    walk_function_body(body, &mut Inner(each));
 }
 
 impl<V: Visitor> Walker<'_, V> {
@@ -122,11 +179,18 @@ impl<V: Visitor> Walker<'_, V> {
                 self.visitor.leave_expansion(*expansion);
             }
             Statement::Block(body) | Statement::LabeledBlock { body, .. } => self.statements(body),
-            Statement::NestedFunction(nested) => {
-                if let Some(body) = &mut nested.function.body {
-                    self.statements(body);
+            Statement::NestedFunction(nested) => match self.inner_functions {
+                InnerFunctions::Descend => {
+                    if let Some(body) = &mut nested.function.body {
+                        self.statements(body);
+                    }
                 }
-            }
+                InnerFunctions::Capture => {
+                    for capture in &nested.captures {
+                        self.visitor.capture(capture.id, CaptureKind::Escape);
+                    }
+                }
+            },
             Statement::Temporary { initializer, .. } => {
                 if let Some(value) = initializer {
                     self.value(value);
@@ -473,11 +537,18 @@ impl<V: Visitor> Walker<'_, V> {
             | ValueKind::FloatClass { operand, .. }
             | ValueKind::Convert { operand, .. } => self.value(operand),
             ValueKind::StatementExpression(evaluation) => self.evaluation(evaluation),
-            ValueKind::Block(block) => {
-                if let Some(body) = &mut block.function.body {
-                    self.statements(body);
+            ValueKind::Block(block) => match self.inner_functions {
+                InnerFunctions::Descend => {
+                    if let Some(body) = &mut block.function.body {
+                        self.statements(body);
+                    }
                 }
-            }
+                InnerFunctions::Capture => {
+                    for capture in &block.captures {
+                        self.visitor.capture(capture.id, capture.kind());
+                    }
+                }
+            },
             ValueKind::Fence { ordering, .. } => self.atomicity(ordering),
             ValueKind::OldValue
             | ValueKind::Constant(_)

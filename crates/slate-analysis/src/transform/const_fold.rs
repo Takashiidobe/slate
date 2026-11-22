@@ -1,11 +1,11 @@
+use super::PassContext;
 use num_bigint::{BigInt, Sign};
 use slate_parser::ast::MacroExpansionId;
 use slate_parser::ir::*;
 
-pub(crate) fn transform(module: &mut Module) {
+pub(super) fn globals(module: &mut Module) {
     let Module {
         globals,
-        functions,
         macro_values,
         ..
     } = module;
@@ -15,14 +15,21 @@ pub(crate) fn transform(module: &mut Module) {
     };
     for global in globals {
         if let Some(initializer) = &mut global.value.variable.initializer {
-            walk_value_with_macros(initializer, macro_values, &mut fold);
+            walk_function_value_with_macros(initializer, macro_values, &mut fold);
         }
     }
-    for function in functions {
-        if let Some(body) = &mut function.value.body {
-            walk_body_with_macros(body, macro_values, &mut fold);
-        }
-    }
+}
+
+pub(super) fn transform(function: &mut Function, cx: &mut PassContext) {
+    let Some(body) = &mut function.body else {
+        return;
+    };
+    let macro_values = &cx.module.macro_values;
+    let mut fold = Fold {
+        macro_values,
+        depth: 0,
+    };
+    walk_function_body_with_macros(body, macro_values, &mut fold);
 }
 
 struct Fold<'a> {

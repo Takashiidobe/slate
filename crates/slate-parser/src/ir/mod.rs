@@ -7,7 +7,11 @@ mod declarations;
 mod macro_strip;
 pub use macro_strip::{strip_all_macro_structure, strip_all_macro_structure_in_value};
 mod visit;
-pub use visit::{Visitor, walk_body, walk_body_with_macros, walk_value, walk_value_with_macros};
+pub use visit::{
+    CaptureKind, Visitor, for_each_inner_function, walk_body, walk_body_with_macros,
+    walk_function_body, walk_function_body_with_macros, walk_function_value,
+    walk_function_value_with_macros, walk_value, walk_value_with_macros,
+};
 mod module;
 mod module_print;
 mod names;
@@ -77,6 +81,16 @@ pub struct BlockCapture {
     pub id: BindingId,
     pub ty: Type,
     pub by_reference: bool,
+}
+
+impl BlockCapture {
+    pub fn kind(&self) -> CaptureKind {
+        if self.by_reference {
+            CaptureKind::Escape
+        } else {
+            CaptureKind::Read
+        }
+    }
 }
 
 #[derive(Debug, Clone)]

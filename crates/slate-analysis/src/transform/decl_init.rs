@@ -2,31 +2,25 @@ use crate::def_use::{DefUse, captured};
 use foldhash::{HashMap, HashSet};
 use slate_parser::ast::{MacroExpansionId, NodeId, Span};
 use slate_parser::ir::{
-    BindingId, Module, PlaceKind, Statement, StorageDuration, Type, Variable, Visitor,
-    walk_body_with_macros,
+    BindingId, Function, PlaceKind, Statement, StorageDuration, Type, Variable, Visitor,
+    walk_function_body_with_macros,
 };
 
-use super::inline_temporaries::record_captures;
+use super::PassContext;
 
 const MAX_DISTANCE: usize = 32;
 
-pub(super) fn transform(module: &mut Module) {
-    let mut captured = record_captures(module);
-    captured.extend(module.macro_hidden_arguments.values().flatten().copied());
+pub(super) fn transform(function: &mut Function, cx: &mut PassContext) {
+    let Some(body) = &mut function.body else {
+        return;
+    };
     let mut pass = DeclInit {
-        captured: &captured,
+        captured: cx.captured,
         depth: 0,
         retired: Vec::new(),
     };
-    for function in &mut module.functions {
-        if let Some(body) = &mut function.value.body {
-            walk_body_with_macros(body, &module.macro_values, &mut pass);
-        }
-    }
-    for id in pass.retired {
-        module.c_types.nodes.remove(&id);
-        module.metadata.remove(&id);
-    }
+    walk_function_body_with_macros(body, &cx.module.macro_values, &mut pass);
+    cx.retire(pass.retired);
 }
 
 fn scalar_local(variable: &Variable) -> bool {

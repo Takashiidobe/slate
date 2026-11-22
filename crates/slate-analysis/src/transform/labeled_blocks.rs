@@ -1,63 +1,47 @@
 use foldhash::{HashMap, HashSet};
 use slate_parser::ast::{NodeId, Span};
-use slate_parser::ir::{BindingId, MacroValues, Module, Parameters, Statement, Visitor, walk_body};
+use slate_parser::ir::{
+    BindingId, CaptureKind, Function, MacroValues, Parameters, Statement, Visitor,
+    walk_function_body,
+};
 
+use super::PassContext;
 use super::inline_temporaries::{children, evaluations};
 use super::structure_goto::jump_lists;
 use super::truth_canonicalize::negation;
 
 type Body = Vec<Span<Statement>>;
 
-pub(super) fn transform(module: &mut Module) {
+pub(super) fn transform(function: &mut Function, cx: &mut PassContext) {
+    let Some(body) = &mut function.body else {
+        return;
+    };
+    let parameters: HashSet<String> = match &function.parameters {
+        Parameters::Prototype { fixed, .. } => fixed
+            .iter()
+            .filter_map(|parameter| parameter.value.name.clone())
+            .collect(),
+        Parameters::Unprototyped => HashSet::default(),
+    };
     let mut retired = Vec::new();
-    let Module {
-        functions,
-        macro_values,
-        globals,
-        ..
-    } = module;
-    let mut outer: HashSet<String> = globals
-        .iter()
-        .map(|global| global.value.variable.name.clone())
-        .chain(functions.iter().map(|function| function.value.name.clone()))
-        .collect();
-    for function in functions {
-        if let Some(body) = &mut function.value.body {
-            let parameters: Vec<String> = match &function.value.parameters {
-                Parameters::Prototype { fixed, .. } => fixed
-                    .iter()
-                    .filter_map(|parameter| parameter.value.name.clone())
-                    .collect(),
-                Parameters::Unprototyped => Vec::new(),
-            };
-            let added: Vec<String> = parameters
-                .into_iter()
-                .filter(|name| outer.insert(name.clone()))
-                .collect();
-            let mut pass = Pass {
-                macro_values,
-                outer: &outer,
-                locals: names(body).0,
-                cases: false,
-                retired: &mut retired,
-            };
-            while pass.list(body, None) {}
-            pass.cases = true;
-            while pass.list(body, None) {}
-            for name in added {
-                outer.remove(&name);
-            }
-        }
-    }
-    for id in retired {
-        module.c_types.nodes.remove(&id);
-        module.metadata.remove(&id);
-    }
+    let mut pass = Pass {
+        macro_values: &cx.module.macro_values,
+        outer: cx.visible,
+        parameters: &parameters,
+        locals: names(body).0,
+        cases: false,
+        retired: &mut retired,
+    };
+    while pass.list(body, None) {}
+    pass.cases = true;
+    while pass.list(body, None) {}
+    cx.retire(retired);
 }
 
 struct Pass<'a> {
     macro_values: &'a MacroValues,
     outer: &'a HashSet<String>,
+    parameters: &'a HashSet<String>,
     locals: HashMap<String, usize>,
     cases: bool,
     retired: &'a mut Vec<NodeId>,
@@ -254,7 +238,9 @@ impl Pass<'_> {
         let (declared, scoped) = names(inner);
         scoped
             || declared.iter().any(|(name, count)| {
-                self.outer.contains(name) || self.locals.get(name).copied().unwrap_or(0) > *count
+                self.outer.contains(name)
+                    || self.parameters.contains(name)
+                    || self.locals.get(name).copied().unwrap_or(0) > *count
             })
     }
 
@@ -370,7 +356,7 @@ fn nested_breaks(body: &mut Body, id: BindingId) -> usize {
 
 fn all_breaks(body: &mut Body, id: BindingId) -> usize {
     let mut breaks = Breaks { id, count: 0 };
-    walk_body(body, &mut breaks);
+    walk_function_body(body, &mut breaks);
     breaks.count
 }
 
@@ -389,7 +375,7 @@ impl Visitor for Breaks {
 
 fn names(body: &mut Body) -> (HashMap<String, usize>, bool) {
     let mut names = Names::default();
-    walk_body(body, &mut names);
+    walk_function_body(body, &mut names);
     (names.declared, names.scoped)
 }
 
@@ -531,7 +517,7 @@ fn retarget_cases(body: &mut Body, switch: BindingId, exit: BindingId) -> bool {
 
 fn movable(range: &[Span<Statement>], rest: &[Span<Statement>]) -> bool {
     let mut targets = Targets::default();
-    walk_body(&mut range.to_vec(), &mut targets);
+    walk_function_body(&mut range.to_vec(), &mut targets);
     if targets.found {
         return false;
     }
@@ -554,7 +540,7 @@ fn movable(range: &[Span<Statement>], rest: &[Span<Statement>]) -> bool {
         declared,
         found: false,
     };
-    walk_body(&mut rest.to_vec(), &mut reads);
+    walk_function_body(&mut rest.to_vec(), &mut reads);
     !reads.found
 }
 
@@ -579,6 +565,10 @@ struct Reads {
 
 impl Visitor for Reads {
     fn binding(&mut self, binding: BindingId) {
+        self.found |= self.declared.contains(&binding);
+    }
+
+    fn capture(&mut self, binding: BindingId, _kind: CaptureKind) {
         self.found |= self.declared.contains(&binding);
     }
 }

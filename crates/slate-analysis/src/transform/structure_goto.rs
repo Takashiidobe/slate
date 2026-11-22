@@ -1,49 +1,44 @@
 use foldhash::{HashMap, HashSet};
 use slate_parser::ast::{NodeId, Span};
 use slate_parser::ir::{
-    AsmPiece, BindingId, Evaluation, Module, Place, PlaceKind, Statement, StorageDuration, Type,
-    Value, ValueKind, Variable, Visitor, walk_body, walk_value,
+    AsmPiece, BindingId, CaptureKind, Evaluation, Function, Module, Place, PlaceKind, Statement,
+    StorageDuration, Type, Value, ValueKind, Variable, Visitor, walk_function_body,
+    walk_function_value,
 };
 
+use super::PassContext;
 use super::inline_temporaries::{children, evaluations};
 
 type Body = Vec<Span<Statement>>;
 
-pub(super) fn transform(module: &mut Module) {
-    let mut functions = std::mem::take(&mut module.functions);
+pub(super) fn transform(function: &mut Function, cx: &mut PassContext) {
+    let Some(body) = &mut function.body else {
+        return;
+    };
+    let mut survey = Survey::default();
+    walk_function_body(body, &mut survey);
+    if survey.indirect {
+        return;
+    }
+    let mut forwards = Forwards::default();
+    walk_function_body(body, &mut forwards);
+    let resolved = forwards.resolve();
+    if !resolved.is_empty() {
+        forward(body, &resolved, &mut survey.gotos);
+    }
+    let mut threads = HashMap::default();
+    scan_threads(body, &mut Vec::new(), &mut threads);
+    if !threads.is_empty() {
+        thread(body, &mut Vec::new(), &threads, &mut survey.gotos);
+    }
     let mut retired = Vec::new();
-    for function in &mut functions {
-        let Some(body) = &mut function.value.body else {
-            continue;
-        };
-        let mut survey = Survey::default();
-        walk_body(body, &mut survey);
-        if survey.indirect {
-            continue;
-        }
-        let mut forwards = Forwards::default();
-        walk_body(body, &mut forwards);
-        let resolved = forwards.resolve();
-        if !resolved.is_empty() {
-            forward(body, &resolved, &mut survey.gotos);
-        }
-        let mut threads = HashMap::default();
-        scan_threads(body, &mut Vec::new(), &mut threads);
-        if !threads.is_empty() {
-            thread(body, &mut Vec::new(), &threads, &mut survey.gotos);
-        }
-        let mut pass = StructureGoto {
-            module,
-            gotos: survey.gotos,
-            retired: &mut retired,
-        };
-        pass.list(body);
-    }
-    module.functions = functions;
-    for id in retired {
-        module.c_types.nodes.remove(&id);
-        module.metadata.remove(&id);
-    }
+    let mut pass = StructureGoto {
+        module: &mut *cx.module,
+        gotos: survey.gotos,
+        retired: &mut retired,
+    };
+    pass.list(body);
+    cx.retire(retired);
 }
 
 #[derive(Default)]
@@ -653,7 +648,7 @@ fn sites(range: &[Span<Statement>], label: BindingId) -> (Vec<usize>, usize) {
 
 fn condition_prefix(range: &[Span<Statement>], condition: &Value) -> usize {
     let mut reads = Reads::default();
-    walk_value(&mut condition.clone(), &mut reads);
+    walk_function_value(&mut condition.clone(), &mut reads);
     let mut split = range.len();
     loop {
         let declared = range[..split]
@@ -666,7 +661,7 @@ fn condition_prefix(range: &[Span<Statement>], condition: &Value) -> usize {
         let Some(declared) = declared else {
             return split;
         };
-        walk_body(&mut range[declared..split].to_vec(), &mut reads);
+        walk_function_body(&mut range[declared..split].to_vec(), &mut reads);
         split = declared;
     }
 }
@@ -676,6 +671,10 @@ struct Reads(HashSet<BindingId>);
 
 impl Visitor for Reads {
     fn binding(&mut self, binding: BindingId) {
+        self.0.insert(binding);
+    }
+
+    fn capture(&mut self, binding: BindingId, _kind: CaptureKind) {
         self.0.insert(binding);
     }
 }
@@ -719,7 +718,7 @@ fn movable(range: &[Span<Statement>], rest: &[Span<Statement>]) -> Option<HashSe
     }
     let mut switches = Switches::default();
     let mut range = range.to_vec();
-    walk_body(&mut range, &mut switches);
+    walk_function_body(&mut range, &mut switches);
     if switches.cases.difference(&switches.owned).next().is_some() {
         return None;
     }
@@ -728,7 +727,7 @@ fn movable(range: &[Span<Statement>], rest: &[Span<Statement>]) -> Option<HashSe
         used: HashSet::default(),
     };
     let mut rest = rest.to_vec();
-    walk_body(&mut rest, &mut uses);
+    walk_function_body(&mut rest, &mut uses);
     uses.used
         .iter()
         .all(|id| declared.get(id).copied().unwrap_or(false))
@@ -893,19 +892,7 @@ impl Visitor for Uses<'_> {
         self.note(binding);
     }
 
-    fn statement(&mut self, statement: &Statement) {
-        if let Statement::NestedFunction(nested) = statement {
-            for capture in &nested.captures {
-                self.note(capture.id);
-            }
-        }
-    }
-
-    fn value_kind(&mut self, kind: &ValueKind) {
-        if let ValueKind::Block(block) = kind {
-            for capture in &block.captures {
-                self.note(capture.id);
-            }
-        }
+    fn capture(&mut self, binding: BindingId, _kind: CaptureKind) {
+        self.note(binding);
     }
 }

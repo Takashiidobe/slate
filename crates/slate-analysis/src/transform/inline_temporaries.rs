@@ -1,75 +1,14 @@
-use crate::def_use::{DefUse, captured, deep};
+use super::PassContext;
+use crate::def_use::{DefUse, deep};
 use foldhash::{HashSet, HashSetExt};
 use slate_parser::ast::Span;
 use slate_parser::ir::*;
 
 const MAX_DISTANCE: usize = 32;
 
-pub(crate) fn transform(module: &mut Module) {
-    let captures = record_captures(module);
-    let Module {
-        functions,
-        macro_values,
-        ..
-    } = module;
-    for function in functions {
-        if let Some(body) = &mut function.value.body {
-            walk_body(
-                body,
-                &mut InnerFunctions {
-                    record_captures: &captures,
-                    macro_values,
-                },
-            );
-        }
-        rewrite(&mut function.value, &captures, macro_values);
-    }
-}
-
-struct InnerFunctions<'a> {
-    record_captures: &'a HashSet<BindingId>,
-    macro_values: &'a MacroValues,
-}
-
-impl Visitor for InnerFunctions<'_> {
-    fn rewrite_statement(&mut self, statement: &mut Statement) {
-        if let Statement::NestedFunction(nested) = statement {
-            rewrite(
-                &mut nested.function,
-                self.record_captures,
-                self.macro_values,
-            );
-        }
-    }
-
-    fn rewrite_value(&mut self, value: &mut Value) {
-        if let ValueKind::Block(block) = &mut value.node.value {
-            rewrite(&mut block.function, self.record_captures, self.macro_values);
-        }
-    }
-}
-
-pub(super) fn record_captures(module: &Module) -> HashSet<BindingId> {
-    let mut captures = HashSet::new();
-    for definition in &module.types {
-        if let TypeDefinitionKind::Record {
-            fields: Some(fields),
-            ..
-        } = &definition.value.kind
-        {
-            for field in fields {
-                captures.extend(captured(&field.ty));
-            }
-        }
-    }
-    captures
-}
-
-fn rewrite(
-    function: &mut Function,
-    record_captures: &HashSet<BindingId>,
-    macro_values: &MacroValues,
-) {
+pub(super) fn transform(function: &mut Function, cx: &mut PassContext) {
+    let record_captures = cx.captured;
+    let macro_values = &cx.module.macro_values;
     let Some(body) = &mut function.body else {
         return;
     };
@@ -435,7 +374,7 @@ fn substitute(
         if substitute.initializer.is_none() {
             break;
         }
-        walk_value(value, &mut substitute);
+        walk_function_value(value, &mut substitute);
     }
     substitute.initializer
 }
@@ -884,8 +823,13 @@ impl<'c, 'a> Scan<'c, 'a> {
             }
             ValueKind::Block(block) => {
                 self.summary.effects = true;
-                if let Some(body) = &block.function.body {
-                    self.nested(|scan| scan.statements(body));
+                for capture in &block.captures {
+                    if self.temporary == Some(capture.id) {
+                        self.found = true;
+                        self.rejected = true;
+                    } else if self.local(capture.id) {
+                        self.summary.reads.insert(capture.id);
+                    }
                 }
             }
             ValueKind::Fence { .. } | ValueKind::Seh(_) => self.summary.effects = true,

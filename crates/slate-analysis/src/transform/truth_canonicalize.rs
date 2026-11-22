@@ -1,13 +1,13 @@
+use super::PassContext;
 use super::const_fold::constant_comparison;
 use super::inline_temporaries::{children, evaluations};
 use foldhash::HashSet;
 use slate_parser::ast::{MacroExpansionId, Span};
 use slate_parser::ir::*;
 
-pub(crate) fn transform(module: &mut Module) {
+pub(super) fn globals(module: &mut Module) {
     let Module {
         globals,
-        functions,
         macro_values,
         ..
     } = module;
@@ -19,21 +19,24 @@ pub(crate) fn transform(module: &mut Module) {
     };
     for global in globals {
         if let Some(initializer) = &mut global.value.variable.initializer {
-            walk_value_with_macros(initializer, macro_values, &mut truth);
+            walk_function_value_with_macros(initializer, macro_values, &mut truth);
         }
     }
-    for function in functions.iter_mut() {
-        if let Some(body) = &mut function.value.body {
-            walk_body_with_macros(body, macro_values, &mut truth);
-        }
-    }
-    if truth.written.is_empty() {
+}
+
+pub(super) fn transform(function: &mut Function, cx: &mut PassContext) {
+    let Some(body) = &mut function.body else {
         return;
-    }
-    for function in functions {
-        if let Some(body) = &mut function.value.body {
-            initialize(body, &truth.written);
-        }
+    };
+    let mut truth = Truth {
+        macro_values: &cx.module.macro_values,
+        depth: 0,
+        temporaries: HashSet::default(),
+        written: HashSet::default(),
+    };
+    walk_function_body_with_macros(body, &cx.module.macro_values, &mut truth);
+    if !truth.written.is_empty() {
+        initialize(body, &truth.written);
     }
 }
 

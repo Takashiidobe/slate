@@ -1,28 +1,23 @@
+use super::PassContext;
 use foldhash::{HashMap, HashSet};
 use slate_parser::ast::MacroExpansionId;
 use slate_parser::ir::*;
 
-pub(crate) fn transform(module: &mut Module) {
-    let Module {
-        functions,
+pub(super) fn transform(function: &mut Function, cx: &mut PassContext) {
+    let Some(body) = &mut function.body else {
+        return;
+    };
+    let macro_values = &cx.module.macro_values;
+    let mut scan = Scan {
         macro_values,
-        ..
-    } = module;
-    for function in functions.iter_mut() {
-        let Some(body) = &mut function.value.body else {
-            continue;
-        };
-        let mut scan = Scan {
-            macro_values,
-            depth: 0,
-            locals: HashMap::default(),
-            tainted: HashSet::default(),
-        };
-        walk_body_with_macros(body, macro_values, &mut scan);
-        let truth = scan.truth_locals();
-        if !truth.is_empty() {
-            walk_body(body, &mut Retype { truth });
-        }
+        depth: 0,
+        locals: HashMap::default(),
+        tainted: HashSet::default(),
+    };
+    walk_function_body_with_macros(body, macro_values, &mut scan);
+    let truth = scan.truth_locals();
+    if !truth.is_empty() {
+        walk_function_body(body, &mut Retype { truth });
     }
 }
 
@@ -175,10 +170,7 @@ fn tested_against_zero<'v>(left: &'v Value, right: &'v Value) -> Option<&'v Valu
 }
 
 fn nests(statement: &Statement) -> bool {
-    matches!(
-        statement,
-        Statement::NestedFunction(_) | Statement::OmpParallel(_) | Statement::OmpFor(_)
-    )
+    matches!(statement, Statement::OmpParallel(_) | Statement::OmpFor(_))
 }
 
 impl Visitor for Scan<'_> {
@@ -294,6 +286,10 @@ impl Visitor for Scan<'_> {
         if self.depth > 0 {
             self.tainted.insert(binding);
         }
+    }
+
+    fn capture(&mut self, binding: BindingId, _kind: CaptureKind) {
+        self.tainted.insert(binding);
     }
 }
 

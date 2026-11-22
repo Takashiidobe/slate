@@ -746,10 +746,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let sum: *mut __slate_blocks::Byref<i64> = __captures.c0;
 // CHECK-NEXT:     let calls: *mut __slate_blocks::Byref<i32> = __captures.c1;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         if [[V_2]] % 2 != 0 {
+// CHECK-NEXT:     if [[V_2]] % 2 != 0 {
+// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *__slate_blocks::value(sum) += [[V_2]] as i64;
 // CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *__slate_blocks::value(calls) += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

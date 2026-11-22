@@ -1,27 +1,19 @@
 use slate_parser::ast::{NodeId, Span};
 use slate_parser::ir::{
-    BindingId, MacroValues, Module, Number, Statement, Value, ValueKind, Visitor, walk_value,
+    BindingId, Function, MacroValues, Number, Statement, Value, ValueKind, Visitor, walk_value,
 };
 
+use super::PassContext;
 use super::const_fold::constant_comparison;
 use super::inline_temporaries::{children, evaluations};
 
-pub(super) fn transform(module: &mut Module) {
+pub(super) fn transform(function: &mut Function, cx: &mut PassContext) {
+    let Some(body) = &mut function.body else {
+        return;
+    };
     let mut retired = Vec::new();
-    let Module {
-        functions,
-        macro_values,
-        ..
-    } = module;
-    for function in functions {
-        if let Some(body) = &mut function.value.body {
-            list(body, macro_values, &mut retired);
-        }
-    }
-    for id in retired {
-        module.c_types.nodes.remove(&id);
-        module.metadata.remove(&id);
-    }
+    list(body, &cx.module.macro_values, &mut retired);
+    cx.retire(retired);
 }
 
 fn list(body: &mut [Span<Statement>], macro_values: &MacroValues, retired: &mut Vec<NodeId>) {

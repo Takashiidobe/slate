@@ -151,10 +151,7 @@ impl DefUse {
             Statement::Expression(value) | Statement::Return(Some(value)) => self.value(value),
             Statement::NestedFunction(nested) => {
                 for capture in &nested.captures {
-                    self.record(capture.id, Access::Escape);
-                }
-                if let Some(body) = &nested.function.body {
-                    self.statements(body);
+                    self.capture(capture.id, CaptureKind::Escape);
                 }
             }
             Statement::If {
@@ -355,6 +352,16 @@ impl DefUse {
         deep(|| self.value_kind(&value.node.value));
     }
 
+    fn capture(&mut self, binding: BindingId, kind: CaptureKind) {
+        self.record(
+            binding,
+            match kind {
+                CaptureKind::Escape => Access::Escape,
+                CaptureKind::Read => Access::Capture,
+            },
+        );
+    }
+
     fn captures(&mut self, ty: &Type) {
         for binding in captured(ty) {
             self.record(binding, Access::Capture);
@@ -476,8 +483,8 @@ impl DefUse {
             | ValueKind::Convert { operand, .. } => self.value(operand),
             ValueKind::StatementExpression(evaluation) => self.evaluation(evaluation),
             ValueKind::Block(block) => {
-                if let Some(body) = &block.function.body {
-                    self.statements(body);
+                for capture in &block.captures {
+                    self.capture(capture.id, capture.kind());
                 }
             }
             ValueKind::LabelAddress(_)
