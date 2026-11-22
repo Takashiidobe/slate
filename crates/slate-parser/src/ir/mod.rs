@@ -277,6 +277,7 @@ impl fmt::Display for Value {
 pub struct Annotations<'a> {
     pub metadata: Option<&'a Metadata>,
     pub macros: Option<&'a MacroInvocations>,
+    pub(crate) block_functions: Option<&'a std::cell::RefCell<Vec<String>>>,
 }
 
 pub struct DisplayValue<'a> {
@@ -583,7 +584,11 @@ impl Value {
                     .with_compact(compact)
             ),
             ValueKind::Block(block) => {
-                write!(f, "block_literal<{}, captures=[", self.ty)?;
+                write!(
+                    f,
+                    "block_literal<{}, %{}, captures=[",
+                    self.ty, block.function.id.0
+                )?;
                 for (index, capture) in block.captures.iter().enumerate() {
                     if index > 0 {
                         f.write_str(", ")?;
@@ -595,11 +600,12 @@ impl Value {
                         if capture.by_reference { " byref" } else { "" }
                     )?;
                 }
-                write!(
-                    f,
-                    "], statements={}>",
-                    block.function.body.as_ref().map_or(0, Vec::len)
-                )
+                f.write_str("]>")?;
+                if let Some(pending) = metadata.block_functions {
+                    let rendered = module_print::block_function(block, metadata, compact);
+                    pending.borrow_mut().push(rendered);
+                }
+                Ok(())
             }
             ValueKind::Capture { id, extent, value } => write!(
                 f,

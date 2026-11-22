@@ -315,8 +315,9 @@ variables, which the backend must keep in shared storage (their `Let` carries
 `byref`, printed `[byref]`); `ty` is the captured variable's type. Everything
 else is captured by value at block creation. Assigning a captured non-`__block`
 variable is rejected by the checker. A call through a block pointer is a `Call`
-with an indirect callee whose value has the block pointer type. Fixture:
-`block_literals.c`.
+with an indirect callee whose value has the block pointer type. The printer
+shows the literal inline as `block_literal<T, %F, captures=[..]>` and its body
+as a `block_fn %F` after the holding statement. Fixture: `block_literals.c`.
 
 ## Unsequenced effects follow clang
 

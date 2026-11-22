@@ -1,15 +1,16 @@
 use super::{
-    Annotations, ArrayExtent, AsmConstraintLocation, AsmOperandKind, AutoInit, CTypeTable, Comment,
-    Comments, DllStorage, Evaluation, FloatType, InlineAsm, Inlining, Linkage, MemoryEffects,
-    Metadata, Module, NumericType, Parameters, PatternFill, RecordKind, SehHandler, Statement,
-    StorageDuration, SymbolAttributes, TargetFeature, TlsModel, Type, TypeDefinitionKind, Variable,
-    Visibility,
+    Annotations, ArrayExtent, AsmConstraintLocation, AsmOperandKind, AutoInit, BlockLiteral,
+    CTypeTable, Comment, Comments, DllStorage, Evaluation, FloatType, InlineAsm, Inlining, Linkage,
+    MemoryEffects, Metadata, Module, NumericType, Parameters, PatternFill, RecordKind, SehHandler,
+    Statement, StorageDuration, SymbolAttributes, TargetFeature, TlsModel, Type,
+    TypeDefinitionKind, Variable, Visibility,
 };
 use crate::{
     ast::{CommentAttach, Loc, MacroInvocations, NodeId, SmeKind, Span},
     compiler_options::StackProtector,
     ir::Fallthrough,
 };
+use std::cell::RefCell;
 use std::fmt;
 
 pub struct DisplayModule<'a> {
@@ -262,7 +263,6 @@ fn asm_attributes(f: &mut fmt::Formatter<'_>, asm: &InlineAsm) -> fmt::Result {
     }
 }
 
-#[derive(Clone, Copy)]
 struct Printer<'a> {
     metadata: Option<&'a Metadata>,
     macros: Option<&'a MacroInvocations>,
@@ -270,6 +270,7 @@ struct Printer<'a> {
     comments: Option<&'a Comments>,
     show_comments: bool,
     compact: bool,
+    block_functions: RefCell<Vec<String>>,
 }
 
 impl DisplayModule<'_> {
@@ -321,8 +322,49 @@ impl DisplayModule<'_> {
             comments: self.show_comments.then_some(&self.module.comments),
             show_comments: self.show_comments,
             compact: self.compact,
+            block_functions: RefCell::default(),
         }
     }
+}
+
+pub(super) fn block_function(
+    block: &BlockLiteral,
+    table: Annotations<'_>,
+    compact: bool,
+) -> String {
+    struct Rendered<'a> {
+        block: &'a BlockLiteral,
+        printer: Printer<'a>,
+    }
+    impl fmt::Display for Rendered<'_> {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            let function = &self.block.function;
+            write!(f, "block_fn %{}(", function.id.0)?;
+            parameter_list(f, &function.parameters, self.printer.table())?;
+            f.write_str(") -> ")?;
+            match &function.return_type {
+                Some(ty) => write!(f, "{ty}")?,
+                None => f.write_str("void")?,
+            }
+            writeln!(f, " {{")?;
+            self.printer
+                .statements(f, function.body.as_deref().unwrap_or_default(), 4)?;
+            f.write_str("}")
+        }
+    }
+    Rendered {
+        block,
+        printer: Printer {
+            metadata: table.metadata,
+            macros: table.macros,
+            c_types: None,
+            comments: None,
+            show_comments: false,
+            compact,
+            block_functions: RefCell::default(),
+        },
+    }
+    .to_string()
 }
 
 pub struct DisplayStatement<'a> {
@@ -346,6 +388,7 @@ impl fmt::Display for StatementLines<'_> {
             comments: None,
             show_comments: false,
             compact: false,
+            block_functions: RefCell::default(),
         }
         .statements(f, std::slice::from_ref(self.0), 0)
     }
@@ -362,6 +405,7 @@ impl Printer<'_> {
         Annotations {
             metadata: self.metadata,
             macros: self.macros,
+            block_functions: Some(&self.block_functions),
         }
     }
 
@@ -605,10 +649,15 @@ impl Printer<'_> {
         body: &[Span<Statement>],
         indent: usize,
     ) -> fmt::Result {
+        let mut pending = None;
         for statement in body {
+            if let Some(mark) = pending.take() {
+                self.block_functions_since(f, mark, indent)?;
+            }
             if matches!(statement.value, Statement::Comment(_)) && !self.show_comments {
                 continue;
             }
+            pending = Some(self.block_functions.borrow().len());
             write!(f, "{:indent$}", "")?;
             match &statement.value {
                 Statement::Comment(comment) => {
@@ -1044,6 +1093,24 @@ impl Printer<'_> {
             self.statement_annotations(f, statement)?;
             writeln!(f, ";")?;
         }
+        if let Some(mark) = pending {
+            self.block_functions_since(f, mark, indent)?;
+        }
+        Ok(())
+    }
+
+    fn block_functions_since(
+        &self,
+        f: &mut fmt::Formatter<'_>,
+        mark: usize,
+        indent: usize,
+    ) -> fmt::Result {
+        let rendered: Vec<String> = self.block_functions.borrow_mut().drain(mark..).collect();
+        for function in rendered {
+            for line in function.lines() {
+                writeln!(f, "{:indent$}{line}", "")?;
+            }
+        }
         Ok(())
     }
 }
@@ -1381,6 +1448,7 @@ impl fmt::Display for DisplayModule<'_> {
                 locations(f, global.spelling, global.expansion)?;
             }
             writeln!(f, ";")?;
+            printer.block_functions_since(f, 0, 4)?;
         }
         for function in &self.module.functions {
             printer.owned(f, function.id, 4, None)?;

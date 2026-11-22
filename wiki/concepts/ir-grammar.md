@@ -634,7 +634,12 @@ core       = "const<" type ">(" constant ")"
            | "float_class<bool, test=" float_class ">(" value ")"
            | "lane<" type ">(" value ", " value ")"
            | "shuffle<" type ", mask=" shuffle_mask ">(" value [ ", " value ] ")"
-           | "intrinsic<" type ", " llvm_name ">(" [ value { ", " value } ] ")" ;
+           | "intrinsic<" type ", " llvm_name ">(" [ value { ", " value } ] ")"
+           | "block_literal<" type ", " binding ", captures=["
+             [ capture { ", " capture } ] "]>" ;
+capture    = binding [ " byref" ] ;
+block_fn   = "block_fn" binding "(" [ parameters ] ")" "->" type
+             "{" { statement } "}" ;
 shuffle_mask = "[" lane { ", " lane } "]" | "dynamic(" value ")" ;
 lane       = digits | "undef" ;
 constant   = int | bool | decimal_digits | float_literal | "bits=0x" hex_digits ;
@@ -665,6 +670,10 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
   operand and comes from an `ext_vector` swizzle. `mask=dynamic(v)` is the
   two-operand `__builtin_shufflevector` form, whose mask is a runtime integer
   vector, not constants.
+- `block_literal<T, %F, captures=[..]>` is a clang `^{}` literal; `%F` is its
+  function. Its body prints as `block_fn %F(..) -> T { .. }` on the lines after
+  the statement or global that holds the literal, at that statement's indent,
+  in the order the literals appear.
 - `intrinsic<T, llvm.name>(args)` calls an LLVM intrinsic by its unmangled name
   (`llvm.vector.reduce.add`, `llvm.umax`); overload suffixes come from the
   argument and result types. Only builtin expansion produces it

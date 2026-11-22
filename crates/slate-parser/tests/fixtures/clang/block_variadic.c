@@ -39,7 +39,21 @@ int call(int (^f)(int, ...)) { return f(2, (char)1, (short)2); }
 // DEFAULT-NEXT:         storage d128 [size=16, align=16];
 // DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     type @type[[TYPE_va_list:[0-9]+]] va_list = va_list;
-// DEFAULT-NEXT:     global %[[VALUE_sum:[0-9]+]] sum: block<fn(i32, ...) -> i32> [storage=static] = block_literal<block<fn(i32, ...) -> i32>, captures=[], statements=6> [linkage=external];
+// DEFAULT-NEXT:     global %[[VALUE_sum:[0-9]+]] sum: block<fn(i32, ...) -> i32> [storage=static] = block_literal<block<fn(i32, ...) -> i32>, %[[VALUE0:[0-9]+]], captures=[]> [linkage=external];
+// DEFAULT-NEXT:     block_fn %[[VALUE0]](%[[VALUE_n:[0-9]+]] n: i32, ...) -> i32 {
+// DEFAULT-NEXT:         let %[[VALUE_ap:[0-9]+]] ap: va_list [storage=automatic] [c="va_list"];
+// DEFAULT-NEXT:         va_start(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         let %[[VALUE_s:[0-9]+]] s: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:         for %[[VALUE1:[0-9]+]]
+// DEFAULT-NEXT:             init:
+// DEFAULT-NEXT:                 let %[[VALUE_i:[0-9]+]] i: i32 [storage=automatic] = const<i32>(0);
+// DEFAULT-NEXT:             condition: lt<i32>(read<i32>(%[[VALUE_i]]), read<i32>(%[[VALUE_n]]))
+// DEFAULT-NEXT:             increment: update<i32, result=old>(%[[VALUE_i]], add<i32>(old<i32>, const<i32>(1)))
+// DEFAULT-NEXT:             body:
+// DEFAULT-NEXT:                 capture<%[[VALUE2:[0-9]+]]>(va_arg<i32>(%[[VALUE_ap]]), update<i32, result=new>(%[[VALUE_s]], add<i32>(old<i32>, read<i32>(%[[VALUE2]]))));
+// DEFAULT-NEXT:         va_end(%[[VALUE_ap]]);
+// DEFAULT-NEXT:         return read<i32>(%[[VALUE_s]]);
+// DEFAULT-NEXT:     }
 // DEFAULT-NEXT:     fn %[[VALUE_call:[0-9]+]] @call(%[[VALUE_f:[0-9]+]] f: block<fn(i32, ...) -> i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // DEFAULT-NEXT:         return call<i32>(read<block<fn(i32, ...) -> i32>>(%[[VALUE_f]]), const<i32>(2), widen<i32>(truncate<i8>(const<i32>(1))), widen<i32>(truncate<i16>(const<i32>(2))));
 // DEFAULT-NEXT:     }
