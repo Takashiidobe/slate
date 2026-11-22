@@ -16,7 +16,8 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: fn volatile_local(mut slot: i32) -> i32 {
+// CHECK-NEXT: fn volatile_local(value: i32) -> i32 {
+// CHECK-NEXT:     let mut slot: i32 = value;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_volatile(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(slot),

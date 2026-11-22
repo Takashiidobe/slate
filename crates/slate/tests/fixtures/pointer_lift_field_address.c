@@ -106,14 +106,14 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn mark(p: &mut i8) {
 // CHECK-NEXT:     *p = 119;
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn bump_packed({{__v[0-9]+}}: *mut i32) {
+// CHECK-LABEL: {{^}}fn bump_packed(p: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0:__v[0-9]+]] = *[[V_0]] + 10;
+// CHECK-NEXT:         *p = *p + 10;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn bump_half({{__v[0-9]+}}: *mut i32) {
+// CHECK-LABEL: {{^}}fn bump_half(p: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0:__v[0-9]+]] = *[[V_0]] + 20;
+// CHECK-NEXT:         *p = *p + 20;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn bump_union(p: &mut i32) {

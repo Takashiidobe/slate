@@ -134,7 +134,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe { hook.unwrap()() };
 // CHECK-NEXT:     (unsafe { *p.add(1) }) - before + n
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn sum_after(p: *const i32, n: i32, mut total: i32) -> i32 {
+// CHECK-LABEL: {{^}}fn sum_after(p: *const i32, n: i32, extra: i32) -> i32 {
+// CHECK-NEXT:     let mut total: i32 = extra;
 // CHECK-NEXT:     for i in 0..n {
 // CHECK-NEXT:         total += unsafe { *p.offset(i as isize) };
 // CHECK-NEXT:     }

@@ -70,8 +70,9 @@ int main(void) {
 // CHECK-NEXT: use slate_support::free;
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn handle_exit(status: i32, arg: *mut ()) {
+// CHECK-NEXT:     let captured: *mut i32 = arg as *mut i32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(arg as *mut i32) = status;
+// CHECK-NEXT:         *captured = status;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("on_exit:{}", status);
 // CHECK-NEXT: }

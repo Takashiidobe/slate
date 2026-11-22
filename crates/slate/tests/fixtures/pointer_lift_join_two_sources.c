@@ -21,7 +21,8 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: fn read_then_store(mut q: *const i32, b: *mut i32, which: i32) -> i32 {
+// CHECK-NEXT: fn read_then_store(a: *const i32, b: *mut i32, which: i32) -> i32 {
+// CHECK-NEXT:     let mut q: *const i32 = a;
 // CHECK-NEXT:     let mut s: i32 = unsafe { *q };
 // CHECK-NEXT:     if which != 0 {
 // CHECK-NEXT:         q = b as *const i32;

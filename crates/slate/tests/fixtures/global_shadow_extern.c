@@ -64,9 +64,9 @@ int late = 99;
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: fn bump([[V_0:__v[0-9]+]]: *mut i32, by: i32) {
+// CHECK-NEXT: fn bump(slot: *mut i32, by: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + by;
+// CHECK-NEXT:         *slot = *slot + by;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

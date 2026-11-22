@@ -313,7 +313,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn switch_wide_selector(mut [[T_0:__t[0-9]+]]: bitint::BInt<256, 4, 32, bitint::A8>) -> i32 {
+// CHECK-NEXT: fn switch_wide_selector(x: bitint::BInt<256, 4, 32, bitint::A8>) -> i32 {
+// CHECK-NEXT:     let [[T_0:__t[0-9]+]]: bitint::BInt<256, 4, 32, bitint::A8> = x;
 // CHECK-NEXT:     let [[T_1:__t[0-9]+]]: i64 = if [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(1))
 // CHECK-NEXT:         == 0 || [[T_0]].compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(2)) == 0 {
 // CHECK-NEXT:         0
@@ -355,9 +356,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn switch_wide_selector_unsigned(
-// CHECK-NEXT:     mut [[T_0]]: bitint::BUint<256, 4, 32, bitint::A8>,
-// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT: fn switch_wide_selector_unsigned(x: bitint::BUint<256, 4, 32, bitint::A8>) -> i32 {
+// CHECK-NEXT:     let [[T_0]]: bitint::BUint<256, 4, 32, bitint::A8> = x;
 // CHECK-NEXT:     let [[T_1]]: i64 = if [[T_0]]
 // CHECK-NEXT:         .compare(
 // CHECK-NEXT:             <bitint::BUint<256, 4, 32, bitint::A8>>::from_le_bytes::<208, 26>(
@@ -392,8 +392,9 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn switch_wide_fallthrough(mut [[T_0]]: bitint::BInt<256, 4, 32, bitint::A8>) -> i32 {
+// CHECK-NEXT: fn switch_wide_fallthrough(x: bitint::BInt<256, 4, 32, bitint::A8>) -> i32 {
 // CHECK-NEXT:     let mut acc: i32 = 0;
+// CHECK-NEXT:     let [[T_0]]: bitint::BInt<256, 4, 32, bitint::A8> = x;
 // CHECK-NEXT:     let mut [[T_1]]: i64 = if [[T_0]]
 // CHECK-NEXT:         .compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(1)) == 0 {
 // CHECK-NEXT:         0

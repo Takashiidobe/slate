@@ -580,10 +580,11 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_fmaddsub_pd(
-// CHECK-NEXT:     [[V_0:__v[0-9]+]]: core::simd::Simd<f64, 8>,
+// CHECK-NEXT:     __A: core::simd::Simd<f64, 8>,
 // CHECK-NEXT:     __B: core::simd::Simd<f64, 8>,
 // CHECK-NEXT:     __C: core::simd::Simd<f64, 8>,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 8> {
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: core::simd::Simd<f64, 8> = __A;
 // CHECK-NEXT:     return core::simd::Select::select(
 // CHECK-NEXT:         core::simd::Mask::<i64, 8>::from_bitmask(((-1i32 as u8) as u8) as u64),
 // CHECK-NEXT:         unsafe { __slate_intrinsic_d0c927b47915b2e1([[V_0]], __B, __C, const { 4i32 }) },
@@ -594,11 +595,12 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_mask_fmaddsub_pd(
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f64, 8>,
+// CHECK-NEXT:     __A: core::simd::Simd<f64, 8>,
 // CHECK-NEXT:     __U: u8,
 // CHECK-NEXT:     __B: core::simd::Simd<f64, 8>,
 // CHECK-NEXT:     __C: core::simd::Simd<f64, 8>,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 8> {
+// CHECK-NEXT:     let [[V_0]]: core::simd::Simd<f64, 8> = __A;
 // CHECK-NEXT:     return core::simd::Select::select(
 // CHECK-NEXT:         core::simd::Mask::<i64, 8>::from_bitmask((__U as u8) as u64),
 // CHECK-NEXT:         unsafe { __slate_intrinsic_d0c927b47915b2e1([[V_0]], __B, __C, const { 4i32 }) },
@@ -611,9 +613,10 @@ int main(void) {
 // CHECK-NEXT: unsafe fn _mm512_mask3_fmaddsub_pd(
 // CHECK-NEXT:     __A: core::simd::Simd<f64, 8>,
 // CHECK-NEXT:     __B: core::simd::Simd<f64, 8>,
-// CHECK-NEXT:     [[V_0]]: core::simd::Simd<f64, 8>,
+// CHECK-NEXT:     __C: core::simd::Simd<f64, 8>,
 // CHECK-NEXT:     __U: u8,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 8> {
+// CHECK-NEXT:     let [[V_0]]: core::simd::Simd<f64, 8> = __C;
 // CHECK-NEXT:     return core::simd::Select::select(
 // CHECK-NEXT:         core::simd::Mask::<i64, 8>::from_bitmask((__U as u8) as u64),
 // CHECK-NEXT:         unsafe { __slate_intrinsic_d0c927b47915b2e1(__A, __B, [[V_0]], const { 4i32 }) },

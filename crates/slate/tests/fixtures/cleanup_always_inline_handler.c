@@ -55,7 +55,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn guarded(mut held: i32, bail: i32) -> i32 {
+// CHECK-NEXT: fn guarded(depth: i32, bail: i32) -> i32 {
+// CHECK-NEXT:     let mut held: i32 = depth;
 // CHECK-NEXT:     let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(held) as *mut _;
 // CHECK-NEXT:     let __slate_cleanup_0 = ::slate_support::Guard(
 // CHECK-NEXT:         &mut || unlock(__slate_cleanup_ptr_0 as *mut _),

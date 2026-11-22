@@ -80,7 +80,8 @@ int main(void) {
 // CHECK-NEXT:     unlock(unsafe { *p });
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn guarded(mut guard: *mut i32) -> i32 {
+// CHECK-NEXT: fn guarded(x: *mut i32) -> i32 {
+// CHECK-NEXT:     let mut guard: *mut i32 = x;
 // CHECK-NEXT:     let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(guard) as *mut _;
 // CHECK-NEXT:     let __slate_cleanup_0 = ::slate_support::Guard(
 // CHECK-NEXT:         &mut || release(__slate_cleanup_ptr_0 as *mut _),

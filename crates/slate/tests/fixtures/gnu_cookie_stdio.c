@@ -56,27 +56,24 @@ int main(void) {
 // CHECK-NEXT:     buffer: *const i8,
 // CHECK-NEXT:     size: u64,
 // CHECK-NEXT: ) -> i64 {
+// CHECK-NEXT:     let cookie: *mut GNUCookie = state as *mut GNUCookie;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
 // CHECK-NEXT:             ((buffer as *const ()) as *const core::ffi::c_void) as *const u8,
-// CHECK-NEXT:             (((*(state as *mut GNUCookie)).bytes
-// CHECK-NEXT:                 .as_mut_ptr()
-// CHECK-NEXT:                 .offset((*(state as *mut GNUCookie)).length as isize) as *mut ())
+// CHECK-NEXT:             (((*cookie).bytes.as_mut_ptr().offset((*cookie).length as isize) as *mut ())
 // CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             (size as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(state as *mut GNUCookie)).length = unsafe {
-// CHECK-NEXT:                 (*(state as *mut GNUCookie)).length
-// CHECK-NEXT:             }
-// CHECK-NEXT:             .wrapping_add(size);
+// CHECK-NEXT:         (*cookie).length = unsafe { (*cookie).length }.wrapping_add(size);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     size as i64
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}extern "C-unwind" fn gnu_cookie_close(state: *mut ()) -> i32 {
+// CHECK-NEXT:     let cookie: *mut GNUCookie = state as *mut GNUCookie;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(state as *mut GNUCookie)).closed = 1;
+// CHECK-NEXT:         (*cookie).closed = 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

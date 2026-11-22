@@ -25,7 +25,8 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn bp_operand(mut r: i64) -> i64 {
+// CHECK-NEXT: fn bp_operand(x: i64) -> i64 {
+// CHECK-NEXT:     let mut r: i64 = x;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
@@ -39,7 +40,8 @@ int main(void) {
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn bp_intel(mut r: i64) -> i64 {
+// CHECK-NEXT: fn bp_intel(x: i64) -> i64 {
+// CHECK-NEXT:     let mut r: i64 = x;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(

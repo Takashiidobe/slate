@@ -103,7 +103,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]
-// CHECK-NEXT: extern "C-unwind" fn find(mut p: *mut ent, h: u32, key: c_ulong) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn find(head: *mut ent, h: u32, key: c_ulong) -> i32 {
+// CHECK-NEXT:     let mut p: *mut ent = head;
 // CHECK-NEXT:     FIND_ENTRY!(p, h, key);
 // CHECK-NEXT:     !p.is_null() as i32
 // CHECK-NEXT: }

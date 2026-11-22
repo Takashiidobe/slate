@@ -29,7 +29,8 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: fn same_as_place(mut flag: i32, mut other: i32) -> i32 {
+// CHECK-NEXT: fn same_as_place(place: i32, mut other: i32) -> i32 {
+// CHECK-NEXT:     let mut flag: i32 = place;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u8;
 // CHECK-NEXT:         core::arch::asm!(
@@ -44,7 +45,8 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn wide_place(mut flag: i64, mut other: i64) -> i32 {
+// CHECK-NEXT: fn wide_place(place: i64, mut other: i64) -> i32 {
+// CHECK-NEXT:     let mut flag: i64 = place;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u8;
 // CHECK-NEXT:         core::arch::asm!(

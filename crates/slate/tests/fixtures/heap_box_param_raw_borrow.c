@@ -40,11 +40,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn consume(
-// CHECK-NEXT:     [[V_0:__v[0-9]+]]: *mut __SlateRecord_heap_box_param_raw_borrow_c_7,
+// CHECK-NEXT:     ctx: *mut __SlateRecord_heap_box_param_raw_borrow_c_7,
 // CHECK-NEXT:     n: u64,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_0]]).loaded = unsafe { (*[[V_0]]).loaded }.wrapping_sub(n);
+// CHECK-NEXT:         (*ctx).loaded = unsafe { (*ctx).loaded }.wrapping_sub(n);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

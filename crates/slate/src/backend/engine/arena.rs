@@ -823,35 +823,6 @@ impl FunctionOptimizer {
             param.mutable = false;
         }
     }
-
-    pub(in crate::backend) fn rename_param(
-        &mut self,
-        source: Ident,
-        target: Ident,
-        mutable: bool,
-    ) -> bool {
-        if self
-            .params
-            .iter()
-            .any(|param| Ident::new(&param.name) == target)
-        {
-            return false;
-        }
-        let Some(param) = self
-            .params
-            .iter_mut()
-            .find(|param| Ident::new(&param.name) == source)
-        else {
-            return false;
-        };
-        let Some(ty) = self.param_types.remove(&source) else {
-            return false;
-        };
-        param.name = target.as_str().to_string();
-        param.mutable |= mutable;
-        self.param_types.insert(target, ty);
-        true
-    }
 }
 
 impl std::ops::Deref for FunctionOptimizer {

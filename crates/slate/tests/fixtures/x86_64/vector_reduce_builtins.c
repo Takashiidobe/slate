@@ -822,7 +822,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
-// CHECK-NEXT: unsafe fn _mm512_reduce_add_ps(mut [[V_0:__v[0-9]+]]: core::simd::Simd<f32, 16>) -> f32 {
+// CHECK-NEXT: unsafe fn _mm512_reduce_add_ps(__W: core::simd::Simd<f32, 16>) -> f32 {
+// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: core::simd::Simd<f32, 16> = __W;
 // CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: core::simd::Simd<f32, 8> = core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
 // CHECK-NEXT:         [0, 1, 2, 3, 4, 5, 6, 7]

@@ -64,7 +64,9 @@ int main(void) {
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn scaled_sum(mut r8: i64, mut r10: i64) -> i64 {
+// CHECK-NEXT: fn scaled_sum(a: i64, b: i64) -> i64 {
+// CHECK-NEXT:     let mut r10: i64 = b;
+// CHECK-NEXT:     let mut r8: i64 = a;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;
 // CHECK-NEXT:         core::arch::asm!(

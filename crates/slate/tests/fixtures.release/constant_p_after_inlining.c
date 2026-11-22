@@ -102,7 +102,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
-// CHECK-NEXT: fn min_segments(a: u32, y: i32) -> u32 {
+// CHECK-NEXT: fn min_segments(a: u32, b: i32) -> u32 {
+// CHECK-NEXT:     let y: i32 = b;
 // CHECK-NEXT:     if !is_nonneg!(y) {
 // CHECK-NEXT:         unsafe { __compiletime_assert_1() };
 // CHECK-NEXT:     }

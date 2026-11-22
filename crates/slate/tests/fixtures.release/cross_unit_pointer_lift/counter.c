@@ -12,9 +12,9 @@ int counter_apply(int (*fn)(struct counter *), struct counter *c) { return fn(c)
 // CHECK: {{^}}
 // CHECK-NEXT: use crate::__slate_types::counter;
 // CHECK-EMPTY:
-// CHECK-NEXT: pub fn counter_add([[V_0:__v[0-9]+]]: *mut counter, by: i32) {
+// CHECK-NEXT: pub fn counter_add(c: *mut counter, by: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_0]]).value = (*[[V_0]]).value + by;
+// CHECK-NEXT:         (*c).value = (*c).value + by;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

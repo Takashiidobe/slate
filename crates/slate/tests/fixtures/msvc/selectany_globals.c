@@ -197,12 +197,12 @@ int main(void) { return 0; }
 // AARCH64-PC-WINDOWS-MSVC-NEXT:     ".section .rdata$banner,\"dr\",discard,banner\n.globl banner\n.p2align 0\nbanner:\n.byte 115\n.byte 108\n.byte 97\n.byte 116\n.byte 101\n.byte 0\n.text",
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: fn bump([[V_0:__v[0-9]+]]: *mut i32) -> i32 {
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = (unsafe { *[[V_0]] }) + 12;
+// CHECK-NEXT: fn bump(value: *mut i32) -> i32 {
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = (unsafe { *value }) + 12;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = [[V_1]];
+// CHECK-NEXT:         *value = [[V_0]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_1]]
+// CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

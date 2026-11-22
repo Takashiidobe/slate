@@ -192,10 +192,11 @@ int main(void) {
 // CHECK-NEXT: use slate_support::pthread_join;
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn worker(arg: *mut ()) -> *mut () {
+// CHECK-NEXT:     let set: *mut vset = arg as *mut vset;
 // CHECK-NEXT:     for i in 0i32..10000i32 {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::sync::atomic::AtomicI32::from_ptr(
-// CHECK-NEXT:                     core::ptr::addr_of_mut!((*(arg as *mut vset)).in_use) as *mut i32,
+// CHECK-NEXT:                     core::ptr::addr_of_mut!((*set).in_use) as *mut i32,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .fetch_add(1i32, core::sync::atomic::Ordering::SeqCst)
 // CHECK-NEXT:         };

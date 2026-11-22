@@ -350,13 +350,12 @@ int main(void) {
 // CHECK-NEXT:                 + LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 254, 63]);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
+// CHECK-NEXT:     let view: *const List = list as *const List;
 // CHECK-NEXT:     let result: i32 = ((unsafe {
-// CHECK-NEXT:         (*(core::ptr::addr_of!((*(list as *const List)).entries) as *const Entry)
-// CHECK-NEXT:             .add(4)).value
+// CHECK-NEXT:         (*(core::ptr::addr_of!((*view).entries) as *const Entry).add(4)).value
 // CHECK-NEXT:     }) != 52
 // CHECK-NEXT:         || (unsafe {
-// CHECK-NEXT:             (*(core::ptr::addr_of!((*(list as *const List)).entries) as *const Entry)
-// CHECK-NEXT:                 .add(3)).tag
+// CHECK-NEXT:             (*(core::ptr::addr_of!((*view).entries) as *const Entry).add(3)).tag
 // CHECK-NEXT:         }) != 10
 // CHECK-NEXT:         || ((unsafe { *(core::ptr::addr_of_mut!((*bytes).bytes) as *mut u8).add(8) })
 // CHECK-NEXT:             as i32) != 24 || (unsafe { (*bytes).head }) != 2.5f64

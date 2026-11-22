@@ -12,7 +12,6 @@ pub(super) mod literal_casts;
 mod loop_to_while;
 mod nested_unsafe;
 mod null_compare;
-mod param_spills;
 mod pattern_range;
 mod ptr_offset;
 mod pure_stmts;
@@ -57,7 +56,6 @@ pub(super) fn registry(
         Box::new(slot_promote::SlotPromote),
         Box::new(slot_promote::DeclSink),
         Box::new(branch_init::BranchInitFold),
-        Box::new(param_spills::ParamSpillFold),
         Box::new(raw_ptr_alias::RawPtrAliasElide),
         Box::new(array_iter::ForArrayIterRecover),
         Box::new(return_cleanup::UnreachableAfterReturn),

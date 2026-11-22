@@ -97,7 +97,8 @@ int main(void) {
 // CHECK-NEXT:     ],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: fn find(mut node: *mut Node, value: i32) -> *mut Node {
+// CHECK-NEXT: fn find(list: *mut Node, value: i32) -> *mut Node {
+// CHECK-NEXT:     let mut node: *mut Node = list;
 // CHECK-NEXT:     while !node.is_null() {
 // CHECK-NEXT:         if (unsafe { (*node).value }) == value {
 // CHECK-NEXT:             return node;

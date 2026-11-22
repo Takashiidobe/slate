@@ -26,7 +26,8 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn tied_twice(mut t: i64) -> i64 {
+// CHECK-NEXT: fn tied_twice(x: i64) -> i64 {
+// CHECK-NEXT:     let mut t: i64 = x;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         core::arch::asm!(
@@ -39,7 +40,8 @@ int main(void) {
 // CHECK-NEXT:     t
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn input_twice(mut t: i64) -> i64 {
+// CHECK-NEXT: fn input_twice(x: i64) -> i64 {
+// CHECK-NEXT:     let mut t: i64 = x;
 // CHECK-NEXT:     let mut out: i64 = 0;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0]]: u64;

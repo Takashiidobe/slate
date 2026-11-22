@@ -44,7 +44,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn first(p: &i32) -> i32 {
-// CHECK-NEXT:     unsafe { *((((p as *const i32) as *const ()) as *mut ()) as *const i32) }
+// CHECK-NEXT:     let aligned: *const i32 = (((p as *const i32) as *const ()) as *mut ())
+// CHECK-NEXT:         as *const i32;
+// CHECK-NEXT:     unsafe { *aligned }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

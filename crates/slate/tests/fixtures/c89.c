@@ -432,8 +432,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c89_store(destination: *mut (), source: *const ()) {
+// CHECK-NEXT:     let output: *mut i32 = destination as *mut i32;
+// CHECK-NEXT:     let input: *const i32 = source as *const i32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *(destination as *mut i32) = *(source as *const i32);
+// CHECK-NEXT:         *output = *input;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

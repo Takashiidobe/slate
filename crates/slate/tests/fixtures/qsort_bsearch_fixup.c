@@ -59,7 +59,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.cmp_item")]
 // CHECK-NEXT: extern "C-unwind" fn cmp_item(a: *const (), b: *const ()) -> i32 {
-// CHECK-NEXT:     (unsafe { (*(a as *const Item)).key }) - unsafe { (*(b as *const Item)).key }
+// CHECK-NEXT:     let ia: *const Item = a as *const Item;
+// CHECK-NEXT:     let ib: *const Item = b as *const Item;
+// CHECK-NEXT:     (unsafe { (*ia).key }) - unsafe { (*ib).key }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

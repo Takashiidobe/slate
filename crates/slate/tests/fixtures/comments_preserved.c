@@ -99,8 +99,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: /// preserved-function-comment
-// CHECK-NEXT: fn value(mut result: i32) -> i32 {
+// CHECK-NEXT: fn value(n: i32) -> i32 {
 // CHECK-NEXT:     // preserved-local-comment
+// CHECK-NEXT:     let mut result: i32 = n;
 // CHECK-NEXT:     while result < 3 {
 // CHECK-NEXT:         // preserved-loop-comment
 // CHECK-NEXT:         result += 1;

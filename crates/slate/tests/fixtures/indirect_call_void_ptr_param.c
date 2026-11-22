@@ -57,10 +57,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn print_handler(p: *const (), extra: i32) {
 // CHECK-NEXT:     if extra == 0 {
-// CHECK-NEXT:         println!("zero {}", (unsafe { *(p as *const i8) }) as i32);
+// CHECK-NEXT:         let c__0: *const i8 = p as *const i8;
+// CHECK-NEXT:         println!("zero {}", (unsafe { *c__0 }) as i32);
 // CHECK-NEXT:         return;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{} {}", unsafe { (*(p as *const Data)).value }, extra);
+// CHECK-NEXT:     let d: *const Data = p as *const Data;
+// CHECK-NEXT:     println!("{} {}", unsafe { (*d).value }, extra);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

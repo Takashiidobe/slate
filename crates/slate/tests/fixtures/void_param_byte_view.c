@@ -66,17 +66,13 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn rc4_block(handle: *mut (), vblk: *mut (), len: i32) {
 // CHECK-NEXT:     let blk: *mut u8 = vblk as *mut u8;
+// CHECK-NEXT:     let ctx: *mut __SlateRecord_void_param_byte_view_c_5 = handle
+// CHECK-NEXT:         as *mut __SlateRecord_void_param_byte_view_c_5;
 // CHECK-NEXT:     let mut k: u32 = 0;
 // CHECK-NEXT:     let mut tmp: u8 = 0;
-// CHECK-NEXT:     let s: *mut u8 = unsafe {
-// CHECK-NEXT:         (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).s.as_mut_ptr()
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let mut i: u8 = unsafe {
-// CHECK-NEXT:         (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).i
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let mut j: u8 = unsafe {
-// CHECK-NEXT:         (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).j
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let s: *mut u8 = unsafe { (*ctx).s.as_mut_ptr() };
+// CHECK-NEXT:     let mut i: u8 = unsafe { (*ctx).i };
+// CHECK-NEXT:     let mut j: u8 = unsafe { (*ctx).j };
 // CHECK-NEXT:     k = 0;
 // CHECK-NEXT:     while (k as i32) < len {
 // CHECK-NEXT:         i = ((i as i32) + 1 & 255) as u8;
@@ -101,10 +97,10 @@ int main(void) {
 // CHECK-NEXT:         k = k.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).i = i;
+// CHECK-NEXT:         (*ctx).i = i;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*(handle as *mut __SlateRecord_void_param_byte_view_c_5)).j = j;
+// CHECK-NEXT:         (*ctx).j = j;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

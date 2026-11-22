@@ -184,11 +184,12 @@ int main(void) {
 // CHECK-NEXT:     let mut p: *mut i32 = values.0.as_mut_ptr();
 // CHECK-NEXT:     let [[V_9:__v[0-9]+]]: *mut i32 = p;
 // CHECK-NEXT:     p = unsafe { [[V_9]].add(1) };
+// CHECK-NEXT:     let old: *mut i32 = [[V_9]];
 // CHECK-NEXT:     let at_p: i32 = unsafe { *p };
 // CHECK-NEXT:     let [[V_10:__v[0-9]+]]: *mut i32 = unsafe { p.add(1) };
 // CHECK-NEXT:     p = [[V_10]];
 // CHECK-NEXT:     let at_next: i32 = unsafe { *[[V_10]] };
-// CHECK-NEXT:     println!("{} {} {}", unsafe { *[[V_9]] }, at_p, at_next);
+// CHECK-NEXT:     println!("{} {} {}", unsafe { *old }, at_p, at_next);
 // CHECK-NEXT:     let [[V_11:__v[0-9]+]]: *mut i32 = p;
 // CHECK-NEXT:     p = unsafe { [[V_11]].sub(1) };
 // CHECK-NEXT:     let was: i32 = ((unsafe { [[V_11]].offset_from(values.0.as_mut_ptr() as *mut i32) })

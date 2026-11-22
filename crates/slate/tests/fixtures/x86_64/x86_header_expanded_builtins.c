@@ -319,9 +319,10 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpeq_ss(
-// CHECK-NEXT:     mut [[V_0:__v[0-9]+]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     mut __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
+// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
 // CHECK-NEXT:         unsafe {
@@ -367,9 +368,10 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmplt_ss(
-// CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     mut __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
+// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
 // CHECK-NEXT:         unsafe {
@@ -415,9 +417,10 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmple_ss(
-// CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     mut __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
+// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
 // CHECK-NEXT:         unsafe {
@@ -464,8 +467,9 @@ int main(void) {
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpgt_ss(
 // CHECK-NEXT:     mut __a: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
+// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         __a,
 // CHECK-NEXT:         core::simd::simd_swizzle!(
@@ -537,9 +541,10 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpneq_ss(
-// CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     mut __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
+// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
 // CHECK-NEXT:         unsafe {
@@ -585,9 +590,10 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpnlt_ss(
-// CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
 // CHECK-NEXT:     mut __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
+// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __a;
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
 // CHECK-NEXT:         unsafe {
@@ -699,9 +705,11 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpord_ss(
-// CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     mut [[V_1:__v[0-9]+]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
+// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __a;
+// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
 // CHECK-NEXT:         unsafe {
@@ -735,9 +743,11 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpord_ps(
-// CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     mut [[V_1]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
+// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __a;
+// CHECK-NEXT:     let mut [[V_1]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:             ({
@@ -767,9 +777,11 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpunord_ss(
-// CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     mut [[V_1]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
+// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __a;
+// CHECK-NEXT:     let mut [[V_1]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
 // CHECK-NEXT:         unsafe {
@@ -803,9 +815,11 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpunord_ps(
-// CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     mut [[V_1]]: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     __b: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
+// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f32, 4> = __a;
+// CHECK-NEXT:     let mut [[V_1]]: core::simd::Simd<f32, 4> = __b;
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:             ({
@@ -894,9 +908,11 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpord_pd(
-// CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f64, 2>,
-// CHECK-NEXT:     mut [[V_1]]: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     __a: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     __b: core::simd::Simd<f64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 2> {
+// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f64, 2> = __a;
+// CHECK-NEXT:     let mut [[V_1]]: core::simd::Simd<f64, 2> = __b;
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<f64, 2>>(
 // CHECK-NEXT:             ({
@@ -926,9 +942,11 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpunord_pd(
-// CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f64, 2>,
-// CHECK-NEXT:     mut [[V_1]]: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     __a: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     __b: core::simd::Simd<f64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 2> {
+// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f64, 2> = __a;
+// CHECK-NEXT:     let mut [[V_1]]: core::simd::Simd<f64, 2> = __b;
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<f64, 2>>(
 // CHECK-NEXT:             ({
@@ -980,9 +998,10 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmplt_sd(
-// CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     __a: core::simd::Simd<f64, 2>,
 // CHECK-NEXT:     mut __b: core::simd::Simd<f64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 2> {
+// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f64, 2> = __a;
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
 // CHECK-NEXT:         unsafe {
@@ -1006,9 +1025,11 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse2")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm_cmpord_sd(
-// CHECK-NEXT:     mut [[V_0]]: core::simd::Simd<f64, 2>,
-// CHECK-NEXT:     mut [[V_1]]: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     __a: core::simd::Simd<f64, 2>,
+// CHECK-NEXT:     __b: core::simd::Simd<f64, 2>,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 2> {
+// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<f64, 2> = __a;
+// CHECK-NEXT:     let mut [[V_1]]: core::simd::Simd<f64, 2> = __b;
 // CHECK-NEXT:     return core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
 // CHECK-NEXT:         unsafe {

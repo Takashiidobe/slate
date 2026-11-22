@@ -2,7 +2,7 @@ use super::for_range::subtree_ids;
 use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Expr, Ident, Type, UnaryOp};
+use crate::backend::rust_ast::{Expr, Ident, LocalOrigin, Type, UnaryOp};
 
 fn source_var(expr: &Expr) -> Option<Ident> {
     match expr {
@@ -286,6 +286,7 @@ impl NodeRule for RawPtrAliasElide {
         matches!(
             arena.get(id),
             Some(NodeKind::Let {
+                origin: LocalOrigin::Synthetic,
                 ty: Some(Type::Ptr { .. }),
                 init: Some(init),
                 ..
@@ -295,6 +296,7 @@ impl NodeRule for RawPtrAliasElide {
 
     fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
         let Some(NodeKind::Let {
+            origin: LocalOrigin::Synthetic,
             name,
             ty: Some(ty @ Type::Ptr { .. }),
             init: Some(init),

@@ -416,9 +416,9 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn bump([[V_0:__v[0-9]+]]: *mut i32) {
+// CHECK-NEXT: fn bump(value: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 1;
+// CHECK-NEXT:         *value = *value + 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -150,7 +150,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::qsort;
 // CHECK-EMPTY:
-// CHECK-NEXT: fn counter(mut total: i32) -> i32 {
+// CHECK-NEXT: fn counter(start: i32) -> i32 {
+// CHECK-NEXT:     let mut total: i32 = start;
 // CHECK-NEXT:     counter__bump(core::ptr::addr_of_mut!(total), 2i32);
 // CHECK-NEXT:     counter__bump(core::ptr::addr_of_mut!(total), 3i32);
 // CHECK-NEXT:     total

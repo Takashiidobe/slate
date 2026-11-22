@@ -313,7 +313,7 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.mixed")]
 // CHECK-NEXT: unsafe extern "C-unwind" fn mixed(
 // CHECK-NEXT:     mut base: LongDouble,
-// CHECK-NEXT:     mut f: *const i8,
+// CHECK-NEXT:     format: *const i8,
 // CHECK-NEXT:     mut __va_args: core::ffi::VaList<'static>,
 // CHECK-NEXT: ) -> LongDouble {
 // CHECK-NEXT:     let mut ap: core::ffi::VaList<'static> = unsafe { core::mem::zeroed() };
@@ -322,6 +322,7 @@ int main(void) {
 // CHECK-NEXT:             __va_args.clone(),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
+// CHECK-NEXT:     let mut f: *const i8 = format;
 // CHECK-NEXT:     while (unsafe { *f }) != 0 {
 // CHECK-NEXT:         if ((unsafe { *f }) as i32) == 105 {
 // CHECK-NEXT:             base += __slate_f80_from_i32(unsafe { ap.next_arg::<i32>() });
