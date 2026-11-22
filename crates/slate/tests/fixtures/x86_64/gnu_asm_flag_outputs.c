@@ -40,7 +40,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK-LABEL: {{^}}fn compare_flags(mut left: i32, mut right: i32) -> i32 {
+// CHECK-LABEL: {{^}}fn compare_flags(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut equal: i32 = 0;
 // CHECK-NEXT:     let mut above: i32 = 0;
 // CHECK-NEXT:     let mut less: i32 = 0;
@@ -65,7 +65,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     equal * 100 + above * 10 + less
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn compare_flag_widths(mut value: i32) -> i32 {
+// CHECK-LABEL: {{^}}fn compare_flag_widths(value: i32) -> i32 {
 // CHECK-NEXT:     let mut sign: u16 = 0;
 // CHECK-NEXT:     let mut nonzero: u64 = 0;
 // CHECK-NEXT:     {

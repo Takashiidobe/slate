@@ -96,7 +96,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut words: __SlateAlign16<[u64; 12]> = __SlateAlign16(
+// CHECK-NEXT:     let words: __SlateAlign16<[u64; 12]> = __SlateAlign16(
 // CHECK-NEXT:         [
 // CHECK-NEXT:             0u64, 1u64, 9223372036854775808u64, 18446744073709551615u64,
 // CHECK-NEXT:             67818912035696640u64, 12345u64, 11400714819323198485u64, 2u64, 4294967296u64,

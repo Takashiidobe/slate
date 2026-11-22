@@ -105,7 +105,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn shift_by_bitint(seed: i32) -> i32 {
-// CHECK-NEXT:     let mut amount: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:     let amount: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(
 // CHECK-NEXT:         4 as i128,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut v: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(

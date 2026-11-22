@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn input_twice(x: i64) -> i64 {
-// CHECK-NEXT:     let mut t: i64 = x;
+// CHECK-NEXT:     let t: i64 = x;
 // CHECK-NEXT:     let mut out: i64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;

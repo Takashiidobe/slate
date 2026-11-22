@@ -634,7 +634,7 @@ impl FunctionLowerer<'_, '_> {
                 Ok(FnParam {
                     comments: self.claim_comments(param.id),
                     name: self.binding_name(param.value.id),
-                    mutable: true,
+                    mutable: self.binding_requires_mut(param.value.id),
                     ty: match self.borrow_of(param.value.id) {
                         _ if self.c_string_of(param.value.id) => Ok(c_string_type()),
                         Some(borrow) => self.borrow_type(&param.ty, borrow),
@@ -756,6 +756,7 @@ impl FunctionLowerer<'_, '_> {
             let pointee = (**inner).clone();
             let original = std::mem::replace(&mut frame.name, "__slate_interrupt_frame".into());
             frame.ty = pointee.clone();
+            frame.mutable = true;
             statements.insert(
                 0,
                 Stmt::Let {

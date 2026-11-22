@@ -90,7 +90,7 @@ int main(void) {
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn popcount_operand(mut x: u32) -> i32 {
+// CHECK-NEXT: fn popcount_operand(x: u32) -> i32 {
 // CHECK-NEXT:     let mut v: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;

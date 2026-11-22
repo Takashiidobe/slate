@@ -36,8 +36,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut a: [i32; 2] = [1, 2];
-// CHECK-NEXT:     let mut b: [i32; 2] = [3, 4];
+// CHECK-NEXT:     let a: [i32; 2] = [1, 2];
+// CHECK-NEXT:     let b: [i32; 2] = [3, 4];
 // CHECK-NEXT:     if pick(a.as_slice(), b.as_slice(), 2i32, 0i32) != 3
 // CHECK-NEXT:         || pick(a.as_slice(), b.as_slice(), 2i32, 1i32) != 7 {
 // CHECK-NEXT:         std::process::abort();

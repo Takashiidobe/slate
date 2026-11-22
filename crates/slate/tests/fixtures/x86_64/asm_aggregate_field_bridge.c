@@ -285,7 +285,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut wide: wide = {
+// CHECK-NEXT:     let wide: wide = {
 // CHECK-NEXT:         let mut [[T_10:__t[0-9]+]]: wide = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_10]].tag = 97i8;
 // CHECK-NEXT:         [[T_10]].value = -7i32;

@@ -96,7 +96,7 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum_docs() -> i32 {
-// CHECK-NEXT:     let mut cases: __SlateAlign16<[TestCase__4; 3]> = __SlateAlign16(
+// CHECK-NEXT:     let cases: __SlateAlign16<[TestCase__4; 3]> = __SlateAlign16(
 // CHECK-NEXT:         [
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 let mut [[T_0:__t[0-9]+]]: TestCase__4 = unsafe { core::mem::zeroed() };
@@ -151,7 +151,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum_movements() -> i32 {
-// CHECK-NEXT:     let mut cases: __SlateAlign16<[TestCase__45; 3]> = __SlateAlign16(
+// CHECK-NEXT:     let cases: __SlateAlign16<[TestCase__45; 3]> = __SlateAlign16(
 // CHECK-NEXT:         [
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 let mut [[T_0]]: TestCase__45 = unsafe { core::mem::zeroed() };

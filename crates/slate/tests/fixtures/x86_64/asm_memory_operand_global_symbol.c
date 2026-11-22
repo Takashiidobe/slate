@@ -122,7 +122,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn store_local(mut v: i64) {
+// CHECK-NEXT: fn store_local(v: i64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "movq {1:r}, {0}+40(%rip)",
@@ -133,7 +133,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn load_pointee(mut p: *const i64) -> i64 {
+// CHECK-NEXT: fn load_pointee(p: *const i64) -> i64 {
 // CHECK-NEXT:     let mut v: i64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;

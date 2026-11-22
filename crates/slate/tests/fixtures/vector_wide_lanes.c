@@ -199,7 +199,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut seed: core::simd::Simd<u8, 2> = core::simd::Simd::from_array([3u8, 250u8]);
+// CHECK-NEXT:     let seed: core::simd::Simd<u8, 2> = core::simd::Simd::from_array([3u8, 250u8]);
 // CHECK-NEXT:     let mut spread: __slate_vector::__SlateVector<u8, 128, __slate_vector::Align128> = {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = seed.to_array();
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = seed.to_array();

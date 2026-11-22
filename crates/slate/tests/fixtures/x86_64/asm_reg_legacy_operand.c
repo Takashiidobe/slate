@@ -24,7 +24,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn legacy_add(mut a: u32, mut b: u32) -> u32 {
+// CHECK-NEXT: fn legacy_add(mut a: u32, b: u32) -> u32 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         unsafe {
@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn legacy_low_byte(mut x: u32) -> u8 {
+// CHECK-NEXT: fn legacy_low_byte(x: u32) -> u8 {
 // CHECK-NEXT:     let mut r: u8 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;

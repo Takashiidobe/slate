@@ -70,7 +70,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn sqrt_via_x(mut value: f32) -> f32 {
+// CHECK-NEXT: fn sqrt_via_x(value: f32) -> f32 {
 // CHECK-NEXT:     let mut result: f32 = 0 as f32;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
@@ -89,7 +89,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: unsafe fn avx_sum() -> f32 {
-// CHECK-NEXT:     let mut left: core::simd::Simd<f32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:     let left: core::simd::Simd<f32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:         [
 // CHECK-NEXT:             1i32 as f32,
 // CHECK-NEXT:             2i32 as f32,
@@ -101,7 +101,7 @@ int main(void) {
 // CHECK-NEXT:             8i32 as f32,
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut right: core::simd::Simd<f32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:     let right: core::simd::Simd<f32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:         [
 // CHECK-NEXT:             10i32 as f32,
 // CHECK-NEXT:             20i32 as f32,
@@ -144,19 +144,19 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: unsafe fn avx512_masked_sum() -> i32 {
-// CHECK-NEXT:     let mut left: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:     let left: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
 // CHECK-NEXT:         [
 // CHECK-NEXT:             1i32, 2i32, 3i32, 4i32, 5i32, 6i32, 7i32, 8i32, 9i32, 10i32, 11i32, 12i32,
 // CHECK-NEXT:             13i32, 14i32, 15i32, 16i32,
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut right: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:     let right: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
 // CHECK-NEXT:         [
 // CHECK-NEXT:             100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32,
 // CHECK-NEXT:             100i32, 100i32, 100i32, 100i32, 100i32, 100i32, 100i32,
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut mask: u16 = 240;
+// CHECK-NEXT:     let mask: u16 = 240;
 // CHECK-NEXT:     let mut result: core::simd::Simd<i32, 16> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: core::arch::x86_64::__m512i;
@@ -189,13 +189,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: unsafe fn avx512_equal_lanes() -> u32 {
-// CHECK-NEXT:     let mut left: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:     let left: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
 // CHECK-NEXT:         [
 // CHECK-NEXT:             1i32, 2i32, 3i32, 4i32, 5i32, 6i32, 7i32, 8i32, 9i32, 10i32, 11i32, 12i32,
 // CHECK-NEXT:             13i32, 14i32, 15i32, 16i32,
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut right: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
+// CHECK-NEXT:     let right: core::simd::Simd<i32, 16> = core::simd::Simd::from_array(
 // CHECK-NEXT:         [
 // CHECK-NEXT:             1i32, 0i32, 3i32, 0i32, 5i32, 0i32, 7i32, 0i32, 9i32, 0i32, 11i32, 0i32,
 // CHECK-NEXT:             13i32, 0i32, 15i32, 0i32,

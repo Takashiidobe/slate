@@ -35,7 +35,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .wrapping_add(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(seed as i128));
 // CHECK-NEXT:     let [[T_0:__t[0-9]+]]: bitint::BInt<256, 4, 32, bitint::A8> = v;
-// CHECK-NEXT:     let [[T_1:__t[0-9]+]]: i64 = if [[T_0]]
+// CHECK-NEXT:     let mut [[T_1:__t[0-9]+]]: i64 = if [[T_0]]
 // CHECK-NEXT:         .compare(
 // CHECK-NEXT:             <bitint::BInt<256, 4, 32, bitint::A8>>::from_u128(
 // CHECK-NEXT:                 170141183460469231731687303715884105727,

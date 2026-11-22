@@ -774,7 +774,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn c_u100(mut a: bitint::BUint<100, 2, 16, bitint::A8>) {
+// CHECK-NEXT: fn c_u100(a: bitint::BUint<100, 2, 16, bitint::A8>) {
 // CHECK-NEXT:     print!("{} ", a.count_ones() as i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     if a.compare(<bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(0)) != 0 {
@@ -804,7 +804,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn c_u200(mut a: bitint::BUint<200, 4, 32, bitint::A8>) {
+// CHECK-NEXT: fn c_u200(a: bitint::BUint<200, 4, 32, bitint::A8>) {
 // CHECK-NEXT:     print!("{} ", a.count_ones() as i32);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     if a.compare(<bitint::BUint<200, 4, 32, bitint::A8>>::from_u128(0)) != 0 {
@@ -889,11 +889,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sat_s100(
-// CHECK-NEXT:     mut a: bitint::BInt<100, 2, 16, bitint::A8>,
+// CHECK-NEXT:     a: bitint::BInt<100, 2, 16, bitint::A8>,
 // CHECK-NEXT:     b: bitint::BInt<100, 2, 16, bitint::A8>,
 // CHECK-NEXT: ) {
-// CHECK-NEXT:     let mut x: bitint::BInt<100, 2, 16, bitint::A8> = a.saturating_add(b);
-// CHECK-NEXT:     let mut y: bitint::BInt<100, 2, 16, bitint::A8> = a.saturating_sub(b);
+// CHECK-NEXT:     let x: bitint::BInt<100, 2, 16, bitint::A8> = a.saturating_add(b);
+// CHECK-NEXT:     let y: bitint::BInt<100, 2, 16, bitint::A8> = a.saturating_sub(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -906,11 +906,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sat_u100(
-// CHECK-NEXT:     mut a: bitint::BUint<100, 2, 16, bitint::A8>,
+// CHECK-NEXT:     a: bitint::BUint<100, 2, 16, bitint::A8>,
 // CHECK-NEXT:     b: bitint::BUint<100, 2, 16, bitint::A8>,
 // CHECK-NEXT: ) {
-// CHECK-NEXT:     let mut x: bitint::BUint<100, 2, 16, bitint::A8> = a.saturating_add(b);
-// CHECK-NEXT:     let mut y: bitint::BUint<100, 2, 16, bitint::A8> = a.saturating_sub(b);
+// CHECK-NEXT:     let x: bitint::BUint<100, 2, 16, bitint::A8> = a.saturating_add(b);
+// CHECK-NEXT:     let y: bitint::BUint<100, 2, 16, bitint::A8> = a.saturating_sub(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
@@ -923,11 +923,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sat_s200(
-// CHECK-NEXT:     mut a: bitint::BInt<200, 4, 32, bitint::A8>,
+// CHECK-NEXT:     a: bitint::BInt<200, 4, 32, bitint::A8>,
 // CHECK-NEXT:     b: bitint::BInt<200, 4, 32, bitint::A8>,
 // CHECK-NEXT: ) {
-// CHECK-NEXT:     let mut x: bitint::BInt<200, 4, 32, bitint::A8> = a.saturating_add(b);
-// CHECK-NEXT:     let mut y: bitint::BInt<200, 4, 32, bitint::A8> = a.saturating_sub(b);
+// CHECK-NEXT:     let x: bitint::BInt<200, 4, 32, bitint::A8> = a.saturating_add(b);
+// CHECK-NEXT:     let y: bitint::BInt<200, 4, 32, bitint::A8> = a.saturating_sub(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

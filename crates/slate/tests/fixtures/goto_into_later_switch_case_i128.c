@@ -40,7 +40,7 @@ int main() {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: fn classify(mut c: bitint::BInt<128, 2, 16, bitint::A8>) -> i32 {
+// CHECK-NEXT: fn classify(c: bitint::BInt<128, 2, 16, bitint::A8>) -> i32 {
 // CHECK-NEXT:     '[[JOIN_0:__join_[0-9]+]]: {
 // CHECK-NEXT:         '[[JOIN_1:__join_[0-9]+]]: {
 // CHECK-NEXT:             let [[T_0:__t[0-9]+]]: i128 = c.to_i128();

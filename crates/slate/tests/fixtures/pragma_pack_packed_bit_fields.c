@@ -125,7 +125,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut b: int_bits = {
+// CHECK-NEXT:     let b: int_bits = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: int_bits = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].c = 1i8;
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_x(5i32);

@@ -38,7 +38,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK-LABEL: {{^}}fn widen_u8(mut p: &u8) -> u64 {
+// CHECK-LABEL: {{^}}fn widen_u8(p: &u8) -> u64 {
 // CHECK-NEXT:     let mut x: u64 = 0;
 // CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: i64 = 0;
 // CHECK-NEXT:     loop {

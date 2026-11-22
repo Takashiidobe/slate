@@ -32,7 +32,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut code: [u8; 4] = [0, 1, 2, 1];
+// CHECK-NEXT:     let code: [u8; 4] = [0, 1, 2, 1];
 // CHECK-NEXT:     println!("{}", interpret(code.as_slice()));
 // CHECK-NEXT:     0
 // CHECK: {{^}}}

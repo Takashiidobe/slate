@@ -55,7 +55,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *cell = 5;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut values: [i32; 3] = [1, 2, unsafe { *cell }];
+// CHECK-NEXT:     let values: [i32; 3] = [1, 2, unsafe { *cell }];
 // CHECK-NEXT:     release(cell);
 // CHECK-NEXT:     unsafe { slate_support::printf(c"sum %d\n".as_ptr(), sum(values.as_slice())) };
 // CHECK-NEXT:     unsafe { slate_support::putchar(10i32) };

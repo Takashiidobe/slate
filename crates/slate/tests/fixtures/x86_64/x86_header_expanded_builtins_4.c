@@ -1421,7 +1421,7 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_castsi256_si128(
-// CHECK-NEXT:     mut __a: core::simd::Simd<i64, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__a, __a, [0, 1]);
 // CHECK-NEXT: }
@@ -1443,7 +1443,7 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_castpd512_pd128(
-// CHECK-NEXT:     mut __a: core::simd::Simd<f64, 8>,
+// CHECK-NEXT:     __a: core::simd::Simd<f64, 8>,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 2> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__a, __a, [0, 1]);
 // CHECK-NEXT: }
@@ -1451,7 +1451,7 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_castpd512_pd256(
-// CHECK-NEXT:     mut __A: core::simd::Simd<f64, 8>,
+// CHECK-NEXT:     __A: core::simd::Simd<f64, 8>,
 // CHECK-NEXT: ) -> core::simd::Simd<f64, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__A, __A, [0, 1, 2, 3]);
 // CHECK-NEXT: }
@@ -1459,7 +1459,7 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_castps512_ps128(
-// CHECK-NEXT:     mut __a: core::simd::Simd<f32, 16>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 16>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__a, __a, [0, 1, 2, 3]);
 // CHECK-NEXT: }
@@ -1467,7 +1467,7 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_castps512_ps256(
-// CHECK-NEXT:     mut __A: core::simd::Simd<f32, 16>,
+// CHECK-NEXT:     __A: core::simd::Simd<f32, 16>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 8> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__A, __A, [0, 1, 2, 3, 4, 5, 6, 7]);
 // CHECK-NEXT: }

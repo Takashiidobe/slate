@@ -170,7 +170,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 5]> = __SlateAlign16(
+// CHECK-NEXT:     let values: __SlateAlign16<[i32; 5]> = __SlateAlign16(
 // CHECK-NEXT:         [3i32, 1i32, 4i32, 1i32, 5i32],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(

@@ -133,7 +133,7 @@ int main(void) {
 // CHECK-NEXT:         fill(slots.0.as_mut_slice(), [[T_0]])
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("{}", unsafe { (*slots.0[0]).wrapping_add(*slots.0[2]) });
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
+// CHECK-NEXT:     let values: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
 // CHECK-NEXT:     println!("{}", sum(values.0.as_slice()));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -111,7 +111,7 @@ int main(void) {
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn through_register(mut pointer: *mut i64) -> i64 {
+// CHECK-NEXT: fn through_register(pointer: *mut i64) -> i64 {
 // CHECK-NEXT:     let mut value: i64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;

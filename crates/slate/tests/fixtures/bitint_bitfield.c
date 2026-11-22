@@ -327,7 +327,7 @@ int main(void) {
 // CHECK-NEXT:         let [[T_6:__t[0-9]+]] = <bitint::BInt<156, 3, 24, bitint::A8>>::from_i128(1 as i128);
 // CHECK-NEXT:         t.0[i as usize].__slate_bits_0.__set_c([[T_6]]);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut ret: bitint::BInt<156, 3, 24, bitint::A8> = combine(
+// CHECK-NEXT:     let ret: bitint::BInt<156, 3, 24, bitint::A8> = combine(
 // CHECK-NEXT:         s.0.as_slice(),
 // CHECK-NEXT:         t.0.as_slice(),
 // CHECK-NEXT:         r.0.as_mut_slice(),

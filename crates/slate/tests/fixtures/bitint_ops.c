@@ -568,8 +568,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn s100(
-// CHECK-NEXT:     mut a: bitint::BInt<100, 2, 16, bitint::A8>,
-// CHECK-NEXT:     mut b: bitint::BInt<100, 2, 16, bitint::A8>,
+// CHECK-NEXT:     a: bitint::BInt<100, 2, 16, bitint::A8>,
+// CHECK-NEXT:     b: bitint::BInt<100, 2, 16, bitint::A8>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     let mut r: bitint::BInt<100, 2, 16, bitint::A8> = a.wrapping_add(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -641,8 +641,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn u100(
-// CHECK-NEXT:     mut a: bitint::BUint<100, 2, 16, bitint::A8>,
-// CHECK-NEXT:     mut b: bitint::BUint<100, 2, 16, bitint::A8>,
+// CHECK-NEXT:     a: bitint::BUint<100, 2, 16, bitint::A8>,
+// CHECK-NEXT:     b: bitint::BUint<100, 2, 16, bitint::A8>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     let mut r: bitint::BUint<100, 2, 16, bitint::A8> = a.wrapping_add(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -714,8 +714,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn s128(
-// CHECK-NEXT:     mut a: bitint::BInt<128, 2, 16, bitint::A8>,
-// CHECK-NEXT:     mut b: bitint::BInt<128, 2, 16, bitint::A8>,
+// CHECK-NEXT:     a: bitint::BInt<128, 2, 16, bitint::A8>,
+// CHECK-NEXT:     b: bitint::BInt<128, 2, 16, bitint::A8>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     let mut r: bitint::BInt<128, 2, 16, bitint::A8> = a.wrapping_add(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -787,8 +787,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn u128(
-// CHECK-NEXT:     mut a: bitint::BUint<128, 2, 16, bitint::A8>,
-// CHECK-NEXT:     mut b: bitint::BUint<128, 2, 16, bitint::A8>,
+// CHECK-NEXT:     a: bitint::BUint<128, 2, 16, bitint::A8>,
+// CHECK-NEXT:     b: bitint::BUint<128, 2, 16, bitint::A8>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     let mut r: bitint::BUint<128, 2, 16, bitint::A8> = a.wrapping_add(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -860,8 +860,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn s200(
-// CHECK-NEXT:     mut a: bitint::BInt<200, 4, 32, bitint::A8>,
-// CHECK-NEXT:     mut b: bitint::BInt<200, 4, 32, bitint::A8>,
+// CHECK-NEXT:     a: bitint::BInt<200, 4, 32, bitint::A8>,
+// CHECK-NEXT:     b: bitint::BInt<200, 4, 32, bitint::A8>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     let mut r: bitint::BInt<200, 4, 32, bitint::A8> = a.wrapping_add(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -933,8 +933,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn u200(
-// CHECK-NEXT:     mut a: bitint::BUint<200, 4, 32, bitint::A8>,
-// CHECK-NEXT:     mut b: bitint::BUint<200, 4, 32, bitint::A8>,
+// CHECK-NEXT:     a: bitint::BUint<200, 4, 32, bitint::A8>,
+// CHECK-NEXT:     b: bitint::BUint<200, 4, 32, bitint::A8>,
 // CHECK-NEXT: ) {
 // CHECK-NEXT:     let mut r: bitint::BUint<200, 4, 32, bitint::A8> = a.wrapping_add(b);
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

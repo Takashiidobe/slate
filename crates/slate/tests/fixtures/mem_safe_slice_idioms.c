@@ -61,20 +61,20 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]][0] = 0u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let src_a: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
+// CHECK-NEXT:     let mut src_a: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     dst_a[0usize..4usize].copy_from_slice(&src_a[0usize..4usize]);
 // CHECK-NEXT:     let mut dst_b: [u8; 8] = [9, 9, 9, 9, 9, 9, 9, 9];
-// CHECK-NEXT:     let src_b: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
+// CHECK-NEXT:     let mut src_b: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     dst_b[0usize..5usize].copy_from_slice(&src_b[0usize..5usize]);
 // CHECK-NEXT:     let mut self_c: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     self_c.copy_within(0usize..8usize, 0usize);
 // CHECK-NEXT:     let mut dst_d: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     dst_d[0usize..5usize].fill((65i32 as i32) as u8);
 // CHECK-NEXT:     let mut dst_e: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     let src_e: [u8; 8] = [9, 9, 9, 9, 9, 9, 9, 9];
+// CHECK-NEXT:     let mut src_e: [u8; 8] = [9, 9, 9, 9, 9, 9, 9, 9];
 // CHECK-NEXT:     dst_e[0usize..4usize].copy_from_slice(&src_e[2usize..6usize]);
 // CHECK-NEXT:     let mut dst_f: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     let src_f: [u8; 8] = [9, 9, 9, 9, 9, 9, 9, 9];
+// CHECK-NEXT:     let mut src_f: [u8; 8] = [9, 9, 9, 9, 9, 9, 9, 9];
 // CHECK-NEXT:     let n: i32 = get_n();
 // CHECK-NEXT:     dst_f[0usize..((n as u64) as usize) as usize]
 // CHECK-NEXT:         .copy_from_slice(&src_f[0usize..((n as u64) as usize) as usize]);

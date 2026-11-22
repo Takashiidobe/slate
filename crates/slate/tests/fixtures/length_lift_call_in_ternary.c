@@ -35,7 +35,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut values: [i32; 3] = [1, 2, 5];
+// CHECK-NEXT:     let values: [i32; 3] = [1, 2, 5];
 // CHECK-NEXT:     report((sum(values.as_slice()) != 8) as i32);
 // CHECK-NEXT:     let mut picked: i32 = 0;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if sum(values.as_slice()) > 2 {

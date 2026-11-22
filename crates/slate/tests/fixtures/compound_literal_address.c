@@ -28,7 +28,7 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: Slice = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: Slice = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut first: Slice = unsafe {
+// CHECK-NEXT:     let first: Slice = unsafe {
 // CHECK-NEXT:         *make_slice(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(*{
 // CHECK-NEXT:                 [[SLATE_COMPOUND_0]] = {
@@ -41,7 +41,7 @@ int main(void) {
 // CHECK-NEXT:             (core::mem::size_of::<[i8; 6]>() as u64).wrapping_sub(1),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut second: Slice = unsafe {
+// CHECK-NEXT:     let second: Slice = unsafe {
 // CHECK-NEXT:         *make_slice(
 // CHECK-NEXT:             core::ptr::addr_of_mut!(*{
 // CHECK-NEXT:                 [[SLATE_COMPOUND_1]] = {

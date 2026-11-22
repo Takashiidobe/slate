@@ -27,7 +27,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn narrow_output(mut r#in: u64, out: &mut u32) -> u64 {
+// CHECK-NEXT: fn narrow_output(r#in: u64, out: &mut u32) -> u64 {
 // CHECK-NEXT:     let mut a: u64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
@@ -46,7 +46,7 @@ int main(void) {
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn wide_output(mut r#in: u32) -> u64 {
+// CHECK-NEXT: fn wide_output(r#in: u32) -> u64 {
 // CHECK-NEXT:     let mut out: u64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;

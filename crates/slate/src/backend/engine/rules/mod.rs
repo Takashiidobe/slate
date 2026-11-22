@@ -6,11 +6,11 @@ mod for_range;
 mod inline_temps;
 mod label_elide;
 pub(super) mod literal_casts;
+mod mutation;
 mod null_compare;
 mod pattern_range;
 mod pure_stmts;
 mod raw_ptr_alias;
-mod remove_mut;
 mod return_cleanup;
 mod singleton_scopes;
 mod slot_promote;
@@ -18,7 +18,6 @@ pub(super) mod walk;
 
 use super::NodeRule;
 use crate::backend::rust_ast::Prim;
-pub(super) use remove_mut::demote_params;
 
 pub(super) fn control_flow_registry() -> Vec<Box<dyn NodeRule>> {
     vec![
@@ -35,8 +34,7 @@ pub(super) fn control_flow_registry() -> Vec<Box<dyn NodeRule>> {
 pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Box<dyn NodeRule>> {
     let mut rules = control_flow_registry();
     rules.extend(vec![
-        Box::new(remove_mut::RemoveMut) as Box<dyn NodeRule>,
-        Box::new(slot_promote::SlotPromote),
+        Box::new(slot_promote::SlotPromote) as Box<dyn NodeRule>,
         Box::new(slot_promote::DeclSink),
         Box::new(branch_init::BranchInitFold),
         Box::new(raw_ptr_alias::RawPtrAliasElide),

@@ -63,16 +63,16 @@ int main(void) {
 // CHECK-NEXT:     let u128a: u128 = (0 as u128).wrapping_sub(1 as u128);
 // CHECK-NEXT:     let add_u128: u128 = u128a.saturating_add(5 as u128);
 // CHECK-NEXT:     println!("{}", (add_u128 == (0 as u128).wrapping_sub(1 as u128)) as i32);
-// CHECK-NEXT:     let mut s200a: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
+// CHECK-NEXT:     let s200a: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(
 // CHECK-NEXT:         -1 as i128,
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut add_s200: bitint::BInt<200, 4, 32, bitint::A8> = s200a
+// CHECK-NEXT:     let add_s200: bitint::BInt<200, 4, 32, bitint::A8> = s200a
 // CHECK-NEXT:         .saturating_add(<bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(5 as i128));
 // CHECK-NEXT:     println!("{}", add_s200.to_i128() as i32);
-// CHECK-NEXT:     let mut u200a: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<200, 4, 32, bitint::A8>>::from_bint(
+// CHECK-NEXT:     let u200a: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<200, 4, 32, bitint::A8>>::from_bint(
 // CHECK-NEXT:         <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(3 as i128),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut sub_u200: bitint::BUint<200, 4, 32, bitint::A8> = u200a
+// CHECK-NEXT:     let sub_u200: bitint::BUint<200, 4, 32, bitint::A8> = u200a
 // CHECK-NEXT:         .saturating_sub(
 // CHECK-NEXT:             <bitint::BUint<200, 4, 32, bitint::A8>>::from_bint(
 // CHECK-NEXT:                 <bitint::BInt<200, 4, 32, bitint::A8>>::from_i128(10 as i128),

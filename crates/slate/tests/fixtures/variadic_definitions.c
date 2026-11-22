@@ -95,7 +95,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C-unwind" fn ignore_rest(first: i32, __va_args: ...) -> i32 {
+// CHECK-NEXT: unsafe extern "C-unwind" fn ignore_rest(first: i32, mut __va_args: ...) -> i32 {
 // CHECK-NEXT:     first * 3
 // CHECK-NEXT: }
 // CHECK-EMPTY:

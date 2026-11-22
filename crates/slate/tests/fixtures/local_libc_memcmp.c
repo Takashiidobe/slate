@@ -41,9 +41,9 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut x: [u8; 3] = [1, 2, 3];
-// CHECK-NEXT:     let mut y: [u8; 3] = [1, 2, 4];
-// CHECK-NEXT:     let mut z: [u8; 3] = [1, 2, 3];
+// CHECK-NEXT:     let x: [u8; 3] = [1, 2, 3];
+// CHECK-NEXT:     let y: [u8; 3] = [1, 2, 4];
+// CHECK-NEXT:     let z: [u8; 3] = [1, 2, 3];
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {}",
 // CHECK-NEXT:         cmp_bytes(x.as_slice(), 3i32, y.as_slice(), 3i32),

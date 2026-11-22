@@ -106,7 +106,7 @@ int main(void) {
 // CHECK-NEXT:     forward(unsafe { core::slice::from_raw_parts_mut(heap, len as usize) });
 // CHECK-NEXT:     let mut local: [i32; 3] = [7, 8, 9];
 // CHECK-NEXT:     bump(local.as_mut_slice());
-// CHECK-NEXT:     let mut window: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
+// CHECK-NEXT:     let window: __SlateAlign16<[i32; 4]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32]);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}",
 // CHECK-NEXT:         unsafe { *heap.add(4) },

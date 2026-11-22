@@ -44,10 +44,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let alpha: [i8; 4] = [97, 98, 99, 0];
-// CHECK-NEXT:     let beta: [i8; 4] = [97, 98, 100, 0];
+// CHECK-NEXT:     let mut alpha: [i8; 4] = [97, 98, 99, 0];
+// CHECK-NEXT:     let mut beta: [i8; 4] = [97, 98, 100, 0];
 // CHECK-NEXT:     let mut bytes_a: [u8; 3] = [255, 1, 0];
-// CHECK-NEXT:     let bytes_b: [u8; 3] = [255, 2, 0];
+// CHECK-NEXT:     let mut bytes_b: [u8; 3] = [255, 2, 0];
 // CHECK-NEXT:     let mut hay: [i8; 7] = [97, 98, 97, 99, 97, 100, 0];
 // CHECK-NEXT:     let mut sub: [i8; 4] = [97, 99, 97, 0];
 // CHECK-NEXT:     let mut empty: [i8; 1] = [0];

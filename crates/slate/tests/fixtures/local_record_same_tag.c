@@ -57,7 +57,7 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn first() -> i32 {
-// CHECK-NEXT:     let mut items: __SlateAlign16<[Rec__6; 2]> = __SlateAlign16(
+// CHECK-NEXT:     let items: __SlateAlign16<[Rec__6; 2]> = __SlateAlign16(
 // CHECK-NEXT:         [
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 let mut [[T_0:__t[0-9]+]]: Rec__6 = unsafe { core::mem::zeroed() };
@@ -86,7 +86,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn second() -> i32 {
-// CHECK-NEXT:     let mut items: __SlateAlign16<[Rec__18; 2]> = __SlateAlign16(
+// CHECK-NEXT:     let items: __SlateAlign16<[Rec__18; 2]> = __SlateAlign16(
 // CHECK-NEXT:         [
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 let mut [[T_0]]: Rec__18 = unsafe { core::mem::zeroed() };

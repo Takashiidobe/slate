@@ -52,7 +52,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut __dummy: u64 = 0;
-// CHECK-NEXT:         let __dummy2: u64 = 0;
+// CHECK-NEXT:         let mut __dummy2: u64 = 0;
 // CHECK-NEXT:         core::ptr::addr_of_mut!(__dummy) == (core::ptr::addr_of!(__dummy2) as *mut u64);
 // CHECK-NEXT:         [[V_0]] = 1;
 // CHECK-NEXT:     }

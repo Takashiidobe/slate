@@ -214,7 +214,7 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_castsi256_si128(
-// CHECK-NEXT:     mut __a: core::simd::Simd<i64, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__a, __a, [0, 1]);
 // CHECK-NEXT: }
@@ -232,7 +232,7 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx,avx2,fma,popcnt,sse3,sse4.1,sse4.2,ssse3,xsave")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.gather_sum")]
 // CHECK-NEXT: unsafe fn gather_sum(table: *const i32, index: core::simd::Simd<i64, 4>) -> i32 {
-// CHECK-NEXT:     let mut v: core::simd::Simd<i64, 4> = unsafe {
+// CHECK-NEXT:     let v: core::simd::Simd<i64, 4> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<i64, 4>>(
 // CHECK-NEXT:             __slate_intrinsic_2bb68d2b4a903634(
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(

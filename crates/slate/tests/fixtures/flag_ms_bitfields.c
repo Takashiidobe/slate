@@ -87,14 +87,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut m: mixed_units = {
+// CHECK-NEXT:     let m: mixed_units = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: mixed_units = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].__slate_bits_0.__set_a(1i8);
 // CHECK-NEXT:         [[T_0]].__slate_bits_1.__set_b(2i32);
 // CHECK-NEXT:         [[T_0]].c = 3i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut w: widening = {
+// CHECK-NEXT:     let w: widening = {
 // CHECK-NEXT:         let mut [[T_1:__t[0-9]+]]: widening = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_1]].__slate_bits_0.__set_x(1i32);
 // CHECK-NEXT:         [[T_1]].__slate_bits_1.__set_y(2i64);

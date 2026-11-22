@@ -156,7 +156,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         let mut v: bitint::BUint<300, 5, 40, bitint::A8> = unsafe {
+// CHECK-NEXT:         let v: bitint::BUint<300, 5, 40, bitint::A8> = unsafe {
 // CHECK-NEXT:             __slate_sysv_va::arg::<_, bitint::BUint<300, 5, 40, bitint::A8>>(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(ap),
 // CHECK-NEXT:                 0u32,

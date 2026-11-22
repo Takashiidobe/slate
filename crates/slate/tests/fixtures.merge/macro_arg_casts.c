@@ -157,8 +157,8 @@ int main(void) {
 // CHECK-NEXT:     STORE_BYTE!(small);
 // CHECK-NEXT:     STORE_BYTE!(code);
 // CHECK-NEXT:     STORE_BYTE!(lc >> 3i32);
-// CHECK-NEXT:     SUM_TWICE!(wide);
-// CHECK-NEXT:     SUM_TWICE__2!(code);
+// CHECK-NEXT:     SUM_TWICE__2!(wide);
+// CHECK-NEXT:     SUM_TWICE!(code);
 // CHECK-NEXT:     MIXED!(wide);
 // CHECK-NEXT:     MIXED!((small as i32) + 1);
 // CHECK-NEXT:     unsafe {
@@ -240,7 +240,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: i32 = unsafe { flips };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = __v + (($a) + $a);
+// CHECK-NEXT:             flips = __v + ((($a) as i32) + (($a) as i32));
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -249,7 +249,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: i32 = unsafe { flips };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             flips = __v + ((($a) as i32) + (($a) as i32));
+// CHECK-NEXT:             flips = __v + (($a) + $a);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

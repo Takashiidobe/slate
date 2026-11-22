@@ -1,5 +1,5 @@
 use super::for_range::subtree_ids;
-use super::remove_mut::invariant_within;
+use super::mutation::invariant_within;
 use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
@@ -270,7 +270,7 @@ impl NodeRule for DeclSink {
             NodeKind::Let {
                 origin,
                 name,
-                mutable: true,
+                mutable: false,
                 ty,
                 init: Some(value),
             },

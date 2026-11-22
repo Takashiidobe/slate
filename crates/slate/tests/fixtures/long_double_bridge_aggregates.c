@@ -271,7 +271,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(export_name = "__slate_ld____slate_ldfp_long_double_bridge_aggregates_weigh__rf80_m32a8_f80")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.weigh")]
-// CHECK-NEXT: extern "C-unwind" fn weigh(b: big, scale: LongDouble) -> LongDouble {
+// CHECK-NEXT: extern "C-unwind" fn weigh(mut b: big, scale: LongDouble) -> LongDouble {
 // CHECK-NEXT:     __slate_f80_from_f64(b.d[0] + b.d[1] + b.d[2] + (b.k as f64)) * scale
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -289,7 +289,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(export_name = "__slate_ld____slate_ldfp_long_double_bridge_aggregates_spread__rm32a8_f80_m32a8")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.spread")]
-// CHECK-NEXT: extern "C-unwind" fn spread(base: LongDouble, b: big) -> big {
+// CHECK-NEXT: extern "C-unwind" fn spread(base: LongDouble, mut b: big) -> big {
 // CHECK-NEXT:     let r: big = {
 // CHECK-NEXT:         let mut [[T_0]]: big = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].d = [
@@ -352,7 +352,7 @@ int main(void) {
 // CHECK-NEXT:             2i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let s: big = unsafe {
+// CHECK-NEXT:     let mut s: big = unsafe {
 // CHECK-NEXT:         __slate_icall__rm32a8_f80_m32a8(
 // CHECK-NEXT:             core::mem::transmute::<Option<unsafe extern "C-unwind" fn(LongDouble, big) -> big>, *const ()>(
 // CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(spread_ptr)),

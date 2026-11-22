@@ -287,7 +287,7 @@ int main(void) {
 // CHECK-NEXT:     let a: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = __slate_vector::__SlateVector::from_array(
 // CHECK-NEXT:         [(1 as u128) << 100i32 | 7, !(0 as u128)],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut b: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = __slate_vector::__SlateVector::from_array(
+// CHECK-NEXT:     let b: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = __slate_vector::__SlateVector::from_array(
 // CHECK-NEXT:         [3 as u128, (5 as u128) << 70i32],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let m: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = mix(a, b);
@@ -340,10 +340,10 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"s[2]=%lld\n".as_ptr(), s[2] as i64) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut narrow: core::simd::Simd<u64, 2> = core::simd::Simd::from_array(
+// CHECK-NEXT:     let narrow: core::simd::Simd<u64, 2> = core::simd::Simd::from_array(
 // CHECK-NEXT:         [18446744073709551615u64, 3u64],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut wide: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = __slate_vector::__SlateVector::from_array(
+// CHECK-NEXT:     let wide: __slate_vector::__SlateVector<u128, 2, __slate_vector::Align32> = __slate_vector::__SlateVector::from_array(
 // CHECK-NEXT:         narrow.to_array().map(|__lane| __lane as u128),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show(c"w0".as_ptr(), wide[0].wrapping_add(1));

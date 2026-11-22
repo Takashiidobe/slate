@@ -221,7 +221,7 @@ int main(void) {
 // CHECK-NEXT:             as *const bitint::BInt<200, 4, 32, bitint::A8>,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let flag: bool = true;
-// CHECK-NEXT:     let mut from_bool: bitint::BInt<70, 2, 16, bitint::A8> = <bitint::BInt<70, 2, 16, bitint::A8>>::from_u128(
+// CHECK-NEXT:     let from_bool: bitint::BInt<70, 2, 16, bitint::A8> = <bitint::BInt<70, 2, 16, bitint::A8>>::from_u128(
 // CHECK-NEXT:         flag as u128,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

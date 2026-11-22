@@ -31,19 +31,19 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut equal_a: [u8; 4] = [1, 2, 3, 4];
-// CHECK-NEXT:     let equal_b: [u8; 4] = [1, 2, 3, 4];
+// CHECK-NEXT:     let mut equal_b: [u8; 4] = [1, 2, 3, 4];
 // CHECK-NEXT:     let equal_result: i32 = ((equal_a[0usize..4usize].cmp(&equal_b[0usize..4usize])
 // CHECK-NEXT:         as i32) == 0) as i32;
 // CHECK-NEXT:     let mut unequal_a: [u8; 4] = [1, 2, 3, 4];
-// CHECK-NEXT:     let unequal_b: [u8; 4] = [1, 2, 3, 9];
+// CHECK-NEXT:     let mut unequal_b: [u8; 4] = [1, 2, 3, 9];
 // CHECK-NEXT:     let unequal_result: i32 = ((unequal_a[0usize..4usize].cmp(&unequal_b[0usize..4usize])
 // CHECK-NEXT:         as i32) == 0) as i32;
 // CHECK-NEXT:     let mut partial_a: [u8; 8] = [1, 2, 3, 4, 9, 9, 9, 9];
-// CHECK-NEXT:     let partial_b: [u8; 8] = [1, 2, 3, 4, 0, 0, 0, 0];
+// CHECK-NEXT:     let mut partial_b: [u8; 8] = [1, 2, 3, 4, 0, 0, 0, 0];
 // CHECK-NEXT:     let partial_result: i32 = ((partial_a[0usize..4usize].cmp(&partial_b[0usize..4usize])
 // CHECK-NEXT:         as i32) == 0) as i32;
 // CHECK-NEXT:     let mut dyn_a: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     let dyn_b: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
+// CHECK-NEXT:     let mut dyn_b: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     let n: i32 = get_count();
 // CHECK-NEXT:     let dyn_result: i32 = ((dyn_a[0usize..((n as u64) as usize) as usize]
 // CHECK-NEXT:         .cmp(&dyn_b[0usize..((n as u64) as usize) as usize]) as i32) == 0) as i32;

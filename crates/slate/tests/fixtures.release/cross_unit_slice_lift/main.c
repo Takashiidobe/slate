@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::free;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn window_total() -> i32 {
-// CHECK-NEXT:     let mut window: [i32; 2] = [5, 6];
+// CHECK-NEXT:     let window: [i32; 2] = [5, 6];
 // CHECK-NEXT:     table_sum(window.as_slice())
 // CHECK-NEXT: }
 // CHECK-EMPTY:

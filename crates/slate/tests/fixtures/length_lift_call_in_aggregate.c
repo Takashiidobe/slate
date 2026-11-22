@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut values: [i32; 3] = [1, 2, 5];
+// CHECK-NEXT:     let values: [i32; 3] = [1, 2, 5];
 // CHECK-NEXT:     let p: pair = pair {
 // CHECK-NEXT:         a: sum(values.as_slice()),
 // CHECK-NEXT:         b: sum(values.as_slice()),

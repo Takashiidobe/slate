@@ -61,8 +61,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut x: __SlateAlign16<[i32; 5]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32, 5i32]);
-// CHECK-NEXT:     let mut y: [i32; 2] = [10, 20];
+// CHECK-NEXT:     let x: __SlateAlign16<[i32; 5]> = __SlateAlign16([1i32, 2i32, 3i32, 4i32, 5i32]);
+// CHECK-NEXT:     let y: [i32; 2] = [10, 20];
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         sum_both(x.0.as_slice(), y.as_slice()),

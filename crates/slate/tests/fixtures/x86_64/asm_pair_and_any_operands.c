@@ -114,7 +114,7 @@ int main(void) {
 // CHECK-NEXT:     hi
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn single_a(mut x: u64) -> u64 {
+// CHECK-NEXT: fn single_a(x: u64) -> u64 {
 // CHECK-NEXT:     let mut r: u64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
@@ -131,10 +131,7 @@ int main(void) {
 // CHECK-NEXT:     r
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn any_operands(
-// CHECK-NEXT:     mut x: i32,
-// CHECK-NEXT:     mut big: &__SlateRecord_asm_pair_and_any_operands_c_3,
-// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT: fn any_operands(x: i32, big: &__SlateRecord_asm_pair_and_any_operands_c_3) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "\n# {0:e}\n# {1}\n# {2}",

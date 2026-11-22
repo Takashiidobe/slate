@@ -337,7 +337,7 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_castps256_ps128(
-// CHECK-NEXT:     mut __a: core::simd::Simd<f32, 8>,
+// CHECK-NEXT:     __a: core::simd::Simd<f32, 8>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__a, __a, [0, 1, 2, 3]);
 // CHECK-NEXT: }
@@ -345,7 +345,7 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm256_castsi256_si128(
-// CHECK-NEXT:     mut __a: core::simd::Simd<i64, 4>,
+// CHECK-NEXT:     __a: core::simd::Simd<i64, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 2> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__a, __a, [0, 1]);
 // CHECK-NEXT: }
@@ -394,12 +394,12 @@ int main(void) {
 // CHECK-NEXT:     h
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn low_half(mut v: core::simd::Simd<i32, 4>) -> core::simd::Simd<i32, 2> {
+// CHECK-NEXT: fn low_half(v: core::simd::Simd<i32, 4>) -> core::simd::Simd<i32, 2> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(v, v, [0, 1]);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn widen_undef(mut v: core::simd::Simd<i32, 4>) -> core::simd::Simd<i32, 8> {
-// CHECK-NEXT:     let mut w: core::simd::Simd<i32, 8> = core::simd::simd_swizzle!(
+// CHECK-NEXT: fn widen_undef(v: core::simd::Simd<i32, 4>) -> core::simd::Simd<i32, 8> {
+// CHECK-NEXT:     let w: core::simd::Simd<i32, 8> = core::simd::simd_swizzle!(
 // CHECK-NEXT:         v,
 // CHECK-NEXT:         v,
 // CHECK-NEXT:         [0, 1, 2, 3, 0, 0, 0, 0]
@@ -408,20 +408,20 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn interleave(
-// CHECK-NEXT:     mut a: core::simd::Simd<i32, 4>,
-// CHECK-NEXT:     mut b: core::simd::Simd<i32, 4>,
+// CHECK-NEXT:     a: core::simd::Simd<i32, 4>,
+// CHECK-NEXT:     b: core::simd::Simd<i32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<i32, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(a, b, [0, 4, 1, 5]);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn concat(
-// CHECK-NEXT:     mut a: core::simd::Simd<i32, 4>,
-// CHECK-NEXT:     mut b: core::simd::Simd<i32, 4>,
+// CHECK-NEXT:     a: core::simd::Simd<i32, 4>,
+// CHECK-NEXT:     b: core::simd::Simd<i32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<i32, 8> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(a, b, [7, 6, 5, 4, 3, 2, 1, 0]);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn reverse(mut v: core::simd::Simd<i32, 4>) -> core::simd::Simd<i32, 4> {
+// CHECK-NEXT: fn reverse(v: core::simd::Simd<i32, 4>) -> core::simd::Simd<i32, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(v, v, [3, 2, 1, 0]);
 // CHECK-NEXT: }
 // CHECK-EMPTY:

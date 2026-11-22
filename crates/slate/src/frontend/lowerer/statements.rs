@@ -169,7 +169,7 @@ impl FunctionLowerer<'_, '_> {
             } => Stmt::Let {
                 origin: rust::LocalOrigin::Synthetic,
                 name: self.binding_name(*id),
-                mutable: true,
+                mutable: self.binding_requires_mut(*id),
                 ty: Some(self.lower_binding_type(ty, *id)?),
                 init: initializer
                     .as_ref()
@@ -233,7 +233,7 @@ impl FunctionLowerer<'_, '_> {
                         return Ok(Stmt::Let {
                             origin: rust::LocalOrigin::Source,
                             name: self.binding_name(variable.id),
-                            mutable: true,
+                            mutable: self.binding_requires_mut(variable.id),
                             ty: Some(self.borrow_type(&variable.ty, borrow)?),
                             init: Some(self.lower_borrow(initializer, borrow)?),
                         });
@@ -368,6 +368,33 @@ impl FunctionLowerer<'_, '_> {
                         }));
                     }
                 }
+                let name = self.binding_name(variable.id);
+                let mutable =
+                    self.after_declaration.is_some() || self.binding_requires_mut(variable.id);
+                let init = match init {
+                    Some(Expr::If { cond, then_expr, else_expr })
+                        if variable.initializer.as_ref().is_some_and(|value| {
+                            matches!(&value.node.value,
+                                ValueKind::Conditional { then_value, else_value, .. }
+                                if matches!(then_value.node.value, ValueKind::StatementExpression(_))
+                                    && matches!(else_value.node.value, ValueKind::StatementExpression(_)))
+                        }) =>
+                    {
+                        let (then_body, then_value) = initializer_arm(*then_expr);
+                        let (else_body, else_value) = initializer_arm(*else_expr);
+                        return Ok(Stmt::LetIf {
+                            name,
+                            mutable,
+                            ty: Some(ty),
+                            cond: *cond,
+                            then_body,
+                            then_value,
+                            else_body,
+                            else_value,
+                        });
+                    }
+                    init => init,
+                };
                 Stmt::Let {
                     origin: if variable.initializer.is_none()
                         && variable.auto_init.is_none()
@@ -378,8 +405,8 @@ impl FunctionLowerer<'_, '_> {
                     } else {
                         rust::LocalOrigin::Source
                     },
-                    name: self.binding_name(variable.id),
-                    mutable: true,
+                    name,
+                    mutable,
                     ty: Some(ty),
                     init,
                 }
@@ -841,6 +868,17 @@ impl FunctionLowerer<'_, '_> {
                 }))
             }))
             .collect())
+    }
+}
+
+fn initializer_arm(expr: Expr) -> (Vec<Stmt>, Expr) {
+    if let Expr::Block(mut block) = expr {
+        if let Some(tail) = block.tail.take() {
+            return (block.stmts, *tail);
+        }
+        (Vec::new(), Expr::Block(block))
+    } else {
+        (Vec::new(), expr)
     }
 }
 

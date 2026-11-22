@@ -159,7 +159,6 @@ fn run_function(
     for registry in passes {
         run_worklist(&mut function, registry);
     }
-    rules::demote_params(&mut function);
     *body = arena::reify(&function, root);
     *params = function.params().to_vec();
     shadow::restore(body, &mut params[..], &shadowed);

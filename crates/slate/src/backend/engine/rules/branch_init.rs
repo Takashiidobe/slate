@@ -222,6 +222,11 @@ impl NodeRule for BranchInitFold {
                 else_value,
             },
         );
+        if super::mutation::can_drop_mut(arena, id)
+            && let Some(NodeKind::LetIf { mutable, .. }) = arena.get_mut(id)
+        {
+            *mutable = false;
+        }
         true
     }
 }

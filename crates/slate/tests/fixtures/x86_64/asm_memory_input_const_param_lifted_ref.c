@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut seen: u64 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: fn load(mut dtr: *const desc_ptr) {
+// CHECK-NEXT: fn load(dtr: *const desc_ptr) {
 // CHECK-NEXT:     let mut got: u64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;

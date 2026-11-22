@@ -37,6 +37,26 @@ init:
     return result;
 }
 
+int branch_write(int choice) {
+    int result;
+    if (choice) {
+        int value = compute();
+        result = value + 1;
+    } else {
+        result = 2;
+    }
+    return result;
+}
+
+int branch_reads_previous(int choice) {
+    int result = compute();
+    if (choice)
+        result = result + 1;
+    else
+        result = 2;
+    return result;
+}
+
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn %{{[0-9]+}} @across_call(%{{[0-9]+}} flags: ptr<i32>) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // CHECK-NEXT:     let %[[V_OLD:[0-9]+]] old: i32 [storage=automatic] = read<i32>(deref(read<ptr<i32>>(%[[V_FLAGS:[0-9]+]])));
@@ -66,6 +86,18 @@ init:
 // CHECK-NEXT:         goto %[[V_INIT:[0-9]+]];
 // CHECK-NEXT:     label %[[V_INIT]] init:
 // CHECK-NEXT:         write<i32>(%[[V_RESULT]], call<i32, signature=fn() -> i32>(%[[V0:[0-9]+]]));
+// CHECK-NEXT:     return read<i32>(%[[V_RESULT]]);
+// CHECK: {{^}}}
+// CHECK-LABEL: {{^}}fn %{{[0-9]+}} @branch_write(%{{[0-9]+}} choice: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// CHECK-NEXT:     let %[[V_RESULT:[0-9]+]] result: i32 [storage=automatic] = conditional<i32>(ne<i32>(read<i32>(%[[V_CHOICE:[0-9]+]]), const<i32>(0)), statement_expression<i32, statements=1>(add<i32, overflow=ub>(read<i32>(%[[V0:[0-9]+]]), const<i32>(1))), statement_expression<i32, statements=0>(const<i32>(2)));
+// CHECK-NEXT:     return read<i32>(%[[V_RESULT]]);
+// CHECK: {{^}}}
+// CHECK-LABEL: {{^}}fn %{{[0-9]+}} @branch_reads_previous(%{{[0-9]+}} choice: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// CHECK-NEXT:     let %[[V_RESULT:[0-9]+]] result: i32 [storage=automatic] = call<i32, signature=fn() -> i32>(%[[V0:[0-9]+]]);
+// CHECK-NEXT:     if ne<i32>(read<i32>(%[[V_CHOICE:[0-9]+]]), const<i32>(0))
+// CHECK-NEXT:         write<i32>(%[[V_RESULT]], add<i32, overflow=ub>(read<i32>(%[[V_RESULT]]), const<i32>(1)));
+// CHECK-NEXT:     else
+// CHECK-NEXT:         write<i32>(%[[V_RESULT]], const<i32>(2));
 // CHECK-NEXT:     return read<i32>(%[[V_RESULT]]);
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

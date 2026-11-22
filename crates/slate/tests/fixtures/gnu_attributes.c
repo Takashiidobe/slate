@@ -291,7 +291,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe extern "C-unwind" fn gnu_attribute_format(
 // CHECK-NEXT:     format: *const i8,
-// CHECK-NEXT:     __va_args: ...,
+// CHECK-NEXT:     mut __va_args: ...,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     ((unsafe { *format.add(0) as i32 }) == 102) as i32
 // CHECK-NEXT: }
@@ -300,7 +300,10 @@ int main(void) {
 // CHECK-NEXT:     format
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: unsafe extern "C-unwind" fn gnu_attribute_sentinel(value: i32, __va_args: ...) -> i32 {
+// CHECK-NEXT: unsafe extern "C-unwind" fn gnu_attribute_sentinel(
+// CHECK-NEXT:     value: i32,
+// CHECK-NEXT:     mut __va_args: ...,
+// CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     value + 37
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -13,9 +13,25 @@ pub(crate) fn deep<T>(recurse: impl FnOnce() -> T) -> T {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum Access {
     Read,
+    ReadProjection,
+    Initialize,
     Write,
     Escape,
+    Argument(BorrowArgument),
     Capture,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct BorrowArgument {
+    pub callee: BindingId,
+    pub index: usize,
+    pub array: bool,
+}
+
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
+pub struct BindingMutability {
+    pub required: bool,
+    pub arguments: Vec<BorrowArgument>,
 }
 
 pub(crate) struct DefUse {
@@ -46,20 +62,25 @@ impl DefUse {
     }
 
     pub fn escapes(&self, binding: BindingId) -> bool {
-        self.uses
-            .get(&binding)
-            .is_some_and(|uses| uses.iter().any(|(_, access)| *access == Access::Escape))
+        self.uses.get(&binding).is_some_and(|uses| {
+            uses.iter().any(|(_, access)| {
+                matches!(
+                    access,
+                    Access::Escape | Access::Argument(_) | Access::ReadProjection
+                )
+            })
+        })
     }
 
     pub fn written_once(&self, binding: BindingId) -> bool {
         let uses = self.uses.get(&binding).map(Vec::as_slice).unwrap_or(&[]);
         uses.iter()
-            .filter(|(_, access)| *access == Access::Write)
+            .filter(|(_, access)| matches!(access, Access::Write | Access::Initialize))
             .count()
             == 1
-            && uses
-                .iter()
-                .all(|(_, access)| matches!(access, Access::Write | Access::Read))
+            && uses.iter().all(|(_, access)| {
+                matches!(access, Access::Write | Access::Initialize | Access::Read)
+            })
     }
 
     pub fn single_read(&self, binding: BindingId) -> bool {
@@ -71,17 +92,63 @@ impl DefUse {
 
     pub fn only_writes(&self, binding: BindingId, count: usize) -> bool {
         let uses = self.uses.get(&binding).map(Vec::as_slice).unwrap_or(&[]);
-        uses.len() == count && uses.iter().all(|(_, access)| *access == Access::Write)
+        uses.len() == count
+            && uses
+                .iter()
+                .all(|(_, access)| matches!(access, Access::Write | Access::Initialize))
+    }
+
+    pub fn mutability(&self, binding: BindingId) -> BindingMutability {
+        self.uses
+            .get(&binding)
+            .map_or_else(BindingMutability::default, |uses| Self::mutability_of(uses))
+    }
+
+    pub fn binding_mutability(&self) -> impl Iterator<Item = (BindingId, BindingMutability)> + '_ {
+        self.uses
+            .iter()
+            .map(|(&id, uses)| (id, Self::mutability_of(uses)))
+    }
+
+    fn mutability_of(uses: &[(u32, Access)]) -> BindingMutability {
+        if uses
+            .iter()
+            .any(|(_, access)| matches!(access, Access::Write | Access::Escape))
+        {
+            return BindingMutability {
+                required: true,
+                arguments: Vec::new(),
+            };
+        }
+        BindingMutability {
+            required: false,
+            arguments: uses
+                .iter()
+                .filter_map(|(_, access)| match access {
+                    Access::Argument(argument) => Some(*argument),
+                    _ => None,
+                })
+                .collect(),
+        }
     }
 
     pub fn straight_line_write(&self, binding: BindingId, statements: usize) -> bool {
-        self.next as usize == statements && self.only_writes(binding, 1)
+        self.straight_line_writes(binding, statements, 1)
+    }
+
+    pub fn straight_line_writes(
+        &self,
+        binding: BindingId,
+        statements: usize,
+        writes: usize,
+    ) -> bool {
+        self.next as usize == statements && self.only_writes(binding, writes)
     }
 
     pub fn touched_in(&self, binding: BindingId, region: &Range<u32>) -> bool {
         self.uses.get(&binding).is_some_and(|uses| {
             uses.iter().any(|(position, access)| {
-                matches!(access, Access::Write | Access::Escape) && region.contains(position)
+                !matches!(access, Access::Read | Access::Capture) && region.contains(position)
             })
         })
     }
@@ -147,8 +214,12 @@ impl DefUse {
             | Statement::Goto(_) => {}
             Statement::ComputedGoto(value) => self.value(value),
             Statement::Temporary {
-                ty, initializer, ..
+                id,
+                ty,
+                initializer,
+                ..
             } => {
+                self.uses.entry(*id).or_default();
                 self.captures(ty);
                 if let Some(value) = initializer {
                     self.value(value);
@@ -312,12 +383,13 @@ impl DefUse {
     }
 
     fn variable(&mut self, variable: &Variable) {
+        self.uses.entry(variable.id).or_default();
         self.captures(&variable.ty);
         if variable.cleanup.is_some() {
             self.record(variable.id, Access::Escape);
         }
         if let Some(value) = &variable.initializer {
-            self.record(variable.id, Access::Write);
+            self.record(variable.id, Access::Initialize);
             self.value(value);
         }
     }
@@ -338,17 +410,45 @@ impl DefUse {
     }
 
     fn place(&mut self, place: &Place) {
+        self.access_place(place, Access::Escape);
+    }
+
+    fn access_place(&mut self, place: &Place, access: Access) {
         self.captures(&place.ty);
         match &place.kind {
-            PlaceKind::Binding(id) => self.record(*id, Access::Escape),
+            PlaceKind::Binding(id) => self.record(*id, access),
+            PlaceKind::Deref(value)
+                if access == Access::ReadProjection
+                    && let ValueKind::PointerOffset {
+                        pointer,
+                        amount,
+                        subtract: false,
+                        element,
+                        ..
+                    } = &value.node.value
+                    && let ValueKind::ArrayDecay {
+                        place: array,
+                        length: Some(_),
+                    } = &pointer.node.value
+                    && let Type::Array {
+                        length: Some(1..),
+                        element: array_element,
+                    } = &array.ty
+                    && **array_element == *element
+                    && matches!(array.kind, PlaceKind::Binding(_))
+                    && captured(&array.ty).is_empty() =>
+            {
+                self.access_place(array, access);
+                self.value(amount);
+            }
             PlaceKind::Deref(value) => self.value(value),
             PlaceKind::CompoundLiteral { initializer, .. }
             | PlaceKind::Temporary { initializer, .. } => self.value(initializer),
             PlaceKind::ComplexPart { base, .. }
             | PlaceKind::Field { base, .. }
-            | PlaceKind::Swizzle { base, .. } => self.place(base),
+            | PlaceKind::Swizzle { base, .. } => self.access_place(base, access),
             PlaceKind::Lane { base, index } => {
-                self.place(base);
+                self.access_place(base, access);
                 self.value(index);
             }
             PlaceKind::Index { base, index } => {
@@ -361,6 +461,54 @@ impl DefUse {
     fn value(&mut self, value: &Value) {
         self.captures(&value.ty);
         deep(|| self.value_kind(&value.node.value));
+    }
+
+    fn argument(&mut self, argument: &Value, callee: BindingId, index: usize) {
+        let mut value = argument;
+        while let ValueKind::Copy { operand, .. }
+        | ValueKind::Convert {
+            kind: ConversionKind::PointerCast,
+            operand,
+            ..
+        } = &value.node.value
+            && matches!((&operand.ty, &value.ty), (Type::Pointer { pointee: from, .. }, Type::Pointer { pointee: to, .. }) if from == to)
+        {
+            self.captures(&value.ty);
+            value = operand;
+        }
+        let (place, array) = match &value.node.value {
+            ValueKind::AddressOf(place) => (place, false),
+            ValueKind::ArrayDecay {
+                place,
+                length: Some(_),
+            } if matches!(
+                place.ty,
+                Type::Array {
+                    length: Some(1..),
+                    ..
+                }
+            ) && captured(&place.ty).is_empty() =>
+            {
+                (place, true)
+            }
+            _ => {
+                self.value(value);
+                return;
+            }
+        };
+        if matches!(place.kind, PlaceKind::Binding(_)) {
+            self.captures(&value.ty);
+            self.access_place(
+                place,
+                Access::Argument(BorrowArgument {
+                    callee,
+                    index,
+                    array,
+                }),
+            );
+        } else {
+            self.value(value);
+        }
     }
 
     fn capture(&mut self, binding: BindingId, kind: CaptureKind) {
@@ -381,8 +529,11 @@ impl DefUse {
 
     fn value_kind(&mut self, kind: &ValueKind) {
         match kind {
-            ValueKind::Read { place, .. } => match place.kind {
+            ValueKind::Read { place, ordering } => match place.kind {
                 PlaceKind::Binding(id) => self.record(id, Access::Read),
+                _ if ordering.is_none() && place.access.is_plain() => {
+                    self.access_place(place, Access::ReadProjection);
+                }
                 _ => self.place(place),
             },
             ValueKind::AddressOf(place)
@@ -435,8 +586,11 @@ impl DefUse {
                 if let Callee::Indirect(value) = callee {
                     self.value(value);
                 }
-                for argument in arguments {
-                    self.value(argument);
+                for (index, argument) in arguments.iter().enumerate() {
+                    match callee {
+                        Callee::Direct(callee) => self.argument(argument, *callee, index),
+                        Callee::Indirect(_) => self.value(argument),
+                    }
                 }
             }
             ValueKind::Arith { left, right, .. }

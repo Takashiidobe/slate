@@ -41,7 +41,7 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn classify(seed: i32) -> i32 {
-// CHECK-NEXT:     let mut v: bitint::BUint<128, 2, 16, bitint::A8> = <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
+// CHECK-NEXT:     let v: bitint::BUint<128, 2, 16, bitint::A8> = <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
 // CHECK-NEXT:             340282366920938463463374607431768211440,
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .wrapping_add(
@@ -64,7 +64,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn classify_run(seed: i32) -> i32 {
-// CHECK-NEXT:     let mut v: bitint::BUint<128, 2, 16, bitint::A8> = <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
+// CHECK-NEXT:     let v: bitint::BUint<128, 2, 16, bitint::A8> = <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
 // CHECK-NEXT:             340282366920938463463374607431768211440,
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .wrapping_add(

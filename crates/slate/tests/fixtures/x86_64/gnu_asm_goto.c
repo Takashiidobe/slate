@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(asm_goto_with_outputs)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: fn gnu_asm_goto(mut value: i32) -> i32 {
+// CHECK-NEXT: fn gnu_asm_goto(value: i32) -> i32 {
 // CHECK-NEXT:     let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(

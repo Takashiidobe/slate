@@ -101,7 +101,7 @@ int main(void) {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let skipped: i32 = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:     let mut skipped: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     '[[JOIN_0:__join_[0-9]+]]: {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: i32 = mode;
 // CHECK-NEXT:         if [[T_0]] == 1 {

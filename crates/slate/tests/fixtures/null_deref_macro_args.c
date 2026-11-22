@@ -180,7 +180,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_1]][0] = 0i32;
 // CHECK-NEXT:         [[T_1]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut sp: *mut i32 = slots.as_mut_ptr();
+// CHECK-NEXT:     let sp: *mut i32 = slots.as_mut_ptr();
 // CHECK-NEXT:     STORE__2!(sp, 1i32, 6i32);
 // CHECK-NEXT:     store_null(2i32);
 // CHECK-NEXT:     println!("{} {} {} {}", a, b, prev as i32, slots[1]);

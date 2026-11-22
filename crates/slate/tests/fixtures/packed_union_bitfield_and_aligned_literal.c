@@ -209,7 +209,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: __SlateAlign4<__SlateRecord_packed_union_bitfield_and_aligned_literal_c_9> = unsafe {
 // CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let guid: __SlateAlign4<__SlateRecord_packed_union_bitfield_and_aligned_literal_c_9> = __SlateAlign4(
+// CHECK-NEXT:     let mut guid: __SlateAlign4<__SlateRecord_packed_union_bitfield_and_aligned_literal_c_9> = __SlateAlign4(
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *{
 // CHECK-NEXT:                 [[SLATE_COMPOUND_0]].0 = __SlateRecord_packed_union_bitfield_and_aligned_literal_c_9 {

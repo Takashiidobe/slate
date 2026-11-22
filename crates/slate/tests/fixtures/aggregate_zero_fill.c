@@ -73,7 +73,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
-// CHECK-NEXT: fn checksum(s: Sample) -> i32 {
+// CHECK-NEXT: fn checksum(mut s: Sample) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = s.id + ((s.scale * 10.0f64) as i32);
 // CHECK-NEXT:     if s.id != 0 {
 // CHECK-NEXT:         total += unsafe { *s.target };

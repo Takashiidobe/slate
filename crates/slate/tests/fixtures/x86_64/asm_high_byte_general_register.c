@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
-// CHECK-NEXT: fn high_byte(mut x: u32) -> u32 {
+// CHECK-NEXT: fn high_byte(x: u32) -> u32 {
 // CHECK-NEXT:     let mut out: u8 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -71,7 +71,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
-// CHECK-NEXT: fn mix(mut a: u32, mut b: u32) -> u32 {
+// CHECK-NEXT: fn mix(mut a: u32, b: u32) -> u32 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         unsafe {

@@ -59,8 +59,21 @@ impl FunctionLowerer<'_, '_> {
                 statement.spelling,
                 statement.expansion,
             );
+            let declaration = body.len();
             body.extend(self.lower_statement(&copy)?);
             if private.firstprivate {
+                let name = self.binding_name(private.copy.id);
+                for statement in &mut body[declaration..] {
+                    if let Stmt::Let {
+                        name: declared,
+                        mutable,
+                        ..
+                    } = statement
+                        && *declared == name
+                    {
+                        *mutable = true;
+                    }
+                }
                 let place = ir::Place::new(
                     private.copy.ty.clone(),
                     PlaceKind::Binding(private.original),

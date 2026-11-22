@@ -23,7 +23,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut a: num_complex::Complex<f64> = num_complex::Complex {
+// CHECK-NEXT:     let a: num_complex::Complex<f64> = num_complex::Complex {
 // CHECK-NEXT:         re: 1.0f64,
 // CHECK-NEXT:         im: 2.0f64,
 // CHECK-NEXT:     };

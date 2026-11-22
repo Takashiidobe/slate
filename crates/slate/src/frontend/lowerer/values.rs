@@ -1643,6 +1643,21 @@ impl FunctionLowerer<'_, '_> {
                     rhs: Box::new(self.lower_condition(right)?),
                 }
             }
+            ValueKind::StatementExpression(evaluation) => {
+                let mut stmts = self.lower_statement_list(&evaluation.statements)?;
+                let outer = std::mem::take(&mut self.pending);
+                let tail = self.lower_value(&evaluation.value);
+                stmts.extend(std::mem::replace(&mut self.pending, outer));
+                let tail = tail?;
+                if stmts.is_empty() {
+                    tail
+                } else {
+                    Expr::Block(Box::new(rust::Block {
+                        stmts,
+                        tail: Some(Box::new(tail)),
+                    }))
+                }
+            }
             ValueKind::Conditional {
                 condition,
                 then_value,

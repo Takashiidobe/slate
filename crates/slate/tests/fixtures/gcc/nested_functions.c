@@ -157,7 +157,7 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn counter__bump(__slate_capture_0: *mut i32, by: i32) {
+// CHECK-NEXT: fn counter__bump(__slate_capture_0: *mut i32, mut by: i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *__slate_capture_0 += by;
 // CHECK-NEXT:     }
@@ -172,12 +172,12 @@ int main(void) {
 // CHECK-NEXT: fn grandparent__inner(
 // CHECK-NEXT:     __slate_capture_0: *mut i32,
 // CHECK-NEXT:     __slate_capture_1: *mut i32,
-// CHECK-NEXT:     j: i32,
+// CHECK-NEXT:     mut j: i32,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     (unsafe { *__slate_capture_0 }) + (unsafe { *__slate_capture_1 }) * j
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn grandparent__middle(__slate_capture_0: *mut i32, k: i32) -> i32 {
+// CHECK-NEXT: fn grandparent__middle(__slate_capture_0: *mut i32, mut k: i32) -> i32 {
 // CHECK-NEXT:     let mut scale: i32 = k + 1;
 // CHECK-NEXT:     grandparent__inner(__slate_capture_0, core::ptr::addr_of_mut!(scale), k)
 // CHECK-NEXT:         + grandparent__inner(__slate_capture_0, core::ptr::addr_of_mut!(scale), 1i32)
@@ -188,7 +188,7 @@ int main(void) {
 // CHECK-NEXT:     parity__is_even(core::ptr::addr_of_mut!(calls), n) * 100 + calls
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn parity__is_even(__slate_capture_0: *mut i32, k: i32) -> i32 {
+// CHECK-NEXT: fn parity__is_even(__slate_capture_0: *mut i32, mut k: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *__slate_capture_0 += 1;
 // CHECK-NEXT:     }
@@ -200,7 +200,7 @@ int main(void) {
 // CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn parity__is_odd(__slate_capture_0: *mut i32, k: i32) -> i32 {
+// CHECK-NEXT: fn parity__is_odd(__slate_capture_0: *mut i32, mut k: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *__slate_capture_0 += 1;
 // CHECK-NEXT:     }
@@ -229,20 +229,23 @@ int main(void) {
 // CHECK-NEXT:     __slate_capture_1: *mut point,
 // CHECK-NEXT:     __slate_capture_2: *mut *mut i32,
 // CHECK-NEXT: ) {
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = unsafe { (*__slate_capture_0).as_mut_ptr().add(3) };
+// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: *mut i32 = unsafe { (*__slate_capture_0).as_mut_ptr().add(3) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_1]] += (*__slate_capture_1).x;
 // CHECK-NEXT:         (*__slate_capture_1).y *= 2;
 // CHECK-NEXT:         *__slate_capture_2 = (*__slate_capture_2).add(1);
-// CHECK-NEXT:         *(*__slate_capture_2) += 100;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: *mut i32 = unsafe { *__slate_capture_2 };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         *[[V_2]] += 100;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum_vla(mut n: i32) -> i32 {
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u64 = n as u64;
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: u64 = n as u64;
 // CHECK-NEXT:     let mut data: Vec<i32> = {
-// CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_2]] as usize);
-// CHECK-NEXT:         unsafe { __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_2]] as usize) };
+// CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_3]] as usize);
+// CHECK-NEXT:         unsafe { __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_3]] as usize) };
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut i: i32 = 0;
@@ -279,7 +282,7 @@ int main(void) {
 // CHECK-NEXT:     acc
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn with_goto__add(__slate_capture_0: *mut i32, v: i32) {
+// CHECK-NEXT: fn with_goto__add(__slate_capture_0: *mut i32, mut v: i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *__slate_capture_0 += v;
 // CHECK-NEXT:     }
@@ -291,7 +294,7 @@ int main(void) {
 // CHECK-NEXT:     compare_ints__less(right, left) - compare_ints__less(left, right)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn compare_ints__less(x: i32, y: i32) -> i32 {
+// CHECK-NEXT: fn compare_ints__less(mut x: i32, mut y: i32) -> i32 {
 // CHECK-NEXT:     (x < y) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -330,7 +333,10 @@ int main(void) {
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "C-unwind" fn sort_with_nested__ascending(a: *const (), b: *const ()) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn sort_with_nested__ascending(
+// CHECK-NEXT:     mut a: *const (),
+// CHECK-NEXT:     mut b: *const (),
+// CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { *(a as *const i32) - *(b as *const i32) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -372,8 +378,8 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", counter(1i32));
 // CHECK-NEXT:     println!("{}", grandparent(1i32));
-// CHECK-NEXT:     let [[V_2]]: i32 = parity(5i32);
-// CHECK-NEXT:     println!("{} {}", parity(4i32), [[V_2]]);
+// CHECK-NEXT:     let [[V_3]]: i32 = parity(5i32);
+// CHECK-NEXT:     println!("{} {}", parity(4i32), [[V_3]]);
 // CHECK-NEXT:     println!("{}", aggregates());
 // CHECK-NEXT:     println!("{}", sum_vla(5i32));
 // CHECK-NEXT:     println!("{}", with_goto(4i32));

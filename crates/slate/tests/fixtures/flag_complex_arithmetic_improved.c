@@ -596,7 +596,7 @@ int main(void) {
 // CHECK-NEXT:     let one: f64 = 1.0f64;
 // CHECK-NEXT:     let zero: f64 = 0.0f64;
 // CHECK-NEXT:     let inf: f64 = f64::INFINITY;
-// CHECK-NEXT:     let mut z: num_complex::Complex<f64> = (unsafe {
+// CHECK-NEXT:     let z: num_complex::Complex<f64> = (unsafe {
 // CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(big))
 // CHECK-NEXT:     })
 // CHECK-NEXT:         + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
@@ -730,7 +730,7 @@ int main(void) {
 // CHECK-NEXT:                 true,
 // CHECK-NEXT:             ),
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let mut f: num_complex::Complex<f32> = (unsafe {
+// CHECK-NEXT:     let f: num_complex::Complex<f32> = (unsafe {
 // CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(one)) as f32
 // CHECK-NEXT:     })
 // CHECK-NEXT:         + num_complex::Complex {

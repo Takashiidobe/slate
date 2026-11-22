@@ -23,7 +23,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK-LABEL: {{^}}fn add_via_x(mut a: f64, mut b: f64) -> f64 {
+// CHECK-LABEL: {{^}}fn add_via_x(a: f64, b: f64) -> f64 {
 // CHECK-NEXT:     let mut result: f64 = 0 as f64;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn roundtrip_via_x(mut a: i32) -> i32 {
+// CHECK-LABEL: {{^}}fn roundtrip_via_x(a: i32) -> i32 {
 // CHECK-NEXT:     let mut mid: i32 = 0;
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     {

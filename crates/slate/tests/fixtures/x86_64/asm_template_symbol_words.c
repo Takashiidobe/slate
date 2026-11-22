@@ -59,7 +59,7 @@ int main(void) {
 // CHECK-NEXT:     n = unsafe { core::mem::transmute::<u64, u64>([[T_2]] as u64) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn incl(mut p: &mut i32) {
+// CHECK-NEXT: fn incl(p: &mut i32) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "lock incl ({0:r})",

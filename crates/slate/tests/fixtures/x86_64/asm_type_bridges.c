@@ -55,7 +55,7 @@ int main(void) {
 // CHECK-NEXT:     let mut flag: bool = true;
 // CHECK-NEXT:     let mut byte: i8 = -2;
 // CHECK-NEXT:     let mut tied: u32 = 0;
-// CHECK-NEXT:     let mut input: i32 = -4;
+// CHECK-NEXT:     let input: i32 = -4;
 // CHECK-NEXT:     let mut number: u32 = 3;
 // CHECK-NEXT:     let mut word: word = word { value: 40 };
 // CHECK-NEXT:     let mut half: half = half { value: 9 };

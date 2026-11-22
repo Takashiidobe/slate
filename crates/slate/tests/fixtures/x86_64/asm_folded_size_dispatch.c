@@ -100,7 +100,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn zero_u8(mut p: &u8) -> i32 {
+// CHECK-NEXT: fn zero_u8(p: &u8) -> i32 {
 // CHECK-NEXT:     let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
@@ -119,7 +119,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn zero_u32(mut p: &u32) -> i32 {
+// CHECK-NEXT: fn zero_u32(p: &u32) -> i32 {
 // CHECK-NEXT:     let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
@@ -138,7 +138,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn zero_u64(mut p: &u64) -> i32 {
+// CHECK-NEXT: fn zero_u64(p: &u64) -> i32 {
 // CHECK-NEXT:     let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
@@ -157,7 +157,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn load_u64(mut p: &u64) -> u64 {
+// CHECK-NEXT: fn load_u64(p: &u64) -> u64 {
 // CHECK-NEXT:     let mut x: u64 = 0;
 // CHECK-NEXT:     if ((const { core::mem::size_of::<u64>() }) as u64) == 4 {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
@@ -189,7 +189,7 @@ int main(void) {
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn load_u32(mut p: &u32) -> u32 {
+// CHECK-NEXT: fn load_u32(p: &u32) -> u32 {
 // CHECK-NEXT:     let mut x: u32 = 0;
 // CHECK-NEXT:     if ((const { core::mem::size_of::<u32>() }) as u64) == 4 {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -221,7 +221,7 @@ int main(void) {
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn pick(mut p: &u64) -> i32 {
+// CHECK-NEXT: fn pick(p: &u64) -> i32 {
 // CHECK-NEXT:     let mut r: i32 = 0;
 // CHECK-NEXT:     match (const { core::mem::size_of::<u64>() }) as u64 {
 // CHECK-NEXT:         4 => {

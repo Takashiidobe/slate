@@ -245,6 +245,26 @@ struct FunctionLowerer<'a, 'm> {
 }
 
 impl FunctionLowerer<'_, '_> {
+    fn binding_requires_mut(&self, id: BindingId) -> bool {
+        self.tables
+            .facts
+            .binding(id)
+            .and_then(|facts| facts.mutability.as_ref())
+            .is_none_or(|fact| {
+                fact.required
+                    || fact.arguments.iter().any(|argument| {
+                        self.tables
+                            .parameter_borrow(argument.callee, argument.index)
+                            .is_none_or(|borrow| borrow.mutable)
+                            || (!argument.array
+                                && self
+                                    .tables
+                                    .parameter_length(argument.callee, argument.index)
+                                    .is_some())
+                    })
+            })
+    }
+
     fn next_temp(&mut self) -> String {
         let index = self.temps;
         self.temps += 1;

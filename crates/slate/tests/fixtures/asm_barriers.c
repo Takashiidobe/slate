@@ -137,7 +137,7 @@ int main(void) {
 // CHECK-NEXT:     x.wrapping_add(1)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn input_barrier(mut p: &[u8]) -> i32 {
+// CHECK-NEXT: fn input_barrier(p: &[u8]) -> i32 {
 // CHECK-NEXT:     let n: i32 = p.len() as i32;
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..n {
@@ -215,7 +215,7 @@ int main(void) {
 // CHECK-NEXT:     (1 & (e as i32) - 1 >> 8i32) - 1
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn no_unroll(mut p: &[f32]) -> i32 {
+// CHECK-NEXT: fn no_unroll(p: &[f32]) -> i32 {
 // CHECK-NEXT:     let n: i32 = p.len() as i32;
 // CHECK-NEXT:     let mut sum: f32 = 0i32 as f32;
 // CHECK-NEXT:     for i in 0..n {
@@ -233,7 +233,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut cell: i32 = 0;
-// CHECK-NEXT:     let mut bytes: [u8; 4] = [1, 2, 3, 4];
+// CHECK-NEXT:     let bytes: [u8; 4] = [1, 2, 3, 4];
 // CHECK-NEXT:     empty_volatile();
 // CHECK-NEXT:     let __slate_printf_arg1 = memory_barrier(&mut cell);
 // CHECK-NEXT:     println!("{} {}", typecheck_probe(), __slate_printf_arg1);
@@ -246,12 +246,12 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!("{}", input_barrier(bytes.as_slice()));
-// CHECK-NEXT:     let mut zeros: [u8; 4] = {
+// CHECK-NEXT:     let zeros: [u8; 4] = {
 // CHECK-NEXT:         let mut [[T_0]]: [u8; 4] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0u8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut floats: [f32; 3] = [1.5f32, 2.5f32, 3.0f32];
+// CHECK-NEXT:     let floats: [f32; 3] = [1.5f32, 2.5f32, 3.0f32];
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         verify_volatile(bytes.as_slice(), bytes.as_slice(), 4i32),

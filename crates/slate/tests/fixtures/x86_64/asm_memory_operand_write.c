@@ -25,7 +25,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: fn bump(mut p: *mut i32) -> i32 {
+// CHECK-NEXT: fn bump(p: *mut i32) -> i32 {
 // CHECK-NEXT:     let before: i32 = unsafe { *p };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!("addl $1, ({0:r})", in(reg) p, options(nostack, att_syntax));
@@ -33,7 +33,7 @@ int main(void) {
 // CHECK-NEXT:     (unsafe { *p }) - before
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn store(mut p: *mut i32) -> i32 {
+// CHECK-NEXT: fn store(p: *mut i32) -> i32 {
 // CHECK-NEXT:     let before: i32 = unsafe { *p };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(

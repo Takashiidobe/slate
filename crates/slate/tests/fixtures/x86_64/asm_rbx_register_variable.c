@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn add_via_rbx(mut a: u32, mut b: u32) -> u32 {
+// CHECK-NEXT: fn add_via_rbx(mut a: u32, b: u32) -> u32 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         unsafe {
@@ -69,7 +69,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn scaled_sum(a: i64, b: i64) -> i64 {
-// CHECK-NEXT:     let mut r10: i64 = b;
+// CHECK-NEXT:     let r10: i64 = b;
 // CHECK-NEXT:     let mut r8: i64 = a;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
@@ -87,7 +87,7 @@ int main(void) {
 // CHECK-NEXT:     r8
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn low_word(mut x: u32) -> u16 {
+// CHECK-NEXT: fn low_word(x: u32) -> u16 {
 // CHECK-NEXT:     let mut w: u16 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u16;

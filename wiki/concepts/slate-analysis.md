@@ -576,8 +576,9 @@ benchmark showed no analysis that SSA would make asymptotically cheaper.
 
 - Positions number statements in pre-order, so a statement's subtree is a
   contiguous range. Each use records its binding, its position, and its access:
-  `Read`, `Write` (assignment target, initializer, update), `Escape` (address
-  taken, place operand, asm operand, OpenMP clause, nested-function or
+  `Read`, `ReadProjection`, `Initialize`, `Write` (assignment or update),
+  `Argument` (direct address or fixed-array argument), `Escape` (other address
+  uses, place operand, asm operand, OpenMP clause, nested-function or
   `__block` capture, `cleanup`), or `Capture` (a VLA extent named by a type, or
   a by-value block capture: a read with no value site, so never a
   `single_read`). DefUse stops at inner functions; it sees their captures at
@@ -592,6 +593,21 @@ benchmark showed no analysis that SSA would make asymptotically cheaper.
   ordering query proves its range is straight-line (`structured`, or a sibling
   scan that rejects labels, cases and jumps), so gotos elsewhere in the
   function cannot enter or leave it.
+
+### Binding mutability
+
+- `BindingFacts::mutability` records writes after initialization, opaque
+  place uses, and direct address or array arguments that may become borrows.
+  Lowering resolves those arguments against the selected parameter
+  representation. A shared borrow can use an immutable binding, and a write
+  through a pointer can leave the pointer binding immutable.
+- Lowering marks Rust-created writes where it emits them, including aggregate
+  fills, dispatch slots, and OpenMP firstprivate copies. Kept macro places
+  retain conservative mutability.
+- `decl-init` also folds an adjacent uninitialized scalar declaration and
+  two branches ending in a single write into a conditional initializer.
+  The condition and the branch prefixes must leave the binding untouched.
+  Branch prefixes stay inside their arm's statement expression.
 
 ### Counted loops
 

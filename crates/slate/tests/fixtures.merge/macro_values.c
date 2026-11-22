@@ -762,7 +762,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn positions(selector: i32) {
-// CHECK-NEXT:     let hidden: i32 = 2;
+// CHECK-NEXT:     let mut hidden: i32 = 2;
 // CHECK-NEXT:     let mut size: i32 = 0;
 // CHECK-NEXT:     while MIN!(size, 3i32) < 3 {
 // CHECK-NEXT:         size += 1;

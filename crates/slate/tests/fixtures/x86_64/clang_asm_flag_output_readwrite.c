@@ -21,7 +21,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: fn equal_rw(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn equal_rw(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 7;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u8;
@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn carry_rw(mut a: u32, mut b: u32) -> u8 {
+// CHECK-NEXT: fn carry_rw(mut a: u32, b: u32) -> u8 {
 // CHECK-NEXT:     let mut flag: u8 = 9;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u8;

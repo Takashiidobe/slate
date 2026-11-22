@@ -92,7 +92,7 @@ int main(void) {
 // CHECK-NEXT:     sum(buf.as_mut_ptr() as *const i8, 8i32)
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn offset_copy() -> i32 {
-// CHECK-NEXT:     let src: [i8; 6] = [1, 2, 3, 4, 5, 6];
+// CHECK-NEXT:     let mut src: [i8; 6] = [1, 2, 3, 4, 5, 6];
 // CHECK-NEXT:     let mut dst: [i8; 8] = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0i8;
@@ -120,7 +120,7 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn compare() -> i32 {
 // CHECK-NEXT:     let mut a: [u8; 4] = [1, 2, 3, 200];
-// CHECK-NEXT:     let b: [u8; 4] = [1, 2, 9, 4];
+// CHECK-NEXT:     let mut b: [u8; 4] = [1, 2, 9, 4];
 // CHECK-NEXT:     ((a[0usize..4usize].cmp(&b[0usize..4usize]) as i32) < 0) as i32
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn shadowed() -> i32 {

@@ -38,7 +38,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
-// CHECK-NEXT: fn add_imm__const1(mut x: u32, n: i32) -> u32 {
+// CHECK-NEXT: fn add_imm__const1(x: u32, n: i32) -> u32 {
 // CHECK-NEXT:     let mut out: u32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
@@ -117,7 +117,7 @@ int main(void) {
 // CHECK-NEXT: static mut calls: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
-// CHECK-NEXT: fn load_g__const5(mut p: &u32, n: i32) -> u32 {
+// CHECK-NEXT: fn load_g__const5(p: &u32, n: i32) -> u32 {
 // CHECK-NEXT:     let mut out: u32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;

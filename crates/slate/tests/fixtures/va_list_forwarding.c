@@ -122,7 +122,7 @@ int main(void) {
 // CHECK-NEXT:     buffer: *mut i8,
 // CHECK-NEXT:     size: u64,
 // CHECK-NEXT:     fmt: *const i8,
-// CHECK-NEXT:     mut ap: core::ffi::VaList<'static>,
+// CHECK-NEXT:     ap: core::ffi::VaList<'static>,
 // CHECK-NEXT: ) -> i32 {
 // CHECK-NEXT:     unsafe { vsnprintf(buffer, size, fmt, ap.clone()) }
 // CHECK-NEXT: }

@@ -66,7 +66,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let pairs: __SlateAlign16<{{\[\[}}i32; 2]; 7]> = __SlateAlign16(
+// CHECK-NEXT:     let mut pairs: __SlateAlign16<{{\[\[}}i32; 2]; 7]> = __SlateAlign16(
 // CHECK-NEXT:         [
 // CHECK-NEXT:             [7i32, 2i32],
 // CHECK-NEXT:             [-7i32, 2i32],

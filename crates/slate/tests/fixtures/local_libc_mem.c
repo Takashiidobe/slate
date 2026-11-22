@@ -28,7 +28,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut dst: __SlateAlign16<[i8; 16]> = __SlateAlign16([0i8; 16]);
-// CHECK-NEXT:     let src: [i8; 8] = [104, 101, 108, 108, 111, 0, 0, 0];
+// CHECK-NEXT:     let mut src: [i8; 8] = [104, 101, 108, 108, 111, 0, 0, 0];
 // CHECK-NEXT:     dst.0[0usize..6usize].copy_from_slice(&src[0usize..6usize]);
 // CHECK-NEXT:     dst.0[5usize..8usize].fill((65i32 as i32) as i8);
 // CHECK-NEXT:     dst.0[8] = 0;

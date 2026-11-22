@@ -88,7 +88,7 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.mix100")]
 // CHECK-NEXT: extern "C-unwind" fn mix100(
 // CHECK-NEXT:     a: i16,
-// CHECK-NEXT:     mut b: bitint::BInt<100, 2, 16, bitint::A8>,
+// CHECK-NEXT:     b: bitint::BInt<100, 2, 16, bitint::A8>,
 // CHECK-NEXT:     c: i64,
 // CHECK-NEXT: ) -> bitint::BInt<100, 2, 16, bitint::A8> {
 // CHECK-NEXT:     return <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(a as i128)
@@ -99,7 +99,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn rot(
-// CHECK-NEXT:     mut x: bitint::BUint<128, 2, 16, bitint::A8>,
+// CHECK-NEXT:     x: bitint::BUint<128, 2, 16, bitint::A8>,
 // CHECK-NEXT:     n: i32,
 // CHECK-NEXT: ) -> bitint::BUint<128, 2, 16, bitint::A8> {
 // CHECK-NEXT:     return x.shl_bits(n as usize).bitor_bits(x.shr_bits((128 - n) as usize));
@@ -107,7 +107,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn sum200(
-// CHECK-NEXT:     mut a: bitint::BInt<200, 4, 32, bitint::A8>,
+// CHECK-NEXT:     a: bitint::BInt<200, 4, 32, bitint::A8>,
 // CHECK-NEXT:     b: bitint::BInt<200, 4, 32, bitint::A8>,
 // CHECK-NEXT:     c: bitint::BInt<200, 4, 32, bitint::A8>,
 // CHECK-NEXT: ) -> bitint::BInt<200, 4, 32, bitint::A8> {
@@ -116,7 +116,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: fn big(
-// CHECK-NEXT:     mut a: bitint::BUint<300, 5, 40, bitint::A8>,
+// CHECK-NEXT:     a: bitint::BUint<300, 5, 40, bitint::A8>,
 // CHECK-NEXT:     k: i32,
 // CHECK-NEXT:     b: bitint::BUint<300, 5, 40, bitint::A8>,
 // CHECK-NEXT: ) -> bitint::BUint<300, 5, 40, bitint::A8> {
@@ -146,11 +146,11 @@ int main(void) {
 // CHECK-NEXT:         .wrapping_add(p.b);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn lo(mut v: bitint::BInt<200, 4, 32, bitint::A8>) -> i64 {
+// CHECK-NEXT: fn lo(v: bitint::BInt<200, 4, 32, bitint::A8>) -> i64 {
 // CHECK-NEXT:     v.to_i128() as i64
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn hi(mut v: bitint::BInt<200, 4, 32, bitint::A8>) -> i64 {
+// CHECK-NEXT: fn hi(v: bitint::BInt<200, 4, 32, bitint::A8>) -> i64 {
 // CHECK-NEXT:     v.shr_bits(100 as usize).to_i128() as i64
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -203,7 +203,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut r: bitint::BUint<128, 2, 16, bitint::A8> = rot(
+// CHECK-NEXT:     let r: bitint::BUint<128, 2, 16, bitint::A8> = rot(
 // CHECK-NEXT:         <bitint::BUint<128, 2, 16, bitint::A8>>::from_bint(
 // CHECK-NEXT:                 <bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(1 as i128),
 // CHECK-NEXT:             )
@@ -231,7 +231,7 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%lld %lld\n".as_ptr(), lo(s), hi(s)) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut b: bitint::BUint<300, 5, 40, bitint::A8> = big(
+// CHECK-NEXT:     let b: bitint::BUint<300, 5, 40, bitint::A8> = big(
 // CHECK-NEXT:         <bitint::BUint<300, 5, 40, bitint::A8>>::from_bint(
 // CHECK-NEXT:                 <bitint::BInt<300, 5, 40, bitint::A8>>::from_i128(1 as i128),
 // CHECK-NEXT:             )
@@ -255,7 +255,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut p: pair = mkpair(
+// CHECK-NEXT:     let p: pair = mkpair(
 // CHECK-NEXT:         -7i16,
 // CHECK-NEXT:         <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1 as i128)
 // CHECK-NEXT:             .shl_bits(80 as usize)

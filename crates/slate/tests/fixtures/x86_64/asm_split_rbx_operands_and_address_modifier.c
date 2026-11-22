@@ -61,7 +61,7 @@ int main(void) {
 // CHECK-NEXT:     options(att_syntax),
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: fn swap_through_rbx(mut r#in: u64, out_rcx: &mut u64) -> u64 {
+// CHECK-NEXT: fn swap_through_rbx(r#in: u64, out_rcx: &mut u64) -> u64 {
 // CHECK-NEXT:     let mut rbx: u64 = 0;
 // CHECK-NEXT:     let mut rcx: u64 = 0;
 // CHECK-NEXT:     {
@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT:     rbx
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn try_store(mut lock: *mut u32, mut tid: u32, mut pop: *mut u64) -> u32 {
+// CHECK-NEXT: fn try_store(lock: *mut u32, mut tid: u32, pop: *mut u64) -> u32 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         unsafe {

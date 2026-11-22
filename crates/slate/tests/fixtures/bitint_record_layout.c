@@ -97,7 +97,7 @@ int main(void) {
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let item: BitIntOrArray = {
+// CHECK-NEXT:     let mut item: BitIntOrArray = {
 // CHECK-NEXT:         let mut [[T_0]]: BitIntOrArray = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].bytes = {
 // CHECK-NEXT:             let mut [[T_1]]: [i8; 20] = unsafe { core::mem::zeroed() };

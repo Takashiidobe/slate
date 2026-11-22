@@ -1,6 +1,5 @@
 use super::walk::child_exprs;
-use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
+use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind};
 use crate::backend::rust_ast::{Expr, Ident, Stmt, Type, UnaryOp, macro_template_base};
 
 fn place_root(expr: &Expr) -> Option<Ident> {
@@ -160,7 +159,7 @@ pub(in crate::backend::engine) fn binding_invariant_within(
     })
 }
 
-fn demotable(arena: &FunctionOptimizer, id: NodeId) -> bool {
+pub(super) fn can_drop_mut(arena: &FunctionOptimizer, id: NodeId) -> bool {
     let (name, ty) = match arena.get(id) {
         Some(NodeKind::Let {
             name,
@@ -193,61 +192,4 @@ fn demotable(arena: &FunctionOptimizer, id: NodeId) -> bool {
                 .get(neighbor)
                 .is_some_and(|kind| !binding.node_mutates(kind))
         })
-}
-
-pub(in crate::backend::engine) fn demote_params(arena: &mut FunctionOptimizer) {
-    let immutable: Vec<Ident> = arena
-        .params()
-        .iter()
-        .filter(|param| param.mutable)
-        .map(|param| Ident::new(&param.name))
-        .filter(|&name| {
-            let binding = Binding {
-                name,
-                ty: arena.param_type(name),
-            };
-            arena.definition(name).is_none()
-                && arena.def_use_neighbors(name).iter().all(|&neighbor| {
-                    arena
-                        .get(neighbor)
-                        .is_some_and(|kind| !binding.node_mutates(kind))
-                })
-        })
-        .collect();
-    for name in immutable {
-        arena.demote_param(name);
-    }
-}
-
-pub(in crate::backend::engine) struct RemoveMut;
-
-impl NodeRule for RemoveMut {
-    fn name(&self) -> &'static str {
-        "remove_mut"
-    }
-
-    fn priority(&self) -> u32 {
-        0
-    }
-
-    fn kinds(&self) -> &'static [NodeKindTag] {
-        &[NodeKindTag::Let, NodeKindTag::LetIf]
-    }
-
-    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
-        demotable(arena, id)
-    }
-
-    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
-        if !demotable(arena, id) {
-            return false;
-        }
-        let Some(NodeKind::Let { mutable, .. } | NodeKind::LetIf { mutable, .. }) =
-            arena.get_mut(id)
-        else {
-            return false;
-        };
-        *mutable = false;
-        true
-    }
 }

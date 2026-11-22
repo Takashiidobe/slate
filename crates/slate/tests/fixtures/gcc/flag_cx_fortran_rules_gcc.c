@@ -253,7 +253,7 @@ int main(void) {
 // CHECK-NEXT:     let one: f64 = 1.0f64;
 // CHECK-NEXT:     let zero: f64 = 0.0f64;
 // CHECK-NEXT:     let inf: f64 = f64::INFINITY;
-// X86_64-UNKNOWN-LINUX-GNU-NEXT:     let mut z: num_complex::Complex<f64> = (unsafe {
+// X86_64-UNKNOWN-LINUX-GNU-NEXT:     let z: num_complex::Complex<f64> = (unsafe {
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(big))
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:     })
 // X86_64-UNKNOWN-LINUX-GNU-NEXT:         + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
@@ -293,7 +293,7 @@ int main(void) {
 // I686-UNKNOWN-LINUX-GNU-NEXT:             }
 // I686-UNKNOWN-LINUX-GNU-NEXT:         },
 // I686-UNKNOWN-LINUX-GNU-NEXT:     );
-// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     let mut z: num_complex::Complex<f64> = (unsafe {
+// AARCH64-UNKNOWN-LINUX-GNU-NEXT:     let z: num_complex::Complex<f64> = (unsafe {
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(big))
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:     })
 // AARCH64-UNKNOWN-LINUX-GNU-NEXT:         + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })

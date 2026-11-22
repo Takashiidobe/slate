@@ -146,18 +146,18 @@ int main(void) {
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn drop_and_read(limit: i32) -> u32 {
+// CHECK-NEXT: fn drop_and_read(mut limit: i32) -> u32 {
 // CHECK-NEXT:     let mut hold: u32 = 43981;
 // CHECK-NEXT:     let mut bits: u32 = 16;
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let n: i32 = 5;
-// CHECK-NEXT:     let r#type: i32 = 3;
+// CHECK-NEXT:     let mut r#type: i32 = 3;
 // CHECK-NEXT:     let mut table: __SlateAlignLargeArray<[i32; 4]> = __SlateAlignLargeArray(
 // CHECK-NEXT:         [1i32, 2i32, 3i32, 4i32],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut cursor: *mut i32 = unsafe { table.0.as_mut_ptr().add(1) };
 // CHECK-NEXT:     let mut pair: pair = pair { left: 1, right: 2 };
-// CHECK-NEXT:     let scale: i32 = 2;
+// CHECK-NEXT:     let mut scale: i32 = 2;
 // CHECK-NEXT:     DROP!(4i32, hold, bits);
 // CHECK-NEXT:     CHECK_DROP!(3i32, bits, hold);
 // CHECK-NEXT:     SHIFT_THEN_READ!(1i32, hold, bits, total);
@@ -175,7 +175,7 @@ int main(void) {
 // CHECK-NEXT:     TEMP_ARG!(total, total);
 // CHECK-NEXT:     total += PARAMETER_READ!(limit);
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let hold: u32 = 7;
+// CHECK-NEXT:         let mut hold: u32 = 7;
 // CHECK-NEXT:         total = (total as u32).wrapping_add(hold.wrapping_add(1)) as i32;
 // CHECK-NEXT:         total = (total as u32).wrapping_add(BITS!(1i32, hold)) as i32;
 // CHECK-NEXT:     }

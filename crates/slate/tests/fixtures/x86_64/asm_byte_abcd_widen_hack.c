@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn add_byte_input_via_Q(mut x: u8, mut y: u8) -> u8 {
+// CHECK-LABEL: {{^}}fn add_byte_input_via_Q(mut x: u8, y: u8) -> u8 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         unsafe {

@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut callback: Callback = Callback { handler: Some(add_one) };
+// CHECK-NEXT:     let callback: Callback = Callback { handler: Some(add_one) };
 // CHECK-NEXT:     println!("{}", unsafe { callback.handler.unwrap()(41i32) });
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

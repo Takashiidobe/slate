@@ -195,16 +195,16 @@ int main(void) {
 // CHECK-NEXT:         requested as u32,
 // CHECK-NEXT:         || {
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let mut id: i32 = unsafe { omp_get_thread_num() };
+// CHECK-NEXT:                 let id: i32 = unsafe { omp_get_thread_num() };
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     (*__slate_omp_0)[id as usize] = omp_get_num_threads();
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 let mut [[V_0:__v[0-9]+]]: *mut i32 = unsafe {
+// CHECK-NEXT:                 let [[V_0:__v[0-9]+]]: *mut i32 = unsafe {
 // CHECK-NEXT:                     (core::ptr::addr_of_mut!(global_hits.0) as *mut i32)
 // CHECK-NEXT:                         .offset(id as isize)
 // CHECK-NEXT:                 };
-// CHECK-NEXT:                 let mut [[V_1:__v[0-9]+]]: i32 = unsafe { *[[V_0]] };
-// CHECK-NEXT:                 let mut [[V_2:__v[0-9]+]]: i32 = [[V_1]] + 1;
+// CHECK-NEXT:                 let [[V_1:__v[0-9]+]]: i32 = unsafe { *[[V_0]] };
+// CHECK-NEXT:                 let [[V_2:__v[0-9]+]]: i32 = [[V_1]] + 1;
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     *[[V_0]] = [[V_2]];
 // CHECK-NEXT:                 }
@@ -233,7 +233,7 @@ int main(void) {
 // CHECK-NEXT:         4u32,
 // CHECK-NEXT:         || {
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let mut id: i32 = unsafe { omp_get_thread_num() };
+// CHECK-NEXT:                 let id: i32 = unsafe { omp_get_thread_num() };
 // CHECK-NEXT:                 if id < unsafe { *__slate_omp_1 } {
 // CHECK-NEXT:                     unsafe {
 // CHECK-NEXT:                         *(__slate_omp_2 as *mut i32).offset(id as isize) = id
@@ -258,8 +258,8 @@ int main(void) {
 // CHECK-NEXT:         4u32,
 // CHECK-NEXT:         || {
 // CHECK-NEXT:             if (unsafe { omp_get_thread_num() }) == 1 {
-// CHECK-NEXT:                 let mut [[V_3]]: i32 = unsafe { calls };
-// CHECK-NEXT:                 let mut [[V_0]]: i32 = [[V_3]] + 5;
+// CHECK-NEXT:                 let [[V_3]]: i32 = unsafe { calls };
+// CHECK-NEXT:                 let [[V_0]]: i32 = [[V_3]] + 5;
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     calls = [[V_0]];
 // CHECK-NEXT:                 }
@@ -347,7 +347,7 @@ int main(void) {
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("if {}", serial);
-// CHECK-NEXT:     let p: i32 = 5;
+// CHECK-NEXT:     let mut p: i32 = 5;
 // CHECK-NEXT:     let mut written: __SlateAlign16<[i32; 4]> = __SlateAlign16(
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: [i32; 4] = unsafe { core::mem::zeroed() };
@@ -376,8 +376,8 @@ int main(void) {
 // CHECK-NEXT:         written.0[2],
 // CHECK-NEXT:         written.0[3]
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let f: i32 = 7;
-// CHECK-NEXT:     let pr: pair = pair { a: 1, b: 2 };
+// CHECK-NEXT:     let mut f: i32 = 7;
+// CHECK-NEXT:     let mut pr: pair = pair { a: 1, b: 2 };
 // CHECK-NEXT:     let mut seen: __SlateAlign16<[i32; 4]> = __SlateAlign16(
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: [i32; 4] = unsafe { core::mem::zeroed() };
@@ -396,12 +396,12 @@ int main(void) {
 // CHECK-NEXT:             let mut pr: pair = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:             pr = unsafe { core::ptr::read(__slate_omp_first_9) };
 // CHECK-NEXT:             {
-// CHECK-NEXT:                 let mut id: i32 = unsafe { omp_get_thread_num() };
-// CHECK-NEXT:                 let mut [[V_5:__v[0-9]+]]: i32 = f;
-// CHECK-NEXT:                 let mut [[V_6:__v[0-9]+]]: i32 = [[V_5]] + id;
+// CHECK-NEXT:                 let id: i32 = unsafe { omp_get_thread_num() };
+// CHECK-NEXT:                 let [[V_5:__v[0-9]+]]: i32 = f;
+// CHECK-NEXT:                 let [[V_6:__v[0-9]+]]: i32 = [[V_5]] + id;
 // CHECK-NEXT:                 f = [[V_6]];
-// CHECK-NEXT:                 let mut [[V_7:__v[0-9]+]]: i32 = pr.b;
-// CHECK-NEXT:                 let mut [[V_8:__v[0-9]+]]: i32 = [[V_7]] + f;
+// CHECK-NEXT:                 let [[V_7:__v[0-9]+]]: i32 = pr.b;
+// CHECK-NEXT:                 let [[V_8:__v[0-9]+]]: i32 = [[V_7]] + f;
 // CHECK-NEXT:                 pr.b = [[V_8]];
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     (*__slate_omp_7)[id as usize] = pr.a * 100 + pr.b;

@@ -56,7 +56,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn classify_bitint(seed: i32) -> i32 {
-// CHECK-NEXT:     let mut v: bitint::BInt<128, 2, 16, bitint::A8> = <bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(
+// CHECK-NEXT:     let v: bitint::BInt<128, 2, 16, bitint::A8> = <bitint::BInt<128, 2, 16, bitint::A8>>::from_u128(
 // CHECK-NEXT:             170141183460469231731687303715884105720,
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .wrapping_add(<bitint::BInt<128, 2, 16, bitint::A8>>::from_i128(seed as i128));

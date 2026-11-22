@@ -119,7 +119,7 @@ int main(void) {
 // CHECK-NEXT:             v.__slate_bits_1.__get_h() as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut w: bits = {
+// CHECK-NEXT:     let w: bits = {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: bits = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].__slate_bits_1.__set_g(7u32);
 // CHECK-NEXT:         [[T_0]]

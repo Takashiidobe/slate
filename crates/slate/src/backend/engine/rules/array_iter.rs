@@ -1,5 +1,5 @@
 use super::for_range::{int_value, subtree_ids};
-use super::remove_mut::invariant_within;
+use super::mutation::invariant_within;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::{Expr, Ident, Type, Unsafe};

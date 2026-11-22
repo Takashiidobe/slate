@@ -68,7 +68,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fire(retval: *mut obj) -> i32 {
-// CHECK-NEXT:     let mut args: __SlateAlign16<[*mut obj; 2]> = __SlateAlign16(
+// CHECK-NEXT:     let args: __SlateAlign16<[*mut obj; 2]> = __SlateAlign16(
 // CHECK-NEXT:         [core::ptr::null_mut::<obj>(), retval],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     sum(args.0.as_slice())

@@ -548,7 +548,7 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_castsi512_si256(
-// CHECK-NEXT:     mut __A: core::simd::Simd<i64, 8>,
+// CHECK-NEXT:     __A: core::simd::Simd<i64, 8>,
 // CHECK-NEXT: ) -> core::simd::Simd<i64, 4> {
 // CHECK-NEXT:     return core::simd::simd_swizzle!(__A, __A, [0, 1, 2, 3]);
 // CHECK-NEXT: }
@@ -815,9 +815,9 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "sse4.1")]
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn sse(fa: &f32, fb: &f32, da: &f64, bytes: &[i8]) {
-// CHECK-NEXT:     let mut a: core::simd::Simd<f32, 4> = unsafe { _mm_loadu_ps(fa) };
-// CHECK-NEXT:     let mut b: core::simd::Simd<f32, 4> = unsafe { _mm_loadu_ps(fb) };
-// CHECK-NEXT:     let mut c: core::simd::Simd<f64, 2> = unsafe { _mm_loadu_pd(da) };
+// CHECK-NEXT:     let a: core::simd::Simd<f32, 4> = unsafe { _mm_loadu_ps(fa) };
+// CHECK-NEXT:     let b: core::simd::Simd<f32, 4> = unsafe { _mm_loadu_ps(fb) };
+// CHECK-NEXT:     let c: core::simd::Simd<f64, 2> = unsafe { _mm_loadu_pd(da) };
 // CHECK-NEXT:     let x: core::simd::Simd<i64, 2> = unsafe {
 // CHECK-NEXT:         _mm_loadu_si128(bytes.as_ptr() as *const core::simd::Simd<i64, 2>)
 // CHECK-NEXT:     };
@@ -950,13 +950,13 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx2")]
 // CHECK-NEXT: #[inline(never)]
 // CHECK-NEXT: unsafe fn avx(fa: &f32, fb: &f32, da: &f64, bytes: &[i8]) {
-// CHECK-NEXT:     let mut a: core::simd::Simd<f32, 8> = unsafe { _mm256_loadu_ps(fa) };
-// CHECK-NEXT:     let mut b: core::simd::Simd<f32, 8> = unsafe { _mm256_loadu_ps(fb) };
-// CHECK-NEXT:     let mut c: core::simd::Simd<f64, 4> = unsafe { _mm256_loadu_pd(da) };
-// CHECK-NEXT:     let mut x: core::simd::Simd<i64, 4> = unsafe {
+// CHECK-NEXT:     let a: core::simd::Simd<f32, 8> = unsafe { _mm256_loadu_ps(fa) };
+// CHECK-NEXT:     let b: core::simd::Simd<f32, 8> = unsafe { _mm256_loadu_ps(fb) };
+// CHECK-NEXT:     let c: core::simd::Simd<f64, 4> = unsafe { _mm256_loadu_pd(da) };
+// CHECK-NEXT:     let x: core::simd::Simd<i64, 4> = unsafe {
 // CHECK-NEXT:         _mm256_loadu_si256(bytes.as_ptr() as *const core::simd::Simd<i64, 4>)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut y: core::simd::Simd<i64, 4> = unsafe {
+// CHECK-NEXT:     let y: core::simd::Simd<i64, 4> = unsafe {
 // CHECK-NEXT:         _mm256_loadu_si256(bytes.as_ptr().add(32) as *const core::simd::Simd<i64, 4>)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     SHOW__5!(
@@ -1028,7 +1028,7 @@ int main(void) {
 // CHECK-NEXT:         show(c"perm2f128_ps".as_ptr(), core::ptr::addr_of_mut!(t_) as *const (), 32i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut t_: core::simd::Simd<f64, 4> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: core::simd::Simd<f64, 4> = c;
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: core::simd::Simd<f64, 4> = c;
 // CHECK-NEXT:     t_ = core::simd::simd_swizzle!([[V_1]], [[V_1]], [2, 3, 4, 5]);
 // CHECK-NEXT:     show(c"perm2f128_pd".as_ptr(), core::ptr::addr_of_mut!(t_) as *const (), 32i32);
 // CHECK-NEXT:     unsafe {
@@ -1195,7 +1195,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut [[V_0]]: core::simd::Simd<i32, 8> = unsafe {
+// CHECK-NEXT:     let [[V_0]]: core::simd::Simd<i32, 8> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i32, 8>>(
 // CHECK-NEXT:             _mm512_castsi512_si256(x),
 // CHECK-NEXT:         )
@@ -1248,10 +1248,10 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut a: core::simd::Simd<f32, 16> = unsafe {
+// CHECK-NEXT:     let a: core::simd::Simd<f32, 16> = unsafe {
 // CHECK-NEXT:         _mm512_loadu_ps((fa as *const f32) as *const ())
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut b: core::simd::Simd<f32, 16> = unsafe {
+// CHECK-NEXT:     let b: core::simd::Simd<f32, 16> = unsafe {
 // CHECK-NEXT:         _mm512_loadu_ps((fb as *const f32) as *const ())
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let c: core::simd::Simd<f64, 8> = unsafe {

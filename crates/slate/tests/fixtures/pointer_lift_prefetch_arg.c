@@ -50,7 +50,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut values: __SlateAlign16<[i32; 8]> = __SlateAlign16(
+// CHECK-NEXT:     let values: __SlateAlign16<[i32; 8]> = __SlateAlign16(
 // CHECK-NEXT:         [1i32, 2i32, 3i32, 4i32, 5i32, 6i32, 7i32, 8i32],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {}", sum(values.0.as_slice()), first(&values.0[0usize]));

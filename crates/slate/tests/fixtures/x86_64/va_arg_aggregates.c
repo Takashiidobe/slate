@@ -188,13 +188,13 @@ int main(void) {
 // CHECK-NEXT:         let m: mixed = unsafe {
 // CHECK-NEXT:             __slate_sysv_va::arg::<_, mixed>(core::ptr::addr_of_mut!(ap), 6u32)
 // CHECK-NEXT:         };
-// CHECK-NEXT:         let f: floats = unsafe {
+// CHECK-NEXT:         let mut f: floats = unsafe {
 // CHECK-NEXT:             __slate_sysv_va::arg::<_, floats>(core::ptr::addr_of_mut!(ap), 10u32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let b: big = unsafe {
 // CHECK-NEXT:             __slate_sysv_va::arg::<_, big>(core::ptr::addr_of_mut!(ap), 0u32)
 // CHECK-NEXT:         };
-// CHECK-NEXT:         let o: odd = unsafe {
+// CHECK-NEXT:         let mut o: odd = unsafe {
 // CHECK-NEXT:             __slate_sysv_va::arg::<_, odd>(core::ptr::addr_of_mut!(ap), 1u32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let u: number = unsafe {

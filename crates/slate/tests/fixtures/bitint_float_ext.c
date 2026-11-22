@@ -332,7 +332,7 @@ int main(void) {
 // CHECK-NEXT:         __slate_printf__ri32_pi8_f80(c"%La\n".as_ptr(), LongDouble(u.to_f80_bytes()))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     let mut z: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<135, 3, 24, bitint::A8>>::from_i128(
+// CHECK-NEXT:     let z: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<135, 3, 24, bitint::A8>>::from_i128(
 // CHECK-NEXT:         0 as i128,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
@@ -352,10 +352,10 @@ int main(void) {
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 192, 254, 63]),
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     for i in 0i32..6i32 {
-// CHECK-NEXT:         let mut s: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:         let s: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:             values[i as usize].0,
 // CHECK-NEXT:         );
-// CHECK-NEXT:         let mut u: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<200, 4, 32, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:         let u: bitint::BUint<200, 4, 32, bitint::A8> = <bitint::BUint<200, 4, 32, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:             if values[i as usize] < __slate_f80_from_i32(0i32) {
 // CHECK-NEXT:                 -values[i as usize]
 // CHECK-NEXT:             } else {
@@ -379,11 +379,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn half_quad() {
-// CHECK-NEXT:     let mut h: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<135, 3, 24, bitint::A8>>::from_i128(
+// CHECK-NEXT:     let h: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<135, 3, 24, bitint::A8>>::from_i128(
 // CHECK-NEXT:         65519 as i128,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", (f16::from_bits(h.to_ieee_bits(10, 5, false) as u16) as f32) as i32);
-// CHECK-NEXT:     let mut h2: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<135, 3, 24, bitint::A8>>::from_i128(
+// CHECK-NEXT:     let h2: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<135, 3, 24, bitint::A8>>::from_i128(
 // CHECK-NEXT:         65520 as i128,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
@@ -403,7 +403,7 @@ int main(void) {
 // CHECK-NEXT:             == LongDouble(m.to_f80_bytes())) as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let q: f128 = f128::from_bits(m.to_ieee_bits(112, 15, false));
-// CHECK-NEXT:     let mut back: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_ieee_bits(
+// CHECK-NEXT:     let back: bitint::BInt<200, 4, 32, bitint::A8> = <bitint::BInt<200, 4, 32, bitint::A8>>::from_ieee_bits(
 // CHECK-NEXT:         q.to_bits() as u128,
 // CHECK-NEXT:         112,
 // CHECK-NEXT:         15,
@@ -411,7 +411,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{}", (back.compare(m) == 0) as i32);
 // CHECK-NEXT:     let hv: f16 = -300.75f64 as f16;
-// CHECK-NEXT:     let mut hb: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<135, 3, 24, bitint::A8>>::from_ieee_bits(
+// CHECK-NEXT:     let hb: bitint::BInt<135, 3, 24, bitint::A8> = <bitint::BInt<135, 3, 24, bitint::A8>>::from_ieee_bits(
 // CHECK-NEXT:         hv.to_bits() as u128,
 // CHECK-NEXT:         10,
 // CHECK-NEXT:         5,

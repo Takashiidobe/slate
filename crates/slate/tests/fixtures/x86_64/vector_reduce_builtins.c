@@ -809,16 +809,14 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "avx512f")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn _mm512_reduce_add_ps(__W: core::simd::Simd<f32, 16>) -> f32 {
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: core::simd::Simd<f32, 16> = __W;
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: core::simd::Simd<f32, 8> = core::simd::simd_swizzle!(
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: core::simd::Simd<f32, 16> = __W;
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: core::simd::Simd<f32, 8> = core::simd::simd_swizzle!(
 // CHECK-NEXT:         [[V_0]],
 // CHECK-NEXT:         [0, 1, 2, 3, 4, 5, 6, 7]
 // CHECK-NEXT:     ) + core::simd::simd_swizzle!([[V_0]], [8, 9, 10, 11, 12, 13, 14, 15]);
-// CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: core::simd::Simd<f32, 4> = core::simd::simd_swizzle!(
-// CHECK-NEXT:         [[V_1]],
-// CHECK-NEXT:         [0, 1, 2, 3]
-// CHECK-NEXT:     ) + core::simd::simd_swizzle!([[V_1]], [4, 5, 6, 7]);
-// CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: core::simd::Simd<f32, 2> = core::simd::simd_swizzle!([[V_2]], [0, 1])
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: core::simd::Simd<f32, 4> = core::simd::simd_swizzle!([[V_1]], [0, 1, 2, 3])
+// CHECK-NEXT:         + core::simd::simd_swizzle!([[V_1]], [4, 5, 6, 7]);
+// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: core::simd::Simd<f32, 2> = core::simd::simd_swizzle!([[V_2]], [0, 1])
 // CHECK-NEXT:         + core::simd::simd_swizzle!([[V_2]], [2, 3]);
 // CHECK-NEXT:     -0.0f32
 // CHECK-NEXT:         + (core::simd::simd_swizzle!([[V_3]], [0])
@@ -1027,7 +1025,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let other: core::simd::Simd<i64, 4> = unsafe { _mm256_set1_epi8(16i8) };
-// CHECK-NEXT:     let mut max: core::simd::Simd<i64, 4> = unsafe { _mm256_max_epu8(bytes, other) };
+// CHECK-NEXT:     let max: core::simd::Simd<i64, 4> = unsafe { _mm256_max_epu8(bytes, other) };
 // CHECK-NEXT:     let mut out: __SlateAlign16<[i64; 2]> = __SlateAlign16([0i64; 2]);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         _mm_storeu_si128(
@@ -1069,7 +1067,7 @@ int main(void) {
 // CHECK-NEXT:             8i32 as f32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut fused: core::simd::Simd<f32, 8> = unsafe {
+// CHECK-NEXT:     let fused: core::simd::Simd<f32, 8> = unsafe {
 // CHECK-NEXT:         _mm256_fmadd_ps(floats, floats, _mm256_set1_ps(0.5f32))
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut f: __SlateAlign16<[f32; 4]> = __SlateAlign16([0 as f32; 4]);
@@ -1140,7 +1138,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     println!("tern {}", unsafe { _mm512_reduce_add_epi32(tern) });
-// CHECK-NEXT:     let mut seq: core::simd::Simd<i64, 8> = unsafe {
+// CHECK-NEXT:     let seq: core::simd::Simd<i64, 8> = unsafe {
 // CHECK-NEXT:         _mm512_setr_epi64(10i64, 20i64, 30i64, 40i64, 50i64, 60i64, 70i64, 80i64)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut out: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);

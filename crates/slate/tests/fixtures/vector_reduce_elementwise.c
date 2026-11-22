@@ -103,7 +103,7 @@ int main(void) {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: core::simd::Simd<f64, 2> = unsafe {
 // CHECK-NEXT:         core::mem::zeroed()
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut i: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
+// CHECK-NEXT:     let i: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:         [3i32, -7i32, 12i32, 5i32],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let u: core::simd::Simd<u32, 4> = core::simd::Simd::from_array(
@@ -116,7 +116,7 @@ int main(void) {
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let l: core::simd::Simd<i64, 2> = core::simd::Simd::from_array([-4i64, 9i64]);
-// CHECK-NEXT:     let mut f: core::simd::Simd<f32, 4> = core::simd::Simd::from_array(
+// CHECK-NEXT:     let f: core::simd::Simd<f32, 4> = core::simd::Simd::from_array(
 // CHECK-NEXT:         [1.5f32, -2.5f32, 4.0f32, 0.5f32],
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let d: core::simd::Simd<f64, 2> = core::simd::Simd::from_array([2.5f64, -8.0f64]);

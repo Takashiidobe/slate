@@ -1,5 +1,5 @@
 use super::inline_temps;
-use super::remove_mut::{binding_invariant_within, invariant_within};
+use super::mutation::{binding_invariant_within, invariant_within};
 use super::walk::kind_has_stmt_exprs;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};

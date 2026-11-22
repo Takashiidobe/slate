@@ -177,7 +177,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for round in 0..count {
-// CHECK-NEXT:         let t: Tiny = unsafe {
+// CHECK-NEXT:         let mut t: Tiny = unsafe {
 // CHECK-NEXT:             __slate_sysv_va::arg::<_, Tiny>(core::ptr::addr_of_mut!(ap), 1u32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let p: Pair = unsafe {
@@ -197,10 +197,10 @@ int main(void) {
 // CHECK-NEXT:         let m: Mixed = unsafe {
 // CHECK-NEXT:             __slate_sysv_va::arg::<_, Mixed>(core::ptr::addr_of_mut!(ap), 1u32)
 // CHECK-NEXT:         };
-// CHECK-NEXT:         let big: Big = unsafe {
+// CHECK-NEXT:         let mut big: Big = unsafe {
 // CHECK-NEXT:             __slate_sysv_va::arg::<_, Big>(core::ptr::addr_of_mut!(ap), 0u32)
 // CHECK-NEXT:         };
-// CHECK-NEXT:         let ud: UD = unsafe {
+// CHECK-NEXT:         let mut ud: UD = unsafe {
 // CHECK-NEXT:             __slate_sysv_va::arg::<_, UD>(core::ptr::addr_of_mut!(ap), 10u32)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

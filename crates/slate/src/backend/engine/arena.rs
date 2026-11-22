@@ -803,16 +803,6 @@ impl FunctionOptimizer {
             _ => None,
         }
     }
-
-    pub(in crate::backend) fn demote_param(&mut self, name: Ident) {
-        if let Some(param) = self
-            .params
-            .iter_mut()
-            .find(|param| Ident::new(&param.name) == name)
-        {
-            param.mutable = false;
-        }
-    }
 }
 
 impl std::ops::Deref for FunctionOptimizer {

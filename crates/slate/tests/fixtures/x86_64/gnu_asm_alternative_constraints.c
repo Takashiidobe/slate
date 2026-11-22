@@ -23,7 +23,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
-// CHECK-LABEL: {{^}}fn add_ri(mut a: i32, mut b: i32) -> i32 {
+// CHECK-LABEL: {{^}}fn add_ri(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn add_rm(mut a: i32, mut p: &i32) -> i32 {
+// CHECK-LABEL: {{^}}fn add_rm(a: i32, p: &i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;

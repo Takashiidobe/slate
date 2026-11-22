@@ -35,7 +35,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn core(mut a: i32, mut b: i32) -> i32 {
+// CHECK-NEXT: fn core(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let mut output: i32 = 0;
 // CHECK-NEXT:     let mut tied: i32 = 0;
 // CHECK-NEXT:     let mut early: i32 = 0;
@@ -105,7 +105,7 @@ int main(void) {
 // CHECK-NEXT:     let mut x: i32 = 3;
 // CHECK-NEXT:     let mut p: *mut i32 = core::ptr::addr_of_mut!(x);
 // CHECK-NEXT:     let mut y: i32 = 4;
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: *mut i32 = p;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut i32 = p;
 // CHECK-NEXT:     p = unsafe { [[V_0]].add(1) };
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;

@@ -194,7 +194,7 @@ int main(void) {
 // CHECK-NEXT:     TEMP!(value);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn nested(mut tree__0: *const code, index: i32) {
+// CHECK-NEXT: fn nested(tree__0: *const code, index: i32) {
 // CHECK-NEXT:     SEND_CODE!(index, tree__0);
 // CHECK-NEXT:     SEND_CODE!(index + 1, tree__0);
 // CHECK-NEXT:     SEND!(index, 9i32);
@@ -268,7 +268,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! LOCAL_READS {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let reads__1: i32 = 40;
+// CHECK-NEXT:         let mut reads__1: i32 = 40;
 // CHECK-NEXT:         ADD_READS__2!($a, reads__1);
 // CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {

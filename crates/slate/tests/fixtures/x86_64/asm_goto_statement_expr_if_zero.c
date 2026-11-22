@@ -27,7 +27,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: fn classify_zero(mut value: i32) -> i32 {
+// CHECK-NEXT: fn classify_zero(value: i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32;
 // CHECK-NEXT:     {

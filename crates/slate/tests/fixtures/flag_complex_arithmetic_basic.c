@@ -23,7 +23,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let big: f64 = 1e300f64;
-// CHECK-NEXT:     let mut z: num_complex::Complex<f64> = (unsafe {
+// CHECK-NEXT:     let z: num_complex::Complex<f64> = (unsafe {
 // CHECK-NEXT:         core::ptr::read_volatile(core::ptr::addr_of!(big))
 // CHECK-NEXT:     })
 // CHECK-NEXT:         + (unsafe { core::ptr::read_volatile(core::ptr::addr_of!(big)) })
@@ -31,7 +31,7 @@ int main(void) {
 // CHECK-NEXT:                 re: 0.0f64,
 // CHECK-NEXT:                 im: 1.0f64,
 // CHECK-NEXT:             };
-// CHECK-NEXT:     let mut q: num_complex::Complex<f64> = z.c_div(z, true);
+// CHECK-NEXT:     let q: num_complex::Complex<f64> = z.c_div(z, true);
 // CHECK-NEXT:     let small: num_complex::Complex<f64> = (1.0f64
 // CHECK-NEXT:             + num_complex::Complex {
 // CHECK-NEXT:                 re: 0.0f64,

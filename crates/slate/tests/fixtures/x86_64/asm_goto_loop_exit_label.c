@@ -56,7 +56,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn fill_until_fault(mut buf: *mut i8, size: u64, mut fault_at: u64) -> u64 {
+// CHECK-NEXT: fn fill_until_fault(buf: *mut i8, size: u64, fault_at: u64) -> u64 {
 // CHECK-NEXT:     let mut i: u64 = 0;
 // CHECK-NEXT:     if size == 0 {
 // CHECK-NEXT:         return 0;

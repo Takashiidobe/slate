@@ -60,7 +60,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn add_tied_g(mut y: i32) -> i32 {
+// CHECK-LABEL: {{^}}fn add_tied_g(y: i32) -> i32 {
 // CHECK-NEXT:     let mut x: i32 = 1;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;

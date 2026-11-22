@@ -222,7 +222,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn r_u100() {
-// CHECK-NEXT:     let mut x: bitint::BUint<100, 2, 16, bitint::A8> = <bitint::BUint<100, 2, 16, bitint::A8>>::from_bint(
+// CHECK-NEXT:     let x: bitint::BUint<100, 2, 16, bitint::A8> = <bitint::BUint<100, 2, 16, bitint::A8>>::from_bint(
 // CHECK-NEXT:             <bitint::BInt<100, 2, 16, bitint::A8>>::from_i128(1 as i128),
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .shl_bits(99 as usize)
@@ -233,9 +233,9 @@ int main(void) {
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
-// CHECK-NEXT:         let mut l: bitint::BUint<100, 2, 16, bitint::A8> = x
+// CHECK-NEXT:         let l: bitint::BUint<100, 2, 16, bitint::A8> = x
 // CHECK-NEXT:             .rotate_left_bits((counts.0[i as usize] as i64).rem_euclid(100) as u32);
-// CHECK-NEXT:         let mut r: bitint::BUint<100, 2, 16, bitint::A8> = x
+// CHECK-NEXT:         let r: bitint::BUint<100, 2, 16, bitint::A8> = x
 // CHECK-NEXT:             .rotate_right_bits((counts.0[i as usize] as i64).rem_euclid(100) as u32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {
@@ -253,7 +253,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn r_u128b() {
-// CHECK-NEXT:     let mut x: bitint::BUint<128, 2, 16, bitint::A8> = <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
+// CHECK-NEXT:     let x: bitint::BUint<128, 2, 16, bitint::A8> = <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
 // CHECK-NEXT:             3735928559 as u128,
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .shl_bits(90 as usize)
@@ -262,9 +262,9 @@ int main(void) {
 // CHECK-NEXT:     while (i as u64)
 // CHECK-NEXT:         < (core::mem::size_of::<[i32; 24]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<i32>() as u64) {
-// CHECK-NEXT:         let mut l: bitint::BUint<128, 2, 16, bitint::A8> = x
+// CHECK-NEXT:         let l: bitint::BUint<128, 2, 16, bitint::A8> = x
 // CHECK-NEXT:             .rotate_left_bits((counts.0[i as usize] as i64).rem_euclid(128) as u32);
-// CHECK-NEXT:         let mut r: bitint::BUint<128, 2, 16, bitint::A8> = x
+// CHECK-NEXT:         let r: bitint::BUint<128, 2, 16, bitint::A8> = x
 // CHECK-NEXT:             .rotate_right_bits((counts.0[i as usize] as i64).rem_euclid(128) as u32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe {

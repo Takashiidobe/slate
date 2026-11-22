@@ -620,7 +620,7 @@ int main(void) {
 // CHECK-NEXT:         != LongDouble([0, 0, 0, 0, 196, 162, 121, 235, 28, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut b101: bitint::BInt<101, 2, 16, bitint::A8> = <bitint::BInt<101, 2, 16, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:     let b101: bitint::BInt<101, 2, 16, bitint::A8> = <bitint::BInt<101, 2, 16, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:         LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]).0,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if LongDouble(b101.to_f80_bytes())
@@ -633,7 +633,7 @@ int main(void) {
 // CHECK-NEXT:         .compare(b101) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut ub150: bitint::BUint<150, 3, 24, bitint::A8> = <bitint::BUint<150, 3, 24, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:     let ub150: bitint::BUint<150, 3, 24, bitint::A8> = <bitint::BUint<150, 3, 24, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:         LongDouble([0, 64, 3, 20, 62, 12, 145, 224, 48, 64]).0,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if LongDouble(ub150.to_f80_bytes())
@@ -646,7 +646,7 @@ int main(void) {
 // CHECK-NEXT:         .compare(ub150) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut b256: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:     let b256: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:         LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]).0,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if b256
@@ -658,7 +658,7 @@ int main(void) {
 // CHECK-NEXT:         != LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut ub300: bitint::BUint<300, 5, 40, bitint::A8> = <bitint::BUint<300, 5, 40, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:     let ub300: bitint::BUint<300, 5, 40, bitint::A8> = <bitint::BUint<300, 5, 40, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]).0,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if ub300
@@ -670,7 +670,7 @@ int main(void) {
 // CHECK-NEXT:         != LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let mut b129: bitint::BInt<129, 3, 24, bitint::A8> = <bitint::BInt<129, 3, 24, bitint::A8>>::from_f80_bytes(
+// CHECK-NEXT:     let b129: bitint::BInt<129, 3, 24, bitint::A8> = <bitint::BInt<129, 3, 24, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 246, 5, 64]).0,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if (b129.to_i128() as i32) != 123 {

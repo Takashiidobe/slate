@@ -2,6 +2,7 @@ use crate::byte_buffers::{self, ArrayAlias};
 use crate::c_string_arrays;
 use crate::constant_strings::{self, ConstantString};
 use crate::counted_loops::{self, CountedLoop};
+use crate::def_use::{BindingMutability, DefUse};
 use crate::identity::{FunctionIdentity, identify};
 use crate::pointer::{self, PointerFact};
 use crate::program::{Program, ProgramBinding, UnitId};
@@ -15,6 +16,7 @@ pub struct BindingFacts {
     pub constant_string: Option<ConstantString>,
     pub array_alias: Option<ArrayAlias>,
     pub c_string_array: bool,
+    pub mutability: Option<BindingMutability>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
@@ -168,6 +170,31 @@ pub fn analyze(program: &Program<'_>) -> Facts {
         let mut strings = HashMap::new();
         for function in &module.functions {
             constant_strings::analyze(&function.value, &context, &mut strings);
+            let Some(body) = &function.body else {
+                continue;
+            };
+            let uses = DefUse::of(body);
+            for (binding, mutability) in uses.binding_mutability() {
+                bindings
+                    .entry(ProgramBinding { unit, binding })
+                    .or_default()
+                    .mutability = Some(mutability);
+            }
+            if let slate_parser::ir::Parameters::Prototype { fixed, .. } = &function.parameters {
+                for parameter in fixed {
+                    let binding = parameter.value.id;
+                    bindings
+                        .entry(ProgramBinding { unit, binding })
+                        .or_default()
+                        .mutability = Some(uses.mutability(binding));
+                }
+            }
+        }
+        for &binding in module.macro_hidden_arguments.values().flatten() {
+            bindings
+                .entry(ProgramBinding { unit, binding })
+                .or_default()
+                .mutability = None;
         }
         for (binding, bytes) in strings {
             bindings

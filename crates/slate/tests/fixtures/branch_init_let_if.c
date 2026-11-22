@@ -71,8 +71,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn either(p: *const i8, a: i32) -> i32 {
 // CHECK-NEXT:     let r: i32 = if !p.is_null() {
-// CHECK-NEXT:         let t: i32 = probe(p);
-// CHECK-NEXT:         t + a
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = probe(p);
+// CHECK-NEXT:         [[V_0]] + a
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         -1
 // CHECK-NEXT:     };
