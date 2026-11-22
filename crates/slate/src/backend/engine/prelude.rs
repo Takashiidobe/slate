@@ -187,14 +187,7 @@ fn ato_int_prelude(name: &str, ret: Prim, target: &slate_parser::target_info::Ta
         args: vec![var("s")],
         unsafe_: Unsafe(true),
     };
-    let bytes = mcall(
-        Expr::Unsafe(Box::new(Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(cstr)),
-        })),
-        "to_bytes",
-        Vec::new(),
-    );
+    let bytes = mcall(cstr, "to_bytes", Vec::new());
 
     let slice = Expr::Ref {
         mutable: false,

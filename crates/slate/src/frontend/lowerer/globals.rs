@@ -72,7 +72,7 @@ impl FunctionLowerer<'_, '_> {
         }
         let ty = self.lower_type(&value.ty)?;
         let temp = self.next_temp();
-        Ok(Expr::Unsafe(Box::new(rust::Block {
+        Ok(Expr::Block(Box::new(rust::Block {
             stmts: vec![
                 Stmt::Let {
                     origin: rust::LocalOrigin::Synthetic,
@@ -514,7 +514,7 @@ impl FunctionLowerer<'_, '_> {
         self.in_static_initializer = false;
         self.address_image_fill = false;
         filled?;
-        Ok(Expr::Unsafe(Box::new(rust::Block {
+        Ok(Expr::Block(Box::new(rust::Block {
             stmts,
             tail: Some(Box::new(Expr::var(storage.as_str().into()))),
         })))

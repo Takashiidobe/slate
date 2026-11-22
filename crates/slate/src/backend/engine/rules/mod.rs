@@ -8,7 +8,6 @@ mod inline_temps;
 mod label_elide;
 mod libc_call;
 pub(super) mod literal_casts;
-mod nested_unsafe;
 mod null_compare;
 mod pattern_range;
 mod pure_stmts;
@@ -83,9 +82,5 @@ pub(super) fn late_registry() -> Vec<Box<dyn NodeRule>> {
 }
 
 pub(super) fn unsafe_registry() -> Vec<Box<dyn NodeRule>> {
-    vec![
-        Box::new(nested_unsafe::NestedUnsafeStmt),
-        Box::new(nested_unsafe::NestedUnsafeExpr),
-        Box::new(singleton_scopes::ScopeFlatten),
-    ]
+    vec![Box::new(singleton_scopes::ScopeFlatten)]
 }

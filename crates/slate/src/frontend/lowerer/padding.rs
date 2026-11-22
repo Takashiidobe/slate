@@ -175,6 +175,6 @@ impl FunctionLowerer<'_, '_> {
             }
             start += length;
         }
-        Some(Expr::Unsafe(Box::new(rust::Block { stmts, tail: None })))
+        Some(Expr::Block(Box::new(rust::Block { stmts, tail: None })))
     }
 }

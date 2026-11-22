@@ -234,8 +234,8 @@ int main(void) {
 // CHECK-NEXT:     let d: i32 = CAST_TO!(i32, m);
 // CHECK-NEXT:     let c2: c_long = NESTED_CAST!(c_long, i);
 // CHECK-NEXT:     let z: c_ulong = SIZE_PLUS!(i32, 1i32) as c_ulong;
-// CHECK-NEXT:     let e: i32 = APPLY!(i);
-// CHECK-NEXT:     let e2: i32 = APPLY__2!(r#fn, i);
+// CHECK-NEXT:     let e: i32 = APPLY__2!(i);
+// CHECK-NEXT:     let e2: i32 = APPLY!(r#fn, i);
 // CHECK-NEXT:     let g: i32 = CALL2!(i, j);
 // CHECK-NEXT:     let h: i32 = ARGS_OF!(i, j);
 // CHECK-NEXT:     let q: i32 = 9;
@@ -265,9 +265,9 @@ int main(void) {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %d %d %d\n".as_ptr(),
 // CHECK-NEXT:                 FIELD!(op, r#type),
-// CHECK-NEXT:                 FIELD__2!(op),
+// CHECK-NEXT:                 FIELD__3!(op),
 // CHECK-NEXT:                 FIELD!(op, count),
-// CHECK-NEXT:                 FIELD__3!(op, inner_value),
+// CHECK-NEXT:                 FIELD__2!(op, inner_value),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -277,9 +277,9 @@ int main(void) {
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {} {}",
 // CHECK-NEXT:             FIELD!(op, r#type),
-// CHECK-NEXT:             FIELD__2!(op),
+// CHECK-NEXT:             FIELD__3!(op),
 // CHECK-NEXT:             FIELD!(op, count),
-// CHECK-NEXT:             FIELD__3!(op, inner_value)
+// CHECK-NEXT:             FIELD__2!(op, inner_value)
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     TRACE!(c"plain\n".as_ptr() as *mut c_char);
@@ -327,14 +327,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! APPLY {
-// CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         twice($x)
+// CHECK-NEXT:     ($f:expr, $x:expr) => {
+// CHECK-NEXT:         unsafe { $f.unwrap()($x) }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! APPLY__2 {
-// CHECK-NEXT:     ($f:expr, $x:expr) => {
-// CHECK-NEXT:         unsafe { $f.unwrap()($x) }
+// CHECK-NEXT:     ($x:expr) => {
+// CHECK-NEXT:         twice($x)
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -363,14 +363,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! FIELD__2 {
-// CHECK-NEXT:     ($p:expr) => {
-// CHECK-NEXT:         unsafe { (*$p).__slate_bits_0.__get_flag() as i32 }
+// CHECK-NEXT:     ($p:expr, $name:ident) => {
+// CHECK-NEXT:         unsafe { (*$p).[[SLATE_ANON_0]].$name }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! FIELD__3 {
-// CHECK-NEXT:     ($p:expr, $name:ident) => {
-// CHECK-NEXT:         unsafe { (*$p).[[SLATE_ANON_0]].$name }
+// CHECK-NEXT:     ($p:expr) => {
+// CHECK-NEXT:         unsafe { (*$p).__slate_bits_0.__get_flag() as i32 }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

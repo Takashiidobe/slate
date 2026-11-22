@@ -482,7 +482,7 @@ int main(void) {
 // CHECK-NEXT:     CHECK!(
 // CHECK-NEXT:         (unsafe {
 // CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(buffer_a) as *mut i8) as *const i8,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(buffer_a) as *const i8,
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 (if (core::mem::size_of::<*mut ()>() as u64) == 8 {
 // I686-PC-WINDOWS-MSVC-NEXT:                 (if (core::mem::size_of::<*mut ()>() as u32) == 8 {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:                 (if (core::mem::size_of::<*mut ()>() as u64) == 8 {
@@ -496,7 +496,7 @@ int main(void) {
 // CHECK-NEXT:     CHECK!(
 // CHECK-NEXT:         (unsafe {
 // CHECK-NEXT:             strcmp(
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(buffer_b) as *mut i8) as *const i8,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(buffer_b) as *const i8,
 // X86_64-PC-WINDOWS-MSVC-NEXT:                 (if (core::mem::size_of::<*mut ()>() as u64) == 8 {
 // I686-PC-WINDOWS-MSVC-NEXT:                 (if (core::mem::size_of::<*mut ()>() as u32) == 8 {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:                 (if (core::mem::size_of::<*mut ()>() as u64) == 8 {

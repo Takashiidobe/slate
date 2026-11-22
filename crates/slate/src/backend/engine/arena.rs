@@ -44,7 +44,6 @@ node_kind_tags! {
     InlineAsm,
     Expr,
     Return,
-    Unsafe,
     If,
     Loop,
     For,
@@ -67,8 +66,8 @@ impl NodeKindTag {
     const fn carries_exprs(self) -> bool {
         use NodeKindTag::*;
         match self {
-            Let | LetIf | Assign | CompoundAssign | InlineAsm | Expr | Return | Unsafe | If
-            | For | Match | While | Block => true,
+            Let | LetIf | Assign | CompoundAssign | InlineAsm | Expr | Return | If | For
+            | Match | While | Block => true,
             Comment | Loop | Scope | LabeledBlock | Break | Continue => false,
         }
     }
@@ -131,10 +130,6 @@ pub(in crate::backend) enum NodeKind {
     InlineAsm(InlineAsm),
     Expr(Expr),
     Return(Option<Expr>),
-    Unsafe {
-        stmts: Vec<NodeId>,
-        tail: Option<Box<Expr>>,
-    },
     If {
         cond: Expr,
         then_body: Vec<NodeId>,
@@ -186,7 +181,6 @@ impl NodeKind {
             NodeKind::InlineAsm(_) => NodeKindTag::InlineAsm,
             NodeKind::Expr(_) => NodeKindTag::Expr,
             NodeKind::Return(_) => NodeKindTag::Return,
-            NodeKind::Unsafe { .. } => NodeKindTag::Unsafe,
             NodeKind::If { .. } => NodeKindTag::If,
             NodeKind::Loop { .. } => NodeKindTag::Loop,
             NodeKind::For { .. } => NodeKindTag::For,
@@ -216,9 +210,7 @@ impl NodeKind {
                 else_body,
                 ..
             } => vec![then_body, else_body],
-            NodeKind::Unsafe { stmts, .. }
-            | NodeKind::While { stmts, .. }
-            | NodeKind::Block { stmts, .. } => {
+            NodeKind::While { stmts, .. } | NodeKind::Block { stmts, .. } => {
                 vec![stmts]
             }
             NodeKind::If {
@@ -250,9 +242,7 @@ impl NodeKind {
                 else_body,
                 ..
             } => vec![then_body, else_body],
-            NodeKind::Unsafe { stmts, .. }
-            | NodeKind::While { stmts, .. }
-            | NodeKind::Block { stmts, .. } => {
+            NodeKind::While { stmts, .. } | NodeKind::Block { stmts, .. } => {
                 vec![stmts]
             }
             NodeKind::If {
@@ -311,7 +301,7 @@ fn own_reads(kind: &NodeKind) -> Vec<Ident> {
                 expr.collect_vars(&mut out);
             }
         }
-        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => {
+        NodeKind::Block { tail, .. } => {
             if let Some(tail) = tail.as_deref() {
                 tail.collect_vars(&mut out);
             }
@@ -912,10 +902,6 @@ fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
         Stmt::InlineAsm(asm) => NodeKind::InlineAsm(asm),
         Stmt::Expr(expr) => NodeKind::Expr(expr),
         Stmt::Return(expr) => NodeKind::Return(expr),
-        Stmt::Unsafe { body } => NodeKind::Unsafe {
-            stmts: build_stmts(arena, Some(id), body.stmts),
-            tail: body.tail,
-        },
         Stmt::If {
             cond,
             then_body,
@@ -965,7 +951,7 @@ fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
             stmts: build_stmts(arena, Some(id), body.stmts),
             tail: body.tail,
         },
-        Stmt::Block(body) => NodeKind::Block {
+        Stmt::Block(body) | Stmt::Unsafe { body } => NodeKind::Block {
             stmts: build_stmts(arena, Some(id), body.stmts),
             tail: body.tail,
         },
@@ -1045,12 +1031,6 @@ fn reify_stmt(arena: &Arena, id: NodeId, out: &mut Vec<Stmt>) {
         NodeKind::InlineAsm(asm) => Stmt::InlineAsm(asm.clone()),
         NodeKind::Expr(expr) => Stmt::Expr(expr.clone()),
         NodeKind::Return(expr) => Stmt::Return(expr.clone()),
-        NodeKind::Unsafe { stmts, tail } => Stmt::Unsafe {
-            body: Block {
-                stmts: reify_nested(arena, stmts),
-                tail: tail.clone(),
-            },
-        },
         NodeKind::If {
             cond,
             then_body,

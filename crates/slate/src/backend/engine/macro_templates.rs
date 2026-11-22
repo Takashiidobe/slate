@@ -311,15 +311,8 @@ fn place_of_argument(argument: &Expr) -> Expr {
     }
 }
 
-pub fn make_place_parameter(template: &mut [Stmt], parameter: &str, read_is_unsafe: bool) {
-    let read = if read_is_unsafe {
-        Expr::Unsafe(Box::new(Block {
-            stmts: Vec::new(),
-            tail: Some(Box::new(place_hole(parameter))),
-        }))
-    } else {
-        place_hole(parameter)
-    };
+pub fn make_place_parameter(template: &mut [Stmt], parameter: &str) {
+    let read = place_hole(parameter);
     visit_exprs_mut(template, &mut |expr| {
         if hole_parameter(expr) == Some(parameter) {
             *expr = read.clone();

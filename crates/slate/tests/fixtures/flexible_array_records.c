@@ -284,19 +284,19 @@ int main(void) {
 // CHECK-NEXT:         return 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe {
-// CHECK-NEXT:         (((core::ptr::addr_of_mut!((*list).entries) as *mut Entry) as *mut i8)
+// CHECK-NEXT:         ((core::ptr::addr_of_mut!((*list).entries) as *mut i8)
 // CHECK-NEXT:             .offset_from((list as *mut i8) as *mut i8) as i64) as u64
 // CHECK-NEXT:     }) != 8 {
 // CHECK-NEXT:         return 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe {
-// CHECK-NEXT:         (((core::ptr::addr_of_mut!((*bytes).bytes) as *mut u8) as *mut i8)
+// CHECK-NEXT:         ((core::ptr::addr_of_mut!((*bytes).bytes) as *mut i8)
 // CHECK-NEXT:             .offset_from((bytes as *mut i8) as *mut i8) as i64) as u64
 // CHECK-NEXT:     }) != 12 {
 // CHECK-NEXT:         return 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe {
-// CHECK-NEXT:         (((core::ptr::addr_of_mut!((*wide).values) as *mut LongDouble) as *mut i8)
+// CHECK-NEXT:         ((core::ptr::addr_of_mut!((*wide).values) as *mut i8)
 // CHECK-NEXT:             .offset_from((wide as *mut i8) as *mut i8) as i64) as u64
 // CHECK-NEXT:     }) != 16 {
 // CHECK-NEXT:         return 4;

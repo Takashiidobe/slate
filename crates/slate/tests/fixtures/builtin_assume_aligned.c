@@ -43,16 +43,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let a: *mut () = first_word(
-// CHECK-NEXT:         unsafe { (core::ptr::addr_of_mut!(buf.0) as *mut u8) as *mut () },
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let a: *mut () = first_word(unsafe { core::ptr::addr_of_mut!(buf.0) as *mut () });
 // CHECK-NEXT:     let b: *mut () = first_word_offset(
 // CHECK-NEXT:         unsafe { (core::ptr::addr_of_mut!(buf.0) as *mut u8).add(8) as *mut () },
 // CHECK-NEXT:         8u64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         (a == unsafe { (core::ptr::addr_of_mut!(buf.0) as *mut u8) as *mut () }) as i32,
+// CHECK-NEXT:         (a == unsafe { core::ptr::addr_of_mut!(buf.0) as *mut () }) as i32,
 // CHECK-NEXT:         (b == unsafe { (core::ptr::addr_of_mut!(buf.0) as *mut u8).add(8) as *mut () })
 // CHECK-NEXT:             as i32
 // CHECK-NEXT:     );

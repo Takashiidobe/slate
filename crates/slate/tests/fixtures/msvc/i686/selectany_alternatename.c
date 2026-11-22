@@ -102,7 +102,7 @@ int main(void) {
 // CHECK-NEXT:         || (unsafe {
 // CHECK-NEXT:             wcscmp(
 // CHECK-NEXT:                 target.as_mut_ptr() as *const u16,
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(__slate_str28) as *mut u16) as *const u16,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(__slate_str28) as *const u16,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         }) != 0 {
 // CHECK-NEXT:         unsafe { abort() };

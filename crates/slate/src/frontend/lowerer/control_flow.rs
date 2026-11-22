@@ -787,10 +787,7 @@ impl FunctionLowerer<'_, '_> {
         let index = self.local_index(variable.id);
         let pointer = format!("__slate_cleanup_ptr_{index}");
         let call = self.cleanup_call(cleanup, Expr::var(pointer.as_str().into()))?;
-        let call = match call {
-            call @ Expr::Unsafe(_) => call,
-            call => unsafe_op(call),
-        };
+        let call = unsafe_op(call);
         Ok([
             Stmt::Let {
                 origin: rust::LocalOrigin::Synthetic,
@@ -1259,14 +1256,9 @@ impl FunctionLowerer<'_, '_> {
                     init: Some(state(entry)),
                 });
             }
-            lowered.push(Stmt::Unsafe {
-                body: rust::Block {
-                    stmts: vec![Stmt::LabeledBlock {
-                        label,
-                        body: structured.body,
-                    }],
-                    tail: None,
-                },
+            lowered.push(Stmt::LabeledBlock {
+                label,
+                body: structured.body,
             });
             return Ok(lowered);
         }
@@ -1277,17 +1269,12 @@ impl FunctionLowerer<'_, '_> {
             ty: Some(rust::Type::Prim(Prim::Usize)),
             init: Some(state(entry)),
         });
-        lowered.push(Stmt::Unsafe {
-            body: rust::Block {
-                stmts: vec![Stmt::Loop {
-                    label: Some(rust::Label::new("__slate_dispatch")),
-                    body: vec![Stmt::Match {
-                        expr: Expr::var("__slate_state".into()),
-                        arms,
-                    }],
-                }],
-                tail: None,
-            },
+        lowered.push(Stmt::Loop {
+            label: Some(rust::Label::new("__slate_dispatch")),
+            body: vec![Stmt::Match {
+                expr: Expr::var("__slate_state".into()),
+                arms,
+            }],
         });
         Ok(lowered)
     }

@@ -821,7 +821,7 @@ fn kind_own_effects(kind: &NodeKind) -> Effects {
         }
         NodeKind::Expr(expr) => expr_effects(expr),
         NodeKind::Return(expr) => expr.as_ref().map_or(Effects::default(), expr_effects),
-        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => tail
+        NodeKind::Block { tail, .. } => tail
             .as_ref()
             .map_or(Effects::default(), |t| expr_effects(t)),
         NodeKind::While { cond, tail, .. } => expr_effects(cond).union(
@@ -872,9 +872,7 @@ fn kind_own_expr_any(kind: &NodeKind, pred: &mut dyn FnMut(&Expr) -> bool) -> bo
         }
         NodeKind::Expr(expr) => expr_any(expr, pred),
         NodeKind::Return(expr) => expr.as_ref().is_some_and(|e| expr_any(e, pred)),
-        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => {
-            tail.as_ref().is_some_and(|t| expr_any(t, pred))
-        }
+        NodeKind::Block { tail, .. } => tail.as_ref().is_some_and(|t| expr_any(t, pred)),
         NodeKind::While { cond, tail, .. } => {
             expr_any(cond, pred) || tail.as_ref().is_some_and(|t| expr_any(t, pred))
         }
@@ -954,9 +952,6 @@ fn immediate_effectful_consumer(arena: &Arena, id: NodeId, name: Ident) -> bool 
             expr_ident(target).is_some() && expr_ident(value) == Some(name)
         }
         Some(NodeKind::Return(Some(expr))) => expr_ident(expr) == Some(name),
-        Some(NodeKind::Unsafe { stmts, tail }) if tail.is_none() && stmts.len() == 1 => {
-            immediate_effectful_consumer(arena, stmts[0], name)
-        }
         Some(NodeKind::Expr(expr)) => simple_macro_arg_use_expr(expr, name),
         _ => false,
     }
@@ -1037,9 +1032,6 @@ fn is_top_level_use(arena: &Arena, id: NodeId, name: Ident) -> bool {
         Some(NodeKind::Return(Some(expr))) => expr_ident(expr) == Some(name),
         Some(NodeKind::If { cond, .. }) => expr_ident(cond) == Some(name),
         Some(NodeKind::Match { expr, .. }) => expr_ident(expr) == Some(name),
-        Some(NodeKind::Unsafe { stmts, tail }) if tail.is_none() && stmts.len() == 1 => {
-            is_top_level_use(arena, stmts[0], name)
-        }
         Some(NodeKind::InlineAsm(asm)) => asm
             .operands
             .iter()
@@ -1129,7 +1121,7 @@ fn kind_own_substitute_var(kind: &mut NodeKind, name: &str, replacement: &Expr) 
         NodeKind::Return(expr) => expr
             .as_mut()
             .is_some_and(|e| e.substitute_var(name, replacement)),
-        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => tail
+        NodeKind::Block { tail, .. } => tail
             .as_mut()
             .is_some_and(|t| t.substitute_var(name, replacement)),
         NodeKind::While { cond, tail, .. } => {
@@ -1275,9 +1267,7 @@ fn kind_simple_macro_arg_use(kind: &NodeKind, name: Ident) -> bool {
 
 fn unwrap_single_stmt(arena: &Arena, id: NodeId) -> NodeId {
     match arena.get(id) {
-        Some(NodeKind::Unsafe { stmts, tail }) | Some(NodeKind::Block { stmts, tail })
-            if tail.is_none() && stmts.len() == 1 =>
-        {
+        Some(NodeKind::Block { stmts, tail }) if tail.is_none() && stmts.len() == 1 => {
             unwrap_single_stmt(arena, stmts[0])
         }
         _ => id,
@@ -1743,9 +1733,6 @@ fn consumer_arg_pos(arena: &Arena, id: NodeId, name: Ident, ty: Option<&Type>) -
         } => expr_arg_pos(expr, name, ty),
         NodeKind::Assign { value, .. } | NodeKind::CompoundAssign { value, .. } => {
             expr_arg_pos(value, name, ty)
-        }
-        NodeKind::Unsafe { stmts, tail } if tail.is_none() && stmts.len() == 1 => {
-            consumer_arg_pos(arena, stmts[0], name, ty)
         }
         _ => None,
     }

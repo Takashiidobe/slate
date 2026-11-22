@@ -75,8 +75,8 @@ int main(void) {
 // CHECK-NEXT:             -2147483648.0f64,
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     for i in 0i32..7i32 {
-// CHECK-NEXT:         print!("{} ", values.0[i as usize] as i32);
+// CHECK-NEXT:     for i in values.0.iter().copied() {
+// CHECK-NEXT:         print!("{} ", i as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");

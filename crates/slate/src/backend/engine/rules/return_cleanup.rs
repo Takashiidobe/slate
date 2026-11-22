@@ -114,11 +114,7 @@ fn last_statement(arena: &Arena, list: &[NodeId]) -> Option<NodeId> {
 fn diverges(arena: &Arena, id: NodeId) -> bool {
     match arena.get(id) {
         Some(NodeKind::Return(_)) => true,
-        Some(
-            kind @ (NodeKind::Unsafe { tail: None, .. }
-            | NodeKind::Block { tail: None, .. }
-            | NodeKind::Scope { .. }),
-        ) => kind
+        Some(kind @ (NodeKind::Block { tail: None, .. } | NodeKind::Scope { .. })) => kind
             .child_lists()
             .first()
             .and_then(|list| last_statement(arena, list))
@@ -168,7 +164,6 @@ impl NodeRule for UnreachableAfterReturn {
     fn kinds(&self) -> &'static [NodeKindTag] {
         &[
             NodeKindTag::Return,
-            NodeKindTag::Unsafe,
             NodeKindTag::Block,
             NodeKindTag::Scope,
             NodeKindTag::If,

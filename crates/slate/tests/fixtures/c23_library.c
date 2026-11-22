@@ -754,14 +754,14 @@ int main(void) {
 // CHECK-NEXT:         wcsftime(
 // CHECK-NEXT:             wide_month.0.as_mut_ptr(),
 // CHECK-NEXT:             32u64,
-// CHECK-NEXT:             (core::ptr::addr_of_mut!(__slate_str281) as *mut i32) as *const i32,
+// CHECK-NEXT:             core::ptr::addr_of_mut!(__slate_str281) as *const i32,
 // CHECK-NEXT:             core::ptr::addr_of_mut!(utc) as *const slate_support::tm,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 7) as i32;
 // CHECK-NEXT:     total += ((unsafe {
 // CHECK-NEXT:         wcscmp(
 // CHECK-NEXT:             wide_month.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:             (core::ptr::addr_of_mut!(__slate_str283) as *mut i32) as *const i32,
+// CHECK-NEXT:             core::ptr::addr_of_mut!(__slate_str283) as *const i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     let const_month: *const i32 = wide_month.0.as_mut_ptr() as *const i32;
@@ -770,16 +770,14 @@ int main(void) {
 // CHECK-NEXT:         wcschr(wide_month.0.as_mut_ptr() as *const i32, 110i32).is_null()
 // CHECK-NEXT:     } as i32;
 // CHECK-NEXT:     total += !unsafe {
-// CHECK-NEXT:         (wcsstr(
-// CHECK-NEXT:                 const_month,
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(__slate_str287) as *mut i32) as *const i32,
-// CHECK-NEXT:             ) as *const i32)
+// CHECK-NEXT:         (wcsstr(const_month, core::ptr::addr_of_mut!(__slate_str287) as *const i32)
+// CHECK-NEXT:                 as *const i32)
 // CHECK-NEXT:             .is_null()
 // CHECK-NEXT:     } as i32;
 // CHECK-NEXT:     total += !unsafe {
 // CHECK-NEXT:         wcsstr(
 // CHECK-NEXT:                 wide_month.0.as_mut_ptr() as *const i32,
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(__slate_str289) as *mut i32) as *const i32,
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(__slate_str289) as *const i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .is_null()
 // CHECK-NEXT:     } as i32;

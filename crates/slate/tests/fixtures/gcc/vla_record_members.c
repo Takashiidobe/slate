@@ -152,7 +152,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn trailing(n: i32) -> i32 {
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u64 = n as u64;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: u64 = n as u64;
 // CHECK-NEXT:     let mut x: Vec<u32> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<u32> = Vec::with_capacity(
 // CHECK-NEXT:             (7usize
@@ -205,8 +205,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn grid(rows: i32, cols: i32) {
-// CHECK-NEXT:     let mut [[V_0]]: u64 = rows as u64;
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: u64 = cols as u64;
+// CHECK-NEXT:     let [[V_0]]: u64 = rows as u64;
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: u64 = cols as u64;
 // CHECK-NEXT:     let mut g: Vec<u32> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<u32> = Vec::with_capacity(
 // CHECK-NEXT:             (7usize
@@ -282,7 +282,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn only_member(n: i32) {
-// CHECK-NEXT:     let mut [[V_0]]: u64 = n as u64;
+// CHECK-NEXT:     let [[V_0]]: u64 = n as u64;
 // CHECK-NEXT:     let mut u: Vec<u32> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<u32> = Vec::with_capacity(
 // CHECK-NEXT:             (3usize
@@ -341,7 +341,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn per_iteration() {
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for n in 1..(4i32 + 1) {
-// CHECK-NEXT:         let mut [[V_0]]: u64 = n as u64;
+// CHECK-NEXT:         let [[V_0]]: u64 = n as u64;
 // CHECK-NEXT:         let mut v: Vec<u64> = {
 // CHECK-NEXT:             let mut __slate_vla: Vec<u64> = Vec::with_capacity(
 // CHECK-NEXT:                 (15usize
@@ -423,7 +423,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn captured_once(mut n: i32) {
-// CHECK-NEXT:     let mut [[V_0]]: u64 = n as u64;
+// CHECK-NEXT:     let [[V_0]]: u64 = n as u64;
 // CHECK-NEXT:     n += 10;
 // CHECK-NEXT:     let mut a: Vec<u8> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<u8> = Vec::with_capacity(

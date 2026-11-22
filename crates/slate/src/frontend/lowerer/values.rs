@@ -197,16 +197,9 @@ pub(super) fn mark_unsafe(expr: &mut Expr) {
     }
 }
 
-pub(super) fn unsafe_wrap(expr: Expr) -> Expr {
-    Expr::Unsafe(Box::new(rust::Block {
-        stmts: Vec::new(),
-        tail: Some(Box::new(expr)),
-    }))
-}
-
 pub(super) fn unsafe_op(mut expr: Expr) -> Expr {
     mark_unsafe(&mut expr);
-    unsafe_wrap(expr)
+    expr
 }
 
 pub(super) fn zeroed() -> Expr {
@@ -882,7 +875,7 @@ impl FunctionLowerer<'_, '_> {
                         unsafe_: rust::Unsafe(true),
                     }
                 };
-                unsafe_wrap(if read_ty == ty {
+                if read_ty == ty {
                     read
                 } else if ty == rust::Type::Prim(Prim::F16) {
                     Expr::Call {
@@ -903,7 +896,7 @@ impl FunctionLowerer<'_, '_> {
                     self.narrow_integer(read, &value.ty)?
                 } else {
                     convert_function_pointer(read_ty, ty, Box::new(read))
-                })
+                }
             }
             ValueKind::Fence { ordering, scope } => self
                 .lower_fence(*scope, ordering)
@@ -997,7 +990,7 @@ impl FunctionLowerer<'_, '_> {
                     let address = self.lower_address(erased, false)?;
                     let (copy, read) =
                         self.with_erased_copy(erased, |lowerer| lowerer.lower_value(value))?;
-                    return Ok(Expr::Unsafe(Box::new(rust::Block {
+                    return Ok(Expr::Block(Box::new(rust::Block {
                         stmts: vec![Stmt::Let {
                             origin: rust::LocalOrigin::Synthetic,
                             name: copy,
@@ -2024,7 +2017,7 @@ impl FunctionLowerer<'_, '_> {
                             mutable: true,
                             expr: Box::new(Expr::var(env.as_str().into())),
                         };
-                        Expr::Unsafe(Box::new(rust::Block {
+                        Expr::Block(Box::new(rust::Block {
                             stmts: vec![Stmt::Assign {
                                 target: slot(self.lower_value(buf)?),
                                 value: env_ptr(),
@@ -2416,46 +2409,32 @@ impl FunctionLowerer<'_, '_> {
                     args: vec![self.lower_value(&member.value)?],
                     unsafe_: rust::Unsafe(false),
                 });
-                stmts.push(if self.tables.is_union(ty) {
-                    Stmt::Unsafe {
-                        body: rust::Block {
-                            stmts: vec![setter],
-                            tail: None,
-                        },
-                    }
-                } else {
-                    setter
-                });
+                stmts.push(setter);
                 continue;
             }
             if let ir::AggregateTarget::Field(index) = member.target
                 && erased.contains(&index)
             {
                 let member_ty = self.lower_type(&member.value.ty)?;
-                stmts.push(Stmt::Unsafe {
-                    body: rust::Block {
-                        stmts: vec![Stmt::Expr(Expr::MethodCall {
-                            recv: Box::new(Expr::Cast {
-                                expr: Box::new(Expr::AddrOf {
-                                    mutable: true,
-                                    expr: Box::new(Expr::Field {
-                                        base: Box::new(base.clone()),
-                                        field: field_name(index)?,
-                                        union: rust::UnsafeCmp(false),
-                                    }),
-                                }),
-                                ty: rust::Type::Ptr {
-                                    mutable: true,
-                                    inner: Box::new(member_ty),
-                                },
+                stmts.push(Stmt::Expr(Expr::MethodCall {
+                    recv: Box::new(Expr::Cast {
+                        expr: Box::new(Expr::AddrOf {
+                            mutable: true,
+                            expr: Box::new(Expr::Field {
+                                base: Box::new(base.clone()),
+                                field: field_name(index)?,
+                                union: rust::UnsafeCmp(false),
                             }),
-                            method: "write_unaligned".into(),
-                            args: vec![self.lower_value(&member.value)?],
-                            unsafe_: rust::Unsafe(true),
-                        })],
-                        tail: None,
-                    },
-                });
+                        }),
+                        ty: rust::Type::Ptr {
+                            mutable: true,
+                            inner: Box::new(member_ty),
+                        },
+                    }),
+                    method: "write_unaligned".into(),
+                    args: vec![self.lower_value(&member.value)?],
+                    unsafe_: rust::Unsafe(true),
+                }));
                 continue;
             }
             let place = match member.target {

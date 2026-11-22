@@ -47,59 +47,51 @@ impl FunctionLowerer<'_, '_> {
                 lowerer.lower_assignment(place, Expr::var(operand.as_str().into()))
             })?;
             let pointer_var = || Expr::var(pointer.as_str().into());
-            return Ok(Stmt::Unsafe {
-                body: rust::Block {
-                    stmts: vec![
-                        Stmt::Let {
-                            origin: rust::LocalOrigin::Synthetic,
-                            name: operand.clone(),
-                            mutable: false,
-                            ty: None,
-                            init: Some(value),
-                        },
-                        Stmt::Let {
-                            origin: rust::LocalOrigin::Synthetic,
-                            name: pointer.clone(),
-                            mutable: false,
-                            ty: None,
-                            init: Some(address),
-                        },
-                        Stmt::Let {
-                            origin: rust::LocalOrigin::Synthetic,
-                            name: copy.clone(),
-                            mutable: true,
-                            ty: None,
-                            init: Some(Expr::MethodCall {
-                                recv: Box::new(pointer_var()),
-                                method: "read_unaligned".into(),
-                                args: Vec::new(),
-                                unsafe_: rust::Unsafe(true),
-                            }),
-                        },
-                        assignment,
-                        Stmt::Expr(Expr::MethodCall {
+            return Ok(Stmt::Scope {
+                body: vec![
+                    Stmt::Let {
+                        origin: rust::LocalOrigin::Synthetic,
+                        name: operand.clone(),
+                        mutable: false,
+                        ty: None,
+                        init: Some(value),
+                    },
+                    Stmt::Let {
+                        origin: rust::LocalOrigin::Synthetic,
+                        name: pointer.clone(),
+                        mutable: false,
+                        ty: None,
+                        init: Some(address),
+                    },
+                    Stmt::Let {
+                        origin: rust::LocalOrigin::Synthetic,
+                        name: copy.clone(),
+                        mutable: true,
+                        ty: None,
+                        init: Some(Expr::MethodCall {
                             recv: Box::new(pointer_var()),
-                            method: "write_unaligned".into(),
-                            args: vec![Expr::var(copy.as_str().into())],
+                            method: "read_unaligned".into(),
+                            args: Vec::new(),
                             unsafe_: rust::Unsafe(true),
                         }),
-                    ],
-                    tail: None,
-                },
+                    },
+                    assignment,
+                    Stmt::Expr(Expr::MethodCall {
+                        recv: Box::new(pointer_var()),
+                        method: "write_unaligned".into(),
+                        args: vec![Expr::var(copy.as_str().into())],
+                        unsafe_: rust::Unsafe(true),
+                    }),
+                ],
             });
         }
         if let Some(address) = self.erased_field_address(place, true)? {
-            return Ok(Stmt::Unsafe {
-                body: rust::Block {
-                    stmts: vec![Stmt::Expr(Expr::MethodCall {
-                        recv: Box::new(address),
-                        method: "write_unaligned".into(),
-                        args: vec![value],
-                        unsafe_: rust::Unsafe(true),
-                    })],
-                    tail: None,
-                },
-            });
+            return Ok(Stmt::Expr(Expr::MethodCall {
+                recv: Box::new(address),
+                method: "write_unaligned".into(),
+                args: vec![value],
+                unsafe_: rust::Unsafe(true),
+            }));
         }
         if let Some(unaligned) = self.lower_unaligned_write(place, &value)? {
             return Ok(unaligned);
@@ -148,16 +140,7 @@ impl FunctionLowerer<'_, '_> {
                 },
             },
         };
-        Ok(if self.place_is_unsafe(place) {
-            Stmt::Unsafe {
-                body: rust::Block {
-                    stmts: vec![assignment],
-                    tail: None,
-                },
-            }
-        } else {
-            assignment
-        })
+        Ok(assignment)
     }
 
     fn lower_statement_node(
@@ -353,12 +336,10 @@ impl FunctionLowerer<'_, '_> {
                         true,
                     )?;
                     if !writes.is_empty() {
-                        self.after_declaration = Some(Stmt::Unsafe {
-                            body: rust::Block {
-                                stmts: writes,
-                                tail: None,
-                            },
-                        });
+                        self.after_declaration = Some(Stmt::Block(rust::Block {
+                            stmts: writes,
+                            tail: None,
+                        }));
                     }
                 }
                 Stmt::Let {
@@ -953,20 +934,11 @@ fn same_operand(a: &ir::Value, b: &ir::Value) -> bool {
         }
 }
 
-fn peel_unsafe(expr: &Expr) -> &Expr {
-    match expr {
-        Expr::Unsafe(block) if block.stmts.is_empty() => {
-            block.tail.as_deref().map_or(expr, peel_unsafe)
-        }
-        _ => expr,
-    }
-}
-
 pub(super) fn fold_compound_assignments(stmts: &mut [Stmt]) {
     for stmt in stmts {
         match stmt {
             Stmt::Scope { body } => fold_compound_assignments(body),
-            Stmt::Block(body) | Stmt::Unsafe { body } => fold_compound_assignments(&mut body.stmts),
+            Stmt::Block(body) => fold_compound_assignments(&mut body.stmts),
             _ => {
                 let assignment = std::mem::replace(stmt, Stmt::Break(None));
                 *stmt = compound_assignment(assignment);
@@ -995,25 +967,11 @@ fn compound_assignment(assignment: Stmt) -> Stmt {
                     lhs,
                     rhs,
                 },
-        } if *peel_unsafe(&lhs) == target => Stmt::CompoundAssign {
+        } if *lhs == target => Stmt::CompoundAssign {
             target,
             op,
             value: *rhs,
         },
-        Stmt::Unsafe {
-            body: rust::Block {
-                mut stmts,
-                tail: None,
-            },
-        } if stmts.len() == 1 => {
-            let only = compound_assignment(stmts.remove(0));
-            Stmt::Unsafe {
-                body: rust::Block {
-                    stmts: vec![only],
-                    tail: None,
-                },
-            }
-        }
         other => other,
     }
 }

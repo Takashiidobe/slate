@@ -494,7 +494,7 @@ impl FunctionLowerer<'_, '_> {
             args.push(self.lower_call_argument(argument, index >= parameters.len())?);
         }
         let callee = self.lower_value(block)?;
-        Ok(Expr::Unsafe(Box::new(rust::Block {
+        Ok(Expr::Block(Box::new(rust::Block {
             stmts: vec![Stmt::Let {
                 origin: rust::LocalOrigin::Synthetic,
                 name: temp.clone(),

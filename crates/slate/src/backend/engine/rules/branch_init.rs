@@ -53,7 +53,7 @@ fn kind_reads_var(kind: &NodeKind, name: Ident) -> bool {
         }
         NodeKind::Expr(expr) => expr.reads_var(name_str),
         NodeKind::Return(expr) => expr.as_ref().is_some_and(|expr| expr.reads_var(name_str)),
-        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => {
+        NodeKind::Block { tail, .. } => {
             tail.as_ref().is_some_and(|tail| tail.reads_var(name_str))
         }
         NodeKind::While { cond, tail, .. } => {

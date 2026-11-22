@@ -78,9 +78,7 @@ fn is_inert(arena: &FunctionOptimizer, id: NodeId) -> bool {
     match arena.get(id) {
         Some(NodeKind::Expr(expr)) => is_pure(expr) && !is_function_tail(arena, id),
         Some(NodeKind::Scope { body, .. }) => only_comments(arena, body),
-        Some(NodeKind::Unsafe { stmts, tail } | NodeKind::Block { stmts, tail }) => {
-            tail.is_none() && only_comments(arena, stmts)
-        }
+        Some(NodeKind::Block { stmts, tail }) => tail.is_none() && only_comments(arena, stmts),
         Some(NodeKind::If {
             cond,
             then_body,
@@ -105,7 +103,6 @@ impl NodeRule for PureStmtDrop {
         &[
             NodeKindTag::Expr,
             NodeKindTag::Scope,
-            NodeKindTag::Unsafe,
             NodeKindTag::Block,
             NodeKindTag::If,
         ]

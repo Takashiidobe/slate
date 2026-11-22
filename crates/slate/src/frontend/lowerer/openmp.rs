@@ -98,7 +98,7 @@ impl FunctionLowerer<'_, '_> {
                 num_threads,
                 Expr::Closure {
                     params: Vec::new(),
-                    body: Box::new(Expr::Unsafe(Box::new(rust::Block {
+                    body: Box::new(Expr::Block(Box::new(rust::Block {
                         stmts: body,
                         tail: None,
                     }))),

@@ -98,10 +98,10 @@ int main(void) {
 // CHECK-NEXT: #![feature(simd_ffi)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! PRINT__2 {
+// CHECK-NEXT: macro_rules! PRINT__3 {
 // CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 16]> = __SlateAlign16([0i64; 16]);
+// CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
 // CHECK-NEXT:             for i in 0..$n {
 // CHECK-NEXT:                 lanes.0[i as usize] = $v[i as usize] as i64;
 // CHECK-NEXT:             }
@@ -121,7 +121,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! PRINT__3 {
+// CHECK-NEXT: macro_rules! PRINT {
 // CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
@@ -190,10 +190,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! PRINT {
+// CHECK-NEXT: macro_rules! PRINT__2 {
 // CHECK-NEXT:     ($label:expr, $v:expr, $n:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
+// CHECK-NEXT:             let mut lanes: __SlateAlign16<[i64; 16]> = __SlateAlign16([0i64; 16]);
 // CHECK-NEXT:             for i in 0..$n {
 // CHECK-NEXT:                 lanes.0[i as usize] = $v[i as usize] as i64;
 // CHECK-NEXT:             }

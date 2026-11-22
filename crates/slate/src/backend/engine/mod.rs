@@ -4,7 +4,6 @@ mod prelude;
 mod printf_format;
 mod rules;
 pub mod shadow;
-mod unsafe_marks;
 mod unsafe_placement;
 
 use arena::{Arena, FunctionOptimizer, NodeId, NodeKindTag};
@@ -100,7 +99,6 @@ pub(in crate::backend) fn apply_local(
     program: &mut Program,
     target: &slate_parser::target_info::TargetInfo,
 ) {
-    unsafe_marks::check(program);
     let passes = [
         RuleRegistry::build(rules::registry(target, program.runtime)),
         RuleRegistry::build(rules::late_registry()),

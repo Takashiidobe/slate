@@ -854,10 +854,7 @@ impl NodeRule for LibcCall {
             return false;
         };
         if discards_result {
-            *slot = Expr::Unsafe(Box::new(Block {
-                stmts: Vec::new(),
-                tail: Some(Box::new(replacement)),
-            }));
+            *slot = replacement;
         } else {
             *peel_call_head_mut(slot) = replacement;
         }

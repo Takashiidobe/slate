@@ -203,39 +203,24 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "table {}",
-// CHECK-NEXT:         aligned(
-// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(table.0) as *mut [u64; 64]) as *const () },
-// CHECK-NEXT:             16u64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         aligned(unsafe { core::ptr::addr_of_mut!(table.0) as *const () }, 16u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "small {}",
-// CHECK-NEXT:         aligned(
-// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(small.0) as *mut u64) as *const () },
-// CHECK-NEXT:             16u64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         aligned(unsafe { core::ptr::addr_of_mut!(small.0) as *const () }, 16u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "aligned32 {}",
-// CHECK-NEXT:         aligned(
-// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(aligned32.0) as *mut u32) as *const () },
-// CHECK-NEXT:             32u64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         aligned(unsafe { core::ptr::addr_of_mut!(aligned32.0) as *const () }, 32u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "bytes {}",
-// CHECK-NEXT:         aligned(
-// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(bytes.0) as *mut u8) as *const () },
-// CHECK-NEXT:             16u64,
-// CHECK-NEXT:         )
+// CHECK-NEXT:         aligned(unsafe { core::ptr::addr_of_mut!(bytes.0) as *const () }, 16u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"table sum %llu\n".as_ptr(),
-// CHECK-NEXT:             sum_vectors(
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(table.0[5]) as *mut u64) as *const u64,
-// CHECK-NEXT:                 64i32,
-// CHECK-NEXT:             ) as u64,
+// CHECK-NEXT:             sum_vectors(core::ptr::addr_of_mut!(table.0[5]) as *const u64, 64i32) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
@@ -243,10 +228,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(
 // CHECK-NEXT:             c"small sum %llu\n".as_ptr(),
-// CHECK-NEXT:             sum_vectors(
-// CHECK-NEXT:                 (core::ptr::addr_of_mut!(small.0) as *mut u64) as *const u64,
-// CHECK-NEXT:                 2i32,
-// CHECK-NEXT:             ) as u64,
+// CHECK-NEXT:             sum_vectors(core::ptr::addr_of_mut!(small.0) as *const u64, 2i32) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

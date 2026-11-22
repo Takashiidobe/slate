@@ -104,7 +104,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%s\n".as_ptr(), words.0[i as usize]) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     total((core::ptr::addr_of_mut!(greeting) as *mut i8) as *const i8) % 256
+// CHECK-NEXT:     total(core::ptr::addr_of_mut!(greeting) as *const i8) % 256
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

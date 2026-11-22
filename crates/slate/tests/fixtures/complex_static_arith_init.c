@@ -464,41 +464,37 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     show_d(
 // CHECK-NEXT:         c"f_add".as_ptr(),
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_0:__t[0-9]+]] = unsafe { f_add };
+// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_0]].re as f64,
-// CHECK-NEXT:                 im: [[T_0]].im as f64,
+// CHECK-NEXT:                 re: f_add.re as f64,
+// CHECK-NEXT:                 im: f_add.im as f64,
 // CHECK-NEXT:             }
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show_d(
 // CHECK-NEXT:         c"f_mul".as_ptr(),
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = unsafe { f_mul };
+// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_1]].re as f64,
-// CHECK-NEXT:                 im: [[T_1]].im as f64,
+// CHECK-NEXT:                 re: f_mul.re as f64,
+// CHECK-NEXT:                 im: f_mul.im as f64,
 // CHECK-NEXT:             }
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show_d(
 // CHECK-NEXT:         c"f_div".as_ptr(),
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_2:__t[0-9]+]] = unsafe { f_div };
+// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_2]].re as f64,
-// CHECK-NEXT:                 im: [[T_2]].im as f64,
+// CHECK-NEXT:                 re: f_div.re as f64,
+// CHECK-NEXT:                 im: f_div.im as f64,
 // CHECK-NEXT:             }
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
 // CHECK-NEXT:     show_d(
 // CHECK-NEXT:         c"f_real_div".as_ptr(),
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_3:__t[0-9]+]] = unsafe { f_real_div };
+// CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_3]].re as f64,
-// CHECK-NEXT:                 im: [[T_3]].im as f64,
+// CHECK-NEXT:                 re: f_real_div.re as f64,
+// CHECK-NEXT:                 im: f_real_div.im as f64,
 // CHECK-NEXT:             }
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );
@@ -525,13 +521,13 @@ int main(void) {
 // CHECK-NEXT:     show_d(
 // CHECK-NEXT:         c"rt_divf".as_ptr(),
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_4:__t[0-9]+]] = unsafe {
+// CHECK-NEXT:             let [[T_0:__t[0-9]+]] = unsafe {
 // CHECK-NEXT:                 core::ptr::read_volatile(core::ptr::addr_of!(numf))
 // CHECK-NEXT:                     .c_div(core::ptr::read_volatile(core::ptr::addr_of!(denf)), false)
 // CHECK-NEXT:             };
 // CHECK-NEXT:             num_complex::Complex {
-// CHECK-NEXT:                 re: [[T_4]].re as f64,
-// CHECK-NEXT:                 im: [[T_4]].im as f64,
+// CHECK-NEXT:                 re: [[T_0]].re as f64,
+// CHECK-NEXT:                 im: [[T_0]].im as f64,
 // CHECK-NEXT:             }
 // CHECK-NEXT:         },
 // CHECK-NEXT:     );

@@ -152,7 +152,7 @@ int main(void) {
 // CHECK-NEXT:     let loose: *mut entry = unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of!(entries.0) as *const entry).add(1) as *mut entry
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let crc: *mut u32 = (core::ptr::addr_of!(crc_table.0) as *const u32) as *mut u32;
+// CHECK-NEXT:     let crc: *mut u32 = core::ptr::addr_of!(crc_table.0) as *mut u32;
 // CHECK-NEXT:     let walk: *const entry = core::ptr::addr_of!(entries.0) as *const entry;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -185,10 +185,7 @@ int main(void) {
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         read_mutable(
-// CHECK-NEXT:             (core::ptr::addr_of!(exported_table) as *const i32) as *mut i32,
-// CHECK-NEXT:             2i32,
-// CHECK-NEXT:         ),
+// CHECK-NEXT:         read_mutable(core::ptr::addr_of!(exported_table) as *mut i32, 2i32),
 // CHECK-NEXT:         exported_table[0]
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {

@@ -77,8 +77,11 @@ fn literal(expr: &Expr) -> bool {
     }
 }
 
-fn unsafe_block(stmts: Vec<Stmt>, tail: Expr) -> Expr {
-    Expr::Unsafe(Box::new(rust::Block {
+fn block_expr(stmts: Vec<Stmt>, tail: Expr) -> Expr {
+    if stmts.is_empty() {
+        return tail;
+    }
+    Expr::Block(Box::new(rust::Block {
         stmts,
         tail: Some(Box::new(tail)),
     }))
@@ -334,7 +337,7 @@ impl FunctionLowerer<'_, '_> {
                     None => method(recv, "load", vec![order]),
                 }
             };
-            return Ok(unsafe_block(
+            return Ok(block_expr(
                 Vec::new(),
                 if is_store {
                     access
@@ -636,7 +639,7 @@ impl FunctionLowerer<'_, '_> {
                     },
                 }
             };
-            return Ok(Some(unsafe_block(stmts, result)));
+            return Ok(Some(block_expr(stmts, result)));
         }
         if !pure_update(computation) {
             return Ok(None);
@@ -654,10 +657,10 @@ impl FunctionLowerer<'_, '_> {
             vec![identity_closure(&current)],
         );
         if postfix {
-            return Ok(Some(unsafe_block(Vec::new(), target.to_c(previous))));
+            return Ok(Some(block_expr(Vec::new(), target.to_c(previous))));
         }
         let result = self.lower_with_old(computation, target.to_c(var(&old)))?;
-        Ok(Some(unsafe_block(vec![let_stmt(&old, previous)], result)))
+        Ok(Some(block_expr(vec![let_stmt(&old, previous)], result)))
     }
 
     fn lower_compare_exchange(
@@ -743,7 +746,7 @@ impl FunctionLowerer<'_, '_> {
                 ],
             },
         };
-        Ok(Some(unsafe_block(stmts, tail)))
+        Ok(Some(block_expr(stmts, tail)))
     }
 
     pub(super) fn lower_fence(

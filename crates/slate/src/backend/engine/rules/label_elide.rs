@@ -22,7 +22,6 @@ fn reaches_label_end(arena: &Arena, container: NodeId, label: &Label) -> bool {
             | NodeKind::Match { .. }
             | NodeKind::Scope { .. }
             | NodeKind::LabeledBlock { .. }
-            | NodeKind::Unsafe { tail: None, .. }
             | NodeKind::Block { tail: None, .. }
     ) {
         return false;
@@ -53,7 +52,6 @@ fn enclosing_loop(arena: &Arena, id: NodeId) -> Option<NodeId> {
             NodeKind::If { .. }
             | NodeKind::Match { .. }
             | NodeKind::Scope { .. }
-            | NodeKind::Unsafe { tail: None, .. }
             | NodeKind::Block { tail: None, .. } => current = arena.parent(current)?,
             _ => return None,
         }

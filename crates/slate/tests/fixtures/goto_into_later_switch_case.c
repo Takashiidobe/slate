@@ -68,7 +68,7 @@ int main() {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         return 200;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     return 100;
+// CHECK-NEXT:     100
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

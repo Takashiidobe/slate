@@ -1,8 +1,33 @@
 use super::rules::walk::{child_exprs, child_exprs_mut};
-use super::unsafe_marks::needs_unsafe;
 use crate::backend::rust_ast::{
-    AsmOperand, Block, Expr, ImplItem, Item, Program, RustValue, Stmt, UnaryOp,
+    AsmOperand, AtomicPlace, Block, Expr, ImplItem, Item, Pointee, Program, RustValue, Stmt,
+    UnaryOp,
 };
+
+fn needs_unsafe(expr: &Expr) -> bool {
+    match expr {
+        Expr::Unary {
+            op: UnaryOp::Deref(Pointee::Raw),
+            ..
+        }
+        | Expr::Transmute { .. }
+        | Expr::CopyNonoverlapping { .. }
+        | Expr::PtrCopy { .. }
+        | Expr::WriteBytes { .. } => true,
+        Expr::Var { unsafe_, .. }
+        | Expr::Call { unsafe_, .. }
+        | Expr::MethodCall { unsafe_, .. }
+        | Expr::MethodCallGeneric { unsafe_, .. } => unsafe_.0,
+        Expr::Field { union, .. } => union.0,
+        Expr::AtomicRef { place, .. }
+        | Expr::AtomicLoad { place, .. }
+        | Expr::AtomicStore { place, .. }
+        | Expr::AtomicFetch { place, .. }
+        | Expr::AtomicSwap { place, .. }
+        | Expr::AtomicCompareExchange { place, .. } => matches!(place, AtomicPlace::Ptr(_)),
+        _ => false,
+    }
+}
 
 pub(super) fn place(program: &mut Program) {
     for item in &mut program.items {
@@ -40,7 +65,7 @@ fn place_stmts(stmts: &mut Vec<Stmt>, covered: bool) {
     for stmt in std::mem::take(stmts) {
         scoped_last = false;
         match stmt {
-            Stmt::Unsafe { mut body } => {
+            Stmt::Unsafe { mut body } | Stmt::Block(mut body) if !body.stmts.is_empty() => {
                 place_block(&mut body, covered);
                 if body.tail.is_none() && !has_let(&body.stmts) {
                     out.extend(body.stmts);

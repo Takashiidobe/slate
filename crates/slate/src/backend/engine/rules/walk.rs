@@ -444,9 +444,7 @@ pub(super) fn visit_kind_exprs(kind: &NodeKind, mut f: impl FnMut(&Expr)) {
         }
         NodeKind::Expr(expr) => f(expr),
         NodeKind::Return(expr) => expr.as_ref().into_iter().for_each(&mut f),
-        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => {
-            tail.as_deref().into_iter().for_each(&mut f)
-        }
+        NodeKind::Block { tail, .. } => tail.as_deref().into_iter().for_each(&mut f),
         NodeKind::While { cond, tail, .. } => {
             f(cond);
             tail.as_deref().into_iter().for_each(&mut f);
@@ -482,9 +480,7 @@ pub(super) fn visit_kind_exprs_mut(kind: &mut NodeKind, mut f: impl FnMut(&mut E
         }
         NodeKind::Expr(expr) => f(expr),
         NodeKind::Return(expr) => expr.as_mut().into_iter().for_each(&mut f),
-        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => {
-            tail.as_deref_mut().into_iter().for_each(&mut f)
-        }
+        NodeKind::Block { tail, .. } => tail.as_deref_mut().into_iter().for_each(&mut f),
         NodeKind::While { cond, tail, .. } => {
             f(cond);
             tail.as_deref_mut().into_iter().for_each(&mut f);

@@ -132,7 +132,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_places.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_places: 43 items, 16 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_places: 39 items, 14 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:state: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 15 function-like, 15 lifted at least once (expansions counted per distinct compile)
@@ -200,13 +200,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(unix)]
-// CHECK-NEXT: macro_rules! SHOW_COUNT__2 {
-// CHECK-NEXT:     ($s:expr) => {
-// CHECK-NEXT:         println!("{}", $s.count);
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: mod __slate_bits {
 // CHECK-NEXT:     #[bitfields::bitfield(u8, c_names = true, new = false, from_into_bits = false, from_traits = false, default = false, debug = false, builder = false, bit_ops = false)]
 // CHECK-NEXT:     pub struct __SlateBits0U0 {
@@ -261,15 +254,6 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! SHOW_COUNT {
-// CHECK-NEXT:     ($s:expr) => {
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), $s.count) };
-// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: macro_rules! SHOW_COUNT__2 {
 // CHECK-NEXT:     ($s:expr) => {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), $s.count) };
@@ -373,21 +357,21 @@ int main(void) {
 // CHECK-NEXT:     PUSH!(stack.0, top, 5i32);
 // CHECK-NEXT:     PUSH!(stack.0, top, 6i32);
 // CHECK-NEXT:     pushes(stack.0.as_mut_slice(), &mut top);
-// CHECK-NEXT:     SET_COUNT__2!(s);
-// CHECK-NEXT:     SHOW_COUNT__2!(s);
+// CHECK-NEXT:     SET_COUNT!(s);
+// CHECK-NEXT:     SHOW_COUNT!(s);
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         SHOW_COUNT!(*ps);
 // CHECK-NEXT:         SET_COUNT!(*ps);
-// CHECK-NEXT:         INC__2!((*ps).count);
+// CHECK-NEXT:         INC!((*ps).count);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     INC!(array[index as usize]);
 // CHECK-NEXT:     INC!(s.bits[2]);
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { (*ps).bits.as_mut_ptr() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] += 1;
-// CHECK-NEXT:         INC__2!(global);
+// CHECK-NEXT:         INC!(global);
 // CHECK-NEXT:         SET_COUNT!(shared);
-// CHECK-NEXT:         INC__2!(shared.bits[1]);
+// CHECK-NEXT:         INC!(shared.bits[1]);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     THROUGH!(through);
 // CHECK-NEXT:     ADDRESS_ONLY!(ro);
@@ -577,12 +561,6 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! INC__2 {
-// CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         $x = ($x) + 1;
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! NESTED_INC {
 // CHECK-NEXT:     ($x:expr) => {
 // CHECK-NEXT:         INC!($x);
@@ -606,12 +584,6 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SET_COUNT {
-// CHECK-NEXT:     ($s:expr) => {
-// CHECK-NEXT:         $s.count = 3;
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! SET_COUNT__2 {
 // CHECK-NEXT:     ($s:expr) => {
 // CHECK-NEXT:         $s.count = 3;
 // CHECK-NEXT:     };

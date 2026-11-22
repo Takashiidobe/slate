@@ -68,9 +68,7 @@ fn kind_only_deref_uses(kind: &NodeKind, name: Ident) -> bool {
         NodeKind::InlineAsm(_) => false,
         NodeKind::Expr(expr) => expr_only_deref(expr, name),
         NodeKind::Return(expr) => expr.as_ref().is_none_or(|e| expr_only_deref(e, name)),
-        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => {
-            tail.as_deref().is_none_or(|e| expr_only_deref(e, name))
-        }
+        NodeKind::Block { tail, .. } => tail.as_deref().is_none_or(|e| expr_only_deref(e, name)),
         NodeKind::While { cond, tail, .. } => {
             expr_only_deref(cond, name) && tail.as_deref().is_none_or(|e| expr_only_deref(e, name))
         }
@@ -243,7 +241,7 @@ fn kind_own_substitute_var(kind: &mut NodeKind, name: &str, replacement: &Expr) 
         NodeKind::Return(expr) => expr
             .as_mut()
             .is_some_and(|e| e.substitute_var(name, replacement)),
-        NodeKind::Unsafe { tail, .. } | NodeKind::Block { tail, .. } => tail
+        NodeKind::Block { tail, .. } => tail
             .as_mut()
             .is_some_and(|t| t.substitute_var(name, replacement)),
         NodeKind::While { cond, tail, .. } => {

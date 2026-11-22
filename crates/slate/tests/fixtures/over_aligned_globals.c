@@ -151,16 +151,13 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         counter.0 += 10;
 // CHECK-NEXT:         values.0[1] = 50;
+// CHECK-NEXT:         *values_tail = (*values_tail).wrapping_add(600);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut u32 = unsafe { values_tail };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = (*[[V_0]]).wrapping_add(600);
-// CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut f64 = unsafe {
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut f64 = unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!(weights.0) as *mut f64).add(0)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] *= 4.0f64;
+// CHECK-NEXT:         *[[V_0]] *= 4.0f64;
 // CHECK-NEXT:         origin.0.y = 80;
 // CHECK-NEXT:         (*origin_ptr).x += 1;
 // CHECK-NEXT:         page.0[3] = 112;
@@ -171,19 +168,10 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {}",
 // CHECK-NEXT:         aligned(unsafe { core::ptr::addr_of_mut!(counter.0) as *const () }, 64u64),
-// CHECK-NEXT:         aligned(
-// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(values.0) as *mut u32) as *const () },
-// CHECK-NEXT:             32u64,
-// CHECK-NEXT:         ),
-// CHECK-NEXT:         aligned(
-// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(weights.0) as *mut f64) as *const () },
-// CHECK-NEXT:             128u64,
-// CHECK-NEXT:         ),
+// CHECK-NEXT:         aligned(unsafe { core::ptr::addr_of_mut!(values.0) as *const () }, 32u64),
+// CHECK-NEXT:         aligned(unsafe { core::ptr::addr_of_mut!(weights.0) as *const () }, 128u64),
 // CHECK-NEXT:         aligned(unsafe { core::ptr::addr_of_mut!(origin.0) as *const () }, 16u64),
-// CHECK-NEXT:         aligned(
-// CHECK-NEXT:             unsafe { (core::ptr::addr_of_mut!(page.0) as *mut i8) as *const () },
-// CHECK-NEXT:             4096u64,
-// CHECK-NEXT:         ),
+// CHECK-NEXT:         aligned(unsafe { core::ptr::addr_of_mut!(page.0) as *const () }, 4096u64),
 // CHECK-NEXT:         aligned(unsafe { core::ptr::addr_of_mut!(small.0) as *const () }, 16u64)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
@@ -193,7 +181,7 @@ int main(void) {
 // CHECK-NEXT:             values.0[0],
 // CHECK-NEXT:             values.0[1],
 // CHECK-NEXT:             values.0[2],
-// CHECK-NEXT:             total((core::ptr::addr_of_mut!(values.0) as *mut u32) as *const u32, 3i32),
+// CHECK-NEXT:             total(core::ptr::addr_of_mut!(values.0) as *const u32, 3i32),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

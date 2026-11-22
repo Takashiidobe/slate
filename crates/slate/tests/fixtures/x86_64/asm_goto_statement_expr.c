@@ -24,35 +24,14 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i32;
 // CHECK-NEXT:     let mut result: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut [[V_1:__v[0-9]+]]: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut [[RESULT_0:result_[0-9]+]]: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     {
-// CHECK-NEXT:         {
-// CHECK-NEXT:             [[RESULT_0]] = 0;
-// CHECK-NEXT:             let mut __slate_asm_target: bool = false;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::arch::asm!(
-// CHECK-NEXT:                     "testl {0:e}, {0:e}\n\tjz {1}",
-// CHECK-NEXT:                     in(reg) 0i32 as u32,
-// CHECK-NEXT:                     label {
-// CHECK-NEXT:                         __slate_asm_target = true;
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     options(nostack, att_syntax),
-// CHECK-NEXT:                 );
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if __slate_asm_target {
-// CHECK-NEXT:                 [[RESULT_0]] = 13;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 [[RESULT_0]] = 11;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:         [[V_0]] = [[RESULT_0]];
-// CHECK-NEXT:         result = 0;
+// CHECK-NEXT:         [[RESULT_0]] = 0;
 // CHECK-NEXT:         let mut __slate_asm_target: bool = false;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::arch::asm!(
 // CHECK-NEXT:                 "testl {0:e}, {0:e}\n\tjz {1}",
-// CHECK-NEXT:                 in(reg) 9i32 as u32,
+// CHECK-NEXT:                 in(reg) 0i32 as u32,
 // CHECK-NEXT:                 label {
 // CHECK-NEXT:                     __slate_asm_target = true;
 // CHECK-NEXT:                 },
@@ -60,13 +39,30 @@ int main(void) {
 // CHECK-NEXT:             );
 // CHECK-NEXT:         }
 // CHECK-NEXT:         if __slate_asm_target {
-// CHECK-NEXT:             result = 13;
+// CHECK-NEXT:             [[RESULT_0]] = 13;
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             result = 11;
+// CHECK-NEXT:             [[RESULT_0]] = 11;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         [[V_1]] = result;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     println!("{} {}", [[V_0]], [[V_1]]);
+// CHECK-NEXT:     [[V_0]] = [[RESULT_0]];
+// CHECK-NEXT:     result = 0;
+// CHECK-NEXT:     let mut __slate_asm_target: bool = false;
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "testl {0:e}, {0:e}\n\tjz {1}",
+// CHECK-NEXT:             in(reg) 9i32 as u32,
+// CHECK-NEXT:             label {
+// CHECK-NEXT:                 __slate_asm_target = true;
+// CHECK-NEXT:             },
+// CHECK-NEXT:             options(nostack, att_syntax),
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
+// CHECK-NEXT:     if __slate_asm_target {
+// CHECK-NEXT:         result = 13;
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         result = 11;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     println!("{} {}", [[V_0]], result);
 // CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

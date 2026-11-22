@@ -224,7 +224,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! TEMP {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = ($a) as i32;
+// CHECK-NEXT:         let temp: i32 = $a;
 // CHECK-NEXT:         println!("{}", temp + 1);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -232,7 +232,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! TEMP__2 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = $a;
+// CHECK-NEXT:         let temp: i32 = ($a) as i32;
 // CHECK-NEXT:         println!("{}", temp + 1);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -321,7 +321,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! TEMP {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = ($a) as i32;
+// CHECK-NEXT:         let temp: i32 = $a;
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), temp + 1) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -331,7 +331,7 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! TEMP__2 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let temp: i32 = $a;
+// CHECK-NEXT:         let temp: i32 = ($a) as i32;
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), temp + 1) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -403,8 +403,8 @@ int main(void) {
 // CHECK-NEXT:     SHOW!(byte);
 // CHECK-NEXT:     SHOW!(wide >> 30i32);
 // CHECK-NEXT:     WIDEN__3!(local);
-// CHECK-NEXT:     WIDEN!(wide);
-// CHECK-NEXT:     WIDEN__2!(byte);
+// CHECK-NEXT:     WIDEN__2!(wide);
+// CHECK-NEXT:     WIDEN!(byte);
 // CHECK-NEXT:     TWICE!(next());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         AFTER!(calls);
@@ -412,8 +412,8 @@ int main(void) {
 // CHECK-NEXT:     let moved: i32 = unsafe { calls };
 // CHECK-NEXT:     AFTER!(moved);
 // CHECK-NEXT:     UNUSED!(local);
-// CHECK-NEXT:     TEMP__2!(local);
-// CHECK-NEXT:     TEMP!(byte);
+// CHECK-NEXT:     TEMP!(local);
+// CHECK-NEXT:     TEMP__2!(byte);
 // CHECK-NEXT:     OUTER!(local, wide > 0);
 // CHECK-NEXT:     OUTER!(local + 2, 3i32);
 // CHECK-NEXT:     BUMP!(core::ptr::addr_of_mut!(s));
@@ -473,7 +473,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + $a;
+// CHECK-NEXT:             total = __v + ((($a) as i32) as c_long);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -482,7 +482,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + ((($a) as i32) as c_long);
+// CHECK-NEXT:             total = __v + $a;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

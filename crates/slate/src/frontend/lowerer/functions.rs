@@ -793,17 +793,7 @@ impl FunctionLowerer<'_, '_> {
         if let Some(ir::Fallthrough::Return(value)) = &function.fallthrough
             && !ends_in_return
         {
-            let returned = Stmt::Return(Some(self.lower_value(value)?));
-            statements.push(if control_flow::needs_dispatch(body) {
-                Stmt::Unsafe {
-                    body: rust::Block {
-                        stmts: vec![returned],
-                        tail: None,
-                    },
-                }
-            } else {
-                returned
-            });
+            statements.push(Stmt::Return(Some(self.lower_value(value)?)));
         }
         let target_feature = self.tables.target_feature_attr(function)?;
         let inline = match function.semantics.inlining {

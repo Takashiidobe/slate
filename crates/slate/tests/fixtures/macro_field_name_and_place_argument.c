@@ -85,8 +85,8 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of!(source.0) as *const [u64; 3]) as *const ())
-// CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((core::ptr::addr_of!(source.0) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             (((*[[V_0]]).as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             ((core::mem::size_of::<{{\[\[}}u64; 3]; 2]>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
@@ -101,8 +101,8 @@ int main(void) {
 // CHECK-NEXT:     [[V_1]] = __Fp;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of!(source.0) as *const [u64; 3]) as *const ())
-// CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((core::ptr::addr_of!(source.0) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             (((*[[V_1]]).as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
 // CHECK-NEXT:             ((core::mem::size_of::<{{\[\[}}u64; 3]; 2]>() as u64) as usize) as usize,
 // CHECK-NEXT:         )

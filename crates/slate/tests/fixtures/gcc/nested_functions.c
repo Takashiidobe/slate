@@ -239,7 +239,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum_vla(mut n: i32) -> i32 {
-// CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: u64 = n as u64;
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: u64 = n as u64;
 // CHECK-NEXT:     let mut data: Vec<i32> = {
 // CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_2]] as usize);
 // CHECK-NEXT:         unsafe { __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_2]] as usize) };

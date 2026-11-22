@@ -168,18 +168,12 @@ int main(void) {
 // CHECK-NEXT: };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump(flags: *mut Flags) {
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]] = (unsafe { (*flags).__slate_bits_0.__get_a() }) + 3;
-// CHECK-NEXT:         unsafe { (*flags).__slate_bits_0.__set_a([[T_0]]) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]] = (unsafe { (*flags).__slate_bits_2.__get_wide() }) + 1;
-// CHECK-NEXT:         unsafe { (*flags).__slate_bits_2.__set_wide([[T_1]]) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]] = (unsafe { (*flags).__slate_bits_1.__get__flags2() }) * 2;
-// CHECK-NEXT:         unsafe { (*flags).__slate_bits_1.__set__flags2([[T_2]]) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let [[T_0]] = (unsafe { (*flags).__slate_bits_0.__get_a() }) + 3;
+// CHECK-NEXT:     unsafe { (*flags).__slate_bits_0.__set_a([[T_0]]) };
+// CHECK-NEXT:     let [[T_1:__t[0-9]+]] = (unsafe { (*flags).__slate_bits_2.__get_wide() }) + 1;
+// CHECK-NEXT:     unsafe { (*flags).__slate_bits_2.__set_wide([[T_1]]) };
+// CHECK-NEXT:     let [[T_2:__t[0-9]+]] = (unsafe { (*flags).__slate_bits_1.__get__flags2() }) * 2;
+// CHECK-NEXT:     unsafe { (*flags).__slate_bits_1.__set__flags2([[T_2]]) };
 // CHECK-NEXT:     let [[T_3:__t[0-9]+]] = !unsafe { (*flags).__slate_bits_0.__get_ready() };
 // CHECK-NEXT:     unsafe { (*flags).__slate_bits_0.__set_ready([[T_3]]) };
 // CHECK-NEXT: }

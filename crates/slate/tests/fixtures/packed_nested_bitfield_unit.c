@@ -132,20 +132,18 @@ int main(void) {
 // CHECK-NEXT:             )
 // CHECK-NEXT:             .__get_flags() as i32) as u32
 // CHECK-NEXT:     }) | bit;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_1]] = unsafe {
-// CHECK-NEXT:             core::ptr::read_unaligned(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!((*a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_1]].__set_flags([[T_0]]);
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::ptr::write_unaligned(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!((*a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
-// CHECK-NEXT:                 [[T_1]],
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let mut [[T_1]] = unsafe {
+// CHECK-NEXT:         core::ptr::read_unaligned(
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     [[T_1]].__set_flags([[T_0]]);
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::ptr::write_unaligned(
+// CHECK-NEXT:             core::ptr::addr_of_mut!((*a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
+// CHECK-NEXT:             [[T_1]],
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let [[T_2]] = ((unsafe {
 // CHECK-NEXT:         core::ptr::read_unaligned(
 // CHECK-NEXT:                 core::ptr::addr_of!((*a).[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
@@ -178,20 +176,18 @@ int main(void) {
 // CHECK-NEXT:     mark(unsafe { (core::ptr::addr_of_mut!(table.0) as *mut alt).add(0) }, 4u32);
 // CHECK-NEXT:     let mut local: alt = unsafe { table.0[1] };
 // CHECK-NEXT:     let [[T_0]] = 21u32;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let mut [[T_1]] = unsafe {
-// CHECK-NEXT:             core::ptr::read_unaligned(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(local.[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         [[T_1]].__set_flags([[T_0]]);
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::ptr::write_unaligned(
-// CHECK-NEXT:                 core::ptr::addr_of_mut!(local.[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
-// CHECK-NEXT:                 [[T_1]],
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     let mut [[T_1]] = unsafe {
+// CHECK-NEXT:         core::ptr::read_unaligned(
+// CHECK-NEXT:             core::ptr::addr_of_mut!(local.[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     [[T_1]].__set_flags([[T_0]]);
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::ptr::write_unaligned(
+// CHECK-NEXT:             core::ptr::addr_of_mut!(local.[[SLATE_ANON_0]].[[SLATE_ANON_1]].__slate_bits_0),
+// CHECK-NEXT:             [[T_1]],
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

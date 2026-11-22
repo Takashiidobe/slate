@@ -53,9 +53,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let start: *mut () = unsafe {
-// CHECK-NEXT:         (core::ptr::addr_of_mut!(bytes.0) as *mut u8) as *mut ()
-// CHECK-NEXT:     };
+// CHECK-NEXT:     let start: *mut () = unsafe { core::ptr::addr_of_mut!(bytes.0) as *mut () };
 // CHECK-NEXT:     let end: *mut () = unsafe {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!(bytes.0) as *mut u8)
 // CHECK-NEXT:             .add((core::mem::size_of::<[u8; 16]>() as u64) as usize) as *mut ()

@@ -157,14 +157,7 @@ fn printf_call_args(expr: &Expr) -> Option<&[Expr]> {
 }
 
 fn is_printf_stmt(stmt: &Stmt, printf_names: &HashSet<String>) -> bool {
-    let Stmt::Expr(Expr::Unsafe(block)) = stmt else {
-        return false;
-    };
-    block.stmts.is_empty()
-        && block
-            .tail
-            .as_deref()
-            .is_some_and(|tail| is_stdout_writer_call(tail, printf_names))
+    matches!(stmt, Stmt::Expr(call) if is_stdout_writer_call(call, printf_names))
 }
 
 fn is_writer_value(expr: &Expr, writer_names: &HashSet<String>) -> bool {
@@ -281,10 +274,7 @@ fn fflush_all_stmt() -> Stmt {
         args: vec![Expr::Value(RustValue::NullPtr)],
         unsafe_: Unsafe(true),
     };
-    Stmt::Expr(Expr::Unsafe(Box::new(Block {
-        stmts: Vec::new(),
-        tail: Some(Box::new(call)),
-    })))
+    Stmt::Expr(call)
 }
 
 fn contains_mut_borrow(expr: &Expr) -> bool {
@@ -314,13 +304,10 @@ fn needs_hoist(expr: &Expr) -> bool {
 }
 
 fn try_convert(stmt: &Stmt) -> Option<Vec<Stmt>> {
-    let Stmt::Expr(Expr::Unsafe(block)) = stmt else {
+    let Stmt::Expr(call) = stmt else {
         return None;
     };
-    if !block.stmts.is_empty() {
-        return None;
-    }
-    let args = printf_call_args(block.tail.as_deref()?)?;
+    let args = printf_call_args(call)?;
     let plan = decimal_format_plan(args)?;
     let mut hoisted = Vec::new();
     let mut macro_args = vec![Expr::Str(plan.format)];

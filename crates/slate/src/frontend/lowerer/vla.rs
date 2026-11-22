@@ -217,28 +217,23 @@ impl FunctionLowerer<'_, '_> {
                             unsafe_: rust::Unsafe(false),
                         }),
                     },
-                    Stmt::Unsafe {
-                        body: rust::Block {
-                            stmts: vec![Stmt::Expr(Expr::MethodCall {
-                                recv: Box::new(Expr::MethodCall {
-                                    recv: Box::new(Expr::var(buffer.into())),
-                                    method: "as_mut_ptr".into(),
-                                    args: Vec::new(),
-                                    unsafe_: rust::Unsafe(false),
-                                }),
-                                method: "write_bytes".into(),
-                                args: vec![
-                                    Expr::Value(rust::RustValue::TypedUInt(
-                                        u128::from(fill_byte),
-                                        Prim::U8,
-                                    )),
-                                    count,
-                                ],
-                                unsafe_: rust::Unsafe(true),
-                            })],
-                            tail: None,
-                        },
-                    },
+                    Stmt::Expr(Expr::MethodCall {
+                        recv: Box::new(Expr::MethodCall {
+                            recv: Box::new(Expr::var(buffer.into())),
+                            method: "as_mut_ptr".into(),
+                            args: Vec::new(),
+                            unsafe_: rust::Unsafe(false),
+                        }),
+                        method: "write_bytes".into(),
+                        args: vec![
+                            Expr::Value(rust::RustValue::TypedUInt(
+                                u128::from(fill_byte),
+                                Prim::U8,
+                            )),
+                            count,
+                        ],
+                        unsafe_: rust::Unsafe(true),
+                    }),
                 ],
                 tail: Some(Box::new(Expr::var(buffer.into()))),
             })),

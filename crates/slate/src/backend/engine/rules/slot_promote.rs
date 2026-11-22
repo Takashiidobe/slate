@@ -3,7 +3,7 @@ use super::remove_mut::invariant_within;
 use super::walk;
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{Block, Expr, Ident, LocalOrigin, Type, UnaryOp, Unsafe};
+use crate::backend::rust_ast::{Expr, Ident, LocalOrigin, Type, UnaryOp, Unsafe};
 use crate::function_identity::CallBinding;
 
 struct Slot {
@@ -151,19 +151,16 @@ fn replace_derefs(expr: &mut Expr, slot: Ident, storage: Ident) -> bool {
 }
 
 fn zeroed() -> Expr {
-    Expr::Unsafe(Box::new(Block {
-        stmts: Vec::new(),
-        tail: Some(Box::new(Expr::Call {
-            func: Box::new(Expr::var("core::mem::zeroed".into())),
-            args: Vec::new(),
-            binding: CallBinding::Generated,
-            unsafe_: Unsafe(true),
-        })),
-    }))
+    Expr::Call {
+        func: Box::new(Expr::var("core::mem::zeroed".into())),
+        args: Vec::new(),
+        binding: CallBinding::Generated,
+        unsafe_: Unsafe(true),
+    }
 }
 
 fn is_zeroed(expr: &Expr) -> bool {
-    matches!(expr, Expr::Unsafe(block) if block.stmts.is_empty() && block.tail.as_deref().is_some_and(|tail| is_call_to(tail, "core::mem::zeroed")))
+    is_call_to(expr, "core::mem::zeroed")
 }
 
 fn takes_address(expr: &Expr, name: Ident) -> bool {

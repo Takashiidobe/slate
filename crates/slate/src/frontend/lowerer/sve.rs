@@ -186,7 +186,13 @@ pub(super) fn sve_convert(
             })),
         }
     };
-    Ok(Expr::Unsafe(Box::new(body)))
+    Ok(match body {
+        rust::Block {
+            stmts,
+            tail: Some(tail),
+        } if stmts.is_empty() => *tail,
+        body => Expr::Block(Box::new(body)),
+    })
 }
 
 impl FunctionLowerer<'_, '_> {

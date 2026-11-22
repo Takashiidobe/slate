@@ -152,10 +152,10 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __movsb(
 // I686-PC-WINDOWS-MSVC-NEXT:         __movsb(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             out.0.as_mut_ptr() as *mut u8,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes.0) as *mut u8) as *const u8) as *const u8,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(bytes.0) as *const u8) as *const u8,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (n as u64) as usize,
 // I686-PC-WINDOWS-MSVC-NEXT:             out.as_mut_ptr() as *mut u8,
-// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes) as *mut u8) as *const u8) as *const u8,
+// I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(bytes) as *const u8) as *const u8,
 // I686-PC-WINDOWS-MSVC-NEXT:             n as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // I686-PC-WINDOWS-MSVC-NEXT:         )
@@ -176,10 +176,10 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __movsb(
 // I686-PC-WINDOWS-MSVC-NEXT:         __movsb(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(bytes.0) as *mut u8).add(2) as *mut u8,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes.0) as *mut u8) as *const u8) as *const u8,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(bytes.0) as *const u8) as *const u8,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (count(10u32) as u64) as usize,
 // I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(bytes) as *mut u8).add(2) as *mut u8,
-// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(bytes) as *mut u8) as *const u8) as *const u8,
+// I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(bytes) as *const u8) as *const u8,
 // I686-PC-WINDOWS-MSVC-NEXT:             count(10u32) as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // I686-PC-WINDOWS-MSVC-NEXT:         )
@@ -228,10 +228,10 @@ int main(void) { return 0; }
 // X86_64-PC-WINDOWS-MSVC-NEXT:         __movsw(
 // I686-PC-WINDOWS-MSVC-NEXT:         __movsw(
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(words.0) as *mut u16).add(1) as *mut u16,
-// X86_64-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(words.0) as *mut u16) as *const u16) as *const u16,
+// X86_64-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(words.0) as *const u16) as *const u16,
 // X86_64-PC-WINDOWS-MSVC-NEXT:             (count(6u32) as u64) as usize,
 // I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(words) as *mut u16).add(1) as *mut u16,
-// I686-PC-WINDOWS-MSVC-NEXT:             ((core::ptr::addr_of_mut!(words) as *mut u16) as *const u16) as *const u16,
+// I686-PC-WINDOWS-MSVC-NEXT:             (core::ptr::addr_of_mut!(words) as *const u16) as *const u16,
 // I686-PC-WINDOWS-MSVC-NEXT:             count(6u32) as usize,
 // X86_64-PC-WINDOWS-MSVC-NEXT:         )
 // I686-PC-WINDOWS-MSVC-NEXT:         )

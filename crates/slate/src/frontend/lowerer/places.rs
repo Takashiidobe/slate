@@ -289,17 +289,12 @@ impl FunctionLowerer<'_, '_> {
         if !self.reduced_alignment_access(place) || matches!(place.kind, PlaceKind::Lane { .. }) {
             return Ok(None);
         }
-        Ok(Some(Stmt::Unsafe {
-            body: rust::Block {
-                stmts: vec![Stmt::Expr(Expr::MethodCall {
-                    recv: Box::new(self.lower_address(place, true)?),
-                    method: "write_unaligned".into(),
-                    args: vec![value.clone()],
-                    unsafe_: rust::Unsafe(true),
-                })],
-                tail: None,
-            },
-        }))
+        Ok(Some(Stmt::Expr(Expr::MethodCall {
+            recv: Box::new(self.lower_address(place, true)?),
+            method: "write_unaligned".into(),
+            args: vec![value.clone()],
+            unsafe_: rust::Unsafe(true),
+        })))
     }
 
     fn unaligned_lane<'p>(
@@ -361,52 +356,50 @@ impl FunctionLowerer<'_, '_> {
         let operand = self.next_temp();
         let index = self.lower_index(index)?;
         let pointer_var = || Expr::var(pointer.as_str().into());
-        Ok(Some(Stmt::Unsafe {
-            body: rust::Block {
-                stmts: vec![
-                    Stmt::Let {
-                        origin: rust::LocalOrigin::Synthetic,
-                        name: operand.clone(),
-                        mutable: false,
-                        ty: None,
-                        init: Some(value.clone()),
-                    },
-                    Stmt::Let {
-                        origin: rust::LocalOrigin::Synthetic,
-                        name: pointer.clone(),
-                        mutable: false,
-                        ty: None,
-                        init: Some(self.lower_address(base, true)?),
-                    },
-                    Stmt::Let {
-                        origin: rust::LocalOrigin::Synthetic,
-                        name: vector.clone(),
-                        mutable: true,
-                        ty: None,
-                        init: Some(Expr::MethodCall {
-                            recv: Box::new(pointer_var()),
-                            method: "read_unaligned".into(),
-                            args: Vec::new(),
-                            unsafe_: rust::Unsafe(true),
-                        }),
-                    },
-                    Stmt::Assign {
-                        target: Expr::Index {
-                            base: Box::new(Expr::var(vector.as_str().into())),
-                            index: Box::new(index),
-                        },
-                        value: Expr::var(operand.as_str().into()),
-                    },
-                    Stmt::Expr(Expr::MethodCall {
+        Ok(Some(Stmt::Block(rust::Block {
+            stmts: vec![
+                Stmt::Let {
+                    origin: rust::LocalOrigin::Synthetic,
+                    name: operand.clone(),
+                    mutable: false,
+                    ty: None,
+                    init: Some(value.clone()),
+                },
+                Stmt::Let {
+                    origin: rust::LocalOrigin::Synthetic,
+                    name: pointer.clone(),
+                    mutable: false,
+                    ty: None,
+                    init: Some(self.lower_address(base, true)?),
+                },
+                Stmt::Let {
+                    origin: rust::LocalOrigin::Synthetic,
+                    name: vector.clone(),
+                    mutable: true,
+                    ty: None,
+                    init: Some(Expr::MethodCall {
                         recv: Box::new(pointer_var()),
-                        method: "write_unaligned".into(),
-                        args: vec![Expr::var(vector.as_str().into())],
+                        method: "read_unaligned".into(),
+                        args: Vec::new(),
                         unsafe_: rust::Unsafe(true),
                     }),
-                ],
-                tail: None,
-            },
-        }))
+                },
+                Stmt::Assign {
+                    target: Expr::Index {
+                        base: Box::new(Expr::var(vector.as_str().into())),
+                        index: Box::new(index),
+                    },
+                    value: Expr::var(operand.as_str().into()),
+                },
+                Stmt::Expr(Expr::MethodCall {
+                    recv: Box::new(pointer_var()),
+                    method: "write_unaligned".into(),
+                    args: vec![Expr::var(vector.as_str().into())],
+                    unsafe_: rust::Unsafe(true),
+                }),
+            ],
+            tail: None,
+        })))
     }
 
     pub(super) fn erased_ancestor<'p>(
@@ -846,37 +839,30 @@ impl FunctionLowerer<'_, '_> {
                     ty: None,
                     init: Some(value),
                 },
-                Stmt::Unsafe {
-                    body: rust::Block {
-                        stmts: vec![
-                            Stmt::Let {
-                                origin: rust::LocalOrigin::Synthetic,
-                                name: unit.clone(),
-                                mutable: true,
-                                ty: None,
-                                init: Some(Expr::Call {
-                                    func: Box::new(Expr::var(read.into())),
-                                    args: vec![address.clone()],
-                                    binding: CallBinding::Generated,
-                                    unsafe_: rust::Unsafe(true),
-                                }),
-                            },
-                            Stmt::Expr(Expr::MethodCall {
-                                recv: Box::new(Expr::var(unit.as_str().into())),
-                                method: setter,
-                                args: vec![Expr::var(operand.into())],
-                                unsafe_: rust::Unsafe(false),
-                            }),
-                            Stmt::Expr(Expr::Call {
-                                func: Box::new(Expr::var(write.into())),
-                                args: vec![address, Expr::var(unit.into())],
-                                binding: CallBinding::Generated,
-                                unsafe_: rust::Unsafe(true),
-                            }),
-                        ],
-                        tail: None,
-                    },
+                Stmt::Let {
+                    origin: rust::LocalOrigin::Synthetic,
+                    name: unit.clone(),
+                    mutable: true,
+                    ty: None,
+                    init: Some(Expr::Call {
+                        func: Box::new(Expr::var(read.into())),
+                        args: vec![address.clone()],
+                        binding: CallBinding::Generated,
+                        unsafe_: rust::Unsafe(true),
+                    }),
                 },
+                Stmt::Expr(Expr::MethodCall {
+                    recv: Box::new(Expr::var(unit.as_str().into())),
+                    method: setter,
+                    args: vec![Expr::var(operand.into())],
+                    unsafe_: rust::Unsafe(false),
+                }),
+                Stmt::Expr(Expr::Call {
+                    func: Box::new(Expr::var(write.into())),
+                    args: vec![address, Expr::var(unit.into())],
+                    binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(true),
+                }),
             ],
         }))
     }

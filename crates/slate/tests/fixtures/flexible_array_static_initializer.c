@@ -163,9 +163,8 @@ int main(void) {
 // CHECK-NEXT:             c"%s %zu\n".as_ptr(),
 // CHECK-NEXT:             name_pointer,
 // CHECK-NEXT:             strlen(
-// CHECK-NEXT:                 ((core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(tail)
-// CHECK-NEXT:                     as *mut Tail)).name) as *mut i8) as *const i8)
-// CHECK-NEXT:                     as *const core::ffi::c_char,
+// CHECK-NEXT:                 (core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(tail)
+// CHECK-NEXT:                     as *mut Tail)).name) as *const i8) as *const core::ffi::c_char,
 // CHECK-NEXT:             ) as u64,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };

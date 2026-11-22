@@ -54,7 +54,7 @@ int main(void) {
 // CHECK-NEXT:         (!unsafe { (core::ptr::addr_of_mut!(*__ehdr_start) as *mut i8).is_null() }
 // CHECK-NEXT:             && (unsafe {
 // CHECK-NEXT:                 memcmp(
-// CHECK-NEXT:                     ((core::ptr::addr_of_mut!(*__ehdr_start) as *mut i8) as *const ())
+// CHECK-NEXT:                     (core::ptr::addr_of_mut!(*__ehdr_start) as *const ())
 // CHECK-NEXT:                         as *const core::ffi::c_void,
 // CHECK-NEXT:                     (b"\x7fELF\0".as_ptr() as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:                     4u64 as usize,

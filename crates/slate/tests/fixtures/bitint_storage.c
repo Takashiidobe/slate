@@ -266,10 +266,7 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     dump(
 // CHECK-NEXT:         c"global_pair".as_ptr(),
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (core::ptr::addr_of_mut!(global_pair.0)
-// CHECK-NEXT:                 as *mut bitint::BInt<128, 2, 16, bitint::A8>) as *const ()
-// CHECK-NEXT:         },
+// CHECK-NEXT:         unsafe { core::ptr::addr_of_mut!(global_pair.0) as *const () },
 // CHECK-NEXT:         32u64,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let truncated: i16 = (((unsafe { global_huge.to_u128() as u16 }) & 511) as i16) << 7

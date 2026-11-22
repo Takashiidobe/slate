@@ -95,8 +95,8 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d %d\n".as_ptr(),
-// CHECK-NEXT:                 EXPLICIT__2!(i) as i32,
-// CHECK-NEXT:                 EXPLICIT!(m) as i32,
+// CHECK-NEXT:                 EXPLICIT!(i) as i32,
+// CHECK-NEXT:                 EXPLICIT__2!(m) as i32,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
@@ -112,7 +112,7 @@ int main(void) {
 // CHECK-NEXT:             WHEN!(m != 0) as i32,
 // CHECK-NEXT:             WHEN!(!p.is_null()) as i32
 // CHECK-NEXT:         );
-// CHECK-NEXT:         println!("{} {}", EXPLICIT__2!(i) as i32, EXPLICIT!(m) as i32);
+// CHECK-NEXT:         println!("{} {}", EXPLICIT!(i) as i32, EXPLICIT__2!(m) as i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%d %ld\n".as_ptr(), TWICE__2!(i), TWICE!(m)) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

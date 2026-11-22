@@ -10,7 +10,6 @@ const KINDS: &[NodeKindTag] = &[
     NodeKindTag::CompoundAssign,
     NodeKindTag::Expr,
     NodeKindTag::Return,
-    NodeKindTag::Unsafe,
     NodeKindTag::Block,
     NodeKindTag::If,
     NodeKindTag::For,

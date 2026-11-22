@@ -2989,11 +2989,9 @@ impl FunctionLowerer<'_, '_> {
             kind: rust::AsmKind::Statement,
         }));
         prefix.extend(writebacks);
-        Ok(Stmt::Unsafe {
-            body: rust::Block {
-                stmts: prefix,
-                tail: None,
-            },
-        })
+        Ok(Stmt::Block(rust::Block {
+            stmts: prefix,
+            tail: None,
+        }))
     }
 }
