@@ -1,8 +1,8 @@
 use foldhash::{HashMap, HashSet};
 use slate_parser::ast::{NodeId, Span};
 use slate_parser::ir::{
-    AsmPiece, BindingId, Evaluation, Module, NestedFunction, Statement, Value, ValueKind, Visitor,
-    walk_body, walk_value,
+    AsmPiece, BindingId, Evaluation, Module, Place, PlaceKind, Statement, StorageDuration, Type,
+    Value, ValueKind, Variable, Visitor, walk_body, walk_value,
 };
 
 use super::inline_temporaries::{children, evaluations};
@@ -117,31 +117,41 @@ impl StructureGoto<'_> {
         if ahead + behind != total {
             return None;
         }
-        let end = backward.last().map(|last| label + last + 1);
-        if let Some(end) = end
-            && !movable(&body[label..end], &body[end..])
-        {
-            return None;
+        let mut label = label;
+        let mut end = backward.last().map(|last| label + last + 1);
+        let mut start = forward.first().copied();
+        let looped = match end {
+            Some(end) => Some(movable(&body[label..end], &body[end..])?),
+            None => None,
+        };
+        let blocked = match start {
+            Some(start) => Some(movable(&body[start..label], &body[label..])?),
+            None => None,
+        };
+        if let (Some(first), Some(hoisted)) = (start, &blocked) {
+            let (first, moved) = hoist(body, first, label, hoisted);
+            end = end.map(|end| end + moved - label);
+            label = moved;
+            start = Some(first);
         }
-        if let Some(&start) = forward.first()
-            && !movable(&body[start..label], &body[label..])
-        {
-            return None;
+        let block_end = label;
+        if let (Some(last), Some(hoisted)) = (end, &looped) {
+            let (first, last) = hoist(body, label, last, hoisted);
+            label = first;
+            end = Some(last);
         }
         self.gotos.remove(&id);
         if let Some(end) = end {
             self.wrap_loop(body, label, end, id, behind);
         }
-        let position = match forward.first() {
-            Some(&start) => {
-                self.wrap_block(body, start, label, id);
-                start + 1
+        let position = match start {
+            Some(start) => {
+                self.wrap_block(body, start, block_end, id);
+                self.revisit(&mut body[start]);
+                label - (block_end - start) + 1
             }
             None => label,
         };
-        if let Some(&start) = forward.first() {
-            self.revisit(&mut body[start]);
-        }
         if end.is_some() {
             self.revisit(&mut body[position]);
             return Some(position + 1);
@@ -507,37 +517,107 @@ fn retarget(statement: &mut Span<Statement>, label: BindingId, jump: &Statement)
     }
 }
 
-fn movable(range: &[Span<Statement>], rest: &[Span<Statement>]) -> bool {
-    let mut declared = HashSet::default();
+fn movable(range: &[Span<Statement>], rest: &[Span<Statement>]) -> Option<HashSet<BindingId>> {
+    let mut declared = HashMap::default();
     if !declarations(range, &mut declared) {
-        return false;
+        return None;
     }
     let mut switches = Switches::default();
     let mut range = range.to_vec();
     walk_body(&mut range, &mut switches);
     if switches.cases.difference(&switches.owned).next().is_some() {
-        return false;
+        return None;
     }
     let mut uses = Uses {
         declared: &declared,
-        used: false,
+        used: HashSet::default(),
     };
     let mut rest = rest.to_vec();
     walk_body(&mut rest, &mut uses);
-    !uses.used
+    uses.used
+        .iter()
+        .all(|id| declared.get(id).copied().unwrap_or(false))
+        .then_some(uses.used)
 }
 
-fn declarations(range: &[Span<Statement>], declared: &mut HashSet<BindingId>) -> bool {
+fn hoistable(variable: &Variable) -> bool {
+    if variable.storage != StorageDuration::Automatic {
+        return true;
+    }
+    !variable.is_const
+        && !variable.constexpr
+        && !variable.byref
+        && (variable.initializer.is_none()
+            || matches!(
+                variable.ty,
+                Type::Bool | Type::Numeric(_) | Type::Pointer { .. }
+            ))
+}
+
+fn hoist(
+    body: &mut Body,
+    start: usize,
+    end: usize,
+    hoisted: &HashSet<BindingId>,
+) -> (usize, usize) {
+    if hoisted.is_empty() {
+        return (start, end);
+    }
+    let mut declarations = Vec::new();
+    let range = extract(body.drain(start..end).collect(), hoisted, &mut declarations);
+    let (count, length) = (declarations.len(), range.len());
+    body.splice(start..start, declarations.into_iter().chain(range));
+    (start + count, start + count + length)
+}
+
+fn extract(range: Body, hoisted: &HashSet<BindingId>, declarations: &mut Body) -> Body {
+    let mut kept = Vec::with_capacity(range.len());
+    for mut statement in range {
+        match &mut statement.value {
+            Statement::Let(variable) if hoisted.contains(&variable.id) => {
+                if variable.storage == StorageDuration::Automatic
+                    && let Some(value) = variable.initializer.take()
+                {
+                    let place = Place {
+                        ty: variable.ty.clone(),
+                        kind: PlaceKind::Binding(variable.id),
+                        access: variable.access,
+                    };
+                    kept.push(Span::new(
+                        Statement::Write {
+                            place,
+                            value,
+                            ordering: None,
+                            unsequenced: false,
+                        },
+                        statement.spelling,
+                        statement.expansion,
+                    ));
+                }
+                declarations.push(statement);
+                continue;
+            }
+            Statement::Label { body, .. } => {
+                *body = extract(std::mem::take(body), hoisted, declarations);
+            }
+            _ => {}
+        }
+        kept.push(statement);
+    }
+    kept
+}
+
+fn declarations(range: &[Span<Statement>], declared: &mut HashMap<BindingId, bool>) -> bool {
     for statement in range {
         match &statement.value {
             Statement::Let(variable) => {
                 if variable.cleanup.is_some() || variable.ty.is_variably_modified() {
                     return false;
                 }
-                declared.insert(variable.id);
+                declared.insert(variable.id, hoistable(variable));
             }
             Statement::Temporary { id, .. } => {
-                declared.insert(*id);
+                declared.insert(*id, false);
             }
             Statement::Label { body, .. } => {
                 if !declarations(body, declared) {
@@ -571,34 +651,36 @@ impl Visitor for Switches {
 }
 
 struct Uses<'a> {
-    declared: &'a HashSet<BindingId>,
-    used: bool,
+    declared: &'a HashMap<BindingId, bool>,
+    used: HashSet<BindingId>,
+}
+
+impl Uses<'_> {
+    fn note(&mut self, binding: BindingId) {
+        if self.declared.contains_key(&binding) {
+            self.used.insert(binding);
+        }
+    }
 }
 
 impl Visitor for Uses<'_> {
     fn binding(&mut self, binding: BindingId) {
-        self.used |= self.declared.contains(&binding);
+        self.note(binding);
     }
 
     fn statement(&mut self, statement: &Statement) {
         if let Statement::NestedFunction(nested) = statement {
-            self.used |= captures(nested, self.declared);
+            for capture in &nested.captures {
+                self.note(capture.id);
+            }
         }
     }
 
     fn value_kind(&mut self, kind: &ValueKind) {
         if let ValueKind::Block(block) = kind {
-            self.used |= block
-                .captures
-                .iter()
-                .any(|capture| self.declared.contains(&capture.id));
+            for capture in &block.captures {
+                self.note(capture.id);
+            }
         }
     }
-}
-
-fn captures(nested: &NestedFunction, declared: &HashSet<BindingId>) -> bool {
-    nested
-        .captures
-        .iter()
-        .any(|capture| declared.contains(&capture.id))
 }

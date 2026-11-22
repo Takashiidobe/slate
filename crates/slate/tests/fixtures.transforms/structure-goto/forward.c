@@ -85,6 +85,18 @@ skip:
     return b;
 }
 
+int initialized_after(int a) {
+    if (a > 3)
+        goto skip;
+    int b = a * 3;
+    static int calls = 0;
+    calls++;
+    printf("b %d\n", b);
+skip:
+    b = a;
+    return b + calls;
+}
+
 void release(int *p) { printf("release %d\n", *p); }
 
 int with_cleanup(int a) {
@@ -121,6 +133,7 @@ int main(void) {
     printf("%d\n", unused_label(4));
     printf("%d %d\n", declared_between(0), declared_between(2));
     printf("%d %d\n", used_after(0), used_after(5));
+    printf("%d %d\n", initialized_after(1), initialized_after(5));
     printf("%d %d\n", with_cleanup(1), with_cleanup(2));
     printf("%d\n", backward(4));
     return 0;
@@ -226,13 +239,28 @@ int main(void) {
 // CHECK-NEXT:     return read<i32>(%[[V_A]]);
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn %{{[0-9]+}} @used_after(%{{[0-9]+}} a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
-// CHECK-NEXT:     if ne<i32>(read<i32>(%[[V_A:[0-9]+]]), const<i32>(0))
-// CHECK-NEXT:         goto %[[V_SKIP:[0-9]+]];
 // CHECK-NEXT:     let %[[V_B:[0-9]+]] b: i32 [storage=automatic];
-// CHECK-NEXT:     write<i32>(%[[V_B]], mul<i32, overflow=ub>(read<i32>(%[[V_A]]), const<i32>(3)));
-// CHECK-NEXT:     label %[[V_SKIP]] skip:
-// CHECK-NEXT:         write<i32>(%[[V_B]], read<i32>(%[[V_A]]));
+// CHECK-NEXT:     block %[[V0:[0-9]+]] {
+// CHECK-NEXT:         if ne<i32>(read<i32>(%[[V_A:[0-9]+]]), const<i32>(0))
+// CHECK-NEXT:             break %[[V0]];
+// CHECK-NEXT:         write<i32>(%[[V_B]], mul<i32, overflow=ub>(read<i32>(%[[V_A]]), const<i32>(3)));
+// CHECK-NEXT:     }
+// CHECK-NEXT:     write<i32>(%[[V_B]], read<i32>(%[[V_A]]));
 // CHECK-NEXT:     return read<i32>(%[[V_B]]);
+// CHECK: {{^}}}
+// CHECK-LABEL: {{^}}fn %{{[0-9]+}} @initialized_after(%{{[0-9]+}} a: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// CHECK-NEXT:     let %[[V_B:[0-9]+]] b: i32 [storage=automatic];
+// CHECK-NEXT:     block %[[V0:[0-9]+]] {
+// CHECK-NEXT:         if gt<i32>(read<i32>(%[[V_A:[0-9]+]]), const<i32>(3))
+// CHECK-NEXT:             break %[[V0]];
+// CHECK-NEXT:         write<i32>(%[[V_B]], mul<i32, overflow=ub>(read<i32>(%[[V_A]]), const<i32>(3)));
+// CHECK-NEXT:         let %[[V1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[V2:[0-9]+]]);
+// CHECK-NEXT:         let %[[V3:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[V1]]), const<i32>(1));
+// CHECK-NEXT:         write<i32>(%[[V2]], read<i32>(%[[V3]]));
+// CHECK-NEXT:         call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V4:[0-9]+]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(6)>(%[[V5:[0-9]+]])), read<i32>(%[[V_B]]));
+// CHECK-NEXT:     }
+// CHECK-NEXT:     write<i32>(%[[V_B]], read<i32>(%[[V_A]]));
+// CHECK-NEXT:     return add<i32, overflow=ub>(read<i32>(%[[V_B]]), read<i32>(%[[V2]]));
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn %{{[0-9]+}} @release(%{{[0-9]+}} p: ptr<i32>) -> void [linkage=external] [fallthrough=ret_void] {
 // CHECK-NEXT:     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V0:[0-9]+]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(12)>(%[[V1:[0-9]+]])), read<i32>(deref(read<ptr<i32>>(%[[V_P:[0-9]+]]))));
@@ -276,8 +304,9 @@ int main(void) {
 // CHECK-NEXT:     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V0]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[V14:[0-9]+]])), call<i32, signature=fn(i32) -> i32>(%[[V15:[0-9]+]], const<i32>(4)));
 // CHECK-NEXT:     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V0]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[V16:[0-9]+]])), call<i32, signature=fn(i32) -> i32>(%[[V17:[0-9]+]], const<i32>(0)), call<i32, signature=fn(i32) -> i32>(%[[V17]], const<i32>(2)));
 // CHECK-NEXT:     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V0]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[V18:[0-9]+]])), call<i32, signature=fn(i32) -> i32>(%[[V19:[0-9]+]], const<i32>(0)), call<i32, signature=fn(i32) -> i32>(%[[V19]], const<i32>(5)));
-// CHECK-NEXT:     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V0]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[V20:[0-9]+]])), call<i32, signature=fn(i32) -> i32>(%[[V21:[0-9]+]], const<i32>(1)), call<i32, signature=fn(i32) -> i32>(%[[V21]], const<i32>(2)));
-// CHECK-NEXT:     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V0]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[V22:[0-9]+]])), call<i32, signature=fn(i32) -> i32>(%[[V23:[0-9]+]], const<i32>(4)));
+// CHECK-NEXT:     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V0]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[V20:[0-9]+]])), call<i32, signature=fn(i32) -> i32>(%[[V21:[0-9]+]], const<i32>(1)), call<i32, signature=fn(i32) -> i32>(%[[V21]], const<i32>(5)));
+// CHECK-NEXT:     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V0]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[V22:[0-9]+]])), call<i32, signature=fn(i32) -> i32>(%[[V23:[0-9]+]], const<i32>(1)), call<i32, signature=fn(i32) -> i32>(%[[V23]], const<i32>(2)));
+// CHECK-NEXT:     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V0]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[V24:[0-9]+]])), call<i32, signature=fn(i32) -> i32>(%[[V25:[0-9]+]], const<i32>(4)));
 // CHECK-NEXT:     return const<i32>(0);
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

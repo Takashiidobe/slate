@@ -183,7 +183,7 @@ int main(void) {
 // CHECK-NEXT: fn declared(mut n: i32) -> i32 {
 // CHECK-NEXT:     let mut out: i32 = 1;
 // CHECK-NEXT:     let mut seen: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut __slate_state: usize = 3usize;
+// CHECK-NEXT:     let mut __slate_state: usize = 4usize;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         if n & 1 != 0 {
 // CHECK-NEXT:             __slate_state = 1;

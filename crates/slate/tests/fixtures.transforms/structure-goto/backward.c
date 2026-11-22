@@ -72,6 +72,14 @@ again:
     return sum;
 }
 
+int loop_local(int n) {
+again:;
+    int last = n * 2;
+    if (--n > 0)
+        goto again;
+    return last;
+}
+
 int main(void) {
     int values[] = {4, 1, 3, 2};
     printf("%d %d\n", retry(4), retry(1));
@@ -81,6 +89,7 @@ int main(void) {
     printf("%d\n", two_edges(7));
     printf("%d %d\n", entered(3, 0), entered(3, 1));
     printf("%d\n", scoped(4));
+    printf("%d\n", loop_local(3));
     return 0;
 }
 
@@ -212,6 +221,19 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     return read<i32>(%[[V_SUM]]);
 // CHECK: {{^}}}
+// CHECK-LABEL: {{^}}fn %{{[0-9]+}} @loop_local(%{{[0-9]+}} n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
+// CHECK-NEXT:     let %[[V_LAST:[0-9]+]] last: i32 [storage=automatic];
+// CHECK-NEXT:     do %[[V0:[0-9]+]]
+// CHECK-NEXT:         ;
+// CHECK-NEXT:         write<i32>(%[[V_LAST]], mul<i32, overflow=ub>(read<i32>(%[[V_N:[0-9]+]]), const<i32>(2)));
+// CHECK-NEXT:     while {
+// CHECK-NEXT:         let %[[V1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[V_N]]);
+// CHECK-NEXT:         let %[[V2:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[V1]]), const<i32>(1));
+// CHECK-NEXT:         write<i32>(%[[V_N]], read<i32>(%[[V2]]));
+// CHECK-NEXT:         yield gt<i32>(read<i32>(%[[V2]]), const<i32>(0));
+// CHECK-NEXT:     };
+// CHECK-NEXT:     return read<i32>(%[[V_LAST]]);
+// CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn %{{[0-9]+}} @main() -> i32 [linkage=external] [fallthrough=ret_zero] {
 // CHECK-NEXT:     let %[[V_VALUES:[0-9]+]] values: array<i32, 4> [storage=automatic] [align=16] = aggregate<array<i32, 4>, zero_fill=false>(index0 = const<i32>(4), index1 = const<i32>(1), index2 = const<i32>(3), index3 = const<i32>(2));
 // CHECK-NEXT:     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V0:[0-9]+]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[V1:[0-9]+]])), call<i32, signature=fn(i32) -> i32>(%[[V2:[0-9]+]], const<i32>(4)), call<i32, signature=fn(i32) -> i32>(%[[V2]], const<i32>(1)));
@@ -221,6 +243,7 @@ int main(void) {
 // CHECK-NEXT:     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V0]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[V8:[0-9]+]])), call<i32, signature=fn(i32) -> i32>(%[[V9:[0-9]+]], const<i32>(7)));
 // CHECK-NEXT:     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V0]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(7)>(%[[V10:[0-9]+]])), call<i32, signature=fn(i32, i32) -> i32>(%[[V11:[0-9]+]], const<i32>(3), const<i32>(0)), call<i32, signature=fn(i32, i32) -> i32>(%[[V11]], const<i32>(3), const<i32>(1)));
 // CHECK-NEXT:     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V0]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[V12:[0-9]+]])), call<i32, signature=fn(i32) -> i32>(%[[V13:[0-9]+]], const<i32>(4)));
+// CHECK-NEXT:     call<i32, signature=fn(ptr<const i8>, ...) -> i32>(%[[V0]], pointer_cast<ptr<const i8>, reason=arg>(array_decay<ptr<i8>, length=Some(4)>(%[[V14:[0-9]+]])), call<i32, signature=fn(i32) -> i32>(%[[V15:[0-9]+]], const<i32>(3)));
 // CHECK-NEXT:     return const<i32>(0);
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END
