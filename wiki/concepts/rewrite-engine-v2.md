@@ -58,17 +58,24 @@ conversions and layout remain slate-parser responsibilities.
 
 ## Control-flow rewrites
 
-| CFG shape                               | Rust-to-Rust rewrite                                                                  |
-| --------------------------------------- | ------------------------------------------------------------------------------------- |
-| Straight-line chain / forwarding states | Coalesce basic blocks / thread jumps                                                  |
-| Acyclic region                          | `if` / `match` and labeled join blocks                                                |
-| Natural loop                            | Labeled `loop`; existing loop/while/for peepholes refine it                           |
-| Multi-entry cyclic region               | Existing SCC-local dispatch; explicit-tail-call helpers are an optimization candidate |
+No goto rule is left in `backend/engine/rules/` (`slate-8ge7.24.10`). C gotos
+are structured before Rust exists:
 
-- Goto structuring is no longer a rule: `lower_dispatch` runs
-  `frontend/lowerer/structure.rs` (dominators, natural loops, irreducible-SCC
-  selectors) on its own block graph, and `frontend/lowerer/switch.rs` emits the
-  switch fallthrough `match` directly.
+| CFG shape                                   | Where                                                                                                  |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Forward/backward goto, label in a block/arm | IR pass `structure-goto` (labeled blocks, loops, label lifting, goto forwarding)                        |
+| Diamond / single-exit tail                  | IR pass `labeled-blocks` (if/else and `match` arms, [slate-analysis](slate-analysis.md#labeled-blocks)) |
+| Residual region (indirect gotos, rest)      | `lower_dispatch` + `frontend/lowerer/structure.rs`: dominators, natural loops, join labels             |
+| Multi-entry cyclic region                   | `structure.rs` `split_irreducible`: a `__slate_state` selector per multi-entry SCC, recursively       |
+| Switch fallthrough                          | `frontend/lowerer/switch.rs`: duplicated-tail `match`, or a case loop past the budget                  |
+
+- `structure` returning `None` (an arm shape the extractor does not parse)
+  keeps the flat `'__slate_dispatch: loop { match __slate_state }`; 5 regions
+  in 4 fixtures after `slate-8ge7.24.10.11`.
+- `label_elide` stays: `drop_label`, `drop_loop_label`, `tail_break_drop`,
+  `loop_tail_break` and `break_to_else` clean up lowering's own labeled blocks
+  (`continue` in a `for` with an increment, switch duplication, cleanup
+  scopes), not gotos; moving them is `slate-8ge7.24.11`.
 - Reuse the retained algorithms and registry; the removed frontend was
   CIR-specific, but these passes consume Rust AST. See
   [pass porting](pass-porting-workflow.md).
@@ -103,18 +110,8 @@ conversions and layout remain slate-parser responsibilities.
   MergeFunctions could fold into another definition with the same signature
   shape, and `backend::place_in_distinct_sections` gives each one a unique
   `.text.slate_distinct.<unit>.<name>` link section (ELF only).
-- Goto recognition accepts legacy and `__slate_dispatch` / `__slate_state`
-  names, integer / `usize` state values, and transfers inside conditional arms.
-  Nested decisions stay in their original blocks; dispatcher exits remain
-  labeled block exits.
-- Keep loop-transfer labels when crossing labeled join blocks.
-- Switch recovery accepts the current two-statement case-selector / dispatch
-  scope.
 - [SQLite runtime case study](sqlite-runtime-performance.md) measures the
   effects of these generic passes.
-- Coalesce before structuring. Choose structured output for reducible regions;
-  consider tail calls at the irreducible-SCC decision point before fallback
-  localization.
 
 ### Explicit-tail-call candidate
 
