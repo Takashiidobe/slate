@@ -298,13 +298,7 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     third.0[0usize..16usize].copy_from_slice(&source.0[0usize..16usize]);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::copy(
-// CHECK-NEXT:             (third.0.as_mut_ptr() as *const ()) as *const u8,
-// CHECK-NEXT:             (third.0.as_mut_ptr().add(2) as *mut ()) as *mut u8,
-// CHECK-NEXT:             8 as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     third.0.copy_within(0usize..8usize, 2usize);
 // CHECK-NEXT:     unsafe { __builtin_bzero(second.0.as_mut_ptr().add(8) as *mut (), 8u64) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __builtin___memcpy_chk(
@@ -331,13 +325,8 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     ((end == unsafe { first.0.as_mut_ptr().add(8) as *mut () }) as i32)
-// CHECK-NEXT:         + (((unsafe {
-// CHECK-NEXT:             __builtin_memcmp(
-// CHECK-NEXT:                 first.0.as_mut_ptr() as *const (),
-// CHECK-NEXT:                 source.0.as_mut_ptr() as *const (),
-// CHECK-NEXT:                 16u64,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         }) == 0) as i32)
+// CHECK-NEXT:         + (((first.0[0usize..16usize].cmp(&source.0[0usize..16usize]) as i32) == 0)
+// CHECK-NEXT:             as i32)
 // CHECK-NEXT:         + (((unsafe {
 // CHECK-NEXT:             __builtin_bcmp(
 // CHECK-NEXT:                 first.0.as_mut_ptr() as *const (),

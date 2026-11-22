@@ -239,6 +239,7 @@ struct FunctionLowerer<'a, 'm> {
     unborrowed: HashSet<BindingId>,
     reassigned_borrows: HashSet<BindingId>,
     views: HashMap<BindingId, (BindingId, ir::Value, ir::Value)>,
+    array_aliases: HashMap<BindingId, ir::Value>,
     erased_copy: Option<(*const ir::Place, String)>,
     const_layout: bool,
 }
@@ -402,6 +403,10 @@ impl Tables<'_> {
             .binding(binding)
             .and_then(|facts| facts.pointer)
             .and_then(|fact| fact.borrow)
+    }
+
+    fn array_alias_of(&self, binding: BindingId) -> Option<slate_analysis::ArrayAlias> {
+        self.facts.binding(binding)?.array_alias
     }
 
     fn constant_string_of(&self, binding: BindingId) -> Option<&slate_analysis::ConstantString> {

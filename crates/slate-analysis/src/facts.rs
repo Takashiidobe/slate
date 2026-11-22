@@ -1,3 +1,4 @@
+use crate::byte_buffers::{self, ArrayAlias};
 use crate::constant_strings::{self, ConstantString};
 use crate::counted_loops::{self, CountedLoop};
 use crate::identity::{FunctionIdentity, identify};
@@ -11,6 +12,7 @@ use slate_parser::ir::BindingId;
 pub struct BindingFacts {
     pub pointer: Option<PointerFact>,
     pub constant_string: Option<ConstantString>,
+    pub array_alias: Option<ArrayAlias>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
@@ -103,7 +105,7 @@ pub fn analyze(program: &Program<'_>) -> Facts {
                 binding,
                 BindingFacts {
                     pointer: Some(fact),
-                    constant_string: None,
+                    ..BindingFacts::default()
                 },
             )
         })
@@ -111,12 +113,31 @@ pub fn analyze(program: &Program<'_>) -> Facts {
     for (unit, program_unit) in program.units() {
         let module = program_unit.module;
         let literals = constant_strings::literals(module);
-        let callees = constant_strings::string_callees(module, |binding| {
-            match identities.get(&ProgramBinding { unit, binding }) {
-                Some(FunctionIdentity::Known(known)) => Some(*known),
-                _ => None,
-            }
+        let identity = |binding| match identities.get(&ProgramBinding { unit, binding }) {
+            Some(FunctionIdentity::Known(known)) => Some(*known),
+            _ => None,
+        };
+        let callees = constant_strings::known_callees(module, identity, |known| {
+            known.string_arguments().is_some()
         });
+        let buffer_callees = constant_strings::known_callees(module, identity, |known| {
+            known.buffer_arguments().is_some()
+        });
+        let mut aliases = HashMap::new();
+        for function in &module.functions {
+            byte_buffers::analyze(
+                &function.value,
+                &buffer_callees,
+                &module.macro_values,
+                &mut aliases,
+            );
+        }
+        for (binding, alias) in aliases {
+            bindings
+                .entry(ProgramBinding { unit, binding })
+                .or_default()
+                .array_alias = Some(alias);
+        }
         let c_strings: HashSet<BindingId> = bindings
             .iter()
             .filter(|(key, facts)| {

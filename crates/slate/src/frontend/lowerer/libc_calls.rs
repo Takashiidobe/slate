@@ -4,8 +4,7 @@ use rust::RustValue;
 
 struct Site<'c> {
     args: &'c [Expr],
-    slices: Vec<Option<Expr>>,
-    arrays: Vec<Option<(Expr, rust::Type, u64)>>,
+    buffers: Vec<Option<Buffer>>,
     discarded: bool,
     result: rust::Type,
 }
@@ -68,19 +67,17 @@ impl FunctionLowerer<'_, '_> {
             }))));
         }
         let result = self.call_result(signature)?;
-        let mut arrays = Vec::new();
-        if matches!(known, Known::MemCpy | Known::MemMove | Known::MemSet) && arguments.len() == 3 {
-            for argument in &arguments[..2] {
-                arrays.push(self.local_byte_array(argument)?);
+        let mut buffers = Vec::new();
+        if let Some((indices, arity)) = known.buffer_arguments()
+            && arguments.len() == arity
+        {
+            for &index in indices {
+                buffers.push(self.buffer(&arguments[index])?);
             }
         }
         let site = Site {
             args,
-            slices: arguments
-                .iter()
-                .map(|argument| self.byte_slice(argument))
-                .collect(),
-            arrays,
+            buffers,
             discarded,
             result,
         };
@@ -107,46 +104,38 @@ impl FunctionLowerer<'_, '_> {
         })
     }
 
-    fn byte_slice(&self, value: &ir::Value) -> Option<Expr> {
-        match &value.node.value {
-            ValueKind::Copy { operand, .. }
-            | ValueKind::Convert {
-                kind: ir::ConversionKind::PointerCast,
-                operand,
-                ..
-            } => self.byte_slice(operand),
-            ValueKind::Read {
-                place:
-                    ir::Place {
-                        kind: PlaceKind::Binding(id),
-                        ..
-                    },
-                ordering: None,
-            } if self.borrow_of(*id).is_some_and(|borrow| borrow.many)
-                && matches!(
-                    self.tables.resolve_type(&value.ty),
-                    ir::Type::Pointer { pointee, .. }
-                        if matches!(**pointee, ir::Type::Numeric(ir::NumericType::Integer { width: 8, signed: false, .. }))
-                ) =>
-            {
-                Some(Expr::var(self.binding_name(*id).as_str().into()))
-            }
-            #[expect(
-                slate::sensitive_wildcard,
-                reason = "only borrowed unsigned byte pointers lower to byte slices"
-            )]
-            _ => None,
-        }
+    pub(super) fn array_alias(&self, binding: BindingId) -> bool {
+        !self.unborrowed.contains(&binding)
+            && !self.switch_lets.contains(&binding)
+            && self.tables.array_alias_of(binding).is_some()
     }
 
-    fn local_byte_array(&mut self, value: &ir::Value) -> Result<Option<(Expr, rust::Type, u64)>> {
+    fn buffer(&mut self, value: &ir::Value) -> Result<Option<Buffer>> {
         match &value.node.value {
             ValueKind::Copy { operand, .. }
             | ValueKind::Convert {
                 kind: ir::ConversionKind::PointerCast,
                 operand,
                 ..
-            } => self.local_byte_array(operand),
+            } => self.buffer(operand),
+            ValueKind::PointerOffset {
+                pointer,
+                amount,
+                subtract: false,
+                element,
+                ..
+            } if byte_integer(self.tables.resolve_type(element))
+                && let Some(amount) = constant_amount(amount) =>
+            {
+                let Some(buffer) = self.buffer(pointer)? else {
+                    return Ok(None);
+                };
+                let offset = buffer.offset + amount;
+                Ok(buffer
+                    .length
+                    .is_none_or(|length| offset <= length)
+                    .then_some(Buffer { offset, ..buffer }))
+            }
             ValueKind::ArrayDecay {
                 place:
                     place @ ir::Place {
@@ -158,21 +147,143 @@ impl FunctionLowerer<'_, '_> {
                 let ir::Type::Array { element, .. } = self.tables.resolve_type(&place.ty) else {
                     return Ok(None);
                 };
-                if !matches!(
-                    self.tables.resolve_type(element),
-                    ir::Type::Numeric(ir::NumericType::Integer { width: 8, .. })
-                ) {
+                if !byte_integer(self.tables.resolve_type(element)) {
                     return Ok(None);
                 }
-                let element = self.lower_type(element)?;
-                Ok(Some((self.lower_place(place)?, element, *length)))
+                Ok(Some(Buffer {
+                    root: *id,
+                    base: self.lower_place(place)?,
+                    element: self.lower_type(element)?,
+                    offset: 0,
+                    length: Some(*length),
+                    mutable: true,
+                }))
+            }
+            ValueKind::Read {
+                place:
+                    ir::Place {
+                        kind: PlaceKind::Binding(id),
+                        ..
+                    },
+                ordering: None,
+            } => {
+                if let Some(initializer) = self.array_aliases.get(id) {
+                    let initializer = initializer.clone();
+                    return self.buffer(&initializer);
+                }
+                let Some(borrow) = self.borrow_of(*id).filter(|borrow| borrow.many) else {
+                    return Ok(None);
+                };
+                let ir::Type::Pointer { pointee, .. } = self.tables.resolve_type(&value.ty) else {
+                    return Ok(None);
+                };
+                if !byte_integer(self.tables.resolve_type(pointee)) {
+                    return Ok(None);
+                }
+                Ok(Some(Buffer {
+                    root: *id,
+                    base: Expr::var(self.binding_name(*id).as_str().into()),
+                    element: self.lower_type(pointee)?,
+                    offset: 0,
+                    length: None,
+                    mutable: borrow.mutable,
+                }))
             }
             #[expect(
                 slate::sensitive_wildcard,
-                reason = "only a decayed local byte array has a known extent"
+                reason = "only local byte arrays, their aliases and offsets, and lifted byte slices are buffers"
             )]
             _ => Ok(None),
         }
+    }
+}
+
+#[derive(Clone)]
+struct Buffer {
+    root: BindingId,
+    base: Expr,
+    element: rust::Type,
+    offset: u64,
+    length: Option<u64>,
+    mutable: bool,
+}
+
+impl Buffer {
+    fn holds(&self, n: Option<u64>) -> bool {
+        match (n, self.length) {
+            (Some(n), Some(length)) => self.offset.checked_add(n).is_some_and(|end| end <= length),
+            _ => true,
+        }
+    }
+
+    fn range(&self, len: &Length) -> Expr {
+        Expr::Range {
+            start: Box::new(usize_lit(self.offset)),
+            end: Box::new(self.end(len)),
+        }
+    }
+
+    fn end(&self, len: &Length) -> Expr {
+        match len {
+            Length::Constant(n) => usize_lit(self.offset + n),
+            Length::Runtime(len) if self.offset == 0 => len.clone(),
+            Length::Runtime(len) => Expr::Binary {
+                op: rust::BinOp::Add,
+                lhs: Box::new(usize_lit(self.offset)),
+                rhs: Box::new(len.clone()),
+            },
+        }
+    }
+
+    fn span(&self, len: &Length) -> Expr {
+        Expr::Index {
+            base: Box::new(self.base.clone()),
+            index: Box::new(self.range(len)),
+        }
+    }
+}
+
+enum Length {
+    Constant(u64),
+    Runtime(Expr),
+}
+
+impl Length {
+    fn of(len: &Expr, uses: usize) -> Option<Self> {
+        if let Some(n) = const_len(len) {
+            return Some(Self::Constant(n));
+        }
+        (uses == 1 || duplicable(len))
+            .then(|| Self::Runtime(cast(len.clone(), rust::Type::Prim(Prim::Usize))))
+    }
+
+    fn constant(&self) -> Option<u64> {
+        match self {
+            Self::Constant(n) => Some(*n),
+            Self::Runtime(_) => None,
+        }
+    }
+}
+
+fn byte_integer(ty: &ir::Type) -> bool {
+    matches!(
+        ty,
+        ir::Type::Numeric(ir::NumericType::Integer { width: 8, .. })
+    )
+}
+
+fn constant_amount(value: &ir::Value) -> Option<u64> {
+    match &value.node.value {
+        ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. } => {
+            constant_amount(operand)
+        }
+        ValueKind::Constant(ir::Number::Integer(n)) => u64::try_from(n).ok(),
+        ValueKind::Constant(ir::Number::SignedInteger(n)) => u64::try_from(n).ok(),
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "only integer constants are constant offsets"
+        )]
+        _ => None,
     }
 }
 
@@ -240,16 +351,6 @@ pub(super) fn usize_lit(n: u64) -> Expr {
     Expr::Value(RustValue::Usize(n as usize))
 }
 
-fn upto(base: Expr, end: Expr) -> Expr {
-    Expr::Index {
-        base: Box::new(base),
-        index: Box::new(Expr::Range {
-            start: Box::new(usize_lit(0)),
-            end: Box::new(end),
-        }),
-    }
-}
-
 fn borrowed(expr: Expr) -> Expr {
     Expr::Ref {
         mutable: false,
@@ -276,15 +377,19 @@ fn free_call(path: &[&str], args: Vec<Expr>) -> Expr {
 }
 
 fn mem_cmp(site: &Site) -> Option<Expr> {
-    let a = site.slices.first()?.clone()?;
-    let b = site.slices.get(1)?.clone()?;
-    let len = site.args.get(2)?;
-    if !duplicable(len) {
+    let [Some(a), Some(b)] = site.buffers.as_slice() else {
+        return None;
+    };
+    let len = Length::of(site.args.get(2)?, 2)?;
+    if a.element != rust::Type::Prim(Prim::U8)
+        || b.element != a.element
+        || !a.holds(len.constant())
+        || !b.holds(len.constant())
+    {
         return None;
     }
-    let len = cast(len.clone(), rust::Type::Prim(Prim::Usize));
     Some(cast(
-        method_call(upto(a, len.clone()), "cmp", vec![borrowed(upto(b, len))]),
+        method_call(a.span(&len), "cmp", vec![borrowed(b.span(&len))]),
         rust::Type::Prim(Prim::I32),
     ))
 }
@@ -330,37 +435,27 @@ fn mem_copy(site: &Site, overlapping: bool) -> Option<Expr> {
     let [dst, src, len] = site.args else {
         return None;
     };
-    if let Some(n) = const_len(len)
-        && let (Some((to, to_elem, to_len)), Some((from, from_elem, from_len))) =
-            (site.arrays[0].clone(), site.arrays[1].clone())
-        && to_elem == from_elem
-        && n <= to_len
-        && n <= from_len
+    if let [Some(to), Some(from)] = site.buffers.as_slice()
+        && to.mutable
+        && to.element == from.element
+        && let Some(n) = Length::of(len, 2)
+        && to.holds(n.constant())
+        && from.holds(n.constant())
     {
-        let effect = if to == from {
-            overlapping.then(|| {
-                method_call(
-                    to,
-                    "copy_within",
-                    vec![
-                        Expr::Range {
-                            start: Box::new(usize_lit(0)),
-                            end: Box::new(usize_lit(n)),
-                        },
-                        usize_lit(0),
-                    ],
-                )
-            })
+        let effect = if to.root == from.root {
+            method_call(
+                to.base.clone(),
+                "copy_within",
+                vec![from.range(&n), usize_lit(to.offset)],
+            )
         } else {
-            Some(method_call(
-                upto(to, usize_lit(n)),
+            method_call(
+                to.span(&n),
                 "copy_from_slice",
-                vec![borrowed(upto(from, usize_lit(n)))],
-            ))
+                vec![borrowed(from.span(&n))],
+            )
         };
-        if let Some(effect) = effect {
-            return returning_dst(site, effect, dst);
-        }
+        return returning_dst(site, effect, dst);
     }
     let effect = Expr::PtrCopy {
         src: Box::new(cast(src.clone(), byte_ptr(false))),
@@ -375,14 +470,15 @@ fn mem_set(site: &Site) -> Option<Expr> {
     let [dst, value, len] = site.args else {
         return None;
     };
-    if let Some(n) = const_len(len)
-        && let Some((to, element, to_len)) = site.arrays[0].clone()
-        && n <= to_len
+    if let Some(Some(to)) = site.buffers.first()
+        && to.mutable
+        && let Some(n) = Length::of(len, 1)
+        && to.holds(n.constant())
     {
         let effect = method_call(
-            upto(to, usize_lit(n)),
+            to.span(&n),
             "fill",
-            vec![cast(value.clone(), element)],
+            vec![cast(value.clone(), to.element.clone())],
         );
         return returning_dst(site, effect, dst);
     }

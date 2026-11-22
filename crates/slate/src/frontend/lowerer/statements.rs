@@ -191,6 +191,13 @@ impl FunctionLowerer<'_, '_> {
                 }
             }
             ir::Statement::Let(variable) if variable.byref => self.lower_byref_let(variable)?,
+            ir::Statement::Let(variable)
+                if let Some(initializer) = &variable.initializer
+                    && self.array_alias(variable.id) =>
+            {
+                self.array_aliases.insert(variable.id, initializer.clone());
+                Stmt::Block(rust::Block::default())
+            }
             ir::Statement::Let(variable) if self.tables.variably_modified(&variable.ty) => {
                 self.lower_vla_let(variable)?
             }

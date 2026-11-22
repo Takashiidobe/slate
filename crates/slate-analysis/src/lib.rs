@@ -9,6 +9,7 @@
     clippy::unimplemented
 )]
 
+mod byte_buffers;
 mod constant_strings;
 mod counted_loops;
 mod def_use;
@@ -19,6 +20,7 @@ mod pointer;
 mod program;
 pub mod transform;
 
+pub use byte_buffers::ArrayAlias;
 pub use constant_strings::ConstantString;
 pub use counted_loops::CountedLoop;
 pub use facts::{BindingFacts, Facts, UnitFacts, ValueFacts, analyze};

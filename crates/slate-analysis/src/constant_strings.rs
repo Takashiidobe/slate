@@ -58,18 +58,18 @@ pub(crate) fn literals(module: &Module) -> HashMap<BindingId, Vec<u8>> {
         .collect()
 }
 
-pub(crate) fn string_callees(
+pub(crate) fn known_callees(
     module: &Module,
     identity: impl Fn(BindingId) -> Option<Known>,
+    accept: impl Fn(Known) -> bool,
 ) -> HashMap<BindingId, Known> {
     module
         .functions
         .iter()
         .filter_map(|function| {
             let known = identity(function.value.id)?;
-            (function.name.trim_start_matches("__builtin_") == known.symbol()
-                && known.string_arguments().is_some())
-            .then_some((function.value.id, known))
+            (function.name.trim_start_matches("__builtin_") == known.symbol() && accept(known))
+                .then_some((function.value.id, known))
         })
         .collect()
 }

@@ -29,35 +29,12 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut forward_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::copy(
-// CHECK-NEXT:             ((forward_buf.as_mut_ptr() as *const ()) as *const core::ffi::c_void)
-// CHECK-NEXT:                 as *const u8,
-// CHECK-NEXT:             ((forward_buf.as_mut_ptr().add(1) as *mut ()) as *mut core::ffi::c_void)
-// CHECK-NEXT:                 as *mut u8,
-// CHECK-NEXT:             (5u64 as usize) as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     forward_buf.copy_within(0usize..5usize, 1usize);
 // CHECK-NEXT:     let mut backward_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::copy(
-// CHECK-NEXT:             ((backward_buf.as_mut_ptr().add(1) as *const ()) as *const core::ffi::c_void)
-// CHECK-NEXT:                 as *const u8,
-// CHECK-NEXT:             ((backward_buf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void)
-// CHECK-NEXT:                 as *mut u8,
-// CHECK-NEXT:             (5u64 as usize) as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     backward_buf.copy_within(1usize..6usize, 0usize);
 // CHECK-NEXT:     let mut dyn_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     let n: i32 = get_count();
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::copy(
-// CHECK-NEXT:             ((dyn_buf.as_mut_ptr().add(1) as *const ()) as *const core::ffi::c_void)
-// CHECK-NEXT:                 as *const u8,
-// CHECK-NEXT:             ((dyn_buf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             ((n as u64) as usize) as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     dyn_buf.copy_within(1usize..(1usize + (((n as u64) as usize) as usize)), 0usize);
 // CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         print!("{} ", forward_buf[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

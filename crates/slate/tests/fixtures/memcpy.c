@@ -51,29 +51,16 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     partial_dst[0usize..4usize].copy_from_slice(&partial_src[0usize..4usize]);
 // CHECK-NEXT:     let mut alias_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((alias_buf.as_mut_ptr().add(4) as *const ()) as *const core::ffi::c_void)
-// CHECK-NEXT:                 as *const u8,
-// CHECK-NEXT:             ((alias_buf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             (4u64 as usize) as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let mut dyn_src: [u8; 8] = [1, 1, 1, 1, 1, 1, 1, 1];
+// CHECK-NEXT:     alias_buf.copy_within(4usize..8usize, 0usize);
+// CHECK-NEXT:     let dyn_src: [u8; 8] = [1, 1, 1, 1, 1, 1, 1, 1];
 // CHECK-NEXT:     let mut dyn_dst: [u8; 8] = {
 // CHECK-NEXT:         let mut [[T_2:__t[0-9]+]]: [u8; 8] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_2]][0] = 0u8;
 // CHECK-NEXT:         [[T_2]]
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let n: i32 = get_count();
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             ((dyn_src.as_mut_ptr() as *const ()) as *const core::ffi::c_void)
-// CHECK-NEXT:                 as *const u8,
-// CHECK-NEXT:             ((dyn_dst.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             ((n as u64) as usize) as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     dyn_dst[0usize..((n as u64) as usize) as usize]
+// CHECK-NEXT:         .copy_from_slice(&dyn_src[0usize..((n as u64) as usize) as usize]);
 // CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         print!("{} ", full_dst[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

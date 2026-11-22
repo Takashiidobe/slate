@@ -260,6 +260,10 @@ impl FunctionLowerer<'_, '_> {
             let initializer = initializer.clone();
             return self.lower_value(&initializer).map(Some);
         }
+        if let Some(initializer) = self.array_aliases.get(id) {
+            let initializer = initializer.clone();
+            return self.lower_value(&initializer).map(Some);
+        }
         let local = self.string_local(*id);
         if matches!(local, Some(LocalString::Str(_))) {
             return Err(Invariant::UnprovenBorrow(value.to_string()).into());

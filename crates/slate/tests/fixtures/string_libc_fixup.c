@@ -32,7 +32,6 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcmp;
 // CHECK-NEXT: use slate_support::strcmp;
 // CHECK-NEXT: use slate_support::strncmp;
 // CHECK-NEXT: use slate_support::strchr;
@@ -51,7 +50,7 @@ int main(void) {
 // CHECK-NEXT:     let mut alpha: [i8; 4] = [97, 98, 99, 0];
 // CHECK-NEXT:     let mut beta: [i8; 4] = [97, 98, 100, 0];
 // CHECK-NEXT:     let mut bytes_a: [u8; 3] = [255, 1, 0];
-// CHECK-NEXT:     let mut bytes_b: [u8; 3] = [255, 2, 0];
+// CHECK-NEXT:     let bytes_b: [u8; 3] = [255, 2, 0];
 // CHECK-NEXT:     let mut hay: [i8; 7] = [97, 98, 97, 99, 97, 100, 0];
 // CHECK-NEXT:     let mut sub: [i8; 4] = [97, 99, 97, 0];
 // CHECK-NEXT:     let mut empty: [i8; 1] = [0];
@@ -78,11 +77,7 @@ int main(void) {
 // CHECK-NEXT:                 (beta.as_mut_ptr() as *const i8) as *const core::ffi::c_char,
 // CHECK-NEXT:                 2u64 as usize,
 // CHECK-NEXT:             ) as i32) == 0) as i32,
-// CHECK-NEXT:             ((memcmp(
-// CHECK-NEXT:                 (bytes_a.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
-// CHECK-NEXT:                 (bytes_b.as_mut_ptr() as *const ()) as *const core::ffi::c_void,
-// CHECK-NEXT:                 1u64 as usize,
-// CHECK-NEXT:             ) as i32) == 0) as i32,
+// CHECK-NEXT:             ((bytes_a[0usize..1usize].cmp(&bytes_b[0usize..1usize]) as i32) == 0) as i32,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

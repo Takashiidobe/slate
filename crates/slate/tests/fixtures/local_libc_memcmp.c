@@ -35,8 +35,7 @@ int main(void) {
 // CHECK-NEXT:     for i in 0..blen {
 // CHECK-NEXT:         sb += b[i as usize] as i32;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let order: i32 = a[0usize..(3u64 as usize) as usize]
-// CHECK-NEXT:         .cmp(&b[0usize..(3u64 as usize) as usize]) as i32;
+// CHECK-NEXT:     let order: i32 = a[0usize..3usize].cmp(&b[0usize..3usize]) as i32;
 // CHECK-NEXT:     let sign: i32 = ((order > 0) as i32) - ((order < 0) as i32);
 // CHECK-NEXT:     sign * 1000 + (sa - sb)
 // CHECK-NEXT: }

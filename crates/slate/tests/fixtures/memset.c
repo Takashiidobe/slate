@@ -46,13 +46,7 @@ int main(void) {
 // CHECK-NEXT:     partial_buf[0usize..4usize].fill((9i32 as i32) as u8);
 // CHECK-NEXT:     let mut dynamic_buf: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
 // CHECK-NEXT:     let n: i32 = get_count();
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::write_bytes(
-// CHECK-NEXT:             ((dynamic_buf.as_mut_ptr() as *mut ()) as *mut core::ffi::c_void) as *mut u8,
-// CHECK-NEXT:             (9i32 as i32) as u8,
-// CHECK-NEXT:             ((n as u64) as usize) as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     dynamic_buf[0usize..((n as u64) as usize) as usize].fill((9i32 as i32) as u8);
 // CHECK-NEXT:     for i in 0i32..8i32 {
 // CHECK-NEXT:         print!("{} ", zero_buf[i as usize] as i32);
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

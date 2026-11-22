@@ -16,6 +16,7 @@
 - [Scaling rule](#scaling-rule)
 - [Pointer capabilities](#pointer-capabilities)
 - [String views and libc calls](#string-views-and-libc-calls)
+- [Byte buffers and mem\* calls](#byte-buffers-and-mem-calls)
 - [Effect summaries](#effect-summaries)
 - [Def-use](#def-use)
   - [Counted loops](#counted-loops)
@@ -477,9 +478,34 @@ literal or `&str` is `s.parse::<T>().unwrap()`.
 Other libc lowering stays in `frontend/lowerer/libc_calls.rs`: `exit`/`abort`
 become `std::process` calls, remaining `ato*` call
 `slate_support::__slate_ato*` (core-only, ungated in `slate_support`; the
-per-file prelude is gone), `memcpy`/`memmove`/`memset` on decayed local byte
-arrays with a constant length become `copy_from_slice`/`copy_within`/`fill`,
-and `memcmp` of borrowed `&[u8]` parameters becomes a slice `cmp`.
+per-file prelude is gone), and `mem*` calls lower on byte buffers (below).
+
+## Byte buffers and mem* calls
+
+`libc_calls::buffer` resolves a `mem*` pointer argument to a buffer: a root
+binding, its Rust base, element type, a constant byte offset and the known
+length. Roots are a decayed local byte array (not static, not a literal), a
+lifted `&[u8]`/`&mut [u8]` parameter (`borrow.many`, length unknown), or an
+`ArrayAlias` local. Constant `PointerOffset`s on 8-bit elements add to the
+offset.
+
+The overlap fact is the root: `memcpy`/`memmove` with one root become
+`base.copy_within(s..s+n, d)`, with two roots `d[..].copy_from_slice(&s[..])`
+(two lifted references are already disjoint), and anything else stays
+`ptr::copy`/`copy_nonoverlapping`. `memset` becomes `fill`; `memcmp` becomes a
+slice `cmp` only on `u8` elements (C compares unsigned bytes). A constant `n`
+must fit the known length; a runtime `n` is allowed, evaluated once or
+duplicable, and a slice index panics where C was undefined.
+
+`byte_buffers::ArrayAlias { array, offset }` (`BindingFacts::array_alias`) marks
+a plain, written-once, non-escaping pointer local whose initializer is a
+decayed local byte array plus a constant offset, when every read of it is a
+`mem*` buffer argument outside a macro expansion and the array's name is not
+redeclared in the function. Lowering drops its `let`, and any read lowers to
+the initializer, so no raw pointer from `as_mut_ptr()` outlives a slice borrow
+of the array (that would be UB under Stacked and Tree Borrows). A pointer local
+with other reads (`char *p = buf; memset(p, 0, 8); return p[0];`) gets no fact
+and stays raw.
 
 Freestanding units (`slate-3amj.56`) give plain libc names no identity, so only
 `__builtin_*` forms reach these lowerings; every form above needs only `core`.

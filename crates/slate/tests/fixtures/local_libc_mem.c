@@ -30,14 +30,7 @@ int main(void) {
 // CHECK-NEXT:     let mut dst: __SlateAlign16<[i8; 16]> = __SlateAlign16([0i8; 16]);
 // CHECK-NEXT:     let src: [i8; 8] = [104, 101, 108, 108, 111, 0, 0, 0];
 // CHECK-NEXT:     dst.0[0usize..6usize].copy_from_slice(&src[0usize..6usize]);
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::write_bytes(
-// CHECK-NEXT:             ((dst.0.as_mut_ptr().add(5) as *mut ()) as *mut core::ffi::c_void)
-// CHECK-NEXT:                 as *mut u8,
-// CHECK-NEXT:             (65i32 as i32) as u8,
-// CHECK-NEXT:             (3u64 as usize) as usize,
-// CHECK-NEXT:         )
-// CHECK-NEXT:     };
+// CHECK-NEXT:     dst.0[5usize..8usize].fill((65i32 as i32) as i8);
 // CHECK-NEXT:     dst.0[8] = 0;
 // CHECK-NEXT:     let mut moved: __SlateAlign16<[i8; 16]> = __SlateAlign16([0i8; 16]);
 // CHECK-NEXT:     moved.0[0usize..9usize].copy_from_slice(&dst.0[0usize..9usize]);
