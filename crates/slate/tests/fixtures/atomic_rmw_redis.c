@@ -231,7 +231,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn try_claim(slot: *mut u64, want: u64) -> i32 {
 // CHECK-NEXT:     let mut expected: u64 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: while !unsafe {
+// CHECK-NEXT:     while !unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = core::ptr::addr_of_mut!(expected);
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = want;
 // CHECK-NEXT:         match core::sync::atomic::AtomicU64::from_ptr(slot as *mut u64)

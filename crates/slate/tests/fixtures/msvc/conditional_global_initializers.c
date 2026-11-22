@@ -99,10 +99,10 @@ int main(void) {
 // CHECK-NEXT: #![allow(suspicious_runtime_symbol_definitions)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! CHECK {
+// CHECK-NEXT: macro_rules! CHECK__2 {
 // CHECK-NEXT:     ($c:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             if !$c {
+// CHECK-NEXT:             if !(($c) != 0) {
 // CHECK-NEXT:                 unsafe { abort() };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
@@ -112,10 +112,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! CHECK__2 {
+// CHECK-NEXT: macro_rules! CHECK {
 // CHECK-NEXT:     ($c:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             if !(($c) != 0) {
+// CHECK-NEXT:             if !$c {
 // CHECK-NEXT:                 unsafe { abort() };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {

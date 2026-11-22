@@ -1,8 +1,20 @@
 use crate::backend::engine::NodeRule;
 use crate::backend::engine::arena::{Arena, FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
-use crate::backend::rust_ast::{BinOp, Expr, UnaryOp};
+use crate::backend::rust_ast::{BinOp, Expr, RustValue, UnaryOp};
 
-use super::loop_to_while::negate;
+fn negate(cond: &Expr) -> Expr {
+    match cond {
+        Expr::Unary {
+            op: UnaryOp::Not,
+            expr,
+        } => (**expr).clone(),
+        Expr::Value(RustValue::Bool(value)) => Expr::Value(RustValue::Bool(!value)),
+        _ => Expr::Unary {
+            op: UnaryOp::Not,
+            expr: Box::new(cond.clone()),
+        },
+    }
+}
 
 fn is_pure(expr: &Expr) -> bool {
     match expr {

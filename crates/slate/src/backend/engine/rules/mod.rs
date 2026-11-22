@@ -9,7 +9,6 @@ mod inline_temps;
 mod label_elide;
 mod libc_call;
 pub(super) mod literal_casts;
-mod loop_to_while;
 mod nested_unsafe;
 mod null_compare;
 mod pattern_range;
@@ -36,8 +35,6 @@ pub(super) fn control_flow_registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(label_elide::LoopLabelElide),
         Box::new(singleton_scopes::ScopeFlatten),
         Box::new(for_range::ForRangeRecover),
-        Box::new(loop_to_while::LoopToWhile),
-        Box::new(loop_to_while::LoopElseBreakToWhile),
     ]
 }
 

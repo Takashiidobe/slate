@@ -63,7 +63,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn accumulate(n: i32, total: &mut i32) {
 // CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while !(i >= n) {
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if i >= n {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = i;
 // CHECK-NEXT:         i = [[V_0]] + 1;
 // CHECK-NEXT:         match choose([[V_0]]) {

@@ -96,25 +96,23 @@ int main(void) {
 // CHECK-NEXT: fn dispatch(n: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
 // CHECK-NEXT:     let mut k: i32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: while k < 8 {
-// CHECK-NEXT:         '[[SLATE_CONTINUE_0:__slate_continue_[0-9]+]]: {
-// CHECK-NEXT:             k += 1;
-// CHECK-NEXT:             match n + k {
-// CHECK-NEXT:                 3 => {
-// CHECK-NEXT:                     total += 1;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 5 => {
-// CHECK-NEXT:                     total += 100;
-// CHECK-NEXT:                     break '[[SLATE_CONTINUE_0]];
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 9 => {
-// CHECK-NEXT:                     total += 1000;
-// CHECK-NEXT:                     break '[[SLATE_BREAK_1]];
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {}
+// CHECK-NEXT:     while k < 8 {
+// CHECK-NEXT:         k += 1;
+// CHECK-NEXT:         match n + k {
+// CHECK-NEXT:             3 => {
+// CHECK-NEXT:                 total += 1;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             total += 10;
+// CHECK-NEXT:             5 => {
+// CHECK-NEXT:                 total += 100;
+// CHECK-NEXT:                 continue;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             9 => {
+// CHECK-NEXT:                 total += 1000;
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {}
 // CHECK-NEXT:         }
+// CHECK-NEXT:         total += 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total * 16 + k
 // CHECK-NEXT: }

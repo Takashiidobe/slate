@@ -468,13 +468,13 @@ int main(void) {
 // CHECK-NEXT:     while index < value {
 // CHECK-NEXT:         if index == 1 {
 // CHECK-NEXT:             index += 1;
-// CHECK-NEXT:         } else {
-// CHECK-NEXT:             result += index;
-// CHECK-NEXT:             if result > 20 {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             index += 1;
+// CHECK-NEXT:             continue;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         result += index;
+// CHECK-NEXT:         if result > 20 {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         index += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         result -= 1;

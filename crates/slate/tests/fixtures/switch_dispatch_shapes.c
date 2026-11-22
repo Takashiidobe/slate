@@ -186,28 +186,26 @@ int main(void) {
 // CHECK-NEXT: fn run(ops: &[u32]) -> i32 {
 // CHECK-NEXT:     let mut acc: i32 = 1;
 // CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     while true {
-// CHECK-NEXT:         '[[SLATE_CONTINUE_0:__slate_continue_[0-9]+]]: {
-// CHECK-NEXT:             let op: u32 = ops[i as usize];
-// CHECK-NEXT:             i += 1;
-// CHECK-NEXT:             match op as u32 {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     acc += 3;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     acc -= 1;
-// CHECK-NEXT:                     break '[[SLATE_CONTINUE_0]];
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 2 => {
-// CHECK-NEXT:                     acc *= 2;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 3 => {
-// CHECK-NEXT:                     return acc;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {}
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         let op: u32 = ops[i as usize];
+// CHECK-NEXT:         i += 1;
+// CHECK-NEXT:         match op as u32 {
+// CHECK-NEXT:             0 => {
+// CHECK-NEXT:                 acc += 3;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             acc += 100;
+// CHECK-NEXT:             1 => {
+// CHECK-NEXT:                 acc -= 1;
+// CHECK-NEXT:                 continue;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             2 => {
+// CHECK-NEXT:                 acc *= 2;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             3 => {
+// CHECK-NEXT:                 return acc;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {}
 // CHECK-NEXT:         }
+// CHECK-NEXT:         acc += 100;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }

@@ -165,12 +165,13 @@ int main(void) {
 // CHECK-NEXT:         let mut j: i32 = 0;
 // CHECK-NEXT:         while j < i {
 // CHECK-NEXT:             j += 1;
-// CHECK-NEXT:             if j != 2 {
-// CHECK-NEXT:                 if j == 4 {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 t += j;
+// CHECK-NEXT:             if j == 2 {
+// CHECK-NEXT:                 continue;
 // CHECK-NEXT:             }
+// CHECK-NEXT:             if j == 4 {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             t += j;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         for i in 0i32..2i32 {
 // CHECK-NEXT:             if i == 1 {

@@ -162,8 +162,9 @@ Nothing is rewritten that removes an `explicit` conversion or comparison, a
 
 Lowering uses the same rules through `transform::negation` for loop exit tests
 (`if !c { break }`) of a `do`/`while` and of a `while`/`for` whose condition
-has hoisted statements; a head test with none keeps `!c` so `LoopToWhile`
-recovers `while c`. Negations that the backend's goto structuring builds
+has hoisted statements; a head test with none lowers to `while c` directly. A
+`break` the C source wrote at the loop head stays `if c { break }`: no rule
+folds it into the condition. Negations that the backend's goto structuring builds
 (`if !(i < 5) { break }` from `if (i < 5) goto top`) are not canonicalized.
 
 ### Labeled blocks

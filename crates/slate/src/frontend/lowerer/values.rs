@@ -431,13 +431,13 @@ impl FunctionLowerer<'_, '_> {
     pub(super) fn lower_exit_condition(
         &mut self,
         evaluation: &ir::Evaluation,
-        head: bool,
     ) -> Result<(Vec<Stmt>, Expr)> {
         let statements = self.lower_statement_list(&evaluation.statements)?;
-        let negated = (matches!(evaluation.value.ty, ir::Type::Bool)
-            && !(head && statements.is_empty()))
-        .then(|| slate_analysis::transform::negation(&evaluation.value, self.tables.macro_values))
-        .flatten();
+        let negated = matches!(evaluation.value.ty, ir::Type::Bool)
+            .then(|| {
+                slate_analysis::transform::negation(&evaluation.value, self.tables.macro_values)
+            })
+            .flatten();
         let condition = match negated {
             Some(negated) => self.lower_condition(&negated)?,
             None => Expr::Unary {

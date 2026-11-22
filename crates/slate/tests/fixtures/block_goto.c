@@ -392,15 +392,19 @@ again:
 // CHECK-NEXT:             ) as *const (),
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) as *mut core::ffi::c_void;
-// CHECK-NEXT:     '[[SLATE_BREAK_0]]: while !((unsafe {
-// CHECK-NEXT:         let [[T_0]] = inc;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> i32>>(
-// CHECK-NEXT:                     __slate_blocks::invoke([[T_0]]),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:             .unwrap()([[T_0]])
-// CHECK-NEXT:     }) >= 3) {}
+// CHECK-NEXT:     '[[SLATE_BREAK_0]]: loop {
+// CHECK-NEXT:         if (unsafe {
+// CHECK-NEXT:             let [[T_0]] = inc;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                     core::mem::transmute::<*const core::ffi::c_void, Option<unsafe extern "C-unwind" fn(*mut core::ffi::c_void) -> i32>>(
+// CHECK-NEXT:                         __slate_blocks::invoke([[T_0]]),
+// CHECK-NEXT:                     )
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 .unwrap()([[T_0]])
+// CHECK-NEXT:         }) >= 3 {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
 // CHECK-NEXT:     println!("n={}", unsafe { *__slate_blocks::value(n) });
 // CHECK-NEXT:     unsafe { _Block_release(inc as *const ()) };
 // CHECK-NEXT:     println!("redeclare {}", redeclare(4i32));

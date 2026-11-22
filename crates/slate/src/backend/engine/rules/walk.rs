@@ -229,6 +229,12 @@ fn expr_has_stmts(expr: &Expr) -> bool {
         || child_exprs(expr).into_iter().any(expr_has_stmts)
 }
 
+pub(crate) fn stmts_have_stmt_exprs(stmts: &[Stmt]) -> bool {
+    let mut exprs = Vec::new();
+    stmts_exprs(stmts, &mut exprs);
+    exprs.into_iter().any(expr_has_stmts)
+}
+
 pub(super) fn kind_has_stmt_exprs(kind: &NodeKind) -> bool {
     let mut found = false;
     visit_kind_exprs(kind, |expr| found |= expr_has_stmts(expr));

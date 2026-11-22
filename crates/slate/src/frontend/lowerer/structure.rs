@@ -836,6 +836,61 @@ fn fold_empty_branches(body: &mut Vec<Stmt>) {
     });
 }
 
+fn header_test(body: &mut Vec<Stmt>) -> Option<Expr> {
+    let only = body.len() == 1;
+    let Some(Stmt::If {
+        cond,
+        then_body,
+        else_body,
+    }) = body.first_mut()
+    else {
+        return None;
+    };
+    if matches!(then_body[..], [Stmt::Break(None)]) && else_body.is_empty() {
+        let cond = negate(cond);
+        body.remove(0);
+        return Some(cond);
+    }
+    if only && matches!(else_body[..], [Stmt::Break(None)]) {
+        let cond = std::mem::replace(cond, Expr::Value(RustValue::Bool(true)));
+        let stmts = std::mem::take(then_body);
+        *body = stmts;
+        return Some(cond);
+    }
+    None
+}
+
+pub(super) fn label_needed(body: &mut [Stmt], label: &Label) -> bool {
+    if crate::backend::engine::stmts_have_stmt_exprs(body) || nested_jump(body, label, false) {
+        return true;
+    }
+    elide_local_label(body, label, false);
+    false
+}
+
+fn nested_jump(body: &[Stmt], label: &Label, nested: bool) -> bool {
+    body.iter().any(|stmt| match stmt {
+        Stmt::Break(Some(target)) | Stmt::Continue(Some(target)) => nested && target == label,
+        _ => {
+            let nested = nested
+                || matches!(
+                    stmt,
+                    Stmt::LabeledBlock { .. }
+                        | Stmt::Loop { .. }
+                        | Stmt::While { .. }
+                        | Stmt::For { .. }
+                );
+            bodies(stmt)
+                .into_iter()
+                .any(|list| nested_jump(list, label, nested))
+        }
+    })
+}
+
+pub(super) fn uses_label_or_exprs(body: &[Stmt], label: &Label) -> bool {
+    crate::backend::engine::stmts_have_stmt_exprs(body) || uses_label(body, label)
+}
+
 fn elide_local_label(body: &mut [Stmt], label: &Label, blocked: bool) {
     for stmt in body {
         if !blocked {
@@ -918,9 +973,19 @@ impl Graph {
         elide_local_label(&mut body, &label, false);
         drop_tail_continue(&mut body);
         fold_empty_branches(&mut body);
-        let core = Stmt::Loop {
-            label: uses_label(&body, &label).then(|| label.clone()),
-            body,
+        let core = match header_test(&mut body) {
+            Some(cond) => Stmt::While {
+                label: uses_label(&body, &label).then(|| label.clone()),
+                cond,
+                body: RustBlock {
+                    stmts: body,
+                    tail: None,
+                },
+            },
+            None => Stmt::Loop {
+                label: uses_label(&body, &label).then(|| label.clone()),
+                body,
+            },
         };
         self.wrap(vec![core], &self.owned(node, Owner::AfterLoop(node)), loops)
     }

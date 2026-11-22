@@ -28,29 +28,41 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn a(mut n: i32) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
-// CHECK-NEXT:     while n > 0 {
-// CHECK-NEXT:         s += n;
-// CHECK-NEXT:         n -= 1;
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if n > 0 {
+// CHECK-NEXT:             s += n;
+// CHECK-NEXT:             n -= 1;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn b(mut n: i32) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
-// CHECK-NEXT:     while n > 0 && s < 100 {
-// CHECK-NEXT:         s += n;
-// CHECK-NEXT:         n -= 1;
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if n > 0 && s < 100 {
+// CHECK-NEXT:             s += n;
+// CHECK-NEXT:             n -= 1;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn c(mut n: i32) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
-// CHECK-NEXT:     while n > 0 {
-// CHECK-NEXT:         s += n;
-// CHECK-NEXT:         n -= 1;
-// CHECK-NEXT:         if s > 50 {
-// CHECK-NEXT:             continue;
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if n > 0 {
+// CHECK-NEXT:             s += n;
+// CHECK-NEXT:             n -= 1;
+// CHECK-NEXT:             if s > 50 {
+// CHECK-NEXT:                 continue;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             s += 1;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         s += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK: {{^}}}
@@ -69,12 +81,16 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn e(mut n: i32) -> i32 {
 // CHECK-NEXT:     let mut s: i32 = 0;
-// CHECK-NEXT:     while n > 0 {
-// CHECK-NEXT:         s += n;
-// CHECK-NEXT:         if s > 9 {
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if n > 0 {
+// CHECK-NEXT:             s += n;
+// CHECK-NEXT:             if s > 9 {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             n -= 1;
+// CHECK-NEXT:         } else {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         n -= 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     s
 // CHECK: {{^}}}
