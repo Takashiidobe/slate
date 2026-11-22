@@ -887,6 +887,29 @@ fn nested_jump(body: &[Stmt], label: &Label, nested: bool) -> bool {
     })
 }
 
+pub(super) fn drop_tail_break(body: &mut Vec<Stmt>, label: &Label) {
+    match body.last_mut() {
+        Some(Stmt::Break(Some(target))) if target == label => {
+            body.pop();
+        }
+        Some(Stmt::If {
+            then_body,
+            else_body,
+            ..
+        }) => {
+            drop_tail_break(then_body, label);
+            drop_tail_break(else_body, label);
+        }
+        Some(Stmt::Match { arms, .. }) => {
+            for arm in arms {
+                drop_tail_break(&mut arm.body, label);
+            }
+        }
+        Some(Stmt::Scope { body }) => drop_tail_break(body, label),
+        _ => {}
+    }
+}
+
 pub(super) fn uses_label_or_exprs(body: &[Stmt], label: &Label) -> bool {
     crate::backend::engine::stmts_have_stmt_exprs(body) || uses_label(body, label)
 }

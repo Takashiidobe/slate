@@ -286,16 +286,16 @@ impl FunctionLowerer<'_, '_> {
                 None => Vec::new(),
             },
         });
-        Ok(Stmt::LabeledBlock {
-            label: self.break_label(id),
-            body: vec![Stmt::Match {
-                expr: self.lower_folded(
-                    discriminant,
-                    folded.is_some(),
-                    Self::lower_match_scrutinee,
-                )?,
-                arms: match_arms,
-            }],
+        let label = self.break_label(id);
+        let mut body = vec![Stmt::Match {
+            expr: self.lower_folded(discriminant, folded.is_some(), Self::lower_match_scrutinee)?,
+            arms: match_arms,
+        }];
+        structure::drop_tail_break(&mut body, &label);
+        Ok(if structure::uses_label_or_exprs(&body, &label) {
+            Stmt::LabeledBlock { label, body }
+        } else {
+            Stmt::Scope { body }
         })
     }
 
@@ -642,12 +642,13 @@ fn case_loop(
         ty: Some(rust::Type::Prim(Prim::I64)),
         init: Some(init),
     });
+    let mut body = vec![Stmt::Match {
+        expr: Expr::Var(case.into()),
+        arms: match_arms,
+    }];
     body_prefix.push(Stmt::Loop {
-        label: Some(label),
-        body: vec![Stmt::Match {
-            expr: Expr::Var(case.into()),
-            arms: match_arms,
-        }],
+        label: structure::label_needed(&mut body, &label).then_some(label),
+        body,
     });
     Stmt::Scope { body: body_prefix }
 }
