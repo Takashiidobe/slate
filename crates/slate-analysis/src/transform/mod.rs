@@ -1,6 +1,7 @@
 mod const_fold;
 mod dead_temporaries;
 mod decl_init;
+mod do_while_zero;
 mod inline_temporaries;
 mod structure_goto;
 mod truth_canonicalize;
@@ -40,6 +41,11 @@ pub static PASSES: &[Pass] = &[
         name: "const-fold",
         slots: &[Slot::AfterMacroStrip],
         run: const_fold::transform,
+    },
+    Pass {
+        name: "do-while-zero",
+        slots: &[Slot::AfterMacroStrip],
+        run: do_while_zero::transform,
     },
     Pass {
         name: "dead-temporaries",

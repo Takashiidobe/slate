@@ -349,17 +349,12 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
 // CHECK-NEXT:     let mut old: u64 = 0;
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         old = unsafe {
-// CHECK-NEXT:             core::sync::atomic::AtomicU64::from_ptr(
-// CHECK-NEXT:                     core::ptr::addr_of_mut!(used_memory) as *mut u64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:                 .fetch_add(5u64, core::sync::atomic::Ordering::Relaxed)
-// CHECK-NEXT:         };
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
+// CHECK-NEXT:     old = unsafe {
+// CHECK-NEXT:         core::sync::atomic::AtomicU64::from_ptr(
+// CHECK-NEXT:                 core::ptr::addr_of_mut!(used_memory) as *mut u64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:             .fetch_add(5u64, core::sync::atomic::Ordering::Relaxed)
+// CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicU64::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(used_memory) as *mut u64,

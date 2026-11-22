@@ -40,49 +40,44 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn widen_u8(mut p: &u8) -> u64 {
 // CHECK-NEXT:     let mut x: u64 = 0;
+// CHECK-NEXT:     let mut [[T_0:__t[0-9]+]]: i64 = 0;
 // CHECK-NEXT:     loop {
-// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: i64 = 0;
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             match [[T_0]] {
-// CHECK-NEXT:                 0 => {
-// CHECK-NEXT:                     unsafe {
-// CHECK-NEXT:                         let [[T_1:__t[0-9]+]]: u64;
-// CHECK-NEXT:                         core::arch::asm!(
-// CHECK-NEXT:                             "movzbl {1:l}, {0:e}",
-// CHECK-NEXT:                             lateout(reg) [[T_1]],
-// CHECK-NEXT:                             in(reg) (*p as u8) as u32,
-// CHECK-NEXT:                             options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         x = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                     [[T_0]] = 1;
-// CHECK-NEXT:                     continue;
+// CHECK-NEXT:         match [[T_0]] {
+// CHECK-NEXT:             0 => {
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     let [[T_1:__t[0-9]+]]: u64;
+// CHECK-NEXT:                     core::arch::asm!(
+// CHECK-NEXT:                         "movzbl {1:l}, {0:e}",
+// CHECK-NEXT:                         lateout(reg) [[T_1]],
+// CHECK-NEXT:                         in(reg) (*p as u8) as u32,
+// CHECK-NEXT:                         options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     x = unsafe { core::mem::transmute::<u64, u64>([[T_1]] as u64) };
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 1 => {
-// CHECK-NEXT:                     x = x.wrapping_mul(3).wrapping_add(1);
-// CHECK-NEXT:                     x ^= x >> 3i32;
-// CHECK-NEXT:                     STEP!(x);
-// CHECK-NEXT:                     STEP!(x);
-// CHECK-NEXT:                     STEP!(x);
-// CHECK-NEXT:                     STEP!(x);
-// CHECK-NEXT:                     STEP!(x);
-// CHECK-NEXT:                     STEP!(x);
-// CHECK-NEXT:                     STEP!(x);
-// CHECK-NEXT:                     STEP!(x);
-// CHECK-NEXT:                     STEP!(x);
-// CHECK-NEXT:                     STEP!(x);
-// CHECK-NEXT:                     STEP!(x);
-// CHECK-NEXT:                     STEP!(x);
-// CHECK-NEXT:                     STEP!(x);
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 _ => {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:                 [[T_0]] = 1;
+// CHECK-NEXT:                 continue;
 // CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
+// CHECK-NEXT:             1 => {
+// CHECK-NEXT:                 x = x.wrapping_mul(3).wrapping_add(1);
+// CHECK-NEXT:                 x ^= x >> 3i32;
+// CHECK-NEXT:                 STEP!(x);
+// CHECK-NEXT:                 STEP!(x);
+// CHECK-NEXT:                 STEP!(x);
+// CHECK-NEXT:                 STEP!(x);
+// CHECK-NEXT:                 STEP!(x);
+// CHECK-NEXT:                 STEP!(x);
+// CHECK-NEXT:                 STEP!(x);
+// CHECK-NEXT:                 STEP!(x);
+// CHECK-NEXT:                 STEP!(x);
+// CHECK-NEXT:                 STEP!(x);
+// CHECK-NEXT:                 STEP!(x);
+// CHECK-NEXT:                 STEP!(x);
+// CHECK-NEXT:                 STEP!(x);
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x

@@ -90,39 +90,29 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn run() {
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if IS_DEBUG_ENABLED!(2u32, 16i32) {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 debug_print(
-// CHECK-NEXT:                     2u32,
-// CHECK-NEXT:                     38u32,
-// CHECK-NEXT:                     c"run".as_ptr(),
-// CHECK-NEXT:                     core::ptr::addr_of!(module_name) as *const i8,
-// CHECK-NEXT:                     16u32,
-// CHECK-NEXT:                     c"exec\n".as_ptr(),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     if IS_DEBUG_ENABLED!(2u32, 16i32) {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             debug_print(
+// CHECK-NEXT:                 2u32,
+// CHECK-NEXT:                 38u32,
+// CHECK-NEXT:                 c"run".as_ptr(),
+// CHECK-NEXT:                 core::ptr::addr_of!(module_name) as *const i8,
+// CHECK-NEXT:                 16u32,
+// CHECK-NEXT:                 c"exec\n".as_ptr(),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if IS_DEBUG_ENABLED!(1u32, 16i32) {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 debug_print(
-// CHECK-NEXT:                     1u32,
-// CHECK-NEXT:                     39u32,
-// CHECK-NEXT:                     c"run".as_ptr(),
-// CHECK-NEXT:                     core::ptr::addr_of!(module_name) as *const i8,
-// CHECK-NEXT:                     16u32,
-// CHECK-NEXT:                     c"level one\n".as_ptr(),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     if IS_DEBUG_ENABLED!(1u32, 16i32) {
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             debug_print(
+// CHECK-NEXT:                 1u32,
+// CHECK-NEXT:                 39u32,
+// CHECK-NEXT:                 c"run".as_ptr(),
+// CHECK-NEXT:                 core::ptr::addr_of!(module_name) as *const i8,
+// CHECK-NEXT:                 16u32,
+// CHECK-NEXT:                 c"level one\n".as_ptr(),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

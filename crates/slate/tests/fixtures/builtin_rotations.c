@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     loop {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let x: u8 = 147;
 // CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16(
 // CHECK-NEXT:             [0u32, 1u32, (8i32 - 1i32) as u32, 8u32, (8i32 + 1i32) as u32, 255u32],
@@ -67,11 +67,8 @@ int main(void) {
 // CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let x: u16 = 37175;
 // CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16(
 // CHECK-NEXT:             [0u32, 1u32, (16i32 - 1i32) as u32, 16u32, (16i32 + 1i32) as u32, 255u32],
@@ -90,11 +87,8 @@ int main(void) {
 // CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let x: u32 = 2436344781;
 // CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16(
 // CHECK-NEXT:             [0u32, 1u32, (32i32 - 1i32) as u32, 32u32, (32i32 + 1i32) as u32, 255u32],
@@ -113,11 +107,8 @@ int main(void) {
 // CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
 // CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
+// CHECK-NEXT:     {
 // CHECK-NEXT:         let x: u64 = 10464021160185111365;
 // CHECK-NEXT:         let counts: __SlateAlign16<[u32; 6]> = __SlateAlign16(
 // CHECK-NEXT:             [0u32, 1u32, (64i32 - 1i32) as u32, 64u32, (64i32 + 1i32) as u32, 255u32],
@@ -135,9 +126,6 @@ int main(void) {
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
 // CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut x: u32 = 3;

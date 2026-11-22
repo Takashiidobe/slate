@@ -58,12 +58,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn runs_once_when_false() -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         total += 7;
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
-// CHECK-NEXT:     }
+// CHECK-NEXT:     total += 7;
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:

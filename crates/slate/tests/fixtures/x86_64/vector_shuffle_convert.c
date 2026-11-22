@@ -534,33 +534,28 @@ int main(void) {
 // CHECK-NEXT:         core::simd::num::SimdUint::cast::<u16>(unsigned_bytes),
 // CHECK-NEXT:         16i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: loop {
-// CHECK-NEXT:         let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
-// CHECK-NEXT:         '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
-// CHECK-NEXT:             lanes.0[i as usize] = core::simd::num::SimdInt::cast::<i16>(
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *{
-// CHECK-NEXT:                         [[SLATE_COMPOUND_1]] = core::simd::Simd::from_array(
-// CHECK-NEXT:                             [70000i32, -70000i32, 32767i32, -32769i32],
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 },
-// CHECK-NEXT:             )[i as usize] as i64;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%s %lld\n".as_ptr(),
-// CHECK-NEXT:                 c"trunc".as_ptr() as *mut i8,
-// CHECK-NEXT:                 fold(lanes.0.as_mut_ptr() as *const i64, 4i32),
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     let mut lanes: __SlateAlign16<[i64; 4]> = __SlateAlign16([0i64; 4]);
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0i32..4i32 {
+// CHECK-NEXT:         lanes.0[i as usize] = core::simd::num::SimdInt::cast::<i16>(
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *{
+// CHECK-NEXT:                     [[SLATE_COMPOUND_1]] = core::simd::Simd::from_array(
+// CHECK-NEXT:                         [70000i32, -70000i32, 32767i32, -32769i32],
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     core::ptr::addr_of_mut!([[SLATE_COMPOUND_1]])
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             },
+// CHECK-NEXT:         )[i as usize] as i64;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%s %lld\n".as_ptr(),
+// CHECK-NEXT:             c"trunc".as_ptr() as *mut i8,
+// CHECK-NEXT:             fold(lanes.0.as_mut_ptr() as *const i64, 4i32),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     let floats: core::simd::Simd<f32, 4> = core::simd::num::SimdInt::cast::<f32>(a);
 // CHECK-NEXT:     let back: core::simd::Simd<i32, 4> = core::simd::num::SimdFloat::cast::<i32>(
 // CHECK-NEXT:         floats

@@ -84,32 +84,14 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         while start < count {
 // CHECK-NEXT:             let copy: i32 = values[start as usize];
-// CHECK-NEXT:             loop {
-// CHECK-NEXT:                 if unlikely!(copy < 0) != 0 {
-// CHECK-NEXT:                     loop {
-// CHECK-NEXT:                         loop {
-// CHECK-NEXT:                             unsafe {
-// CHECK-NEXT:                                 core::arch::asm!("", options(nostack, att_syntax));
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                             unsafe {
-// CHECK-NEXT:                                 core::ptr::write_volatile(
-// CHECK-NEXT:                                     core::ptr::addr_of_mut!(trapped),
-// CHECK-NEXT:                                     1i32,
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                             };
-// CHECK-NEXT:                             if true {
-// CHECK-NEXT:                                 break;
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         unsafe { core::hint::unreachable_unchecked() };
-// CHECK-NEXT:                         if true {
-// CHECK-NEXT:                             break;
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }
+// CHECK-NEXT:             if unlikely!(copy < 0) != 0 {
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     core::arch::asm!("", options(nostack, att_syntax));
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 if true {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     core::ptr::write_volatile(core::ptr::addr_of_mut!(trapped), 1i32)
+// CHECK-NEXT:                 };
+// CHECK-NEXT:                 unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if copy > 9 {
 // CHECK-NEXT:                 break;

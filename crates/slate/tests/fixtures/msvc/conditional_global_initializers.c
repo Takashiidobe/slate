@@ -459,36 +459,20 @@ int main(void) {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         ((const { core::mem::size_of::<[ptrlen; 3]>() }) as u64)
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             / ((const { core::mem::size_of::<ptrlen>() }) as u64) == 3
 // CHECK-NEXT:     );
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: bool = same(unsafe { names.0[0] }, c"ping".as_ptr()) != 0
-// CHECK-NEXT:             && same(unsafe { names.0[1] }, c"query".as_ptr()) != 0;
-// CHECK-NEXT:         if !([[V_0]]
-// CHECK-NEXT:             && same(unsafe { names.0[2] }, c"session-bind@openssh.com".as_ptr()) != 0) {
-// CHECK-NEXT:             unsafe { abort() };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = same(unsafe { names.0[0] }, c"ping".as_ptr()) != 0
+// CHECK-NEXT:         && same(unsafe { names.0[1] }, c"query".as_ptr()) != 0;
+// CHECK-NEXT:     if !([[V_0]]
+// CHECK-NEXT:         && same(unsafe { names.0[2] }, c"session-bind@openssh.com".as_ptr()) != 0) {
+// CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: bool = (unsafe { extra.0.hash })
-// CHECK-NEXT:             == unsafe { core::ptr::addr_of!(vt_a.0) }
-// CHECK-NEXT:             && (unsafe { unsafe { (*extra.0.hash).r#fn }.unwrap()(5i32) }) == 15;
-// CHECK-NEXT:         if !([[V_1]] && (unsafe { unsafe { extra.0.fallback }.unwrap()(5i32) }) == 12) {
-// CHECK-NEXT:             unsafe { abort() };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = (unsafe { extra.0.hash }) == unsafe { core::ptr::addr_of!(vt_a.0) }
+// CHECK-NEXT:         && (unsafe { unsafe { (*extra.0.hash).r#fn }.unwrap()(5i32) }) == 15;
+// CHECK-NEXT:     if !([[V_1]] && (unsafe { unsafe { extra.0.fallback }.unwrap()(5i32) }) == 12) {
+// CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     loop {
-// CHECK-NEXT:         if !((unsafe { strcmp(extra.0.alg, c"Ed25519".as_ptr()) }) == 0
-// CHECK-NEXT:             && same(unsafe { extra.0.prefix }, c"".as_ptr()) != 0) {
-// CHECK-NEXT:             unsafe { abort() };
-// CHECK-NEXT:         }
-// CHECK-NEXT:         if true {
-// CHECK-NEXT:             break;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     if !((unsafe { strcmp(extra.0.alg, c"Ed25519".as_ptr()) }) == 0
+// CHECK-NEXT:         && same(unsafe { extra.0.prefix }, c"".as_ptr()) != 0) {
+// CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     CHECK!(
 // CHECK-NEXT:         (unsafe { pick.0 })
