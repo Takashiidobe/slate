@@ -1,4 +1,4 @@
-use foldhash::{HashMap, HashMapExt};
+use foldhash::HashMap;
 use slate_parser::ast::Span;
 use slate_parser::ir::*;
 use std::ops::Range;
@@ -34,31 +34,41 @@ pub struct BindingMutability {
     pub arguments: Vec<BorrowArgument>,
 }
 
+#[derive(Default)]
 pub(crate) struct DefUse {
     uses: HashMap<BindingId, Vec<(u32, Access)>>,
+    locals: Vec<BindingId>,
     bodies: HashMap<BindingId, Range<u32>>,
     switches: HashMap<BindingId, u32>,
     cases: Vec<(u32, BindingId)>,
     labels: Vec<u32>,
     opaque: Vec<u32>,
-    position: u32,
     next: u32,
 }
 
 impl DefUse {
     pub fn of(body: &[Span<Statement>]) -> Self {
-        let mut def_use = Self {
-            uses: HashMap::new(),
-            bodies: HashMap::new(),
-            switches: HashMap::new(),
-            cases: Vec::new(),
-            labels: Vec::new(),
-            opaque: Vec::new(),
-            position: 0,
-            next: 0,
+        let mut walker = Walker::default();
+        walker.statements(body);
+        walker.def_use
+    }
+
+    pub fn for_mutability(
+        function: &Function,
+        types: &HashMap<TypeId, &TypeDefinitionKind>,
+    ) -> Option<Self> {
+        let mut walker = Walker {
+            types: Some(types),
+            ..Walker::default()
         };
-        def_use.statements(body);
-        def_use
+        walker.statements(function.body.as_deref()?);
+        let mut def_use = walker.def_use;
+        if let Parameters::Prototype { fixed, .. } = &function.parameters {
+            def_use
+                .locals
+                .extend(fixed.iter().map(|param| param.value.id));
+        }
+        Some(def_use)
     }
 
     pub fn escapes(&self, binding: BindingId) -> bool {
@@ -105,9 +115,7 @@ impl DefUse {
     }
 
     pub fn binding_mutability(&self) -> impl Iterator<Item = (BindingId, BindingMutability)> + '_ {
-        self.uses
-            .iter()
-            .map(|(&id, uses)| (id, Self::mutability_of(uses)))
+        self.locals.iter().map(|&id| (id, self.mutability(id)))
     }
 
     fn mutability_of(uses: &[(u32, Access)]) -> BindingMutability {
@@ -168,26 +176,36 @@ impl DefUse {
                         .is_some_and(|switch| region.contains(switch))
             })
     }
+}
 
+#[derive(Default)]
+struct Walker<'a> {
+    def_use: DefUse,
+    position: u32,
+    types: Option<&'a HashMap<TypeId, &'a TypeDefinitionKind>>,
+}
+
+impl Walker<'_> {
     fn record(&mut self, binding: BindingId, access: Access) {
-        self.uses
+        self.def_use
+            .uses
             .entry(binding)
             .or_default()
             .push((self.position, access));
     }
 
     fn region(&mut self, body: &[Span<Statement>]) -> Range<u32> {
-        let start = self.next;
+        let start = self.def_use.next;
         self.statements(body);
-        start..self.next
+        start..self.def_use.next
     }
 
     fn statements(&mut self, body: &[Span<Statement>]) {
         for statement in body {
             deep(|| {
                 let outer = self.position;
-                self.position = self.next;
-                self.next += 1;
+                self.position = self.def_use.next;
+                self.def_use.next += 1;
                 self.statement(&statement.value);
                 self.position = outer;
             });
@@ -219,7 +237,9 @@ impl DefUse {
                 initializer,
                 ..
             } => {
-                self.uses.entry(*id).or_default();
+                if self.types.is_some() {
+                    self.def_use.locals.push(*id);
+                }
                 self.captures(ty);
                 if let Some(value) = initializer {
                     self.value(value);
@@ -255,7 +275,7 @@ impl DefUse {
             } => {
                 self.evaluation(condition);
                 let body = self.region(body);
-                self.bodies.insert(*id, body);
+                self.def_use.bodies.insert(*id, body);
             }
             Statement::DoWhile {
                 id,
@@ -263,7 +283,7 @@ impl DefUse {
                 condition,
             } => {
                 let body = self.region(body);
-                self.bodies.insert(*id, body);
+                self.def_use.bodies.insert(*id, body);
                 self.evaluation(condition);
             }
             Statement::For {
@@ -282,7 +302,7 @@ impl DefUse {
                     self.evaluation(increment);
                 }
                 let body = self.region(body);
-                self.bodies.insert(*id, body);
+                self.def_use.bodies.insert(*id, body);
             }
             Statement::Switch {
                 id,
@@ -290,10 +310,10 @@ impl DefUse {
                 body,
                 ..
             } => {
-                self.switches.insert(*id, self.position);
+                self.def_use.switches.insert(*id, self.position);
                 self.value(discriminant);
                 let body = self.region(body);
-                self.bodies.insert(*id, body);
+                self.def_use.bodies.insert(*id, body);
             }
             Statement::Case {
                 switch,
@@ -301,7 +321,7 @@ impl DefUse {
                 end,
                 body,
             } => {
-                self.cases.push((self.position, *switch));
+                self.def_use.cases.push((self.position, *switch));
                 self.value(start);
                 if let Some(end) = end {
                     self.value(end);
@@ -309,11 +329,11 @@ impl DefUse {
                 self.statements(body);
             }
             Statement::Default { switch, body } => {
-                self.cases.push((self.position, *switch));
+                self.def_use.cases.push((self.position, *switch));
                 self.statements(body);
             }
             Statement::Asm(asm) => {
-                self.opaque.push(self.position);
+                self.def_use.opaque.push(self.position);
                 for operand in &asm.operands {
                     match &operand.kind {
                         AsmOperandKind::In(value) => self.value(value),
@@ -333,11 +353,11 @@ impl DefUse {
                 }
             }
             Statement::Label { body, .. } => {
-                self.labels.push(self.position);
+                self.def_use.labels.push(self.position);
                 self.statements(body);
             }
             Statement::SehTry { body, handler, .. } => {
-                self.opaque.push(self.position);
+                self.def_use.opaque.push(self.position);
                 self.statements(body);
                 match handler {
                     SehHandler::Except { filter, body } => {
@@ -348,7 +368,7 @@ impl DefUse {
                 }
             }
             Statement::OmpParallel(parallel) => {
-                self.opaque.push(self.position);
+                self.def_use.opaque.push(self.position);
                 for value in [&parallel.num_threads, &parallel.condition]
                     .into_iter()
                     .flatten()
@@ -362,7 +382,7 @@ impl DefUse {
                 self.statements(&parallel.body);
             }
             Statement::OmpFor(omp) => {
-                self.opaque.push(self.position);
+                self.def_use.opaque.push(self.position);
                 self.privates(&omp.private);
                 for omp_loop in &omp.loops {
                     self.variable(&omp_loop.variable);
@@ -383,7 +403,9 @@ impl DefUse {
     }
 
     fn variable(&mut self, variable: &Variable) {
-        self.uses.entry(variable.id).or_default();
+        if self.types.is_some() {
+            self.def_use.locals.push(variable.id);
+        }
         self.captures(&variable.ty);
         if variable.cleanup.is_some() {
             self.record(variable.id, Access::Escape);
@@ -413,6 +435,34 @@ impl DefUse {
         self.access_place(place, Access::Escape);
     }
 
+    fn aligned_array(&self, mut place: &Place) -> bool {
+        while let PlaceKind::Field {
+            base, bits: None, ..
+        } = &place.kind
+        {
+            let Some(types) = self.types else {
+                return false;
+            };
+            let mut ty = &base.ty;
+            while let Type::Defined(id) = ty
+                && let Some(TypeDefinitionKind::Alias(inner)) = types.get(id)
+            {
+                ty = inner;
+            }
+            if !place.access.is_plain()
+                || !matches!(ty, Type::Defined(id) if matches!(
+                    types.get(id),
+                    Some(TypeDefinitionKind::Record { layout: Some(layout), .. })
+                        if !layout.underaligned.contains(&true)
+                ))
+            {
+                return false;
+            }
+            place = base;
+        }
+        matches!(place.kind, PlaceKind::Binding(_)) && place.access.is_plain()
+    }
+
     fn access_place(&mut self, place: &Place, access: Access) {
         self.captures(&place.ty);
         match &place.kind {
@@ -435,7 +485,7 @@ impl DefUse {
                         element: array_element,
                     } = &array.ty
                     && **array_element == *element
-                    && matches!(array.kind, PlaceKind::Binding(_))
+                    && self.aligned_array(array)
                     && captured(&array.ty).is_empty() =>
             {
                 self.access_place(array, access);

@@ -679,14 +679,11 @@ int main(void) {
 // CHECK-NEXT:     c0: *mut __slate_blocks::Byref<*mut core::ffi::c_void>,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "C-unwind" fn __slate_block_0(
-// CHECK-NEXT:     __block: *mut core::ffi::c_void,
-// CHECK-NEXT:     mut [[V_0:__v[0-9]+]]: i32,
-// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn __slate_block_0(__block: *mut core::ffi::c_void, [[V_0:__v[0-9]+]]: i32) -> i32 {
 // CHECK-NEXT:     let __captures: __slate_block_0_captures = unsafe {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_0_captures>(__block)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut fib: *mut __slate_blocks::Byref<*mut core::ffi::c_void> = __captures.c0;
+// CHECK-NEXT:     let fib: *mut __slate_blocks::Byref<*mut core::ffi::c_void> = __captures.c0;
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = if [[V_0]] < 2 {
 // CHECK-NEXT:         [[V_0]]
 // CHECK-NEXT:     } else {
@@ -728,14 +725,11 @@ int main(void) {
 // CHECK-NEXT:     c0: *mut __slate_blocks::Byref<*mut core::ffi::c_void>,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "C-unwind" fn __slate_block_1(
-// CHECK-NEXT:     __block: *mut core::ffi::c_void,
-// CHECK-NEXT:     mut [[V_0]]: i32,
-// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn __slate_block_1(__block: *mut core::ffi::c_void, [[V_0]]: i32) -> i32 {
 // CHECK-NEXT:     let __captures: __slate_block_1_captures = unsafe {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_1_captures>(__block)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut depth: *mut __slate_blocks::Byref<*mut core::ffi::c_void> = __captures.c0;
+// CHECK-NEXT:     let depth: *mut __slate_blocks::Byref<*mut core::ffi::c_void> = __captures.c0;
 // CHECK-NEXT:     let [[V_1]]: i32 = if [[V_0]] != 0 {
 // CHECK-NEXT:         ({
 // CHECK-NEXT:             let [[T_0]] = unsafe { *__slate_blocks::value(depth) };
@@ -772,8 +766,8 @@ int main(void) {
 // CHECK-NEXT:     let __captures: __slate_block_2_captures = unsafe {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_2_captures>(__block)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut count: *mut __slate_blocks::Byref<i32> = __captures.c0;
-// CHECK-NEXT:     let mut [[V_0]]: i32 = (unsafe { *__slate_blocks::value(count) }) + 1;
+// CHECK-NEXT:     let count: *mut __slate_blocks::Byref<i32> = __captures.c0;
+// CHECK-NEXT:     let [[V_0]]: i32 = (unsafe { *__slate_blocks::value(count) }) + 1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *__slate_blocks::value(count) = [[V_0]];
 // CHECK-NEXT:     }
@@ -800,8 +794,8 @@ int main(void) {
 // CHECK-NEXT:     let __captures: __slate_block_3_captures = unsafe {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_3_captures>(__block)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut total: *mut __slate_blocks::Byref<i64> = __captures.c0;
-// CHECK-NEXT:     let mut [[V_0]]: i64 = (unsafe { *__slate_blocks::value(total) }) + 5;
+// CHECK-NEXT:     let total: *mut __slate_blocks::Byref<i64> = __captures.c0;
+// CHECK-NEXT:     let [[V_0]]: i64 = (unsafe { *__slate_blocks::value(total) }) + 5;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *__slate_blocks::value(total) = [[V_0]];
 // CHECK-NEXT:     }
@@ -828,7 +822,7 @@ int main(void) {
 // CHECK-NEXT:     let __captures: __slate_block_4_captures = unsafe {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_4_captures>(__block)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut total: *mut __slate_blocks::Byref<i64> = __captures.c0;
+// CHECK-NEXT:     let total: *mut __slate_blocks::Byref<i64> = __captures.c0;
 // CHECK-NEXT:     unsafe { *__slate_blocks::value(total) as i32 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -852,7 +846,7 @@ int main(void) {
 // CHECK-NEXT:     let __captures: __slate_block_5_captures = unsafe {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_5_captures>(__block)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut x: *mut __slate_blocks::Byref<i32> = __captures.c0;
+// CHECK-NEXT:     let x: *mut __slate_blocks::Byref<i32> = __captures.c0;
 // CHECK-NEXT:     unsafe { *__slate_blocks::value(x) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -876,8 +870,8 @@ int main(void) {
 // CHECK-NEXT:     let __captures: __slate_block_6_captures = unsafe {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_6_captures>(__block)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut mine: *mut __slate_blocks::Byref<i32> = __captures.c0;
-// CHECK-NEXT:     let mut [[V_0]]: i32 = unsafe { *__slate_blocks::value(mine) };
+// CHECK-NEXT:     let mine: *mut __slate_blocks::Byref<i32> = __captures.c0;
+// CHECK-NEXT:     let [[V_0]]: i32 = unsafe { *__slate_blocks::value(mine) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *__slate_blocks::value(mine) = [[V_0]] + 1;
 // CHECK-NEXT:     }

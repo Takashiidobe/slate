@@ -601,6 +601,11 @@ benchmark showed no analysis that SSA would make asymptotically cheaper.
   Lowering resolves those arguments against the selected parameter
   representation. A shared borrow can use an immutable binding, and a write
   through a pointer can leave the pointer binding immutable.
+- Mutability collection uses `for_each_function_ref` to build one `DefUse`
+  per scope. By-value block captures get facts scoped to their invoke function.
+  A by-reference capture loads an immutable pointer binding to writable storage.
+  Aligned array field reads are projections. Packed or underaligned fields
+  retain the conservative address-use classification.
 - Lowering marks Rust-created writes where it emits them, including aggregate
   fills, dispatch slots, and OpenMP firstprivate copies. Kept macro places
   retain conservative mutability.

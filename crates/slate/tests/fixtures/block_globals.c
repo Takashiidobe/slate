@@ -269,10 +269,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut hits: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "C-unwind" fn __slate_block_0(
-// CHECK-NEXT:     __block: *mut core::ffi::c_void,
-// CHECK-NEXT:     mut [[V_0:__v[0-9]+]]: i32,
-// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn __slate_block_0(__block: *mut core::ffi::c_void, [[V_0:__v[0-9]+]]: i32) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_blocks::captures::<()>(__block) };
 // CHECK-NEXT:     [[V_0]] * 2
 // CHECK-NEXT: }
@@ -281,10 +278,7 @@ int main(void) {
 // CHECK-NEXT:     __slate_blocks::global(__slate_block_0 as *const core::ffi::c_void)
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "C-unwind" fn __slate_block_1(
-// CHECK-NEXT:     __block: *mut core::ffi::c_void,
-// CHECK-NEXT:     mut [[V_0]]: i32,
-// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn __slate_block_1(__block: *mut core::ffi::c_void, [[V_0]]: i32) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_blocks::captures::<()>(__block) };
 // CHECK-NEXT:     [[V_0]] + 1
 // CHECK-NEXT: }
@@ -293,10 +287,7 @@ int main(void) {
 // CHECK-NEXT:     __slate_blocks::global(__slate_block_1 as *const core::ffi::c_void)
 // CHECK-NEXT: };
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "C-unwind" fn __slate_block_2(
-// CHECK-NEXT:     __block: *mut core::ffi::c_void,
-// CHECK-NEXT:     mut [[V_0]]: i32,
-// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn __slate_block_2(__block: *mut core::ffi::c_void, [[V_0]]: i32) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_blocks::captures::<()>(__block) };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         hits += 1;

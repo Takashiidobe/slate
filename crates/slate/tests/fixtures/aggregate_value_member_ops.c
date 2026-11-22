@@ -78,7 +78,7 @@ int main(void) {
 // CHECK-NEXT:     n.inner.left + n.inner.right + n.tag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn array_value(mut w: WithArray) -> i32 {
+// CHECK-NEXT: fn array_value(w: WithArray) -> i32 {
 // CHECK-NEXT:     w.data[1] + w.marker
 // CHECK-NEXT: }
 // CHECK-EMPTY:

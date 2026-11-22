@@ -40,7 +40,7 @@ int main(void) {
 // CHECK-NEXT:     b.data[2] = 30;
 // CHECK-NEXT:     b.len = 3;
 // CHECK-NEXT:     println!("{}", b.data[1] + b.len);
-// CHECK-NEXT:     let mut init: Buf = Buf { data: [1, 2, 3], len: 3 };
+// CHECK-NEXT:     let init: Buf = Buf { data: [1, 2, 3], len: 3 };
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     let mut i: i32 = 0;
 // CHECK-NEXT:     while i < init.len {

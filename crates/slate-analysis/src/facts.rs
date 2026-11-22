@@ -8,7 +8,7 @@ use crate::pointer::{self, PointerFact};
 use crate::program::{Program, ProgramBinding, UnitId};
 use foldhash::{HashMap, HashMapExt, HashSet};
 use slate_parser::ast::NodeId;
-use slate_parser::ir::BindingId;
+use slate_parser::ir::{BindingId, for_each_function_ref};
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct BindingFacts {
@@ -25,6 +25,7 @@ pub struct ValueFacts {}
 #[derive(Debug, Default)]
 pub struct Facts {
     bindings: HashMap<ProgramBinding, BindingFacts>,
+    block_captures: HashMap<(ProgramBinding, BindingId), BindingMutability>,
     values: HashMap<NodeId, ValueFacts>,
     identities: HashMap<ProgramBinding, FunctionIdentity>,
     counted_loops: Vec<HashMap<BindingId, CountedLoop>>,
@@ -52,6 +53,16 @@ impl<'f> UnitFacts<'f> {
 
     pub fn binding(&self, binding: BindingId) -> Option<&'f BindingFacts> {
         self.facts.bindings.get(&self.key(binding))
+    }
+
+    pub fn block_capture(
+        &self,
+        function: BindingId,
+        capture: BindingId,
+    ) -> Option<&'f BindingMutability> {
+        self.facts
+            .block_captures
+            .get(&(self.key(function), capture))
     }
 
     pub fn value(&self, node: NodeId) -> Option<&'f ValueFacts> {
@@ -114,6 +125,7 @@ pub fn analyze(program: &Program<'_>) -> Facts {
             )
         })
         .collect();
+    let mut block_captures = HashMap::default();
     for (unit, program_unit) in program.units() {
         let module = program_unit.module;
         let literals = constant_strings::literals(module);
@@ -170,27 +182,39 @@ pub fn analyze(program: &Program<'_>) -> Facts {
         let mut strings = HashMap::new();
         for function in &module.functions {
             constant_strings::analyze(&function.value, &context, &mut strings);
-            let Some(body) = &function.body else {
-                continue;
+        }
+        let hidden: HashSet<_> = module
+            .macro_hidden_arguments
+            .values()
+            .flatten()
+            .copied()
+            .collect();
+        let types = module
+            .types
+            .iter()
+            .map(|ty| (ty.value.id, &ty.kind))
+            .collect();
+        for_each_function_ref(module, |function, captures| {
+            let Some(uses) = DefUse::for_mutability(function, &types) else {
+                return;
             };
-            let uses = DefUse::of(body);
             for (binding, mutability) in uses.binding_mutability() {
                 bindings
                     .entry(ProgramBinding { unit, binding })
                     .or_default()
                     .mutability = Some(mutability);
             }
-            if let slate_parser::ir::Parameters::Prototype { fixed, .. } = &function.parameters {
-                for parameter in fixed {
-                    let binding = parameter.value.id;
-                    bindings
-                        .entry(ProgramBinding { unit, binding })
-                        .or_default()
-                        .mutability = Some(uses.mutability(binding));
+            let owner = ProgramBinding {
+                unit,
+                binding: function.id,
+            };
+            for capture in captures {
+                if !capture.by_reference && !hidden.contains(&capture.id) {
+                    block_captures.insert((owner, capture.id), uses.mutability(capture.id));
                 }
             }
-        }
-        for &binding in module.macro_hidden_arguments.values().flatten() {
+        });
+        for binding in hidden {
             bindings
                 .entry(ProgramBinding { unit, binding })
                 .or_default()
@@ -205,6 +229,7 @@ pub fn analyze(program: &Program<'_>) -> Facts {
     }
     Facts {
         bindings,
+        block_captures,
         values: HashMap::new(),
         identities,
         counted_loops,

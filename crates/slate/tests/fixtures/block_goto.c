@@ -445,8 +445,8 @@ again:
 // CHECK-NEXT:     let __captures: __slate_block_0_captures = unsafe {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_0_captures>(__block)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut n: *mut __slate_blocks::Byref<i32> = __captures.c0;
-// CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: i32 = (unsafe { *__slate_blocks::value(n) }) + 1;
+// CHECK-NEXT:     let n: *mut __slate_blocks::Byref<i32> = __captures.c0;
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = (unsafe { *__slate_blocks::value(n) }) + 1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *__slate_blocks::value(n) = [[V_2]];
 // CHECK-NEXT:     }
@@ -469,14 +469,11 @@ again:
 // CHECK-NEXT:     c0: *mut __slate_blocks::Byref<*mut core::ffi::c_void>,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "C-unwind" fn __slate_block_1(
-// CHECK-NEXT:     __block: *mut core::ffi::c_void,
-// CHECK-NEXT:     mut [[V_0]]: i32,
-// CHECK-NEXT: ) -> i32 {
+// CHECK-NEXT: extern "C-unwind" fn __slate_block_1(__block: *mut core::ffi::c_void, [[V_0]]: i32) -> i32 {
 // CHECK-NEXT:     let __captures: __slate_block_1_captures = unsafe {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_1_captures>(__block)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut depth: *mut __slate_blocks::Byref<*mut core::ffi::c_void> = __captures.c0;
+// CHECK-NEXT:     let depth: *mut __slate_blocks::Byref<*mut core::ffi::c_void> = __captures.c0;
 // CHECK-NEXT:     let [[V_1]]: i32 = if [[V_0]] != 0 {
 // CHECK-NEXT:         ({
 // CHECK-NEXT:             let [[T_0]] = unsafe { *__slate_blocks::value(depth) };
@@ -513,8 +510,8 @@ again:
 // CHECK-NEXT:     let __captures: __slate_block_2_captures = unsafe {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_2_captures>(__block)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut n: *mut __slate_blocks::Byref<i32> = __captures.c0;
-// CHECK-NEXT:     let mut [[V_0]]: i32 = (unsafe { *__slate_blocks::value(n) }) + 1;
+// CHECK-NEXT:     let n: *mut __slate_blocks::Byref<i32> = __captures.c0;
+// CHECK-NEXT:     let [[V_0]]: i32 = (unsafe { *__slate_blocks::value(n) }) + 1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *__slate_blocks::value(n) = [[V_0]];
 // CHECK-NEXT:     }

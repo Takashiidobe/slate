@@ -217,14 +217,18 @@ Per-value expansion chains are not in the IR yet (only atomic builtins record
 
 ## Walking the IR
 
-`ir::Visitor` with `ir::walk_body` / `ir::walk_value` (`ir/visit.rs`) is the one
-IR traversal; do not hand-roll another. It visits every `Statement`,
-`PlaceKind`, and `ValueKind` through `&mut`. Observe hooks (`statement`,
+`ir::walk_body` and `ir::walk_value` take a mutable `ir::Visitor`.
+`ir::walk_module_ref` takes a `ReadVisitor` over shared IR.
+Both walkers use the same exhaustive matches over statements, places, and
+values in `ir/visit.rs`. Mutable observe hooks (`statement`,
 `value_kind`, `place_kind`, `binding`) run before the children; rewrite hooks
 (`rewrite_place`, `rewrite_value`, `rewrite_statement`) run after them, bottom
 up. The macro hooks (`keep`, `enter_expansion`, value and place holes) default
-to keeping and ignoring macro structure. A new variant must be added to the
-walker's matches, which are exhaustive.
+to keeping and ignoring macro structure.
+
+Use `for_each_function_ref` for read-only scope discovery. It visits top-level
+functions, GNU nested functions, and block bodies, including blocks in global
+initializers.
 
 ## Dumps and CLI
 

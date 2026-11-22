@@ -255,7 +255,12 @@ impl FunctionLowerer<'_, '_> {
             loads.push(Stmt::Let {
                 origin: rust::LocalOrigin::Source,
                 name: self.binding_name(capture.id),
-                mutable: true,
+                mutable: !capture.by_reference
+                    && self.requires_mut(
+                        self.tables
+                            .facts
+                            .block_capture(block.function.id, capture.id),
+                    ),
                 ty: Some(ty.clone()),
                 init: Some(Expr::Field {
                     base: Box::new(Expr::var("__captures".into())),
@@ -398,7 +403,7 @@ impl FunctionLowerer<'_, '_> {
             params.push(FnParam {
                 comments: Vec::new(),
                 name: self.binding_name(param.value.id),
-                mutable: true,
+                mutable: self.binding_requires_mut(param.value.id),
                 ty: self.lower_type(&param.ty)?,
             });
         }
