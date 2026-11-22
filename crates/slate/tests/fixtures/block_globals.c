@@ -290,7 +290,7 @@ int main(void) {
 // CHECK-NEXT: extern "C-unwind" fn __slate_block_2(__block: *mut core::ffi::c_void, [[V_0]]: i32) -> i32 {
 // CHECK-NEXT:     unsafe { __slate_blocks::captures::<()>(__block) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         hits = hits + 1;
+// CHECK-NEXT:         hits += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }

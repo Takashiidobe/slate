@@ -66,7 +66,7 @@ int main(void) {
 // CHECK-NEXT:         *a = 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *b = *b + 2;
+// CHECK-NEXT:         *b += 2;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn read_only(p: &i32) -> i32 {

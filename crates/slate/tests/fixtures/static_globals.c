@@ -21,7 +21,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump_counter() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         counter = counter + 1;
+// CHECK-NEXT:         counter += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { counter }
 // CHECK-NEXT: }

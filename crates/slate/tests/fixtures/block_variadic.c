@@ -437,8 +437,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: i32 = base;
 // CHECK-NEXT:     for [[V_3:__v[0-9]+]] in 0..[[V_0]] {
-// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: i32 = unsafe { [[V_1]].next_arg::<i32>() };
-// CHECK-NEXT:         [[V_2]] += [[V_4]];
+// CHECK-NEXT:         [[V_2]] += unsafe { [[V_1]].next_arg::<i32>() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[V_2]]
 // CHECK-NEXT: }
@@ -511,10 +510,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     for [[V_2]] in 0..[[V_0]] {
 // CHECK-NEXT:         let [[V_3]]: f64 = unsafe { [[V_1]].next_arg::<f64>() };
-// CHECK-NEXT:         let [[V_4]]: f64 = unsafe { *__slate_blocks::value(total) };
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: f64 = [[V_4]] + [[V_3]];
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *__slate_blocks::value(total) = [[V_5]];
+// CHECK-NEXT:             *__slate_blocks::value(total) += [[V_3]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

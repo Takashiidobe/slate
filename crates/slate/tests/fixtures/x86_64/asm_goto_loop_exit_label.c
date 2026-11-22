@@ -46,13 +46,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn region_begin() {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         open_regions = open_regions + 1;
+// CHECK-NEXT:         open_regions += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn region_end() {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         open_regions = open_regions - 1;
+// CHECK-NEXT:         open_regions -= 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

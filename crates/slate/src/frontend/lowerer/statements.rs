@@ -428,10 +428,14 @@ impl FunctionLowerer<'_, '_> {
                 ordering,
                 ..
             } => {
+                let updates_in_place = updates_in_place(place, value);
                 let value = self.lower_value(value)?;
                 match ordering {
                     Some(ordering) => {
                         Stmt::Expr(self.lower_atomic_access(place, ordering, Some(value))?)
+                    }
+                    None if updates_in_place => {
+                        compound_assignment(self.lower_assignment(place, value)?)
                     }
                     None => self.lower_assignment(place, value)?,
                 }
@@ -858,5 +862,148 @@ fn is_trivial_operand(value: &Expr) -> bool {
         Expr::Value(_) | Expr::Var(_) => true,
         Expr::Cast { expr, .. } | Expr::Unary { expr, .. } => is_trivial_operand(expr),
         _ => false,
+    }
+}
+
+fn updates_in_place(place: &ir::Place, value: &ir::Value) -> bool {
+    let ir::ValueKind::Arith {
+        op:
+            ir::ArithOp::Add
+            | ir::ArithOp::Sub
+            | ir::ArithOp::Mul
+            | ir::ArithOp::Div
+            | ir::ArithOp::Rem
+            | ir::ArithOp::And
+            | ir::ArithOp::Or
+            | ir::ArithOp::Xor
+            | ir::ArithOp::Shl
+            | ir::ArithOp::Shr,
+        left,
+        ..
+    } = &value.node.value
+    else {
+        return false;
+    };
+    let ir::ValueKind::Read {
+        place: read,
+        ordering: None,
+    } = &left.node.value
+    else {
+        return false;
+    };
+    !place.access.volatile && value.ty == place.ty && left.ty == place.ty && same_place(place, read)
+}
+
+fn same_place(a: &ir::Place, b: &ir::Place) -> bool {
+    if a.access.volatile || b.access.volatile {
+        return false;
+    }
+    match (&a.kind, &b.kind) {
+        (PlaceKind::Binding(a), PlaceKind::Binding(b)) => a == b,
+        (PlaceKind::Deref(a), PlaceKind::Deref(b)) => same_operand(a, b),
+        (
+            PlaceKind::Field {
+                base: a,
+                index: i,
+                bits: None,
+            },
+            PlaceKind::Field {
+                base: b,
+                index: j,
+                bits: None,
+            },
+        ) => i == j && same_place(a, b),
+        (PlaceKind::Index { base: a, index: i }, PlaceKind::Index { base: b, index: j }) => {
+            same_operand(a, b) && same_operand(i, j)
+        }
+        _ => false,
+    }
+}
+
+fn same_operand(a: &ir::Value, b: &ir::Value) -> bool {
+    a.ty == b.ty
+        && match (&a.node.value, &b.node.value) {
+            (ir::ValueKind::Constant(a), ir::ValueKind::Constant(b)) => a == b,
+            (
+                ir::ValueKind::Read {
+                    place: a,
+                    ordering: None,
+                },
+                ir::ValueKind::Read {
+                    place: b,
+                    ordering: None,
+                },
+            ) => same_place(a, b),
+            (
+                ir::ValueKind::ArrayDecay { place: a, .. },
+                ir::ValueKind::ArrayDecay { place: b, .. },
+            ) => same_place(a, b),
+            (
+                ir::ValueKind::PointerOffset {
+                    pointer: a,
+                    amount: i,
+                    subtract: s,
+                    ..
+                },
+                ir::ValueKind::PointerOffset {
+                    pointer: b,
+                    amount: j,
+                    subtract: t,
+                    ..
+                },
+            ) => s == t && same_operand(a, b) && same_operand(i, j),
+            _ => false,
+        }
+}
+
+fn peel_unsafe(expr: &Expr) -> &Expr {
+    match expr {
+        Expr::Unsafe(block) if block.stmts.is_empty() => {
+            block.tail.as_deref().map_or(expr, peel_unsafe)
+        }
+        _ => expr,
+    }
+}
+
+fn compound_assignment(assignment: Stmt) -> Stmt {
+    match assignment {
+        Stmt::Assign {
+            target,
+            value:
+                Expr::Binary {
+                    op:
+                        op @ (rust::BinOp::Add
+                        | rust::BinOp::Sub
+                        | rust::BinOp::Mul
+                        | rust::BinOp::Div
+                        | rust::BinOp::Rem
+                        | rust::BinOp::BitAnd
+                        | rust::BinOp::BitOr
+                        | rust::BinOp::BitXor
+                        | rust::BinOp::Shl
+                        | rust::BinOp::Shr),
+                    lhs,
+                    rhs,
+                },
+        } if *peel_unsafe(&lhs) == target => Stmt::CompoundAssign {
+            target,
+            op,
+            value: *rhs,
+        },
+        Stmt::Unsafe {
+            body: rust::Block {
+                mut stmts,
+                tail: None,
+            },
+        } if stmts.len() == 1 => {
+            let only = compound_assignment(stmts.remove(0));
+            Stmt::Unsafe {
+                body: rust::Block {
+                    stmts: vec![only],
+                    tail: None,
+                },
+            }
+        }
+        other => other,
     }
 }

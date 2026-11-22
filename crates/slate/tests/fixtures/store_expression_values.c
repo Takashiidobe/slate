@@ -88,21 +88,21 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn idx() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = calls + 1;
+// CHECK-NEXT:         calls += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { calls }) % 6
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn slot() -> *mut i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = calls + 10;
+// CHECK-NEXT:         calls += 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { (core::ptr::addr_of_mut!(slots.0) as *mut i32).add(2) }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn produce() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = calls + 100;
+// CHECK-NEXT:         calls += 100;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     7
 // CHECK-NEXT: }
@@ -126,7 +126,7 @@ int main(void) {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!(slots.0) as *mut i32).offset(idx() as isize)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_3]] = *[[V_3]] + 5;
+// CHECK-NEXT:         *[[V_3]] += 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slots.0[idx() as usize] = slots.0[0] + 1;

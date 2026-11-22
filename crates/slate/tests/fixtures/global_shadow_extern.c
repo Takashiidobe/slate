@@ -66,7 +66,7 @@ int late = 99;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump(slot: *mut i32, by: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *slot = *slot + by;
+// CHECK-NEXT:         *slot += by;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -76,10 +76,10 @@ int late = 99;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn record(t: *mut Tally, weight: i64) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*t).hits = (*t).hits + 1;
+// CHECK-NEXT:         (*t).hits += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*t).weight = (*t).weight + weight;
+// CHECK-NEXT:         (*t).weight += weight;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

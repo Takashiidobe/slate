@@ -95,12 +95,12 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn bump(p: &mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p = *p + 1;
+// CHECK-NEXT:         *p += 1;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn scale(p: &mut f64) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p = *p * 2.0f64;
+// CHECK-NEXT:         *p *= 2.0f64;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn mark(p: &mut i8) {
@@ -108,17 +108,17 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn bump_packed(p: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p = *p + 10;
+// CHECK-NEXT:         *p += 10;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn bump_half(p: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p = *p + 20;
+// CHECK-NEXT:         *p += 20;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn bump_union(p: &mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p = *p + 30;
+// CHECK-NEXT:         *p += 30;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn owner_tag(d: *mut f64) -> i8 {

@@ -112,7 +112,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if !::slate_support::opaque_is_null(out) {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *out = *out + 1;
+// CHECK-NEXT:             *out += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

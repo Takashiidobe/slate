@@ -34,7 +34,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         counter = counter + 4;
+// CHECK-NEXT:         counter += 4;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     let mut it: *mut i32 = unsafe {

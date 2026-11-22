@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn release(value: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         total = total + *value;
+// CHECK-NEXT:         total += *value;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-NEXT:             &mut || release(__slate_cleanup_ptr_0 as *mut _),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = total + 1;
+// CHECK-NEXT:             total += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let after: i32 = unsafe { total };
@@ -60,7 +60,7 @@ int main(void) {
 // CHECK-NEXT:             &mut || release(__slate_cleanup_ptr_2 as *mut _),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = total * 2;
+// CHECK-NEXT:             total *= 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     after * 10000 + unsafe { total }

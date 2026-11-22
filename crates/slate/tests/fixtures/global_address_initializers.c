@@ -169,16 +169,14 @@ int main(void) {
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { counter_ptr };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 1;
+// CHECK-NEXT:         *counter_ptr += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *unsafe { table_ptr }.add(0) = 10;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = unsafe { table_third };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] = *[[V_1]] + 20;
+// CHECK-NEXT:         *table_third += 20;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *(*table_whole).as_mut_ptr().add(3) = 40;
@@ -195,20 +193,17 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *unsafe { name_ptr }.add(0) = 83;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i32 = unsafe { *counter_ptr_ptr };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_2]] = *[[V_2]] + 100;
+// CHECK-NEXT:         *(*counter_ptr_ptr) += 100;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *slots.0[1] = 22;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut i32 = unsafe { slots.0[2] };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_3]] = *[[V_3]] + 1;
+// CHECK-NEXT:         *slots.0[2] += 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_4:__v[0-9]+]]: *mut i32 = unsafe { cursors.0[1].value };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_4]] = *[[V_4]] + 400;
+// CHECK-NEXT:         *cursors.0[1].value += 400;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     let mut it: *mut i32 = unsafe { core::ptr::addr_of_mut!(table.0) as *mut i32 };

@@ -83,9 +83,8 @@ int main(void) {
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_0:__slate_compound_[0-9]+]]: i32 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_1:__slate_compound_[0-9]+]]: Point = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     let mut [[SLATE_COMPOUND_2:__slate_compound_[0-9]+]]: [i32; 4] = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut Point = unsafe { origin };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_0]]).x = (*[[V_0]]).x + 10;
+// CHECK-NEXT:         (*origin).x += 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *unsafe { primes }.add(3) = 11;
@@ -111,7 +110,7 @@ int main(void) {
 // CHECK-NEXT:             })
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *counter = *counter + 1;
+// CHECK-NEXT:             *counter += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         print!("{} ", unsafe { *counter });
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());

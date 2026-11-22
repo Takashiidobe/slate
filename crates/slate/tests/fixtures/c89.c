@@ -455,7 +455,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c89_static_local() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = calls + 1;
+// CHECK-NEXT:         calls += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { calls }
 // CHECK-NEXT: }

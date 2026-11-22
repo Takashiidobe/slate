@@ -41,10 +41,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         first = first + 10;
+// CHECK-NEXT:         first += 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         second = second * 2;
+// CHECK-NEXT:         second *= 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     let mut count: i32 = 0;

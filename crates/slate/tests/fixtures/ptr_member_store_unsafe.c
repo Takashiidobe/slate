@@ -46,7 +46,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump(p: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p = *p + 10;
+// CHECK-NEXT:         *p += 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

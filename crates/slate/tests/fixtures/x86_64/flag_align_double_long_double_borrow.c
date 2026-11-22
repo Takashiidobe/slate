@@ -201,7 +201,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn half(p: &mut LongDouble) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *p = *p / __slate_f80_from_i32(2i32);
+// CHECK-NEXT:         *p /= __slate_f80_from_i32(2i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

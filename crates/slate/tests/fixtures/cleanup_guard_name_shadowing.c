@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn release(guard: *mut Guard) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         slate_support = slate_support + (*guard).depth;
+// CHECK-NEXT:         slate_support += (*guard).depth;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -56,7 +56,7 @@ int main(void) {
 // CHECK-NEXT:             &mut || release(__slate_cleanup_ptr_1 as *mut _),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support = slate_support * 2;
+// CHECK-NEXT:             slate_support *= 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { slate_support }

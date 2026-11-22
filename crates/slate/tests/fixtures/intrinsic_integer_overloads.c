@@ -37,7 +37,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn input() -> u32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = calls + 1;
+// CHECK-NEXT:         calls += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     2309737967
 // CHECK-NEXT: }

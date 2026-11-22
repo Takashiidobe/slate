@@ -135,7 +135,7 @@ int main(void) {
 // CHECK-NEXT:         if (unsafe { _setjmp(core::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) })
 // CHECK-NEXT:             != 0 {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 failures = failures + 1;
+// CHECK-NEXT:                 failures += 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             println!("recovered risky {}", i);
 // CHECK-NEXT:             continue;
@@ -147,7 +147,7 @@ int main(void) {
 // CHECK-NEXT:         if (unsafe { _setjmp(core::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) })
 // CHECK-NEXT:             != 0 {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 failures = failures + 1;
+// CHECK-NEXT:                 failures += 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             println!("recovered content_like {}", i);
 // CHECK-NEXT:             continue;

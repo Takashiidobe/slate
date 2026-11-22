@@ -444,12 +444,11 @@ again:
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_0_captures>(__block)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let n: *mut __slate_blocks::Byref<i32> = __captures.c0;
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = unsafe { *__slate_blocks::value(n) };
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: i32 = [[V_2]] + 1;
+// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = (unsafe { *__slate_blocks::value(n) }) + 1;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_blocks::value(n) = [[V_3]];
+// CHECK-NEXT:         *__slate_blocks::value(n) = [[V_2]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_3]]
+// CHECK-NEXT:     [[V_2]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static __slate_block_0_descriptor: __slate_blocks::Descriptor = __slate_blocks::descriptor::<__slate_block_0_captures>(
@@ -498,12 +497,11 @@ again:
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_2_captures>(__block)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let n: *mut __slate_blocks::Byref<i32> = __captures.c0;
-// CHECK-NEXT:     let [[V_0]]: i32 = unsafe { *__slate_blocks::value(n) };
-// CHECK-NEXT:     let [[V_1]]: i32 = [[V_0]] + 1;
+// CHECK-NEXT:     let [[V_0]]: i32 = (unsafe { *__slate_blocks::value(n) }) + 1;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_blocks::value(n) = [[V_1]];
+// CHECK-NEXT:         *__slate_blocks::value(n) = [[V_0]];
 // CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_1]]
+// CHECK-NEXT:     [[V_0]]
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static __slate_block_2_descriptor: __slate_blocks::Descriptor = __slate_blocks::descriptor::<__slate_block_2_captures>(

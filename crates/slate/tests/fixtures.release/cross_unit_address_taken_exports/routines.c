@@ -35,7 +35,7 @@ const struct api_routines api = {add, sub, bump, name};
 // CHECK-NEXT: #[unsafe(no_mangle)]
 // CHECK-NEXT: pub extern "C-unwind" fn bump(c: *mut counter, by: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*c).value = (*c).value + by;
+// CHECK-NEXT:         (*c).value += by;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

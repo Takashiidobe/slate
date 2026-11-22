@@ -30,7 +30,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn add_one(value: *mut i32) -> *mut i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *value = *value + 1;
+// CHECK-NEXT:         *value += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }

@@ -748,13 +748,9 @@ int main(void) {
 // CHECK-NEXT:     let calls: *mut __slate_blocks::Byref<i32> = __captures.c1;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         if [[V_2]] % 2 != 0 {
-// CHECK-NEXT:             let [[V_3:__v[0-9]+]]: i64 = *__slate_blocks::value(sum);
-// CHECK-NEXT:             let [[V_4:__v[0-9]+]]: i64 = [[V_3]] + ([[V_2]] as i64);
-// CHECK-NEXT:             *__slate_blocks::value(sum) = [[V_4]];
+// CHECK-NEXT:             *__slate_blocks::value(sum) += [[V_2]] as i64;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_5:__v[0-9]+]]: i32 = *__slate_blocks::value(calls);
-// CHECK-NEXT:         let [[V_6:__v[0-9]+]]: i32 = [[V_5]] + 1;
-// CHECK-NEXT:         *__slate_blocks::value(calls) = [[V_6]];
+// CHECK-NEXT:         *__slate_blocks::value(calls) += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -776,12 +772,12 @@ int main(void) {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_8_captures>(__block)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let r#box: *mut __slate_blocks::Byref<__SlateRecord_block_more_c_59> = __captures.c0;
-// CHECK-NEXT:     for [[V_6]] in 0i32..3i32 {
-// CHECK-NEXT:         let [[V_5]]: *mut i32 = unsafe {
-// CHECK-NEXT:             (*__slate_blocks::value(r#box)).v.as_mut_ptr().offset([[V_6]] as isize)
+// CHECK-NEXT:     for [[V_3:__v[0-9]+]] in 0i32..3i32 {
+// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: *mut i32 = unsafe {
+// CHECK-NEXT:             (*__slate_blocks::value(r#box)).v.as_mut_ptr().offset([[V_3]] as isize)
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *[[V_5]] = *[[V_5]] + 10;
+// CHECK-NEXT:             *[[V_4]] += 10;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -796,12 +792,12 @@ int main(void) {
 // CHECK-NEXT:     c0: f64,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: extern "C-unwind" fn __slate_block_9(__block: *mut core::ffi::c_void, [[V_6]]: f64) -> f64 {
+// CHECK-NEXT: extern "C-unwind" fn __slate_block_9(__block: *mut core::ffi::c_void, [[V_3]]: f64) -> f64 {
 // CHECK-NEXT:     let __captures: __slate_block_9_captures = unsafe {
 // CHECK-NEXT:         __slate_blocks::captures::<__slate_block_9_captures>(__block)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let scale: f64 = __captures.c0;
-// CHECK-NEXT:     [[V_6]] * scale
+// CHECK-NEXT:     [[V_3]] * scale
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static __slate_block_9_descriptor: __slate_blocks::Descriptor = __slate_blocks::descriptor::<__slate_block_9_captures>(

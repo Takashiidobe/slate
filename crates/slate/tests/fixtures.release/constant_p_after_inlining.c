@@ -142,7 +142,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         if [[V_0]] {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *slot = *slot + 1;
+// CHECK-NEXT:                 *slot += 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             continue;
 // CHECK-NEXT:         }

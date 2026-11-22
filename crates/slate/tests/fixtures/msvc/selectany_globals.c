@@ -231,7 +231,7 @@ int main(void) { return 0; }
 // CHECK-NEXT:         unsafe { abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         mixed.scale = mixed.scale * (2i32 as f64);
+// CHECK-NEXT:         mixed.scale *= 2i32 as f64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (unsafe { mixed.scale }) != -5.0f64 {
 // CHECK-NEXT:         unsafe { abort() };

@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn once(x: f64) -> f64 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = calls + 1;
+// CHECK-NEXT:         calls += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }

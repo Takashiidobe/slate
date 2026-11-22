@@ -55,7 +55,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn advance(r#gen: &mut r#gen, send: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*r#gen).r#gen = (*r#gen).r#gen + send;
+// CHECK-NEXT:         (*r#gen).r#gen += send;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (*r#gen).r#gen
 // CHECK-NEXT: }

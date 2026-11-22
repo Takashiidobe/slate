@@ -119,7 +119,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn next_slot(slots: *mut i32) -> *mut i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = calls + 1;
+// CHECK-NEXT:         calls += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { slots.offset(calls as isize) }
 // CHECK-NEXT: }
@@ -229,11 +229,11 @@ int main(void) {
 // CHECK-NEXT:     let mut slots: __SlateAlign16<[i32; 4]> = __SlateAlign16([0i32, 0i32, 0i32, 0i32]);
 // CHECK-NEXT:     let [[V_20:__v[0-9]+]]: *mut i32 = next_slot(slots.0.as_mut_ptr());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_20]] = *[[V_20]] + 1;
+// CHECK-NEXT:         *[[V_20]] += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_21:__v[0-9]+]]: *mut i32 = next_slot(slots.0.as_mut_ptr());
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_21]] = *[[V_21]] + 1;
+// CHECK-NEXT:         *[[V_21]] += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} calls={}",
@@ -252,10 +252,10 @@ int main(void) {
 // CHECK-NEXT:     let cp: *mut Counter = core::ptr::addr_of_mut!(counter);
 // CHECK-NEXT:     counter.hits += 1;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*cp).hits = (*cp).hits + 1;
+// CHECK-NEXT:         (*cp).hits += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*cp).total = (*cp).total + (1i32 as f64);
+// CHECK-NEXT:         (*cp).total += 1i32 as f64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_22:__v[0-9]+]]: i32 = unsafe { (*cp).hits };
 // CHECK-NEXT:     unsafe {

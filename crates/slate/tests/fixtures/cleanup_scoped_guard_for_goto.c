@@ -160,9 +160,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn guard_release(g: *mut guard) {
 // CHECK-NEXT:     if !unsafe { (*g).lock }.is_null() {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { (*g).lock };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *[[V_0]] = *[[V_0]] - 1;
+// CHECK-NEXT:             *(*g).lock -= 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
@@ -172,9 +171,8 @@ int main(void) {
 // CHECK-NEXT:         lock: if ok != 0 { lock } else { core::ptr::null_mut::<i32>() },
 // CHECK-NEXT:     };
 // CHECK-NEXT:     if !g.lock.is_null() {
-// CHECK-NEXT:         let [[V_0]]: *mut i32 = g.lock;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *[[V_0]] = *[[V_0]] + 1;
+// CHECK-NEXT:             *g.lock += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     return g;
@@ -236,7 +234,7 @@ int main(void) {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *slot = *slot + 1;
+// CHECK-NEXT:                     *slot += 1;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:             break;
@@ -276,7 +274,7 @@ int main(void) {
 // CHECK-NEXT: static mut order_len: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn note(c: *mut i8) {
-// CHECK-NEXT:     let [[V_0]]: i32 = unsafe { order_len };
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe { order_len };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         order_len = [[V_0]] + 1;
 // CHECK-NEXT:     }

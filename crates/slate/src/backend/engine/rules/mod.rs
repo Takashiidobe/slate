@@ -1,6 +1,5 @@
 mod array_iter;
 mod branch_init;
-mod compound_assign;
 mod cstr_literal;
 mod dead_store;
 mod for_range;
@@ -69,8 +68,7 @@ pub(super) fn registry(
         rules.push(Box::new(getenv_var::GetenvVar));
     }
     rules.extend(vec![
-        Box::new(compound_assign::CompoundAssignRecover) as Box<dyn NodeRule>,
-        Box::new(dead_store::DeadStore),
+        Box::new(dead_store::DeadStore) as Box<dyn NodeRule>,
         Box::new(pure_stmts::PureStmtDrop),
         Box::new(pure_stmts::EmptyElseDrop),
         Box::new(pure_stmts::EmptyThenInvert),

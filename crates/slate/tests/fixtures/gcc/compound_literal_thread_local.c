@@ -91,22 +91,22 @@ int main(void) {
 // CHECK-NEXT: fn step(bump: i32) -> i32 {
 // CHECK-NEXT:     let c: *mut i32 = counter();
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *c = *c + bump;
+// CHECK-NEXT:         *c += bump;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let p: *mut Point = point();
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*p).x = (*p).x + bump;
+// CHECK-NEXT:         (*p).x += bump;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*p).y = (*p).y * 2;
+// CHECK-NEXT:         (*p).y *= 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { pair_a().add(0) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + bump;
+// CHECK-NEXT:         *[[V_0]] += bump;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = unsafe { pair_b().add(1) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] = *[[V_1]] - bump;
+// CHECK-NEXT:         *[[V_1]] -= bump;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { *c }) * 10000 + (unsafe { (*p).x }) * 100 + unsafe { (*p).y }
 // CHECK-NEXT:         + unsafe { *pair_a().add(0) } + unsafe { *pair_b().add(1) }

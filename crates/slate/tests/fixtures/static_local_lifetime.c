@@ -169,10 +169,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn moved(dx: i32) -> *mut Point {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         point.x = point.x + dx;
+// CHECK-NEXT:         point.x += dx;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         point.y = point.y * 2;
+// CHECK-NEXT:         point.y *= 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { core::ptr::addr_of_mut!(point) }
 // CHECK-NEXT: }
@@ -203,7 +203,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn running_mean(sample: f64) -> f64 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         sum = sum + sample;
+// CHECK-NEXT:         sum += sample;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_0]]: i32 = (unsafe { samples }) + 1;
 // CHECK-NEXT:     unsafe {
@@ -282,7 +282,7 @@ int main(void) {
 // CHECK-NEXT:     println!("{}", unsafe { (*moved(1i32)).x });
 // CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = base_pointer();
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] = *[[V_1]] + 5;
+// CHECK-NEXT:         *[[V_1]] += 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let through: i32 = unsafe { *base_pointer() };
 // CHECK-NEXT:     println!("{} {}", unsafe { global_base }, through);

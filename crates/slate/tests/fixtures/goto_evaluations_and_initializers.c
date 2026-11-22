@@ -54,7 +54,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn initialize() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         initializers = initializers + 1;
+// CHECK-NEXT:         initializers += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     19
 // CHECK-NEXT: }

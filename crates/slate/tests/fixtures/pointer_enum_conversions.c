@@ -110,7 +110,7 @@ int main(void) {
 // CHECK-NEXT:     let read_only: *const i32 = opaque as *const i32;
 // CHECK-NEXT:     let writable: *mut i32 = read_only as *mut i32;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *writable = *writable + 5;
+// CHECK-NEXT:         *writable += 5;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", values.0[1]);
 // CHECK-NEXT:     let bytes: *mut u8 = (unsafe { values.0.as_mut_ptr().add(0) }) as *mut u8;

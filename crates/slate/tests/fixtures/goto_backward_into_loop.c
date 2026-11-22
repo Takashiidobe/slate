@@ -80,7 +80,7 @@ int main(void) {
 // CHECK-NEXT:                         if j != 0 {
 // CHECK-NEXT:                             break;
 // CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             g = g + 1;
+// CHECK-NEXT:                             g += 1;
 // CHECK-NEXT:                             __slate_state = 7;
 // CHECK-NEXT:                         }
 // CHECK-NEXT:                     }

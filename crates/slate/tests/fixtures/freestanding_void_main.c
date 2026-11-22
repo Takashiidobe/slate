@@ -29,7 +29,7 @@ void main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn step(amount: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         counter = counter + amount;
+// CHECK-NEXT:         counter += amount;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -100,7 +100,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn touch() {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         counter = counter + 1;
+// CHECK-NEXT:         counter += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

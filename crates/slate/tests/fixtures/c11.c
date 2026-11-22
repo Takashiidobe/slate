@@ -649,7 +649,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn c11_evaluation_step(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         c11_evaluation_total = c11_evaluation_total + value;
+// CHECK-NEXT:         c11_evaluation_total += value;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value * 2
 // CHECK-NEXT: }
@@ -691,7 +691,7 @@ int main(void) {
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.c11_once_handler")]
 // CHECK-NEXT: extern "C-unwind" fn c11_once_handler() {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         c11_once_total = c11_once_total + 1;
+// CHECK-NEXT:         c11_once_total += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

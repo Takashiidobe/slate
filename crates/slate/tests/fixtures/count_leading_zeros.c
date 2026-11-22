@@ -31,7 +31,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn next() -> u64 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = calls + 1;
+// CHECK-NEXT:         calls += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     4294967296
 // CHECK-NEXT: }

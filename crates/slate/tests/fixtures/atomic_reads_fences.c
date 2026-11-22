@@ -82,7 +82,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn once(p: *mut i32) -> *mut i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = calls + 1;
+// CHECK-NEXT:         calls += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     p
 // CHECK-NEXT: }

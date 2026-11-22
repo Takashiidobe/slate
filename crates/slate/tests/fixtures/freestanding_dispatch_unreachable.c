@@ -86,7 +86,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         if [[V_0]] {
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *slot = *slot + 1;
+// CHECK-NEXT:                 *slot += 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             continue;
 // CHECK-NEXT:         }
@@ -94,7 +94,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if tries != 1 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *slot = *slot + 100;
+// CHECK-NEXT:             *slot += 100;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     *slot + tries

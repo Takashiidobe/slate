@@ -32,7 +32,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn mark(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         hits = hits + 1;
+// CHECK-NEXT:         hits += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }

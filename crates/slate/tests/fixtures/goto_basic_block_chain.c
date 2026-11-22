@@ -76,16 +76,14 @@ int main(void) {
 // CHECK-NEXT:     value = mark(3i32);
 // CHECK-NEXT:     result += value;
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = mark(4i32);
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = unsafe { saved };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] = *[[V_1]] + [[V_0]];
+// CHECK-NEXT:         *saved += [[V_0]];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
 // CHECK-NEXT:         break '[[SLATE_BREAK_0]];
 // CHECK-NEXT:         result = mark(9i32);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: i32 = mark(5i32);
-// CHECK-NEXT:     result += [[V_2]];
+// CHECK-NEXT:     result += mark(5i32);
 // CHECK-NEXT:     println!("{} {}", result, unsafe { trace });
 // CHECK-NEXT:     result
 // CHECK-NEXT: }

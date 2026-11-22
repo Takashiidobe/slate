@@ -58,16 +58,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn adjust(by: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         counter = counter + by;
+// CHECK-NEXT:         counter += by;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         zeroed = zeroed + counter;
+// CHECK-NEXT:         zeroed += counter;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         numbers.0[2] = zeroed - numbers.0[0];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         pair.right = pair.right + numbers.0[1];
+// CHECK-NEXT:         pair.right += numbers.0[1];
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { pair.left }) + unsafe { pair.right }
 // CHECK-NEXT: }

@@ -26,7 +26,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn touch(y: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *y = *y + 1;
+// CHECK-NEXT:         *y += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

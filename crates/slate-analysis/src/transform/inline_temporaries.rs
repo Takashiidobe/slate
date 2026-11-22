@@ -13,7 +13,39 @@ pub(crate) fn transform(module: &mut Module) {
         ..
     } = module;
     for function in functions {
+        if let Some(body) = &mut function.value.body {
+            walk_body(
+                body,
+                &mut InnerFunctions {
+                    record_captures: &captures,
+                    macro_values,
+                },
+            );
+        }
         rewrite(&mut function.value, &captures, macro_values);
+    }
+}
+
+struct InnerFunctions<'a> {
+    record_captures: &'a HashSet<BindingId>,
+    macro_values: &'a MacroValues,
+}
+
+impl Visitor for InnerFunctions<'_> {
+    fn rewrite_statement(&mut self, statement: &mut Statement) {
+        if let Statement::NestedFunction(nested) = statement {
+            rewrite(
+                &mut nested.function,
+                self.record_captures,
+                self.macro_values,
+            );
+        }
+    }
+
+    fn rewrite_value(&mut self, value: &mut Value) {
+        if let ValueKind::Block(block) = &mut value.node.value {
+            rewrite(&mut block.function, self.record_captures, self.macro_values);
+        }
     }
 }
 

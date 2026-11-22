@@ -21,9 +21,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn add_into(dst: *mut i32, src: *const i32, n: i32) {
 // CHECK-NEXT:     for i in 0..n {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { dst.offset(i as isize) };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *[[V_0]] = *[[V_0]] + *src.offset(i as isize);
+// CHECK-NEXT:             *dst.offset(i as isize) += *src.offset(i as isize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }

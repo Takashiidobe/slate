@@ -76,7 +76,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn record_failure(phase: *const i8) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         failures = failures + 1;
+// CHECK-NEXT:         failures += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"FAIL: %s\n".as_ptr(), phase) };

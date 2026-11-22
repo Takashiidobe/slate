@@ -14,7 +14,7 @@ int counter_apply(int (*fn)(struct counter *), struct counter *c) { return fn(c)
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn counter_add(c: *mut counter, by: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*c).value = (*c).value + by;
+// CHECK-NEXT:         (*c).value += by;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

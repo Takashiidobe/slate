@@ -165,7 +165,7 @@ int main(void) { return 0; }
 // CHECK-NEXT:         unsafe { std::process::abort() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         g_entered = g_entered + 1;
+// CHECK-NEXT:         g_entered += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

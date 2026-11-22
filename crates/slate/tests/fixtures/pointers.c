@@ -38,7 +38,7 @@ int main(void) {
 // CHECK-NEXT:     let mut local: i32 = value;
 // CHECK-NEXT:     let ptr: *mut i32 = core::ptr::addr_of_mut!(local);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *ptr = *ptr + 3;
+// CHECK-NEXT:         *ptr += 3;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     local
 // CHECK: {{^}}}

@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-NEXT: fn lock_ctx__2(lock: &mut mutex) {
 // CHECK-NEXT:     (*lock).owner = 7;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*lock).depth = (*lock).depth + 1;
+// CHECK-NEXT:         (*lock).depth += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -513,13 +513,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn next() -> f64 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         state = state ^ state << 13i32;
+// CHECK-NEXT:         state ^= state << 13i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         state = state ^ state >> 7i32;
+// CHECK-NEXT:         state ^= state >> 7i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         state = state ^ state << 17i32;
+// CHECK-NEXT:         state ^= state << 17i32;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     ((((unsafe { state }) >> 11i32) as i64) as f64) / 1099511627776.0f64 - 4096.0f64
 // CHECK-NEXT: }

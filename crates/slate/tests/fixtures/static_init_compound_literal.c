@@ -186,7 +186,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn ratelimited() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         rs.burst = rs.burst - 1;
+// CHECK-NEXT:         rs.burst -= 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { rs.lock.raw }
 // CHECK-NEXT:         .wrapping_mul(100)

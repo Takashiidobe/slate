@@ -94,13 +94,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump(slot: *mut i32, by: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *slot = *slot + by;
+// CHECK-NEXT:         *slot += by;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn scale(slot: *mut f64, factor: f64) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *slot = *slot * factor;
+// CHECK-NEXT:         *slot *= factor;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -147,15 +147,15 @@ int main(void) {
 // CHECK-NEXT:     scale(unsafe { core::ptr::addr_of_mut!((*local.link).weight) }, 8.0f64);
 // CHECK-NEXT:     let slot: *mut i32 = pick(core::ptr::addr_of_mut!(local), 3i32);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *slot = *slot * 2;
+// CHECK-NEXT:         *slot *= 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut i32 = pick(core::ptr::addr_of_mut!(local), 0i32);
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + 1000;
+// CHECK-NEXT:         *[[V_0]] += 1000;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let inner: *mut Inner = inner_of(core::ptr::addr_of_mut!(local));
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*inner).value = (*inner).value + 50;
+// CHECK-NEXT:         (*inner).value += 50;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         global_outer.id = 3;

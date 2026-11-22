@@ -56,7 +56,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn choose(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = calls + 1;
+// CHECK-NEXT:         calls += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value % 4
 // CHECK-NEXT: }
@@ -72,31 +72,31 @@ int main(void) {
 // CHECK-NEXT:         match choose([[V_0]]) {
 // CHECK-NEXT:             0 => {
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *total = *total + 3;
+// CHECK-NEXT:                     *total += 3;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:             1 => {
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *total = *total + 5;
+// CHECK-NEXT:                     *total += 5;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *total = *total + 7;
+// CHECK-NEXT:                     *total += 7;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:             2 => {
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *total = *total + 7;
+// CHECK-NEXT:                     *total += 7;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:             _ => {
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *total = *total - 2;
+// CHECK-NEXT:                     *total -= 2;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *total = *total + calls;
+// CHECK-NEXT:         *total += calls;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -93,7 +93,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { exported }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         negative = negative - 1;
+// CHECK-NEXT:         negative -= 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("{}", unsafe { negative });
 // CHECK-NEXT:     0

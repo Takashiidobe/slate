@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT:         core::arch::asm!("", options(nostack, att_syntax));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         released = released + *depth;
+// CHECK-NEXT:         released += *depth;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *depth = 0;
@@ -76,7 +76,7 @@ int main(void) {
 // CHECK-NEXT:             &mut || unlock(__slate_cleanup_ptr_0 as *mut _),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             released = released + 100;
+// CHECK-NEXT:             released += 100;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { released }

@@ -140,7 +140,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn bump() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls.0 = calls.0 + 1;
+// CHECK-NEXT:         calls.0 += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (unsafe { calls.0 })
 // CHECK-NEXT:         + aligned((unsafe { core::ptr::addr_of_mut!(calls.0) }) as *const (), 256u64)
@@ -150,7 +150,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         counter.0 = counter.0 + 10;
+// CHECK-NEXT:         counter.0 += 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         values.0[1] = 50;
@@ -163,14 +163,13 @@ int main(void) {
 // CHECK-NEXT:         (core::ptr::addr_of_mut!(weights.0) as *mut f64).add(0)
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] = *[[V_1]] * 4.0f64;
+// CHECK-NEXT:         *[[V_1]] *= 4.0f64;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         origin.0.y = 80;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut Point = unsafe { origin_ptr };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_2]]).x = (*[[V_2]]).x + 1;
+// CHECK-NEXT:         (*origin_ptr).x += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         page.0[3] = 112;
@@ -178,9 +177,8 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         small.0 = 115;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_3:__v[0-9]+]]: *mut i32 = unsafe { counter_ptr };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_3]] = *[[V_3]] * 2;
+// CHECK-NEXT:         *counter_ptr *= 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     bump();
 // CHECK-NEXT:     println!(

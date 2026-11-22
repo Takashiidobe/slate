@@ -35,9 +35,8 @@ int main(void) {
 // CHECK-NEXT: fn consume_values(values: *mut i32, len: i32) -> i32 {
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { values.offset(i as isize) };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *[[V_0]] = *[[V_0]] + 1;
+// CHECK-NEXT:             *values.offset(i as isize) += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         sum += unsafe { *values.offset(i as isize) };
 // CHECK-NEXT:     }

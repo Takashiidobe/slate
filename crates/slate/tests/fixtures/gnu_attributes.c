@@ -212,7 +212,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn gnu_attribute_cleanup(value: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         gnu_cleanup_total = gnu_cleanup_total + *value;
+// CHECK-NEXT:         gnu_cleanup_total += *value;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -330,7 +330,7 @@ int main(void) {
 // CHECK-NEXT:             &mut || gnu_attribute_cleanup(__slate_cleanup_ptr_0 as *mut _),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             gnu_cleanup_total = gnu_cleanup_total + 1;
+// CHECK-NEXT:             gnu_cleanup_total += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { gnu_cleanup_total }

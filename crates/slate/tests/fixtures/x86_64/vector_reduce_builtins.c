@@ -871,7 +871,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn counted(v: core::simd::Simd<i32, 4>) -> core::simd::Simd<i32, 4> {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         calls = calls + 1;
+// CHECK-NEXT:         calls += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     return v;
 // CHECK-NEXT: }

@@ -77,7 +77,7 @@ int main(void) {
 // CHECK-NEXT: fn run_case(r#fn: Option<unsafe extern "C-unwind" fn(i32)>, ok: i32) {
 // CHECK-NEXT:     if (unsafe { _setjmp(core::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag) }) != 0 {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             failures = failures + 1;
+// CHECK-NEXT:             failures += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!("FAIL");
 // CHECK-NEXT:         return;

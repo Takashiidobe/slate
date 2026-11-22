@@ -159,7 +159,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn counter__bump(__slate_capture_0: *mut i32, by: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_capture_0 = *__slate_capture_0 + by;
+// CHECK-NEXT:         *__slate_capture_0 += by;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -190,7 +190,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn parity__is_even(__slate_capture_0: *mut i32, k: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_capture_0 = *__slate_capture_0 + 1;
+// CHECK-NEXT:         *__slate_capture_0 += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = if k == 0 {
 // CHECK-NEXT:         1
@@ -202,7 +202,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn parity__is_odd(__slate_capture_0: *mut i32, k: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_capture_0 = *__slate_capture_0 + 1;
+// CHECK-NEXT:         *__slate_capture_0 += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let [[V_0]]: i32 = if k == 0 {
 // CHECK-NEXT:         0
@@ -229,29 +229,27 @@ int main(void) {
 // CHECK-NEXT:     __slate_capture_1: *mut point,
 // CHECK-NEXT:     __slate_capture_2: *mut *mut i32,
 // CHECK-NEXT: ) {
-// CHECK-NEXT:     let [[V_0]]: *mut i32 = unsafe { (*__slate_capture_0).as_mut_ptr().add(3) };
+// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = unsafe { (*__slate_capture_0).as_mut_ptr().add(3) };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_0]] = *[[V_0]] + (*__slate_capture_1).x;
+// CHECK-NEXT:         *[[V_1]] += (*__slate_capture_1).x;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*__slate_capture_1).y = (*__slate_capture_1).y * 2;
+// CHECK-NEXT:         (*__slate_capture_1).y *= 2;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut i32 = unsafe { *__slate_capture_2 };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_capture_2 = [[V_1]].add(1);
+// CHECK-NEXT:         *__slate_capture_2 = unsafe { *__slate_capture_2 }.add(1);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_2:__v[0-9]+]]: *mut i32 = unsafe { *__slate_capture_2 };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_2]] = *[[V_2]] + 100;
+// CHECK-NEXT:         *(*__slate_capture_2) += 100;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum_vla(mut n: i32) -> i32 {
-// CHECK-NEXT:     let mut [[V_3:__v[0-9]+]]: u64 = n as u64;
+// CHECK-NEXT:     let mut [[V_2:__v[0-9]+]]: u64 = n as u64;
 // CHECK-NEXT:     let mut data: Vec<i32> = {
-// CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_3]] as usize);
+// CHECK-NEXT:         let mut __slate_vla: Vec<i32> = Vec::with_capacity([[V_2]] as usize);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_3]] as usize);
+// CHECK-NEXT:             __slate_vla.as_mut_ptr().write_bytes(0u8, [[V_2]] as usize);
 // CHECK-NEXT:         }
 // CHECK-NEXT:         __slate_vla
 // CHECK-NEXT:     };
@@ -280,9 +278,9 @@ int main(void) {
 // CHECK-NEXT:     let mut acc: i32 = 0;
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         with_goto__add(core::ptr::addr_of_mut!(acc), n);
-// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: i32 = n - 1;
-// CHECK-NEXT:         n = [[V_4]];
-// CHECK-NEXT:         if [[V_4]] <= 0 {
+// CHECK-NEXT:         let [[V_0]]: i32 = n - 1;
+// CHECK-NEXT:         n = [[V_0]];
+// CHECK-NEXT:         if [[V_0]] <= 0 {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -291,7 +289,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn with_goto__add(__slate_capture_0: *mut i32, v: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_capture_0 = *__slate_capture_0 + v;
+// CHECK-NEXT:         *__slate_capture_0 += v;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -379,15 +377,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn loop_bound__shrink(__slate_capture_0: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_capture_0 = *__slate_capture_0 - 1;
+// CHECK-NEXT:         *__slate_capture_0 -= 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     println!("{}", counter(1i32));
 // CHECK-NEXT:     println!("{}", grandparent(1i32));
-// CHECK-NEXT:     let [[V_3]]: i32 = parity(5i32);
-// CHECK-NEXT:     println!("{} {}", parity(4i32), [[V_3]]);
+// CHECK-NEXT:     let [[V_2]]: i32 = parity(5i32);
+// CHECK-NEXT:     println!("{} {}", parity(4i32), [[V_2]]);
 // CHECK-NEXT:     println!("{}", aggregates());
 // CHECK-NEXT:     println!("{}", sum_vla(5i32));
 // CHECK-NEXT:     println!("{}", with_goto(4i32));

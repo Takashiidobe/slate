@@ -58,7 +58,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fallback(value: i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         side_effects = side_effects + 1;
+// CHECK-NEXT:         side_effects += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
 // CHECK-NEXT: }

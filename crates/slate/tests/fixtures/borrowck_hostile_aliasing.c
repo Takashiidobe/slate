@@ -142,7 +142,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn add_in_place(a: *mut i32, b: *mut i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *a = *a + *b;
+// CHECK-NEXT:         *a += *b;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -177,10 +177,10 @@ int main(void) {
 // CHECK-NEXT:     let lo: *mut i32 = pair_lo(core::ptr::addr_of_mut!(pair));
 // CHECK-NEXT:     let hi: *mut i32 = pair_hi(core::ptr::addr_of_mut!(pair));
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *lo = *lo + *hi;
+// CHECK-NEXT:         *lo += *hi;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *hi = *hi + *lo;
+// CHECK-NEXT:         *hi += *lo;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     pair.lo + pair.hi
 // CHECK-NEXT: }
@@ -227,9 +227,8 @@ int main(void) {
 // CHECK-NEXT:         sum += unsafe { (*cur).val };
 // CHECK-NEXT:         cur = unsafe { (*cur).next };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut Node = unsafe { (*cur).prev };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_0]]).val = (*[[V_0]]).val + 10;
+// CHECK-NEXT:         (*(*cur).prev).val += 10;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     sum + a.val + b.val + c.val
 // CHECK-NEXT: }
@@ -270,13 +269,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     root.left = core::ptr::addr_of_mut!(left);
 // CHECK-NEXT:     root.right = core::ptr::addr_of_mut!(right);
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: *mut Tree = left.parent;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_1]]).val = (*[[V_1]]).val + left.val;
+// CHECK-NEXT:         (*left.parent).val += left.val;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_0]]: *mut Tree = right.parent;
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*[[V_0]]).val = (*[[V_0]]).val + right.val;
+// CHECK-NEXT:         (*right.parent).val += right.val;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     root.val + left.val + right.val
 // CHECK-NEXT: }
@@ -294,7 +291,7 @@ int main(void) {
 // CHECK-NEXT:         buf.data[i as usize] = (97 + i) as i8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     buf.cursor = unsafe { buf.data.as_mut_ptr().add(3) };
-// CHECK-NEXT:     let [[V_0]]: *mut i8 = buf.cursor;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut i8 = buf.cursor;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *[[V_0]] = ((*[[V_0]] as i32) + 1) as i8;
 // CHECK-NEXT:     }
@@ -338,9 +335,8 @@ int main(void) {
 // CHECK-NEXT: fn global_alias_with_local() -> i32 {
 // CHECK-NEXT:     let mut x: i32 = 7;
 // CHECK-NEXT:     capture_global(core::ptr::addr_of_mut!(x));
-// CHECK-NEXT:     let [[V_1]]: *mut i32 = unsafe { g_ptr };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *[[V_1]] = *[[V_1]] + 1;
+// CHECK-NEXT:         *g_ptr += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x += 1;
 // CHECK-NEXT:     x + unsafe { *g_ptr }
@@ -360,7 +356,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let bits: i32 = unsafe { u.i };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         u.i = u.i + 1;
+// CHECK-NEXT:         u.i += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if bits == unsafe { u.i } { -1 } else { (unsafe { u.f }) as i32 }
 // CHECK-NEXT: }

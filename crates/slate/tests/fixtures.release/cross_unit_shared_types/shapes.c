@@ -92,10 +92,10 @@ int count_vowels(const char *text) {
 // CHECK-NEXT:         (*registry).head = shape;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*registry).count = (*registry).count + 1;
+// CHECK-NEXT:         (*registry).count += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*registry).stats.adds = (*registry).stats.adds + 1;
+// CHECK-NEXT:         (*registry).stats.adds += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -109,10 +109,10 @@ int count_vowels(const char *text) {
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn shape_move(shape: *mut shape, dx: i32, dy: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*shape).origin.x = (*shape).origin.x + dx;
+// CHECK-NEXT:         (*shape).origin.x += dx;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         (*shape).origin.y = (*shape).origin.y + dy;
+// CHECK-NEXT:         (*shape).origin.y += dy;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]] = (((*shape).flags.__slate_bits_0.__get_level() as i32) + 1 & 15)

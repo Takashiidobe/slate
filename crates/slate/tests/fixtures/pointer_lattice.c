@@ -44,7 +44,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn use_and_free(y: *mut i32) -> i32 {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *y = *y + 1;
+// CHECK-NEXT:         *y += 1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let v: i32 = unsafe { *y };
 // CHECK-NEXT:     unsafe { free((y as *mut ()) as *mut core::ffi::c_void) };
