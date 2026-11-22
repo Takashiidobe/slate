@@ -222,6 +222,18 @@ pub(super) fn children(statement: &ir::Statement) -> Vec<&[Statement]> {
     }
 }
 
+pub(super) fn endless(statement: &ir::Statement) -> bool {
+    fn breaks(statements: &[Statement], id: BindingId) -> bool {
+        statements.iter().any(|statement| {
+            matches!(statement.value, ir::Statement::Break(target) if target == id)
+                || children(&statement.value)
+                    .into_iter()
+                    .any(|body| breaks(body, id))
+        })
+    }
+    matches!(statement, ir::Statement::For { id, condition: None, body, .. } if !breaks(body, *id))
+}
+
 pub(super) fn needs_dispatch(statements: &[Statement]) -> bool {
     statements.iter().any(|statement| {
         matches!(

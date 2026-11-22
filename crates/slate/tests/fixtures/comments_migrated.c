@@ -64,22 +64,17 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn dispatched(n: i32) -> i32 {
-// CHECK-NEXT:     // trailing dispatched tmp
-// CHECK-NEXT:     let mut tmp: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     // trailing dispatched acc
-// CHECK-NEXT:     let mut acc: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         acc = 0;
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             acc += n; // leading dispatched add
-// CHECK-NEXT:             tmp = acc * 2; // trailing dispatched assign
-// CHECK-NEXT:             if !(acc < 100) {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:     let mut acc: i32 = 0; // trailing dispatched acc
+// CHECK-NEXT:     let mut tmp: i32 = 0; // trailing dispatched tmp
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         acc += n; // leading dispatched add
+// CHECK-NEXT:         tmp = acc * 2; // trailing dispatched assign
+// CHECK-NEXT:         if acc >= 100 {
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         // leading dispatched return
-// CHECK-NEXT:         return tmp;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     // leading dispatched return
+// CHECK-NEXT:     tmp
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

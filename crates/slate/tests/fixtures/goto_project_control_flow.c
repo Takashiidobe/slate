@@ -62,72 +62,74 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn accumulate(n: i32, total: &mut i32) {
-// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         i = 0;
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             if i >= n {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 let [[V_0:__v[0-9]+]]: i32 = i;
-// CHECK-NEXT:                 i = [[V_0]] + 1;
-// CHECK-NEXT:                 let [[T_0:__t[0-9]+]]: i32 = choose([[V_0]]);
-// CHECK-NEXT:                 if [[T_0]] == 0 {
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     while !(i >= n) {
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = i;
+// CHECK-NEXT:         i = [[V_0]] + 1;
+// CHECK-NEXT:         match choose([[V_0]]) {
+// CHECK-NEXT:             0 => {
+// CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     *total = *total + 3;
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     if [[T_0]] == 1 {
-// CHECK-NEXT:                         *total = *total + 5;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         if [[T_0]] != 2 {
-// CHECK-NEXT:                             *total = *total - 2;
-// CHECK-NEXT:                             continue;
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 *total = *total + 7;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             1 => {
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     *total = *total + 5;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     *total = *total + 7;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             2 => {
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     *total = *total + 7;
+// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 unsafe {
+// CHECK-NEXT:                     *total = *total - 2;
+// CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         *total = *total + calls;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn classify(mut s: *const i8) -> i32 {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let [[T_0]]: i32 = *s as i32;
-// CHECK-NEXT:             if [[T_0]] == 97 {
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         match (unsafe { *s }) as i32 {
+// CHECK-NEXT:             97 => {
 // CHECK-NEXT:                 return 1;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 if [[T_0]] == 98 {
-// CHECK-NEXT:                     return 2;
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     if [[T_0]] == 99 {
-// CHECK-NEXT:                         return 3;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         if [[T_0]] == 100 {
-// CHECK-NEXT:                             return 4;
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             if [[T_0]] == 32 {
-// CHECK-NEXT:                                 s = s.add(1);
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 if [[T_0]] == 9 {
-// CHECK-NEXT:                                     s = s.add(1);
-// CHECK-NEXT:                                 } else {
-// CHECK-NEXT:                                     if [[T_0]] == 110 {
-// CHECK-NEXT:                                         return 5;
-// CHECK-NEXT:                                     } else {
-// CHECK-NEXT:                                         break;
-// CHECK-NEXT:                                     }
-// CHECK-NEXT:                                 }
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             }
+// CHECK-NEXT:             98 => {
+// CHECK-NEXT:                 return 2;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             99 => {
+// CHECK-NEXT:                 return 3;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             100 => {
+// CHECK-NEXT:                 return 4;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             32 => {
+// CHECK-NEXT:                 s = unsafe { s.add(1) };
+// CHECK-NEXT:                 continue;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             9 => {
+// CHECK-NEXT:                 s = unsafe { s.add(1) };
+// CHECK-NEXT:                 continue;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             110 => {
+// CHECK-NEXT:                 return 5;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             _ => {
+// CHECK-NEXT:                 return 6;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return 6;
+// CHECK-NEXT:         break;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe { core::mem::zeroed() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

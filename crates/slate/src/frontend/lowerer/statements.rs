@@ -489,6 +489,9 @@ impl FunctionLowerer<'_, '_> {
                     return Ok(lowered);
                 }
                 let mut statements = self.lower_statement_list(init)?;
+                if increment.is_none() {
+                    self.direct_continues.insert(*id);
+                }
                 let body = self.lower_statement_list(body)?;
                 let mut loop_body = Vec::new();
                 if let Some(condition) = condition {
@@ -500,12 +503,15 @@ impl FunctionLowerer<'_, '_> {
                         else_body: Vec::new(),
                     });
                 }
-                loop_body.push(Stmt::LabeledBlock {
-                    label: self.continue_label(*id),
-                    body,
-                });
-                if let Some(increment) = increment {
-                    loop_body.extend(self.lower_evaluation_statements(increment)?);
+                match increment {
+                    Some(increment) => {
+                        loop_body.push(Stmt::LabeledBlock {
+                            label: self.continue_label(*id),
+                            body,
+                        });
+                        loop_body.extend(self.lower_evaluation_statements(increment)?);
+                    }
+                    None => loop_body.push(Stmt::Scope { body }),
                 }
                 statements.push(Stmt::Loop {
                     label: Some(self.break_label(*id)),
@@ -544,7 +550,7 @@ impl FunctionLowerer<'_, '_> {
                 .lower_switch(*id, discriminant, folded.as_ref(), body)
                 .map_err(|error| error.within(Site::of(statement), "in switch".into()))?,
             ir::Statement::Break(id) => Stmt::Break(Some(self.break_label(*id))),
-            ir::Statement::Continue(id) if self.counted_loops.contains(id) => {
+            ir::Statement::Continue(id) if self.direct_continues.contains(id) => {
                 Stmt::Continue(Some(self.break_label(*id)))
             }
             ir::Statement::Continue(id) => Stmt::Break(Some(self.continue_label(*id))),
@@ -643,7 +649,7 @@ impl FunctionLowerer<'_, '_> {
             };
         }
         let mut statements = self.lower_statement_list(prefix)?;
-        self.counted_loops.insert(id);
+        self.direct_continues.insert(id);
         let body = self.lower_statement_list(body)?;
         statements.push(Stmt::For {
             label: Some(self.break_label(id)),

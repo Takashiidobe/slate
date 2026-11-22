@@ -172,31 +172,25 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn dispatched(n: i32) -> i32 {
-// CHECK-NEXT:     let mut values: core::mem::MaybeUninit<__SlateAlign16<[u64; 2]>> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut [u64; 2] = core::ptr::addr_of_mut!(values) as *mut [u64; 2];
-// CHECK-NEXT:     let mut count: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         count = 0;
-// CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_0]], [10u64, 20u64]);
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             if aligned((*[[SLATE_SLOT_0]]).as_mut_ptr() as *const (), 16u64) == 0 {
-// CHECK-NEXT:                 return -1;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 let [[V_1]]: u64 = sum_vectors(
-// CHECK-NEXT:                     (*[[SLATE_SLOT_0]]).as_mut_ptr() as *const u64,
-// CHECK-NEXT:                     2i32,
-// CHECK-NEXT:                 );
-// CHECK-NEXT:                 let [[V_0]]: *mut u64 = (*[[SLATE_SLOT_0]]).as_mut_ptr().add(0);
-// CHECK-NEXT:                 *[[V_0]] = unsafe { *[[V_0]] }.wrapping_add([[V_1]]);
-// CHECK-NEXT:                 let [[V_2:__v[0-9]+]]: i32 = count + 1;
-// CHECK-NEXT:                 count = [[V_2]];
-// CHECK-NEXT:                 if !([[V_2]] < n) {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
+// CHECK-NEXT:     let mut count: i32 = 0;
+// CHECK-NEXT:     let mut values: __SlateAlign16<[u64; 2]> = __SlateAlign16([10u64, 20u64]);
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         if aligned(values.0.as_mut_ptr() as *const (), 16u64) == 0 {
+// CHECK-NEXT:             return -1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return ((*[[SLATE_SLOT_0]])[0] % 1000) as i32;
+// CHECK-NEXT:         let [[V_2:__v[0-9]+]]: u64 = sum_vectors(values.0.as_mut_ptr() as *const u64, 2i32);
+// CHECK-NEXT:         let [[V_0]]: *mut u64 = unsafe { values.0.as_mut_ptr().add(0) };
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *[[V_0]] = unsafe { *[[V_0]] }.wrapping_add([[V_2]]);
+// CHECK-NEXT:         }
+// CHECK-NEXT:         let [[V_1]]: i32 = count + 1;
+// CHECK-NEXT:         count = [[V_1]];
+// CHECK-NEXT:         if [[V_1]] < n {
+// CHECK-NEXT:             continue;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         break;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     (values.0[0] % 1000) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

@@ -209,7 +209,7 @@ struct FunctionLowerer<'a, 'm> {
     dispatch_vlas: HashSet<BindingId>,
     aligned_locals: HashSet<BindingId>,
     register_locals: HashSet<BindingId>,
-    counted_loops: HashSet<BindingId>,
+    direct_continues: HashSet<BindingId>,
     non_index_names: HashSet<String>,
     macro_sites: Vec<macro_sites::MacroSite>,
     negated_macro_conditions: HashSet<slate_parser::ast::NodeId>,

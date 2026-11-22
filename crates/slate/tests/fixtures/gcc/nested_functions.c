@@ -277,24 +277,21 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn with_goto(mut n: i32) -> i32 {
-// CHECK-NEXT:     let mut acc: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         acc = 0;
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             with_goto__add(core::ptr::addr_of_mut!(acc), n);
-// CHECK-NEXT:             let [[V_3]]: i32 = n - 1;
-// CHECK-NEXT:             n = [[V_3]];
-// CHECK-NEXT:             if !([[V_3]] > 0) {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:     let mut acc: i32 = 0;
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         with_goto__add(core::ptr::addr_of_mut!(acc), n);
+// CHECK-NEXT:         let [[V_4:__v[0-9]+]]: i32 = n - 1;
+// CHECK-NEXT:         n = [[V_4]];
+// CHECK-NEXT:         if [[V_4]] <= 0 {
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return acc;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     acc
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn with_goto__add(__slate_capture_1: *mut i32, v: i32) {
+// CHECK-NEXT: fn with_goto__add(__slate_capture_0: *mut i32, v: i32) {
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *__slate_capture_1 = *__slate_capture_1 + v;
+// CHECK-NEXT:         *__slate_capture_0 = *__slate_capture_0 + v;
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

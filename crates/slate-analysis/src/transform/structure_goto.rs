@@ -1,7 +1,8 @@
 use foldhash::{HashMap, HashSet};
 use slate_parser::ast::{NodeId, Span};
 use slate_parser::ir::{
-    AsmPiece, BindingId, Module, NestedFunction, Statement, ValueKind, Visitor, walk_body,
+    AsmPiece, BindingId, Evaluation, Module, NestedFunction, Statement, Value, ValueKind, Visitor,
+    walk_body, walk_value,
 };
 
 use super::inline_temporaries::{children, evaluations};
@@ -83,42 +84,66 @@ impl StructureGoto<'_> {
                 index += 1;
                 continue;
             };
-            if self.gotos.get(&id).copied().unwrap_or(0) == 0 {
+            let total = self.gotos.get(&id).copied().unwrap_or(0);
+            if total == 0 {
                 self.dissolve(body, index);
                 continue;
             }
-            match self.forward(body, index, id) {
-                Some(start) => {
-                    index = start + 1;
-                    self.dissolve(body, index);
-                }
+            match self.structure(body, index, id, total) {
+                Some(next) => index = next,
                 None => index += 1,
             }
         }
     }
 
-    fn forward(&mut self, body: &mut Body, label: usize, id: BindingId) -> Option<usize> {
-        let mut start = None;
-        let mut reached = 0;
-        for (index, statement) in body[..label].iter().enumerate() {
-            let count = jumps(statement, id);
-            if count != 0 {
-                start.get_or_insert(index);
-                reached += count;
-            }
-        }
-        let start = start?;
-        if reached != self.gotos[&id] || !movable(&body[start..label], &body[label..]) {
+    fn structure(
+        &mut self,
+        body: &mut Body,
+        label: usize,
+        id: BindingId,
+        total: usize,
+    ) -> Option<usize> {
+        let (forward, ahead) = sites(&body[..label], id);
+        let (backward, behind) = sites(&body[label..], id);
+        if ahead + behind != total {
             return None;
         }
+        let end = backward.last().map(|last| label + last + 1);
+        if let Some(end) = end
+            && !movable(&body[label..end], &body[end..])
+        {
+            return None;
+        }
+        if let Some(&start) = forward.first()
+            && !movable(&body[start..label], &body[label..])
+        {
+            return None;
+        }
+        self.gotos.remove(&id);
+        if let Some(end) = end {
+            self.wrap_loop(body, label, end, id, behind);
+        }
+        let position = match forward.first() {
+            Some(&start) => {
+                self.wrap_block(body, start, label, id);
+                start + 1
+            }
+            None => label,
+        };
+        if end.is_some() {
+            return Some(position + 1);
+        }
+        self.dissolve(body, position);
+        Some(position)
+    }
+
+    fn wrap_block(&mut self, body: &mut Body, start: usize, label: usize, id: BindingId) {
         let block = self.module.fresh_binding();
         let mut range: Body = body.drain(start..label).collect();
         for statement in &mut range {
-            retarget(statement, id, block);
+            retarget(statement, id, &Statement::Break(block));
         }
-        self.gotos.remove(&id);
-        let spelling = range[0].spelling;
-        let expansion = range[0].expansion;
+        let (spelling, expansion) = (range[0].spelling, range[0].expansion);
         body.insert(
             start,
             Span::new(
@@ -130,7 +155,88 @@ impl StructureGoto<'_> {
                 expansion,
             ),
         );
-        Some(start)
+    }
+
+    fn wrap_loop(
+        &mut self,
+        body: &mut Body,
+        label: usize,
+        end: usize,
+        id: BindingId,
+        gotos: usize,
+    ) {
+        let Statement::Label { body: inner, .. } = &mut body[label].value else {
+            return;
+        };
+        let mut range = std::mem::take(inner);
+        let looped = self.module.fresh_binding();
+        let mut drained = body.drain(label..end);
+        let Some(head) = drained.next() else {
+            return;
+        };
+        range.extend(drained);
+        self.retired.push(head.id);
+        let (spelling, expansion) = (head.spelling, head.expansion);
+        let condition = match range.pop() {
+            Some(Span {
+                id: node,
+                value:
+                    Statement::If {
+                        condition,
+                        then_body,
+                        else_body: None,
+                        folded: None,
+                    },
+                ..
+            }) if gotos == 1 && only_goto(&then_body, id) => {
+                self.retired.push(node);
+                self.retired.extend(then_body.iter().map(|goto| goto.id));
+                Some(condition)
+            }
+            Some(last) => {
+                range.push(last);
+                None
+            }
+            None => None,
+        };
+        let statement = match condition {
+            Some(value) => {
+                let split = condition_prefix(&range, &value);
+                let statements = range.split_off(split);
+                Statement::DoWhile {
+                    id: looped,
+                    body: range,
+                    condition: Evaluation { statements, value },
+                }
+            }
+            None => {
+                for statement in &mut range {
+                    retarget(statement, id, &Statement::Continue(looped));
+                }
+                match range.last() {
+                    Some(last) if matches!(last.value, Statement::Continue(target) if target == looped) => {
+                        if let Some(last) = range.pop() {
+                            self.retired.push(last.id);
+                        }
+                    }
+                    Some(last) if ends_in_jump(&last.value) => {}
+                    last => {
+                        let (spelling, expansion) = last.map_or((spelling, expansion), |last| {
+                            (last.spelling, last.expansion)
+                        });
+                        range.push(Span::new(Statement::Break(looped), spelling, expansion));
+                    }
+                }
+                Statement::For {
+                    id: looped,
+                    init: Vec::new(),
+                    condition: None,
+                    increment: None,
+                    body: range,
+                }
+            }
+        };
+        body.insert(label, Span::new(statement, spelling, expansion));
     }
 
     fn dissolve(&mut self, body: &mut Body, index: usize) {
@@ -190,19 +296,76 @@ fn jumps(statement: &Span<Statement>, label: BindingId) -> usize {
         .sum::<usize>()
 }
 
-fn retarget(statement: &mut Span<Statement>, label: BindingId, block: BindingId) {
+fn sites(range: &[Span<Statement>], label: BindingId) -> (Vec<usize>, usize) {
+    let mut indices = Vec::new();
+    let mut total = 0;
+    for (index, statement) in range.iter().enumerate() {
+        let count = jumps(statement, label);
+        if count != 0 {
+            indices.push(index);
+            total += count;
+        }
+    }
+    (indices, total)
+}
+
+fn condition_prefix(range: &[Span<Statement>], condition: &Value) -> usize {
+    let mut reads = Reads::default();
+    walk_value(&mut condition.clone(), &mut reads);
+    let mut split = range.len();
+    loop {
+        let declared = range[..split]
+            .iter()
+            .position(|statement| match &statement.value {
+                Statement::Let(variable) => reads.0.contains(&variable.id),
+                Statement::Temporary { id, .. } => reads.0.contains(id),
+                _ => false,
+            });
+        let Some(declared) = declared else {
+            return split;
+        };
+        walk_body(&mut range[declared..split].to_vec(), &mut reads);
+        split = declared;
+    }
+}
+
+#[derive(Default)]
+struct Reads(HashSet<BindingId>);
+
+impl Visitor for Reads {
+    fn binding(&mut self, binding: BindingId) {
+        self.0.insert(binding);
+    }
+}
+
+fn only_goto(body: &[Span<Statement>], label: BindingId) -> bool {
+    matches!(body, [single] if matches!(single.value, Statement::Goto(id) if id == label))
+}
+
+fn ends_in_jump(statement: &Statement) -> bool {
+    matches!(
+        statement,
+        Statement::Return(_)
+            | Statement::Break(_)
+            | Statement::Continue(_)
+            | Statement::Goto(_)
+            | Statement::ComputedGoto(_)
+    )
+}
+
+fn retarget(statement: &mut Span<Statement>, label: BindingId, jump: &Statement) {
     if matches!(statement.value, Statement::Goto(id) if id == label) {
-        statement.value = Statement::Break(block);
+        statement.value = jump.clone();
         return;
     }
     for child in children(&mut statement.value) {
         for statement in child {
-            retarget(statement, label, block);
+            retarget(statement, label, jump);
         }
     }
     for evaluation in evaluations(&mut statement.value) {
         for statement in &mut evaluation.statements {
-            retarget(statement, label, block);
+            retarget(statement, label, jump);
         }
     }
 }

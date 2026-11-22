@@ -128,29 +128,27 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn retry(fr: u32, slot: &mut i32, n: i32) -> i32 {
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: bool = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut tries: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         tries = 0;
-// CHECK-NEXT:         if !__slate_intrinsic_1c5364fcd9da51fe(fr as u32) {
-// CHECK-NEXT:             __compiletime_assert_1();
-// CHECK-NEXT:         }
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             if (fr as u32) == 1 && *slot < n {
-// CHECK-NEXT:                 let [[V_1:__v[0-9]+]]: i32 = tries + 1;
-// CHECK-NEXT:                 tries = [[V_1]];
-// CHECK-NEXT:                 [[V_0]] = [[V_1]] < 3;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 [[V_0]] = false;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if [[V_0]] {
-// CHECK-NEXT:                 *slot = *slot + 1;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:         return *slot + tries;
+// CHECK-NEXT:     let mut tries: i32 = 0;
+// CHECK-NEXT:     if !unsafe { __slate_intrinsic_1c5364fcd9da51fe(fr as u32) } {
+// CHECK-NEXT:         unsafe { __compiletime_assert_1() };
 // CHECK-NEXT:     }
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: bool = if (fr as u32) == 1 && *slot < n {
+// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: i32 = tries + 1;
+// CHECK-NEXT:             tries = [[V_1]];
+// CHECK-NEXT:             [[V_1]] < 3
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             false
+// CHECK-NEXT:         };
+// CHECK-NEXT:         if [[V_0]] {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *slot = *slot + 1;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             continue;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         break;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     *slot + tries
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn likely_retry(slot: &mut i32, n: i32) -> i32 {

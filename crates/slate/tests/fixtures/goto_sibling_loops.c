@@ -24,32 +24,26 @@ second:
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut prod: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut sum: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut k: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         i = 0;
-// CHECK-NEXT:         k = 0;
-// CHECK-NEXT:         sum = 0;
-// CHECK-NEXT:         prod = 1;
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             sum += i;
-// CHECK-NEXT:             i += 1;
-// CHECK-NEXT:             if !(i < 5) {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     let mut k: i32 = 0;
+// CHECK-NEXT:     let mut sum: i32 = 0;
+// CHECK-NEXT:     let mut prod: i32 = 1;
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         sum += i;
+// CHECK-NEXT:         i += 1;
+// CHECK-NEXT:         if i >= 5 {
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         k = 1;
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             prod *= k;
-// CHECK-NEXT:             k += 1;
-// CHECK-NEXT:             if !(k < 5) {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:         println!("{} {}", sum, prod);
-// CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     k = 1;
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         prod *= k;
+// CHECK-NEXT:         k += 1;
+// CHECK-NEXT:         if k >= 5 {
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     }
+// CHECK-NEXT:     println!("{} {}", sum, prod);
+// CHECK-NEXT:     0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

@@ -785,6 +785,7 @@ impl FunctionLowerer<'_, '_> {
             Some(Stmt::Return(_))
         ) || body.last().is_some_and(|last| {
             matches!(last.value, ir::Statement::MacroExpansion { .. }) && switch::ends_in_jump(last)
+                || control_flow::endless(last)
         });
         if matches!(function.fallthrough, Some(ir::Fallthrough::ReturnZero)) && !ends_in_return {
             statements.push(Stmt::Return(Some(Expr::Value(rust::RustValue::I64(0)))));

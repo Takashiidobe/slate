@@ -70,54 +70,55 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn collapse(values: &[i32], mut start: i32) -> i32 {
 // CHECK-NEXT:     let count: i32 = values.len() as i32;
-// CHECK-NEXT:     let mut copy: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         total = 0;
-// CHECK-NEXT:         '[[JOIN_0:__join_[0-9]+]]: {
-// CHECK-NEXT:             loop {
-// CHECK-NEXT:                 if start >= count {
-// CHECK-NEXT:                     break '[[JOIN_0]];
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     if values[start as usize] < 0 {
-// CHECK-NEXT:                         start += 1;
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         break;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
+// CHECK-NEXT:     let mut total: i32 = 0;
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: {
+// CHECK-NEXT:         loop {
+// CHECK-NEXT:             if start >= count {
+// CHECK-NEXT:                 break '[[SLATE_BREAK_0]];
 // CHECK-NEXT:             }
-// CHECK-NEXT:             '__loop_1: loop {
-// CHECK-NEXT:                 if start < count {
-// CHECK-NEXT:                     copy = values[start as usize];
+// CHECK-NEXT:             if values[start as usize] < 0 {
+// CHECK-NEXT:                 start += 1;
+// CHECK-NEXT:                 continue;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:         while start < count {
+// CHECK-NEXT:             let copy: i32 = values[start as usize];
+// CHECK-NEXT:             loop {
+// CHECK-NEXT:                 if unlikely!(copy < 0) != 0 {
 // CHECK-NEXT:                     loop {
-// CHECK-NEXT:                         if unlikely!(copy < 0) != 0 {
-// CHECK-NEXT:                             break '__loop_1;
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             if !false {
+// CHECK-NEXT:                         loop {
+// CHECK-NEXT:                             unsafe {
+// CHECK-NEXT:                                 core::arch::asm!("", options(nostack, att_syntax));
+// CHECK-NEXT:                             }
+// CHECK-NEXT:                             unsafe {
+// CHECK-NEXT:                                 core::ptr::write_volatile(
+// CHECK-NEXT:                                     core::ptr::addr_of_mut!(trapped),
+// CHECK-NEXT:                                     1i32,
+// CHECK-NEXT:                                 )
+// CHECK-NEXT:                             };
+// CHECK-NEXT:                             if true {
 // CHECK-NEXT:                                 break;
 // CHECK-NEXT:                             }
 // CHECK-NEXT:                         }
+// CHECK-NEXT:                         unsafe { core::hint::unreachable_unchecked() };
+// CHECK-NEXT:                         if true {
+// CHECK-NEXT:                             break;
+// CHECK-NEXT:                         }
 // CHECK-NEXT:                     }
-// CHECK-NEXT:                     if copy > 9 {
-// CHECK-NEXT:                         break '[[JOIN_0]];
-// CHECK-NEXT:                     } else {
-// CHECK-NEXT:                         total += copy;
-// CHECK-NEXT:                         start += 1;
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     break '[[JOIN_0]];
+// CHECK-NEXT:                 }
+// CHECK-NEXT:                 if true {
+// CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
-// CHECK-NEXT:             loop {
-// CHECK-NEXT:                 core::arch::asm!("", options(nostack, att_syntax));
-// CHECK-NEXT:                 core::ptr::write_volatile(core::ptr::addr_of_mut!(trapped), 1i32);
-// CHECK-NEXT:                 if !false {
-// CHECK-NEXT:                     core::hint::unreachable_unchecked();
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             if copy > 9 {
+// CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
+// CHECK-NEXT:             total += copy;
+// CHECK-NEXT:             start += 1;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return total;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {

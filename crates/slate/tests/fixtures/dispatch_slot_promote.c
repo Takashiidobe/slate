@@ -60,71 +60,53 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn counted(n: i32) -> i32 {
-// CHECK-NEXT:     let mut total: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut i: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         i = 0;
-// CHECK-NEXT:         total = 0;
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             total += i;
-// CHECK-NEXT:             i += 1;
-// CHECK-NEXT:             if !(i < n) {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:     let mut i: i32 = 0;
+// CHECK-NEXT:     let mut total: i32 = 0;
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         total += i;
+// CHECK-NEXT:         i += 1;
+// CHECK-NEXT:         if i >= n {
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return total;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     total
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn escaped(n: i32) -> i32 {
-// CHECK-NEXT:     let mut k: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut x: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         x = n;
-// CHECK-NEXT:         k = 0;
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             bump(&mut x);
-// CHECK-NEXT:             k += 1;
-// CHECK-NEXT:             if !(k < 3) {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:     let mut x: i32 = n;
+// CHECK-NEXT:     let mut k: i32 = 0;
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         bump(&mut x);
+// CHECK-NEXT:         k += 1;
+// CHECK-NEXT:         if k >= 3 {
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return x;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     x
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn record(n: i32) -> i32 {
-// CHECK-NEXT:     let mut k: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut p: core::mem::MaybeUninit<Pair> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut Pair = core::ptr::addr_of_mut!(p) as *mut Pair;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_0]], Pair { a: 1, b: 2 });
-// CHECK-NEXT:         k = 0;
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             (*[[SLATE_SLOT_0]]).a += (*[[SLATE_SLOT_0]]).b;
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = k + 1;
-// CHECK-NEXT:             k = [[V_0]];
-// CHECK-NEXT:             if !([[V_0]] < n) {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:     let mut p: Pair = Pair { a: 1, b: 2 };
+// CHECK-NEXT:     let mut k: i32 = 0;
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         p.a += p.b;
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = k + 1;
+// CHECK-NEXT:         k = [[V_0]];
+// CHECK-NEXT:         if [[V_0]] >= n {
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return (*[[SLATE_SLOT_0]]).a;
 // CHECK-NEXT:     }
+// CHECK-NEXT:     p.a
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn aligned(n: i32) -> i32 {
-// CHECK-NEXT:     let mut k: i32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut v: core::mem::MaybeUninit<__SlateAlign32<i32>> = core::mem::MaybeUninit::uninit();
-// CHECK-NEXT:     let [[SLATE_SLOT_0:__slate_slot_[0-9]+]]: *mut i32 = core::ptr::addr_of_mut!(v) as *mut i32;
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         core::ptr::write([[SLATE_SLOT_0]], 1i32);
-// CHECK-NEXT:         k = 0;
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             *[[SLATE_SLOT_0]] *= 2;
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = k + 1;
-// CHECK-NEXT:             k = [[V_0]];
-// CHECK-NEXT:             if !([[V_0]] < n) {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:     let mut v: __SlateAlign32<i32> = __SlateAlign32(1i32);
+// CHECK-NEXT:     let mut k: i32 = 0;
+// CHECK-NEXT:     loop {
+// CHECK-NEXT:         v.0 *= 2;
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = k + 1;
+// CHECK-NEXT:         k = [[V_0]];
+// CHECK-NEXT:         if [[V_0]] >= n {
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         return *[[SLATE_SLOT_0]];
 // CHECK-NEXT:     }
+// CHECK-NEXT:     v.0
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

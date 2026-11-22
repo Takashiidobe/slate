@@ -251,15 +251,16 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn %{{[0-9]+}} @backward(%{{[0-9]+}} n: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // CHECK-NEXT:     let %[[V_TOTAL:[0-9]+]] total: i32 [storage=automatic] = const<i32>(0);
-// CHECK-NEXT:     label %[[V_AGAIN:[0-9]+]] again:
-// CHECK-NEXT:         let %[[V0:[0-9]+]]: i32 [synthetic] = read<i32>(%[[V_TOTAL]]);
-// CHECK-NEXT:         let %[[V1:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[V0]]), read<i32>(%[[V_N:[0-9]+]]));
-// CHECK-NEXT:         write<i32>(%[[V_TOTAL]], read<i32>(%[[V1]]));
-// CHECK-NEXT:     let %[[V2:[0-9]+]]: i32 [synthetic] = read<i32>(%[[V_N]]);
-// CHECK-NEXT:     let %[[V3:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[V2]]), const<i32>(1));
-// CHECK-NEXT:     write<i32>(%[[V_N]], read<i32>(%[[V3]]));
-// CHECK-NEXT:     if gt<i32>(read<i32>(%[[V3]]), const<i32>(0))
-// CHECK-NEXT:         goto %[[V_AGAIN]];
+// CHECK-NEXT:     do %[[V0:[0-9]+]]
+// CHECK-NEXT:         let %[[V1:[0-9]+]]: i32 [synthetic] = read<i32>(%[[V_TOTAL]]);
+// CHECK-NEXT:         let %[[V2:[0-9]+]]: i32 [synthetic] = add<i32, overflow=ub>(read<i32>(%[[V1]]), read<i32>(%[[V_N:[0-9]+]]));
+// CHECK-NEXT:         write<i32>(%[[V_TOTAL]], read<i32>(%[[V2]]));
+// CHECK-NEXT:     while {
+// CHECK-NEXT:         let %[[V3:[0-9]+]]: i32 [synthetic] = read<i32>(%[[V_N]]);
+// CHECK-NEXT:         let %[[V4:[0-9]+]]: i32 [synthetic] = sub<i32, overflow=ub>(read<i32>(%[[V3]]), const<i32>(1));
+// CHECK-NEXT:         write<i32>(%[[V_N]], read<i32>(%[[V4]]));
+// CHECK-NEXT:         yield gt<i32>(read<i32>(%[[V4]]), const<i32>(0));
+// CHECK-NEXT:     };
 // CHECK-NEXT:     return read<i32>(%[[V_TOTAL]]);
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn %{{[0-9]+}} @main() -> i32 [linkage=external] [fallthrough=ret_zero] {

@@ -45,7 +45,7 @@ impl<'a, 'm> FunctionLowerer<'a, 'm> {
             dispatch_vlas: HashSet::new(),
             aligned_locals: HashSet::new(),
             register_locals: HashSet::new(),
-            counted_loops: HashSet::new(),
+            direct_continues: HashSet::new(),
             non_index_names: HashSet::new(),
             macro_sites: Vec::new(),
             negated_macro_conditions: HashSet::new(),
