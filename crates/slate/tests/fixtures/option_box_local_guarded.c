@@ -37,10 +37,10 @@ int main(void) {
 // CHECK-NEXT: fn compute(flag: i32) -> i32 {
 // CHECK-NEXT:     let mut p: Option<Vec<i32>> = None;
 // CHECK-NEXT:     if flag != 0 {
-// CHECK-NEXT:         p = Vec::try_filled(1, 0);
+// CHECK-NEXT:         p = Vec::try_alloc(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if let Some(p) = p.as_mut() {
-// CHECK-NEXT:         p[0] = 41;
+// CHECK-NEXT:         p.push(41i32);
 // CHECK-NEXT:         let v: i32 = p[0];
 // CHECK-NEXT:         println!("{}", v);
 // CHECK-NEXT:     } else {

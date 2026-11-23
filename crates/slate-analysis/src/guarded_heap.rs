@@ -1,4 +1,4 @@
-use crate::counted_loops::{integer_constant, plain_access, plain_local};
+use crate::counted_loops::{CountedLoop, integer_constant, plain_access, plain_local};
 use crate::def_use::DefUse;
 use crate::identity::{FunctionIdentity, Known};
 use crate::pointer::{release_endings, released_binding};
@@ -13,24 +13,49 @@ pub enum GuardedHeapStatement {
     Allocate {
         binding: BindingId,
         count: u64,
+        zeroed: bool,
     },
     Present {
         binding: BindingId,
         elide_release: bool,
     },
+    Resize {
+        binding: BindingId,
+        count: u64,
+    },
+    ResizeFailed(BindingId),
+    ZeroFill {
+        binding: BindingId,
+        count: u64,
+        overwrite: bool,
+    },
     Remove,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum HeapIndex {
+    Constant(u64),
+    Binding(BindingId),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct HeapElement {
     pub binding: BindingId,
-    pub index: u64,
+    pub index: HeapIndex,
+    pub append: bool,
 }
 
 #[derive(Debug, Default)]
 pub(crate) struct GuardedHeap {
     pub statements: HashMap<NodeId, GuardedHeapStatement>,
     pub elements: HashMap<NodeId, HeapElement>,
+    pub uninitialized: HashSet<BindingId>,
+}
+
+pub(crate) struct HeapInputs<'a> {
+    pub hidden: &'a HashSet<BindingId>,
+    pub uses: &'a DefUse,
+    pub loops: &'a HashMap<BindingId, CountedLoop>,
 }
 
 pub(crate) fn analyze(
@@ -38,12 +63,11 @@ pub(crate) fn analyze(
     unit: UnitId,
     function: &Function,
     identities: &HashMap<ProgramBinding, FunctionIdentity>,
-    hidden: &HashSet<BindingId>,
-    uses: &DefUse,
+    inputs: &HeapInputs<'_>,
     out: &mut GuardedHeap,
 ) {
     let module = program.unit(unit).module;
-    if !module.hosted || module.nostdinc || !uses.whole_body_structured() {
+    if !module.hosted || module.nostdinc || !inputs.uses.whole_body_structured() {
         return;
     }
     let Some(body) = &function.body else {
@@ -73,7 +97,7 @@ pub(crate) fn analyze(
             || !variable.access.is_plain()
             || variable.byref
             || variable.alignment.is_some()
-            || hidden.contains(&binding)
+            || inputs.hidden.contains(&binding)
             || !variable.initializer.as_ref().is_some_and(is_null)
         {
             continue;
@@ -107,10 +131,17 @@ pub(crate) fn analyze(
         else {
             continue;
         };
-        let [size] = arguments.as_slice() else {
-            continue;
+        let (size, multiplier, zeroed) = match arguments.as_slice() {
+            [size] if builtin(callee, Known::Malloc) => (size, 1, false),
+            [count, size] if builtin(callee, Known::Calloc) => {
+                let Some(count) = unsigned_constant(count) else {
+                    continue;
+                };
+                (size, count, true)
+            }
+            _ => continue,
         };
-        let Some(count) = extent(size, element, module.target.pointer_width) else {
+        let Some(count) = extent(size, element, module.target.pointer_width, multiplier) else {
             continue;
         };
         let Statement::If {
@@ -122,7 +153,7 @@ pub(crate) fn analyze(
         else {
             continue;
         };
-        if !builtin(callee, Known::Malloc) || !checks_presence(condition, binding) {
+        if !checks_null(condition, binding, CompareOp::Ne) {
             continue;
         }
         let mut proof = Cursor {
@@ -131,22 +162,38 @@ pub(crate) fn analyze(
             element,
             count,
             offset: 0,
+            prefix: if zeroed { count } else { 0 },
+            sparse: false,
             initialized: HashSet::new(),
             reads: 1,
             writes: 1,
             elements: HashMap::new(),
-            advances: Vec::new(),
+            actions: Vec::new(),
+            inputs,
         };
         let Some(release) = proof.prove(arm(then_body), &builtin) else {
             continue;
         };
-        if !uses.matches_reads_and_writes(binding, proof.reads, proof.writes) {
+        if !inputs
+            .uses
+            .matches_reads_and_writes(binding, proof.reads, proof.writes)
+        {
             continue;
         }
         found_guard = true;
+        if proof.sparse {
+            out.uninitialized.insert(binding);
+        }
         out.statements.extend([
             (declaration.id, GuardedHeapStatement::Declare),
-            (write.id, GuardedHeapStatement::Allocate { binding, count }),
+            (
+                write.id,
+                GuardedHeapStatement::Allocate {
+                    binding,
+                    count,
+                    zeroed,
+                },
+            ),
             (
                 guard.id,
                 GuardedHeapStatement::Present {
@@ -156,12 +203,7 @@ pub(crate) fn analyze(
             ),
             (release, GuardedHeapStatement::Remove),
         ]);
-        out.statements.extend(
-            proof
-                .advances
-                .into_iter()
-                .map(|id| (id, GuardedHeapStatement::Remove)),
-        );
+        out.statements.extend(proof.actions);
         out.elements.extend(proof.elements);
     }
     if found_guard {
@@ -221,7 +263,11 @@ fn integer_pointee(ty: &Type) -> Option<&Type> {
     .then_some(pointee)
 }
 
-fn extent(size: &Value, element: &Type, pointer_width: u32) -> Option<u64> {
+fn unsigned_constant(value: &Value) -> Option<u64> {
+    integer_constant(value)?.try_into().ok()
+}
+
+fn extent(size: &Value, element: &Type, pointer_width: u32, multiplier: u64) -> Option<u64> {
     let size_of = |value: &Value| match &value.node.value {
         ValueKind::LayoutQuery {
             query: LayoutQuery::SizeOf { ty, .. },
@@ -237,13 +283,14 @@ fn extent(size: &Value, element: &Type, pointer_width: u32) -> Option<u64> {
             ..
         } => {
             if let Some(bytes) = size_of(left) {
-                (bytes, integer_constant(right)?.try_into().ok()?)
+                (bytes, unsigned_constant(right)?)
             } else {
-                (size_of(right)?, integer_constant(left)?.try_into().ok()?)
+                (size_of(right)?, unsigned_constant(left)?)
             }
         }
         _ => (size_of(size)?, 1),
     };
+    let count = count.checked_mul(multiplier)?;
     let Type::Numeric(NumericType::Integer { width, signed, .. }) = size.ty else {
         return None;
     };
@@ -291,12 +338,12 @@ fn reads_binding(value: &Value, binding: BindingId) -> bool {
     )
 }
 
-fn checks_presence(value: &Value, binding: BindingId) -> bool {
+fn checks_null(value: &Value, binding: BindingId, relation: CompareOp) -> bool {
     matches!(
         &value.node.value,
-        ValueKind::Compare { op: CompareOp::Ne, left, right, .. }
-            if (reads_binding(left, binding) && is_null(right))
-                || (is_null(left) && reads_binding(right, binding))
+        ValueKind::Compare { op, left, right, .. }
+            if *op == relation && ((reads_binding(left, binding) && is_null(right))
+                || (is_null(left) && reads_binding(right, binding)))
     )
 }
 
@@ -322,11 +369,14 @@ struct Cursor<'a> {
     element: &'a Type,
     count: u64,
     offset: u64,
+    prefix: u64,
+    sparse: bool,
     initialized: HashSet<u64>,
     reads: usize,
     writes: usize,
     elements: HashMap<NodeId, HeapElement>,
-    advances: Vec<NodeId>,
+    actions: Vec<(NodeId, GuardedHeapStatement)>,
+    inputs: &'a HeapInputs<'a>,
 }
 
 impl Cursor<'_> {
@@ -341,7 +391,8 @@ impl Cursor<'_> {
                 self.offset = self.pointer(value)?;
                 self.reads += 1;
                 self.writes += 1;
-                self.advances.push(statement.id);
+                self.actions
+                    .push((statement.id, GuardedHeapStatement::Remove));
                 continue;
             }
             match &statement.value {
@@ -352,15 +403,29 @@ impl Cursor<'_> {
                     ..
                 } => {
                     self.read(value)?;
-                    if let Some(index) = self.access(place)? {
-                        self.initialized.insert(index);
+                    if let Some((pointer, index)) = self.access(place)? {
+                        let append = index == self.prefix;
+                        self.record_element(pointer, HeapIndex::Constant(index), append)?;
+                        self.initialize(index);
                     }
                 }
                 Statement::Let(variable) if plain_local(variable) && !variable.byref => {
+                    if let Some(count) = self.resize_count(variable, builtin) {
+                        self.prove_resize(
+                            statement.id,
+                            variable.id,
+                            count,
+                            statements.next()?,
+                            statements.next()?,
+                            builtin,
+                        )?;
+                        continue;
+                    }
                     if let Some(value) = &variable.initializer {
                         self.read(value)?;
                     }
                 }
+                Statement::For { id, body, .. } => self.fill_loop(*id, body)?,
                 Statement::Expression(Value {
                     node:
                         Span {
@@ -380,6 +445,25 @@ impl Cursor<'_> {
                         self.reads += 1;
                         return Some(statement.id);
                     }
+                    if builtin(callee, Known::MemSet)
+                        && let [pointer, fill, size] = arguments.as_slice()
+                        && unsigned_constant(fill) == Some(0)
+                        && self.pointer(peel_pointer(pointer)) == Some(0)
+                        && self.extent(size) == Some(self.count)
+                    {
+                        self.actions.push((
+                            statement.id,
+                            GuardedHeapStatement::ZeroFill {
+                                binding: self.binding,
+                                count: self.count,
+                                overwrite: self.prefix != 0,
+                            },
+                        ));
+                        self.reads += 1;
+                        self.prefix = self.count;
+                        self.initialized.clear();
+                        continue;
+                    }
                     for argument in arguments {
                         self.read(argument)?;
                     }
@@ -388,6 +472,190 @@ impl Cursor<'_> {
             }
         }
         None
+    }
+
+    fn extent(&self, value: &Value) -> Option<u64> {
+        extent(value, self.element, self.module.target.pointer_width, 1)
+    }
+
+    fn initialize(&mut self, index: u64) {
+        if index == self.prefix {
+            self.prefix += 1;
+            while self.initialized.remove(&self.prefix) {
+                self.prefix += 1;
+            }
+        } else if index > self.prefix {
+            self.sparse = true;
+            self.initialized.insert(index);
+        }
+    }
+
+    fn fill_loop(&mut self, id: BindingId, body: &[Span<Statement>]) -> Option<()> {
+        let counted = self.inputs.loops.get(&id)?;
+        let start = unsigned_constant(&counted.start)?;
+        let end = unsigned_constant(&counted.end)?.checked_add(u64::from(counted.inclusive))?;
+        let append = start == self.prefix;
+        if (!append && end > self.prefix) || start >= end || end > self.count || self.offset != 0 {
+            return None;
+        }
+        let mut statements = code(arm(body));
+        let Statement::Write {
+            place,
+            value,
+            ordering: None,
+            ..
+        } = &statements.next()?.value
+        else {
+            return None;
+        };
+        let PlaceKind::Deref(pointer) = &place.kind else {
+            return None;
+        };
+        let ValueKind::PointerOffset {
+            pointer: base,
+            amount,
+            subtract: false,
+            element,
+            ..
+        } = &pointer.node.value
+        else {
+            return None;
+        };
+        if statements.next().is_some()
+            || element != self.element
+            || place.ty != *self.element
+            || !plain_access(&place.access)
+            || !reads_binding(base, self.binding)
+            || !reads_binding(amount, counted.index)
+            || [pointer.node.id, base.node.id, amount.node.id]
+                .iter()
+                .any(|id| self.module.macro_values.contains_key(id))
+        {
+            return None;
+        }
+        self.read(value)?;
+        self.record_element(pointer.node.id, HeapIndex::Binding(counted.index), append)?;
+        if append {
+            self.prefix = end;
+            while self.initialized.remove(&self.prefix) {
+                self.prefix += 1;
+            }
+        }
+        Some(())
+    }
+
+    fn resize_count(
+        &self,
+        result: &Variable,
+        builtin: &impl Fn(&Callee, Known) -> bool,
+    ) -> Option<u64> {
+        let initializer = result.initializer.as_ref()?;
+        let ValueKind::Call {
+            callee, arguments, ..
+        } = &peel_pointer(initializer).node.value
+        else {
+            return None;
+        };
+        let [pointer, size] = arguments.as_slice() else {
+            return None;
+        };
+        let pointer = peel_pointer(pointer);
+        if !builtin(callee, Known::Realloc)
+            || result.ty != pointer.ty
+            || !reads_binding(pointer, self.binding)
+            || self.offset != 0
+            || self.module.macro_values.contains_key(&initializer.node.id)
+            || self.inputs.hidden.contains(&result.id)
+            || !self.inputs.uses.matches_reads_and_writes(result.id, 2, 0)
+        {
+            return None;
+        }
+        let count = self.extent(size)?;
+        (count > self.count).then_some(count)
+    }
+
+    fn prove_resize(
+        &mut self,
+        attempt: NodeId,
+        result: BindingId,
+        count: u64,
+        failure: &Span<Statement>,
+        commit: &Span<Statement>,
+        builtin: &impl Fn(&Callee, Known) -> bool,
+    ) -> Option<()> {
+        let Statement::If {
+            condition,
+            then_body,
+            else_body: None,
+            folded: None,
+        } = &failure.value
+        else {
+            return None;
+        };
+        if !checks_null(condition, result, CompareOp::Eq)
+            || self.module.macro_values.contains_key(&condition.node.id)
+            || !reads_binding(write_binding(commit, self.binding)?, result)
+        {
+            return None;
+        }
+        let mut statements = code(arm(then_body)).peekable();
+        while let Some(Span {
+            value: Statement::Let(variable),
+            ..
+        }) = statements.peek()
+        {
+            if !plain_local(variable) || variable.byref {
+                return None;
+            }
+            let initializer = variable.initializer.as_ref()?;
+            if !self.plain_failure_value(initializer, true) {
+                return None;
+            }
+            self.read(initializer)?;
+            statements.next();
+        }
+        let release = statements.next()?;
+        let Statement::Expression(value) = &release.value else {
+            return None;
+        };
+        let ValueKind::Call {
+            callee, arguments, ..
+        } = &value.node.value
+        else {
+            return None;
+        };
+        let [pointer] = arguments.as_slice() else {
+            return None;
+        };
+        if !builtin(callee, Known::Free) || self.pointer(peel_pointer(pointer)) != Some(0) {
+            return None;
+        }
+        let Statement::Return(value) = &statements.next()?.value else {
+            return None;
+        };
+        if statements.next().is_some()
+            || value
+                .as_ref()
+                .is_some_and(|value| !self.plain_failure_value(value, false))
+        {
+            return None;
+        }
+        self.actions.extend([
+            (
+                attempt,
+                GuardedHeapStatement::Resize {
+                    binding: self.binding,
+                    count,
+                },
+            ),
+            (failure.id, GuardedHeapStatement::ResizeFailed(result)),
+            (release.id, GuardedHeapStatement::Remove),
+            (commit.id, GuardedHeapStatement::Remove),
+        ]);
+        self.count = count;
+        self.reads += 2;
+        self.writes += 1;
+        Some(())
     }
 
     fn pointer(&self, value: &Value) -> Option<u64> {
@@ -421,7 +689,7 @@ impl Cursor<'_> {
         }
     }
 
-    fn access(&mut self, place: &Place) -> Option<Option<u64>> {
+    fn access(&self, place: &Place) -> Option<Option<(NodeId, u64)>> {
         let PlaceKind::Deref(pointer) = &place.kind else {
             return Some(None);
         };
@@ -431,19 +699,24 @@ impl Cursor<'_> {
         if !plain_access(&place.access) || place.ty != *self.element || index >= self.count {
             return None;
         }
+        Some(Some((pointer.node.id, index)))
+    }
+
+    fn record_element(&mut self, pointer: NodeId, index: HeapIndex, append: bool) -> Option<()> {
         let element = HeapElement {
             binding: self.binding,
             index,
+            append,
         };
         if self
             .elements
-            .insert(pointer.node.id, element)
+            .insert(pointer, element)
             .is_some_and(|prior| prior != element)
         {
             return None;
         }
         self.reads += 1;
-        Some(Some(index))
+        Some(())
     }
 
     fn read(&mut self, mut value: &Value) -> Option<()> {
@@ -461,13 +734,44 @@ impl Cursor<'_> {
                     place,
                     ordering: None,
                 } => {
-                    let index = self.access(place)?;
-                    return index
-                        .is_none_or(|index| self.initialized.contains(&index))
-                        .then_some(());
+                    if let Some((pointer, index)) = self.access(place)? {
+                        if index >= self.prefix && !self.initialized.contains(&index) {
+                            return None;
+                        }
+                        self.record_element(pointer, HeapIndex::Constant(index), false)?;
+                    }
+                    return Some(());
                 }
                 _ => return Some(()),
             }
         }
+    }
+    fn plain_failure_value(&self, mut value: &Value, allow_element: bool) -> bool {
+        while matches!(value.ty, Type::Numeric(NumericType::Integer { .. })) {
+            match &value.node.value {
+                ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. } => {
+                    value = operand
+                }
+                ValueKind::Constant(_) => return true,
+                ValueKind::Read {
+                    place,
+                    ordering: None,
+                } if plain_access(&place.access) => {
+                    return match place.kind {
+                        PlaceKind::Binding(binding) => !self
+                            .module
+                            .globals
+                            .iter()
+                            .any(|global| global.variable.id == binding),
+                        PlaceKind::Deref(_) => {
+                            allow_element && matches!(self.access(place), Some(Some(_)))
+                        }
+                        _ => false,
+                    };
+                }
+                _ => return false,
+            }
+        }
+        false
     }
 }

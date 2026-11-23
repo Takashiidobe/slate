@@ -43,6 +43,9 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_assignment(&mut self, place: &ir::Place, value: Expr) -> Result<Stmt> {
+        if let Some(store) = self.lower_heap_store(place, &value) {
+            return Ok(store);
+        }
         if place.access.volatile {
             if let Some(write) = self.bit_unit_write(place, value.clone(), true)? {
                 return Ok(write);

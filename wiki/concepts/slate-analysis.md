@@ -616,17 +616,24 @@ extension point for `Box<T>`, `Vec<T>`, `CString` and `String`.
 ### Guarded typed allocations
 
 - `guarded_heap::analyze` lifts a null-initialized integer pointer with one
-  conditional `malloc` and a following presence check. The allocation must
-  have a positive constant element count from `sizeof(T)` or
+  conditional `malloc` or `calloc` and a following presence check. The
+  allocation must have a positive constant element count from `sizeof(T)` or
   `sizeof(T) * count`.
 - In the success arm, track the cursor's constant offset from the allocation
   base. Dereferences must be in bounds, reads must follow a write to that
-  element, and the final `free` must resolve to offset zero. Every use of the
-  pointer must be accounted for by the local def-use proof.
-- Lower to `Option<Vec<T>>` and `Vec::try_filled(count, 0)` from
-  `slate_support::VecExt`. A skipped or failed allocation gives `None`. The
-  success arm uses ordinary indexing. The shared release rule elides
-  scope-exit drops and keeps explicit drops before later work.
+  element or a zeroed allocation, and the final `free` must resolve to offset
+  zero. Every pointer use must be accounted for by the local def-use proof.
+- Track the initialized prefix separately from the allocation extent.
+  `malloc` reserves with `Vec::try_alloc`. Sequential stores and simple
+  counted fill loops append with `push`. A whole-buffer zero `memset` fills
+  at its original position. `calloc` initializes the prefix with
+  `Vec::try_filled(count, 0)`.
+- Use `Vec<MaybeUninit<T>>` when stores leave holes. Lower loads only at
+  proven initialized slots. A guarded, increasing `realloc` reserves more
+  capacity for a prefix vector or adds uninitialized slots for a sparse one.
+  The old extent and contents remain available on the failure path.
+- A skipped or failed allocation gives `None`. The shared release rule
+  elides scope-exit drops and keeps explicit drops before later work.
 
 ## Effect summaries
 

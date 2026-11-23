@@ -513,6 +513,9 @@ impl FunctionLowerer<'_, '_> {
         if let Some(lowered) = self.lower_complex_value(value)? {
             return Ok(lowered);
         }
+        if let Some(load) = self.lower_heap_load(value) {
+            return Ok(load);
+        }
         if let Some(read) = self.borrowed_read(value)? {
             return Ok(read);
         }

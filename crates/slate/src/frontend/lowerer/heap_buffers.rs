@@ -1,7 +1,7 @@
 use super::*;
 use crate::function_identity::Known;
 use optional::{method, some_pattern};
-use slate_analysis::{GuardedHeapStatement, HeapAction};
+use slate_analysis::{GuardedHeapStatement, HeapAction, HeapElement, HeapIndex};
 
 fn peel_pointer(mut value: &ir::Value) -> &ir::Value {
     while let ValueKind::Copy { operand, .. }
@@ -139,6 +139,13 @@ impl FunctionLowerer<'_, '_> {
             (GuardedHeapStatement::Declare, ir::Statement::Let(variable))
                 if let ir::Type::Pointer { pointee, .. } = &variable.ty =>
             {
+                let mut element = self.lower_type(pointee)?;
+                if self.tables.facts.heap_has_uninitialized_slots(variable.id) {
+                    element = rust::Type::Generic {
+                        name: "core::mem::MaybeUninit".into(),
+                        args: vec![element],
+                    };
+                }
                 Stmt::Let {
                     origin: rust::LocalOrigin::Source,
                     name: self.binding_name(variable.id),
@@ -147,23 +154,92 @@ impl FunctionLowerer<'_, '_> {
                         name: "Option".into(),
                         args: vec![rust::Type::Generic {
                             name: "Vec".into(),
-                            args: vec![self.lower_type(pointee)?],
+                            args: vec![element],
                         }],
                     }),
                     init: Some(Expr::Value(rust::RustValue::None)),
                 }
             }
-            (GuardedHeapStatement::Allocate { binding, count }, ir::Statement::Write { .. }) => {
+            (
+                GuardedHeapStatement::Allocate {
+                    binding,
+                    count,
+                    zeroed,
+                },
+                ir::Statement::Write { .. },
+            ) => {
                 self.dependencies.vec_ext = true;
+                let uninit = self.tables.facts.heap_has_uninitialized_slots(binding);
+                let mut args = vec![heap_count(count)];
+                let function = if zeroed {
+                    args.push(heap_zero(uninit));
+                    "Vec::try_filled"
+                } else if uninit {
+                    "Vec::try_uninit"
+                } else {
+                    "Vec::try_alloc"
+                };
                 Stmt::Assign {
                     target: Expr::var(self.binding_name(binding).into()),
-                    value: generated_call(
-                        "Vec::try_filled",
-                        vec![
-                            Expr::Value(rust::RustValue::U128(count.into())),
-                            Expr::Value(rust::RustValue::I64(0)),
-                        ],
-                    ),
+                    value: generated_call(function, args),
+                }
+            }
+            (GuardedHeapStatement::Resize { binding, count }, ir::Statement::Let(result)) => {
+                self.dependencies.vec_ext = true;
+                let uninit = self.tables.facts.heap_has_uninitialized_slots(binding);
+                let mut args = vec![heap_count(count)];
+                let name = if uninit {
+                    args.push(Expr::var("core::mem::MaybeUninit::uninit".into()));
+                    "try_resize_with"
+                } else {
+                    "try_reserve_len"
+                };
+                Stmt::Let {
+                    origin: rust::LocalOrigin::Synthetic,
+                    name: self.binding_name(result.id),
+                    mutable: false,
+                    ty: Some(rust::Type::Prim(Prim::Bool)),
+                    init: Some(method(
+                        method(Expr::var(self.binding_name(binding).into()), name, args),
+                        "is_none",
+                        vec![],
+                    )),
+                }
+            }
+            (GuardedHeapStatement::ResizeFailed(result), ir::Statement::If { then_body, .. }) => {
+                Stmt::If {
+                    cond: Expr::var(self.binding_name(result).into()),
+                    then_body: self.lower_statement_list(then_body)?,
+                    else_body: Vec::new(),
+                }
+            }
+            (
+                GuardedHeapStatement::ZeroFill {
+                    binding,
+                    count,
+                    overwrite,
+                },
+                ir::Statement::Expression(_),
+            ) => {
+                let uninit = self.tables.facts.heap_has_uninitialized_slots(binding);
+                let buffer = Expr::var(self.binding_name(binding).into());
+                let resize = || {
+                    Stmt::Expr(method(
+                        buffer.clone(),
+                        "resize",
+                        vec![heap_count(count), heap_zero(false)],
+                    ))
+                };
+                let fill = || Stmt::Expr(method(buffer.clone(), "fill", vec![heap_zero(uninit)]));
+                if uninit {
+                    fill()
+                } else if overwrite {
+                    Stmt::Block(rust::Block {
+                        stmts: vec![resize(), fill()],
+                        tail: None,
+                    })
+                } else {
+                    resize()
                 }
             }
             (
@@ -199,6 +275,64 @@ impl FunctionLowerer<'_, '_> {
             (GuardedHeapStatement::Remove, _) => Stmt::Block(rust::Block::default()),
             _ => return Err(Invariant::UnprovenBorrow(format!("{action:?}")).into()),
         })
+    }
+
+    pub(super) fn heap_element(&self, place: &ir::Place) -> Option<HeapElement> {
+        let PlaceKind::Deref(pointer) = &place.kind else {
+            return None;
+        };
+        self.tables.facts.heap_element(pointer.node.id)
+    }
+
+    pub(super) fn heap_index(&self, element: HeapElement) -> Expr {
+        let index = match element.index {
+            HeapIndex::Constant(index) => heap_count(index),
+            HeapIndex::Binding(binding) => usize_of(Expr::var(self.binding_name(binding).into())),
+        };
+        Expr::Index {
+            base: Box::new(Expr::var(self.binding_name(element.binding).into())),
+            index: Box::new(index),
+        }
+    }
+
+    pub(super) fn lower_heap_store(&self, place: &ir::Place, value: &Expr) -> Option<Stmt> {
+        let element = self.heap_element(place)?;
+        if self
+            .tables
+            .facts
+            .heap_has_uninitialized_slots(element.binding)
+        {
+            let target = self.heap_index(element);
+            if value.reads_var(&self.binding_name(element.binding)) {
+                return Some(Stmt::Assign {
+                    target,
+                    value: generated_call("core::mem::MaybeUninit::new", vec![value.clone()]),
+                });
+            }
+            return Some(Stmt::Expr(method(target, "write", vec![value.clone()])));
+        }
+        element.append.then(|| {
+            Stmt::Expr(method(
+                Expr::var(self.binding_name(element.binding).into()),
+                "push",
+                vec![value.clone()],
+            ))
+        })
+    }
+
+    pub(super) fn lower_heap_load(&self, value: &ir::Value) -> Option<Expr> {
+        let ValueKind::Read {
+            place,
+            ordering: None,
+        } = &value.node.value
+        else {
+            return None;
+        };
+        let element = self.heap_element(place)?;
+        self.tables
+            .facts
+            .heap_has_uninitialized_slots(element.binding)
+            .then(|| unsafe_op(method(self.heap_index(element), "assume_init_read", vec![])))
     }
 
     pub(super) fn owned(&self, binding: BindingId) -> bool {
@@ -319,6 +453,19 @@ impl FunctionLowerer<'_, '_> {
             return false;
         };
         self.tables.elided_release(value.node.id) && self.lower_release(arguments).is_some()
+    }
+}
+
+fn heap_count(count: u64) -> Expr {
+    Expr::Value(rust::RustValue::U128(count.into()))
+}
+
+fn heap_zero(uninit: bool) -> Expr {
+    let zero = Expr::Value(rust::RustValue::I64(0));
+    if uninit {
+        generated_call("core::mem::MaybeUninit::new", vec![zero])
+    } else {
+        zero
     }
 }
 

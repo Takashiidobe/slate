@@ -103,6 +103,12 @@ impl<'f> UnitFacts<'f> {
             .copied()
     }
 
+    pub fn heap_has_uninitialized_slots(&self, binding: BindingId) -> bool {
+        self.facts.guarded_heap[self.unit.0 as usize]
+            .uninitialized
+            .contains(&binding)
+    }
+
     pub fn identity(&self, function: BindingId) -> FunctionIdentity {
         self.facts
             .identities
@@ -128,7 +134,7 @@ pub fn analyze(program: &Program<'_>) -> Facts {
             }
         }
     }
-    let counted_loops = program
+    let counted_loops: Vec<_> = program
         .units()
         .map(|(_, program_unit)| {
             let mut loops = HashMap::new();
@@ -235,8 +241,11 @@ pub fn analyze(program: &Program<'_>) -> Facts {
                 unit,
                 function,
                 &identities,
-                &hidden,
-                &uses,
+                &guarded_heap::HeapInputs {
+                    hidden: &hidden,
+                    uses: &uses,
+                    loops: &counted_loops[unit.0 as usize],
+                },
                 &mut heap,
             );
             for (binding, mutability) in uses.binding_mutability() {

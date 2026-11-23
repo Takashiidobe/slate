@@ -30,13 +30,13 @@ int main(void) {
 // CHECK-NEXT: use slate_support::VecExt as _;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn compute(flag: i32) -> i32 {
-// CHECK-NEXT:     let mut p: Option<Vec<i32>> = None;
+// CHECK-NEXT:     let mut p: Option<Vec<core::mem::MaybeUninit<i32>>> = None;
 // CHECK-NEXT:     if flag != 0 {
-// CHECK-NEXT:         p = Vec::try_filled(4, 0);
+// CHECK-NEXT:         p = Vec::try_uninit(4);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if let Some(p) = p.as_mut() {
-// CHECK-NEXT:         p[1] = 41;
-// CHECK-NEXT:         println!("{}", p[1]);
+// CHECK-NEXT:         p[1].write(41i32);
+// CHECK-NEXT:         println!("{}", unsafe { p[1].assume_init_read() });
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         println!("no alloc");
 // CHECK-NEXT:     }
