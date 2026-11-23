@@ -373,6 +373,16 @@ and `string_params` passes and the `SLATE_IR_POINTERS` gate were deleted in
   whose callers never pass null leaves `p: &T`. `&p->f` on a nullable class
   keeps the pointer raw: C computes the address without a deref
   (`if (&a->b)` with `a == NULL`), and `unwrap` would panic.
+- Presence checks unwrap (`slate-8ge7.24.22`). On a nullable borrow whose
+  mutability fact says it is never written and never passed to a writing
+  callee, `if (p)` / `if (p && x)` / `p ? a : b` lower to
+  `if let Some(p) = p [&& x]`, and `if (!p) <return|break|continue>` with no
+  else lowers to `let Some(p) = p else { .. };`. Inside the then-branch, or
+  for the rest of the statement list after a let-else, `p` reads as `&T`
+  with no `unwrap`; an else branch keeps the Option. `&mut` matches on
+  `p.as_deref_mut()`. A binding written after the check (`if (!p) p = q;`)
+  keeps `is_none()` / `unwrap()`. Rules that negate a condition or use it as a
+  `bool` must skip `Expr::is_let_condition()`.
 - Return lifting: a candidate's pointer return becomes `&T` / `Option<&T>`
   under lifetime elision only. The function has exactly one tracked pointer
   parameter P, every returned value is in P's class (P itself, `&P[i]`,

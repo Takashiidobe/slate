@@ -54,6 +54,22 @@ static void store(int *out, int value) {
 // @check-fn-end
 
 // @check-fn-begin
+static int chained(const int *p) {
+  if (p != NULL && *p > 2)
+    return *p * 10;
+  return -2;
+}
+// @check-fn-end
+
+// @check-fn-begin
+static int rebound(const int *p, const int *q) {
+  if (!p)
+    p = q;
+  return *p;
+}
+// @check-fn-end
+
+// @check-fn-begin
 static int chosen(int flag) {
   int a = 4;
   int b = 9;
@@ -99,6 +115,9 @@ static int mutated(int key) {
 int main(void) {
   printf("%d %d\n", run(2), run(9));
   printf("%d %d\n", chosen(1), chosen(0));
+  int four = 4, one = 1;
+  printf("%d %d %d\n", chained(&four), chained(&one), chained(NULL));
+  printf("%d %d\n", rebound(&four, &one), rebound(NULL, &one));
   printf("%d %d\n", mutated(8), mutated(5));
   return 0;
 }
@@ -115,14 +134,14 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn lookup(xs: &[i32], key: i32) -> i32 {
 // CHECK-NEXT:     let hit: Option<&i32> = find(xs, key);
-// CHECK-NEXT:     if hit.is_none() {
+// CHECK-NEXT:     let Some(hit) = hit else {
 // CHECK-NEXT:         return -1;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     *hit.unwrap()
+// CHECK-NEXT:     };
+// CHECK-NEXT:     *hit
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn either(xs: &[i32]) -> i32 {
 // CHECK-NEXT:     let hit: Option<&i32> = find(xs, 3i32);
-// CHECK-NEXT:     if hit.is_some() { *hit.unwrap() } else { 0 }
+// CHECK-NEXT:     if let Some(hit) = hit { *hit } else { 0 }
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn second(xs: &[i32]) -> &i32 {
 // CHECK-NEXT:     &xs[1]
@@ -134,16 +153,29 @@ int main(void) {
 // CHECK-NEXT:     *p + 1
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn optional(p: Option<&i32>) -> i32 {
-// CHECK-NEXT:     if p.is_none() {
+// CHECK-NEXT:     let Some(p) = p else {
 // CHECK-NEXT:         return -7;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     *p.unwrap() * 2
+// CHECK-NEXT:     };
+// CHECK-NEXT:     *p * 2
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn store(out: Option<&mut i32>, value: i32) {
 // CHECK-NEXT:     let mut out = out;
-// CHECK-NEXT:     if out.is_some() {
-// CHECK-NEXT:         *out.as_deref_mut().unwrap() = value;
+// CHECK-NEXT:     if let Some(out) = out.as_deref_mut() {
+// CHECK-NEXT:         *out = value;
 // CHECK-NEXT:     }
+// CHECK: {{^}}}
+// CHECK-LABEL: {{^}}fn chained(p: Option<&i32>) -> i32 {
+// CHECK-NEXT:     if let Some(p) = p && *p > 2 {
+// CHECK-NEXT:         return *p * 10;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     -2
+// CHECK: {{^}}}
+// CHECK-LABEL: {{^}}fn rebound(p: Option<&i32>, q: Option<&i32>) -> i32 {
+// CHECK-NEXT:     let mut p = p;
+// CHECK-NEXT:     if p.is_none() {
+// CHECK-NEXT:         p = q;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     *p.unwrap()
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn chosen(flag: i32) -> i32 {
 // CHECK-NEXT:     let mut a: i32 = 4;

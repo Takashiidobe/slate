@@ -522,6 +522,19 @@ impl FunctionLowerer<'_, '_> {
                 condition,
                 then_body,
                 else_body,
+                folded: None,
+            } if let Some(lowered) = self.lower_if_let(
+                condition,
+                then_body,
+                else_body.as_deref().unwrap_or_default(),
+            )? =>
+            {
+                lowered
+            }
+            ir::Statement::If {
+                condition,
+                then_body,
+                else_body,
                 folded,
             } => Stmt::If {
                 cond: self.lower_folded(condition, folded.is_some(), Self::lower_condition)?,
@@ -686,6 +699,16 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         statements: &[slate_parser::ast::Span<ir::Statement>],
     ) -> Result<Vec<Stmt>> {
+        let outer = self.present.clone();
+        let lowered = self.lower_regions(statements);
+        self.present = outer;
+        lowered
+    }
+
+    fn lower_regions(
+        &mut self,
+        statements: &[slate_parser::ast::Span<ir::Statement>],
+    ) -> Result<Vec<Stmt>> {
         let Some(region) = control_flow::residual(statements) else {
             return self.lower_structured_list(statements);
         };
@@ -701,6 +724,17 @@ impl FunctionLowerer<'_, '_> {
     ) -> Result<Vec<Stmt>> {
         let mut lowered = Vec::with_capacity(statements.len());
         for statement in statements {
+            if let ir::Statement::If {
+                condition,
+                then_body,
+                else_body: None,
+                folded: None,
+            } = &statement.value
+                && let Some(guard) = self.lower_let_else(condition, then_body)?
+            {
+                lowered.push(guard);
+                continue;
+            }
             lowered.extend(self.lower_statement(statement)?);
             if let ir::Statement::Let(variable) = &statement.value
                 && let Some(cleanup) = variable.cleanup

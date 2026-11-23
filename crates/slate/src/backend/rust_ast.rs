@@ -942,6 +942,11 @@ pub enum Stmt {
         ty: Option<Type>,
         init: Option<Expr>,
     },
+    LetElse {
+        pattern: Pattern,
+        init: Expr,
+        else_body: Vec<Stmt>,
+    },
     LetIf {
         name: String,
         mutable: bool,
@@ -1288,6 +1293,10 @@ pub enum Expr {
     Range {
         start: Box<Expr>,
         end: Box<Expr>,
+    },
+    Let {
+        pattern: Pattern,
+        expr: Box<Expr>,
     },
     Call {
         func: Box<Expr>,
@@ -1869,7 +1878,10 @@ impl Stmt {
             Stmt::Loop { body, .. }
             | Stmt::For { body, .. }
             | Stmt::Scope { body, .. }
-            | Stmt::LabeledBlock { body, .. } => vec![body],
+            | Stmt::LabeledBlock { body, .. }
+            | Stmt::LetElse {
+                else_body: body, ..
+            } => vec![body],
             Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => {
                 vec![&mut body.stmts]
             }
@@ -1989,6 +2001,7 @@ impl Expr {
             }
             Expr::Binary { lhs, rhs, .. } => lhs.reads_var(name) || rhs.reads_var(name),
             Expr::Range { start, end } => start.reads_var(name) || end.reads_var(name),
+            Expr::Let { expr, .. } => expr.reads_var(name),
             Expr::Call { func, args, .. } => {
                 func.reads_var(name) || args.iter().any(|arg| arg.reads_var(name))
             }
@@ -2098,6 +2111,7 @@ impl Expr {
                 start.collect_vars(out);
                 end.collect_vars(out);
             }
+            Expr::Let { expr, .. } => expr.collect_vars(out),
             Expr::Call { func, args, .. } => {
                 func.collect_vars(out);
                 for arg in args {
@@ -2253,6 +2267,7 @@ impl Expr {
                 start.collect_offset_calls(out);
                 end.collect_offset_calls(out);
             }
+            Expr::Let { expr, .. } => expr.collect_offset_calls(out),
             Expr::Call { func, args, .. } => {
                 func.collect_offset_calls(out);
                 for arg in args {
@@ -2396,6 +2411,7 @@ impl Expr {
                 start.collect_calls(out);
                 end.collect_calls(out);
             }
+            Expr::Let { expr, .. } => expr.collect_calls(out),
             Expr::Call { func, args, .. } => {
                 func.collect_calls(out);
                 for arg in args {
@@ -2542,6 +2558,7 @@ impl Expr {
                 let e = end.substitute_var(name, replacement);
                 s || e
             }
+            Expr::Let { expr, .. } => expr.substitute_var(name, replacement),
             Expr::Call { func, args, .. } => {
                 let mut changed = func.substitute_var(name, replacement);
                 for arg in args {
@@ -2633,10 +2650,64 @@ impl Expr {
                 else_expr,
             } => {
                 let c = cond.substitute_var(name, replacement);
-                let t = then_expr.substitute_var(name, replacement);
+                let t = !cond.let_binds(name) && then_expr.substitute_var(name, replacement);
                 let e = else_expr.substitute_var(name, replacement);
                 c || t || e
             }
+        }
+    }
+
+    pub fn is_let_condition(&self) -> bool {
+        match self {
+            Expr::Let { .. } => true,
+            Expr::Binary {
+                op: BinOp::And,
+                lhs,
+                rhs,
+            } => lhs.is_let_condition() || rhs.is_let_condition(),
+            _ => false,
+        }
+    }
+
+    pub fn let_binds(&self, name: &str) -> bool {
+        match self {
+            Expr::Let { pattern, .. } => pattern.binds(name),
+            Expr::Binary {
+                op: BinOp::And,
+                lhs,
+                rhs,
+            } => lhs.let_binds(name) || rhs.let_binds(name),
+            _ => false,
+        }
+    }
+}
+
+impl Pattern {
+    pub fn binds(&self, name: &str) -> bool {
+        match self {
+            Pattern::Binding(bound) | Pattern::Guarded { bind: bound, .. } => {
+                bound.as_str() == name
+            }
+            Pattern::TupleStruct { fields, .. } | Pattern::Or(fields) => {
+                fields.iter().any(|field| field.binds(name))
+            }
+            Pattern::Wildcard
+            | Pattern::I64(_)
+            | Pattern::I128(_)
+            | Pattern::U128(_)
+            | Pattern::InclusiveRange { .. }
+            | Pattern::InclusiveRangeU128 { .. } => false,
+        }
+    }
+
+    pub fn bound_name(&self) -> Option<Ident> {
+        match self {
+            Pattern::Binding(bound) => Some(*bound),
+            Pattern::TupleStruct { fields, .. } => match fields.as_slice() {
+                [field] => field.bound_name(),
+                _ => None,
+            },
+            _ => None,
         }
     }
 }
@@ -2649,6 +2720,9 @@ fn stmt_reads_var(stmt: &Stmt, name: &str) -> bool {
             init: Some(expr), ..
         } => expr.reads_var(name),
         Stmt::Let { init: None, .. } => false,
+        Stmt::LetElse {
+            init, else_body, ..
+        } => init.reads_var(name) || else_body.iter().any(|stmt| stmt_reads_var(stmt, name)),
         Stmt::LetIf {
             cond,
             then_body,
@@ -2728,6 +2802,14 @@ fn stmt_collect_offset_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a s
             init: Some(expr), ..
         } => expr.collect_offset_calls(out),
         Stmt::Let { init: None, .. } => {}
+        Stmt::LetElse {
+            init, else_body, ..
+        } => {
+            init.collect_offset_calls(out);
+            for stmt in else_body {
+                stmt_collect_offset_calls(stmt, out);
+            }
+        }
         Stmt::LetIf {
             cond,
             then_body,
@@ -2821,6 +2903,14 @@ fn stmt_collect_calls<'a>(stmt: &'a Stmt, out: &mut Vec<(&'a Ident, &'a [Expr])>
             init: Some(expr), ..
         } => expr.collect_calls(out),
         Stmt::Let { init: None, .. } => {}
+        Stmt::LetElse {
+            init, else_body, ..
+        } => {
+            init.collect_calls(out);
+            for stmt in else_body {
+                stmt_collect_calls(stmt, out);
+            }
+        }
         Stmt::LetIf {
             cond,
             then_body,
@@ -2914,6 +3004,14 @@ fn stmt_collect_vars(stmt: &Stmt, out: &mut Vec<Ident>) {
             init: Some(expr), ..
         } => expr.collect_vars(out),
         Stmt::Let { init: None, .. } => {}
+        Stmt::LetElse {
+            init, else_body, ..
+        } => {
+            init.collect_vars(out);
+            for stmt in else_body {
+                stmt_collect_vars(stmt, out);
+            }
+        }
         Stmt::LetIf {
             cond,
             then_body,
@@ -3015,6 +3113,15 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
             init: Some(expr), ..
         } => expr.substitute_var(name, replacement),
         Stmt::Let { init: None, .. } => false,
+        Stmt::LetElse {
+            init, else_body, ..
+        } => {
+            let mut changed = init.substitute_var(name, replacement);
+            for stmt in else_body {
+                changed |= stmt_substitute_var(stmt, name, replacement);
+            }
+            changed
+        }
         Stmt::LetIf {
             cond,
             then_body,
@@ -3085,7 +3192,12 @@ fn stmt_substitute_var(stmt: &mut Stmt, name: &str, replacement: &Expr) -> bool 
             else_body,
         } => {
             let mut changed = cond.substitute_var(name, replacement);
-            for stmt in then_body.iter_mut().chain(else_body.iter_mut()) {
+            let shadowed = cond.let_binds(name);
+            for stmt in then_body
+                .iter_mut()
+                .filter(|_| !shadowed)
+                .chain(else_body.iter_mut())
+            {
                 changed |= stmt_substitute_var(stmt, name, replacement);
             }
             changed

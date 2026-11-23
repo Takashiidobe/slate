@@ -206,6 +206,7 @@ pub(super) fn expr_effects(expr: &Expr) -> Effects {
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
+        | Expr::Let { expr, .. }
         | Expr::Transmute { expr, .. } => expr_effects(expr),
         Expr::Binary { lhs, rhs, .. }
         | Expr::Range {
@@ -397,6 +398,7 @@ fn expr_any(expr: &Expr, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
+        | Expr::Let { expr, .. }
         | Expr::Transmute { expr, .. } => expr_any(expr, pred),
         Expr::Binary { lhs, rhs, .. }
         | Expr::Range {
@@ -469,6 +471,9 @@ fn stmt_any_expr(stmt: &Stmt, pred: &mut dyn FnMut(&Expr) -> bool) -> bool {
         Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => false,
         Stmt::Let { init, .. } => init.as_ref().is_some_and(|e| expr_any(e, pred)),
+        Stmt::LetElse {
+            init, else_body, ..
+        } => expr_any(init, pred) || else_body.iter().any(|s| stmt_any_expr(s, pred)),
         Stmt::LetIf {
             cond,
             then_body,
@@ -535,6 +540,15 @@ fn stmt_e_ident_count(stmt: &Stmt, name: Ident) -> usize {
         Stmt::Cfg { .. } => unreachable!("only the project merge gates statements"),
         Stmt::Comment(_) => 0,
         Stmt::Let { init, .. } => init.as_ref().map_or(0, |e| e_ident_count(e, name)),
+        Stmt::LetElse {
+            init, else_body, ..
+        } => {
+            e_ident_count(init, name)
+                + else_body
+                    .iter()
+                    .map(|s| stmt_e_ident_count(s, name))
+                    .sum::<usize>()
+        }
         Stmt::LetIf {
             cond,
             then_body,
@@ -697,6 +711,7 @@ fn e_ident_count(expr: &Expr, name: Ident) -> usize {
         | Expr::Cast { expr, .. }
         | Expr::Ref { expr, .. }
         | Expr::AddrOf { expr, .. }
+        | Expr::Let { expr, .. }
         | Expr::Transmute { expr, .. } => e_ident_count(expr, name),
         Expr::Binary { lhs, rhs, .. }
         | Expr::Range {
@@ -823,7 +838,7 @@ fn kind_own_effects(kind: &NodeKind) -> Effects {
             tail.as_ref()
                 .map_or(Effects::default(), |t| expr_effects(t)),
         ),
-        NodeKind::If { cond, .. } => expr_effects(cond),
+        NodeKind::If { cond, .. } | NodeKind::LetElse { init: cond, .. } => expr_effects(cond),
         NodeKind::For { iter, .. } => expr_effects(iter),
         NodeKind::Loop { .. } | NodeKind::Scope { .. } | NodeKind::LabeledBlock { .. } => {
             Effects::default()
@@ -871,7 +886,7 @@ fn kind_own_expr_any(kind: &NodeKind, pred: &mut dyn FnMut(&Expr) -> bool) -> bo
         NodeKind::While { cond, tail, .. } => {
             expr_any(cond, pred) || tail.as_ref().is_some_and(|t| expr_any(t, pred))
         }
-        NodeKind::If { cond, .. } => expr_any(cond, pred),
+        NodeKind::If { cond, .. } | NodeKind::LetElse { init: cond, .. } => expr_any(cond, pred),
         NodeKind::For { iter, .. } => expr_any(iter, pred),
         NodeKind::Loop { .. } | NodeKind::Scope { .. } | NodeKind::LabeledBlock { .. } => false,
         NodeKind::Match { expr, .. } => expr_any(expr, pred),
@@ -1126,7 +1141,9 @@ fn kind_own_substitute_var(kind: &mut NodeKind, name: &str, replacement: &Expr) 
                 .is_some_and(|t| t.substitute_var(name, replacement));
             a || b
         }
-        NodeKind::If { cond, .. } => cond.substitute_var(name, replacement),
+        NodeKind::If { cond, .. } | NodeKind::LetElse { init: cond, .. } => {
+            cond.substitute_var(name, replacement)
+        }
         NodeKind::For { iter, pat, .. } => {
             if pat.as_str() == name {
                 false

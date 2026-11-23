@@ -156,8 +156,10 @@ impl NodeRule for EmptyThenInvert {
     fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
         matches!(
             arena.get(id),
-            Some(NodeKind::If { then_body, else_body, .. })
-                if then_body.is_empty() && !only_comments(arena, else_body)
+            Some(NodeKind::If { cond, then_body, else_body })
+                if then_body.is_empty()
+                    && !only_comments(arena, else_body)
+                    && !cond.is_let_condition()
         )
     }
 

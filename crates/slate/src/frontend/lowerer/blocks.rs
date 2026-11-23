@@ -72,6 +72,7 @@ impl<'a, 'm> FunctionLowerer<'a, 'm> {
             reassigned_borrows: HashSet::new(),
             returns: None,
             lifted_call: None,
+            present: HashSet::new(),
             views: HashMap::new(),
             array_aliases: HashMap::new(),
             erased_copy: None,

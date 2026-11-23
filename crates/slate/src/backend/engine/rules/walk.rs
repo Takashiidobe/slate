@@ -13,6 +13,7 @@ pub(in crate::backend::engine) fn child_exprs(expr: &Expr) -> Vec<&Expr> {
         | Expr::ArrayPtr { array: expr, .. }
         | Expr::ArrayRepeat { elem: expr, .. }
         | Expr::AtomicNew { value: expr, .. }
+        | Expr::Let { expr, .. }
         | Expr::Closure { body: expr, .. } => vec![expr],
         Expr::Binary { lhs, rhs, .. }
         | Expr::Range {
@@ -103,6 +104,7 @@ pub(in crate::backend::engine) fn child_exprs_mut(expr: &mut Expr) -> Vec<&mut E
         | Expr::ArrayPtr { array: expr, .. }
         | Expr::ArrayRepeat { elem: expr, .. }
         | Expr::AtomicNew { value: expr, .. }
+        | Expr::Let { expr, .. }
         | Expr::Closure { body: expr, .. } => vec![expr],
         Expr::Binary { lhs, rhs, .. }
         | Expr::Range {
@@ -309,6 +311,12 @@ pub(in crate::backend::engine) fn stmt_exprs<'a>(stmt: &'a Stmt, out: &mut Vec<&
                 stmts_exprs(&arm.body, out);
             }
         }
+        Stmt::LetElse {
+            init, else_body, ..
+        } => {
+            out.push(init);
+            stmts_exprs(else_body, out);
+        }
         Stmt::Loop { body, .. } | Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } => {
             stmts_exprs(body, out)
         }
@@ -402,6 +410,12 @@ pub(in crate::backend::engine) fn stmt_exprs_mut<'a>(
                 stmts_exprs_mut(&mut arm.body, out);
             }
         }
+        Stmt::LetElse {
+            init, else_body, ..
+        } => {
+            out.push(init);
+            stmts_exprs_mut(else_body, out);
+        }
         Stmt::Loop { body, .. } | Stmt::Scope { body, .. } | Stmt::LabeledBlock { body, .. } => {
             stmts_exprs_mut(body, out)
         }
@@ -449,7 +463,7 @@ pub(super) fn visit_kind_exprs(kind: &NodeKind, mut f: impl FnMut(&Expr)) {
             f(cond);
             tail.as_deref().into_iter().for_each(&mut f);
         }
-        NodeKind::If { cond, .. } => f(cond),
+        NodeKind::If { cond, .. } | NodeKind::LetElse { init: cond, .. } => f(cond),
         NodeKind::For { iter, .. } => f(iter),
         NodeKind::Match { expr, .. } => f(expr),
         NodeKind::Loop { .. }
@@ -485,7 +499,7 @@ pub(super) fn visit_kind_exprs_mut(kind: &mut NodeKind, mut f: impl FnMut(&mut E
             f(cond);
             tail.as_deref_mut().into_iter().for_each(&mut f);
         }
-        NodeKind::If { cond, .. } => f(cond),
+        NodeKind::If { cond, .. } | NodeKind::LetElse { init: cond, .. } => f(cond),
         NodeKind::For { iter, .. } => f(iter),
         NodeKind::Match { expr, .. } => f(expr),
         NodeKind::Loop { .. }
@@ -531,10 +545,13 @@ pub(super) fn substitute_var_in_subtree(
     let mut changed = arena
         .get_mut(id)
         .is_some_and(|kind| kind_own_substitute_var(kind, name, replacement));
-    let children: Vec<NodeId> = arena
-        .get(id)
-        .map(|kind| kind.child_lists().into_iter().flatten().copied().collect())
-        .unwrap_or_default();
+    let children: Vec<NodeId> = match arena.get(id) {
+        Some(NodeKind::If {
+            cond, else_body, ..
+        }) if cond.let_binds(name) => else_body.clone(),
+        Some(kind) => kind.child_lists().into_iter().flatten().copied().collect(),
+        None => Vec::new(),
+    };
     for child in children {
         changed |=
             substitute_var_in_subtree(arena, child, name, replacement, kind_own_substitute_var);

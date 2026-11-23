@@ -53,7 +53,12 @@ impl FunctionLowerer<'_, '_> {
         if self.unborrowed.contains(&binding) || self.switch_lets.contains(&binding) {
             return None;
         }
-        self.tables.borrow_of(binding)
+        let borrow = self.tables.borrow_of(binding)?;
+        Some(if self.present.contains(&binding) {
+            optional::present(borrow)
+        } else {
+            borrow
+        })
     }
 
     pub(super) fn c_string_of(&self, binding: BindingId) -> bool {

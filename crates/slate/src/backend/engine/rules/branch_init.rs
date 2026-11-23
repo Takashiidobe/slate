@@ -59,7 +59,10 @@ fn kind_reads_var(kind: &NodeKind, name: Ident) -> bool {
         NodeKind::While { cond, tail, .. } => {
             cond.reads_var(name_str) || tail.as_ref().is_some_and(|tail| tail.reads_var(name_str))
         }
-        NodeKind::If { cond, .. } => cond.reads_var(name_str),
+        NodeKind::If { cond, .. } => cond.let_binds(name_str) || cond.reads_var(name_str),
+        NodeKind::LetElse { pattern, init, .. } => {
+            pattern.binds(name_str) || init.reads_var(name_str)
+        }
         NodeKind::For { pat, iter, .. } => *pat == name || iter.reads_var(name_str),
         NodeKind::Loop { .. } | NodeKind::Scope { .. } | NodeKind::LabeledBlock { .. } => false,
         NodeKind::Match { expr, arms } => expr.reads_var(name_str)

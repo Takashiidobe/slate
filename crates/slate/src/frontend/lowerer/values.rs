@@ -1666,10 +1666,18 @@ impl FunctionLowerer<'_, '_> {
                 then_value,
                 else_value,
             } => {
-                let select = Expr::If {
-                    cond: Box::new(self.lower_condition(condition)?),
-                    then_expr: Box::new(self.lower_value(then_value)?),
-                    else_expr: Box::new(self.lower_value(else_value)?),
+                let select = match self.lower_if_let_value(
+                    condition,
+                    then_value,
+                    else_value,
+                    Self::lower_value,
+                )? {
+                    Some(select) => select,
+                    None => Expr::If {
+                        cond: Box::new(self.lower_condition(condition)?),
+                        then_expr: Box::new(self.lower_value(then_value)?),
+                        else_expr: Box::new(self.lower_value(else_value)?),
+                    },
                 };
                 match self.lower_type(&value.ty)? {
                     ty @ rust::Type::FnPtr { .. } => {

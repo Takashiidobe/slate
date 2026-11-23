@@ -365,12 +365,9 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn ternary_alloca(scratch: Option<&mut [i8]>, n: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
-// CHECK-NEXT:     let mut [[SCRATCH_0:scratch_[0-9]+]] = scratch;
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut () = if [[SCRATCH_0]].is_some() {
-// CHECK-NEXT:         [[SCRATCH_0]]
-// CHECK-NEXT:             .as_deref_mut()
-// CHECK-NEXT:             .map_or(core::ptr::null_mut::<i8>(), |scratch| scratch.as_mut_ptr())
-// CHECK-NEXT:             as *mut ()
+// CHECK-NEXT:     let mut scratch = scratch;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut () = if let Some(scratch) = scratch.as_deref_mut() {
+// CHECK-NEXT:         scratch.as_mut_ptr() as *mut ()
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         __slate_alloca::alloca((n as u64) as usize, 16usize) as *mut ()
 // CHECK-NEXT:     };

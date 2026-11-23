@@ -242,6 +242,7 @@ struct FunctionLowerer<'a, 'm> {
     reassigned_borrows: HashSet<BindingId>,
     returns: Option<slate_analysis::Borrow>,
     lifted_call: Option<slate_parser::ast::NodeId>,
+    present: HashSet<BindingId>,
     views: HashMap<BindingId, (BindingId, ir::Value, ir::Value)>,
     array_aliases: HashMap<BindingId, ir::Value>,
     erased_copy: Option<(*const ir::Place, String)>,

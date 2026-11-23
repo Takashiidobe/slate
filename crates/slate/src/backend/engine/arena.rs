@@ -39,6 +39,7 @@ node_kind_tags! {
     Comment,
     Let,
     LetIf,
+    LetElse,
     Assign,
     CompoundAssign,
     InlineAsm,
@@ -66,8 +67,8 @@ impl NodeKindTag {
     const fn carries_exprs(self) -> bool {
         use NodeKindTag::*;
         match self {
-            Let | LetIf | Assign | CompoundAssign | InlineAsm | Expr | Return | If | For
-            | Match | While | Block => true,
+            Let | LetIf | LetElse | Assign | CompoundAssign | InlineAsm | Expr | Return | If
+            | For | Match | While | Block => true,
             Comment | Loop | Scope | LabeledBlock | Break | Continue => false,
         }
     }
@@ -117,6 +118,11 @@ pub(in crate::backend) enum NodeKind {
         then_value: Expr,
         else_body: Vec<NodeId>,
         else_value: Expr,
+    },
+    LetElse {
+        pattern: Pattern,
+        init: Expr,
+        else_body: Vec<NodeId>,
     },
     Assign {
         target: Expr,
@@ -176,6 +182,7 @@ impl NodeKind {
             NodeKind::Comment(_) => NodeKindTag::Comment,
             NodeKind::Let { .. } => NodeKindTag::Let,
             NodeKind::LetIf { .. } => NodeKindTag::LetIf,
+            NodeKind::LetElse { .. } => NodeKindTag::LetElse,
             NodeKind::Assign { .. } => NodeKindTag::Assign,
             NodeKind::CompoundAssign { .. } => NodeKindTag::CompoundAssign,
             NodeKind::InlineAsm(_) => NodeKindTag::InlineAsm,
@@ -197,6 +204,7 @@ impl NodeKind {
     pub(in crate::backend) fn declared_name(&self) -> Option<Ident> {
         match self {
             NodeKind::Let { name, .. } | NodeKind::LetIf { name, .. } => Some(*name),
+            NodeKind::LetElse { pattern, .. } => pattern.bound_name(),
             NodeKind::For { pat, .. } => Some(*pat),
             _ => None,
         }
@@ -221,7 +229,10 @@ impl NodeKind {
             NodeKind::Loop { body, .. }
             | NodeKind::For { body, .. }
             | NodeKind::Scope { body, .. }
-            | NodeKind::LabeledBlock { body, .. } => vec![body],
+            | NodeKind::LabeledBlock { body, .. }
+            | NodeKind::LetElse {
+                else_body: body, ..
+            } => vec![body],
             NodeKind::Match { arms, .. } => arms.iter_mut().map(|arm| &mut arm.body).collect(),
             NodeKind::Let { .. }
             | NodeKind::Assign { .. }
@@ -253,7 +264,10 @@ impl NodeKind {
             NodeKind::Loop { body, .. }
             | NodeKind::For { body, .. }
             | NodeKind::Scope { body, .. }
-            | NodeKind::LabeledBlock { body, .. } => vec![body],
+            | NodeKind::LabeledBlock { body, .. }
+            | NodeKind::LetElse {
+                else_body: body, ..
+            } => vec![body],
             NodeKind::Match { arms, .. } => arms.iter().map(|arm| &arm.body).collect(),
             NodeKind::Let { .. }
             | NodeKind::Assign { .. }
@@ -313,6 +327,7 @@ fn own_reads(kind: &NodeKind) -> Vec<Ident> {
             }
         }
         NodeKind::If { cond, .. } => cond.collect_vars(&mut out),
+        NodeKind::LetElse { init, .. } => init.collect_vars(&mut out),
         NodeKind::For { iter, .. } => iter.collect_vars(&mut out),
         NodeKind::Loop { .. } | NodeKind::Scope { .. } | NodeKind::LabeledBlock { .. } => {}
         NodeKind::Match { expr, .. } => expr.collect_vars(&mut out),
@@ -866,6 +881,15 @@ fn build_stmt(arena: &mut Arena, parent: Option<NodeId>, stmt: Stmt) -> NodeId {
             ty,
             init,
         },
+        Stmt::LetElse {
+            pattern,
+            init,
+            else_body,
+        } => NodeKind::LetElse {
+            pattern,
+            init,
+            else_body: build_stmts(arena, Some(id), else_body),
+        },
         Stmt::LetIf {
             name,
             mutable,
@@ -989,6 +1013,15 @@ fn reify_stmt(arena: &Arena, id: NodeId, out: &mut Vec<Stmt>) {
             mutable: *mutable,
             ty: ty.clone(),
             init: init.clone(),
+        },
+        NodeKind::LetElse {
+            pattern,
+            init,
+            else_body,
+        } => Stmt::LetElse {
+            pattern: pattern.clone(),
+            init: init.clone(),
+            else_body: reify_nested(arena, else_body),
         },
         NodeKind::LetIf {
             name,

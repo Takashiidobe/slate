@@ -69,8 +69,10 @@ fn walk_stmt(stmt: &mut Stmt, names: &mut impl Names) {
             else_value,
             ..
         } => {
+            names.push();
             walk_expr(cond, names);
             walk_branch(then_body, then_value, names);
+            names.pop();
             walk_branch(else_body, else_value, names);
             bind_string(name, true, names);
         }
@@ -97,9 +99,20 @@ fn walk_stmt(stmt: &mut Stmt, names: &mut impl Names) {
             then_body,
             else_body,
         } => {
+            names.push();
             walk_expr(cond, names);
             walk_stmts(then_body, names);
+            names.pop();
             walk_stmts(else_body, names);
+        }
+        Stmt::LetElse {
+            pattern,
+            init,
+            else_body,
+        } => {
+            walk_expr(init, names);
+            walk_stmts(else_body, names);
+            walk_local_pattern(pattern, names);
         }
         Stmt::Loop { label, body } => {
             if let Some(label) = label {
@@ -161,6 +174,22 @@ fn walk_pattern(pattern: &mut Pattern, names: &mut impl Names) {
         | Pattern::U128(_)
         | Pattern::InclusiveRange { .. }
         | Pattern::InclusiveRangeU128 { .. } => {}
+    }
+}
+
+fn walk_local_pattern(pattern: &mut Pattern, names: &mut impl Names) {
+    match pattern {
+        Pattern::Binding(name) => names.bind(name, true),
+        Pattern::TupleStruct { fields, .. } => {
+            for field in fields {
+                walk_local_pattern(field, names);
+            }
+        }
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "let and let-else patterns are Some(binding) shapes; others bind like match arms"
+        )]
+        other => walk_pattern(other, names),
     }
 }
 
@@ -275,9 +304,15 @@ fn walk_expr(expr: &mut Expr, names: &mut impl Names) {
             then_expr,
             else_expr,
         } => {
+            names.push();
             walk_expr(cond, names);
             walk_expr(then_expr, names);
+            names.pop();
             walk_expr(else_expr, names);
+        }
+        Expr::Let { pattern, expr } => {
+            walk_expr(expr, names);
+            walk_local_pattern(pattern, names);
         }
         Expr::Block(block) | Expr::Unsafe(block) => walk_block(block, names),
         Expr::AtomicRef { place, .. } | Expr::AtomicLoad { place, .. } => walk_place(place, names),
@@ -492,6 +527,9 @@ pub(super) fn restore(body: &mut [Stmt], params: &mut [FnParam], renamed: &[(Ide
                     && other != fresh
                     && pending.contains(&other)
                     && mentions.contains(&other)
+                    && scopes
+                        .get(&other)
+                        .is_some_and(|inner| inner.mentions.contains(&fresh))
             });
         let to = if scope.binders == 1 && !conflicts {
             original

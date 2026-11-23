@@ -1195,6 +1195,20 @@ impl Codegen {
                 self.close_block();
                 self.word(";");
             }
+            Stmt::LetElse {
+                pattern,
+                init,
+                else_body,
+            } => {
+                self.open_block();
+                self.word("let ");
+                self.pattern(pattern);
+                self.word(" = ");
+                self.expr_prec(init, Precedence::Compare.level());
+                self.word(" else ");
+                self.braced_stmts(else_body);
+                self.word(";");
+            }
             Stmt::Assign { target, value } => self.assign_like(target, " = ".into(), value),
             Stmt::CompoundAssign { target, op, value } => {
                 self.assign_like(target, format!(" {}= ", op.spelling()), value);
@@ -1558,6 +1572,12 @@ impl Codegen {
                 self.range_endpoint(start);
                 self.word("..");
                 self.range_endpoint(end);
+            }
+            Expr::Let { pattern, expr } => {
+                self.word("let ");
+                self.pattern(pattern);
+                self.word(" = ");
+                self.expr_prec(expr, Precedence::Compare.level());
             }
             Expr::Call { func, args, .. } => {
                 self.expr_prec(func, Precedence::Call.level());

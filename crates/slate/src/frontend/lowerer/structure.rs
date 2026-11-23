@@ -88,7 +88,10 @@ fn bodies(stmt: &Stmt) -> Vec<&Vec<Stmt>> {
         Stmt::Loop { body, .. }
         | Stmt::For { body, .. }
         | Stmt::Scope { body, .. }
-        | Stmt::LabeledBlock { body, .. } => vec![body],
+        | Stmt::LabeledBlock { body, .. }
+        | Stmt::LetElse {
+            else_body: body, ..
+        } => vec![body],
         Stmt::Unsafe { body } | Stmt::While { body, .. } | Stmt::Block(body) => vec![&body.stmts],
         Stmt::Match { arms, .. } => arms.iter().map(|arm| &arm.body).collect(),
         Stmt::Comment(_)

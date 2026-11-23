@@ -54,9 +54,12 @@ fn place_item(item: &mut Item) {
 }
 
 fn has_let(stmts: &[Stmt]) -> bool {
-    stmts
-        .iter()
-        .any(|stmt| matches!(stmt, Stmt::Let { .. } | Stmt::LetIf { .. }))
+    stmts.iter().any(|stmt| {
+        matches!(
+            stmt,
+            Stmt::Let { .. } | Stmt::LetIf { .. } | Stmt::LetElse { .. }
+        )
+    })
 }
 
 fn place_stmts(stmts: &mut Vec<Stmt>, covered: bool) {
@@ -217,6 +220,12 @@ fn place_stmt(stmt: &mut Stmt, covered: bool) {
             place_stmts(then_body, covered);
             place_stmts(else_body, covered);
         }
+        Stmt::LetElse {
+            init, else_body, ..
+        } => {
+            place_slot(init, covered);
+            place_stmts(else_body, covered);
+        }
         Stmt::For { iter, body, .. } => {
             place_slot(iter, covered);
             place_stmts(body, covered);
@@ -347,7 +356,7 @@ fn view(expr: &Expr) -> &Expr {
 
 fn pending_in(expr: &Expr, context: Context) -> bool {
     let expr = view(expr);
-    if matches!(expr, Expr::Unsafe(_)) || self_contained(expr) {
+    if matches!(expr, Expr::Unsafe(_)) || self_contained(expr) || expr.is_let_condition() {
         return false;
     }
     if needs(expr, context) {

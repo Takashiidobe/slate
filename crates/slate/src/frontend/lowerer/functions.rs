@@ -683,8 +683,10 @@ impl FunctionLowerer<'_, '_> {
         statements.splice(0..0, std::mem::take(&mut self.hoisted));
         let rebound: Vec<Stmt> = fixed
             .iter()
-            .filter(|param| self.reassigned_borrows.contains(&param.value.id))
-            .map(|param| {
+            .zip(params.iter_mut())
+            .filter(|(param, _)| self.reassigned_borrows.contains(&param.value.id))
+            .map(|(param, lowered)| {
+                lowered.mutable = false;
                 let name = self.binding_name(param.value.id);
                 Stmt::Let {
                     origin: rust::LocalOrigin::Synthetic,

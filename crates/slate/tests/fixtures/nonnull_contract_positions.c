@@ -23,7 +23,7 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn combine(left: &i32, scale: i32, right: &i32, optional: Option<&i32>) -> i32 {
-// CHECK-NEXT:     *left + scale * *right + if optional.is_some() { *optional.unwrap() } else { 0 }
+// CHECK-NEXT:     *left + scale * *right + if let Some(optional) = optional { *optional } else { 0 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn difference(left: &i32, scale: i32, right: &i32) -> i32 {
