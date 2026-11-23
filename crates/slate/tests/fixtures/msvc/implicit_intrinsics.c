@@ -1,7 +1,7 @@
 /* { dg-options "/Zc:preprocessor" } */
+#if defined(_M_IX86) || defined(_M_X64)
 #include <stdlib.h>
 
-#if defined(_M_IX86) || defined(_M_X64)
 static void check_cpuid(void) {
     unsigned int basic[4];
     unsigned int extended[4];
