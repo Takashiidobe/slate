@@ -1,4 +1,7 @@
+use crate::counted_loops::{integer_constant, plain_access, plain_local};
+use crate::def_use::DefUse;
 use crate::effects::{Effects, FunctionEffects};
+use crate::guarded_heap::peel_pointer;
 use crate::identity::{FunctionIdentity, Known};
 use crate::program::{FunctionId, Program, ProgramBinding, UnitId};
 use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
@@ -9,6 +12,7 @@ use slate_parser::ir::{
     Parameters, Place, PlaceKind, SehHandler, Statement, StorageDuration, Type, Value, ValueKind,
     Visitor,
 };
+use std::cell::OnceCell;
 
 const STACK_RED_ZONE: usize = 512 << 10;
 const STACK_GROWTH: usize = 16 << 20;
@@ -76,6 +80,23 @@ pub(crate) struct PointerFacts {
     pub bindings: HashMap<ProgramBinding, PointerFact>,
     pub returns: HashMap<ProgramBinding, Borrow>,
     pub elided_releases: HashSet<(UnitId, NodeId)>,
+    pub heap_statements: HashMap<(UnitId, NodeId), HeapStatement>,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct HeapStatement {
+    pub owner: BindingId,
+    pub action: HeapAction,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum HeapAction {
+    TryAllocate,
+    AllocationFailed,
+    TryResize,
+    ResizeFailed(BindingId),
+    RemoveWrite,
+    ClearedCheck(bool),
 }
 
 const WRITE: u8 = 1;
@@ -161,6 +182,7 @@ struct Owned {
     node: u32,
     written: bool,
     elided: Vec<NodeId>,
+    statements: Vec<(NodeId, HeapStatement)>,
 }
 
 struct Release {
@@ -196,13 +218,24 @@ struct Allocation {
     scope: u32,
 }
 
+#[derive(Clone, Copy)]
+enum ResizeOrigin {
+    Guarded { declaration: NodeId, check: NodeId },
+    UncheckedWrite,
+}
+
 #[derive(Default)]
 struct Ownership {
     allocated: HashMap<BindingId, Allocation>,
     writes: HashMap<BindingId, u32>,
-    reallocations: HashMap<BindingId, u32>,
+    supported_writes: HashMap<BindingId, u32>,
+    direct_resizes: HashSet<BindingId>,
+    fallible_resizes: HashSet<BindingId>,
     last_read: HashMap<BindingId, u32>,
     releases: Vec<Release>,
+    exclusive_releases: HashMap<u32, u32>,
+    statements: HashMap<NodeId, HeapStatement>,
+    resize_origins: HashMap<BindingId, ResizeOrigin>,
     position: u32,
     depth: u32,
     scope: u32,
@@ -232,14 +265,20 @@ impl Ownership {
         };
         let last = self.last_read.get(&binding).copied();
         !self.jumps
-            && self.writes.get(&binding) == self.reallocations.get(&binding)
+            && !(self.direct_resizes.contains(&binding) && self.fallible_resizes.contains(&binding))
+            && self.writes.get(&binding) == self.supported_writes.get(&binding)
             && self
                 .releases
                 .iter()
                 .filter(|release| release.binding == binding)
                 .all(|release| {
                     release.ending == Ending::Returns
-                        || (release.depth == depth && Some(release.position) == last)
+                        || (release.depth == depth
+                            && (Some(release.position) == last
+                                || self
+                                    .exclusive_releases
+                                    .get(&release.position)
+                                    .is_some_and(|&other| Some(other) == last)))
                 })
     }
 }
@@ -303,6 +342,8 @@ struct Walker<'a, 'm> {
     leaked: HashSet<BindingId>,
     derived: Vec<(u32, BindingId)>,
     ownership: Ownership,
+    function_body: &'m [Span<Statement>],
+    def_use: OnceCell<DefUse>,
     opaque: bool,
 }
 
@@ -1361,12 +1402,252 @@ impl Walker<'_, '_> {
         });
         self.ownership.scopes += 1;
         let outer = std::mem::replace(&mut self.ownership.scope, self.ownership.scopes);
-        for (statement, ending) in body.iter().zip(endings) {
+        for (index, (statement, ending)) in body.iter().zip(endings).enumerate() {
             let outer = std::mem::replace(&mut self.ownership.ending, ending);
-            self.statement(statement);
+            if self.macro_depth == 0 {
+                self.plan_heap_statement(statement, &body[index + 1..]);
+            }
+            match self
+                .ownership
+                .statements
+                .get(&statement.id)
+                .map(|fact| fact.action)
+            {
+                Some(HeapAction::RemoveWrite)
+                    if let Statement::Write { place, value, .. } = &statement.value
+                        && let PlaceKind::Binding(binding) = place.kind =>
+                {
+                    self.value(value);
+                    self.place(place, Use::Write);
+                    *self.ownership.supported_writes.entry(binding).or_default() += 1;
+                    if is_null_pointer(value) {
+                        self.store(place, value);
+                    } else if let Some(node) = self.node(binding) {
+                        self.nodes[node as usize].raw = true;
+                    }
+                }
+                Some(HeapAction::ClearedCheck(_))
+                    if let Statement::If {
+                        then_body,
+                        else_body,
+                        ..
+                    } = &statement.value =>
+                {
+                    self.statements(then_body);
+                    if let Some(body) = else_body {
+                        self.statements(body);
+                    }
+                }
+                _ => self.statement(statement),
+            }
             self.ownership.ending = outer;
         }
         self.ownership.scope = outer;
+    }
+
+    fn plan_heap_statement(&mut self, statement: &Span<Statement>, following: &[Span<Statement>]) {
+        let mut following = nonempty_statements(following);
+        if let Some(owner) = released_binding(&statement.value, |callee| {
+            self.library_call(callee, Known::Free)
+        }) {
+            if !self.ownership.allocated.contains_key(&owner) {
+                return;
+            }
+            let Some(clear) = following.next() else {
+                return;
+            };
+            if !binding_write(&clear.value)
+                .is_some_and(|(target, value)| target == owner && is_null_pointer(value))
+            {
+                return;
+            }
+            self.heap_statement(clear.id, owner, HeapAction::RemoveWrite);
+            if let Some(check) = following.next()
+                && let Statement::If {
+                    condition,
+                    folded: None,
+                    ..
+                } = &check.value
+                && let Some((binding, equal)) = pointer_null_test(condition)
+                && binding == owner
+                && !self.macro_values.contains_key(&condition.node.id)
+            {
+                self.heap_statement(check.id, owner, HeapAction::ClearedCheck(equal));
+            }
+            return;
+        }
+        let Statement::Let(result) = &statement.value else {
+            return;
+        };
+        let Some(initializer) = &result.initializer else {
+            return;
+        };
+        let ValueKind::Call {
+            callee, arguments, ..
+        } = &peel_pointer(initializer).node.value
+        else {
+            return;
+        };
+        if !plain_local(result)
+            || result.byref
+            || result.alignment.is_some()
+            || self.macro_values.contains_key(&initializer.node.id)
+        {
+            return;
+        }
+        if let [size] = arguments.as_slice()
+            && self.library_call(callee, Known::Malloc)
+            && let Some(next) = following.next()
+        {
+            if let Some(origin) = self.resize_origin(statement.id, result.id, size, next) {
+                self.ownership.resize_origins.insert(result.id, origin);
+            }
+            return;
+        }
+        let [pointer, size] = arguments.as_slice() else {
+            return;
+        };
+        if !self.library_call(callee, Known::Realloc) {
+            return;
+        }
+        let pointer = peel_pointer(pointer);
+        let Some(owner) = plain_read(pointer) else {
+            return;
+        };
+        if result.ty != pointer.ty
+            || !self.ownership.allocated.contains_key(&owner)
+            || !positive_size(size)
+        {
+            return;
+        }
+        let Some(&origin) = self.ownership.resize_origins.get(&owner) else {
+            return;
+        };
+        let (Some(check), Some(commit)) = (following.next(), following.next()) else {
+            return;
+        };
+        let Statement::If {
+            condition,
+            then_body,
+            else_body: None,
+            folded: None,
+        } = &check.value
+        else {
+            return;
+        };
+        if pointer_null_test(condition) != Some((result.id, true))
+            || !self.plain_failure_return(then_body)
+            || !binding_write(&commit.value).is_some_and(|(target, value)| {
+                target == owner && plain_read(value) == Some(result.id)
+            })
+            || self.macro_values.contains_key(&condition.node.id)
+            || self
+                .program
+                .unit(self.unit)
+                .module
+                .macro_hidden_arguments
+                .values()
+                .flatten()
+                .any(|&binding| binding == result.id)
+            || !self
+                .def_use
+                .get_or_init(|| DefUse::of(self.function_body))
+                .matches_reads_and_writes(result.id, 2, 0)
+        {
+            return;
+        }
+        if let ResizeOrigin::Guarded { declaration, check } = origin {
+            self.heap_statement(declaration, owner, HeapAction::TryAllocate);
+            self.heap_statement(check, owner, HeapAction::AllocationFailed);
+        }
+        self.heap_statement(statement.id, owner, HeapAction::TryResize);
+        self.heap_statement(check.id, owner, HeapAction::ResizeFailed(result.id));
+        self.heap_statement(commit.id, owner, HeapAction::RemoveWrite);
+        self.ownership.fallible_resizes.insert(owner);
+    }
+
+    fn resize_origin(
+        &self,
+        declaration: NodeId,
+        binding: BindingId,
+        size: &Value,
+        next: &Span<Statement>,
+    ) -> Option<ResizeOrigin> {
+        if let Statement::If {
+            condition,
+            then_body,
+            else_body: None,
+            folded: None,
+        } = &next.value
+            && pointer_null_test(condition) == Some((binding, true))
+            && !self.macro_values.contains_key(&condition.node.id)
+            && positive_size(size)
+            && self.plain_failure_return(then_body)
+            && !DefUse::of(then_body).mentions(binding)
+        {
+            return Some(ResizeOrigin::Guarded {
+                declaration,
+                check: next.id,
+            });
+        }
+        if let Statement::Write {
+            place,
+            value,
+            ordering: None,
+            ..
+        } = &next.value
+            && let PlaceKind::Deref(pointer) = &place.kind
+            && plain_read(zero_offset_base(pointer)) == Some(binding)
+            && integer_constant(value).is_some()
+        {
+            return Some(ResizeOrigin::UncheckedWrite);
+        }
+        None
+    }
+
+    fn plain_failure_return(&self, body: &[Span<Statement>]) -> bool {
+        if !terminal_statement(body)
+            .is_some_and(|statement| matches!(statement.value, Statement::Return(_)))
+        {
+            return false;
+        }
+        let module = self.program.unit(self.unit).module;
+        let errno = module.globals.iter().find_map(|global| {
+            matches!(global.variable.name.as_str(), "errno" | "_errno")
+                .then_some(global.variable.id)
+        });
+        let mut effects = FailureEffects {
+            walker: self,
+            errno,
+            observed: false,
+        };
+        ir::walk_function_body_with_macros(&mut body.to_vec(), self.macro_values, &mut effects);
+        !effects.observed
+    }
+
+    fn library_call(&self, callee: &Callee, known: Known) -> bool {
+        self.known(callee) == Some(known) && self.program.callee(self.unit, callee).is_none()
+    }
+
+    fn heap_statement(&mut self, id: NodeId, owner: BindingId, action: HeapAction) {
+        self.ownership
+            .statements
+            .insert(id, HeapStatement { owner, action });
+    }
+
+    fn terminal_release(&self, body: &[Span<Statement>]) -> Option<NodeId> {
+        let last = terminal_statement(body)?;
+        match &last.value {
+            Statement::Expression(value)
+                if released_binding(&last.value, |callee| {
+                    self.library_call(callee, Known::Free)
+                })
+                .is_some() =>
+            {
+                Some(value.node.id)
+            }
+            _ => None,
+        }
     }
 
     fn looped(&mut self, walk: impl FnOnce(&mut Self)) {
@@ -1533,7 +1814,8 @@ impl Walker<'_, '_> {
                     && !place.access.volatile
                     && self.reallocates(binding, value)
                 {
-                    *self.ownership.reallocations.entry(binding).or_default() += 1;
+                    *self.ownership.supported_writes.entry(binding).or_default() += 1;
+                    self.ownership.direct_resizes.insert(binding);
                 }
                 self.store(place, value);
             }
@@ -1568,9 +1850,26 @@ impl Walker<'_, '_> {
                 ..
             } => {
                 self.value(condition);
+                let then_release = else_body
+                    .as_ref()
+                    .and_then(|_| self.terminal_release(then_body));
                 self.statements(then_body);
+                let then_release = self.ownership.releases.last().and_then(|release| {
+                    (Some(release.call) == then_release)
+                        .then_some((release.binding, release.position))
+                });
                 if let Some(else_body) = else_body {
+                    let else_release = self.terminal_release(else_body);
                     self.statements(else_body);
+                    if let Some((binding, position)) = then_release
+                        && let Some(release) = self.ownership.releases.last()
+                        && Some(release.call) == else_release
+                        && release.binding == binding
+                    {
+                        self.ownership
+                            .exclusive_releases
+                            .insert(position, release.position);
+                    }
                 }
             }
             Statement::While {
@@ -1638,6 +1937,128 @@ impl Walker<'_, '_> {
                 }
             }
         }
+    }
+}
+
+fn nonempty_statements(
+    body: &[Span<Statement>],
+) -> impl DoubleEndedIterator<Item = &Span<Statement>> {
+    body.iter()
+        .filter(|statement| !matches!(statement.value, Statement::Comment(_) | Statement::Null))
+}
+
+struct FailureEffects<'w, 'a, 'm> {
+    walker: &'w Walker<'a, 'm>,
+    errno: Option<BindingId>,
+    observed: bool,
+}
+
+impl Visitor for FailureEffects<'_, '_, '_> {
+    fn binding(&mut self, binding: BindingId) {
+        self.observed |= self.errno == Some(binding);
+    }
+
+    fn value_kind(&mut self, kind: &ValueKind) {
+        self.observed |= match kind {
+            ValueKind::Call { callee, .. } => !self.walker.library_call(callee, Known::Free),
+            ValueKind::Intrinsic { .. } => true,
+            _ => false,
+        };
+    }
+}
+
+fn terminal_statement(mut body: &[Span<Statement>]) -> Option<&Span<Statement>> {
+    loop {
+        let last = nonempty_statements(body).next_back()?;
+        let Statement::Block(inner) = &last.value else {
+            return Some(last);
+        };
+        body = inner;
+    }
+}
+
+fn binding_write(statement: &Statement) -> Option<(BindingId, &Value)> {
+    let Statement::Write {
+        place,
+        value,
+        ordering: None,
+        ..
+    } = statement
+    else {
+        return None;
+    };
+    match place.kind {
+        PlaceKind::Binding(binding) if plain_access(&place.access) => Some((binding, value)),
+        _ => None,
+    }
+}
+
+fn plain_read(value: &Value) -> Option<BindingId> {
+    match &value.node.value {
+        ValueKind::Read {
+            place,
+            ordering: None,
+        } if plain_access(&place.access) => read_binding(value),
+        _ => None,
+    }
+}
+
+fn zero_offset_base(value: &Value) -> &Value {
+    match &value.node.value {
+        ValueKind::PointerOffset {
+            pointer, amount, ..
+        } if integer_constant(amount)
+            .is_some_and(|amount| amount.sign() == num_bigint::Sign::NoSign) =>
+        {
+            pointer
+        }
+        _ => value,
+    }
+}
+
+fn is_null_pointer(value: &Value) -> bool {
+    matches!(value.ty, Type::Pointer { .. })
+        && matches!(peel_pointer(value).node.value, ValueKind::Null)
+}
+
+fn pointer_null_test(value: &Value) -> Option<(BindingId, bool)> {
+    let ValueKind::Compare {
+        op: op @ (ir::CompareOp::Eq | ir::CompareOp::Ne),
+        left,
+        right,
+        ..
+    } = &value.node.value
+    else {
+        return None;
+    };
+    let pointer = if is_null_pointer(right) {
+        left
+    } else if is_null_pointer(left) {
+        right
+    } else {
+        return None;
+    };
+    Some((plain_read(pointer)?, *op == ir::CompareOp::Eq))
+}
+
+fn positive_size(value: &Value) -> bool {
+    if let Some(constant) =
+        integer_constant(value).or_else(|| slate_parser::sema::fold_integer(value))
+    {
+        return constant.sign() == num_bigint::Sign::Plus;
+    }
+    match &value.node.value {
+        ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. }
+            if operand.ty == value.ty =>
+        {
+            positive_size(operand)
+        }
+        ValueKind::Conditional {
+            then_value,
+            else_value,
+            ..
+        } => positive_size(then_value) && positive_size(else_value),
+        _ => false,
     }
 }
 
@@ -1848,6 +2269,8 @@ fn summarize(
         allocations: HashMap::new(),
         leaked: HashSet::new(),
         ownership: Ownership::default(),
+        function_body: entry.function.body.as_deref().unwrap_or_default(),
+        def_use: OnceCell::new(),
     };
     if let Some(return_type) = &entry.function.return_type {
         walker.returned = walker.anonymous(entry.function.value.id, return_type, NodeKind::Return);
@@ -1878,6 +2301,13 @@ fn summarize(
             walker.nodes[source as usize].flags |= SHARED;
         }
     }
+    let mut heap_statements: HashMap<_, Vec<_>> = HashMap::new();
+    for (id, statement) in walker.ownership.statements.drain() {
+        heap_statements
+            .entry(statement.owner)
+            .or_default()
+            .push((id, statement));
+    }
     let owned: Vec<Owned> = walker
         .nodes
         .iter()
@@ -1893,6 +2323,7 @@ fn summarize(
             node: node as u32,
             written: walker.ownership.writes.contains_key(&item.binding),
             elided: walker.ownership.elided(item.binding).collect(),
+            statements: heap_statements.remove(&item.binding).unwrap_or_default(),
         })
         .collect();
     Some(Summary {
@@ -2521,6 +2952,7 @@ pub(crate) fn analyze(
     }
     let mut owned: HashMap<u32, bool> = HashMap::new();
     let mut elided_releases = HashSet::new();
+    let mut heap_statements = HashMap::new();
     for (function, summary) in summaries.iter().enumerate() {
         let Some(summary) = summary else { continue };
         let Some(entry) = program.function(FunctionId(function as u32)) else {
@@ -2531,6 +2963,7 @@ pub(crate) fn analyze(
             node,
             written,
             ref elided,
+            ref statements,
         } in &summary.owned
         {
             let global = offset + node;
@@ -2552,6 +2985,11 @@ pub(crate) fn analyze(
             {
                 owned.insert(global, written || class_flags[class] & WRITE != 0);
                 elided_releases.extend(elided.iter().map(|&call| (entry.unit, call)));
+                heap_statements.extend(
+                    statements
+                        .iter()
+                        .map(|&(id, fact)| ((entry.unit, id), fact)),
+                );
             }
         }
     }
@@ -2836,6 +3274,7 @@ pub(crate) fn analyze(
         bindings: HashMap::new(),
         returns: HashMap::new(),
         elided_releases,
+        heap_statements,
     };
     for (function, summary) in summaries.iter().enumerate() {
         let Some(summary) = summary else { continue };

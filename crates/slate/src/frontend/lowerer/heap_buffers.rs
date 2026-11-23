@@ -1,7 +1,7 @@
 use super::*;
 use crate::function_identity::Known;
 use optional::{method, some_pattern};
-use slate_analysis::GuardedHeapStatement;
+use slate_analysis::{GuardedHeapStatement, HeapAction};
 
 fn peel_pointer(mut value: &ir::Value) -> &ir::Value {
     while let ValueKind::Copy { operand, .. }
@@ -24,6 +24,112 @@ fn usize_of(expr: Expr) -> Expr {
 }
 
 impl FunctionLowerer<'_, '_> {
+    pub(super) fn lower_heap_statement(
+        &mut self,
+        statement: &Span<ir::Statement>,
+    ) -> Result<Option<Stmt>> {
+        let Some(fact) = self.tables.facts.heap_statement(statement.id) else {
+            return Ok(None);
+        };
+        if !self.owned(fact.owner) {
+            return Ok(None);
+        }
+        Ok(Some(match (fact.action, &statement.value) {
+            (HeapAction::TryAllocate, ir::Statement::Let(variable))
+                if let Some(initializer) = &variable.initializer
+                    && let Some((Known::Malloc, [size])) = self.allocator_call(initializer)
+                    && let ir::Type::Pointer { pointee, .. } =
+                        self.tables.resolve_type(&variable.ty) =>
+            {
+                self.dependencies.vec_ext = true;
+                Stmt::Let {
+                    origin: rust::LocalOrigin::Source,
+                    name: self.binding_name(variable.id),
+                    mutable: false,
+                    ty: Some(rust::Type::Generic {
+                        name: "Option".into(),
+                        args: vec![rust::Type::Generic {
+                            name: "Vec".into(),
+                            args: vec![self.lower_type(pointee)?],
+                        }],
+                    }),
+                    init: Some(generated_call(
+                        "Vec::try_filled",
+                        vec![
+                            usize_of(self.lower_value(size)?),
+                            Expr::Value(rust::RustValue::I64(0)),
+                        ],
+                    )),
+                }
+            }
+            (HeapAction::AllocationFailed, ir::Statement::If { then_body, .. }) => {
+                let owner = self.binding_name(fact.owner);
+                let value = Expr::var(owner.as_str().into());
+                let present = some_pattern(&owner);
+                Stmt::Let {
+                    origin: rust::LocalOrigin::Source,
+                    name: owner,
+                    mutable: true,
+                    ty: None,
+                    init: Some(Expr::Match {
+                        expr: Box::new(value.clone()),
+                        arms: vec![
+                            rust::ExprMatchArm {
+                                pattern: present,
+                                value,
+                            },
+                            rust::ExprMatchArm {
+                                pattern: rust::Pattern::Wildcard,
+                                value: Expr::Block(Box::new(rust::Block {
+                                    stmts: self.lower_statement_list(then_body)?,
+                                    tail: None,
+                                })),
+                            },
+                        ],
+                    }),
+                }
+            }
+            (HeapAction::TryResize, ir::Statement::Let(result))
+                if let Some(initializer) = &result.initializer
+                    && let Some((Known::Realloc, [_, size])) = self.allocator_call(initializer) =>
+            {
+                self.dependencies.vec_ext = true;
+                let resized = method(
+                    Expr::var(self.binding_name(fact.owner).into()),
+                    "try_resize",
+                    vec![
+                        usize_of(self.lower_value(size)?),
+                        Expr::Value(rust::RustValue::I64(0)),
+                    ],
+                );
+                Stmt::Let {
+                    origin: rust::LocalOrigin::Synthetic,
+                    name: self.binding_name(result.id),
+                    mutable: false,
+                    ty: Some(rust::Type::Prim(Prim::Bool)),
+                    init: Some(method(resized, "is_none", vec![])),
+                }
+            }
+            (HeapAction::ResizeFailed(result), ir::Statement::If { then_body, .. }) => Stmt::If {
+                cond: Expr::var(self.binding_name(result).into()),
+                then_body: self.lower_statement_list(then_body)?,
+                else_body: Vec::new(),
+            },
+            (HeapAction::RemoveWrite, ir::Statement::Write { .. }) => {
+                Stmt::Block(rust::Block::default())
+            }
+            (
+                HeapAction::ClearedCheck(equal),
+                ir::Statement::If {
+                    then_body,
+                    else_body,
+                    ..
+                },
+            ) => self.lower_known_if(equal, then_body, else_body.as_deref())?,
+            _ => return Err(Invariant::UnprovenBorrow(format!("{fact:?}")).into()),
+        }))
+    }
+
     pub(super) fn lower_guarded_heap(
         &mut self,
         statement: &ir::Statement,

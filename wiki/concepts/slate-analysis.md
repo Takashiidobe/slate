@@ -571,6 +571,7 @@ Storage stays `[c_char; N]`: retyping to `[u8; N]` would cast every other use.
 8-bit pointer that owns its allocation. Lowering declares it `Vec<T>`
 (`vec![0; n]`), lowers `p = realloc(p, n)` to `resize(n, 0)`, and a null
 compare on it to a constant (the allocation aborts instead of returning NULL).
+An `if` directly testing that comparison keeps only the selected arm.
 
 `free(p)` is elided (`ValueFacts::elided_release`) when only other frees
 follow it and then a `return`, or the end of the block that declares `p`: the
@@ -595,6 +596,22 @@ after free:
 A null check never sets NULLABLE, so an owned buffer's checks do not make a
 callee's parameter nullable. `Owner` is the
 extension point for `Box<T>`, `Vec<T>`, `CString` and `String`.
+
+### Byte-buffer control flow
+
+- `q = realloc(p, n); if (!q) { ... return ...; } p = q;` lowers to
+  `p.try_resize(n, 0)` and a failure branch. The size must be provably
+  positive. The result binding may only be tested and assigned back to `p`.
+  Failure arms that call into other code or inspect `errno` stay raw.
+  A failed resize leaves the old vector available to the failure arm.
+  An adjacent initial `malloc` null guard with an early return also keeps its
+  failure arm through `Vec::try_filled`.
+- A release followed by `p = NULL` can drop the dead reset. An immediately
+  following null test folds to the cleared state. Other pointer uses after
+  release still block ownership.
+- A terminal `free(p)` in each arm of the same `if` counts as one final
+  release for ownership eligibility. Keep both generated drops when work
+  follows the join.
 
 ### Guarded typed allocations
 

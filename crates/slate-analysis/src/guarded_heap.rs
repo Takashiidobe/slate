@@ -253,7 +253,7 @@ fn extent(size: &Value, element: &Type, pointer_width: u32) -> Option<u64> {
         .then_some(count)
 }
 
-fn peel_pointer(mut value: &Value) -> &Value {
+pub(crate) fn peel_pointer(mut value: &Value) -> &Value {
     while let ValueKind::Copy { operand, .. }
     | ValueKind::Convert {
         kind: ConversionKind::PointerCast,

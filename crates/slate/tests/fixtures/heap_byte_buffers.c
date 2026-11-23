@@ -147,6 +147,55 @@ static char *escaped(int n) {
 }
 // @check-fn-end
 
+// @check-fn-begin
+static int grown_fallibly(int fail) {
+  unsigned char *p = malloc(fail == 2 ? __SIZE_MAX__ : 4);
+  if (!p)
+    return -1;
+  p[0] = 41;
+  unsigned char *q = realloc(p, fail ? __SIZE_MAX__ : 8);
+  if (!q) {
+    int saved = p[0];
+    free(p);
+    return saved;
+  }
+  p = q;
+  p[7] = 1;
+  int result = p[0] + p[7];
+  free(p);
+  return result;
+}
+// @check-fn-end
+
+// @check-fn-begin
+static int released_and_cleared(void) {
+  char *p = malloc(4);
+  p[0] = 41;
+  int result = p[0];
+  free(p);
+  p = NULL;
+  if (p == NULL)
+    return result + 1;
+  return result;
+}
+// @check-fn-end
+
+// @check-fn-begin
+static int released_in_either_arm(int flip) {
+  char *p = malloc(4);
+  p[0] = 41;
+  int result;
+  if (flip) {
+    result = p[0] + 1;
+    free(p);
+  } else {
+    result = p[0] - 1;
+    free(p);
+  }
+  return result * 2;
+}
+// @check-fn-end
+
 int main(void) {
   printf("%d\n", owned(16));
   printf("%d\n", grown());
@@ -155,6 +204,9 @@ int main(void) {
   printf("%d %d\n", offset(5), looped(6));
   printf("%d %d %d\n", returned_in_loop(4), returned_in_loop(1), freed_by_callee());
   printf("%d %d %d\n", released_early(4), released_in_branch(4), released_in_branch(1));
+  printf("%d %d %d\n", grown_fallibly(0), grown_fallibly(1), grown_fallibly(2));
+  printf("%d %d %d\n", released_and_cleared(), released_in_either_arm(0),
+         released_in_either_arm(1));
   char *kept = escaped(4);
   printf("%d\n", kept[3]);
   free(kept);
@@ -164,9 +216,6 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn owned(n: i32) -> i32 {
 // CHECK-NEXT:     let mut buf: Vec<i8> = vec![0; (n as u64) as usize];
-// CHECK-NEXT:     if false {
-// CHECK-NEXT:         return -1;
-// CHECK-NEXT:     }
 // CHECK-NEXT:     buf[0usize..((n as u64) as usize) as usize].fill((97i32 as i32) as i8);
 // CHECK-NEXT:     buf[0] = 120;
 // CHECK-NEXT:     buf[(n - 1) as usize] = 0;
@@ -175,9 +224,6 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn grown() -> i32 {
 // CHECK-NEXT:     let mut grow: Vec<i8> = vec![0; (4 as usize) * (1 as usize)];
-// CHECK-NEXT:     if false {
-// CHECK-NEXT:         return -1;
-// CHECK-NEXT:     }
 // CHECK-NEXT:     grow.resize(8 as usize, 0);
 // CHECK-NEXT:     grow[7] = 3;
 // CHECK-NEXT:     fill(&mut grow, 4i32, 2i8);
@@ -262,5 +308,48 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     buf
+// CHECK: {{^}}}
+// CHECK-LABEL: {{^}}fn grown_fallibly(fail: i32) -> i32 {
+// CHECK-NEXT:     let p: Option<Vec<u8>> = Vec::try_filled(
+// CHECK-NEXT:         (if fail == 2 { 18446744073709551615u64 } else { 4u64 }) as usize,
+// CHECK-NEXT:         0,
+// CHECK-NEXT:     );
+// CHECK-NEXT:     let mut p = match p {
+// CHECK-NEXT:         Some(p) => p,
+// CHECK-NEXT:         _ => {
+// CHECK-NEXT:             return -1i32;
+// CHECK-NEXT:         },
+// CHECK-NEXT:     };
+// CHECK-NEXT:     p[0] = 41;
+// CHECK-NEXT:     let q: bool = p
+// CHECK-NEXT:         .try_resize((if fail != 0 { 18446744073709551615u64 } else { 8u64 }) as usize, 0)
+// CHECK-NEXT:         .is_none();
+// CHECK-NEXT:     if q {
+// CHECK-NEXT:         let saved: i32 = p[0] as i32;
+// CHECK-NEXT:         return saved;
+// CHECK-NEXT:     }
+// CHECK-NEXT:     p[7] = 1;
+// CHECK-NEXT:     let result: i32 = (p[0] as i32) + (p[7] as i32);
+// CHECK-NEXT:     result
+// CHECK: {{^}}}
+// CHECK-LABEL: {{^}}fn released_and_cleared() -> i32 {
+// CHECK-NEXT:     let mut p: Vec<i8> = vec![0; 4 as usize];
+// CHECK-NEXT:     p[0] = 41;
+// CHECK-NEXT:     let result: i32 = p[0] as i32;
+// CHECK-NEXT:     drop(p);
+// CHECK-NEXT:     result + 1
+// CHECK: {{^}}}
+// CHECK-LABEL: {{^}}fn released_in_either_arm(flip: i32) -> i32 {
+// CHECK-NEXT:     let mut p: Vec<i8> = vec![0; 4 as usize];
+// CHECK-NEXT:     p[0] = 41;
+// CHECK-NEXT:     let mut result: i32 = 0;
+// CHECK-NEXT:     if flip != 0 {
+// CHECK-NEXT:         result = (p[0] as i32) + 1;
+// CHECK-NEXT:         drop(p);
+// CHECK-NEXT:     } else {
+// CHECK-NEXT:         result = (p[0] as i32) - 1;
+// CHECK-NEXT:         drop(p);
+// CHECK-NEXT:     }
+// CHECK-NEXT:     result * 2
 // CHECK: {{^}}}
 // SLATE-FILECHECK-END

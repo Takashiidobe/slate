@@ -343,6 +343,30 @@ impl FunctionLowerer<'_, '_> {
         ))
     }
 
+    pub(super) fn owned_null_condition(&self, condition: &ir::Value) -> Option<bool> {
+        let ValueKind::Compare {
+            op: op @ (ir::CompareOp::Eq | ir::CompareOp::Ne),
+            left,
+            right,
+            ..
+        } = &condition.node.value
+        else {
+            return None;
+        };
+        if self.tables.macro_values.contains_key(&condition.node.id) {
+            return None;
+        }
+        let pointer = if null_value(right) {
+            left
+        } else if null_value(left) {
+            right
+        } else {
+            return None;
+        };
+        self.owned_read(peel_pointer_casts(pointer))?;
+        Some(*op == ir::CompareOp::Ne)
+    }
+
     fn unwritten(&self, id: BindingId) -> bool {
         self.tables
             .facts

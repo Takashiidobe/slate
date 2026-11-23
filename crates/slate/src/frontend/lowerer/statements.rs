@@ -1,6 +1,25 @@
 use super::*;
 
 impl FunctionLowerer<'_, '_> {
+    pub(super) fn lower_known_if(
+        &mut self,
+        condition: bool,
+        then_body: &[Span<ir::Statement>],
+        else_body: Option<&[Span<ir::Statement>]>,
+    ) -> Result<Stmt> {
+        let body = if condition {
+            then_body
+        } else {
+            else_body.unwrap_or_default()
+        };
+        if body.is_empty() {
+            return Ok(Stmt::Block(rust::Block::default()));
+        }
+        Ok(Stmt::Scope {
+            body: self.lower_statement_list(body)?,
+        })
+    }
+
     pub(super) fn break_label(&self, id: BindingId) -> rust::Label {
         rust::Label::new(format!("__slate_break_{}", self.local_index(id)))
     }
@@ -149,6 +168,9 @@ impl FunctionLowerer<'_, '_> {
     ) -> Result<Stmt> {
         if let Some(action) = self.tables.facts.guarded_heap_statement(statement.id) {
             return self.lower_guarded_heap(&statement.value, action);
+        }
+        if let Some(lowered) = self.lower_heap_statement(statement)? {
+            return Ok(lowered);
         }
         Ok(match &statement.value {
             ir::Statement::Comment(comment) => {
@@ -520,6 +542,14 @@ impl FunctionLowerer<'_, '_> {
             },
             ir::Statement::MacroExpansion { expansion, body } => {
                 self.lower_macro_site(*expansion, body)?
+            }
+            ir::Statement::If {
+                condition,
+                then_body,
+                else_body,
+                folded: None,
+            } if let Some(known) = self.owned_null_condition(condition) => {
+                self.lower_known_if(known, then_body, else_body.as_deref())?
             }
             ir::Statement::If {
                 condition,

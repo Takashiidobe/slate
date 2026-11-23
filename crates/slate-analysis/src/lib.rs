@@ -29,5 +29,5 @@ pub use def_use::{BindingMutability, BorrowArgument};
 pub use facts::{BindingFacts, Facts, UnitFacts, ValueFacts, analyze};
 pub use guarded_heap::{GuardedHeapStatement, HeapElement};
 pub use identity::{FunctionIdentity, Known};
-pub use pointer::{Borrow, Length, Owner, PointerFact, PointerRole};
+pub use pointer::{Borrow, HeapAction, Length, Owner, PointerFact, PointerRole};
 pub use program::{FunctionEntry, FunctionId, Program, ProgramBinding, ProgramUnit, UnitId};

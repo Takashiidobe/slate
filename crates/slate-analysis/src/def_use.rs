@@ -100,6 +100,10 @@ impl DefUse {
         )
     }
 
+    pub fn mentions(&self, binding: BindingId) -> bool {
+        self.uses.contains_key(&binding)
+    }
+
     pub fn matches_reads_and_writes(
         &self,
         binding: BindingId,

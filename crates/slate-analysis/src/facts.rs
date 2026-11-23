@@ -5,7 +5,7 @@ use crate::counted_loops::{self, CountedLoop};
 use crate::def_use::{BindingMutability, DefUse};
 use crate::guarded_heap::{self, GuardedHeap, GuardedHeapStatement, HeapElement};
 use crate::identity::{FunctionIdentity, identify};
-use crate::pointer::{self, Borrow, PointerFact};
+use crate::pointer::{self, Borrow, HeapStatement, PointerFact};
 use crate::program::{Program, ProgramBinding, UnitId};
 use foldhash::{HashMap, HashMapExt, HashSet};
 use slate_parser::ast::NodeId;
@@ -34,6 +34,7 @@ pub struct Facts {
     identities: HashMap<ProgramBinding, FunctionIdentity>,
     counted_loops: Vec<HashMap<BindingId, CountedLoop>>,
     guarded_heap: Vec<GuardedHeap>,
+    heap_statements: HashMap<(UnitId, NodeId), HeapStatement>,
 }
 
 impl Facts {
@@ -85,6 +86,13 @@ impl<'f> UnitFacts<'f> {
         self.facts.guarded_heap[self.unit.0 as usize]
             .statements
             .get(&statement)
+            .copied()
+    }
+
+    pub fn heap_statement(&self, statement: NodeId) -> Option<HeapStatement> {
+        self.facts
+            .heap_statements
+            .get(&(self.unit, statement))
             .copied()
     }
 
@@ -280,5 +288,6 @@ pub fn analyze(program: &Program<'_>) -> Facts {
         identities,
         counted_loops,
         guarded_heap,
+        heap_statements: pointers.heap_statements,
     }
 }
