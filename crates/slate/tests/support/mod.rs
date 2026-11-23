@@ -8,7 +8,7 @@ pub mod filecheck;
 pub mod fresh_tree;
 pub mod manifest;
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -1792,16 +1792,29 @@ pub fn print_triage(prefix: &str, results: &[(String, Result<(), String>)]) {
     }
 }
 
-pub fn failure_report(failures: &[(String, String)]) -> String {
+pub fn failure_report(failures: &[(String, String)], filecheck_fixtures: &[PathBuf]) -> String {
     let details: Vec<String> = failures
         .iter()
         .map(|(name, error)| format!("[{name}] {error}"))
         .collect();
     let names: Vec<&str> = failures.iter().map(|(name, _)| name.as_str()).collect();
-    format!(
+    let mut report = format!(
         "{}\n\n{} failing fixtures: {}",
         details.join("\n\n"),
         failures.len(),
         names.join(" ")
-    )
+    );
+    if !filecheck_fixtures.is_empty() {
+        let paths: BTreeSet<_> = filecheck_fixtures.iter().collect();
+        let args = shlex::try_join(
+            paths
+                .into_iter()
+                .map(|path| path.to_str().expect("fixture path must be UTF-8")),
+        )
+        .expect("quote fixture paths");
+        report.push_str(&format!(
+            "\n\nTo update the FileChecks for these fixtures, run from the workspace root:\n  python3 crates/slate/tools/update_filecheck.py {args}"
+        ));
+    }
+    report
 }

@@ -197,6 +197,6 @@ fn assert_supported(corpus: &Corpus) {
         failures.is_empty(),
         "{} supported tests failed:\n{}",
         corpus.dir,
-        support::failure_report(&failures)
+        support::failure_report(&failures, &[])
     );
 }

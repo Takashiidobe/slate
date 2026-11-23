@@ -271,6 +271,7 @@ fn translate_fixture_project(
 #[test]
 fn generated_differential() {
     let mut failures = Vec::new();
+    let mut filecheck_fixtures = Vec::new();
     let mut total = 0;
     for triple in support::test_targets() {
         let fixtures = target_fixtures(&fixtures_dir(), &triple);
@@ -283,7 +284,16 @@ fn generated_differential() {
         let list = unsupported_dir().join(format!("{triple}.txt"));
         let mut expected_failures = target_unsupported(&list);
         let cross = support::CrossTarget::for_triple(&triple);
-        for (name, result) in run_cases_for_target(&triple, &fixtures, false, cross.as_ref()) {
+        let results = run_cases_for_target(&triple, &fixtures, false, cross.as_ref());
+        for (fixture, (name, result)) in fixtures.into_iter().zip(results) {
+            assert_eq!(fixture.name, name);
+            if result
+                .as_ref()
+                .is_err_and(|e| e.starts_with("FileCheck failed"))
+            {
+                let path = Path::new("crates/slate/tests/fixtures").join(fixture.relative);
+                filecheck_fixtures.push(path);
+            }
             let expected = expected_failures.remove(&name);
             match result {
                 Err(e) if expected && !e.starts_with("FileCheck failed") => {
@@ -320,10 +330,9 @@ fn generated_differential() {
 
     if !failures.is_empty() {
         panic!(
-            "{} of {} generated fixtures failed:\n\n{}",
+            "{} of {total} generated fixtures failed:\n\n{}",
             failures.len(),
-            total,
-            support::failure_report(&failures)
+            support::failure_report(&failures, &filecheck_fixtures),
         );
     }
 }

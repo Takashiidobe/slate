@@ -74,7 +74,7 @@ fn c_testsuite_supported_tests_match_c() {
     assert!(
         failures.is_empty(),
         "c-testsuite supported tests failed:\n{}",
-        support::failure_report(&failures)
+        support::failure_report(&failures, &[])
     );
 }
 
