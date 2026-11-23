@@ -290,14 +290,25 @@ fn support_crate_path(name: &str, project: &Path) -> Result<PathBuf, String> {
     let source = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("vendor")
         .join(name);
-    let mut manifest = cargo_toml::read_manifest(&source.join("Cargo.toml.template"))?;
-    manifest.lib.get_or_insert_default().path = Some(source.join("src/lib.rs"));
+    let template = source.join("Cargo.toml.template");
+    let text = std::fs::read_to_string(&template)
+        .map_err(|e| format!("read {}: {e}", template.display()))?;
+    let mut manifest = text
+        .parse::<toml::Table>()
+        .map_err(|e| format!("parse {}: {e}", template.display()))?;
+    let lib = manifest
+        .entry("lib")
+        .or_insert_with(|| toml::Value::Table(toml::Table::new()))
+        .as_table_mut()
+        .ok_or_else(|| format!("invalid lib table in {}", template.display()))?;
+    let lib_path = source.join("src/lib.rs");
+    let lib_path =
+        toml::Value::try_from(lib_path).map_err(|e| format!("encode {name} path: {e}"))?;
+    lib.insert("path".into(), lib_path);
     let dest = project.join("vendor").join(name);
-    write_if_changed(
-        dest.join("Cargo.toml"),
-        cargo_toml::render_manifest(&manifest)?.as_bytes(),
-    )
-    .map_err(|e| format!("write {name} manifest: {e}"))?;
+    let manifest = toml::to_string(&manifest).map_err(|e| format!("serialize {name}: {e}"))?;
+    write_if_changed(dest.join("Cargo.toml"), manifest.as_bytes())
+        .map_err(|e| format!("write {name} manifest: {e}"))?;
     let build_script = source.join("build.rs");
     if build_script.exists() {
         let contents = std::fs::read(&build_script)
@@ -320,14 +331,11 @@ fn support_crate_path(name: &str, project: &Path) -> Result<PathBuf, String> {
     Ok(dest)
 }
 
-fn bitfields_path() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("vendor/bitfields")
-}
-
 fn generated_crate_manifest(name: &str, project: &Path) -> Result<String, String> {
     support_crate_path("num-traits", project)?;
     support_crate_path("libc", project)?;
     support_crate_path("mach2", project)?;
+    support_crate_path("bitfields-impl", project)?;
     let mut manifest = cargo_toml::Manifest::new(name, "0.0.0", cargo_toml::Edition::E2024);
     manifest.workspace = Some(cargo_toml::Workspace {});
     for support in ["slate-support", "aligned", "bitint", "slate-blocks"] {
@@ -343,7 +351,7 @@ fn generated_crate_manifest(name: &str, project: &Path) -> Result<String, String
     );
     manifest.dependencies.insert(
         "bitfields".to_string(),
-        cargo_toml::Dependency::path(bitfields_path()),
+        cargo_toml::Dependency::path(support_crate_path("bitfields", project)?),
     );
     manifest
         .build_dependencies

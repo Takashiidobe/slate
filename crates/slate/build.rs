@@ -51,11 +51,11 @@ fn main() {
     write_vendored_crate(
         "bitfields",
         "VENDORED_BITFIELDS",
-        &["Cargo.toml", "build.rs", "src"],
+        &["Cargo.toml.template", "build.rs", "src"],
     );
     write_vendored_crate(
         "bitfields-impl",
         "VENDORED_BITFIELDS_IMPL",
-        &["Cargo.toml", "src"],
+        &["Cargo.toml.template", "src"],
     );
 }

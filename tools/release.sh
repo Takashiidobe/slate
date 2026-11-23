@@ -21,10 +21,14 @@ from pathlib import Path
 
 root = Path(sys.argv[1])
 bump = sys.argv[2]
-packages = {
+dependencies = {
     "slate-parser": root / "crates/slate-parser/Cargo.toml",
     "slate-sysroots": root / "crates/slate-sysroots/Cargo.toml",
     "slate-cargo-toml": root / "crates/slate-cargo-toml/Cargo.toml",
+    "slate-analysis": root / "crates/slate-analysis/Cargo.toml",
+}
+packages = {
+    **dependencies,
     "slate-c2rust": root / "crates/slate/Cargo.toml",
 }
 
@@ -73,7 +77,7 @@ for path in packages.values():
 
 workspace = root / "Cargo.toml"
 text = workspace.read_text()
-for name in ("slate-parser", "slate-sysroots", "slate-cargo-toml"):
+for name in dependencies:
     text, count = re.subn(
         rf'(?m)^({re.escape(name)}\s*=\s*\{{\s*version\s*=\s*)"{re.escape(version)}"',
         rf'\g<1>"{next_version}"',

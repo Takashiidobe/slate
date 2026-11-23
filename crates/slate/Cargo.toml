@@ -14,6 +14,8 @@ include = [
   "/build.rs",
   "/LICENSE-*",
   "/vendor/aligned",
+  "/vendor/bitfields",
+  "/vendor/bitfields-impl",
   "/vendor/bitint",
   "/vendor/libc",
   "/vendor/mach2",
