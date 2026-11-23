@@ -3,6 +3,7 @@ use crate::c_string_arrays;
 use crate::constant_strings::{self, ConstantString};
 use crate::counted_loops::{self, CountedLoop};
 use crate::def_use::{BindingMutability, DefUse};
+use crate::guarded_heap::{self, GuardedHeap, GuardedHeapStatement, HeapElement};
 use crate::identity::{FunctionIdentity, identify};
 use crate::pointer::{self, Borrow, PointerFact};
 use crate::program::{Program, ProgramBinding, UnitId};
@@ -32,6 +33,7 @@ pub struct Facts {
     values: HashMap<(UnitId, NodeId), ValueFacts>,
     identities: HashMap<ProgramBinding, FunctionIdentity>,
     counted_loops: Vec<HashMap<BindingId, CountedLoop>>,
+    guarded_heap: Vec<GuardedHeap>,
 }
 
 impl Facts {
@@ -77,6 +79,20 @@ impl<'f> UnitFacts<'f> {
             .counted_loops
             .get(self.unit.0 as usize)
             .and_then(|loops| loops.get(&statement))
+    }
+
+    pub fn guarded_heap_statement(&self, statement: NodeId) -> Option<GuardedHeapStatement> {
+        self.facts.guarded_heap[self.unit.0 as usize]
+            .statements
+            .get(&statement)
+            .copied()
+    }
+
+    pub fn heap_element(&self, pointer: NodeId) -> Option<HeapElement> {
+        self.facts.guarded_heap[self.unit.0 as usize]
+            .elements
+            .get(&pointer)
+            .copied()
     }
 
     pub fn identity(&self, function: BindingId) -> FunctionIdentity {
@@ -132,6 +148,7 @@ pub fn analyze(program: &Program<'_>) -> Facts {
         bindings.entry(function).or_default().returns = Some(borrow);
     }
     let mut block_captures = HashMap::default();
+    let mut guarded_heap = Vec::new();
     for (unit, program_unit) in program.units() {
         let module = program_unit.module;
         let literals = constant_strings::literals(module);
@@ -195,6 +212,7 @@ pub fn analyze(program: &Program<'_>) -> Facts {
             .flatten()
             .copied()
             .collect();
+        let mut heap = GuardedHeap::default();
         let types = module
             .types
             .iter()
@@ -204,6 +222,15 @@ pub fn analyze(program: &Program<'_>) -> Facts {
             let Some(uses) = DefUse::for_mutability(function, &types) else {
                 return;
             };
+            guarded_heap::analyze(
+                program,
+                unit,
+                function,
+                &identities,
+                &hidden,
+                &uses,
+                &mut heap,
+            );
             for (binding, mutability) in uses.binding_mutability() {
                 bindings
                     .entry(ProgramBinding { unit, binding })
@@ -220,6 +247,7 @@ pub fn analyze(program: &Program<'_>) -> Facts {
                 }
             }
         });
+        guarded_heap.push(heap);
         for binding in hidden {
             bindings
                 .entry(ProgramBinding { unit, binding })
@@ -251,5 +279,6 @@ pub fn analyze(program: &Program<'_>) -> Facts {
         values,
         identities,
         counted_loops,
+        guarded_heap,
     }
 }

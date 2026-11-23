@@ -997,6 +997,10 @@ fn write_slate_support(crate_dir: &Path) -> Result<(), String> {
     write_file(
         &src_dir.join("process.rs"),
         include_str!("../vendor/slate-support/src/process.rs"),
+    )?;
+    write_file(
+        &src_dir.join("vec.rs"),
+        include_str!("../vendor/slate-support/src/vec.rs"),
     )
 }
 

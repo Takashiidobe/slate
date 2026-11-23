@@ -173,11 +173,21 @@ struct Release {
 }
 
 #[derive(Clone, Copy, Default, PartialEq, Eq)]
-enum Ending {
+pub(crate) enum Ending {
     #[default]
     Continues,
     Returns,
     ClosesScope,
+}
+
+impl Ending {
+    pub(crate) fn elides_release(self, in_declaring_scope: bool) -> bool {
+        match self {
+            Self::Returns => true,
+            Self::ClosesScope => in_declaring_scope,
+            Self::Continues => false,
+        }
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -211,11 +221,7 @@ impl Ownership {
             .iter()
             .filter(move |release| {
                 release.binding == binding
-                    && match release.ending {
-                        Ending::Returns => true,
-                        Ending::ClosesScope => Some(release.scope) == scope,
-                        Ending::Continues => false,
-                    }
+                    && release.ending.elides_release(Some(release.scope) == scope)
             })
             .map(|release| release.call)
     }
@@ -797,29 +803,6 @@ impl Walker<'_, '_> {
         )
     }
 
-    fn released(&self, statement: &Span<Statement>) -> Option<BindingId> {
-        let Statement::Expression(Value {
-            node:
-                Span {
-                    value:
-                        ValueKind::Call {
-                            callee, arguments, ..
-                        },
-                    ..
-                },
-            ..
-        }) = &statement.value
-        else {
-            return None;
-        };
-        let [pointer] = arguments.as_slice() else {
-            return None;
-        };
-        (self.known(callee) == Some(Known::Free))
-            .then(|| read_binding(peel_conversions(pointer)))
-            .flatten()
-    }
-
     fn allocation(&self, ty: &Type, initializer: &Value) -> Option<(BindingId, Type)> {
         let element = pointee(ty)?;
         let mut call = initializer;
@@ -1371,36 +1354,11 @@ impl Walker<'_, '_> {
     }
 
     fn statements(&mut self, body: &[Span<Statement>]) {
-        let mut endings = vec![Ending::Continues; body.len()];
-        let mut rest: Option<Option<&Value>> = Some(None);
-        let mut returns = false;
-        for (index, statement) in body.iter().enumerate().rev() {
-            match &statement.value {
-                Statement::Comment(_) | Statement::Null => continue,
-                Statement::Return(value) => {
-                    rest = Some(value.as_ref());
-                    returns = true;
-                    continue;
-                }
-                #[expect(
-                    slate::sensitive_wildcard,
-                    reason = "only frees, comments and a return keep a following free at the end of its run"
-                )]
-                _ => {}
-            }
-            match (self.released(statement), rest) {
-                (Some(binding), Some(value)) => {
-                    endings[index] = if !returns {
-                        Ending::ClosesScope
-                    } else if value.is_none_or(|value| !touches(value, binding)) {
-                        Ending::Returns
-                    } else {
-                        Ending::Continues
-                    };
-                }
-                (Some(_) | None, _) => rest = None,
-            }
-        }
+        let endings = release_endings(body, |statement| {
+            released_binding(&statement.value, |callee| {
+                self.known(callee) == Some(Known::Free)
+            })
+        });
         self.ownership.scopes += 1;
         let outer = std::mem::replace(&mut self.ownership.scope, self.ownership.scopes);
         for (statement, ending) in body.iter().zip(endings) {
@@ -1681,6 +1639,64 @@ impl Walker<'_, '_> {
             }
         }
     }
+}
+
+pub(crate) fn released_binding(
+    statement: &Statement,
+    is_free: impl FnOnce(&Callee) -> bool,
+) -> Option<BindingId> {
+    let Statement::Expression(value) = statement else {
+        return None;
+    };
+    let ValueKind::Call {
+        callee, arguments, ..
+    } = &value.node.value
+    else {
+        return None;
+    };
+    let [pointer] = arguments.as_slice() else {
+        return None;
+    };
+    is_free(callee)
+        .then(|| read_binding(peel_conversions(pointer)))
+        .flatten()
+}
+
+pub(crate) fn release_endings(
+    body: &[Span<Statement>],
+    released: impl Fn(&Span<Statement>) -> Option<BindingId>,
+) -> Vec<Ending> {
+    let mut endings = vec![Ending::Continues; body.len()];
+    let mut rest: Option<Option<&Value>> = Some(None);
+    let mut returns = false;
+    for (index, statement) in body.iter().enumerate().rev() {
+        match &statement.value {
+            Statement::Comment(_) | Statement::Null => continue,
+            Statement::Return(value) => {
+                rest = Some(value.as_ref());
+                returns = true;
+                continue;
+            }
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only frees, comments and a return keep a following free at the end of its run"
+            )]
+            _ => {}
+        }
+        match (released(statement), rest) {
+            (Some(binding), Some(value)) => {
+                endings[index] = if !returns {
+                    Ending::ClosesScope
+                } else if value.is_none_or(|value| !touches(value, binding)) {
+                    Ending::Returns
+                } else {
+                    Ending::Continues
+                };
+            }
+            (Some(_) | None, _) => rest = None,
+        }
+    }
+    endings
 }
 
 struct Escaper<'a> {

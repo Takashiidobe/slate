@@ -100,6 +100,33 @@ impl DefUse {
         )
     }
 
+    pub fn matches_reads_and_writes(
+        &self,
+        binding: BindingId,
+        reads: usize,
+        writes: usize,
+    ) -> bool {
+        let Some(uses) = self.uses.get(&binding) else {
+            return false;
+        };
+        let counts =
+            uses.iter()
+                .try_fold(
+                    (0, 0, 0),
+                    |(initializers, reads, writes), (_, access)| match access {
+                        Access::Initialize => Some((initializers + 1, reads, writes)),
+                        Access::Read => Some((initializers, reads + 1, writes)),
+                        Access::Write => Some((initializers, reads, writes + 1)),
+                        _ => None,
+                    },
+                );
+        counts == Some((1, reads, writes))
+    }
+
+    pub fn whole_body_structured(&self) -> bool {
+        self.structured(&(0..self.next))
+    }
+
     pub fn only_writes(&self, binding: BindingId, count: usize) -> bool {
         let uses = self.uses.get(&binding).map(Vec::as_slice).unwrap_or(&[]);
         uses.len() == count

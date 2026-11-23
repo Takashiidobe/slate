@@ -27,24 +27,16 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::malloc;
-// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: use slate_support::VecExt as _;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn compute(flag: i32) -> i32 {
-// CHECK-NEXT:     let mut p: *mut i32 = core::ptr::null_mut::<i32>();
+// CHECK-NEXT:     let mut p: Option<Vec<i32>> = None;
 // CHECK-NEXT:     if flag != 0 {
-// CHECK-NEXT:         p = unsafe {
-// CHECK-NEXT:             (malloc((core::mem::size_of::<i32>() as u64).wrapping_mul(4) as usize)
-// CHECK-NEXT:                 as *mut ()) as *mut i32
-// CHECK-NEXT:         };
+// CHECK-NEXT:         p = Vec::try_filled(4, 0);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if !p.is_null() {
-// CHECK-NEXT:         p = unsafe { p.add(1) };
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *p = 41;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         println!("{}", unsafe { *p });
-// CHECK-NEXT:         unsafe { free((p.sub(1) as *mut ()) as *mut core::ffi::c_void) };
+// CHECK-NEXT:     if let Some(p) = p.as_mut() {
+// CHECK-NEXT:         p[1] = 41;
+// CHECK-NEXT:         println!("{}", p[1]);
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         println!("no alloc");
 // CHECK-NEXT:     }

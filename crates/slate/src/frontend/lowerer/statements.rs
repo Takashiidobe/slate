@@ -147,6 +147,9 @@ impl FunctionLowerer<'_, '_> {
         &mut self,
         statement: &slate_parser::ast::Span<ir::Statement>,
     ) -> Result<Stmt> {
+        if let Some(action) = self.tables.facts.guarded_heap_statement(statement.id) {
+            return self.lower_guarded_heap(&statement.value, action);
+        }
         Ok(match &statement.value {
             ir::Statement::Comment(comment) => {
                 self.dependencies.emitted_comments.insert(statement.id);

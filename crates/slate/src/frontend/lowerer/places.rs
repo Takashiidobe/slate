@@ -551,6 +551,14 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_place(&mut self, place: &ir::Place) -> Result<Expr> {
+        if let PlaceKind::Deref(pointer) = &place.kind
+            && let Some(element) = self.tables.facts.heap_element(pointer.node.id)
+        {
+            return Ok(Expr::Index {
+                base: Box::new(Expr::var(self.binding_name(element.binding).into())),
+                index: Box::new(Expr::Value(rust::RustValue::U128(element.index.into()))),
+            });
+        }
         if let Some(hole) = self.lower_macro_place_wrap(place) {
             return hole;
         }

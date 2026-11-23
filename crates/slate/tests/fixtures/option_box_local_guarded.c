@@ -14,6 +14,7 @@ int compute(int flag) {
   } else {
     printf("no alloc\n");
   }
+  puts("after release");
   return 0;
 }
 
@@ -27,27 +28,28 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::malloc;
-// CHECK-NEXT: use slate_support::free;
+// CHECK-NEXT: use slate_support::VecExt as _;
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn compute(flag: i32) -> i32 {
-// CHECK-NEXT:     let mut p: *mut i32 = core::ptr::null_mut::<i32>();
+// CHECK-NEXT:     let mut p: Option<Vec<i32>> = None;
 // CHECK-NEXT:     if flag != 0 {
-// CHECK-NEXT:         p = unsafe {
-// CHECK-NEXT:             (malloc((core::mem::size_of::<i32>() as u64) as usize) as *mut ())
-// CHECK-NEXT:                 as *mut i32
-// CHECK-NEXT:         };
+// CHECK-NEXT:         p = Vec::try_filled(1, 0);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if !p.is_null() {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *p = 41;
-// CHECK-NEXT:         }
-// CHECK-NEXT:         let v: i32 = unsafe { *p };
+// CHECK-NEXT:     if let Some(p) = p.as_mut() {
+// CHECK-NEXT:         p[0] = 41;
+// CHECK-NEXT:         let v: i32 = p[0];
 // CHECK-NEXT:         println!("{}", v);
-// CHECK-NEXT:         unsafe { free((p as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         println!("no alloc");
 // CHECK-NEXT:     }
+// CHECK-NEXT:     drop(p);
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:     unsafe { slate_support::puts(c"after release".as_ptr()) };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

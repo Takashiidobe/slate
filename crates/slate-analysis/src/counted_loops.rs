@@ -36,7 +36,7 @@ pub(crate) fn analyze(function: &Function, loops: &mut HashMap<BindingId, Counte
     mark(body, &Scope { plain, def_use }, loops);
 }
 
-fn plain_access(access: &Access) -> bool {
+pub(crate) fn plain_access(access: &Access) -> bool {
     !access.volatile && !access.atomic
 }
 

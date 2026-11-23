@@ -1,7 +1,7 @@
 use super::*;
 use slate_analysis::Borrow;
 
-fn method(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
+pub(super) fn method(recv: Expr, method: &str, args: Vec<Expr>) -> Expr {
     Expr::MethodCall {
         recv: Box::new(recv),
         method: method.into(),
@@ -119,7 +119,7 @@ fn diverges(statements: &[slate_parser::ast::Span<ir::Statement>]) -> bool {
     }
 }
 
-fn some_pattern(name: &str) -> rust::Pattern {
+pub(super) fn some_pattern(name: &str) -> rust::Pattern {
     rust::Pattern::TupleStruct {
         name: "Some".into(),
         fields: vec![rust::Pattern::Binding(name.into())],

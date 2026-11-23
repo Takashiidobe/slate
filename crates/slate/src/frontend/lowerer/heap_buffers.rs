@@ -1,5 +1,7 @@
 use super::*;
 use crate::function_identity::Known;
+use optional::{method, some_pattern};
+use slate_analysis::GuardedHeapStatement;
 
 fn peel_pointer(mut value: &ir::Value) -> &ir::Value {
     while let ValueKind::Copy { operand, .. }
@@ -22,6 +24,77 @@ fn usize_of(expr: Expr) -> Expr {
 }
 
 impl FunctionLowerer<'_, '_> {
+    pub(super) fn lower_guarded_heap(
+        &mut self,
+        statement: &ir::Statement,
+        action: GuardedHeapStatement,
+    ) -> Result<Stmt> {
+        Ok(match (action, statement) {
+            (GuardedHeapStatement::Declare, ir::Statement::Let(variable))
+                if let ir::Type::Pointer { pointee, .. } = &variable.ty =>
+            {
+                Stmt::Let {
+                    origin: rust::LocalOrigin::Source,
+                    name: self.binding_name(variable.id),
+                    mutable: true,
+                    ty: Some(rust::Type::Generic {
+                        name: "Option".into(),
+                        args: vec![rust::Type::Generic {
+                            name: "Vec".into(),
+                            args: vec![self.lower_type(pointee)?],
+                        }],
+                    }),
+                    init: Some(Expr::Value(rust::RustValue::None)),
+                }
+            }
+            (GuardedHeapStatement::Allocate { binding, count }, ir::Statement::Write { .. }) => {
+                self.dependencies.vec_ext = true;
+                Stmt::Assign {
+                    target: Expr::var(self.binding_name(binding).into()),
+                    value: generated_call(
+                        "Vec::try_filled",
+                        vec![
+                            Expr::Value(rust::RustValue::U128(count.into())),
+                            Expr::Value(rust::RustValue::I64(0)),
+                        ],
+                    ),
+                }
+            }
+            (
+                GuardedHeapStatement::Present {
+                    binding,
+                    elide_release,
+                },
+                ir::Statement::If {
+                    then_body,
+                    else_body,
+                    ..
+                },
+            ) => {
+                let name = self.binding_name(binding);
+                let opt = Expr::var(name.as_str().into());
+                let guarded = Stmt::If {
+                    cond: Expr::Let {
+                        pattern: some_pattern(name.as_str()),
+                        expr: Box::new(method(opt.clone(), "as_mut", vec![])),
+                    },
+                    then_body: self.lower_statement_list(then_body)?,
+                    else_body: self
+                        .lower_statement_list(else_body.as_deref().unwrap_or_default())?,
+                };
+                if elide_release {
+                    return Ok(guarded);
+                }
+                Stmt::Block(rust::Block {
+                    stmts: vec![guarded, Stmt::Expr(generated_call("drop", vec![opt]))],
+                    tail: None,
+                })
+            }
+            (GuardedHeapStatement::Remove, _) => Stmt::Block(rust::Block::default()),
+            _ => return Err(Invariant::UnprovenBorrow(format!("{action:?}")).into()),
+        })
+    }
+
     pub(super) fn owned(&self, binding: BindingId) -> bool {
         !self.unborrowed.contains(&binding)
             && !self.switch_lets.contains(&binding)
@@ -140,5 +213,14 @@ impl FunctionLowerer<'_, '_> {
             return false;
         };
         self.tables.elided_release(value.node.id) && self.lower_release(arguments).is_some()
+    }
+}
+
+fn generated_call(name: &str, args: Vec<Expr>) -> Expr {
+    Expr::Call {
+        func: Box::new(Expr::var(name.into())),
+        args,
+        binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(false),
     }
 }

@@ -17,6 +17,11 @@ mod process;
 #[cfg(feature = "std")]
 pub use process::*;
 
+#[cfg(feature = "std")]
+mod vec;
+#[cfg(feature = "std")]
+pub use vec::VecExt;
+
 #[cfg(target_vendor = "apple")]
 pub use mach2 as mach;
 

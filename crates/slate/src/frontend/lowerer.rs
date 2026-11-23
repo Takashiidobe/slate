@@ -135,6 +135,7 @@ struct Tables<'m> {
 
 #[derive(Default)]
 struct Dependencies {
+    vec_ext: bool,
     alloca: bool,
     blocks: bool,
     block_items: Vec<Item>,
@@ -1590,6 +1591,16 @@ impl<'m> ModuleLowerer<'m> {
             mut barriers,
             ..
         } = self;
+        if dependencies.vec_ext {
+            items.insert(
+                0,
+                Item::Use {
+                    vis: rust::Visibility::Private,
+                    path: rust::Path::new(["slate_support", "VecExt"].map(rust::Ident::from)),
+                    alias: Some("_".into()),
+                },
+            );
+        }
         for (id, decl, asm) in weak_address_decls {
             if dependencies.weak_addresses.borrow().contains(&id) {
                 externs.push(decl);
