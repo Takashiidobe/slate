@@ -86,6 +86,7 @@ int main(void) {
 // CHECK-NEXT: fn inner_check(ok: i32) {
 // CHECK-NEXT:     if ok == 0 {
 // CHECK-NEXT:         unsafe { longjmp(core::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1i32) };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -119,15 +119,19 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     if shift_by_promoted_types(0i32) != 1024 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if shift_across_limbs(0i32) != 2 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if shift_signed_arithmetic(0i32) != -512 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if shift_by_bitint(0i32) != 3 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}",

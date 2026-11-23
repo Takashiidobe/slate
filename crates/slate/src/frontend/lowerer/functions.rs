@@ -260,10 +260,10 @@ impl Tables<'_> {
         self.names.get(&id)?.builtin.as_deref()
     }
 
-    pub(super) fn returns_through_unit(&self, id: BindingId) -> bool {
+    pub(super) fn needs_noreturn_unreachable(&self, id: BindingId) -> bool {
         self.names
             .get(&id)
-            .is_some_and(|name| name.noreturn && name.builtin.is_none())
+            .is_some_and(|name| name.noreturn && !name.codegen_builtin)
             && self
                 .support_functions
                 .get(&id)

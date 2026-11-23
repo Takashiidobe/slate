@@ -211,6 +211,15 @@ pub(super) fn zeroed() -> Expr {
     })
 }
 
+pub(super) fn noreturn_unreachable() -> Expr {
+    unsafe_op(Expr::Call {
+        func: Box::new(Expr::var("core::hint::unreachable_unchecked".into())),
+        args: Vec::new(),
+        binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(true),
+    })
+}
+
 impl FunctionLowerer<'_, '_> {
     fn lower_function_address(&mut self, value: &ir::Value, id: BindingId) -> Result<Expr> {
         if self.tables.stdio.functions.contains_key(&id) {
@@ -481,8 +490,32 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_value(&mut self, value: &ir::Value) -> Result<Expr> {
-        stacker::maybe_grow(512 << 10, 16 << 20, || self.lower_value_node(value))
-            .map_err(|error| error.at(Site::of(&value.node)))
+        let expr = stacker::maybe_grow(512 << 10, 16 << 20, || self.lower_value_node(value))
+            .map_err(|error| error.at(Site::of(&value.node)))?;
+        if self.discarded_call == Some(value.node.id)
+            || !matches!(
+                value.node.value,
+                ValueKind::Call { callee: ir::Callee::Direct(id), .. }
+                    if self.tables.needs_noreturn_unreachable(id)
+            )
+            || structure::is_exit_path(&expr)
+        {
+            return Ok(expr);
+        }
+        let result = self.next_temp();
+        Ok(Expr::Block(Box::new(rust::Block {
+            tail: Some(Box::new(Expr::var(result.as_str().into()))),
+            stmts: vec![
+                Stmt::Let {
+                    origin: rust::LocalOrigin::Synthetic,
+                    name: result,
+                    mutable: false,
+                    ty: None,
+                    init: Some(expr),
+                },
+                Stmt::Expr(noreturn_unreachable()),
+            ],
+        })))
     }
 
     pub(super) fn lower_value_node(&mut self, value: &ir::Value) -> Result<Expr> {

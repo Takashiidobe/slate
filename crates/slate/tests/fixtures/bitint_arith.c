@@ -464,18 +464,22 @@ int main(void) {
 // CHECK-NEXT:     let sum: i8 = (x.wrapping_add(y) as i8) << 5 >> 5;
 // CHECK-NEXT:     if (sum.wrapping_sub(y) as i8) << 5 >> 5 != x {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if (((x.wrapping_neg() as i8) << 5 >> 5).wrapping_neg() as i8) << 5 >> 5 != x {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if y >= x {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let ux: u8 = 5;
 // CHECK-NEXT:     let uy: u8 = 2;
 // CHECK-NEXT:     let usum: u8 = (ux.wrapping_add(uy) as u8) & 7;
 // CHECK-NEXT:     if (usum.wrapping_sub(uy) as u8) & 7 != ux {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -489,12 +493,15 @@ int main(void) {
 // CHECK-NEXT:     let s2: bitint::BInt<129, 3, 24, bitint::A8> = x.wrapping_add(y);
 // CHECK-NEXT:     if s2.wrapping_sub(y).compare(x) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if x.wrapping_neg().wrapping_neg().compare(x) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if y.compare(x) >= 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let ux: bitint::BUint<129, 3, 24, bitint::A8> = <bitint::BUint<129, 3, 24, bitint::A8>>::from_bint(
 // CHECK-NEXT:         <bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(123456789 as i128),
@@ -505,6 +512,7 @@ int main(void) {
 // CHECK-NEXT:     let usum: bitint::BUint<129, 3, 24, bitint::A8> = ux.wrapping_add(uy);
 // CHECK-NEXT:     if usum.wrapping_sub(uy).compare(ux) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -518,12 +526,15 @@ int main(void) {
 // CHECK-NEXT:     let s3: bitint::BInt<512, 8, 64, bitint::A8> = x.wrapping_add(y);
 // CHECK-NEXT:     if s3.wrapping_sub(y).compare(x) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if x.wrapping_neg().wrapping_neg().compare(x) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if y.compare(x) >= 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let ux: bitint::BUint<512, 8, 64, bitint::A8> = <bitint::BUint<512, 8, 64, bitint::A8>>::from_u128(
 // CHECK-NEXT:         123456789012345 as u128,
@@ -534,6 +545,7 @@ int main(void) {
 // CHECK-NEXT:     let usum: bitint::BUint<512, 8, 64, bitint::A8> = ux.wrapping_add(uy);
 // CHECK-NEXT:     if usum.wrapping_sub(uy).compare(ux) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -564,12 +576,15 @@ int main(void) {
 // CHECK-NEXT:         .wrapping_add(y256)
 // CHECK-NEXT:         .compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(0 as i128)) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if x256.wrapping_neg().compare(y256) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if y256.compare(x256) >= 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let ux256: bitint::BUint<256, 4, 32, bitint::A8> = <bitint::BUint<256, 4, 32, bitint::A8>>::from_buint(
 // CHECK-NEXT:         <bitint::BUint<197, 4, 32, bitint::A8>>::from_le_bytes::<208, 26>(
@@ -585,6 +600,7 @@ int main(void) {
 // CHECK-NEXT:     let usum256: bitint::BUint<256, 4, 32, bitint::A8> = ux256.wrapping_add(uy256);
 // CHECK-NEXT:     if usum256.wrapping_sub(uy256).compare(ux256) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let x512: bitint::BInt<512, 8, 64, bitint::A8> = <bitint::BInt<512, 8, 64, bitint::A8>>::from_bint(
 // CHECK-NEXT:         <bitint::BInt<297, 5, 40, bitint::A8>>::from_le_bytes::<304, 38>(
@@ -609,12 +625,15 @@ int main(void) {
 // CHECK-NEXT:         .wrapping_add(y512)
 // CHECK-NEXT:         .compare(<bitint::BInt<512, 8, 64, bitint::A8>>::from_i128(0 as i128)) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if x512.wrapping_neg().compare(y512) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if y512.compare(x512) >= 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let ux512: bitint::BUint<512, 8, 64, bitint::A8> = <bitint::BUint<512, 8, 64, bitint::A8>>::from_buint(
 // CHECK-NEXT:         <bitint::BUint<296, 5, 40, bitint::A8>>::from_le_bytes::<304, 38>(
@@ -631,6 +650,7 @@ int main(void) {
 // CHECK-NEXT:     let usum512: bitint::BUint<512, 8, 64, bitint::A8> = ux512.wrapping_add(uy512);
 // CHECK-NEXT:     if usum512.wrapping_sub(uy512).compare(ux512) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -680,6 +700,7 @@ int main(void) {
 // CHECK-NEXT:     if sum256.compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(12045 as i128))
 // CHECK-NEXT:         != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let p256: bitint::BUint<256, 4, 32, bitint::A8> = <bitint::BUint<256, 4, 32, bitint::A8>>::from_u128(
 // CHECK-NEXT:         1000000000000 as u128,
@@ -693,22 +714,27 @@ int main(void) {
 // CHECK-NEXT:             <bitint::BUint<256, 4, 32, bitint::A8>>::from_u128(3000000000000 as u128),
 // CHECK-NEXT:         ) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let neg256: bitint::BInt<256, 4, 32, bitint::A8> = x256.wrapping_neg();
 // CHECK-NEXT:     if neg256.compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(-12345 as i128))
 // CHECK-NEXT:         != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let diff256: bitint::BInt<256, 4, 32, bitint::A8> = x256.wrapping_sub(y256);
 // CHECK-NEXT:     if diff256.compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(12645 as i128))
 // CHECK-NEXT:         != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if y256.compare(x256) >= 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if x256.compare(y256) <= 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     check_bitint3();
 // CHECK-NEXT:     check_bitint129();
@@ -720,18 +746,22 @@ int main(void) {
 // CHECK-NEXT:         ),
 // CHECK-NEXT:     ) != 1 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_case_u128(<bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(1))
 // CHECK-NEXT:         != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_selector(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(1 as i128))
 // CHECK-NEXT:         != 10 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_selector(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(2 as i128))
 // CHECK-NEXT:         != 10 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_selector(
 // CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_bint(
@@ -745,26 +775,31 @@ int main(void) {
 // CHECK-NEXT:         ),
 // CHECK-NEXT:     ) != 20 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_selector(
 // CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(350 as i128),
 // CHECK-NEXT:     ) != 30 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_selector(
 // CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(300 as i128),
 // CHECK-NEXT:     ) != 30 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_selector(
 // CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(400 as i128),
 // CHECK-NEXT:     ) != 30 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_selector(
 // CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(999 as i128),
 // CHECK-NEXT:     ) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_selector_unsigned(
 // CHECK-NEXT:         <bitint::BUint<256, 4, 32, bitint::A8>>::from_buint(
@@ -777,6 +812,7 @@ int main(void) {
 // CHECK-NEXT:         ),
 // CHECK-NEXT:     ) != 1 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_selector_unsigned(
 // CHECK-NEXT:         <bitint::BUint<256, 4, 32, bitint::A8>>::from_bint(
@@ -784,6 +820,7 @@ int main(void) {
 // CHECK-NEXT:         ),
 // CHECK-NEXT:     ) != 2 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_selector_unsigned(
 // CHECK-NEXT:         <bitint::BUint<256, 4, 32, bitint::A8>>::from_bint(
@@ -791,26 +828,31 @@ int main(void) {
 // CHECK-NEXT:         ),
 // CHECK-NEXT:     ) != 3 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_fallthrough(
 // CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(1 as i128),
 // CHECK-NEXT:     ) != 101 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_fallthrough(
 // CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(2 as i128),
 // CHECK-NEXT:     ) != 1 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_fallthrough(
 // CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(3 as i128),
 // CHECK-NEXT:     ) != 999 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if switch_wide_fallthrough(
 // CHECK-NEXT:         <bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(4 as i128),
 // CHECK-NEXT:     ) != -1 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

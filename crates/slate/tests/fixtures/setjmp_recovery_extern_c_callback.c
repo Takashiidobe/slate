@@ -65,6 +65,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fail_now() {
 // CHECK-NEXT:     unsafe { longjmp(core::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1i32) };
+// CHECK-NEXT:     unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: extern "C-unwind" fn check(ok: i32) {

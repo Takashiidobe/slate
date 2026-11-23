@@ -947,20 +947,13 @@ impl FunctionLowerer<'_, '_> {
                     ..
                 },
                 ..
-            }) if self.tables.returns_through_unit(*id)
-        );
+            }) if self.tables.needs_noreturn_unreachable(*id)
+        ) && !matches!(&lowered, Stmt::Expr(expr) if structure::is_exit_path(expr));
         Ok(before
             .into_iter()
             .chain(std::iter::once(lowered))
             .chain(self.after_declaration.take())
-            .chain(diverges.then(|| {
-                Stmt::Expr(unsafe_op(Expr::Call {
-                    func: Box::new(Expr::var("core::hint::unreachable_unchecked".into())),
-                    args: Vec::new(),
-                    binding: CallBinding::Generated,
-                    unsafe_: rust::Unsafe(true),
-                }))
-            }))
+            .chain(diverges.then(|| Stmt::Expr(noreturn_unreachable())))
             .collect())
     }
 }

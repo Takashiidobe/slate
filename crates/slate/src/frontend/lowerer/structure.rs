@@ -127,7 +127,7 @@ fn negate(cond: &Expr) -> Expr {
     }
 }
 
-fn is_exit_path(expr: &Expr) -> bool {
+pub(super) fn is_exit_path(expr: &Expr) -> bool {
     let Expr::Call { func, .. } = expr else {
         return false;
     };

@@ -107,6 +107,7 @@ int main(void) {
 // CHECK-NEXT: extern "C-unwind" fn panicky_callback(x: i32) {
 // CHECK-NEXT:     if x == 2 {
 // CHECK-NEXT:         unsafe { longjmp(core::ptr::addr_of_mut!(env.0) as *mut __jmp_buf_tag, 1i32) };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("panicky {}", x);
 // CHECK-NEXT: }

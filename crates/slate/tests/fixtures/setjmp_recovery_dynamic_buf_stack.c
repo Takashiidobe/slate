@@ -46,6 +46,7 @@ int main(void) {
 // CHECK-NEXT:             jb_top = [[V_0]];
 // CHECK-NEXT:         }
 // CHECK-NEXT:         unsafe { longjmp((*jb_stack.offset([[V_0]] as isize)).as_mut_ptr(), $v) };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

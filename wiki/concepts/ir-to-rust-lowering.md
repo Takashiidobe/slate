@@ -142,6 +142,10 @@
 
 ## Control flow
 
+- Direct calls marked `noreturn` emit `unreachable_unchecked()` after the call
+  when the Rust callee has an ordinary return type. Value expressions keep the
+  call's result type for their enclosing Rust expression. Function pointer types
+  still follow the C declaration.
 - Source: `crates/slate/src/frontend/lowerer/control_flow.rs`.
 - Input: slate-parser structured statements and resolved binding/loop/switch
   IDs.

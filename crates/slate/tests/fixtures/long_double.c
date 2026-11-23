@@ -516,35 +516,42 @@ int main(void) {
 // CHECK-NEXT:     let i8: i8 = __slate_f80_to_i8(LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]));
 // CHECK-NEXT:     if __slate_f80_from_i8(i8) != LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let u8: u8 = __slate_f80_to_u8(LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]));
 // CHECK-NEXT:     if __slate_f80_from_u8(u8) != LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let i16: i16 = __slate_f80_to_i16(LongDouble([0, 0, 0, 0, 0, 0, 228, 192, 12, 192]));
 // CHECK-NEXT:     if __slate_f80_from_i16(i16) != LongDouble([0, 0, 0, 0, 0, 0, 228, 192, 12, 192]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let u16: u16 = __slate_f80_to_u16(LongDouble([0, 0, 0, 0, 0, 0, 49, 212, 14, 64]));
 // CHECK-NEXT:     if __slate_f80_from_u16(u16) != LongDouble([0, 0, 0, 0, 0, 0, 49, 212, 14, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let i32: i32 = __slate_f80_to_i32(
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 164, 5, 44, 147, 29, 192]),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if __slate_f80_from_i32(i32) != LongDouble([0, 0, 0, 0, 164, 5, 44, 147, 29, 192]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let u32: u32 = __slate_f80_to_u32(
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 20, 106, 10, 206, 30, 64]),
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if __slate_f80_from_u32(u32) != LongDouble([0, 0, 0, 0, 20, 106, 10, 206, 30, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let i64: i64 = -123456789012345;
 // CHECK-NEXT:     if __slate_f80_from_i64(i64)
 // CHECK-NEXT:         != LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let u64: u64 = __slate_f80_to_u64(
 // CHECK-NEXT:         LongDouble([210, 10, 31, 235, 140, 169, 84, 171, 62, 64]),
@@ -552,6 +559,7 @@ int main(void) {
 // CHECK-NEXT:     if __slate_f80_from_u64(u64)
 // CHECK-NEXT:         != LongDouble([210, 10, 31, 235, 140, 169, 84, 171, 62, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -577,6 +585,7 @@ int main(void) {
 // CHECK-NEXT:     if __slate_f80_from_i128(i128)
 // CHECK-NEXT:         != LongDouble([254, 255, 255, 255, 255, 255, 255, 255, 61, 192]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let u128: u128 = __slate_f80_to_u128(
 // CHECK-NEXT:         LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]),
@@ -584,6 +593,7 @@ int main(void) {
 // CHECK-NEXT:     if __slate_f80_from_u128(u128)
 // CHECK-NEXT:         != LongDouble([255, 255, 255, 255, 255, 255, 255, 255, 62, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
@@ -601,10 +611,12 @@ int main(void) {
 // CHECK-NEXT:     let b9: i16 = __slate_f80_to_i16(LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]));
 // CHECK-NEXT:     if __slate_f80_from_i16(b9) != LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 5, 192]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let ub9: u16 = __slate_f80_to_u16(LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]));
 // CHECK-NEXT:     if __slate_f80_from_u16(ub9) != LongDouble([0, 0, 0, 0, 0, 0, 0, 200, 6, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let b40: i64 = __slate_f80_to_i64(
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 160, 162, 121, 235, 25, 192]),
@@ -612,6 +624,7 @@ int main(void) {
 // CHECK-NEXT:     if __slate_f80_from_i64(b40)
 // CHECK-NEXT:         != LongDouble([0, 0, 0, 0, 160, 162, 121, 235, 25, 192]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let ub40: u64 = __slate_f80_to_u64(
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 196, 162, 121, 235, 28, 64]),
@@ -619,6 +632,7 @@ int main(void) {
 // CHECK-NEXT:     if __slate_f80_from_u64(ub40)
 // CHECK-NEXT:         != LongDouble([0, 0, 0, 0, 196, 162, 121, 235, 28, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let b101: bitint::BInt<101, 2, 16, bitint::A8> = <bitint::BInt<101, 2, 16, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:         LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]).0,
@@ -626,12 +640,14 @@ int main(void) {
 // CHECK-NEXT:     if LongDouble(b101.to_f80_bytes())
 // CHECK-NEXT:         != LongDouble([0, 0, 242, 190, 27, 12, 145, 224, 45, 192]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if <bitint::BInt<101, 2, 16, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:             LongDouble(b101.to_f80_bytes()).0,
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .compare(b101) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let ub150: bitint::BUint<150, 3, 24, bitint::A8> = <bitint::BUint<150, 3, 24, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:         LongDouble([0, 64, 3, 20, 62, 12, 145, 224, 48, 64]).0,
@@ -639,12 +655,14 @@ int main(void) {
 // CHECK-NEXT:     if LongDouble(ub150.to_f80_bytes())
 // CHECK-NEXT:         != LongDouble([0, 64, 3, 20, 62, 12, 145, 224, 48, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if <bitint::BUint<150, 3, 24, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:             LongDouble(ub150.to_f80_bytes()).0,
 // CHECK-NEXT:         )
 // CHECK-NEXT:         .compare(ub150) != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let b256: bitint::BInt<256, 4, 32, bitint::A8> = <bitint::BInt<256, 4, 32, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:         LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]).0,
@@ -653,10 +671,12 @@ int main(void) {
 // CHECK-NEXT:         .compare(<bitint::BInt<256, 4, 32, bitint::A8>>::from_i128(9999999999 as i128))
 // CHECK-NEXT:         != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if LongDouble(b256.to_f80_bytes())
 // CHECK-NEXT:         != LongDouble([0, 0, 0, 192, 255, 248, 2, 149, 32, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let ub300: bitint::BUint<300, 5, 40, bitint::A8> = <bitint::BUint<300, 5, 40, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]).0,
@@ -665,21 +685,25 @@ int main(void) {
 // CHECK-NEXT:         .compare(<bitint::BUint<300, 5, 40, bitint::A8>>::from_u128(4200000000 as u128))
 // CHECK-NEXT:         != 0 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if LongDouble(ub300.to_f80_bytes())
 // CHECK-NEXT:         != LongDouble([0, 0, 0, 0, 0, 234, 86, 250, 30, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let b129: bitint::BInt<129, 3, 24, bitint::A8> = <bitint::BInt<129, 3, 24, bitint::A8>>::from_f80_bytes(
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 246, 5, 64]).0,
 // CHECK-NEXT:     );
 // CHECK-NEXT:     if (b129.to_i128() as i32) != 123 {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     if LongDouble(
 // CHECK-NEXT:         <bitint::BInt<129, 3, 24, bitint::A8>>::from_i128(123 as i128).to_f80_bytes(),
 // CHECK-NEXT:     ) != LongDouble([0, 0, 0, 0, 0, 0, 0, 246, 5, 64]) {
 // CHECK-NEXT:         unsafe { abort() };
+// CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
