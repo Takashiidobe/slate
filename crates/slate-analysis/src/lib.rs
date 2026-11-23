@@ -17,6 +17,7 @@ mod def_use;
 mod effects;
 mod facts;
 mod guarded_heap;
+mod heap_ir;
 mod identity;
 mod pointer;
 mod program;

@@ -1,7 +1,10 @@
 use crate::counted_loops::{CountedLoop, integer_constant, plain_access, plain_local};
 use crate::def_use::DefUse;
+use crate::heap_ir::{
+    binding_write, code_statements, is_null, peel_pointer, plain_read, release_endings,
+    released_binding,
+};
 use crate::identity::{FunctionIdentity, Known};
-use crate::pointer::{release_endings, released_binding};
 use crate::program::{Program, ProgramBinding, UnitId};
 use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use slate_parser::ast::{NodeId, Span};
@@ -84,7 +87,7 @@ pub(crate) fn analyze(
             && program.callee(unit, callee).is_none()
     };
     let mut found_guard = false;
-    let mut statements = code(body);
+    let mut statements = code_statements(body);
     while let Some(declaration) = statements.next() {
         let Statement::Let(variable) = &declaration.value else {
             continue;
@@ -115,7 +118,7 @@ pub(crate) fn analyze(
         else {
             continue;
         };
-        let mut allocation_body = code(arm(then_body));
+        let mut allocation_body = code_statements(arm(then_body));
         let Some(write) = allocation_body
             .next()
             .filter(|_| allocation_body.next().is_none())
@@ -223,7 +226,7 @@ pub(crate) fn analyze(
 }
 
 fn arm(body: &[Span<Statement>]) -> &[Span<Statement>] {
-    let mut statements = code(body);
+    let mut statements = code_statements(body);
     match (statements.next(), statements.next()) {
         (
             Some(Span {
@@ -234,11 +237,6 @@ fn arm(body: &[Span<Statement>]) -> &[Span<Statement>] {
         ) => inner,
         _ => body,
     }
-}
-
-fn code(body: &[Span<Statement>]) -> impl Iterator<Item = &Span<Statement>> + Clone {
-    body.iter()
-        .filter(|stmt| !matches!(stmt.value, Statement::Comment(_) | Statement::Null))
 }
 
 fn integer_pointee(ty: &Type) -> Option<&Type> {
@@ -300,69 +298,6 @@ fn extent(size: &Value, element: &Type, pointer_width: u32, multiplier: u64) -> 
         .then_some(count)
 }
 
-pub(crate) fn peel_pointer(mut value: &Value) -> &Value {
-    while let ValueKind::Copy { operand, .. }
-    | ValueKind::Convert {
-        kind: ConversionKind::PointerCast,
-        operand,
-        ..
-    } = &value.node.value
-        && matches!(
-            (&value.ty, &operand.ty),
-            (
-                Type::Pointer {
-                    space: PointerSpace::Default,
-                    ..
-                },
-                Type::Pointer {
-                    space: PointerSpace::Default,
-                    ..
-                }
-            )
-        )
-    {
-        value = operand;
-    }
-    value
-}
-
-fn is_null(value: &Value) -> bool {
-    matches!(peel_pointer(value).node.value, ValueKind::Null)
-}
-
-fn reads_binding(value: &Value, binding: BindingId) -> bool {
-    matches!(
-        &value.node.value,
-        ValueKind::Read { place, ordering: None }
-            if plain_access(&place.access) && matches!(place.kind, PlaceKind::Binding(id) if id == binding)
-    )
-}
-
-fn checks_null(value: &Value, binding: BindingId, relation: CompareOp) -> bool {
-    matches!(
-        &value.node.value,
-        ValueKind::Compare { op, left, right, .. }
-            if *op == relation && ((reads_binding(left, binding) && is_null(right))
-                || (is_null(left) && reads_binding(right, binding)))
-    )
-}
-
-fn write_binding(statement: &Span<Statement>, binding: BindingId) -> Option<&Value> {
-    match &statement.value {
-        Statement::Write {
-            place,
-            value,
-            ordering: None,
-            ..
-        } if plain_access(&place.access)
-            && matches!(place.kind, PlaceKind::Binding(id) if id == binding) =>
-        {
-            Some(value)
-        }
-        _ => None,
-    }
-}
-
 struct Cursor<'a> {
     module: &'a Module,
     binding: BindingId,
@@ -385,7 +320,7 @@ impl Cursor<'_> {
         body: &[Span<Statement>],
         builtin: &impl Fn(&Callee, Known) -> bool,
     ) -> Option<NodeId> {
-        let mut statements = code(body).peekable();
+        let mut statements = code_statements(body).peekable();
         while let Some(statement) = statements.next() {
             if let Some(value) = write_binding(statement, self.binding) {
                 self.offset = self.pointer(value)?;
@@ -498,7 +433,7 @@ impl Cursor<'_> {
         if (!append && end > self.prefix) || start >= end || end > self.count || self.offset != 0 {
             return None;
         }
-        let mut statements = code(arm(body));
+        let mut statements = code_statements(arm(body));
         let Statement::Write {
             place,
             value,
@@ -598,7 +533,7 @@ impl Cursor<'_> {
         {
             return None;
         }
-        let mut statements = code(arm(then_body)).peekable();
+        let mut statements = code_statements(arm(then_body)).peekable();
         while let Some(Span {
             value: Statement::Let(variable),
             ..
@@ -774,4 +709,22 @@ impl Cursor<'_> {
         }
         false
     }
+}
+
+fn checks_null(value: &Value, binding: BindingId, relation: CompareOp) -> bool {
+    matches!(
+        &value.node.value,
+        ValueKind::Compare { op, left, right, .. }
+            if *op == relation && ((plain_read(left) == Some(binding) && is_null(right))
+                || (is_null(left) && plain_read(right) == Some(binding)))
+    )
+}
+
+fn write_binding(statement: &Span<Statement>, binding: BindingId) -> Option<&Value> {
+    let (target, value) = binding_write(&statement.value)?;
+    (target == binding).then_some(value)
+}
+
+fn reads_binding(value: &Value, binding: BindingId) -> bool {
+    plain_read(value) == Some(binding)
 }

@@ -34,21 +34,7 @@ pub(crate) fn literals(module: &Module) -> HashMap<BindingId, Vec<u8>> {
         .iter()
         .filter_map(|global| {
             let variable = &global.value.variable;
-            let ValueKind::CodeUnits(units) = &variable.initializer.as_ref()?.node.value else {
-                return None;
-            };
-            if !variable.name.starts_with('.')
-                || !matches!(
-                    &variable.ty,
-                    Type::Array { element, .. }
-                        if matches!(**element, Type::Numeric(NumericType::Integer { width: 8, .. }))
-                )
-            {
-                return None;
-            }
-            let (0, content) = units.split_last()? else {
-                return None;
-            };
+            let content = literal_code_units(variable)?;
             let bytes = content
                 .iter()
                 .map(|unit| u8::try_from(*unit).ok())
@@ -56,6 +42,25 @@ pub(crate) fn literals(module: &Module) -> HashMap<BindingId, Vec<u8>> {
             Some((variable.id, bytes))
         })
         .collect()
+}
+
+pub(crate) fn literal_code_units(variable: &slate_parser::ir::Variable) -> Option<&[u32]> {
+    let ValueKind::CodeUnits(units) = &variable.initializer.as_ref()?.node.value else {
+        return None;
+    };
+    if !variable.name.starts_with('.')
+        || !matches!(
+            &variable.ty,
+            Type::Array { element, .. }
+                if matches!(**element, Type::Numeric(NumericType::Integer { width: 8, .. }))
+        )
+    {
+        return None;
+    }
+    let (0, content) = units.split_last()? else {
+        return None;
+    };
+    Some(content)
 }
 
 pub(crate) fn known_callees(
