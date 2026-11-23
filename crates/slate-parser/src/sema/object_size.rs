@@ -8,8 +8,26 @@ use crate::ir::{
 struct Subobject {
     start: i128,
     size: i128,
-    array: bool,
+    kind: SubobjectKind,
     flexible: bool,
+}
+
+#[derive(Clone, Copy)]
+enum SubobjectKind {
+    Scalar,
+    Array,
+    Complex,
+    ComplexComponent,
+}
+
+impl SubobjectKind {
+    fn of(ty: &Type) -> Self {
+        if matches!(ty, Type::Array { .. }) {
+            Self::Array
+        } else {
+            Self::Scalar
+        }
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -69,12 +87,24 @@ impl TypeResolver {
                 }
                 let element =
                     i128::from(self.sizeof_storage(element.clone(), false).ok()?.size_bytes);
+                if amount != 0
+                    && designation
+                        .subobject
+                        .is_some_and(|sub| matches!(sub.kind, SubobjectKind::ComplexComponent))
+                {
+                    return None;
+                }
                 designation.offset += amount * element;
                 designation.index += amount;
-                designation.subobject = designation.subobject.filter(|sub| {
-                    if sub.array {
+                designation.subobject = designation.subobject.filter(|sub| match sub.kind {
+                    SubobjectKind::Array => {
                         (sub.start..=sub.start + sub.size).contains(&designation.offset)
-                    } else {
+                    }
+                    SubobjectKind::Complex => {
+                        (amount == 0 || element == sub.size / 2)
+                            && (0..=2).contains(&designation.index)
+                    }
+                    SubobjectKind::Scalar | SubobjectKind::ComplexComponent => {
                         (amount == 0 || element == sub.size) && (0..=1).contains(&designation.index)
                     }
                 });
@@ -103,7 +133,7 @@ impl TypeResolver {
                     subobject: Some(Subobject {
                         start: 0,
                         size,
-                        array: matches!(place.ty, Type::Array { .. }),
+                        kind: SubobjectKind::of(&place.ty),
                         flexible: false,
                     }),
                     index: 0,
@@ -137,12 +167,45 @@ impl TypeResolver {
                     subobject: Some(Subobject {
                         start,
                         size: self.object_bytes(&place.ty)?,
-                        array: matches!(place.ty, Type::Array { .. }),
+                        kind: SubobjectKind::of(&place.ty),
                         flexible: at_end && self.flexible_array(&place.ty),
                     }),
                     index: 0,
                     at_end,
                 })
+            }
+            PlaceKind::ComplexPart { base, imaginary } => {
+                let mut designation = self.place_designation(base)?;
+                let size = self.object_bytes(&place.ty)?;
+                let start = designation.offset;
+                let index = i128::from(*imaginary);
+                designation.offset = start.checked_add(index * size)?;
+                if self.flavor().is_gcc() {
+                    designation.subobject = Some(Subobject {
+                        start: designation.offset,
+                        size,
+                        kind: SubobjectKind::ComplexComponent,
+                        flexible: false,
+                    });
+                    designation.index = 0;
+                } else {
+                    let complex_size = 2 * size;
+                    let end = start.checked_add(complex_size)?;
+                    designation.subobject = designation.subobject.and_then(|base| {
+                        let within_base =
+                            start >= base.start && end <= base.start.checked_add(base.size)?;
+                        (within_base || base.flexible && designation.whole.is_none()).then_some(
+                            Subobject {
+                                start,
+                                size: complex_size,
+                                kind: SubobjectKind::Complex,
+                                flexible: base.flexible,
+                            },
+                        )
+                    });
+                    designation.index = index;
+                }
+                Some(designation)
             }
             _ => None,
         }

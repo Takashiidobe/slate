@@ -80,6 +80,11 @@ rustc's optimizer resolves `p = local` and `malloc(n)` as clang `-O2` does.
 Optimizer-dependent fixtures live in `crates/slate/tests/fixtures.release/`,
 whose C oracle builds at `-O2`.
 
+For complex components, whole-object modes use the enclosing allocation
+and the real or imaginary component's byte offset. In subobject modes,
+Clang measures to the end of the complex value, and GCC measures the
+selected scalar component. The component's size comes from target storage.
+
 `__builtin_clear_padding(p)` becomes `intrinsic<void, slate.clear_padding>(p)`.
 Slate derives from the pointee layout which bytes and bit-field bits are data
 (named bit-fields and scalars; union members all count) and zeroes the rest
