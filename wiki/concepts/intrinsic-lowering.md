@@ -74,6 +74,10 @@
 - Parser `Type::Vector` uses `std::simd::Simd` for layout and intrinsic ABI.
 - Vector constructors, splats, lane reads/writes, bit casts, and integer
   arithmetic support ordinary SIMD operands around intrinsic calls.
+- Plain swizzle places load or store the selected scalar lanes through raw
+  pointers, including in packed records. A write captures the source vector
+  and destination address once, so overlapping swizzles preserve the original
+  source lanes and leave unselected lanes untouched.
 
 ## Limits
 

@@ -61,7 +61,149 @@ impl Tables<'_> {
     }
 }
 
+fn lane_index(lane: u32) -> Expr {
+    Expr::Value(rust::RustValue::U128(lane.into()))
+}
+
+fn swizzle_lane_access(address: Expr, lane: Expr, method: &str, args: Vec<Expr>) -> Expr {
+    unsafe_op(Expr::MethodCall {
+        recv: Box::new(Expr::MethodCall {
+            recv: Box::new(address),
+            method: "add".into(),
+            args: vec![lane],
+            unsafe_: rust::Unsafe(true),
+        }),
+        method: method.into(),
+        args,
+        unsafe_: rust::Unsafe(true),
+    })
+}
+
 impl FunctionLowerer<'_, '_> {
+    fn swizzle_access(
+        &mut self,
+        place: &ir::Place,
+        mutable: bool,
+    ) -> Result<Option<(Expr, Vec<Expr>)>> {
+        let (projection, index) = match &place.kind {
+            PlaceKind::Lane { base, index } => (&**base, Some(&**index)),
+            _ => (place, None),
+        };
+        let PlaceKind::Swizzle { base, lanes } = &projection.kind else {
+            return Ok(None);
+        };
+        let unsupported = || Construct::Place {
+            ir: place.to_string(),
+        };
+        let mut base = &**base;
+        let mut lanes = lanes.clone();
+        while let PlaceKind::Swizzle {
+            base: inner,
+            lanes: mapping,
+        } = &base.kind
+        {
+            for lane in &mut lanes {
+                *lane = *mapping.get(*lane as usize).ok_or_else(unsupported)?;
+            }
+            base = inner;
+        }
+
+        let element = self
+            .tables
+            .vector_element(&base.ty)
+            .ok_or_else(unsupported)?;
+        let vector = self.lower_type(&base.ty)?;
+        let element = self.lower_type(&ir::Type::Numeric(element))?;
+        let address = Expr::Cast {
+            expr: Box::new(Expr::Cast {
+                expr: Box::new(self.lower_address(base, mutable)?),
+                ty: rust::Type::Ptr {
+                    mutable,
+                    inner: Box::new(vector),
+                },
+            }),
+            ty: rust::Type::Ptr {
+                mutable,
+                inner: Box::new(element),
+            },
+        };
+        let lanes: Vec<_> = lanes.into_iter().map(lane_index).collect();
+        let lanes = match index {
+            Some(index) => vec![Expr::Index {
+                base: Box::new(Expr::ArrayLit(lanes)),
+                index: Box::new(self.lower_index(index)?),
+            }],
+            None => lanes,
+        };
+        Ok(Some((address, lanes)))
+    }
+
+    pub(super) fn lower_swizzle_read(&mut self, place: &ir::Place) -> Result<Option<Expr>> {
+        let Some((address, lanes)) = self.swizzle_access(place, false)? else {
+            return Ok(None);
+        };
+        let mut stmts = Vec::new();
+        let address = self.bind(&mut stmts, address);
+        let mut reads = lanes
+            .into_iter()
+            .map(|lane| swizzle_lane_access(address.clone(), lane, "read_unaligned", Vec::new()));
+        let result = if matches!(place.kind, PlaceKind::Lane { .. }) {
+            reads.next().ok_or_else(|| Construct::Place {
+                ir: place.to_string(),
+            })?
+        } else {
+            let ty = self.lower_type(&place.ty)?;
+            let name = self.next_temp();
+            stmts.push(Stmt::Let {
+                origin: rust::LocalOrigin::Synthetic,
+                name: name.clone(),
+                mutable: false,
+                ty: Some(ty.clone()),
+                init: Some(Expr::Call {
+                    func: Box::new(vector_constructor(&ty, "from_array")),
+                    args: vec![Expr::ArrayLit(reads.collect())],
+                    binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
+                }),
+            });
+            Expr::var(name.as_str().into())
+        };
+        Ok(Some(Expr::Block(Box::new(rust::Block {
+            stmts,
+            tail: Some(Box::new(result)),
+        }))))
+    }
+
+    pub(super) fn lower_swizzle_write(
+        &mut self,
+        place: &ir::Place,
+        value: &Expr,
+    ) -> Result<Option<Stmt>> {
+        let Some((address, lanes)) = self.swizzle_access(place, true)? else {
+            return Ok(None);
+        };
+        let mut body = Vec::new();
+        let operand = self.bind(&mut body, value.clone());
+        let address = self.bind(&mut body, address);
+        for (index, lane) in lanes.into_iter().enumerate() {
+            let value = if matches!(place.kind, PlaceKind::Lane { .. }) {
+                operand.clone()
+            } else {
+                Expr::Index {
+                    base: Box::new(operand.clone()),
+                    index: Box::new(Expr::Value(rust::RustValue::U128(index as u128))),
+                }
+            };
+            body.push(Stmt::Expr(swizzle_lane_access(
+                address.clone(),
+                lane,
+                "write_unaligned",
+                vec![value],
+            )));
+        }
+        Ok(Some(Stmt::Scope { body }))
+    }
+
     pub(super) fn lower_elementwise_abs(
         &mut self,
         value: &ir::Value,

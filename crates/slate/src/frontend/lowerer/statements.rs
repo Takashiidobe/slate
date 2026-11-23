@@ -58,6 +58,9 @@ impl FunctionLowerer<'_, '_> {
                 unsafe_: rust::Unsafe(true),
             })));
         }
+        if let Some(swizzle) = self.lower_swizzle_write(place, &value)? {
+            return Ok(swizzle);
+        }
         if let Some(lane) = self.lower_lane_write(place, &value)? {
             return Ok(lane);
         }

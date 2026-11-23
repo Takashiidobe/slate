@@ -989,6 +989,9 @@ impl FunctionLowerer<'_, '_> {
                 place,
                 ordering: None,
             } => {
+                if let Some(swizzle) = self.lower_swizzle_read(place)? {
+                    return Ok(swizzle);
+                }
                 if let Some(lane) = self.lower_lane_read(place)? {
                     return Ok(lane);
                 }
