@@ -340,7 +340,7 @@ int main(void) {
 // CHECK-NEXT:     let fixed_value: u16 = 37;
 // CHECK-NEXT:     let wide_value: u64 = 8589934591;
 // CHECK-NEXT:     let null_value: *mut () = core::ptr::null_mut::<()>();
-// CHECK-NEXT:     let null_pointer: *mut i32 = core::ptr::null_mut::<i32>();
+// CHECK-NEXT:     let null_pointer: Option<&i32> = None;
 // CHECK-NEXT:     let boolean_value: bool = true;
 // CHECK-NEXT:     let false_value: bool = false;
 // CHECK-NEXT:     let static_compound_value: i32 = 83;
@@ -369,7 +369,7 @@ int main(void) {
 // CHECK-NEXT:     let attribute_total: i32 = c23_nodiscard_value();
 // CHECK-NEXT:     let preprocessor_total: i32 = 23 + 29 + 1 + 1 + 0 + 0 + 0 + 0
 // CHECK-NEXT:         + (c23_embedded[0] as i32) + (c23_embedded[1] as i32) + (c23_embedded[2] as i32);
-// CHECK-NEXT:     let type_total: i32 = (null_value.is_null() as i32) + (null_pointer.is_null() as i32)
+// CHECK-NEXT:     let type_total: i32 = (null_value.is_null() as i32) + (null_pointer.is_none() as i32)
 // CHECK-NEXT:         + (boolean_value as i32) + (!false_value as i32) + unsafe { c23_thread_value };
 // CHECK-NEXT:     let control_total: i32 = c23_unnamed_parameter(89i32, 97i32)
 // CHECK-NEXT:         + c23_label_declaration(101i32) + c23_switch_fallthrough(1i32)

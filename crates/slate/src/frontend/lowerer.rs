@@ -37,6 +37,7 @@ mod macro_sites;
 mod names;
 mod nested;
 mod openmp;
+mod optional;
 mod padding;
 mod places;
 mod pointers;
@@ -239,6 +240,8 @@ struct FunctionLowerer<'a, 'm> {
     switch_lets: HashSet<BindingId>,
     unborrowed: HashSet<BindingId>,
     reassigned_borrows: HashSet<BindingId>,
+    returns: Option<slate_analysis::Borrow>,
+    lifted_call: Option<slate_parser::ast::NodeId>,
     views: HashMap<BindingId, (BindingId, ir::Value, ir::Value)>,
     array_aliases: HashMap<BindingId, ir::Value>,
     erased_copy: Option<(*const ir::Place, String)>,
@@ -429,6 +432,10 @@ impl Tables<'_> {
             .binding(binding)
             .and_then(|facts| facts.pointer)
             .and_then(|fact| fact.borrow)
+    }
+
+    fn return_borrow(&self, function: BindingId) -> Option<slate_analysis::Borrow> {
+        self.facts.binding(function).and_then(|facts| facts.returns)
     }
 
     fn elided_release(&self, call: slate_parser::ast::NodeId) -> bool {

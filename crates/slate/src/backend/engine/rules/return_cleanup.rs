@@ -27,6 +27,9 @@ fn copy_type(ty: &Type) -> bool {
         | Type::Unit
         | Type::Never => true,
         Type::Complex(inner) | Type::Array { elem: inner, .. } => copy_type(inner),
+        Type::Generic { name, args } if name == "Option" => {
+            matches!(args.as_slice(), [inner @ Type::Ref { .. }] if copy_type(inner))
+        }
         _ => false,
     }
 }

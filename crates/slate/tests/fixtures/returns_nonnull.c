@@ -12,13 +12,13 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: fn get(a: *mut i32) -> *mut i32 {
+// CHECK-NEXT: fn get(a: &i32) -> &i32 {
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut x: i32 = 5;
-// CHECK-NEXT:     println!("{}", unsafe { *get(core::ptr::addr_of_mut!(x)) });
+// CHECK-NEXT:     let x: i32 = 5;
+// CHECK-NEXT:     println!("{}", *get(&x));
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

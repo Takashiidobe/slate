@@ -22,15 +22,14 @@ int main(void) {
 // CHECK-NEXT:     copy + 1
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn copy_pointer(source: *mut i32) -> i32 {
-// CHECK-NEXT:     let copy: *mut i32 = source;
-// CHECK-NEXT:     (unsafe { *copy }) + (!source.is_null() as i32)
+// CHECK-NEXT: fn copy_pointer(source: &i32) -> i32 {
+// CHECK-NEXT:     let copy: &i32 = source;
+// CHECK-NEXT:     *copy + (true as i32)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut value: i32 = 10;
-// CHECK-NEXT:     (copy_param(value) != 11 || copy_pointer(core::ptr::addr_of_mut!(value)) != 11)
-// CHECK-NEXT:         as i32
+// CHECK-NEXT:     let value: i32 = 10;
+// CHECK-NEXT:     (copy_param(value) != 11 || copy_pointer(&value) != 11) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(no_mangle)]

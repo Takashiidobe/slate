@@ -421,12 +421,8 @@ int main(void) {
 // CHECK-NEXT:     if !s.is_null() { 52 } else { 0 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn fopen(path: *const i8, mode: *const i8) -> *mut () {
-// CHECK-NEXT:     if !path.is_null() && !mode.is_null() {
-// CHECK-NEXT:         48i32 as *mut ()
-// CHECK-NEXT:     } else {
-// CHECK-NEXT:         core::ptr::null_mut::<()>()
-// CHECK-NEXT:     }
+// CHECK-NEXT: fn fopen(path: *const i8, mode: &i8) -> *mut () {
+// CHECK-NEXT:     if !path.is_null() && true { 48i32 as *mut () } else { core::ptr::null_mut::<()>() }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn fputs(s: *const i8, stream: *mut ()) -> i32 {
@@ -773,10 +769,10 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     CHECK!(printf(a.as_mut_ptr() as *const i8), 51i32, 29i32);
 // CHECK-NEXT:     CHECK!(puts(a.as_mut_ptr() as *const i8), 52i32, 30i32);
-// CHECK-NEXT:     let stream: *mut () = fopen(
-// CHECK-NEXT:         a.as_mut_ptr() as *const i8,
-// CHECK-NEXT:         b.as_mut_ptr() as *const i8,
-// CHECK-NEXT:     );
+// CHECK-NEXT:     let stream: *mut () = {
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]] = a.as_mut_ptr() as *const i8;
+// CHECK-NEXT:         fopen([[T_0]], &b[0usize])
+// CHECK-NEXT:     };
 // CHECK-NEXT:     CHECK!(stream, 48i32 as *mut (), 31i32);
 // CHECK-NEXT:     CHECK!(fputs(a.as_mut_ptr() as *const i8, stream), 54i32, 32i32);
 // CHECK-NEXT:     CHECK!(

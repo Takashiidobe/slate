@@ -90,9 +90,9 @@ int main(void) {
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn field_then_check(pair: *mut pair) -> i32 {
-// CHECK-NEXT:     let value: i32 = unsafe { (*pair).second };
-// CHECK-NEXT:     if ::slate_support::opaque_is_null(pair) {
+// CHECK-NEXT: fn field_then_check(pair: &pair) -> i32 {
+// CHECK-NEXT:     let value: i32 = (*pair).second;
+// CHECK-NEXT:     if false {
 // CHECK-NEXT:         return -1;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value
@@ -106,20 +106,18 @@ int main(void) {
 // CHECK-NEXT:     total
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn store_then_check(out: *mut i32, value: i32) {
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *out = value;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     if !::slate_support::opaque_is_null(out) {
+// CHECK-NEXT: fn store_then_check(out: &mut i32, value: i32) {
+// CHECK-NEXT:     *out = value;
+// CHECK-NEXT:     if true {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *out += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn packed_then_check(wire: *mut wire) -> i32 {
-// CHECK-NEXT:     let length: i32 = unsafe { (*wire).length };
-// CHECK-NEXT:     if !::slate_support::opaque_is_null(wire) { length } else { -1 }
+// CHECK-NEXT: fn packed_then_check(wire: &wire) -> i32 {
+// CHECK-NEXT:     let length: i32 = unsafe { (*((wire as *const wire) as *mut wire)).length };
+// CHECK-NEXT:     if true { length } else { -1 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.unchecked")]
@@ -141,10 +139,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: [i32; 3] = [4, 5, 6];
-// CHECK-NEXT:     let mut pair: pair = pair { first: 7, second: 8 };
-// CHECK-NEXT:     let mut wire: wire = wire { tag: 119, length: 9 };
+// CHECK-NEXT:     let pair: pair = pair { first: 7, second: 8 };
+// CHECK-NEXT:     let wire: wire = wire { tag: 119, length: 9 };
 // CHECK-NEXT:     let mut out: i32 = 0;
-// CHECK-NEXT:     store_then_check(core::ptr::addr_of_mut!(out), 10i32);
+// CHECK-NEXT:     store_then_check(&mut out, 10i32);
 // CHECK-NEXT:     let __slate_printf_arg0 = load_then_check(unsafe { values.as_mut_ptr().add(1) });
 // CHECK-NEXT:     let __slate_printf_arg2 = index_then_check(values.as_mut_ptr() as *const i32, 3i32);
 // CHECK-NEXT:     let __slate_printf_arg5 = call_or_zero(
@@ -155,10 +153,10 @@ int main(void) {
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {} {} {} {}",
 // CHECK-NEXT:         __slate_printf_arg0,
-// CHECK-NEXT:         field_then_check(core::ptr::addr_of_mut!(pair)),
+// CHECK-NEXT:         field_then_check(&pair),
 // CHECK-NEXT:         __slate_printf_arg2,
 // CHECK-NEXT:         out,
-// CHECK-NEXT:         packed_then_check(core::ptr::addr_of_mut!(wire)),
+// CHECK-NEXT:         packed_then_check(&wire),
 // CHECK-NEXT:         __slate_printf_arg5,
 // CHECK-NEXT:         __slate_printf_arg6
 // CHECK-NEXT:     );

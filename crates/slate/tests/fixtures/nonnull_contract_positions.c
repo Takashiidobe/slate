@@ -22,8 +22,8 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: fn combine(left: &i32, scale: i32, right: &i32, optional: *mut i32) -> i32 {
-// CHECK-NEXT:     *left + scale * *right + if !optional.is_null() { unsafe { *optional } } else { 0 }
+// CHECK-NEXT: fn combine(left: &i32, scale: i32, right: &i32, optional: Option<&i32>) -> i32 {
+// CHECK-NEXT:     *left + scale * *right + if optional.is_some() { *optional.unwrap() } else { 0 }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn difference(left: &i32, scale: i32, right: &i32) -> i32 {
@@ -35,10 +35,7 @@ int main(void) {
 // CHECK-NEXT:     let right: i32 = 3;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[T_0:__t[0-9]+]] = core::ptr::null_mut::<i32>();
-// CHECK-NEXT:             combine(&left, 2i32, &right, [[T_0]])
-// CHECK-NEXT:         },
+// CHECK-NEXT:         combine(&left, 2i32, &right, None),
 // CHECK-NEXT:         difference(&left, 2i32, &right)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0

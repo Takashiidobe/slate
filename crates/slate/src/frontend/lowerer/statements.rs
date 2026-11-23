@@ -504,7 +504,7 @@ impl FunctionLowerer<'_, '_> {
                 Stmt::Return(
                     value
                         .as_ref()
-                        .map(|value| self.lower_value(value))
+                        .map(|value| self.lower_returned(value))
                         .transpose()?,
                 )
             }

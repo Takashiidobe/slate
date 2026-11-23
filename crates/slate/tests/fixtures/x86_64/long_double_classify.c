@@ -272,7 +272,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: use slate_support::strlen;
 // CHECK-EMPTY:
-// CHECK-NEXT: fn string2ld(s: *const i8, slen: u64, dp: *mut LongDouble) -> i32 {
+// CHECK-NEXT: fn string2ld(s: *const i8, slen: u64, dp: &mut LongDouble) -> i32 {
 // CHECK-NEXT:     let mut buf: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:     let mut eptr: *mut i8 = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     if slen == 0 || slen >= (core::mem::size_of::<[i8; 64]>() as u64) {
@@ -295,10 +295,8 @@ int main(void) {
 // CHECK-NEXT:     if (unsafe { *eptr as i32 }) != 0 || __slate_f80_is_fp_class(value, 3) {
 // CHECK-NEXT:         return 0;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if !dp.is_null() {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             *dp = value;
-// CHECK-NEXT:         }
+// CHECK-NEXT:     if true {
+// CHECK-NEXT:         *dp = value;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     1
 // CHECK-NEXT: }
@@ -420,14 +418,16 @@ int main(void) {
 // CHECK-NEXT:             c"".as_ptr(),
 // CHECK-NEXT:         ],
 // CHECK-NEXT:     );
-// CHECK-NEXT:     for i in 0..((core::mem::size_of::<[*const i8; 6]>() as u64)
+// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0..((core::mem::size_of::<[*const i8; 6]>() as u64)
 // CHECK-NEXT:         / (core::mem::size_of::<*const i8>() as u64)) {
 // CHECK-NEXT:         let mut d: LongDouble = LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 191]);
-// CHECK-NEXT:         let ok: i32 = string2ld(
-// CHECK-NEXT:             inputs.0[i as usize],
-// CHECK-NEXT:             unsafe { strlen(inputs.0[i as usize] as *const core::ffi::c_char) as u64 },
-// CHECK-NEXT:             core::ptr::addr_of_mut!(d),
-// CHECK-NEXT:         );
+// CHECK-NEXT:         let ok: i32 = {
+// CHECK-NEXT:             let [[T_0:__t[0-9]+]] = inputs.0[i as usize];
+// CHECK-NEXT:             let [[T_1:__t[0-9]+]] = unsafe {
+// CHECK-NEXT:                 strlen(inputs.0[i as usize] as *const core::ffi::c_char) as u64
+// CHECK-NEXT:             };
+// CHECK-NEXT:             string2ld([[T_0]], [[T_1]], &mut d)
+// CHECK-NEXT:         };
 // CHECK-NEXT:         let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);
 // CHECK-NEXT:         let mut n: i32 = 0;
 // CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = if ok != 0 {
@@ -451,11 +451,11 @@ int main(void) {
 // CHECK-NEXT:         LongDouble([0, 0, 0, 0, 0, 0, 0, 128, 255, 255]),
 // CHECK-NEXT:     ];
 // CHECK-NEXT:     let mut accepted: i32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0:__slate_break_[0-9]+]]: for i in 0..((core::mem::size_of::<[LongDouble; 5]>() as u64)
+// CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: for i in 0..((core::mem::size_of::<[LongDouble; 5]>() as u64)
 // CHECK-NEXT:         / (core::mem::size_of::<LongDouble>() as u64)) {
 // CHECK-NEXT:         accepted += {
-// CHECK-NEXT:             let [[T_0:__t[0-9]+]] = addends[i as usize];
-// CHECK-NEXT:             arOpAccumulate(&mut acc, [[T_0]])
+// CHECK-NEXT:             let [[T_2:__t[0-9]+]] = addends[i as usize];
+// CHECK-NEXT:             arOpAccumulate(&mut acc, [[T_2]])
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut out: __SlateAlign16<[i8; 64]> = __SlateAlign16([0i8; 64]);

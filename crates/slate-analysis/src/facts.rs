@@ -4,7 +4,7 @@ use crate::constant_strings::{self, ConstantString};
 use crate::counted_loops::{self, CountedLoop};
 use crate::def_use::{BindingMutability, DefUse};
 use crate::identity::{FunctionIdentity, identify};
-use crate::pointer::{self, PointerFact};
+use crate::pointer::{self, Borrow, PointerFact};
 use crate::program::{Program, ProgramBinding, UnitId};
 use foldhash::{HashMap, HashMapExt, HashSet};
 use slate_parser::ast::NodeId;
@@ -13,6 +13,7 @@ use slate_parser::ir::{BindingId, for_each_function_ref};
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct BindingFacts {
     pub pointer: Option<PointerFact>,
+    pub returns: Option<Borrow>,
     pub constant_string: Option<ConstantString>,
     pub array_alias: Option<ArrayAlias>,
     pub c_string_array: bool,
@@ -127,6 +128,9 @@ pub fn analyze(program: &Program<'_>) -> Facts {
             )
         })
         .collect();
+    for (function, borrow) in pointers.returns {
+        bindings.entry(function).or_default().returns = Some(borrow);
+    }
     let mut block_captures = HashMap::default();
     for (unit, program_unit) in program.units() {
         let module = program_unit.module;

@@ -175,7 +175,10 @@ impl FunctionLowerer<'_, '_> {
                     let initializer = initializer.clone();
                     return self.buffer(&initializer);
                 }
-                let Some(borrow) = self.borrow_of(*id).filter(|borrow| borrow.many) else {
+                let Some(borrow) = self
+                    .borrow_of(*id)
+                    .filter(|borrow| borrow.many && !borrow.nullable)
+                else {
                     return Ok(None);
                 };
                 let ir::Type::Pointer { pointee, .. } = self.tables.resolve_type(&value.ty) else {

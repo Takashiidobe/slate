@@ -69,9 +69,10 @@ int main(void) {
 // CHECK-NEXT:     (!p.is_null() && probe(p) != 0) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn either(p: *const i8, a: i32) -> i32 {
-// CHECK-NEXT:     let r: i32 = if !p.is_null() {
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = probe(p);
+// CHECK-NEXT: fn either(p: &[i8]) -> i32 {
+// CHECK-NEXT:     let a: i32 = p.len() as i32;
+// CHECK-NEXT:     let r: i32 = if true {
+// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = probe(p.as_ptr());
 // CHECK-NEXT:         [[V_0]] + a
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         -1
@@ -116,7 +117,7 @@ int main(void) {
 // CHECK-NEXT:         "{} {} {}",
 // CHECK-NEXT:         both(c"x".as_ptr()),
 // CHECK-NEXT:         both(core::ptr::null::<i8>()),
-// CHECK-NEXT:         either(c"a".as_ptr(), 2i32)
+// CHECK-NEXT:         either(&[97i8, 0i8])
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {} {} {}",

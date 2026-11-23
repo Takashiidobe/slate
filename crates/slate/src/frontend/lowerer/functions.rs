@@ -794,7 +794,7 @@ impl FunctionLowerer<'_, '_> {
         if let Some(ir::Fallthrough::Return(value)) = &function.fallthrough
             && !ends_in_return
         {
-            statements.push(Stmt::Return(Some(self.lower_value(value)?)));
+            statements.push(Stmt::Return(Some(self.lower_returned(value)?)));
         }
         let target_feature = self.tables.target_feature_attr(function)?;
         let inline = match function.semantics.inlining {
@@ -823,6 +823,13 @@ impl FunctionLowerer<'_, '_> {
         let Some(ty) = &function.return_type else {
             return Ok(None);
         };
+        self.returns = self.tables.return_borrow(function.value.id);
+        if let Some(borrow) = self.returns {
+            return self
+                .borrow_type(ty, borrow)
+                .map(Some)
+                .map_err(|e| e.used_at(Site::of(function)));
+        }
         let returns = self.tables.metadata.get(&function.id).and_then(|entries| {
             entries
                 .iter()

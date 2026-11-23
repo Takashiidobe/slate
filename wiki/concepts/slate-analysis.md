@@ -362,8 +362,25 @@ and `string_params` passes and the `SLATE_IR_POINTERS` gate were deleted in
   memory or globals, aggregates, pointer-to-integer conversions, `&p`, opaque
   calls, intrinsics, atomics, anything inside OpenMP, and every capture of a
   block literal or nested function (a by-value block capture copies the
-  pointer into the block, which can write through it later); nullable from
-  comparisons with null and null assignments.
+  pointer into the block, which can write through it later); nullable only
+  from null sources: a null assignment or return, and a null argument at a call
+  site.
+- Nullability comes from sources, never from checks (`slate-8ge7.24.20`). A
+  borrow whose class is nullable lowers as `Option<&T>`, `Option<&mut T>` or
+  `Option<&[T]>`; null is `None`, `p == NULL` is `p.is_none()`, a deref is
+  `p.unwrap()`. A check on a class with no null source folds to a constant
+  (`if (!p)` becomes `if false`), so a defensive check in a static function
+  whose callers never pass null leaves `p: &T`. `&p->f` on a nullable class
+  keeps the pointer raw: C computes the address without a deref
+  (`if (&a->b)` with `a == NULL`), and `unwrap` would panic.
+- Return lifting: a candidate's pointer return becomes `&T` / `Option<&T>`
+  under lifetime elision only. The function has exactly one tracked pointer
+  parameter P, every returned value is in P's class (P itself, `&P[i]`,
+  `P + i`) or null, P and the return are never written through, and at every
+  call site the argument's object is not stored to and not passed to a callee
+  that writes it (the caller holds a shared borrow while the result lives).
+  The returned class does not pin a lifted function's arguments. Results of a
+  non-liftable callee stay raw.
 - An `asm` statement is an opaque call over its operands, the bound gcc, clang
   and Rust's `asm!` all assume. A pointer value as an operand (`"r"(p)`,
   `"D"(dst)`) escapes, unless the template is empty (the barrier idiom
@@ -565,8 +582,8 @@ after free:
 - the copy class is the node alone, not ESCAPE/MACRO, not returned, and no
   callee parameter it reaches has FREE.
 
-Null checks are kept apart from NULLABLE until the candidates are known, so an
-owned buffer does not make a callee's parameter nullable. `Owner` is the
+A null check never sets NULLABLE, so an owned buffer's checks do not make a
+callee's parameter nullable. `Owner` is the
 extension point for `Box<T>`, `Vec<T>`, `CString` and `String`.
 
 ## Effect summaries

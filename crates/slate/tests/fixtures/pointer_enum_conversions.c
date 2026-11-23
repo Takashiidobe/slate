@@ -130,8 +130,8 @@ int main(void) {
 // CHECK-NEXT:         null.is_null() as i32,
 // CHECK-NEXT:         ((null as i64) == 0) as i32
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let from_zero: *mut i32 = core::ptr::null_mut::<i32>();
-// CHECK-NEXT:     println!("{}", from_zero.is_null() as i32);
+// CHECK-NEXT:     let from_zero: Option<&i32> = None;
+// CHECK-NEXT:     println!("{}", from_zero.is_none() as i32);
 // CHECK-NEXT:     println!("{}", !p.is_null() as i32);
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

@@ -1,7 +1,7 @@
 use super::*;
 use slate_analysis::Borrow;
 
-fn same_pointee(from: &ir::Type, to: &ir::Type) -> bool {
+pub(super) fn same_pointee(from: &ir::Type, to: &ir::Type) -> bool {
     matches!((from, to), (ir::Type::Pointer { pointee: left, .. }, ir::Type::Pointer { pointee: right, .. }) if left == right)
 }
 
@@ -12,7 +12,7 @@ pub(super) fn c_string_type() -> rust::Type {
     }
 }
 
-fn reborrow(mutable: bool, expr: Expr) -> Expr {
+pub(super) fn reborrow(mutable: bool, expr: Expr) -> Expr {
     Expr::Ref {
         mutable,
         expr: Box::new(Expr::Unary {
@@ -22,7 +22,7 @@ fn reborrow(mutable: bool, expr: Expr) -> Expr {
     }
 }
 
-fn first_element(mutable: bool, slice: Expr) -> Expr {
+pub(super) fn first_element(mutable: bool, slice: Expr) -> Expr {
     Expr::Ref {
         mutable,
         expr: Box::new(Expr::Index {
@@ -32,7 +32,7 @@ fn first_element(mutable: bool, slice: Expr) -> Expr {
     }
 }
 
-fn one_element_slice(mutable: bool, element: Expr) -> Expr {
+pub(super) fn one_element_slice(mutable: bool, element: Expr) -> Expr {
     Expr::Call {
         func: Box::new(Expr::var(
             if mutable {
@@ -210,10 +210,31 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_borrowed_place(&mut self, place: &ir::Place) -> Result<Option<Expr>> {
+        if let PlaceKind::Deref(pointer) = &place.kind
+            && let Some(borrow) = self.lifted_return(pointer)
+        {
+            let call = self.lower_lifted_call(pointer)?;
+            let call = if borrow.nullable {
+                optional::unwrap(call)
+            } else {
+                call
+            };
+            return Ok(Some(if borrow.many {
+                Expr::Index {
+                    base: Box::new(call),
+                    index: Box::new(Expr::Value(rust::RustValue::Usize(0))),
+                }
+            } else {
+                Expr::Unary {
+                    op: rust::UnaryOp::Deref(rust::Pointee::Ref),
+                    expr: Box::new(call),
+                }
+            }));
+        }
         let Some((id, borrow, index)) = self.borrowed_place(place) else {
             return Ok(None);
         };
-        let binding = Expr::var(self.binding_name(id).as_str().into());
+        let binding = self.borrowed_var(id, borrow);
         if !borrow.many {
             return Ok(Some(Expr::Unary {
                 op: rust::UnaryOp::Deref(rust::Pointee::Ref),
@@ -234,13 +255,21 @@ impl FunctionLowerer<'_, '_> {
         let rust::Type::Ptr { inner, .. } = self.lower_type(ty)? else {
             return Err(Invariant::UnprovenBorrow(ty.to_string()).into());
         };
-        Ok(rust::Type::Ref {
+        let reference = rust::Type::Ref {
             mutable: borrow.mutable,
             inner: if borrow.many {
                 Box::new(rust::Type::Slice(inner))
             } else {
                 inner
             },
+        };
+        Ok(if borrow.nullable {
+            rust::Type::Generic {
+                name: "Option".into(),
+                args: vec![reference],
+            }
+        } else {
+            reference
         })
     }
 
@@ -282,45 +311,12 @@ impl FunctionLowerer<'_, '_> {
         let Some(borrow) = self.borrow_of(*id) else {
             return Ok(None);
         };
-        let binding = Expr::var(self.binding_name(*id).as_str().into());
         let raw = self.lower_type(&value.ty)?;
-        if !borrow.many {
-            let binding = match &raw {
-                rust::Type::Ptr {
-                    mutable: true,
-                    inner,
-                } if !borrow.mutable => Expr::Cast {
-                    expr: Box::new(binding),
-                    ty: rust::Type::Ptr {
-                        mutable: false,
-                        inner: inner.clone(),
-                    },
-                },
-                _ => binding,
-            };
-            return Ok(Some(Expr::Cast {
-                expr: Box::new(binding),
-                ty: raw,
-            }));
+        if borrow.nullable {
+            return Ok(Some(self.optional_read(*id, borrow, raw)));
         }
-        let pointer = Expr::MethodCall {
-            recv: Box::new(binding),
-            method: if borrow.mutable {
-                "as_mut_ptr"
-            } else {
-                "as_ptr"
-            }
-            .into(),
-            args: Vec::new(),
-            unsafe_: rust::Unsafe(false),
-        };
-        Ok(Some(match raw {
-            rust::Type::Ptr { mutable, .. } if mutable != borrow.mutable => Expr::Cast {
-                expr: Box::new(pointer),
-                ty: raw,
-            },
-            _ => pointer,
-        }))
+        let binding = Expr::var(self.binding_name(*id).as_str().into());
+        Ok(Some(optional::raw_view(binding, borrow, raw)))
     }
 
     pub(super) fn borrowed_binding(&self, pointer: &ir::Value) -> Option<(BindingId, Borrow)> {
@@ -390,6 +386,9 @@ impl FunctionLowerer<'_, '_> {
     }
 
     pub(super) fn lower_borrow(&mut self, value: &ir::Value, target: Borrow) -> Result<Expr> {
+        if target.nullable {
+            return self.lower_optional(value, target);
+        }
         match &value.node.value {
             ValueKind::Copy { operand, .. } => self.lower_borrow(operand, target),
             ValueKind::Convert {
@@ -440,6 +439,38 @@ impl FunctionLowerer<'_, '_> {
                     },
                 length: Some(_),
             } => {
+                if let PlaceKind::Binding(id) = place.kind
+                    && let Some(bytes) = self.tables.strings.get(&id)
+                    && !target.mutable
+                    && let rust::Type::Array { elem, .. } = self.lower_type(&place.ty)?
+                    && let rust::Type::Prim(prim @ (rust::Prim::I8 | rust::Prim::U8)) = *elem
+                {
+                    let elements = bytes
+                        .iter()
+                        .map(|&byte| {
+                            let value = match prim {
+                                rust::Prim::I8 => i128::from(byte as i8),
+                                _ => i128::from(byte),
+                            };
+                            Expr::Value(rust::RustValue::TypedInt(value, prim))
+                        })
+                        .collect();
+                    let literal = Expr::Ref {
+                        mutable: false,
+                        expr: Box::new(Expr::ArrayLit(elements)),
+                    };
+                    return Ok(if target.many {
+                        literal
+                    } else {
+                        first_element(
+                            false,
+                            Expr::Unary {
+                                op: rust::UnaryOp::Deref(rust::Pointee::Ref),
+                                expr: Box::new(literal),
+                            },
+                        )
+                    });
+                }
                 let array = self.lower_place(place)?;
                 Ok(if target.many {
                     Expr::MethodCall {
@@ -457,10 +488,48 @@ impl FunctionLowerer<'_, '_> {
                     first_element(target.mutable, array)
                 })
             }
+            ValueKind::AddressOf(
+                place @ ir::Place {
+                    kind: PlaceKind::Deref(_),
+                    ..
+                },
+            ) if let Some((id, source, index)) = self.borrowed_place(place)
+                && (source.mutable || !target.mutable) =>
+            {
+                self.lower_element_borrow(id, source, index, target)
+            }
+            ValueKind::PointerOffset {
+                pointer,
+                amount,
+                subtract: false,
+                ..
+            } if let Some((id, source)) = self.borrowed_binding(pointer)
+                && source.many
+                && (source.mutable || !target.mutable)
+                && !self.packed_pointee(pointer) =>
+            {
+                self.lower_element_borrow(id, source, Some((**amount).clone()), target)
+            }
+            _ if let Some(source) = self.lifted_return(value)
+                && (source.mutable || !target.mutable) =>
+            {
+                let call = self.lower_lifted_call(value)?;
+                let call = if source.nullable {
+                    Expr::MethodCall {
+                        recv: Box::new(call),
+                        method: "unwrap".into(),
+                        args: Vec::new(),
+                        unsafe_: rust::Unsafe(false),
+                    }
+                } else {
+                    call
+                };
+                Ok(optional::convert_present(call, source, target))
+            }
             _ if let Some((id, source)) = self.borrowed_binding(value)
                 && (source.mutable || !target.mutable) =>
             {
-                let binding = Expr::var(self.binding_name(id).as_str().into());
+                let binding = self.borrowed_var(id, source);
                 if self.owned(id) && target.many {
                     return Ok(Expr::Ref {
                         mutable: target.mutable,
@@ -478,7 +547,13 @@ impl FunctionLowerer<'_, '_> {
             }
             _ if !target.many => {
                 let raw = self.lower_value(value)?;
-                Ok(unsafe_op(reborrow(target.mutable, raw)))
+                Ok(Expr::Ref {
+                    mutable: target.mutable,
+                    expr: Box::new(Expr::Unary {
+                        op: rust::UnaryOp::Deref(rust::Pointee::Raw),
+                        expr: Box::new(raw),
+                    }),
+                })
             }
             _ => Err(Invariant::UnprovenBorrow(value.to_string()).into()),
         }

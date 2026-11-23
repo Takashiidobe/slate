@@ -17,13 +17,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let null_value: *mut () = core::ptr::null_mut::<()>();
-// CHECK-NEXT:     let null_pointer: *mut i32 = core::ptr::null_mut::<i32>();
+// CHECK-NEXT:     let null_pointer: Option<&i32> = None;
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::ptr::read_volatile(core::ptr::addr_of!(null_value)).is_null() as i32
 // CHECK-NEXT:         },
-// CHECK-NEXT:         null_pointer.is_null() as i32
+// CHECK-NEXT:         null_pointer.is_none() as i32
 // CHECK-NEXT:     );
 // CHECK-NEXT:     0
 // CHECK-NEXT: }

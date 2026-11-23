@@ -363,10 +363,14 @@ int main(void) {
 // CHECK-NEXT:     sum_frame(&f)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn ternary_alloca(scratch: *mut i8, n: i32) -> i32 {
+// CHECK-NEXT: fn ternary_alloca(scratch: Option<&mut [i8]>, n: i32) -> i32 {
 // CHECK-NEXT:     let __slate_alloca_mark = __slate_alloca::Mark::new();
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut () = if !scratch.is_null() {
-// CHECK-NEXT:         scratch as *mut ()
+// CHECK-NEXT:     let mut [[SCRATCH_0:scratch_[0-9]+]] = scratch;
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: *mut () = if [[SCRATCH_0]].is_some() {
+// CHECK-NEXT:         [[SCRATCH_0]]
+// CHECK-NEXT:             .as_deref_mut()
+// CHECK-NEXT:             .map_or(core::ptr::null_mut::<i8>(), |scratch| scratch.as_mut_ptr())
+// CHECK-NEXT:             as *mut ()
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         __slate_alloca::alloca((n as u64) as usize, 16usize) as *mut ()
 // CHECK-NEXT:     };
@@ -471,11 +475,10 @@ int main(void) {
 // CHECK-NEXT:     let __slate_printf_arg0 = branch_alloca(2i32, argv.as_mut_ptr() as *const i32, 5i32);
 // CHECK-NEXT:     let __slate_printf_arg1 = branch_alloca(2i32, argv.as_mut_ptr() as *const i32, 1i32);
 // CHECK-NEXT:     println!("{} {}", __slate_printf_arg0, __slate_printf_arg1);
-// CHECK-NEXT:     let __slate_printf_arg0 = ternary_alloca(scratch.as_mut_ptr(), 8i32);
 // CHECK-NEXT:     println!(
 // CHECK-NEXT:         "{} {}",
-// CHECK-NEXT:         __slate_printf_arg0,
-// CHECK-NEXT:         ternary_alloca(core::ptr::null_mut::<i8>(), 20i32)
+// CHECK-NEXT:         ternary_alloca(Some(scratch.as_mut_slice()), 8i32),
+// CHECK-NEXT:         ternary_alloca(None, 20i32)
 // CHECK-NEXT:     );
 // CHECK-NEXT:     println!("{} {}", zero_alloca(), aligned_alloca());
 // CHECK-NEXT:     println!("{}", recursive_alloca(100i32));

@@ -141,15 +141,4 @@ impl FunctionLowerer<'_, '_> {
         };
         self.tables.elided_release(value.node.id) && self.lower_release(arguments).is_some()
     }
-
-    pub(super) fn owned_null_compare(&self, left: &ir::Value, right: &ir::Value) -> bool {
-        let null = |value: &ir::Value| {
-            matches!(
-                peel_pointer(value).node.value,
-                ValueKind::Null | ValueKind::Constant(_)
-            )
-        };
-        (null(right) && self.owned_read(left).is_some())
-            || (null(left) && self.owned_read(right).is_some())
-    }
 }

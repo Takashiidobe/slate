@@ -516,6 +516,9 @@ impl FunctionLowerer<'_, '_> {
         if let Some(read) = self.borrowed_read(value)? {
             return Ok(read);
         }
+        if let Some(call) = self.lower_lifted_call_raw(value)? {
+            return Ok(call);
+        }
         Ok(match &value.node.value {
             ValueKind::Constant(number) => {
                 let mut literal = self.lower_number(number, &value.ty)?;
@@ -1695,9 +1698,7 @@ impl FunctionLowerer<'_, '_> {
                 left,
                 right,
                 ..
-            } if self.owned_null_compare(left, right) => {
-                Expr::Value(rust::RustValue::Bool(*op == ir::CompareOp::Ne))
-            }
+            } if let Some(check) = self.null_check(*op == ir::CompareOp::Eq, left, right) => check,
             ValueKind::Compare {
                 op: op @ (ir::CompareOp::Eq | ir::CompareOp::Ne),
                 left,

@@ -5,9 +5,9 @@ use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use rayon::prelude::*;
 use slate_parser::ast::{NodeId, Span};
 use slate_parser::ir::{
-    self, BindingId, Callee, CompareOp, ConversionKind, Evaluation, MacroValues, MacroWrap,
-    NumericType, Parameters, Place, PlaceKind, SehHandler, Statement, StorageDuration, Type, Value,
-    ValueKind, Visitor,
+    self, BindingId, Callee, ConversionKind, Evaluation, MacroValues, MacroWrap, NumericType,
+    Parameters, Place, PlaceKind, SehHandler, Statement, StorageDuration, Type, Value, ValueKind,
+    Visitor,
 };
 
 const STACK_RED_ZONE: usize = 512 << 10;
@@ -36,6 +36,7 @@ pub enum PointerRole {
 pub struct Borrow {
     pub mutable: bool,
     pub many: bool,
+    pub nullable: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -61,16 +62,19 @@ pub struct Length {
 impl PointerCapability {
     fn borrow(&self) -> Option<Borrow> {
         let shared_write = self.write && !self.unique;
-        (!self.raw && !self.escape && !self.nullable && !self.free && !self.string && !shared_write)
-            .then_some(Borrow {
+        (!self.raw && !self.escape && !self.free && !self.string && !shared_write).then_some(
+            Borrow {
                 mutable: self.write,
                 many: self.offset,
-            })
+                nullable: self.nullable,
+            },
+        )
     }
 }
 
 pub(crate) struct PointerFacts {
     pub bindings: HashMap<ProgramBinding, PointerFact>,
+    pub returns: HashMap<ProgramBinding, Borrow>,
     pub elided_releases: HashSet<(UnitId, NodeId)>,
 }
 
@@ -123,6 +127,7 @@ struct CallSite {
     arguments: Vec<(usize, u32)>,
     objects: Vec<(usize, BindingId)>,
     unproven: Vec<usize>,
+    nulls: Vec<usize>,
     parts: Vec<usize>,
     pinned: bool,
     shapes: Vec<Shape>,
@@ -134,6 +139,7 @@ struct Summary {
     lengths: Vec<bool>,
     pointees: Vec<Option<Type>>,
     written: HashSet<BindingId>,
+    stored: HashSet<BindingId>,
     reads: HashMap<BindingId, u32>,
     nodes: Vec<Node>,
     unions: Vec<(u32, u32)>,
@@ -141,6 +147,8 @@ struct Summary {
     calls: Vec<CallSite>,
     results: Vec<(u32, FunctionId)>,
     returned: Option<u32>,
+    returned_from: Vec<u32>,
+    projected: Vec<u32>,
     address_taken: Vec<FunctionId>,
     leaked: HashSet<BindingId>,
     automatic: HashSet<BindingId>,
@@ -185,7 +193,6 @@ struct Ownership {
     reallocations: HashMap<BindingId, u32>,
     last_read: HashMap<BindingId, u32>,
     releases: Vec<Release>,
-    checked: Vec<u32>,
     position: u32,
     depth: u32,
     scope: u32,
@@ -275,12 +282,16 @@ struct Walker<'a, 'm> {
     calls: Vec<CallSite>,
     results: Vec<(u32, FunctionId)>,
     result_nodes: HashMap<NodeId, u32>,
+    call_results: HashSet<u32>,
     returned: Option<u32>,
+    returned_from: Vec<u32>,
+    projected: Vec<u32>,
     address_taken: Vec<FunctionId>,
     automatic: HashSet<BindingId>,
     macro_depth: u32,
     macro_values: &'m MacroValues,
     written: HashSet<BindingId>,
+    stored: HashSet<BindingId>,
     reads: HashMap<BindingId, u32>,
     allocations: HashMap<BindingId, (BindingId, Type)>,
     leaked: HashSet<BindingId>,
@@ -418,6 +429,9 @@ impl Walker<'_, '_> {
         for (node, _) in sources.roots {
             self.flag(node, flags);
         }
+        if flags & (WRITE | ESCAPE) != 0 {
+            self.stored.extend(sources.objects.iter().copied());
+        }
         if flags & ESCAPE != 0 {
             self.leaked.extend(sources.objects);
         }
@@ -549,10 +563,9 @@ impl Walker<'_, '_> {
                 self.copies.push((source, destination));
             }
             if moved
-                || matches!(
-                    self.nodes[source as usize].kind,
-                    NodeKind::Temporary | NodeKind::Return
-                )
+                || self.nodes[source as usize].kind == NodeKind::Return
+                || (self.nodes[source as usize].kind == NodeKind::Temporary
+                    && !self.call_results.contains(&source))
             {
                 self.nodes[destination as usize].raw = true;
             }
@@ -569,6 +582,84 @@ impl Walker<'_, '_> {
                 binding: object,
             }) {
                 self.derived.push((destination, object));
+            } else {
+                self.leaked.insert(object);
+            }
+        }
+    }
+
+    fn element_of(&self, value: &Value) -> Option<u32> {
+        let mut value = value;
+        while let ValueKind::Copy { operand, .. }
+        | ValueKind::Convert {
+            kind: ConversionKind::PointerCast,
+            operand,
+            ..
+        } = &value.node.value
+            && same_pointee(&operand.ty, &value.ty)
+        {
+            value = operand;
+        }
+        let pointer = match &value.node.value {
+            ValueKind::AddressOf(Place {
+                kind: PlaceKind::Deref(pointer),
+                ..
+            }) => match &pointer.node.value {
+                ValueKind::PointerOffset {
+                    pointer,
+                    subtract: false,
+                    ..
+                } => pointer,
+                #[expect(
+                    slate::sensitive_wildcard,
+                    reason = "only an offset element of a binding is a derived borrow"
+                )]
+                _ => return None,
+            },
+            ValueKind::AddressOf(Place {
+                kind: PlaceKind::Index { base, .. },
+                ..
+            }) => base,
+            ValueKind::PointerOffset {
+                pointer,
+                subtract: false,
+                ..
+            } => pointer,
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only an offset element of a binding is a derived borrow"
+            )]
+            _ => return None,
+        };
+        self.node(read_binding(pointer)?)
+    }
+
+    fn flow_return(&mut self, returned: u32, value: &Value) {
+        let sources = self.sources(value);
+        let element = self.element_of(value);
+        for (source, moved) in sources.roots {
+            if (moved && element != Some(source))
+                || !matches!(
+                    self.nodes[source as usize].kind,
+                    NodeKind::Local | NodeKind::Parameter(_)
+                )
+            {
+                self.nodes[returned as usize].raw = true;
+            }
+            self.returned_from.push(source);
+        }
+        if sources.opaque || sources.retyped {
+            self.nodes[returned as usize].raw = true;
+        }
+        if sources.null {
+            self.flag(returned, NULLABLE);
+        }
+        for object in sources.objects {
+            if self.mutable_statics.contains(&ProgramBinding {
+                unit: self.unit,
+                binding: object,
+            }) {
+                self.derived.push((returned, object));
             } else {
                 self.leaked.insert(object);
             }
@@ -706,13 +797,6 @@ impl Walker<'_, '_> {
         )
     }
 
-    fn check(&mut self, value: &Value) {
-        let roots = self.sources(value).roots;
-        self.ownership
-            .checked
-            .extend(roots.into_iter().map(|(node, _)| node));
-    }
-
     fn released(&self, statement: &Span<Statement>) -> Option<BindingId> {
         let Statement::Expression(Value {
             node:
@@ -797,6 +881,9 @@ impl Walker<'_, '_> {
     }
 
     fn proven(&self, value: &Value) -> bool {
+        if null_like(value) {
+            return true;
+        }
         match &value.node.value {
             ValueKind::Read {
                 place:
@@ -912,6 +999,7 @@ impl Walker<'_, '_> {
                 } else {
                     self.written.insert(*binding);
                     if access == Use::Write {
+                        self.stored.insert(*binding);
                         *self.ownership.writes.entry(*binding).or_default() += 1;
                     }
                 }
@@ -1011,6 +1099,19 @@ impl Walker<'_, '_> {
                     && let Some(id) = self.program.callee(self.unit, &Callee::Direct(function))
                 {
                     self.address_taken.push(id);
+                }
+                let mut base = place;
+                while let PlaceKind::Field { base: inner, .. }
+                | PlaceKind::ComplexPart { base: inner, .. } = &base.kind
+                {
+                    base = inner;
+                }
+                if !std::ptr::eq(base, place)
+                    && let PlaceKind::Deref(pointer) = &base.kind
+                {
+                    let roots = self.sources(pointer).roots;
+                    self.projected
+                        .extend(roots.into_iter().map(|(node, _)| node));
                 }
                 self.place(place, Use::Address)
             }
@@ -1119,12 +1220,11 @@ impl Walker<'_, '_> {
             }
             ValueKind::Convert { operand, .. } => {
                 self.value(operand);
-                if tracked_pointer(&operand.ty).is_some() && tracked_pointer(&value.ty).is_none() {
-                    if value.ty == Type::Bool {
-                        self.check(operand);
-                    } else {
-                        self.mark(operand, ESCAPE);
-                    }
+                if tracked_pointer(&operand.ty).is_some()
+                    && tracked_pointer(&value.ty).is_none()
+                    && value.ty != Type::Bool
+                {
+                    self.mark(operand, ESCAPE);
                 }
             }
             ValueKind::Arith { left, right, .. } | ValueKind::Logical { left, right, .. } => {
@@ -1144,19 +1244,9 @@ impl Walker<'_, '_> {
             ValueKind::Unary { operand, .. } | ValueKind::FloatClass { operand, .. } => {
                 self.value(operand)
             }
-            ValueKind::Compare {
-                op, left, right, ..
-            } => {
+            ValueKind::Compare { left, right, .. } => {
                 self.value(left);
                 self.value(right);
-                if matches!(op, CompareOp::Eq | CompareOp::Ne) {
-                    if null_like(right) {
-                        self.check(left);
-                    }
-                    if null_like(left) {
-                        self.check(right);
-                    }
-                }
             }
             ValueKind::Lane { vector, index } => {
                 self.value(vector);
@@ -1188,12 +1278,14 @@ impl Walker<'_, '_> {
             if let Some(node) = self.anonymous(BindingId(u32::MAX), &call.ty, NodeKind::Temporary) {
                 self.result_nodes.insert(call.node.id, node);
                 self.results.push((node, target));
+                self.call_results.insert(node);
             }
             let mut site = CallSite {
                 callee: target,
                 arguments: Vec::new(),
                 objects: Vec::new(),
                 unproven: Vec::new(),
+                nulls: Vec::new(),
                 parts: Vec::new(),
                 pinned: self.macro_depth > 0,
                 shapes: arguments
@@ -1226,6 +1318,9 @@ impl Walker<'_, '_> {
                     }
                 }
                 let sources = self.sources(argument);
+                if sources.null && tracked_pointer(&argument.ty).is_some() {
+                    site.nulls.push(index);
+                }
                 for (node, _) in sources.roots {
                     site.arguments.push((index, node));
                 }
@@ -1492,7 +1587,7 @@ impl Walker<'_, '_> {
             Statement::Return(Some(value)) => {
                 self.value(value);
                 match self.returned {
-                    Some(node) => self.assign(node, value),
+                    Some(node) => self.flow_return(node, value),
                     None => self.mark(value, ESCAPE),
                 }
             }
@@ -1723,12 +1818,16 @@ fn summarize(
         calls: Vec::new(),
         results: Vec::new(),
         result_nodes: HashMap::new(),
+        call_results: HashSet::new(),
         returned: None,
+        returned_from: Vec::new(),
+        projected: Vec::new(),
         address_taken: Vec::new(),
         automatic: HashSet::new(),
         macro_depth: 0,
         macro_values: &program.unit(entry.unit).module.macro_values,
         written: HashSet::new(),
+        stored: HashSet::new(),
         reads: HashMap::new(),
         allocations: HashMap::new(),
         leaked: HashSet::new(),
@@ -1780,16 +1879,12 @@ fn summarize(
             elided: walker.ownership.elided(item.binding).collect(),
         })
         .collect();
-    for &node in &walker.ownership.checked {
-        if !owned.iter().any(|owned| owned.node == node) {
-            walker.nodes[node as usize].flags |= NULLABLE;
-        }
-    }
     Some(Summary {
         parameters,
         lengths,
         pointees,
         written: walker.written,
+        stored: walker.stored,
         reads: walker.reads,
         nodes: walker.nodes,
         unions: walker.unions,
@@ -1797,6 +1892,8 @@ fn summarize(
         calls: walker.calls,
         results: walker.results,
         returned: walker.returned,
+        returned_from: walker.returned_from,
+        projected: walker.projected,
         address_taken: walker.address_taken,
         leaked: walker.leaked,
         automatic: walker.automatic,
@@ -2131,6 +2228,36 @@ pub(crate) fn analyze(
     let mut flows = Vec::new();
     let mut arguments: Vec<(u32, u32, usize, usize)> = Vec::new();
     let mut returns: Vec<(u32, u32)> = Vec::new();
+    let mut lifetimes: Vec<Option<(usize, u32)>> = vec![None; count];
+    for (function, summary) in summaries.iter().enumerate() {
+        let Some(summary) = summary else { continue };
+        let Some(node) = summary.returned else {
+            continue;
+        };
+        let offset = base[function];
+        let returned = offset + node;
+        let item = &summary.nodes[node as usize];
+        for &source in &summary.returned_from {
+            flows.push((offset + source, returned));
+            returns.push((offset + source, returned));
+            copies.push((offset + source, returned));
+        }
+        let [(&index, &parameter)] = parameters[function].iter().collect::<Vec<_>>()[..] else {
+            continue;
+        };
+        let class = classes.find(parameter);
+        if candidates[function]
+            && !item.raw
+            && !item.opaque_pointee
+            && !summary.returned_from.is_empty()
+            && summary
+                .returned_from
+                .iter()
+                .all(|&source| classes.find(offset + source) == class)
+        {
+            lifetimes[function] = Some((index, parameter));
+        }
+    }
     for (function, summary) in summaries.iter().enumerate() {
         let Some(summary) = summary else { continue };
         for &(node, callee) in &summary.results {
@@ -2177,6 +2304,11 @@ pub(crate) fn analyze(
             if !candidates[callee] {
                 continue;
             }
+            for index in &site.nulls {
+                if let Some(&parameter) = parameters[callee].get(index) {
+                    class_flags[classes.find(parameter) as usize] |= NULLABLE;
+                }
+            }
             for &(index, object) in &site.objects {
                 objects.push(((true, object.0), index));
             }
@@ -2213,14 +2345,88 @@ pub(crate) fn analyze(
         }
     }
     propagate(&mut class_flags, ESCAPE, &mut backward);
-    let mut returned = vec![false; total];
+    let mut incoming: Vec<Vec<(usize, usize)>> = vec![Vec::new(); count];
     for (function, summary) in summaries.iter().enumerate() {
         let Some(summary) = summary else { continue };
-        if let Some(node) = summary.returned {
-            returned[classes.find(base[function] + node) as usize] = true;
+        for (index, site) in summary.calls.iter().enumerate() {
+            incoming[site.callee.0 as usize].push((function, index));
+        }
+    }
+    let class_of: Vec<u32> = (0..total as u32).map(|node| classes.find(node)).collect();
+    let immutable = |node: u32| {
+        let flags = class_flags[class_of[node as usize] as usize];
+        flags & WRITE == 0 && capability(flags, false, false).borrow().is_some()
+    };
+    let mut liftable = vec![false; count];
+    for (function, lifetime) in lifetimes.iter().enumerate() {
+        let (Some((index, parameter)), Some(summary)) = (*lifetime, &summaries[function]) else {
+            continue;
+        };
+        let Some(node) = summary.returned else {
+            continue;
+        };
+        liftable[function] = immutable(base[function] + node)
+            && immutable(parameter)
+            && incoming[function].iter().all(|&(caller, site)| {
+                let Some(caller_summary) = &summaries[caller] else {
+                    return false;
+                };
+                let site = &caller_summary.calls[site];
+                let frozen = |object: BindingId| {
+                    !caller_summary.stored.contains(&object)
+                        && caller_summary.calls.iter().all(|other| {
+                            other
+                                .objects
+                                .iter()
+                                .filter(|&&(_, passed)| passed == object)
+                                .all(|&(position, _)| {
+                                    let callee = other.callee.0 as usize;
+                                    candidates[callee]
+                                        && parameters[callee]
+                                            .get(&position)
+                                            .is_some_and(|&parameter| immutable(parameter))
+                                })
+                        })
+                };
+                site.arguments
+                    .iter()
+                    .filter(|&&(position, _)| position == index)
+                    .all(|&(_, node)| immutable(base[caller] + node))
+                    && site
+                        .objects
+                        .iter()
+                        .filter(|&&(position, _)| position == index)
+                        .all(|&(_, object)| frozen(object))
+            });
+    }
+    let mut returned = vec![false; total];
+    for (function, summary) in summaries.iter().enumerate() {
+        if let Some(node) = summary.as_ref().and_then(|summary| summary.returned)
+            && !liftable[function]
+        {
+            returned[class_of[(base[function] + node) as usize] as usize] = true;
         }
     }
     reach(total, &mut backward, &mut returned);
+    for (function, summary) in summaries.iter().enumerate() {
+        let Some(summary) = summary else { continue };
+        let Some(node) = summary.returned else {
+            continue;
+        };
+        let returned = base[function] + node;
+        match lifetimes[function] {
+            Some((_, parameter)) if liftable[function] => {
+                returns.push((parameter, returned));
+                copies.push((parameter, returned));
+            }
+            Some(_) | None => raw[returned as usize] = true,
+        }
+        for &(result, callee) in &summary.results {
+            if !liftable[callee.0 as usize] {
+                raw[(base[function] + result) as usize] = true;
+            }
+        }
+    }
     let mut passed = HashSet::new();
     for (function, summary) in summaries.iter().enumerate() {
         let Some(summary) = summary else { continue };
@@ -2282,9 +2488,17 @@ pub(crate) fn analyze(
         }
     }
     propagate(&mut class_flags, NULLABLE, &mut forward);
+    for (function, summary) in summaries.iter().enumerate() {
+        let Some(summary) = summary else { continue };
+        for &node in &summary.projected {
+            let node = base[function] + node;
+            if class_flags[class_of[node as usize] as usize] & NULLABLE != 0 {
+                raw[node as usize] = true;
+            }
+        }
+    }
     reach(total, &mut copies, &mut raw);
 
-    let class_of: Vec<u32> = (0..total as u32).map(|node| classes.find(node)).collect();
     let mut class_sizes = vec![0u32; total];
     for &class in &class_of {
         class_sizes[class as usize] += 1;
@@ -2344,6 +2558,11 @@ pub(crate) fn analyze(
         for (function, summary) in summaries.iter().enumerate() {
             let Some(summary) = summary else { continue };
             let offset = base[function];
+            if let Some(node) = summary.returned
+                && raw[(offset + node) as usize]
+            {
+                unproven[class_of[(offset + node) as usize] as usize] = true;
+            }
             for site in &summary.calls {
                 let callee = site.callee.0 as usize;
                 if !candidates[callee] {
@@ -2394,13 +2613,6 @@ pub(crate) fn analyze(
         unproven
     };
 
-    let mut incoming: Vec<Vec<(usize, usize)>> = vec![Vec::new(); count];
-    for (function, summary) in summaries.iter().enumerate() {
-        let Some(summary) = summary else { continue };
-        for (index, site) in summary.calls.iter().enumerate() {
-            incoming[site.callee.0 as usize].push((function, index));
-        }
-    }
     let mut active: HashSet<(usize, usize, usize)> = HashSet::new();
     for (function, summary) in summaries.iter().enumerate() {
         let Some(summary) = summary else { continue };
@@ -2577,7 +2789,7 @@ pub(crate) fn analyze(
                     !item.opaque_pointee
                         && capability(class_flags[class], raw[node], item.byte_elements)
                             .borrow()
-                            .is_some()
+                            .is_some_and(|borrow| !borrow.nullable)
                 })
         });
         if next == active {
@@ -2606,8 +2818,33 @@ pub(crate) fn analyze(
 
     let mut facts = PointerFacts {
         bindings: HashMap::new(),
+        returns: HashMap::new(),
         elided_releases,
     };
+    for (function, summary) in summaries.iter().enumerate() {
+        let Some(summary) = summary else { continue };
+        let Some(entry) = program.function(FunctionId(function as u32)) else {
+            continue;
+        };
+        let Some(node) = summary.returned else {
+            continue;
+        };
+        let global = (base[function] + node) as usize;
+        let class = class_of[global] as usize;
+        let item = &summary.nodes[node as usize];
+        if let Some(borrow) = capability(class_flags[class], raw[global], item.byte_elements)
+            .borrow()
+            .filter(|_| liftable[function] && !unproven[class] && !item.opaque_pointee)
+        {
+            facts.returns.insert(
+                ProgramBinding {
+                    unit: entry.unit,
+                    binding: entry.function.value.id,
+                },
+                borrow,
+            );
+        }
+    }
     for (function, summary) in summaries.iter().enumerate() {
         let Some(summary) = summary else { continue };
         let Some(entry) = program.function(FunctionId(function as u32)) else {
@@ -2666,6 +2903,7 @@ pub(crate) fn analyze(
                 Some(&mutable) => Some(Borrow {
                     mutable,
                     many: true,
+                    nullable: false,
                 }),
                 None => borrow,
             };
@@ -2700,6 +2938,18 @@ pub(crate) fn analyze(
             ) else {
                 continue;
             };
+            if let Some(&borrow) = facts.returns.get(&ProgramBinding {
+                unit: definition.unit,
+                binding: definition.function.value.id,
+            }) {
+                facts.returns.insert(
+                    ProgramBinding {
+                        unit,
+                        binding: declaration.value.id,
+                    },
+                    borrow,
+                );
+            }
             let Parameters::Prototype { fixed, .. } = &declaration.value.parameters else {
                 continue;
             };
