@@ -108,31 +108,23 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn value_barrier(mut x: u32) -> u32 {
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "\n# {0:e}",
-// CHECK-NEXT:                 inlateout(reg) x as u32 => [[T_0]],
-// CHECK-NEXT:                 options(nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "\n# {0:e}",
+// CHECK-NEXT:             inlateout(reg) x => x,
+// CHECK-NEXT:             options(nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x.wrapping_mul(3)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn value_barrier_memory(mut x: u64) -> u64 {
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "\n# {0:r}",
-// CHECK-NEXT:                 inlateout(reg) x as u64 => [[T_0]],
-// CHECK-NEXT:                 options(nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u64, u64>([[T_0]] as u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "\n# {0:r}",
+// CHECK-NEXT:             inlateout(reg) x => x,
+// CHECK-NEXT:             options(nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x.wrapping_add(1)
 // CHECK-NEXT: }
@@ -172,7 +164,7 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u16;
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u16;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::arch::asm!(
 // CHECK-NEXT:                 "\n# {0:x}",
@@ -201,16 +193,12 @@ int main(void) {
 // CHECK-NEXT:         d = ((d as i32) | (x[i as usize] as i32)) as u8;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     e = d as u16;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u16;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "\n# {0:x}",
-// CHECK-NEXT:                 inlateout(reg) e as u16 => [[T_0]],
-// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         e = unsafe { core::mem::transmute::<u16, u16>([[T_0]] as u16) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "\n# {0:x}",
+// CHECK-NEXT:             inlateout(reg) e => e,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (1 & (e as i32) - 1 >> 8i32) - 1
 // CHECK-NEXT: }

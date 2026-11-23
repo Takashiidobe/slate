@@ -118,17 +118,13 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "rdm,crc,lse,dotprod")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.crc")]
 // CHECK-NEXT: unsafe extern "C-unwind" fn crc(mut c: u32, v: u8) -> u32 {
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "crc32b {0:w}, {0:w}, {1:w}",
-// CHECK-NEXT:                 inlateout(reg) c as u32 => [[T_0]],
-// CHECK-NEXT:                 in(reg) (v as u8) as u32,
-// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         c = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "crc32b {0:w}, {0:w}, {1:w}",
+// CHECK-NEXT:             inlateout(reg) c => c,
+// CHECK-NEXT:             in(reg) (v as u8) as u32,
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     c
 // CHECK-NEXT: }

@@ -54,17 +54,13 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:         mid = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:     }
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "movd {1}, {0:e}",
-// CHECK-NEXT:                 lateout(reg) [[T_1]],
-// CHECK-NEXT:                 in(xmm_reg) mid as u32,
-// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, i32>([[T_1]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "movd {1}, {0:e}",
+// CHECK-NEXT:             lateout(reg) result,
+// CHECK-NEXT:             in(xmm_reg) mid as u32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK: {{^}}}

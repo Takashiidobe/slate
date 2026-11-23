@@ -84,19 +84,15 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn try_store(lock: *mut u32, mut tid: u32, pop: *mut u64) -> u32 {
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "lock cmpxchgl {0:e}, (%rdi)\n\tjnz 1f\n\tmovq {0:r}, (%rdx)\n1:",
-// CHECK-NEXT:                 in(reg) 0u64,
-// CHECK-NEXT:                 inout("ax") tid as u32 => [[T_0]],
-// CHECK-NEXT:                 in("di") lock as u64,
-// CHECK-NEXT:                 in("dx") pop as u64,
-// CHECK-NEXT:                 options(nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         tid = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "lock cmpxchgl {0:e}, (%rdi)\n\tjnz 1f\n\tmovq {0:r}, (%rdx)\n1:",
+// CHECK-NEXT:             in(reg) 0u64,
+// CHECK-NEXT:             inout("ax") tid => tid,
+// CHECK-NEXT:             in("di") lock as u64,
+// CHECK-NEXT:             in("dx") pop as u64,
+// CHECK-NEXT:             options(nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     tid
 // CHECK-NEXT: }

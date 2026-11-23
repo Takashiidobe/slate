@@ -16,16 +16,12 @@ int main(void) {
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
 // CHECK-NEXT: fn asm_probe(mut x: i32) -> i32 {
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "\n# {0:e}",
-// CHECK-NEXT:                 inlateout(reg) x as u32 => [[T_0]],
-// CHECK-NEXT:                 options(nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "\n# {0:e}",
+// CHECK-NEXT:             inlateout(reg) x => x,
+// CHECK-NEXT:             options(nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x + 1
 // CHECK-NEXT: }

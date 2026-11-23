@@ -51,19 +51,15 @@ int main(void) {
 // CHECK-NEXT:     let mut x0: i64 = a;
 // CHECK-NEXT:     let x1: i64 = b;
 // CHECK-NEXT:     let x2: i64 = c;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "svc #0",
-// CHECK-NEXT:                 inlateout("x0") x0 as u64 => [[T_0]],
-// CHECK-NEXT:                 in("x8") x8 as u64,
-// CHECK-NEXT:                 in("x1") x1 as u64,
-// CHECK-NEXT:                 in("x2") x2 as u64,
-// CHECK-NEXT:                 options(nostack, preserves_flags),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         x0 = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "svc #0",
+// CHECK-NEXT:             inlateout("x0") x0 => x0,
+// CHECK-NEXT:             in("x8") x8 as u64,
+// CHECK-NEXT:             in("x1") x1 as u64,
+// CHECK-NEXT:             in("x2") x2 as u64,
+// CHECK-NEXT:             options(nostack, preserves_flags),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x0
 // CHECK-NEXT: }
@@ -73,34 +69,26 @@ int main(void) {
 // CHECK-NEXT: fn syscall0(number: i64) -> i64 {
 // CHECK-NEXT:     let x8: i64 = number;
 // CHECK-NEXT:     let mut x0: i64 = 0;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "svc #0",
-// CHECK-NEXT:                 lateout("x0") [[T_0]],
-// CHECK-NEXT:                 in("x8") x8 as u64,
-// CHECK-NEXT:                 options(nostack, preserves_flags),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         x0 = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "svc #0",
+// CHECK-NEXT:             lateout("x0") x0,
+// CHECK-NEXT:             in("x8") x8 as u64,
+// CHECK-NEXT:             options(nostack, preserves_flags),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn add_w1(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let mut w: i32 = a;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "add w1, w1, {0:w}",
-// CHECK-NEXT:                 in(reg) b as u32,
-// CHECK-NEXT:                 inlateout("x1") w as u32 => [[T_0]],
-// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         w = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "add w1, w1, {0:w}",
+// CHECK-NEXT:             in(reg) b as u32,
+// CHECK-NEXT:             inlateout("x1") w => w,
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     w
 // CHECK-NEXT: }
@@ -108,7 +96,7 @@ int main(void) {
 // CHECK-NEXT: fn double_d3(a: f64) -> f64 {
 // CHECK-NEXT:     let mut d: f64 = a;
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u64;
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::arch::asm!(
 // CHECK-NEXT:                 "fadd d3, d3, d3",

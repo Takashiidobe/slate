@@ -21,30 +21,22 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN armv7-unknown-linux-gnueabihf
 // CHECK-LABEL: {{^}}fn inc_via_r(mut x: i32) -> i32 {
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "add {0}, {0}, #1",
-// CHECK-NEXT:                 inlateout(reg) x as u32 => [[T_0]],
-// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "add {0}, {0}, #1",
+// CHECK-NEXT:             inlateout(reg) x => x,
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn inc_via_l(mut x: i32) -> i32 {
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "add {0}, {0}, #1",
-// CHECK-NEXT:                 inlateout(reg) x as u32 => [[T_0]],
-// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "add {0}, {0}, #1",
+// CHECK-NEXT:             inlateout(reg) x => x,
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK: {{^}}}

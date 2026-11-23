@@ -62,18 +62,14 @@ int main(void) {
 // CHECK-NEXT: fn loop_label(mut n: i32) -> i32 {
 // CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u32 = 0;
 // CHECK-NEXT:     let mut acc: i32 = 0;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "mov ecx, [{0}]\nxor eax, eax\n2:\nadd eax, ecx\ndec ecx\njnz 2b\nmov [{1}], eax",
-// CHECK-NEXT:                 in(reg) core::ptr::addr_of!(n),
-// CHECK-NEXT:                 in(reg) core::ptr::addr_of_mut!(acc),
-// CHECK-NEXT:                 out("ax") [[T_0]],
-// CHECK-NEXT:                 out("cx") _,
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov ecx, [{0}]\nxor eax, eax\n2:\nadd eax, ecx\ndec ecx\njnz 2b\nmov [{1}], eax",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!(n),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(acc),
+// CHECK-NEXT:             out("ax") [[V_0]],
+// CHECK-NEXT:             out("cx") _,
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     acc
 // CHECK-NEXT: }
@@ -81,17 +77,13 @@ int main(void) {
 // CHECK-NEXT: fn forward(mut v: i32) -> i32 {
 // CHECK-NEXT:     let mut [[V_0]]: u32 = 0;
 // CHECK-NEXT:     let mut out: i32 = 0;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "mov eax, [{0}]\ntest eax, eax\njz 2f\nmov eax, 100\n2:\nmov [{1}], eax",
-// CHECK-NEXT:                 in(reg) core::ptr::addr_of!(v),
-// CHECK-NEXT:                 in(reg) core::ptr::addr_of_mut!(out),
-// CHECK-NEXT:                 out("ax") [[T_0]],
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov eax, [{0}]\ntest eax, eax\njz 2f\nmov eax, 100\n2:\nmov [{1}], eax",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!(v),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(out),
+// CHECK-NEXT:             out("ax") [[V_0]],
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
 // CHECK-NEXT: }
@@ -99,30 +91,20 @@ int main(void) {
 // CHECK-NEXT: fn two_blocks(mut n: i32) -> i32 {
 // CHECK-NEXT:     let mut [[V_0]]: u32 = 0;
 // CHECK-NEXT:     let mut out: i32 = 0;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "mov ecx, [{0}]\nxor eax, eax\n2:\ninc eax\ndec ecx\njnz 2b\nmov [{1}], eax",
-// CHECK-NEXT:                 in(reg) core::ptr::addr_of!(n),
-// CHECK-NEXT:                 in(reg) core::ptr::addr_of_mut!(out),
-// CHECK-NEXT:                 out("ax") [[T_0]],
-// CHECK-NEXT:                 out("cx") _,
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "mov ecx, 3\n2:\ninc dword ptr [{0}]\ndec ecx\njnz 2b",
-// CHECK-NEXT:                 in(reg) core::ptr::addr_of_mut!(out),
-// CHECK-NEXT:                 lateout("ax") [[T_1]],
-// CHECK-NEXT:                 out("cx") _,
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         [[V_0]] = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov ecx, [{0}]\nxor eax, eax\n2:\ninc eax\ndec ecx\njnz 2b\nmov [{1}], eax",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of!(n),
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(out),
+// CHECK-NEXT:             out("ax") [[V_0]],
+// CHECK-NEXT:             out("cx") _,
+// CHECK-NEXT:         );
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov ecx, 3\n2:\ninc dword ptr [{0}]\ndec ecx\njnz 2b",
+// CHECK-NEXT:             in(reg) core::ptr::addr_of_mut!(out),
+// CHECK-NEXT:             lateout("ax") [[V_0]],
+// CHECK-NEXT:             out("cx") _,
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     out
 // CHECK-NEXT: }

@@ -202,21 +202,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn modifiers(pointer: &i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "mov {0}, #15\n\tmovw r1, #9029\n\tadd {0}, {0}, r1\n\tldr r1, [{3}]\n\tadd {0}, {0}, r1\n\t@ {4}\n@ {1}\n@ {2}",
-// CHECK-NEXT:                 out(reg) [[T_0]],
-// CHECK-NEXT:                 const -16i32,
-// CHECK-NEXT:                 const 74565i32,
-// CHECK-NEXT:                 in(reg) (pointer as *const i32) as *mut i32,
-// CHECK-NEXT:                 sym counter,
-// CHECK-NEXT:                 out("r1") _,
-// CHECK-NEXT:                 options(pure, readonly, nostack, preserves_flags),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         result = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov {0}, #15\n\tmovw r1, #9029\n\tadd {0}, {0}, r1\n\tldr r1, [{3}]\n\tadd {0}, {0}, r1\n\t@ {4}\n@ {1}\n@ {2}",
+// CHECK-NEXT:             out(reg) result,
+// CHECK-NEXT:             const -16i32,
+// CHECK-NEXT:             const 74565i32,
+// CHECK-NEXT:             in(reg) (pointer as *const i32) as *mut i32,
+// CHECK-NEXT:             sym counter,
+// CHECK-NEXT:             out("r1") _,
+// CHECK-NEXT:             options(pure, readonly, nostack, preserves_flags),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }

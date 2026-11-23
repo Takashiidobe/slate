@@ -111,34 +111,26 @@ int main(int argc, char **argv) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn rip_rel__const1(mut p: *mut ()) -> *mut () {
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "leaq {1}(%rip), {0:r}",
-// CHECK-NEXT:                 lateout(reg) [[T_0]],
-// CHECK-NEXT:                 sym page,
-// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         p = unsafe { core::mem::transmute::<u64, *mut ()>([[T_0]] as u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "leaq {1}(%rip), {0:r}",
+// CHECK-NEXT:             lateout(reg) p,
+// CHECK-NEXT:             sym page,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     p
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn rip_rel__const2(mut p: *mut ()) -> *mut () {
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "leaq {1}+3(%rip), {0:r}",
-// CHECK-NEXT:                 lateout(reg) [[T_0]],
-// CHECK-NEXT:                 sym table,
-// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         p = unsafe { core::mem::transmute::<u64, *mut ()>([[T_0]] as u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "leaq {1}+3(%rip), {0:r}",
+// CHECK-NEXT:             lateout(reg) p,
+// CHECK-NEXT:             sym table,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     p
 // CHECK-NEXT: }
@@ -146,17 +138,13 @@ int main(int argc, char **argv) {
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: fn rip_rel_after__const3(mut p: *mut ()) -> *mut i8 {
 // CHECK-NEXT:     let original: *mut () = p;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "leaq {1}+1(%rip), {0:r}",
-// CHECK-NEXT:                 lateout(reg) [[T_0]],
-// CHECK-NEXT:                 sym table,
-// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         p = unsafe { core::mem::transmute::<u64, *mut ()>([[T_0]] as u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "leaq {1}+1(%rip), {0:r}",
+// CHECK-NEXT:             lateout(reg) p,
+// CHECK-NEXT:             sym table,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     unsafe { (p as *mut i8).offset(((original == p) as i32) as isize) }
 // CHECK-NEXT: }

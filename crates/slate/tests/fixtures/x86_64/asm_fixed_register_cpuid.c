@@ -15,24 +15,16 @@ int main(void) { return cpuid_leaf1_nonzero(); }
 // CHECK-NEXT:     let mut f1a: u32 = 0;
 // CHECK-NEXT:     let mut f1c: u32 = 0;
 // CHECK-NEXT:     let mut f1d: u32 = 0;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "mov %rbx, {0:r}\ncpuid\n\t\nmov {0:r}, %rbx",
-// CHECK-NEXT:                 out(reg) _,
-// CHECK-NEXT:                 lateout("ax") [[T_0]],
-// CHECK-NEXT:                 lateout("cx") [[T_1]],
-// CHECK-NEXT:                 lateout("dx") [[T_2]],
-// CHECK-NEXT:                 in("ax") 1i32 as u32,
-// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         f1a = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
-// CHECK-NEXT:         f1c = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
-// CHECK-NEXT:         f1d = unsafe { core::mem::transmute::<u32, u32>([[T_2]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov %rbx, {0:r}\ncpuid\n\t\nmov {0:r}, %rbx",
+// CHECK-NEXT:             out(reg) _,
+// CHECK-NEXT:             lateout("ax") f1a,
+// CHECK-NEXT:             lateout("cx") f1c,
+// CHECK-NEXT:             lateout("dx") f1d,
+// CHECK-NEXT:             in("ax") 1i32 as u32,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (f1c | f1d != 0) as i32
 // CHECK: {{^}}}

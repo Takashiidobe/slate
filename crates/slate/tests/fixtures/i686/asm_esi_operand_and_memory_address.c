@@ -76,34 +76,26 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn sum_via_esi(mut a: u32, b: u32) -> u32 {
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "mov %esi, {2:e}\nmov {1:e}, %esi\naddl %esi, {0:e}\nmov {2:e}, %esi",
-// CHECK-NEXT:                 inlateout(reg) a as u32 => [[T_0]],
-// CHECK-NEXT:                 in(reg) b as u32,
-// CHECK-NEXT:                 out(reg) _,
-// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         a = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov %esi, {2:e}\nmov {1:e}, %esi\naddl %esi, {0:e}\nmov {2:e}, %esi",
+// CHECK-NEXT:             inlateout(reg) a => a,
+// CHECK-NEXT:             in(reg) b as u32,
+// CHECK-NEXT:             out(reg) _,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     a
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn clobber_esi(mut x: u32) -> u32 {
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "mov %esi, {1:e}\nmovl {0:e}, %esi\n\tshll $2, %esi\n\tmovl %esi, {0:e}\nmov {1:e}, %esi",
-// CHECK-NEXT:                 inlateout(reg) x as u32 => [[T_0]],
-// CHECK-NEXT:                 out(reg) _,
-// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov %esi, {1:e}\nmovl {0:e}, %esi\n\tshll $2, %esi\n\tmovl %esi, {0:e}\nmov {1:e}, %esi",
+// CHECK-NEXT:             inlateout(reg) x => x,
+// CHECK-NEXT:             out(reg) _,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }

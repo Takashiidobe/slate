@@ -1574,6 +1574,52 @@ impl FunctionLowerer<'_, '_> {
         }))
     }
 
+    fn asm_direct_output(
+        &mut self,
+        place: &ir::Place,
+        reg: &rust::AsmReg,
+        scratch: &rust::Type,
+    ) -> Result<Option<Expr>> {
+        let PlaceKind::Binding(binding) = place.kind else {
+            return Ok(None);
+        };
+        if place.access.volatile
+            || self.tables.statics.contains(&binding)
+            || self.tables.support_globals.contains_key(&binding)
+            || matches!(reg, rust::AsmReg::Class(class) if !matches!(class.as_str(), "reg" | "reg_abcd"))
+        {
+            return Ok(None);
+        }
+        let ty = self.lower_type(&place.ty)?;
+        let bits = match ty {
+            rust::Type::Prim(Prim::I16 | Prim::U16) => rust::Type::Prim(Prim::U16),
+            rust::Type::Prim(Prim::I32 | Prim::U32) => rust::Type::Prim(Prim::U32),
+            rust::Type::Prim(Prim::I64 | Prim::U64) => rust::Type::Prim(Prim::U64),
+            rust::Type::Ptr { .. } | rust::Type::Prim(Prim::Isize | Prim::Usize) => {
+                self.asm_bits_type(&place.ty)?
+            }
+            _ => return Ok(None),
+        };
+        if bits != *scratch
+            || (bits == rust::Type::Prim(Prim::U64)
+                && matches!(
+                    self.tables.target.family,
+                    TargetFamily::X86 | TargetFamily::Arm32
+                ))
+        {
+            return Ok(None);
+        }
+        let output = self.lower_place(place)?;
+        Ok(matches!(
+            output,
+            Expr::Var {
+                unsafe_: rust::Unsafe(false),
+                ..
+            }
+        )
+        .then_some(output))
+    }
+
     fn asm_encode(&mut self, value: Expr, ty: &ir::Type, scratch: &rust::Type) -> Result<Expr> {
         let bits = self.asm_bits_type(ty)?;
         let source = self.lower_type(ty)?;
@@ -2065,6 +2111,7 @@ impl FunctionLowerer<'_, '_> {
         }
         let mut operands = Vec::new();
         let mut explicit = Vec::new();
+        let mut direct_outputs = BTreeSet::new();
         let mut slots = Vec::new();
         let mut flags_inputs = Vec::new();
         let mut saved_rbx = None;
@@ -2564,17 +2611,33 @@ impl FunctionLowerer<'_, '_> {
                 }
                 ir::AsmOperandKind::Out { place, .. } | ir::AsmOperandKind::InOut { place, .. } => {
                     let ty = self.asm_scratch_type(operand)?;
-                    let temp = self.next_temp();
-                    prefix.push(Stmt::Let {
-                        origin: rust::LocalOrigin::Synthetic,
-                        name: temp.clone(),
-                        mutable: false,
-                        ty: Some(ty.clone()),
-                        init: None,
-                    });
-                    let output = Expr::var(temp.as_str().into());
-                    let decoded = self.asm_decode(output.clone(), &place.ty)?;
-                    writebacks.push(self.lower_assignment(place, decoded)?);
+                    let direct = if labels == 0
+                        && writebacks.is_empty()
+                        && reserved.is_none()
+                        && (!explicit_class || pinned.is_some())
+                    {
+                        self.asm_direct_output(place, &reg, &ty)?
+                    } else {
+                        None
+                    };
+                    let output = if let Some(output @ Expr::Var { name, .. }) = direct
+                        && direct_outputs.insert(name)
+                    {
+                        output
+                    } else {
+                        let temp = self.next_temp();
+                        prefix.push(Stmt::Let {
+                            origin: rust::LocalOrigin::Synthetic,
+                            name: temp.clone(),
+                            mutable: false,
+                            ty: Some(ty.clone()),
+                            init: None,
+                        });
+                        let output = Expr::var(temp.as_str().into());
+                        let decoded = self.asm_decode(output.clone(), &place.ty)?;
+                        writebacks.push(self.lower_assignment(place, decoded)?);
+                        output
+                    };
                     let late = matches!(
                         operand.direction(),
                         ir::AsmDirection::LateOut | ir::AsmDirection::InLateOut
@@ -2974,6 +3037,15 @@ impl FunctionLowerer<'_, '_> {
             template.wrap(save, restore);
         }
         operands.extend(explicit);
+        for operand in &mut operands {
+            if let rust::AsmOperand::InOut { input, output, .. } = operand
+                && let Expr::Var { name, .. } = output
+                && direct_outputs.contains(name)
+                && matches!(input, Expr::Cast { expr, .. } if **expr == *output)
+            {
+                *input = output.clone();
+            }
+        }
         self.dependencies.asm_unwind |= options.contains(&rust::AsmOption::MayUnwind);
         self.dependencies.asm_goto_with_outputs |= labels != 0
             && operands.iter().any(|operand| {

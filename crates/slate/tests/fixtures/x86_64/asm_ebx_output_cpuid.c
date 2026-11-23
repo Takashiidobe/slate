@@ -18,22 +18,20 @@ int main(void) { return cpuid_leaf7_ebx_nonzero(); }
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u32;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::arch::asm!(
 // CHECK-NEXT:                 "xchg %rbx, {0:r}\ncpuid\nxchg %rbx, {0:r}",
-// CHECK-NEXT:                 out(reg) [[T_1]],
-// CHECK-NEXT:                 lateout("ax") [[T_0]],
-// CHECK-NEXT:                 lateout("cx") [[T_2]],
+// CHECK-NEXT:                 out(reg) [[T_0]],
+// CHECK-NEXT:                 lateout("ax") f7a,
+// CHECK-NEXT:                 lateout("cx") [[T_1]],
 // CHECK-NEXT:                 in("ax") 7i32 as u32,
 // CHECK-NEXT:                 in("cx") 0i32 as u32,
 // CHECK-NEXT:                 out("dx") _,
 // CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:             );
 // CHECK-NEXT:         }
-// CHECK-NEXT:         f7a = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
-// CHECK-NEXT:         f7b = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
-// CHECK-NEXT:         f7c = unsafe { core::mem::transmute::<u32, u32>([[T_2]] as u32) };
+// CHECK-NEXT:         f7b = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         f7c = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (f7b != 0 || f7a != 0 || f7c != 0) as i32
 // CHECK: {{^}}}

@@ -27,16 +27,12 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn add_via_asm(mut x: i32) -> i32 {
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "addl $5, {0:e}",
-// CHECK-NEXT:                 inlateout(reg) x as u32 => [[T_0]],
-// CHECK-NEXT:                 options(nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         x = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "addl $5, {0:e}",
+// CHECK-NEXT:             inlateout(reg) x => x,
+// CHECK-NEXT:             options(nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
@@ -46,24 +42,22 @@ int main(void) {
 // CHECK-NEXT:     let mut ebx: u32 = 0;
 // CHECK-NEXT:     let mut ecx: u32 = 0;
 // CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u32;
+// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u32;
-// CHECK-NEXT:         let [[T_2:__t[0-9]+]]: u32;
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             core::arch::asm!(
 // CHECK-NEXT:                 "xchg %rbx, {0:r}\ncpuid\nxchg %rbx, {0:r}",
-// CHECK-NEXT:                 out(reg) [[T_1]],
-// CHECK-NEXT:                 lateout("ax") [[T_0]],
-// CHECK-NEXT:                 lateout("cx") [[T_2]],
+// CHECK-NEXT:                 out(reg) [[T_0]],
+// CHECK-NEXT:                 lateout("ax") eax,
+// CHECK-NEXT:                 lateout("cx") [[T_1]],
 // CHECK-NEXT:                 in("ax") 7i32 as u32,
 // CHECK-NEXT:                 in("cx") 0i32 as u32,
 // CHECK-NEXT:                 out("dx") _,
 // CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
 // CHECK-NEXT:             );
 // CHECK-NEXT:         }
-// CHECK-NEXT:         eax = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
-// CHECK-NEXT:         ebx = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
-// CHECK-NEXT:         ecx = unsafe { core::mem::transmute::<u32, u32>([[T_2]] as u32) };
+// CHECK-NEXT:         ebx = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:         ecx = unsafe { core::mem::transmute::<u32, u32>([[T_1]] as u32) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (ebx != 0 || eax != 0 || ecx != 0) as u32
 // CHECK-NEXT: }

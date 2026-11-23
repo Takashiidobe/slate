@@ -27,22 +27,16 @@ int main(void) {
 // CHECK-NEXT: unsafe fn all_lanes_faulted_in() -> i32 {
 // CHECK-NEXT:     let mut active: i64 = 0;
 // CHECK-NEXT:     let mut total: i64 = 0;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:         let [[T_1:__t[0-9]+]]: u64;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "setffr\n\trdffr p2.b\n\tptrue p4.b\n\tcntp {0:x}, p4, p2.b\n\tcntp {1:x}, p4, p4.b",
-// CHECK-NEXT:                 lateout(reg) [[T_0]],
-// CHECK-NEXT:                 lateout(reg) [[T_1]],
-// CHECK-NEXT:                 out("p2") _,
-// CHECK-NEXT:                 out("p4") _,
-// CHECK-NEXT:                 out("ffr") _,
-// CHECK-NEXT:                 options(nomem, nostack, preserves_flags),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         active = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
-// CHECK-NEXT:         total = unsafe { core::mem::transmute::<u64, i64>([[T_1]] as u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "setffr\n\trdffr p2.b\n\tptrue p4.b\n\tcntp {0:x}, p4, p2.b\n\tcntp {1:x}, p4, p4.b",
+// CHECK-NEXT:             lateout(reg) active,
+// CHECK-NEXT:             lateout(reg) total,
+// CHECK-NEXT:             out("p2") _,
+// CHECK-NEXT:             out("p4") _,
+// CHECK-NEXT:             out("ffr") _,
+// CHECK-NEXT:             options(nomem, nostack, preserves_flags),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (active == total) as i32
 // CHECK-NEXT: }

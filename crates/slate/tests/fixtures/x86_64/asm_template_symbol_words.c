@@ -42,21 +42,15 @@ int main(void) {
 // CHECK-NEXT: static mut counter: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: fn movsb(mut dst: *mut (), mut src: *const (), mut n: u64) {
-// CHECK-NEXT:     let [[T_0:__t[0-9]+]]: u64;
-// CHECK-NEXT:     let [[T_1:__t[0-9]+]]: u64;
-// CHECK-NEXT:     let [[T_2:__t[0-9]+]]: u64;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "rep movsb",
-// CHECK-NEXT:             inlateout("di") dst as u64 => [[T_0]],
-// CHECK-NEXT:             inlateout("si") src as u64 => [[T_1]],
-// CHECK-NEXT:             inlateout("cx") n as u64 => [[T_2]],
+// CHECK-NEXT:             inlateout("di") dst => dst,
+// CHECK-NEXT:             inlateout("si") src => src,
+// CHECK-NEXT:             inlateout("cx") n => n,
 // CHECK-NEXT:             options(nostack, att_syntax),
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
-// CHECK-NEXT:     dst = unsafe { core::mem::transmute::<u64, *mut ()>([[T_0]] as u64) };
-// CHECK-NEXT:     src = unsafe { core::mem::transmute::<u64, *const ()>([[T_1]] as u64) };
-// CHECK-NEXT:     n = unsafe { core::mem::transmute::<u64, u64>([[T_2]] as u64) };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn incl(p: &mut i32) {
@@ -81,16 +75,12 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn read_ds() -> u16 {
 // CHECK-NEXT:     let mut v: u16 = 0;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u16;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "movw %ds,{0:x}",
-// CHECK-NEXT:                 lateout(reg) [[T_0]],
-// CHECK-NEXT:                 options(pure, nomem, nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         v = unsafe { core::mem::transmute::<u16, u16>([[T_0]] as u16) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "movw %ds,{0:x}",
+// CHECK-NEXT:             lateout(reg) v,
+// CHECK-NEXT:             options(pure, nomem, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
@@ -98,7 +88,7 @@ int main(void) {
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut src: [i8; 6] = [104, 101, 108, 108, 111, 0];
 // CHECK-NEXT:     let mut dst: [i8; 6] = {
-// CHECK-NEXT:         let mut [[T_0]]: [i8; 6] = unsafe { core::mem::zeroed() };
+// CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: [i8; 6] = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]][0] = 0i8;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };

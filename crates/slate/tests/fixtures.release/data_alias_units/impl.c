@@ -56,16 +56,12 @@ int read_sbox_memory(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: pub fn read_sbox_memory() -> i32 {
 // CHECK-NEXT:     let mut value: u32 = 0;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "movzbl crypto_sbox(%rip), {0:e}",
-// CHECK-NEXT:                 lateout(reg) [[T_0]],
-// CHECK-NEXT:                 options(pure, readonly, nostack, att_syntax),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, u32>([[T_0]] as u32) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "movzbl crypto_sbox(%rip), {0:e}",
+// CHECK-NEXT:             lateout(reg) value,
+// CHECK-NEXT:             options(pure, readonly, nostack, att_syntax),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     value as i32
 // CHECK-NEXT: }

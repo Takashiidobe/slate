@@ -73,19 +73,15 @@ int main(void) {
 // CHECK-NEXT: fn read_x19(value: i64, other: i64) -> i64 {
 // CHECK-NEXT:     let reserved: i64 = value;
 // CHECK-NEXT:     let mut result: i64 = 0;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "mov {3:x}, x19\nmov x19, {1:x}\nadd {0:x}, x19, {2:x}\nmov x19, {3:x}",
-// CHECK-NEXT:                 lateout(reg) [[T_0]],
-// CHECK-NEXT:                 in(reg) reserved as u64,
-// CHECK-NEXT:                 in(reg) other as u64,
-// CHECK-NEXT:                 out(reg) _,
-// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov {3:x}, x19\nmov x19, {1:x}\nadd {0:x}, x19, {2:x}\nmov x19, {3:x}",
+// CHECK-NEXT:             lateout(reg) result,
+// CHECK-NEXT:             in(reg) reserved as u64,
+// CHECK-NEXT:             in(reg) other as u64,
+// CHECK-NEXT:             out(reg) _,
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
@@ -145,20 +141,16 @@ int main(void) {
 // CHECK-NEXT:     let low: i64 = left;
 // CHECK-NEXT:     let high: i64 = right;
 // CHECK-NEXT:     let mut result: i64 = 0;
-// CHECK-NEXT:     {
-// CHECK-NEXT:         let [[T_0]]: u64;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "mov {4:x}, x29\nmov x29, {2:x}\nmov {3:x}, x19\nmov x19, {1:x}\nadd {0:x}, x19, x29\nmov x19, {3:x}\nmov x29, {4:x}",
-// CHECK-NEXT:                 out(reg) [[T_0]],
-// CHECK-NEXT:                 in(reg) low as u64,
-// CHECK-NEXT:                 in(reg) high as u64,
-// CHECK-NEXT:                 out(reg) _,
-// CHECK-NEXT:                 out(reg) _,
-// CHECK-NEXT:                 options(pure, nomem, nostack, preserves_flags),
-// CHECK-NEXT:             );
-// CHECK-NEXT:         }
-// CHECK-NEXT:         result = unsafe { core::mem::transmute::<u64, i64>([[T_0]] as u64) };
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         core::arch::asm!(
+// CHECK-NEXT:             "mov {4:x}, x29\nmov x29, {2:x}\nmov {3:x}, x19\nmov x19, {1:x}\nadd {0:x}, x19, x29\nmov x19, {3:x}\nmov x29, {4:x}",
+// CHECK-NEXT:             out(reg) result,
+// CHECK-NEXT:             in(reg) low as u64,
+// CHECK-NEXT:             in(reg) high as u64,
+// CHECK-NEXT:             out(reg) _,
+// CHECK-NEXT:             out(reg) _,
+// CHECK-NEXT:             options(pure, nomem, nostack, preserves_flags),
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
