@@ -2,7 +2,6 @@ mod arena;
 pub mod macro_templates;
 mod prelude;
 pub(crate) use prelude::{char_prim, long_prim};
-mod printf_format;
 mod rules;
 pub mod shadow;
 mod unsafe_placement;
@@ -110,7 +109,11 @@ pub(in crate::backend) fn apply_local(
     rules::literal_casts::bare_initializers(&mut program.items);
     let place_parameters = macro_templates::finish_holes(program);
     if program.runtime.has_std() {
-        printf_format::rewrite(program, target);
+        crate::frontend::lowerer::printf::finish(program, target);
+        macro_templates::each_body(
+            &mut program.items,
+            &mut crate::frontend::lowerer::printf::clear_formats,
+        );
     }
     let passes = [RuleRegistry::build(rules::unsafe_registry())];
     for item in &mut program.items {

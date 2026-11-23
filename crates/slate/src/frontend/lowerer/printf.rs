@@ -17,12 +17,31 @@ struct RewriteState {
     println_ok: bool,
 }
 
-struct FormatPlan {
-    macro_name: &'static str,
-    format: String,
+pub(super) fn record_format(expr: &mut Expr, format: &slate_analysis::PrintfFormat) {
+    if let Expr::Call {
+        args,
+        binding: CallBinding::Direct { printf_format, .. },
+        ..
+    } = expr
+        && args.first().and_then(literal_c_string) == Some(format.literal.as_bytes())
+    {
+        *printf_format = Some(Box::new(format.clone()));
+    }
 }
 
-fn literal_c_string(expr: &Expr) -> Option<Vec<u8>> {
+pub(crate) fn clear_formats(body: &mut [Stmt]) {
+    crate::backend::engine::macro_templates::visit_exprs_mut(body, &mut |expr| {
+        if let Expr::Call {
+            binding: CallBinding::Direct { printf_format, .. },
+            ..
+        } = expr
+        {
+            *printf_format = None;
+        }
+    });
+}
+
+fn literal_c_string(expr: &Expr) -> Option<&[u8]> {
     let mut current = expr;
     loop {
         match current {
@@ -31,10 +50,10 @@ fn literal_c_string(expr: &Expr) -> Option<Vec<u8>> {
                 recv, method, args, ..
             } if method == "as_ptr" && args.is_empty() => {
                 return match recv.as_ref() {
-                    Expr::CStr(bytes) => Some(bytes.clone()),
+                    Expr::CStr(bytes) => Some(bytes),
                     Expr::ByteStr(bytes) => {
                         let (last, rest) = bytes.split_last()?;
-                        (*last == 0 && !rest.contains(&0)).then(|| rest.to_vec())
+                        (*last == 0 && !rest.contains(&0)).then_some(rest)
                     }
                     _ => None,
                 };
@@ -42,37 +61,6 @@ fn literal_c_string(expr: &Expr) -> Option<Vec<u8>> {
             _ => return None,
         }
     }
-}
-
-fn decimal_format_plan(args: &[Expr]) -> Option<FormatPlan> {
-    let (format_arg, value_args) = args.split_first()?;
-    let bytes = literal_c_string(format_arg)?;
-    let text = std::str::from_utf8(&bytes).ok()?;
-    let mut format = String::new();
-    let mut placeholder_count = 0usize;
-    let mut chars = text.chars();
-    while let Some(c) = chars.next() {
-        match c {
-            '%' => match chars.next()? {
-                'd' => {
-                    format.push_str("{}");
-                    placeholder_count += 1;
-                }
-                _ => return None,
-            },
-            '{' => format.push_str("{{"),
-            '}' => format.push_str("}}"),
-            other => format.push(other),
-        }
-    }
-    if placeholder_count != value_args.len() {
-        return None;
-    }
-    let (macro_name, format) = match format.strip_suffix('\n') {
-        Some(stripped) => ("println", stripped.to_string()),
-        None => ("print", format),
-    };
-    Some(FormatPlan { macro_name, format })
 }
 
 const STDOUT_WRITER_KNOWNS: &[Known] = &[
@@ -147,13 +135,6 @@ fn is_stdout_writer_call(expr: &Expr, writer_names: &HashSet<String>) -> bool {
 fn is_stdout_writer_symbol(name: &str) -> bool {
     STDOUT_WRITER_EXTRA_NAMES.contains(&name)
         || Known::from_symbol(name).is_some_and(|known| STDOUT_WRITER_KNOWNS.contains(&known))
-}
-
-fn printf_call_args(expr: &Expr) -> Option<&[Expr]> {
-    match expr {
-        Expr::Call { binding, args, .. } if binding.known() == Some(Known::Printf) => Some(args),
-        _ => None,
-    }
 }
 
 fn is_printf_stmt(stmt: &Stmt, printf_names: &HashSet<String>) -> bool {
@@ -269,6 +250,7 @@ fn fflush_all_stmt() -> Stmt {
             canonical_type: None,
             trusted_declaration: None,
             trusted_headers: Default::default(),
+            printf_format: None,
         },
         func: Box::new(Expr::var("fflush".into())),
         args: vec![Expr::Value(RustValue::NullPtr)],
@@ -301,15 +283,49 @@ fn needs_hoist(expr: &Expr) -> bool {
     !matches!(expr, Expr::Ref { .. }) && contains_mut_borrow(expr)
 }
 
+fn push_literal(format: &mut String, literal: &str) {
+    for c in literal.chars() {
+        if matches!(c, '{' | '}') {
+            format.push(c);
+        }
+        format.push(c);
+    }
+}
+
 fn try_convert(stmt: &Stmt) -> Option<Vec<Stmt>> {
-    let Stmt::Expr(call) = stmt else {
+    let Stmt::Expr(Expr::Call {
+        args,
+        binding:
+            CallBinding::Direct {
+                printf_format: Some(plan),
+                ..
+            },
+        ..
+    }) = stmt
+    else {
         return None;
     };
-    let args = printf_call_args(call)?;
-    let plan = decimal_format_plan(args)?;
+    let (literal, value_args) = args.split_first()?;
+    if literal_c_string(literal)? != plan.literal.as_bytes()
+        || value_args.len() != plan.decimals.len()
+    {
+        return None;
+    }
+    let (name, text) = match plan.literal.strip_suffix('\n') {
+        Some(text) => ("println", text),
+        None => ("print", plan.literal.as_str()),
+    };
+    let mut format = String::new();
+    let mut start = 0;
+    for &decimal in &plan.decimals {
+        push_literal(&mut format, &text[start..decimal]);
+        format.push_str("{}");
+        start = decimal + 2;
+    }
+    push_literal(&mut format, &text[start..]);
     let mut hoisted = Vec::new();
-    let mut macro_args = vec![Expr::Str(plan.format)];
-    for (index, arg) in args[1..].iter().cloned().enumerate() {
+    let mut macro_args = vec![Expr::Str(format)];
+    for (index, arg) in value_args.iter().cloned().enumerate() {
         if needs_hoist(&arg) {
             let name = format!("__slate_printf_arg{index}");
             hoisted.push(Stmt::Let {
@@ -325,7 +341,7 @@ fn try_convert(stmt: &Stmt) -> Option<Vec<Stmt>> {
         }
     }
     let print_stmt = Stmt::Expr(Expr::Macro {
-        name: plan.macro_name.into(),
+        name: name.into(),
         args: macro_args,
     });
     hoisted.push(print_stmt);
@@ -570,7 +586,7 @@ fn item_exposes_writer(item: &Item, writer_names: &HashSet<String>) -> bool {
     }
 }
 
-pub(super) fn rewrite(program: &mut Program, target: &TargetInfo) {
+pub(crate) fn finish(program: &mut Program, target: &TargetInfo) {
     let printf_names = stdout_writer_shim_names(program);
     if program
         .items

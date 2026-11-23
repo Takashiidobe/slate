@@ -184,28 +184,25 @@ int main(void) {
 // CHECK-NEXT:         "{}",
 // CHECK-NEXT:         unsafe { (*(core::ptr::addr_of_mut!(bytes) as *mut Bytes)).value as i32 }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     println!(
-// CHECK-NEXT:         "{} {} {} {}",
-// CHECK-NEXT:         unsafe { (*(core::ptr::addr_of_mut!(packed) as *mut Packed)).a as i32 },
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%d %d %d %d\n".as_ptr(),
+// CHECK-NEXT:             (*(core::ptr::addr_of_mut!(packed) as *mut Packed)).a as i32,
 // CHECK-NEXT:             (core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(packed)
 // CHECK-NEXT:                     as *mut Packed)).values) as *mut i32)
 // CHECK-NEXT:                 .add(0)
-// CHECK-NEXT:                 .read_unaligned()
-// CHECK-NEXT:         },
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:                 .read_unaligned(),
 // CHECK-NEXT:             (core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(packed)
 // CHECK-NEXT:                     as *mut Packed)).values) as *mut i32)
 // CHECK-NEXT:                 .add(1)
-// CHECK-NEXT:                 .read_unaligned()
-// CHECK-NEXT:         },
-// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:                 .read_unaligned(),
 // CHECK-NEXT:             (core::ptr::addr_of_mut!((*(core::ptr::addr_of_mut!(packed)
 // CHECK-NEXT:                     as *mut Packed)).values) as *mut i32)
 // CHECK-NEXT:                 .add(2)
-// CHECK-NEXT:                 .read_unaligned()
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
+// CHECK-NEXT:                 .read_unaligned(),
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     0
 // CHECK-NEXT: }
 // CHECK-EMPTY:

@@ -41,6 +41,7 @@ mod optional;
 mod padding;
 mod places;
 mod pointers;
+pub(crate) mod printf;
 mod selectany;
 mod statements;
 mod stdio;

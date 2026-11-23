@@ -110,6 +110,7 @@ pub(super) fn runtime_export(
             canonical_type: None,
             trusted_declaration: None,
             trusted_headers: Default::default(),
+            printf_format: None,
         },
         unsafe_: rust::Unsafe(false),
     };

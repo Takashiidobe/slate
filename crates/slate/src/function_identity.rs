@@ -15,6 +15,7 @@ pub enum CallBinding {
         trusted_declaration: Option<String>,
         /// Headers that establish trusted provenance for the declaration.
         trusted_headers: BTreeSet<String>,
+        printf_format: Option<Box<slate_analysis::PrintfFormat>>,
     },
     /// An indirect call whose target is not statically known.
     Indirect,

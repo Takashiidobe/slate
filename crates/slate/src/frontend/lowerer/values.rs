@@ -2388,7 +2388,15 @@ impl FunctionLowerer<'_, '_> {
                 ..
             } => {
                 let discarded = self.discarded_call == Some(value.node.id);
-                self.lower_call(callee, arguments, signature, discarded)?
+                let mut lowered = self.lower_call(callee, arguments, signature, discarded)?;
+                if discarded
+                    && self.tables.runtime.has_std()
+                    && self.tables.target.os != TargetOs::Windows
+                    && let Some(format) = self.tables.facts.printf_format(value.node.id)
+                {
+                    printf::record_format(&mut lowered, format);
+                }
+                lowered
             }
             ValueKind::Aggregate { members, zero_fill } => {
                 self.lower_aggregate(&value.ty, members, *zero_fill)?

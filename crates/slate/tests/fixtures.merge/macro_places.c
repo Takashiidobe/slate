@@ -120,8 +120,7 @@ int main(void) {
 
     printf("%d %d %d %d %d %d\n", n, unused_write, top, stack[0], stack[1], stack[2]);
     printf("%d %d %d %d %d\n", s.count, s.bits[0], s.bits[2], array[1], global);
-    int tight_value = tight.value;
-    printf("%d %d %d %d %d\n", shared.count, shared.bits[1], through, (int)s.flag, tight_value);
+    printf("%d %d %d %d %d\n", shared.count, shared.bits[1], through, (int)s.flag, tight.value);
     printf("%d %d %d %d %d\n", shaky, ro, deref_target, reads_only(3), writes_param(3));
     return 0;
 }
@@ -132,7 +131,7 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_places.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_places: 39 items, 14 gated, 0 duplicated functions
+// CHECK-NEXT: unit macro_places: 39 items, 13 gated, 0 duplicated functions
 // CHECK-NEXT:   spliced record:state: 2 variants
 // CHECK-NEXT:   spliced fn:__slate_main: 2 variants
 // CHECK-NEXT: macros: 15 function-like, 15 lifted at least once (expansions counted per distinct compile)
@@ -278,11 +277,6 @@ int main(void) {
 // CHECK-NEXT:     unsafe extern "C" {}
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: #[cfg(windows)]
-// CHECK-NEXT: unsafe extern "C" {
-// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
-// CHECK-NEXT: }
-// CHECK-EMPTY:
 // CHECK-NEXT: #[repr(C)]
 // CHECK-NEXT: #[derive(Clone, Copy)]
 // CHECK-NEXT: struct state {
@@ -424,6 +418,8 @@ int main(void) {
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
+// CHECK-NEXT:     #[cfg(windows)]
+// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
 // CHECK-NEXT:         println!(
@@ -444,23 +440,17 @@ int main(void) {
 // CHECK-NEXT:             unsafe { global }
 // CHECK-NEXT:         );
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let tight_value: i32 = tight.value;
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:     #[cfg(windows)]
-// CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             slate_support::printf(
-// CHECK-NEXT:                 c"%d %d %d %d %d\n".as_ptr(),
-// CHECK-NEXT:                 shared.count,
-// CHECK-NEXT:                 shared.bits[1],
-// CHECK-NEXT:                 through,
-// CHECK-NEXT:                 s.__slate_bits_0.__get_flag() as i32,
-// CHECK-NEXT:                 tight_value,
-// CHECK-NEXT:             )
-// CHECK-NEXT:         };
-// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         slate_support::printf(
+// CHECK-NEXT:             c"%d %d %d %d %d\n".as_ptr(),
+// CHECK-NEXT:             shared.count,
+// CHECK-NEXT:             shared.bits[1],
+// CHECK-NEXT:             through,
+// CHECK-NEXT:             s.__slate_bits_0.__get_flag() as i32,
+// CHECK-NEXT:             tight.value,
+// CHECK-NEXT:         )
+// CHECK-NEXT:     };
+// CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -479,14 +469,6 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         println!(
-// CHECK-NEXT:             "{} {} {} {} {}",
-// CHECK-NEXT:             unsafe { shared.count },
-// CHECK-NEXT:             unsafe { shared.bits[1] },
-// CHECK-NEXT:             through,
-// CHECK-NEXT:             s.__slate_bits_0.__get_flag() as i32,
-// CHECK-NEXT:             tight_value
-// CHECK-NEXT:         );
 // CHECK-NEXT:         println!(
 // CHECK-NEXT:             "{} {} {} {} {}",
 // CHECK-NEXT:             unsafe { core::ptr::read_volatile(core::ptr::addr_of!(shaky)) },
@@ -615,6 +597,10 @@ int main(void) {
 // CHECK-NEXT: static mut global: i32 = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut shared: state = unsafe { core::mem::zeroed() };
+// CHECK-EMPTY:
+// CHECK-NEXT: unsafe extern "C" {
+// CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
+// CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlignLargeArray<T> {}
 // CHECK-EMPTY:

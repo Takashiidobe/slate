@@ -391,7 +391,7 @@ pub fn parameter_is_written(template: &[Stmt], parameter: &str) -> bool {
     stmts_mutate_parameter(template, parameter)
 }
 
-pub(in crate::backend) fn visit_exprs_mut(stmts: &mut [Stmt], visit: &mut impl FnMut(&mut Expr)) {
+pub(crate) fn visit_exprs_mut(stmts: &mut [Stmt], visit: &mut impl FnMut(&mut Expr)) {
     for stmt in stmts {
         let mut exprs = Vec::new();
         stmt_exprs_mut(stmt, &mut exprs);
@@ -695,7 +695,7 @@ pub(super) fn finish_place_arguments(program: &mut Program, places: &PlaceParame
     });
 }
 
-fn each_body(items: &mut [Item], visit: &mut impl FnMut(&mut [Stmt])) {
+pub(super) fn each_body(items: &mut [Item], visit: &mut impl FnMut(&mut [Stmt])) {
     for item in items {
         match item {
             Item::Fn(func) => visit(&mut func.body),

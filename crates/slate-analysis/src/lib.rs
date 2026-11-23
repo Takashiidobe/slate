@@ -20,6 +20,7 @@ mod guarded_heap;
 mod heap_ir;
 mod identity;
 mod pointer;
+mod printf;
 mod program;
 pub mod transform;
 
@@ -31,4 +32,5 @@ pub use facts::{BindingFacts, Facts, UnitFacts, ValueFacts, analyze};
 pub use guarded_heap::{GuardedHeapStatement, HeapElement, HeapIndex};
 pub use identity::{FunctionIdentity, Known};
 pub use pointer::{Borrow, HeapAction, Length, Owner, PointerFact, PointerRole};
+pub use printf::PrintfFormat;
 pub use program::{FunctionEntry, FunctionId, Program, ProgramBinding, ProgramUnit, UnitId};

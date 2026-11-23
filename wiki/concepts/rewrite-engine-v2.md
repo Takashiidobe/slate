@@ -46,13 +46,14 @@ conversions and layout remain slate-parser responsibilities.
   of the block as detached. Comments inside a discarded subtree move to the
   replacement as leading.
 
-- `printf_format` wraps every libc stdio writer in a Rust stdout flush and
-  `fflush(NULL)`, so `print!` and libc output keep their order. Never skip this
-  because a stream looks like `stderr`: `stderr = stdout`, `freopen` and
-  `setvbuf` can all change where it writes or how it buffers. ucrt defines
-  `printf` and `fprintf` inline, so calls to them carry
-  `FunctionIdentity::HeaderInline`. They get the flushes but no libc identity,
-  because `print!` would skip Windows' text-mode `\n` to `\r\n` translation.
+- IR analysis recognizes literal `printf` formats and checks argument places for
+  underalignment. Keep calls that read underaligned fields as C calls because
+  Rust formatting macros borrow their arguments.
+- The `printf` lowering finishes after the Rust shape rules so it can preserve
+  writer results and surround C stdio writers with a Rust stdout flush and
+  `fflush(NULL)`. A stream such as `stderr` can be redirected or rebuffered.
+  Keep Windows calls as C calls to preserve text-mode newline translation.
+  Clear the format facts before merge compares the resulting Rust bodies.
 - A libc identity needs the known function's header to be the outermost system
   header or the declaring file. bionic's `stdlib.h` includes `stdio.h`, so the
   outermost header alone is not enough.
@@ -189,10 +190,8 @@ described in [macro templates](slate-architecture.md#macro-templates). While the
 rules run, an argument is a `$a()` hole, so no rule moves, merges, or drops its
 evaluation, and a shape-matching rule cannot see through it.
 
-`finish_holes` turns holes into `$a` after `printf_format` and before the unsafe
-pass, because that pass removes `unsafe` depending on the surrounding block and
-would give one macro different bodies. The unsafe pass then runs over the macro
-bodies too.
+`finish_holes` turns holes into `$a` before `printf` lowering finishes. Unsafe
+placement runs afterward, including on macro bodies.
 
 Expansions `macro_keep.rs` rejects carry no structure and stay inline, so a
 rejected lift costs readability, never correctness.

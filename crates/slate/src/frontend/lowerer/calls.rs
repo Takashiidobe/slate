@@ -259,6 +259,7 @@ impl FunctionLowerer<'_, '_> {
                     canonical_type: None,
                     trusted_declaration: None,
                     trusted_headers: Default::default(),
+                    printf_format: None,
                 },
                 ir::Callee::Indirect(_) => CallBinding::Indirect,
             },
@@ -375,6 +376,7 @@ impl FunctionLowerer<'_, '_> {
                     canonical_type: None,
                     trusted_declaration: None,
                     trusted_headers: Default::default(),
+                    printf_format: None,
                 },
                 FunctionIdentity::HeaderInline | FunctionIdentity::Unknown => {
                     CallBinding::Generated

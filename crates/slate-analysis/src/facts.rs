@@ -6,6 +6,7 @@ use crate::def_use::{BindingMutability, DefUse};
 use crate::guarded_heap::{self, GuardedHeap, GuardedHeapStatement, HeapElement};
 use crate::identity::{FunctionIdentity, identify};
 use crate::pointer::{self, Borrow, HeapStatement, PointerFact};
+use crate::printf::{self, PrintfFormat};
 use crate::program::{Program, ProgramBinding, UnitId};
 use foldhash::{HashMap, HashMapExt, HashSet};
 use slate_parser::ast::NodeId;
@@ -34,6 +35,7 @@ pub struct Facts {
     identities: HashMap<ProgramBinding, FunctionIdentity>,
     counted_loops: Vec<HashMap<BindingId, CountedLoop>>,
     guarded_heap: Vec<GuardedHeap>,
+    printf_formats: Vec<HashMap<NodeId, PrintfFormat>>,
     heap_statements: HashMap<(UnitId, NodeId), HeapStatement>,
 }
 
@@ -109,6 +111,10 @@ impl<'f> UnitFacts<'f> {
             .contains(&binding)
     }
 
+    pub fn printf_format(&self, call: NodeId) -> Option<&'f PrintfFormat> {
+        self.facts.printf_formats[self.unit.0 as usize].get(&call)
+    }
+
     pub fn identity(&self, function: BindingId) -> FunctionIdentity {
         self.facts
             .identities
@@ -163,6 +169,7 @@ pub fn analyze(program: &Program<'_>) -> Facts {
     }
     let mut block_captures = HashMap::default();
     let mut guarded_heap = Vec::new();
+    let mut printf_formats = Vec::new();
     for (unit, program_unit) in program.units() {
         let module = program_unit.module;
         let literals = constant_strings::literals(module);
@@ -177,6 +184,7 @@ pub fn analyze(program: &Program<'_>) -> Facts {
             known.buffer_arguments().is_some()
         });
         let known = constant_strings::known_callees(module, identity, |_| true);
+        printf_formats.push(printf::analyze(program, unit, module, &known, &literals));
         let mut c_arrays = HashSet::default();
         for function in &module.functions {
             c_string_arrays::analyze(&function.value, &known, &module.macro_values, &mut c_arrays);
@@ -297,6 +305,7 @@ pub fn analyze(program: &Program<'_>) -> Facts {
         identities,
         counted_loops,
         guarded_heap,
+        printf_formats,
         heap_statements: pointers.heap_statements,
     }
 }
