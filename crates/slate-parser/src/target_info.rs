@@ -52,6 +52,7 @@ pub enum TargetEnvironment {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[slate::sensitive(exhaustive)]
 pub enum VaListKind {
     CharPointer,
     X86_64Sysv,

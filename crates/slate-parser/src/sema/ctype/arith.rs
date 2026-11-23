@@ -55,7 +55,9 @@ impl CTypes {
                 let char_type = self.qual(CTypeKind::Char);
                 self.pointer(char_type)
             }
-            _ => self.qual(CTypeKind::VaList),
+            VaListKind::X86_64Sysv | VaListKind::AArch64Aapcs | VaListKind::ArmAapcs => {
+                self.qual(CTypeKind::VaList)
+            }
         }
     }
 

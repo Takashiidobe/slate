@@ -1,9 +1,10 @@
-use crate::sensitive::sensitive_enum;
+use crate::sensitive::{requires_exhaustive_match, sensitive_enum};
 use rustc_attr_ir::lang_items::LangItem;
 use rustc_errors::DiagDecorator;
 use rustc_hir::def::{DefKind, Res};
 use rustc_hir::{
-    Arm, Expr, ExprKind, HirId, MatchSource, Pat, PatExpr, PatExprKind, PatKind, QPath,
+    Block, Expr, ExprKind, HirId, LetStmt, MatchSource, Pat, PatExpr, PatExprKind, PatKind, QPath,
+    StmtKind,
 };
 use rustc_lint::{LateContext, LateLintPass, LintContext};
 use rustc_span::Span;
@@ -22,7 +23,7 @@ rustc_lint_defs::declare_lint_pass!(SensitiveWildcard => [SENSITIVE_WILDCARD]);
 struct Step(Option<DefId>, usize);
 
 enum Leaf {
-    Wild(Span),
+    Wild(Span, Option<DefId>),
     Ctor {
         enumeration: DefId,
         variant: Option<DefId>,
@@ -54,44 +55,93 @@ impl<'tcx> LateLintPass<'tcx> for SensitiveWildcard {
                     enumeration,
                     variant,
                 } => Some((path.as_slice(), *enumeration, *variant)),
-                Leaf::Wild(_) => None,
+                Leaf::Wild(..) => None,
             })
             .collect();
         for (arm, arm_leaves) in arms.iter().zip(&leaves) {
-            if is_rejecting(cx, arm) {
+            if is_rejecting(cx, arm.body) {
                 continue;
             }
             for (path, leaf) in arm_leaves {
-                let Leaf::Wild(span) = leaf else {
+                let Leaf::Wild(span, enumeration) = leaf else {
                     continue;
                 };
                 let covered: Vec<_> = ctors
                     .iter()
                     .filter(|(ctor, ..)| ctor.starts_with(path))
                     .collect();
-                let Some(&&(_, enum_did, _)) = covered.first() else {
+                let strict = enumeration
+                    .iter()
+                    .copied()
+                    .chain(covered.iter().map(|(_, did, _)| *did))
+                    .find(|did| requires_exhaustive_match(cx.tcx, *did));
+                let Some(enum_did) = strict.or_else(|| {
+                    let &&(_, did, _) = covered.first()?;
+                    (!is_projection(&covered)).then_some(did)
+                }) else {
                     continue;
                 };
-                if is_projection(&covered) {
-                    continue;
-                }
                 let span = if from_matches {
                     expr.span.source_callsite()
                 } else {
                     *span
                 };
-                let name = cx.tcx.def_path_str(enum_did);
-                cx.tcx.emit_node_span_lint(SENSITIVE_WILDCARD, arm.hir_id, span, DiagDecorator(|diag| {
-                    diag.primary_message(format!(
-                        "catch-all over sensitive enum `{name}` hides variants added later"
-                    ));
-                    diag.help(
-                        "list the variants, or `#[expect(slate::sensitive_wildcard, reason = \"...\")]` on the arm or item",
-                    );
-                }));
+                emit(cx, arm.hir_id, span, enum_did);
             }
         }
     }
+
+    fn check_local(&mut self, cx: &LateContext<'tcx>, local: &'tcx LetStmt<'tcx>) {
+        let Some(otherwise) = local.els else {
+            return;
+        };
+        if local.pat.span.in_external_macro(cx.sess().source_map())
+            || block_result(otherwise).is_some_and(|expr| is_rejecting(cx, expr))
+        {
+            return;
+        }
+
+        let mut leaves = Vec::new();
+        collect(cx, local.pat, &mut Vec::new(), &mut leaves);
+        for (path, leaf) in &leaves {
+            let Leaf::Ctor { enumeration, .. } = leaf else {
+                continue;
+            };
+            if requires_exhaustive_match(cx.tcx, *enumeration)
+                && cx
+                    .tcx
+                    .adt_def(*enumeration)
+                    .variants()
+                    .iter()
+                    .any(|variant| {
+                        !leaves.iter().any(|(other, leaf)| {
+                            other == path
+                                && match leaf {
+                                    Leaf::Wild(..) => true,
+                                    Leaf::Ctor { variant: named, .. } => {
+                                        *named == Some(variant.def_id)
+                                    }
+                                }
+                        })
+                    })
+            {
+                emit(cx, local.hir_id, otherwise.span, *enumeration);
+                return;
+            }
+        }
+    }
+}
+
+fn emit(cx: &LateContext<'_>, hir_id: HirId, span: Span, enum_did: DefId) {
+    let name = cx.tcx.def_path_str(enum_did);
+    cx.tcx.emit_node_span_lint(SENSITIVE_WILDCARD, hir_id, span, DiagDecorator(|diag| {
+        diag.primary_message(format!(
+            "catch-all over sensitive enum `{name}` hides variants added later"
+        ));
+        diag.help(
+            "list the variants, or `#[expect(slate::sensitive_wildcard, reason = \"...\")]` on the arm or item",
+        );
+    }));
 }
 
 fn is_matches_expansion(span: Span) -> bool {
@@ -108,7 +158,7 @@ fn collect<'tcx>(
     let sensitive = sensitive_enum(cx.tcx, ty);
     match pat.kind {
         PatKind::Wild | PatKind::Binding(_, _, _, None) => {
-            out.push((path.clone(), Leaf::Wild(pat.span)));
+            out.push((path.clone(), Leaf::Wild(pat.span, sensitive)));
         }
         PatKind::Binding(_, _, _, Some(inner))
         | PatKind::Ref(inner, ..)
@@ -226,20 +276,22 @@ fn variant_arity(cx: &LateContext<'_>, did: DefId) -> usize {
     }
 }
 
-fn is_rejecting(cx: &LateContext<'_>, arm: &Arm<'_>) -> bool {
-    let mut expr = arm.body;
+fn block_result<'tcx>(block: &'tcx Block<'tcx>) -> Option<&'tcx Expr<'tcx>> {
+    block.expr.or_else(|| match block.stmts.last()?.kind {
+        StmtKind::Expr(expr) | StmtKind::Semi(expr) => Some(expr),
+        _ => None,
+    })
+}
+
+fn is_rejecting(cx: &LateContext<'_>, mut expr: &Expr<'_>) -> bool {
     loop {
         match expr.kind {
-            ExprKind::Block(block, _) => match (block.expr, block.stmts.last()) {
-                (Some(tail), _) => expr = tail,
-                (None, Some(stmt)) => match stmt.kind {
-                    rustc_hir::StmtKind::Expr(inner) | rustc_hir::StmtKind::Semi(inner) => {
-                        expr = inner
-                    }
-                    _ => return false,
-                },
-                (None, None) => return false,
-            },
+            ExprKind::Block(block, _) => {
+                let Some(result) = block_result(block) else {
+                    return false;
+                };
+                expr = result;
+            }
             ExprKind::DropTemps(inner) => expr = inner,
             ExprKind::Ret(Some(inner)) => return is_err_ctor(cx, inner),
             ExprKind::Ret(None)

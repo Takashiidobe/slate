@@ -1,0 +1,43 @@
+warning: catch-all over sensitive enum `Abi` hides variants added later
+  --> $DIR/exhaustive.rs:13:9
+   |
+LL |         _ => 0,
+   |         ^
+   |
+   = help: list the variants, or `#[expect(slate::sensitive_wildcard, reason = "...")]` on the arm or item
+   = note: `#[warn(slate::sensitive_wildcard)]` on by default
+
+warning: catch-all over sensitive enum `Abi` hides variants added later
+  --> $DIR/exhaustive.rs:19:9
+   |
+LL |         _ => 0,
+   |         ^
+   |
+   = help: list the variants, or `#[expect(slate::sensitive_wildcard, reason = "...")]` on the arm or item
+
+warning: catch-all over sensitive enum `Abi` hides variants added later
+  --> $DIR/exhaustive.rs:24:5
+   |
+LL |     matches!(abi, Abi::Register)
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: list the variants, or `#[expect(slate::sensitive_wildcard, reason = "...")]` on the arm or item
+
+warning: catch-all over sensitive enum `Abi` hides variants added later
+  --> $DIR/exhaustive.rs:30:9
+   |
+LL |         _ => 0,
+   |         ^
+   |
+   = help: list the variants, or `#[expect(slate::sensitive_wildcard, reason = "...")]` on the arm or item
+
+warning: catch-all over sensitive enum `Abi` hides variants added later
+  --> $DIR/exhaustive.rs:35:34
+   |
+LL |     let Abi::Register = abi else { return 0 };
+   |                                  ^^^^^^^^^^^^
+   |
+   = help: list the variants, or `#[expect(slate::sensitive_wildcard, reason = "...")]` on the arm or item
+
+warning: 5 warnings emitted
+

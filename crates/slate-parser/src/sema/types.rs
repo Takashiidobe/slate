@@ -299,7 +299,9 @@ impl TypeResolver {
     pub(super) fn ms_va_convention(&self) -> VaConvention {
         match self.dialect.target().va_list_kind() {
             VaListKind::CharPointer => VaConvention::Target,
-            _ => VaConvention::Win64,
+            VaListKind::X86_64Sysv | VaListKind::AArch64Aapcs | VaListKind::ArmAapcs => {
+                VaConvention::Win64
+            }
         }
     }
 

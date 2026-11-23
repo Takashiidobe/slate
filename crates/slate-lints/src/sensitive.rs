@@ -1,7 +1,7 @@
 use rustc_ast::attr::AttributeExt;
 use rustc_attr_ir::Attribute;
 use rustc_middle::ty::{self, Ty, TyCtxt};
-use rustc_span::def_id::DefId;
+use rustc_span::{Symbol, def_id::DefId};
 
 #[expect(
     deprecated,
@@ -9,6 +9,25 @@ use rustc_span::def_id::DefId;
 )]
 pub fn has_sensitive_attr(tcx: TyCtxt<'_>, did: DefId) -> bool {
     tcx.get_all_attrs(did).iter().any(is_sensitive_attr)
+}
+
+#[expect(
+    deprecated,
+    reason = "slate:: tool attributes are unparsed, so find_attr! cannot see them"
+)]
+pub fn requires_exhaustive_match(tcx: TyCtxt<'_>, did: DefId) -> bool {
+    tcx.get_all_attrs(did)
+        .iter()
+        .filter(|attr| is_sensitive_attr(attr))
+        .any(|attr| {
+            attr.meta_item_list().is_some_and(|args| {
+                args.iter().any(|arg| {
+                    arg.meta_item().is_some_and(|item| {
+                        item.is_word() && item.has_name(Symbol::intern("exhaustive"))
+                    })
+                })
+            })
+        })
 }
 
 fn is_sensitive_attr(attr: &Attribute) -> bool {

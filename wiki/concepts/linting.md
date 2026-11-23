@@ -72,6 +72,11 @@ Does not fire on:
   (`unreachable!`, `panic!`): a new variant there fails loudly.
 - Code from derives and external macros.
 
+Use `#[slate::sensitive(exhaustive)]` on enums that need an explicit decision
+for every variant. It checks single-variant matches, wildcard-only matches
+over the enum, and `let … else` branches that take a successful default for
+omitted variants. Rejecting branches retain the same exemption.
+
 The lint is an audit: each hit is a place where an assumption about the variant
 set was implicit. Resolve it so the assumption is written down.
 
