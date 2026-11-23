@@ -4,6 +4,7 @@
 - [Suppressions](#suppressions)
 - [Parser paths do not panic](#parser-paths-do-not-panic)
 - [Custom lints](#custom-lints)
+  - [`slate::crate_wide_allow`](#slatecrate_wide_allow)
   - [`slate::sensitive_wildcard`](#slatesensitive_wildcard)
   - [`slate::sensitive_field_rest`](#slatesensitive_field_rest)
 - [Adding a lint](#adding-a-lint)
@@ -44,6 +45,12 @@ non-empty type instead of `last().unwrap()`, a `let ... else` returning
 the `slate` tool (`#![register_tool(slate)]`), so the marker attributes and
 `#[expect(slate::...)]` compile in ordinary builds and are checked only under
 `cargo dylint`.
+
+### `slate::crate_wide_allow`
+
+Rejects `#![allow(...)]` at the crate root, including active `cfg_attr`
+forms. Crate-wide allows can override command-line `--deny` and `--warn`
+settings. Use a reasoned `#[expect]` on the smallest item that needs it.
 
 ### `slate::sensitive_wildcard`
 

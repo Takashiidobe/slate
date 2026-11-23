@@ -5,16 +5,16 @@ The crate is outside the Cargo workspace and builds against rustc internals.
 
 | Lint | Fires on |
 | --- | --- |
+| `slate::crate_wide_allow` | An `#![allow(...)]` at the crate root. Denied by default. |
 | `slate::sensitive_wildcard` | A `_`, binding, or `matches!` catch-all over a `#[slate::sensitive]` enum when the arms name two or more variants. Single-variant projections and arms that return `Err(..)` or diverge are exempt. |
 | `slate::sensitive_field_rest` | A `{ .. }` or `( .. )` pattern that skips a `#[slate::sensitive]` field. |
 
 Policy (when to mark, how to resolve a hit, when an `#[expect]` is acceptable):
 [wiki/concepts/linting.md](../../wiki/concepts/linting.md).
 
-Both lints report on the match arm or pattern, so you can suppress one place
-with `#[expect(slate::sensitive_wildcard, reason = "...")]`. The `slate` tool
-namespace is registered in `slate-parser` and `slate`; ordinary builds ignore the
-attributes.
+To suppress a sensitive lint, put a reasoned `#[expect]` on the match arm or
+pattern it reports. Ordinary builds accept the `slate` attributes in
+`slate-parser` and `slate`. Dylint checks them.
 
 ## Setup (once per machine)
 
@@ -36,5 +36,5 @@ relink the alias to the new toolchain directory.
 
 ```bash
 cargo dylint --all -p slate-parser -p slate-c2rust   # from the workspace root
-cd crates/slate-lints && cargo test                  # UI tests: ui/main.rs vs ui/main.stderr
+cd crates/slate-lints && cargo test                  # UI fixtures and expected diagnostics
 ```

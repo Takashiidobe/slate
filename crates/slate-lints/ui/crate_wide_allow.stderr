@@ -1,0 +1,27 @@
+error: crate-wide `#![allow(...)]` suppresses lints
+  --> $DIR/crate_wide_allow.rs:3:1
+   |
+LL | #![allow(dead_code)]
+   | ^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: put an `#[expect(..., reason = "...")]` on the smallest item that needs it
+   = note: `#[deny(slate::crate_wide_allow)]` on by default
+
+error: crate-wide `#![allow(...)]` suppresses lints
+  --> $DIR/crate_wide_allow.rs:4:1
+   |
+LL | #![allow(unused_imports, unused_variables, reason = "UI fixture")]
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: put an `#[expect(..., reason = "...")]` on the smallest item that needs it
+
+error: crate-wide `#![allow(...)]` suppresses lints
+  --> $DIR/crate_wide_allow.rs:5:20
+   |
+LL | #![cfg_attr(all(), allow(unused_mut))]
+   |                    ^^^^^^^^^^^^^^^^^
+   |
+   = help: put an `#[expect(..., reason = "...")]` on the smallest item that needs it
+
+error: aborting due to 3 previous errors
+

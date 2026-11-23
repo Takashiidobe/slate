@@ -1,6 +1,6 @@
 #![feature(register_tool)]
 #![register_tool(slate)]
-#![allow(dead_code)]
+#![expect(dead_code, reason = "test cases are checked without being called")]
 
 #[slate::sensitive]
 enum Kind {

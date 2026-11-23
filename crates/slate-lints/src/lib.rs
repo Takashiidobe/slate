@@ -11,6 +11,7 @@ extern crate rustc_middle;
 extern crate rustc_session;
 extern crate rustc_span;
 
+mod crate_wide_allow;
 mod sensitive;
 mod sensitive_field_rest;
 mod sensitive_wildcard;
@@ -21,9 +22,11 @@ dylint_linting::dylint_library!();
 pub fn register_lints(sess: &rustc_session::Session, lint_store: &mut rustc_lint::LintStore) {
     dylint_linting::init_config(sess);
     lint_store.register_lints(&[
+        crate_wide_allow::CRATE_WIDE_ALLOW,
         sensitive_wildcard::SENSITIVE_WILDCARD,
         sensitive_field_rest::SENSITIVE_FIELD_REST,
     ]);
+    lint_store.register_early_lint_pass(Box::new(|| Box::new(crate_wide_allow::CrateWideAllow)));
     lint_store.register_late_lint_pass(Box::new(|_| {
         Box::new(sensitive_wildcard::SensitiveWildcard)
     }));
