@@ -28,6 +28,9 @@ initialization are required semantics, not optional metadata.
   designator spelling is source context.
 - `int b = a` initializes from `a`'s current value; later writes are `write`
   statements, not changes to the initializer.
+- Clang static initializers drop a comma operand when constant evaluation can
+  discard its value. A sequence with an evaluated call or load remains in the
+  IR.
 - Compound literals and string literals have their own object identity.
 
 ## Automatic variable fill

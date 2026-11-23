@@ -1326,9 +1326,17 @@ impl Lowerer {
     fn element(&mut self, e: &Expr, to: QualType) -> Result<Value, ResolveError> {
         let value = self.expr(e)?;
         let to = self.types.ctypes.unqualified(to);
-        Ok(self
+        let mut value = self
             .convert_recorded(e, value, to, ConversionReason::Assign)?
-            .value)
+            .value;
+        if self.in_constant_initializer && self.types.flavor().is_clang() {
+            super::fold::clang_static_initializer(
+                &mut value,
+                self.types.fold_target(),
+                &self.types.entities,
+            );
+        }
+        Ok(value)
     }
 
     fn string_array_initializer(&mut self, e: &Expr, c: QualType) -> Result<Value, ResolveError> {

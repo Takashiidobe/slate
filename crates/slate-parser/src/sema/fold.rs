@@ -1,9 +1,10 @@
 use super::builtins::{BitBuiltin, ConstantBuiltin, StdcBit};
+use super::entity::Entities;
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
     AggregateTarget, ArithOp, ArithSema, BindingId, CompareOp, ConversionKind, FloatType,
-    LogicalOp, Number, NumericType, Overflow, Place, PlaceKind, ShiftFill, Type, UnaryArithOp,
-    Value, ValueKind,
+    LogicalOp, Number, NumericType, Overflow, Place, PlaceKind, ShiftFill, StorageDuration, Type,
+    UnaryArithOp, Value, ValueKind, Visitor, walk_function_value,
 };
 use foldhash::HashMap;
 use num_bigint::{BigInt, BigUint, Sign};
@@ -34,6 +35,67 @@ pub(super) fn integer_constant(value: &Value, target: Target) -> Option<BigInt> 
 
 pub(super) fn pointer_address(value: &Value, target: Target) -> Option<BigInt> {
     address(value, MAX_DEPTH, Env::constant(target, None))
+}
+
+pub(super) fn clang_static_initializer(value: &mut Value, target: Target, entities: &Entities) {
+    let mut folder = StaticSequences {
+        target,
+        entities,
+        changed: false,
+    };
+    walk_function_value(value, &mut folder);
+    if folder.changed
+        && integer_type(&value.ty).is_some()
+        && let Some(number) = integer_constant(value, target)
+    {
+        value.node.value = ValueKind::Constant(integer_number(&value.ty, number));
+    }
+}
+
+struct StaticSequences<'a> {
+    target: Target,
+    entities: &'a Entities,
+    changed: bool,
+}
+
+impl StaticSequences<'_> {
+    fn discardable(&self, value: &Value) -> bool {
+        match &value.node.value {
+            ValueKind::Void => true,
+            ValueKind::AddressOf(place)
+            | ValueKind::ArrayDecay { place, .. }
+            | ValueKind::FunctionDecay { place } => self.static_address(place),
+            _ => match value.ty {
+                Type::Numeric(NumericType::Float(_)) => {
+                    floating(value, MAX_DEPTH, Env::constant(self.target, None)).is_some()
+                }
+                Type::Pointer { .. } => pointer_address(value, self.target).is_some(),
+                _ => integer_constant(value, self.target).is_some(),
+            },
+        }
+    }
+
+    fn static_address(&self, place: &Place) -> bool {
+        match &place.kind {
+            PlaceKind::Binding(id) => {
+                self.entities.storage(*id) == Some(StorageDuration::Static)
+                    || self.entities.linkage(*id).is_some()
+            }
+            PlaceKind::Field { base, .. } => self.static_address(base),
+            _ => false,
+        }
+    }
+}
+
+impl Visitor for StaticSequences<'_> {
+    fn rewrite_value(&mut self, value: &mut Value) {
+        if let ValueKind::Sequence { left, right } = &mut value.node.value
+            && self.discardable(left)
+        {
+            value.node.value = std::mem::replace(&mut right.node.value, ValueKind::Void);
+            self.changed = true;
+        }
+    }
 }
 
 pub(super) fn integer_with_objects(
