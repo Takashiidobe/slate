@@ -57,12 +57,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sve")]
-// CHECK-NEXT: unsafe fn add_arrays(
-// CHECK-NEXT:     mut out: *mut i64,
-// CHECK-NEXT:     mut left: *const i64,
-// CHECK-NEXT:     mut right: *const i64,
-// CHECK-NEXT:     mut count: i64,
-// CHECK-NEXT: ) {
+// CHECK-NEXT: unsafe fn add_arrays(out: *mut i64, left: *const i64, right: *const i64, count: i64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "mov x9, #0\n1:\n\twhilelo p1.d, x9, {3:x}\n\tb.none 2f\n\tld1d z1.d, p1/z, [{1:x}, x9, lsl #3]\n\tld1d z2.d, p1/z, [{2:x}, x9, lsl #3]\n\tadd z1.d, z1.d, z2.d\n\tst1d z1.d, p1, [{0:x}, x9, lsl #3]\n\tincd x9\n\tb 1b\n2:",

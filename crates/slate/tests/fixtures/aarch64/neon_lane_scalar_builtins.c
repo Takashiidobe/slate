@@ -235,14 +235,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,fhm,crc,lse,rcpc,dotprod,bti,fcma,jsconv,frintts,aes,sha2,sha3,sm4,neon")]
 // CHECK-NEXT: #[inline(always)]
-// CHECK-NEXT: unsafe fn vget_low_f32(mut __p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 2> {
+// CHECK-NEXT: unsafe fn vget_low_f32(__p0: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 2> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f32, 2> = core::simd::simd_swizzle!(__p0, __p0, [0, 1]);
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,fhm,crc,lse,rcpc,dotprod,bti,fcma,jsconv,frintts,aes,sha2,sha3,sm4,neon")]
 // CHECK-NEXT: #[inline(always)]
-// CHECK-NEXT: unsafe fn vget_low_f16(mut __p0: core::simd::Simd<f16, 8>) -> core::simd::Simd<f16, 4> {
+// CHECK-NEXT: unsafe fn vget_low_f16(__p0: core::simd::Simd<f16, 8>) -> core::simd::Simd<f16, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f16, 4> = core::simd::simd_swizzle!(
 // CHECK-NEXT:         __p0,
 // CHECK-NEXT:         __p0,

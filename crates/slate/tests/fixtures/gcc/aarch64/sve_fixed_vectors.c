@@ -117,7 +117,7 @@ int main(void) {
 // CHECK-NEXT:         [[T_0]].tail = 42i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     };
-// CHECK-NEXT:     let mut scaled: core::simd::Simd<i32, 16> = unsafe { scale(h.vector, 3i32) };
+// CHECK-NEXT:     let scaled: core::simd::Simd<i32, 16> = unsafe { scale(h.vector, 3i32) };
 // CHECK-NEXT:     let plain: core::simd::Simd<i32, 16> = unsafe { as_gnu(scaled) };
 // CHECK-NEXT:     let mask: core::simd::Simd<i32, 16> = {
 // CHECK-NEXT:         let [[T_1:__t[0-9]+]] = scaled.to_array();

@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:     diff as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn sum_via_esi(mut a: u32, mut b: u32) -> u32 {
+// CHECK-NEXT: fn sum_via_esi(mut a: u32, b: u32) -> u32 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         unsafe {
@@ -122,7 +122,7 @@ int main(void) {
 // CHECK-NEXT:     ((fsw as i32) == 0 && (fcw as i32) & 4159 == 63) as i32
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn set_bit(mut nr: i32, mut addr: *mut ()) {
+// CHECK-NEXT: fn set_bit(nr: i32, addr: *mut ()) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "btsl {1:e},({0:e})",

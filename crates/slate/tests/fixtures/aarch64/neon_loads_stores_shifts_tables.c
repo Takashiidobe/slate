@@ -632,8 +632,6 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memset;
-// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "neon")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vqtbl3q_u8(
@@ -1002,7 +1000,7 @@ int main(void) {
 // CHECK-NEXT:             let __ret: core::simd::Simd<i16, 8> = unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i16, 8>>(
 // CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                         (((core::ptr::addr_of_mut!(s16_buf) as *mut i16) as *const ())
+// CHECK-NEXT:                         ((core::ptr::addr_of_mut!(s16_buf) as *const ())
 // CHECK-NEXT:                                 as *mut core::simd::Simd<i16, 8>)
 // CHECK-NEXT:                             .read_unaligned(),
 // CHECK-NEXT:                     ),
@@ -1064,8 +1062,8 @@ int main(void) {
 // CHECK-NEXT:                             ),
 // CHECK-NEXT:                         ),
 // CHECK-NEXT:                         core::simd::Simd::splat(
-// CHECK-NEXT:                             *(((core::ptr::addr_of_mut!(s32_buf) as *mut i32)
-// CHECK-NEXT:                                 as *const ()) as *mut i32),
+// CHECK-NEXT:                             *((core::ptr::addr_of_mut!(s32_buf) as *const ())
+// CHECK-NEXT:                                 as *mut i32),
 // CHECK-NEXT:                         ),
 // CHECK-NEXT:                         [0, 3]
 // CHECK-NEXT:                     ),
@@ -1088,7 +1086,7 @@ int main(void) {
 // CHECK-NEXT:             let __ret: core::simd::Simd<u64, 2> = unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u64, 2>>(
 // CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<u64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                         (((core::ptr::addr_of_mut!(u64_buf) as *mut u64) as *const ())
+// CHECK-NEXT:                         ((core::ptr::addr_of_mut!(u64_buf) as *const ())
 // CHECK-NEXT:                                 as *mut core::simd::Simd<u64, 2>)
 // CHECK-NEXT:                             .read_unaligned(),
 // CHECK-NEXT:                     ),
@@ -1245,7 +1243,7 @@ int main(void) {
 // CHECK-NEXT:         let __ret: core::simd::Simd<f32, 4> = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<f32, 4>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     (((core::ptr::addr_of_mut!(f32_buf) as *mut f32) as *const ())
+// CHECK-NEXT:                     ((core::ptr::addr_of_mut!(f32_buf) as *const ())
 // CHECK-NEXT:                             as *mut core::simd::Simd<f32, 4>)
 // CHECK-NEXT:                         .read_unaligned(),
 // CHECK-NEXT:                 ),
@@ -1319,7 +1317,7 @@ int main(void) {
 // CHECK-NEXT:         let __ret: core::simd::Simd<i32, 4> = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i32, 4>>(
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     (((core::ptr::addr_of_mut!(s32_buf) as *mut i32) as *const ())
+// CHECK-NEXT:                     ((core::ptr::addr_of_mut!(s32_buf) as *const ())
 // CHECK-NEXT:                             as *mut core::simd::Simd<i32, 4>)
 // CHECK-NEXT:                         .read_unaligned(),
 // CHECK-NEXT:                 ),
@@ -1416,7 +1414,7 @@ int main(void) {
 // CHECK-NEXT:         let __ret: core::simd::Simd<f32, 4> = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<f32, 4>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     (((core::ptr::addr_of_mut!(f32_buf) as *mut f32) as *const ())
+// CHECK-NEXT:                     ((core::ptr::addr_of_mut!(f32_buf) as *const ())
 // CHECK-NEXT:                             as *mut core::simd::Simd<f32, 4>)
 // CHECK-NEXT:                         .read_unaligned(),
 // CHECK-NEXT:                 ),
@@ -1493,7 +1491,7 @@ int main(void) {
 // CHECK-NEXT:         let __ret: core::simd::Simd<u8, 16> = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     (((core::ptr::addr_of_mut!(u8_buf) as *mut u8) as *const ())
+// CHECK-NEXT:                     ((core::ptr::addr_of_mut!(u8_buf) as *const ())
 // CHECK-NEXT:                             as *mut core::simd::Simd<u8, 16>)
 // CHECK-NEXT:                         .read_unaligned(),
 // CHECK-NEXT:                 ),
@@ -1578,7 +1576,7 @@ int main(void) {
 // CHECK-NEXT:         let __ret: core::simd::Simd<i16, 8> = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i16, 8>>(
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     (((core::ptr::addr_of_mut!(s16_buf) as *mut i16) as *const ())
+// CHECK-NEXT:                     ((core::ptr::addr_of_mut!(s16_buf) as *const ())
 // CHECK-NEXT:                             as *mut core::simd::Simd<i16, 8>)
 // CHECK-NEXT:                         .read_unaligned(),
 // CHECK-NEXT:                 ),
@@ -1652,7 +1650,7 @@ int main(void) {
 // CHECK-NEXT:         let __ret: core::simd::Simd<i32, 4> = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i32, 4>>(
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     (((core::ptr::addr_of_mut!(s32_buf) as *mut i32) as *const ())
+// CHECK-NEXT:                     ((core::ptr::addr_of_mut!(s32_buf) as *const ())
 // CHECK-NEXT:                             as *mut core::simd::Simd<i32, 4>)
 // CHECK-NEXT:                         .read_unaligned(),
 // CHECK-NEXT:                 ),
@@ -1666,8 +1664,8 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let __ret: core::simd::Simd<i8, 16> = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                 ((((core::ptr::addr_of_mut!(u8_buf) as *mut u8) as *const i8).add(20)
-// CHECK-NEXT:                         as *const ()) as *mut core::simd::Simd<i8, 16>)
+// CHECK-NEXT:                 (((core::ptr::addr_of_mut!(u8_buf) as *const i8).add(20) as *const ())
+// CHECK-NEXT:                         as *mut core::simd::Simd<i8, 16>)
 // CHECK-NEXT:                     .read_unaligned(),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
@@ -1707,7 +1705,7 @@ int main(void) {
 // CHECK-NEXT:         let __ret: core::simd::Simd<u64, 2> = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u64, 2>>(
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<u64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     (((core::ptr::addr_of_mut!(u64_buf) as *mut u64) as *const ())
+// CHECK-NEXT:                     ((core::ptr::addr_of_mut!(u64_buf) as *const ())
 // CHECK-NEXT:                             as *mut core::simd::Simd<u64, 2>)
 // CHECK-NEXT:                         .read_unaligned(),
 // CHECK-NEXT:                 ),
@@ -1942,8 +1940,8 @@ int main(void) {
 // CHECK-NEXT:             let __ret: core::simd::Simd<u16, 4> = unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i8, 8>, core::simd::Simd<u16, 4>>(
 // CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<u16, 4>, core::simd::Simd<i8, 8>>(
-// CHECK-NEXT:                         ((((core::ptr::addr_of_mut!(s16_buf) as *mut i16) as *const u16)
-// CHECK-NEXT:                                 as *const ()) as *mut core::simd::Simd<u16, 4>)
+// CHECK-NEXT:                         (((core::ptr::addr_of_mut!(s16_buf) as *const u16) as *const ())
+// CHECK-NEXT:                                 as *mut core::simd::Simd<u16, 4>)
 // CHECK-NEXT:                             .read_unaligned(),
 // CHECK-NEXT:                     ),
 // CHECK-NEXT:                 )
@@ -2089,7 +2087,7 @@ int main(void) {
 // CHECK-NEXT:             let __ret: core::simd::Simd<i32, 2> = unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i8, 8>, core::simd::Simd<i32, 2>>(
 // CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i32, 2>, core::simd::Simd<i8, 8>>(
-// CHECK-NEXT:                         (((core::ptr::addr_of_mut!(s32_buf) as *mut i32) as *const ())
+// CHECK-NEXT:                         ((core::ptr::addr_of_mut!(s32_buf) as *const ())
 // CHECK-NEXT:                                 as *mut core::simd::Simd<i32, 2>)
 // CHECK-NEXT:                             .read_unaligned(),
 // CHECK-NEXT:                     ),
@@ -2121,7 +2119,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let __ret: core::simd::Simd<i8, 16> = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                 (((core::ptr::addr_of_mut!(shift_counts) as *mut i8) as *const ())
+// CHECK-NEXT:                 ((core::ptr::addr_of_mut!(shift_counts) as *const ())
 // CHECK-NEXT:                         as *mut core::simd::Simd<i8, 16>)
 // CHECK-NEXT:                     .read_unaligned(),
 // CHECK-NEXT:             )
@@ -2138,7 +2136,7 @@ int main(void) {
 // CHECK-NEXT:         let __ret: core::simd::Simd<i32, 4> = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i32, 4>>(
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     (((core::ptr::addr_of_mut!(shift32_counts) as *mut i32) as *const ())
+// CHECK-NEXT:                     ((core::ptr::addr_of_mut!(shift32_counts) as *const ())
 // CHECK-NEXT:                             as *mut core::simd::Simd<i32, 4>)
 // CHECK-NEXT:                         .read_unaligned(),
 // CHECK-NEXT:                 ),
@@ -2157,7 +2155,7 @@ int main(void) {
 // CHECK-NEXT:         let __ret: core::simd::Simd<i16, 8> = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i16, 8>>(
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     (((core::ptr::addr_of_mut!(shift16_counts) as *mut i16) as *const ())
+// CHECK-NEXT:                     ((core::ptr::addr_of_mut!(shift16_counts) as *const ())
 // CHECK-NEXT:                             as *mut core::simd::Simd<i16, 8>)
 // CHECK-NEXT:                         .read_unaligned(),
 // CHECK-NEXT:                 ),
@@ -2177,7 +2175,7 @@ int main(void) {
 // CHECK-NEXT:         let __ret: core::simd::Simd<i32, 2> = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 8>, core::simd::Simd<i32, 2>>(
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 2>, core::simd::Simd<i8, 8>>(
-// CHECK-NEXT:                     (((core::ptr::addr_of_mut!(s32_buf) as *mut i32) as *const ())
+// CHECK-NEXT:                     ((core::ptr::addr_of_mut!(s32_buf) as *const ())
 // CHECK-NEXT:                             as *mut core::simd::Simd<i32, 2>)
 // CHECK-NEXT:                         .read_unaligned(),
 // CHECK-NEXT:                 ),
@@ -2189,7 +2187,7 @@ int main(void) {
 // CHECK-NEXT:     let __ret: core::simd::Simd<i32, 2> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i8, 8>, core::simd::Simd<i32, 2>>(
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 2>, core::simd::Simd<i8, 8>>(
-// CHECK-NEXT:                 (((core::ptr::addr_of_mut!(shift32_counts) as *mut i32) as *const ())
+// CHECK-NEXT:                 ((core::ptr::addr_of_mut!(shift32_counts) as *const ())
 // CHECK-NEXT:                         as *mut core::simd::Simd<i32, 2>)
 // CHECK-NEXT:                     .read_unaligned(),
 // CHECK-NEXT:             ),
@@ -2206,7 +2204,7 @@ int main(void) {
 // CHECK-NEXT:         let __ret: core::simd::Simd<u8, 16> = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     (((core::ptr::addr_of_mut!(u8_buf) as *mut u8) as *const ())
+// CHECK-NEXT:                     ((core::ptr::addr_of_mut!(u8_buf) as *const ())
 // CHECK-NEXT:                             as *mut core::simd::Simd<u8, 16>)
 // CHECK-NEXT:                         .read_unaligned(),
 // CHECK-NEXT:                 ),
@@ -2249,7 +2247,7 @@ int main(void) {
 // CHECK-NEXT:         let __ret: core::simd::Simd<u8, 16> = unsafe {
 // CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<u8, 16>>(
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<u8, 16>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     (((core::ptr::addr_of!(idx_bytes) as *const u8) as *const ())
+// CHECK-NEXT:                     ((core::ptr::addr_of!(idx_bytes) as *const ())
 // CHECK-NEXT:                             as *mut core::simd::Simd<u8, 16>)
 // CHECK-NEXT:                         .read_unaligned(),
 // CHECK-NEXT:                 ),

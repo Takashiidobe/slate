@@ -287,19 +287,12 @@ fn generated_differential() {
         let results = run_cases_for_target(&triple, &fixtures, false, cross.as_ref());
         for (fixture, (name, result)) in fixtures.into_iter().zip(results) {
             assert_eq!(fixture.name, name);
-            if result
-                .as_ref()
-                .is_err_and(|e| e.starts_with("FileCheck failed"))
-            {
-                let path = Path::new("crates/slate/tests/fixtures").join(fixture.relative);
-                filecheck_fixtures.push(path);
-            }
             let expected = expected_failures.remove(&name);
             match result {
-                Err(e) if expected && !e.starts_with("FileCheck failed") => {
+                Err(e) if expected && !support::is_filecheck_failure(&e) => {
                     eprintln!("xfail {triple} {name}");
                 }
-                Ok(()) | Err(_) if expected => {
+                Ok(()) if expected => {
                     eprintln!("FAIL  {triple} {name}");
                     failures.push((
                         format!("{triple}/{name}"),
@@ -308,6 +301,10 @@ fn generated_differential() {
                 }
                 Ok(()) => eprintln!("ok    {triple} {name}"),
                 Err(e) => {
+                    if support::is_filecheck_failure(&e) {
+                        let path = Path::new("crates/slate/tests/fixtures").join(fixture.relative);
+                        filecheck_fixtures.push(path);
+                    }
                     eprintln!("FAIL  {triple} {name}");
                     failures.push((format!("{triple}/{name}"), e));
                 }

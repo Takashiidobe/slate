@@ -47,10 +47,10 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn syscall3(number: i64, a: i64, b: i64, c: i64) -> i64 {
-// CHECK-NEXT:     let mut x8: i64 = number;
+// CHECK-NEXT:     let x8: i64 = number;
 // CHECK-NEXT:     let mut x0: i64 = a;
-// CHECK-NEXT:     let mut x1: i64 = b;
-// CHECK-NEXT:     let mut x2: i64 = c;
+// CHECK-NEXT:     let x1: i64 = b;
+// CHECK-NEXT:     let x2: i64 = c;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
 // CHECK-NEXT:         unsafe {
@@ -71,7 +71,7 @@ int main(void) {
 // CHECK-NEXT: use slate_support::getpid;
 // CHECK-EMPTY:
 // CHECK-NEXT: fn syscall0(number: i64) -> i64 {
-// CHECK-NEXT:     let mut x8: i64 = number;
+// CHECK-NEXT:     let x8: i64 = number;
 // CHECK-NEXT:     let mut x0: i64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
@@ -88,7 +88,7 @@ int main(void) {
 // CHECK-NEXT:     x0
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn add_w1(a: i32, mut b: i32) -> i32 {
+// CHECK-NEXT: fn add_w1(a: i32, b: i32) -> i32 {
 // CHECK-NEXT:     let mut w: i32 = a;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;

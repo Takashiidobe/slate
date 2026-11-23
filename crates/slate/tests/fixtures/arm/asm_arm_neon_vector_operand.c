@@ -21,8 +21,8 @@ int main(void) {
 
 // SLATE-FILECHECK-BEGIN armv7-unknown-linux-gnueabihf
 // CHECK-LABEL: {{^}}unsafe fn add_via_w(
-// CHECK-NEXT:     mut lhs: core::simd::Simd<f32, 4>,
-// CHECK-NEXT:     mut rhs: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     lhs: core::simd::Simd<f32, 4>,
+// CHECK-NEXT:     rhs: core::simd::Simd<f32, 4>,
 // CHECK-NEXT: ) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let mut result: core::simd::Simd<f32, 4> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     {

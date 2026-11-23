@@ -45,7 +45,7 @@ int main(void) {
 // CHECK-NEXT:     options(att_syntax),
 // CHECK-NEXT: );
 // CHECK-EMPTY:
-// CHECK-NEXT: fn count(mut w: u32) -> u32 {
+// CHECK-NEXT: fn count(w: u32) -> u32 {
 // CHECK-NEXT:     let mut res: u32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;

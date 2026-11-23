@@ -65,7 +65,7 @@ int main(void) {
 // CHECK-NEXT:     ebx
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn add_via_ebx(mut a: u32, mut b: u32) -> u32 {
+// CHECK-NEXT: fn add_via_ebx(mut a: u32, b: u32) -> u32 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         unsafe {
@@ -97,7 +97,7 @@ int main(void) {
 // CHECK-NEXT:     x
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn load_via_address(mut p: *mut u32) -> u32 {
+// CHECK-NEXT: fn load_via_address(p: *mut u32) -> u32 {
 // CHECK-NEXT:     let mut v: u32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;

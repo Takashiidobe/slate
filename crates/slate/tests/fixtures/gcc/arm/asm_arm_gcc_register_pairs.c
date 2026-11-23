@@ -104,7 +104,7 @@ int main(void) {
 // CHECK-NEXT:     value
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn modifiers(mut pointer: &i32) -> i32 {
+// CHECK-NEXT: fn modifiers(pointer: &i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;

@@ -15,7 +15,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN armv7-unknown-linux-gnueabihf
-// CHECK-LABEL: {{^}}fn load_via_uv(mut address: &i32) -> i32 {
+// CHECK-LABEL: {{^}}fn load_via_uv(address: &i32) -> i32 {
 // CHECK-NEXT:     let mut value: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;

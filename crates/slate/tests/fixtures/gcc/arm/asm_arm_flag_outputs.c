@@ -53,7 +53,7 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_eq(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_eq(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
@@ -71,7 +71,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_ne(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_ne(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -89,7 +89,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_cs(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_cs(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -107,7 +107,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_cc(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_cc(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -125,7 +125,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_hs(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_hs(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -143,7 +143,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_lo(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_lo(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -161,7 +161,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_mi(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_mi(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -179,7 +179,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_pl(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_pl(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -197,7 +197,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_vs(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_vs(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -215,7 +215,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_vc(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_vc(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -233,7 +233,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_hi(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_hi(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -251,7 +251,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_ls(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_ls(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -269,7 +269,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_ge(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_ge(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -287,7 +287,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_lt(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_lt(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -305,7 +305,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_gt(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_gt(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -323,7 +323,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn f_le(mut left: i32, mut right: i32) -> i32 {
+// CHECK-NEXT: fn f_le(left: i32, right: i32) -> i32 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -341,7 +341,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn sign_zero(mut value: i32) -> i32 {
+// CHECK-NEXT: fn sign_zero(value: i32) -> i32 {
 // CHECK-NEXT:     let mut minus: u8 = 0;
 // CHECK-NEXT:     let mut nonzero: bool = false;
 // CHECK-NEXT:     {

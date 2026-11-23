@@ -1750,6 +1750,16 @@ fn filecheck_case(case: &Case, target: &str) -> Result<(), String> {
     )
 }
 
+pub fn is_filecheck_failure(error: &str) -> bool {
+    error.starts_with("FileCheck failed")
+}
+
+fn is_runtime_mismatch(error: &str) -> bool {
+    error.starts_with("exit code differs")
+        || error.starts_with("stdout differs")
+        || error.starts_with("stderr differs")
+}
+
 pub fn first_barrier(error: &str) -> (&'static str, &str) {
     let error = error.strip_prefix("translate failed: ").unwrap_or(error);
     let detail = error
@@ -1767,10 +1777,7 @@ pub fn first_barrier(error: &str) -> (&'static str, &str) {
     }
     let class = if error.starts_with("Rust batch build failed") {
         "rustc"
-    } else if error.starts_with("exit code differs")
-        || error.starts_with("stdout differs")
-        || error.starts_with("stderr differs")
-    {
+    } else if is_runtime_mismatch(error) {
         "runtime mismatch"
     } else if error.starts_with("slate translate failed") || detail.starts_with("error") {
         "parse/sema"
@@ -1793,17 +1800,39 @@ pub fn print_triage(prefix: &str, results: &[(String, Result<(), String>)]) {
 }
 
 pub fn failure_report(failures: &[(String, String)], filecheck_fixtures: &[PathBuf]) -> String {
-    let details: Vec<String> = failures
-        .iter()
-        .map(|(name, error)| format!("[{name}] {error}"))
-        .collect();
-    let names: Vec<&str> = failures.iter().map(|(name, _)| name.as_str()).collect();
+    let mut details = Vec::new();
+    let mut runtime_failures = Vec::new();
+    let mut filecheck_failures = Vec::new();
+    let mut other_failures = Vec::new();
+    for (name, error) in failures {
+        details.push(format!("[{name}] {error}"));
+        let names = if is_filecheck_failure(error) {
+            &mut filecheck_failures
+        } else if is_runtime_mismatch(error)
+            || ["run ", "wait ", "open stdin for ", "write stdin for "]
+                .iter()
+                .any(|prefix| error.starts_with(prefix))
+        {
+            &mut runtime_failures
+        } else {
+            &mut other_failures
+        };
+        names.push(name.as_str());
+    }
     let mut report = format!(
-        "{}\n\n{} failing fixtures: {}",
+        "{}\n\n{} failing fixtures",
         details.join("\n\n"),
-        failures.len(),
-        names.join(" ")
+        failures.len()
     );
+    for (label, names) in [
+        ("Runtime failures", runtime_failures),
+        ("Other failures", other_failures),
+        ("FileCheck failures", filecheck_failures),
+    ] {
+        if !names.is_empty() {
+            report.push_str(&format!("\n{label} ({}): {}", names.len(), names.join(" ")));
+        }
+    }
     if !filecheck_fixtures.is_empty() {
         let paths: BTreeSet<_> = filecheck_fixtures.iter().collect();
         let args = shlex::try_join(
@@ -1813,7 +1842,7 @@ pub fn failure_report(failures: &[(String, String)], filecheck_fixtures: &[PathB
         )
         .expect("quote fixture paths");
         report.push_str(&format!(
-            "\n\nTo update the FileChecks for these fixtures, run from the workspace root:\n  python3 crates/slate/tools/update_filecheck.py {args}"
+            "\n\nTo regenerate checks for the FileCheck failures, run from the workspace root:\n  python3 crates/slate/tools/update_filecheck.py {args}"
         ));
     }
     report

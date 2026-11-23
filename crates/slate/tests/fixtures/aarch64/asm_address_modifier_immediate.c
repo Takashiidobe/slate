@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT:     v
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn through_register(mut q: *mut i32) -> i32 {
+// CHECK-NEXT: fn through_register(q: *mut i32) -> i32 {
 // CHECK-NEXT:     let mut v: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;

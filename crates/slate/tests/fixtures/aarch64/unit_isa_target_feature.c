@@ -86,8 +86,8 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "rdm,crc,lse,dotprod")]
 // CHECK-NEXT: unsafe fn dot(
 // CHECK-NEXT:     mut acc: core::simd::Simd<i32, 4>,
-// CHECK-NEXT:     mut a: core::simd::Simd<i8, 16>,
-// CHECK-NEXT:     mut b: core::simd::Simd<i8, 16>,
+// CHECK-NEXT:     a: core::simd::Simd<i8, 16>,
+// CHECK-NEXT:     b: core::simd::Simd<i8, 16>,
 // CHECK-NEXT: ) -> core::simd::Simd<i32, 4> {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: core::arch::aarch64::uint8x16_t;
@@ -117,7 +117,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "rdm,crc,lse,dotprod")]
 // CHECK-NEXT: #[unsafe(link_section = ".text.slate_distinct.main.crc")]
-// CHECK-NEXT: unsafe extern "C-unwind" fn crc(mut c: u32, mut v: u8) -> u32 {
+// CHECK-NEXT: unsafe extern "C-unwind" fn crc(mut c: u32, v: u8) -> u32 {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         unsafe {

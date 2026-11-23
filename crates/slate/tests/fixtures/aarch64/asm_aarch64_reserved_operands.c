@@ -70,8 +70,8 @@ int main(void) {
 // CHECK-NEXT:     reserved
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn read_x19(value: i64, mut other: i64) -> i64 {
-// CHECK-NEXT:     let mut reserved: i64 = value;
+// CHECK-NEXT: fn read_x19(value: i64, other: i64) -> i64 {
+// CHECK-NEXT:     let reserved: i64 = value;
 // CHECK-NEXT:     let mut result: i64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
@@ -142,8 +142,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn both(left: i64, right: i64) -> i64 {
-// CHECK-NEXT:     let mut low: i64 = left;
-// CHECK-NEXT:     let mut high: i64 = right;
+// CHECK-NEXT:     let low: i64 = left;
+// CHECK-NEXT:     let high: i64 = right;
 // CHECK-NEXT:     let mut result: i64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;

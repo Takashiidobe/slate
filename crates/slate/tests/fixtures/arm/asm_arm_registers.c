@@ -80,8 +80,8 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pinned_core(a: i32, b: i32) -> i32 {
-// CHECK-NEXT:     let mut first: i32 = a;
-// CHECK-NEXT:     let mut second: i32 = b;
+// CHECK-NEXT:     let first: i32 = a;
+// CHECK-NEXT:     let second: i32 = b;
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
@@ -100,7 +100,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn pinned_single(value: f32) -> f32 {
-// CHECK-NEXT:     let mut r#in: f32 = value;
+// CHECK-NEXT:     let r#in: f32 = value;
 // CHECK-NEXT:     let mut result: f32 = 0 as f32;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -117,7 +117,7 @@ int main(void) {
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn double_register(mut value: f64) -> f64 {
+// CHECK-NEXT: fn double_register(value: f64) -> f64 {
 // CHECK-NEXT:     let mut result: f64 = 0 as f64;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
@@ -200,8 +200,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn unused_operands(mut value: i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
-// CHECK-NEXT:     let mut f: f32 = 1.0f32;
-// CHECK-NEXT:     let mut d: f64 = 2.0f64;
+// CHECK-NEXT:     let f: f32 = 1.0f32;
+// CHECK-NEXT:     let d: f64 = 2.0f64;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
 // CHECK-NEXT:         unsafe {

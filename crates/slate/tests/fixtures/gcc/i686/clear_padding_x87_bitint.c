@@ -307,9 +307,6 @@ int main(void) {
 // CHECK-NEXT:     z: num_complex::Complex<LongDouble>,
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-NEXT: use slate_support::memset;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn dump(name: *const i8, p: *const (), n: u32) {
 // CHECK-NEXT:     let bytes: *const u8 = p as *const u8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());

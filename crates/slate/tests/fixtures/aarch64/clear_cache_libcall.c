@@ -29,20 +29,18 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut code: [u8; 64] = unsafe { core::mem::zeroed() };
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memset;
-// CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::write_bytes(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(code) as *mut u8) as *mut ())
-// CHECK-NEXT:                 as *mut core::ffi::c_void) as *mut u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(code) as *mut ()) as *mut core::ffi::c_void)
+// CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (213i32 as i32) as u8,
 // CHECK-NEXT:             ((core::mem::size_of::<[u8; 64]>() as u64) as usize) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         __slate_intrinsic_7eb885185d29c159(
-// CHECK-NEXT:             (core::ptr::addr_of_mut!(code) as *mut u8) as *mut (),
+// CHECK-NEXT:             core::ptr::addr_of_mut!(code) as *mut (),
 // CHECK-NEXT:             (core::ptr::addr_of_mut!(code) as *mut u8)
 // CHECK-NEXT:                 .add((core::mem::size_of::<[u8; 64]>() as u64) as usize) as *mut (),
 // CHECK-NEXT:         )

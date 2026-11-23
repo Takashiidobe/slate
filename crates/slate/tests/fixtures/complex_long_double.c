@@ -92,14 +92,14 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn mul(
-// CHECK-NEXT:     mut a: num_complex::Complex<f128>,
+// CHECK-NEXT:     a: num_complex::Complex<f128>,
 // CHECK-NEXT:     b: num_complex::Complex<f128>,
 // CHECK-NEXT: ) -> num_complex::Complex<f128> {
 // CHECK-NEXT:     a.c_mul(b, false)
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn div(
-// CHECK-NEXT:     mut a: num_complex::Complex<f128>,
+// CHECK-NEXT:     a: num_complex::Complex<f128>,
 // CHECK-NEXT:     b: num_complex::Complex<f128>,
 // CHECK-NEXT: ) -> num_complex::Complex<f128> {
 // CHECK-NEXT:     a.c_div(b, false)
@@ -114,7 +114,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn __slate_main() -> i32 {
-// CHECK-NEXT:     let mut a: num_complex::Complex<f128> = make(1.5f128, -2.25f128);
+// CHECK-NEXT:     let a: num_complex::Complex<f128> = make(1.5f128, -2.25f128);
 // CHECK-NEXT:     let b: num_complex::Complex<f128> = make(0.5f128, 4f128);
 // CHECK-NEXT:     show(c"add".as_ptr(), a + b);
 // CHECK-NEXT:     show(c"sub".as_ptr(), a - b);

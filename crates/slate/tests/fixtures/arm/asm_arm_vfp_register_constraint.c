@@ -30,7 +30,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN armv7-unknown-linux-gnueabihf
-// CHECK-LABEL: {{^}}fn copy_via_t(mut value: f32) -> f32 {
+// CHECK-LABEL: {{^}}fn copy_via_t(value: f32) -> f32 {
 // CHECK-NEXT:     let mut result: f32 = 0 as f32;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
@@ -46,7 +46,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn copy_via_w(mut value: f64) -> f64 {
+// CHECK-LABEL: {{^}}fn copy_via_w(value: f64) -> f64 {
 // CHECK-NEXT:     let mut result: f64 = 0 as f64;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
@@ -62,7 +62,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn copy_via_x(mut value: f64) -> f64 {
+// CHECK-LABEL: {{^}}fn copy_via_x(value: f64) -> f64 {
 // CHECK-NEXT:     let mut result: f64 = 0 as f64;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;

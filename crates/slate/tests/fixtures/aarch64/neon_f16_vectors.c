@@ -123,8 +123,8 @@ int main(void) {
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,crc,lse,neon")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vcgtq_f16(
-// CHECK-NEXT:     mut __p0: core::simd::Simd<f16, 8>,
-// CHECK-NEXT:     mut __p1: core::simd::Simd<f16, 8>,
+// CHECK-NEXT:     __p0: core::simd::Simd<f16, 8>,
+// CHECK-NEXT:     __p1: core::simd::Simd<f16, 8>,
 // CHECK-NEXT: ) -> core::simd::Simd<u16, 8> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<u16, 8> = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i16, 8>, core::simd::Simd<u16, 8>>(
@@ -230,7 +230,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,crc,lse,neon")]
 // CHECK-NEXT: #[inline(always)]
-// CHECK-NEXT: unsafe fn vget_high_f16(mut __p0: core::simd::Simd<f16, 8>) -> core::simd::Simd<f16, 4> {
+// CHECK-NEXT: unsafe fn vget_high_f16(__p0: core::simd::Simd<f16, 8>) -> core::simd::Simd<f16, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f16, 4> = core::simd::simd_swizzle!(
 // CHECK-NEXT:         __p0,
 // CHECK-NEXT:         __p0,
@@ -241,7 +241,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,crc,lse,neon")]
 // CHECK-NEXT: #[inline(always)]
-// CHECK-NEXT: unsafe fn vget_low_f16(mut __p0: core::simd::Simd<f16, 8>) -> core::simd::Simd<f16, 4> {
+// CHECK-NEXT: unsafe fn vget_low_f16(__p0: core::simd::Simd<f16, 8>) -> core::simd::Simd<f16, 4> {
 // CHECK-NEXT:     let __ret: core::simd::Simd<f16, 4> = core::simd::simd_swizzle!(
 // CHECK-NEXT:         __p0,
 // CHECK-NEXT:         __p0,

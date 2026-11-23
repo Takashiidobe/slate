@@ -270,10 +270,10 @@ int main(void) {
 // CHECK-NEXT:     unsafe { printf(c"%zu %zu %zu %zu\n".as_ptr(), 8u32, 8u32, 8u32, 8u32) };
 // CHECK-NEXT:     let mut image: wide = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __builtin_memset(
-// CHECK-NEXT:             core::ptr::addr_of_mut!(image) as *mut (),
-// CHECK-NEXT:             170i32,
-// CHECK-NEXT:             core::mem::size_of::<wide>() as u32,
+// CHECK-NEXT:         core::ptr::write_bytes(
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(image) as *mut ()) as *mut u8,
+// CHECK-NEXT:             170u8,
+// CHECK-NEXT:             (core::mem::size_of::<wide>() as u32) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     image.c = 1;
@@ -287,10 +287,10 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     let mut n: nested = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __builtin_memset(
-// CHECK-NEXT:             core::ptr::addr_of_mut!(n) as *mut (),
-// CHECK-NEXT:             0i32,
-// CHECK-NEXT:             core::mem::size_of::<nested>() as u32,
+// CHECK-NEXT:         core::ptr::write_bytes(
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(n) as *mut ()) as *mut u8,
+// CHECK-NEXT:             0u8,
+// CHECK-NEXT:             (core::mem::size_of::<nested>() as u32) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     n.tag = 9;
@@ -374,10 +374,10 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     let mut b: bits = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         __builtin_memset(
-// CHECK-NEXT:             core::ptr::addr_of_mut!(b) as *mut (),
-// CHECK-NEXT:             0i32,
-// CHECK-NEXT:             core::mem::size_of::<bits>() as u32,
+// CHECK-NEXT:         core::ptr::write_bytes(
+// CHECK-NEXT:             (core::ptr::addr_of_mut!(b) as *mut ()) as *mut u8,
+// CHECK-NEXT:             0u8,
+// CHECK-NEXT:             (core::mem::size_of::<bits>() as u32) as usize,
 // CHECK-NEXT:         )
 // CHECK-NEXT:     };
 // CHECK-NEXT:     b.c = 1;

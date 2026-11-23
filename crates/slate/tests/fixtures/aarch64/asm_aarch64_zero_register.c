@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut pair: [i64; 2] = [3, 4];
 // CHECK-EMPTY:
-// CHECK-NEXT: fn store_long(mut target: *mut i64, mut value: i64) {
+// CHECK-NEXT: fn store_long(target: *mut i64, value: i64) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
 // CHECK-NEXT:             "str {1:x}, [{0:x}]",

@@ -53,7 +53,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn through_x19(mut value: i64) -> i64 {
+// CHECK-NEXT: fn through_x19(value: i64) -> i64 {
 // CHECK-NEXT:     let mut result: i64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
@@ -71,7 +71,7 @@ int main(void) {
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn through_x29(mut value: i64) -> i64 {
+// CHECK-NEXT: fn through_x29(value: i64) -> i64 {
 // CHECK-NEXT:     let mut result: i64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
@@ -89,7 +89,7 @@ int main(void) {
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn through_fp(mut value: i64) -> i64 {
+// CHECK-NEXT: fn through_fp(value: i64) -> i64 {
 // CHECK-NEXT:     let mut result: i64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
@@ -107,7 +107,7 @@ int main(void) {
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn through_both(mut left: i64, mut right: i64) -> i64 {
+// CHECK-NEXT: fn through_both(left: i64, right: i64) -> i64 {
 // CHECK-NEXT:     let mut result: i64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;

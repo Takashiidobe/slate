@@ -20,7 +20,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN aarch64-unknown-linux-gnu
-// CHECK-LABEL: {{^}}fn atomic_increment(mut counter: &mut i32) -> i32 {
+// CHECK-LABEL: {{^}}fn atomic_increment(counter: &mut i32) -> i32 {
 // CHECK-NEXT:     let mut old: i32 = 0;
 // CHECK-NEXT:     let mut status: i32 = 0;
 // CHECK-NEXT:     {

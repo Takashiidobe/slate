@@ -19,7 +19,7 @@ int main(void) {
 // CHECK-NEXT:     fn fflush(_0: *mut slate_support::FILE) -> i32;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn copy_through(mut value: i64) -> i64 {
+// CHECK-NEXT: fn copy_through(value: i64) -> i64 {
 // CHECK-NEXT:     let mut result: i64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;

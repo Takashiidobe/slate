@@ -26,7 +26,7 @@ int main(void) {
 }
 
 // SLATE-FILECHECK-BEGIN aarch64-unknown-linux-gnu
-// CHECK-LABEL: {{^}}fn copy_via_w(mut value: f32) -> f32 {
+// CHECK-LABEL: {{^}}fn copy_via_w(value: f32) -> f32 {
 // CHECK-NEXT:     let mut result: f32 = 0 as f32;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
@@ -42,7 +42,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     result
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn copy_via_x(mut value: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 4> {
+// CHECK-LABEL: {{^}}fn copy_via_x(value: core::simd::Simd<f32, 4>) -> core::simd::Simd<f32, 4> {
 // CHECK-NEXT:     let mut result: core::simd::Simd<f32, 4> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: core::arch::aarch64::uint8x16_t;

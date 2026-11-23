@@ -43,7 +43,7 @@ int main(void) {
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "rdm,fp16,crc,lse,sve,fcma")]
-// CHECK-NEXT: unsafe fn widen(mut v: core::simd::Simd<i32, 16>) -> core::arch::aarch64::svint32_t {
+// CHECK-NEXT: unsafe fn widen(v: core::simd::Simd<i32, 16>) -> core::arch::aarch64::svint32_t {
 // CHECK-NEXT:     return unsafe {
 // CHECK-NEXT:         core::arch::aarch64::svld1_s32(
 // CHECK-NEXT:             core::arch::aarch64::svptrue_b32(),

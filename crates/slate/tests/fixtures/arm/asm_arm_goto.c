@@ -39,7 +39,7 @@ int main(void) {
 // CHECK-NEXT: #![feature(asm_goto_with_outputs)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: fn classify(mut value: i32) -> i32 {
+// CHECK-NEXT: fn classify(value: i32) -> i32 {
 // CHECK-NEXT:     let mut __slate_asm_target: usize = 0usize;
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::arch::asm!(
@@ -70,18 +70,20 @@ int main(void) {
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         steps += 1;
 // CHECK-NEXT:         let mut __slate_asm_target: bool = false;
-// CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u32;
-// CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             core::arch::asm!(
-// CHECK-NEXT:                 "subs {0}, {0}, #1\n\tbne {1}",
-// CHECK-NEXT:                 inlateout(reg) value as u32 => [[T_0]],
-// CHECK-NEXT:                 label {
-// CHECK-NEXT:                     __slate_asm_target = true;
-// CHECK-NEXT:                 },
-// CHECK-NEXT:                 options(nostack),
-// CHECK-NEXT:             );
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let [[T_0:__t[0-9]+]]: u32;
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 core::arch::asm!(
+// CHECK-NEXT:                     "subs {0}, {0}, #1\n\tbne {1}",
+// CHECK-NEXT:                     inlateout(reg) value as u32 => [[T_0]],
+// CHECK-NEXT:                     label {
+// CHECK-NEXT:                         __slate_asm_target = true;
+// CHECK-NEXT:                     },
+// CHECK-NEXT:                     options(nostack),
+// CHECK-NEXT:                 );
+// CHECK-NEXT:             }
+// CHECK-NEXT:             value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:         }
-// CHECK-NEXT:         value = unsafe { core::mem::transmute::<u32, i32>([[T_0]] as u32) };
 // CHECK-NEXT:         if !__slate_asm_target {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }

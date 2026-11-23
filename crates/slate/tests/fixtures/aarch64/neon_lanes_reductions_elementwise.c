@@ -589,8 +589,6 @@ int main(void) {
 // CHECK-NEXT:     return __ret;
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: use slate_support::memcpy;
-// CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "neon")]
 // CHECK-NEXT: #[inline(always)]
 // CHECK-NEXT: unsafe fn vminq_u32(
@@ -1422,7 +1420,7 @@ int main(void) {
 // CHECK-NEXT:     let mut qb: core::simd::Simd<u64, 2> = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(f32_in[0]) as *mut f32) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(f32_in[0]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(fa) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1431,7 +1429,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(f32_in[1]) as *mut f32) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(f32_in[1]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(fb) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1440,7 +1438,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(f64_in[0]) as *mut f64) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(f64_in[0]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(da) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1449,7 +1447,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(f64_in[1]) as *mut f64) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(f64_in[1]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(db) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1458,7 +1456,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(s8_in[0]) as *mut i8) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(s8_in[0]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(sa) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1467,7 +1465,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(s8_in[1]) as *mut i8) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(s8_in[1]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(sb) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1476,8 +1474,8 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(u8_in) as *mut u8) as *const ())
-// CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(u8_in) as *const ()) as *const core::ffi::c_void)
+// CHECK-NEXT:                 as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(ua) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
 // CHECK-NEXT:             (16u64 as usize) as usize,
@@ -1485,7 +1483,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(s16_in[0]) as *mut i16) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(s16_in[0]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(ha) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1494,7 +1492,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(s16_in[1]) as *mut i16) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(s16_in[1]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(hb) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1503,7 +1501,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(u16_in[0]) as *mut u16) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(u16_in[0]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(wa) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1512,7 +1510,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(u16_in[1]) as *mut u16) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(u16_in[1]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(wb) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1521,7 +1519,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(s32_in[0]) as *mut i32) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(s32_in[0]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(ia) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1530,7 +1528,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(s32_in[1]) as *mut i32) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(s32_in[1]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(ib) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1539,7 +1537,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(u32_in[0]) as *mut u32) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(u32_in[0]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(ja) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1548,7 +1546,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(u32_in[1]) as *mut u32) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(u32_in[1]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(jb) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1557,7 +1555,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(u64_in[0]) as *mut u64) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(u64_in[0]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(qa) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,
@@ -1566,7 +1564,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         core::ptr::copy_nonoverlapping(
-// CHECK-NEXT:             (((core::ptr::addr_of_mut!(u64_in[1]) as *mut u64) as *const ())
+// CHECK-NEXT:             ((core::ptr::addr_of_mut!(u64_in[1]) as *const ())
 // CHECK-NEXT:                 as *const core::ffi::c_void) as *const u8,
 // CHECK-NEXT:             ((core::ptr::addr_of_mut!(qb) as *mut ()) as *mut core::ffi::c_void)
 // CHECK-NEXT:                 as *mut u8,

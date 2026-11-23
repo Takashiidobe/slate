@@ -92,7 +92,7 @@ int main(void) {
 // CHECK-NEXT:     flag
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn flags_name(mut left: i32, mut right: i32) -> u64 {
+// CHECK-NEXT: fn flags_name(left: i32, right: i32) -> u64 {
 // CHECK-NEXT:     let mut flag: i32 = 0;
 // CHECK-NEXT:     let mut bits: u64 = 0;
 // CHECK-NEXT:     {

@@ -158,7 +158,7 @@ int main(void) {
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn exclusive_load(mut pointer: *mut u64) -> u64 {
+// CHECK-NEXT: fn exclusive_load(pointer: *mut u64) -> u64 {
 // CHECK-NEXT:     let mut result: u64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;
@@ -200,7 +200,7 @@ int main(void) {
 // CHECK-NEXT:     result
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn modifiers(mut pointer: &i32) -> i32 {
+// CHECK-NEXT: fn modifiers(pointer: &i32) -> i32 {
 // CHECK-NEXT:     let mut result: i32 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u32;

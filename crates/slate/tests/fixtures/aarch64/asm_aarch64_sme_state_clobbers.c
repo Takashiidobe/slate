@@ -21,7 +21,7 @@ int main(void){ printf("%ld %ld\n", za_roundtrip(7), fpmr_rw(5)); return 0; }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "sme")]
-// CHECK-NEXT: unsafe fn za_roundtrip(mut v: i64) -> i64 {
+// CHECK-NEXT: unsafe fn za_roundtrip(v: i64) -> i64 {
 // CHECK-NEXT:     let mut r: i64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0:__t[0-9]+]]: u64;
@@ -39,7 +39,7 @@ int main(void){ printf("%ld %ld\n", za_roundtrip(7), fpmr_rw(5)); return 0; }
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: #[target_feature(enable = "fp8")]
-// CHECK-NEXT: unsafe fn fpmr_rw(mut v: i64) -> i64 {
+// CHECK-NEXT: unsafe fn fpmr_rw(v: i64) -> i64 {
 // CHECK-NEXT:     let mut r: i64 = 0;
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let [[T_0]]: u64;
