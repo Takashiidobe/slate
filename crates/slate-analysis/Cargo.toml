@@ -1,6 +1,6 @@
 [package]
 name = "slate-analysis"
-version = "0.9.0"
+version = "0.10.0"
 edition = "2024"
 description = "Whole-program analyses over slate-parser IR whose facts drive Slate's lowering"
 license.workspace = true
