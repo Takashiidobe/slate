@@ -4077,6 +4077,10 @@ impl TypeResolver {
     pub(super) fn require_pointer_element(&self, ty: &Type) -> Result<(), ResolveError> {
         match ty {
             Type::VariableArray { element, .. } => self.require_pointer_element(element),
+            Type::Array {
+                element,
+                length: Some(_),
+            } if element.is_variably_modified() => self.require_pointer_element(element),
             Type::Void | Type::Function { .. } => Ok(()),
             #[expect(
                 slate::sensitive_wildcard,
@@ -4110,14 +4114,20 @@ impl TypeResolver {
         atomic: bool,
         sizeof: bool,
     ) -> Result<StorageLayout, ResolveError> {
-        while !sizeof
-            && let Type::VariableArray { element, .. }
-            | Type::Array {
-                element,
-                length: None,
-            } = ty
-        {
-            ty = element;
+        if !sizeof {
+            loop {
+                match ty {
+                    Type::VariableArray { element, .. }
+                    | Type::Array {
+                        element,
+                        length: None,
+                    } => ty = element,
+                    Type::Array { element, .. } if element.is_variably_modified() => {
+                        ty = element;
+                    }
+                    _ => break,
+                }
+            }
         }
         self.sizeof_storage(ty.clone(), atomic)
     }
@@ -4175,6 +4185,7 @@ impl TypeResolver {
         requested: Option<u64>,
     ) -> Result<Option<u64>, ResolveError> {
         let large_array = (declared.is_some()
+            && !ty.is_variably_modified()
             && matches!(
                 ty,
                 Type::Array {

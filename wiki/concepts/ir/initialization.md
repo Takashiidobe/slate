@@ -173,6 +173,9 @@ initializer, not the type.
   (`int (*p)[m]` is `ptr<vla<i32, %m>>`). It decays like an array with
   `length=None`. `sizeof` is a runtime `mul` of the captured extents, never a
   re-evaluation of the bound.
+- A fixed bound around a VLA stays an `array<T, N>`. Its size and pointer
+  stride include both fixed and captured extents. Its natural alignment
+  comes from its element type.
 - Parameters: a definition captures each non-constant bound once at entry, in
   parameter order (C11 6.9.1p10), including the outermost one that the pointer
   adjustment drops (`int a[n][m]` is `ptr<vla<i32, %m>>`). Prototype scope has
