@@ -288,7 +288,7 @@ pub(super) fn needs_dispatch(statements: &[Statement]) -> bool {
         matches!(
             statement.value,
             ir::Statement::Goto(_) | ir::Statement::ComputedGoto(_) | ir::Statement::Label { .. }
-        ) || matches!(&statement.value, ir::Statement::Asm(asm) if !asm.labels.is_empty())
+        ) || matches!(&statement.value, ir::Statement::Asm(asm) if !asm.labels.is_empty() || entry_labels(asm).next().is_some())
             || children(statement).into_iter().any(needs_dispatch)
             || match &statement.value {
                 ir::Statement::Switch { id, body, .. } if has_nested_switch_label(*id, body) => {
