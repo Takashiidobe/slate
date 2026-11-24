@@ -1,0 +1,16 @@
+#include "../abi.h"
+
+__asm__(".text\n"
+        "clobber_regs:\n"
+        "xor %r10d, %r10d\n"
+        "ret\n"
+        ".globl call_cb\n"
+        "call_cb:\n"
+        "sub $8, %rsp\n"
+        "mov %rdi, %rax\n"
+        "lea clobber_regs(%rip), %rdi\n"
+        "mov $42, %r10d\n"
+        "call *%rax\n"
+        "mov %r10d, %eax\n"
+        "add $8, %rsp\n"
+        "ret\n");

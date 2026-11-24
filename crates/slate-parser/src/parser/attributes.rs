@@ -561,8 +561,11 @@ fn parse_attribute_value(
             .map(Attribute::TlsModel)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "ms_struct" if arguments.is_empty() => Ok(Attribute::MsStruct),
+        "swiftcall" | "preserve_most" => {
+            Err(format!("unsupported calling convention `{canonical_name}`"))
+        }
         "cdecl" | "stdcall" | "fastcall" | "vectorcall" | "regcall" | "thiscall" | "ms_abi"
-        | "sysv_abi" | "preserve_most" | "preserve_all" | "preserve_none"
+        | "sysv_abi" | "preserve_all" | "preserve_none"
             if arguments.is_empty() =>
         {
             let convention = match canonical_name {
@@ -573,7 +576,6 @@ fn parse_attribute_value(
                 "regcall" => CallingConvention::Regcall,
                 "thiscall" => CallingConvention::Thiscall,
                 "ms_abi" => CallingConvention::MsAbi,
-                "preserve_most" => CallingConvention::PreserveMost,
                 "preserve_all" => CallingConvention::PreserveAll,
                 "preserve_none" => CallingConvention::PreserveNone,
                 _ => CallingConvention::SysVAbi,

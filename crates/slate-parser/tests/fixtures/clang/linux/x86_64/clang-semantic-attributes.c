@@ -1,5 +1,4 @@
 #define ATTR(name) __attribute__((name))
-ATTR(preserve_most) void most(void);
 ATTR(preserve_all) void all(void);
 ATTR(preserve_none) void none(void);
 ATTR(address_space(1 + 2)) int *device_memory;
@@ -44,7 +43,6 @@ ATTR(always_inline) inline void inline_fn(void);
 // GNU-NEXT:     global %[[VALUE_device_memory:[0-9]+]] device_memory: ptr<i32> [storage=static] [linkage=external];
 // GNU-NEXT:     global %[[VALUE_annotated:[0-9]+]] annotated: i32 [storage=static] [linkage=external];
 // GNU-NEXT:     global %[[VALUE_weak_platform:[0-9]+]] weak_platform: i32 [storage=static] [linkage=external];
-// GNU-NEXT:     fn %[[VALUE_most:[0-9]+]] @most() -> void [linkage=external];
 // GNU-NEXT:     fn %[[VALUE_all:[0-9]+]] @all() -> void [linkage=external];
 // GNU-NEXT:     fn %[[VALUE_none:[0-9]+]] @none() -> void [linkage=external];
 // GNU-NEXT:     fn %[[VALUE_overloaded:[0-9]+]] @overloaded(%[[VALUE0:[0-9]+]] <unnamed>: i32) -> i32 [linkage=external] [asm_name="_Z10overloadedi"] [overloadable];
