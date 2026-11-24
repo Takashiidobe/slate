@@ -70,5 +70,6 @@ allow_attributes_without_reason = "deny"
 result_large_err = "allow"
 
 [dev-dependencies]
+slate-mutate = { path = "../slate-mutate" }
 tempfile.workspace = true
 toml.workspace = true

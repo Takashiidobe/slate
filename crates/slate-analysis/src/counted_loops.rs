@@ -300,7 +300,7 @@ fn integer_range(ty: &Type) -> Option<(BigInt, BigInt)> {
     })
 }
 
-pub(crate) fn integer_constant(value: &Value) -> Option<BigInt> {
+pub fn integer_constant(value: &Value) -> Option<BigInt> {
     let constant = match &value.node.value {
         ValueKind::Constant(Number::Integer(value)) => BigInt::from(value.clone()),
         ValueKind::Constant(Number::SignedInteger(value)) => value.clone(),

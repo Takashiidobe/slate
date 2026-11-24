@@ -554,7 +554,7 @@ pub fn msvc_wine_root() -> Option<PathBuf> {
     .clone()
 }
 
-fn msvc_oracle_arch(cross: Option<&CrossTarget>) -> Option<&'static str> {
+pub fn msvc_oracle_arch(cross: Option<&CrossTarget>) -> Option<&'static str> {
     let arch = match cross.map(|cross| cross.rust_triple) {
         None if cfg!(target_arch = "x86_64") => "x64",
         Some("x86_64-pc-windows-msvc") => "x64",
@@ -567,7 +567,12 @@ fn msvc_oracle_arch(cross: Option<&CrossTarget>) -> Option<&'static str> {
         .map(|_| arch)
 }
 
-fn compile_c_msvc(src: &Path, out: &Path, extra_args: &[String], arch: &str) -> Result<(), String> {
+pub fn compile_c_msvc(
+    src: &Path,
+    out: &Path,
+    extra_args: &[String],
+    arch: &str,
+) -> Result<(), String> {
     let cache_key = serde_json::to_string(&(1, src, "cl.exe", arch, extra_args))
         .map_err(|e| format!("encode C cache key: {e}"))?;
     let dir = out.parent().ok_or("msvc output has no directory")?;
@@ -998,6 +1003,18 @@ pub fn build_batch(
     jobs: usize,
     cross: Option<&CrossTarget>,
 ) -> Result<BatchBuild, String> {
+    let target_dir = test_target_dir_for_project(project);
+    build_batch_in(cases, project, bin_dir, jobs, cross, &target_dir)
+}
+
+pub fn build_batch_in(
+    cases: &[RustCase],
+    project: &Path,
+    bin_dir: &Path,
+    jobs: usize,
+    cross: Option<&CrossTarget>,
+    target_dir: &Path,
+) -> Result<BatchBuild, String> {
     std::fs::create_dir_all(bin_dir).map_err(|e| format!("create {}: {e}", bin_dir.display()))?;
     write_if_changed(
         project.join("Cargo.toml"),
@@ -1029,8 +1046,7 @@ pub fn build_batch(
     }
     write_long_double_shim(project)?;
 
-    let target_dir = test_target_dir_for_project(project);
-    std::fs::create_dir_all(&target_dir)
+    std::fs::create_dir_all(target_dir)
         .map_err(|e| format!("create {}: {e}", target_dir.display()))?;
     let mut command = Command::new(cargo());
     command
@@ -1045,7 +1061,7 @@ pub fn build_batch(
         .arg("--jobs")
         .arg(jobs.max(1).to_string())
         .arg("--target-dir")
-        .arg(&target_dir);
+        .arg(target_dir);
     if let Some(cross) = cross {
         command
             .arg("--target")
@@ -1602,7 +1618,7 @@ fn target_clause_matches(text: &str, triple: &str) -> bool {
     if negated { !any_match } else { any_match }
 }
 
-fn fixture_dg_directive_flags(path: &Path, directive: &str) -> Vec<String> {
+fn fixture_dg_directive_flags(path: &Path, directive: &str, target: &str) -> Vec<String> {
     let Ok(text) = std::fs::read_to_string(path) else {
         return Vec::new();
     };
@@ -1620,7 +1636,7 @@ fn fixture_dg_directive_flags(path: &Path, directive: &str) -> Vec<String> {
         };
         let quoted = &rest[..quote_len];
         let after = &rest[quote_len + 1..];
-        if after.contains("target") && !target_clause_matches(after, "x86_64-unknown-linux-gnu") {
+        if after.contains("target") && !target_clause_matches(after, target) {
             continue;
         }
         flags.extend(quoted.split_whitespace().map(str::to_string));
@@ -1629,11 +1645,11 @@ fn fixture_dg_directive_flags(path: &Path, directive: &str) -> Vec<String> {
 }
 
 pub fn fixture_dg_options(path: &Path) -> Vec<String> {
-    fixture_dg_directive_flags(path, "dg-options")
+    fixture_dg_directive_flags(path, "dg-options", DEFAULT_TEST_TARGET)
 }
 
 pub fn fixture_dg_additional_options(path: &Path) -> Vec<String> {
-    fixture_dg_directive_flags(path, "dg-additional-options")
+    fixture_dg_directive_flags(path, "dg-additional-options", DEFAULT_TEST_TARGET)
 }
 
 fn hash_files_beside(dir: &Path, hasher: &mut std::hash::DefaultHasher) {
@@ -1854,4 +1870,14 @@ pub fn failure_report(failures: &[(String, String)], filecheck_fixtures: &[PathB
         ));
     }
     report
+}
+
+pub fn mutation_fixture_flags(path: &Path, target: &str) -> Vec<String> {
+    let mut flags = fixture_dg_directive_flags(path, "dg-options", target);
+    flags.extend(fixture_dg_directive_flags(
+        path,
+        "dg-additional-options",
+        target,
+    ));
+    flags
 }

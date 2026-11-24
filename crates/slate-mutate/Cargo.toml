@@ -1,0 +1,12 @@
+[package]
+name = "slate-mutate"
+version = "0.10.0"
+edition = "2024"
+description = "Typed IR mutations for Slate differential testing"
+license.workspace = true
+repository.workspace = true
+include = ["/src"]
+
+[dependencies]
+slate-analysis.workspace = true
+slate-parser.workspace = true

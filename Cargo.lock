@@ -1815,6 +1815,7 @@ dependencies = [
  "shlex",
  "slate-analysis",
  "slate-cargo-toml",
+ "slate-mutate",
  "slate-parser",
  "slate-sysroots",
  "stacker",
@@ -1863,6 +1864,14 @@ dependencies = [
  "slate-parser",
  "syn 3.0.6",
  "tempfile",
+]
+
+[[package]]
+name = "slate-mutate"
+version = "0.10.0"
+dependencies = [
+ "slate-analysis",
+ "slate-parser",
 ]
 
 [[package]]

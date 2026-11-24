@@ -209,6 +209,17 @@ impl DefUse {
     }
 }
 
+pub fn single_read_initializers(body: &[Span<Statement>]) -> impl Iterator<Item = BindingId> {
+    let uses = DefUse::of(body);
+    body.iter().filter_map(move |statement| {
+        let Statement::Let(variable) = &statement.value else {
+            return None;
+        };
+        uses.matches_reads_and_writes(variable.id, 1, 0)
+            .then_some(variable.id)
+    })
+}
+
 #[derive(Default)]
 struct Walker<'a> {
     def_use: DefUse,

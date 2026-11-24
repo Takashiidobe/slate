@@ -1,3 +1,5 @@
+#[path = "mutation/mod.rs"]
+mod mutation;
 mod support;
 
 use std::path::{Path, PathBuf};
@@ -270,6 +272,9 @@ fn translate_fixture_project(
 
 #[test]
 fn generated_differential() {
+    if std::env::var("SLATE_MUTATE").as_deref() == Ok("1") {
+        return mutation::run();
+    }
     let mut failures = Vec::new();
     let mut filecheck_fixtures = Vec::new();
     let mut total = 0;

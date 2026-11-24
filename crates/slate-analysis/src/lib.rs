@@ -27,6 +27,8 @@ pub mod transform;
 pub use byte_buffers::ArrayAlias;
 pub use constant_strings::ConstantString;
 pub use counted_loops::CountedLoop;
+pub use counted_loops::integer_constant;
+pub use def_use::single_read_initializers;
 pub use def_use::{BindingMutability, BorrowArgument};
 pub use facts::{BindingFacts, Facts, UnitFacts, ValueFacts, analyze};
 pub use guarded_heap::{GuardedHeapStatement, HeapElement, HeapIndex};

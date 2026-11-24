@@ -47,6 +47,16 @@ fn single_file_options(path: &Path) -> frontend::lowerer::LowerOptions {
     }
 }
 
+/// Lower an already parsed module with the single-file translation pipeline.
+pub fn translate_ir(
+    module: &slate_parser::ir::Module,
+    files: &slate_parser::files::Files,
+    path: &Path,
+) -> Result<String, Error> {
+    let program = frontend::lower_single_module(module, files, &single_file_options(path), "main")?;
+    format_program(backend::apply_with_target(program, &module.target))
+}
+
 pub fn translate(path: &Path) -> Result<String, Error> {
     translate_with_args(path, &[])
 }

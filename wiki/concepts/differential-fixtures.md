@@ -7,6 +7,7 @@
 - [Supported/unsupported ratchet](#supportedunsupported-ratchet)
 - [Triage](#triage)
 - [Workflow](#workflow)
+- [IR mutation testing](#ir-mutation-testing)
 - [Per-fixture compiler flags](#per-fixture-compiler-flags)
 - [FileCheck](#filecheck)
 <!-- /toc -->
@@ -165,6 +166,32 @@ module's type list is not a gate.
 2. Implement the lowering until the report prints `PASS <stem>`.
 3. `git mv` the fixture into the supported bucket.
 4. Run the full `slate` profile and promote anything else the change fixed.
+
+## IR mutation testing
+
+```bash
+SLATE_MUTATE=1 SLATE_DIFF_FIXTURE=peel_casts \
+  cargo nextest run --release --profile slate --test differential \
+  -E 'test(=generated_differential)' --no-capture
+```
+
+- Choose a UTF-8, single-file executable with `SLATE_MUTATE_SOURCE`, a fixture
+  stem with `SLATE_DIFF_FIXTURE`, or the supported fixture sweep with
+  `SLATE_MUTATE_ALL=1`.
+- Set `SLATE_DIFF_FLAVOR` to `clang`, `gcc`, or `msvc` to select the oracle.
+  Fixture directories select the flavor by default. The harness requires a
+  runnable oracle for the selected target.
+- Set `SLATE_MUTATE_LIMIT` to cap generated variants per seed. The default is
+  16. Set `SLATE_MUTATE_FLAGS` to append shell-quoted compiler flags to
+  `dg-options` and `dg-additional-options` for both Slate and the oracle.
+- Rules mutate integer expressions in top-level returns and proven decimal
+  `printf` output in `main`. A local initializer is eligible when its sole read
+  feeds one of those outputs. Source edits require an editable integer literal
+  in the main file.
+- A finding preserves the C variant, generated Rust when available, and
+  compiler arguments under `crates/slate/target/difftest-mutations/`. The
+  harness skips C variants that fail compilation, time out, or exit by signal.
+  Each executable has a five-second timeout.
 
 ## Per-fixture compiler flags
 
