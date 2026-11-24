@@ -83,16 +83,28 @@ impl FixtureConfig {
 
     fn runs_on(&self, platform: &Platform) -> bool {
         match &self.platforms {
-            Some(platforms) => platforms.iter().any(|name| name == platform.name),
+            Some(platforms) => platforms
+                .iter()
+                .any(|name| name == platform.name || name == platform.triple),
             None => !platform.opt_in,
         }
     }
 }
 
-fn fixtures(platform: &Platform) -> Vec<(String, PathBuf, FixtureConfig)> {
+fn fixtures(
+    platform: &Platform,
+    root: &Path,
+    unsupported: bool,
+) -> Vec<(String, PathBuf, FixtureConfig)> {
     let selected = std::env::var("SLATE_DIFF_FIXTURE").ok();
-    let mut fixtures: Vec<_> = std::fs::read_dir(fixtures_root())
-        .expect("read dylink fixtures")
+    let entries = match std::fs::read_dir(root) {
+        Ok(entries) => entries,
+        Err(error) if unsupported && error.kind() == std::io::ErrorKind::NotFound => {
+            return Vec::new();
+        }
+        Err(error) => panic!("read dylink fixtures in {}: {error}", root.display()),
+    };
+    let mut fixtures: Vec<_> = entries
         .filter_map(|entry| {
             let path = entry.ok()?.path();
             let name = path.file_name()?.to_string_lossy().into_owned();
@@ -388,9 +400,21 @@ impl Platform {
         support::run_with_config_for_target(binary, &self.run_config(), work, self.cross.as_ref())
     }
 
-    fn check(&self, fixture: &Path, name: &str, config: &FixtureConfig) -> Result<(), String> {
+    fn check(
+        &self,
+        fixture: &Path,
+        name: &str,
+        config: &FixtureConfig,
+        unsupported: bool,
+    ) -> Result<(), String> {
+        let bucket = if unsupported {
+            "dylink-unsupported"
+        } else {
+            "dylink"
+        };
         let work = manifest_dir()
-            .join("target/difftest-generated/dylink")
+            .join("target/difftest-generated")
+            .join(bucket)
             .join(self.triple)
             .join(name);
         std::fs::create_dir_all(&work).map_err(|e| e.to_string())?;
@@ -401,7 +425,6 @@ impl Platform {
         .map_err(|e| e.to_string())?;
         self.build_dependency(fixture, config, &work)?;
         let native = self.build_native_host(fixture, config, &work)?;
-        let translated = self.build_translated_host(fixture, config, &work)?;
         let c = self.run(&native, &work)?;
         if c.exit() != Some(0) || c.stdout().is_empty() {
             return Err(format!(
@@ -410,8 +433,22 @@ impl Platform {
                 String::from_utf8_lossy(c.stdout())
             ));
         }
-        let rust = self.run(&translated, &work)?;
-        support::compare_runs(&c, &rust, false)?;
+        let comparison = self
+            .build_translated_host(fixture, config, &work)
+            .and_then(|translated| self.run(&translated, &work))
+            .and_then(|rust| support::compare_runs(&c, &rust, false));
+        if unsupported {
+            return match comparison {
+                Ok(()) => Err(format!(
+                    "fixture now matches C. Promote it with:\n  git mv crates/slate/tests/fixtures.dylink.unsupported/{name} crates/slate/tests/fixtures.dylink/{name}"
+                )),
+                Err(error) => {
+                    eprintln!("[{}/{name}] unsupported: {error}", self.name);
+                    Ok(())
+                }
+            };
+        }
+        comparison?;
         let crate_dir = work.join("rust");
         std::fs::write(crate_dir.join("runtime-ok"), b"").map_err(|e| e.to_string())?;
         for source in c_sources_in(&fixture.join("host")) {
@@ -482,21 +519,30 @@ fn windows_platform() -> Option<Platform> {
 }
 
 fn run_platform(platform: &Platform) {
-    let fixtures = fixtures(platform);
+    let supported_root = fixtures_root();
+    let unsupported_root = supported_root.with_extension("dylink.unsupported");
+    let supported = fixtures(platform, &supported_root, false);
     assert!(
-        !fixtures.is_empty() || platform.opt_in || std::env::var("SLATE_DIFF_FIXTURE").is_ok(),
+        !supported.is_empty() || platform.opt_in || std::env::var("SLATE_DIFF_FIXTURE").is_ok(),
         "no dylink fixtures found in {}",
-        fixtures_root().display()
+        supported_root.display()
     );
-    let failures: Vec<_> = support::parallel_map(&fixtures, |(name, path, config)| {
-        platform
-            .check(path, name, config)
-            .err()
-            .map(|error| format!("[{}/{name}] {error}", platform.name))
-    })
-    .into_iter()
-    .flatten()
-    .collect();
+    let mut failures = Vec::new();
+    for (fixtures, unsupported) in [
+        (supported, false),
+        (fixtures(platform, &unsupported_root, true), true),
+    ] {
+        failures.extend(
+            support::parallel_map(&fixtures, |(name, path, config)| {
+                platform
+                    .check(path, name, config, unsupported)
+                    .err()
+                    .map(|error| format!("[{}/{name}] {error}", platform.name))
+            })
+            .into_iter()
+            .flatten(),
+        );
+    }
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
 }
 

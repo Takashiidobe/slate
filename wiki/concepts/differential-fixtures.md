@@ -232,17 +232,25 @@ one after the leg's runtime comparison passes, for that leg's triple
 (`x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu`,
 `x86_64-pc-windows-msvc`). `update_filecheck.py` covers all three by default.
 
-A fixture's optional `dylink.json` sets `platforms` (leg names, replacing the
-default three) and `args` (passed to the native lib, the native host and
-`translate`), `compiler` (argv[0] of the translated host's compile command,
-default `clang`, which picks slate's flavor) and `translate_args` (passed only to
-`translate`). The last two test gcc-only flags such as `-mabi=ms`: the native
-side stays clang and spells the convention with attributes under `__clang__`
+A fixture's optional `dylink.json` sets `platforms` (leg names or target
+triples, replacing the default three), `args` (passed to the native lib, native
+host, and `translate`), `compiler` (argv[0] of the translated host's compile
+command, default `clang`, which picks slate's flavor) and `translate_args`
+(passed only to `translate`). The last two test gcc-only flags such as
+`-mabi=ms`. The native side uses clang and spells the convention with attributes
+under `__clang__`
 (`abi_mabi_ms`). `linux-i686` (`i686-unknown-linux-gnu`, native `-m32`) is opt-in:
 it runs only fixtures that list it, which is how 32-bit ABI flags such as
 `-mrtd` are tested across a native/translated boundary. Native builds go
 through `compile_c_cached` and the crate through `fresh_tree`, so an unchanged
 fixture rebuilds nothing.
+
+Put known translation, build, or runtime failures in
+`tests/fixtures.dylink.unsupported/<name>/`, using the same `host/`,
+`lib/`, and optional `dylink.json` layout. Each dylink leg requires a working
+native oracle. When the translated host matches its output and exit status,
+the test prints the `git mv` command to promote the fixture to
+`tests/fixtures.dylink/`.
 
 `tests/fixtures.plan/` fixtures pin `translate-project --plan` output instead of
 Rust. `plan_filecheck` (`tests/project_plan.rs`) treats each `.c` file as a

@@ -127,7 +127,10 @@ def dylink_project(path):
 def dylink_targets(path):
     config = DYLINK / dylink_project(path) / "dylink.json"
     platforms = json.loads(config.read_text()).get("platforms") if config.is_file() else None
-    return [DYLINK_PLATFORMS[name] for name in platforms or DYLINK_DEFAULT_PLATFORMS]
+    return [
+        DYLINK_PLATFORMS.get(name, name)
+        for name in (DYLINK_DEFAULT_PLATFORMS if platforms is None else platforms)
+    ]
 
 
 def is_transform(path):
