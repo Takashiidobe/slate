@@ -37,7 +37,7 @@ pub(super) fn place(program: &mut Program) {
 
 fn place_item(item: &mut Item) {
     match item {
-        Item::Fn(func) => place_stmts(&mut func.body, false),
+        Item::Fn(func) => place_stmts_with_tail(&mut func.body, false, func.ret.is_some()),
         Item::MacroRules { body, .. } => place_stmts(body, false),
         Item::InlineMod { items, .. } => items.iter_mut().for_each(place_item),
         Item::Cfg { item, .. } => place_item(item),
@@ -63,11 +63,20 @@ fn has_let(stmts: &[Stmt]) -> bool {
 }
 
 fn place_stmts(stmts: &mut Vec<Stmt>, covered: bool) {
+    place_stmts_with_tail(stmts, covered, false);
+}
+
+fn place_stmts_with_tail(stmts: &mut Vec<Stmt>, covered: bool, value_tail: bool) {
     let mut out = Vec::with_capacity(stmts.len());
+    let last = stmts.len().saturating_sub(1);
     let mut scoped_last = false;
-    for stmt in std::mem::take(stmts) {
+    for (index, stmt) in std::mem::take(stmts).into_iter().enumerate() {
         scoped_last = false;
         match stmt {
+            Stmt::Expr(mut expr) if value_tail && index == last => {
+                place_slot(&mut expr, covered);
+                out.push(Stmt::Expr(expr));
+            }
             Stmt::Unsafe { mut body } | Stmt::Block(mut body) if !body.stmts.is_empty() => {
                 place_block(&mut body, covered);
                 if body.tail.is_none() && !has_let(&body.stmts) {
