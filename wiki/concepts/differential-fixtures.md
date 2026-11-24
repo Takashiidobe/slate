@@ -170,28 +170,30 @@ module's type list is not a gate.
 ## IR mutation testing
 
 ```bash
-SLATE_MUTATE=1 SLATE_DIFF_FIXTURE=peel_casts \
-  cargo nextest run --release --profile slate --test differential \
-  -E 'test(=generated_differential)' --no-capture
+SLATE_DIFF_FIXTURE=peel_casts SLATE_MUTATE_RULES=string,statement \
+  cargo nextest run --release --profile mutation --no-capture
 ```
 
-- Choose a UTF-8, single-file executable with `SLATE_MUTATE_SOURCE`, a fixture
-  stem with `SLATE_DIFF_FIXTURE`, or the supported fixture sweep with
-  `SLATE_MUTATE_ALL=1`.
-- Set `SLATE_DIFF_FLAVOR` to `clang`, `gcc`, or `msvc` to select the oracle.
-  Fixture directories select the flavor by default. The harness requires a
-  runnable oracle for the selected target.
-- Set `SLATE_MUTATE_LIMIT` to cap generated variants per seed. The default is
-  16. Set `SLATE_MUTATE_FLAGS` to append shell-quoted compiler flags to
-  `dg-options` and `dg-additional-options` for both Slate and the oracle.
-- Rules mutate integer expressions in top-level returns and proven decimal
-  `printf` output in `main`. A local initializer is eligible when its sole read
-  feeds one of those outputs. Source edits require an editable integer literal
-  in the main file.
-- A finding preserves the C variant, generated Rust when available, and
-  compiler arguments under `crates/slate/target/difftest-mutations/`. The
-  harness skips C variants that fail compilation, time out, or exit by signal.
-  Each executable has a five-second timeout.
+- Select a fixture stem with `SLATE_DIFF_FIXTURE`, pass a UTF-8 single-file
+  executable with `SLATE_MUTATE_SOURCE`, or use `SLATE_MUTATE_ALL=1`.
+- Set `SLATE_MUTATE_RULES` to a comma-separated list of `integer`, `operator`,
+  `condition`, `statement`, `float`, `string`, `array`, `char`, and `pointer`.
+  The default enables all strategies. Set `SLATE_MUTATE_SEED` to shuffle
+  candidate order reproducibly and `SLATE_MUTATE_LIMIT` to cap variants per
+  seed. The default limit is 16.
+- Fixture directories select Clang, GCC, or MSVC. Use `SLATE_DIFF_FLAVOR` to
+  override the selection and `SLATE_MUTATE_FLAGS` to append shell-quoted flags
+  to the fixture's compiler flags for both Slate and the oracle.
+- The strategies target observable values in `main` and check the uses of
+  affected locals. Array edits stay within initialized bounds. Pointer edits
+  introduce null in equality comparisons. String edits replace byte literals
+  passed directly to `puts` or `printf` with a static `%s` format. Infinity
+  and NaN mutations use Clang or GCC builtins and require non-finite math.
+- Generated executables and Cargo build files use temporary directories.
+  Failure artifacts retain sources and compiler arguments under
+  `crates/slate/target/difftest-mutations/`. The harness skips C variants
+  that fail compilation, time out, or exit by signal. Each executable has
+  a five-second timeout.
 
 ## Per-fixture compiler flags
 

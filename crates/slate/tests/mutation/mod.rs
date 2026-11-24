@@ -1,7 +1,7 @@
 use super::{Flavor, fixture_flavor, fixtures_dir, selected_flavor, support, target_fixtures};
 use slate_analysis::transform::{Passes, Slot};
 use slate_analysis::{Program, UnitId, analyze};
-use slate_mutate::{Mutation, candidates};
+use slate_mutate::{Mutation, Rule, candidates};
 use slate_parser::ast::FileId;
 use slate_parser::{files::Files, ir::Module};
 use std::fs;
@@ -21,16 +21,17 @@ impl Oracle<'_> {
         let filename = filename.replace('\\', "\\\\").replace('"', "\\\"");
         fs::write(&path, format!("#line 1 \"{filename}\"\n{source}"))
             .map_err(|error| error.to_string())?;
+        let compiler_dir = tempfile::tempdir().map_err(|error| error.to_string())?;
         let mut flags = self.config.c_args.clone();
         let include_dir = seed.parent().unwrap().display();
         let binary = if let Some(arch) = self.msvc_arch {
             flags.insert(0, format!("/I{include_dir}"));
-            let binary = dir.join("oracle.exe");
+            let binary = compiler_dir.path().join("oracle.exe");
             support::compile_c_msvc(&path, &binary, &flags, arch)?;
             binary
         } else {
             flags.splice(0..0, ["-iquote".into(), include_dir.to_string()]);
-            let binary = dir.join("oracle");
+            let binary = compiler_dir.path().join("oracle");
             support::compile_c_with_args_for_target(
                 &path,
                 &binary,
@@ -40,7 +41,7 @@ impl Oracle<'_> {
             )?;
             binary
         };
-        support::run_with_config_for_target(&binary, &self.config, dir, self.cross)
+        support::run_with_config_for_target(&binary, &self.config, compiler_dir.path(), self.cross)
     }
 }
 
@@ -63,7 +64,8 @@ fn explicit_source() -> Option<(PathBuf, Flavor)> {
     Some((path, flavor))
 }
 
-pub(super) fn run() {
+#[test]
+fn mutation_differential() {
     assert!(
         std::env::var_os("SLATE_MUTATE_SOURCE").is_some()
             || std::env::var_os("SLATE_DIFF_FIXTURE").is_some()
@@ -79,7 +81,7 @@ pub(super) fn run() {
 
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/difftest-mutations");
     fs::create_dir_all(&root).expect("create mutation output directory");
-    let build = tempfile::tempdir_in(&root).expect("create mutation build directory");
+    let build = tempfile::tempdir().expect("create mutation build directory");
     let mut total = 0;
     let mut failures = Vec::new();
     for triple in support::test_targets() {
@@ -97,7 +99,7 @@ pub(super) fn run() {
                 .collect()
         };
         for (path, flavor) in seeds {
-            match run_seed(&path, flavor, &triple, &extra, limit, build.path()) {
+            match run_seed(&path, flavor, &triple, &extra, limit, build.path(), &root) {
                 Ok(count) => total += count,
                 Err(error) => failures.push(format!("{triple} {}: {error}", path.display())),
             }
@@ -106,7 +108,7 @@ pub(super) fn run() {
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
     assert!(
         total != 0,
-        "no runnable mutants; choose a seed with eligible integer expressions"
+        "no runnable mutants; choose a seed with eligible expressions"
     );
     eprintln!("compared {total} IR mutants");
 }
@@ -118,6 +120,7 @@ fn run_seed(
     extra: &[String],
     limit: usize,
     build: &Path,
+    artifacts: &Path,
 ) -> Result<usize, String> {
     let cross = if flavor == Flavor::Msvc {
         support::CrossTarget::windows_msvc(triple.split('-').next().unwrap())
@@ -146,14 +149,21 @@ fn run_seed(
     let (module, files) =
         slate::api::slate_ir_with_passes(&path, &parser_args, &Passes::named("inline-temps")?)
             .map_err(|error| format!("seed parser failed: {error}"))?;
-    let variants: Vec<_> = materialize(&path, &source, &module, &files)?
+    let allow_non_finite = flavor != Flavor::Msvc
+        && !flags.iter().any(|flag| {
+            matches!(
+                flag.as_str(),
+                "-ffast-math" | "-ffinite-math-only" | "-Ofast"
+            )
+        });
+    let variants: Vec<_> = materialize(&path, &source, &module, &files, allow_non_finite)?
         .take(limit)
         .collect();
     if variants.is_empty() {
         return Ok(0);
     }
 
-    let work = tempfile::tempdir_in(build.parent().unwrap()).map_err(|error| error.to_string())?;
+    let work = tempfile::tempdir_in(artifacts).map_err(|error| error.to_string())?;
     let oracle = Oracle {
         config: support::RunConfig {
             cc: (flavor == Flavor::Gcc).then(|| "gcc".into()),
@@ -196,20 +206,37 @@ fn materialize<'a>(
     source: &'a str,
     module: &Module,
     files: &Files,
+    allow_non_finite: bool,
 ) -> Result<impl Iterator<Item = (Mutation, String)> + 'a, String> {
     let file = files
         .paths()
         .position(|file| file == path)
         .map(|index| FileId(index as u32))
         .ok_or("seed source missing from parser file table")?;
+    let rules = std::env::var("SLATE_MUTATE_RULES").ok();
     let program = Program::new([(module, files)], |_, _| true, false);
     let facts = analyze(&program);
-    Ok(candidates(module, facts.unit(UnitId(0)))
-        .into_iter()
-        .filter_map(move |mutation| {
-            let source = mutation.oracle_source(file, source)?;
-            Some((mutation, source))
-        }))
+    let mut mutations = candidates(module, facts.unit(UnitId(0)));
+    if let Ok(seed) = std::env::var("SLATE_MUTATE_SEED") {
+        let seed = seed
+            .parse::<u64>()
+            .map_err(|_| "invalid SLATE_MUTATE_SEED")?;
+        fastrand::Rng::with_seed(seed).shuffle(&mut mutations);
+    }
+    Ok(mutations.into_iter().filter_map(move |mutation| {
+        if mutation.rule == Rule::FloatSpecial && !allow_non_finite {
+            return None;
+        }
+        if rules.as_ref().is_some_and(|rules| {
+            !rules
+                .split(',')
+                .any(|rule| rule.trim() == mutation.rule.strategy())
+        }) {
+            return None;
+        }
+        let source = mutation.oracle_source(file, source)?;
+        Some((mutation, source))
+    }))
 }
 
 struct Work<'a> {
@@ -247,7 +274,7 @@ fn compare_seed_and_mutants(
                     "{name} {:?} at byte {} -> {}",
                     mutation.rule,
                     mutation.location.offset,
-                    mutation.replacement()
+                    mutation.description()
                 )
             },
         );
@@ -280,7 +307,7 @@ fn compare_seed_and_mutants(
             Ok(rust) => {
                 let rs_src = dir.join("generated.rs");
                 fs::write(&rs_src, rust).map_err(|error| error.to_string())?;
-                runs.push((description, c_run, dir));
+                runs.push((description, c_run));
                 cases.push(support::RustCase { name, rs_src });
             }
             Err(error) if mutation.is_some() => {
@@ -299,11 +326,17 @@ fn compare_seed_and_mutants(
         &work.build.join("target"),
     )?;
     let count = cases.len() - 1;
-    for (case, (description, expected, dir)) in cases.iter().zip(runs) {
+    for (case, (description, expected)) in cases.iter().zip(runs) {
         let result = built
             .executable(&case.name)
             .and_then(|binary| {
-                support::run_with_config_for_target(&binary, &oracle.config, &dir, oracle.cross)
+                let dir = tempfile::tempdir().map_err(|error| error.to_string())?;
+                support::run_with_config_for_target(
+                    &binary,
+                    &oracle.config,
+                    dir.path(),
+                    oracle.cross,
+                )
             })
             .and_then(|actual| {
                 support::compare_runs(&expected, &actual, oracle.config.compare_stderr)

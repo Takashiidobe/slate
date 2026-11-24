@@ -1803,6 +1803,7 @@ name = "slate-c2rust"
 version = "0.10.0"
 dependencies = [
  "clap",
+ "fastrand",
  "foldhash",
  "libc",
  "miette",

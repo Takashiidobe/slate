@@ -1,10 +1,13 @@
 experimental = ["setup-scripts"]
 
 [profile.default]
-default-filter = '!(binary(project_merge) & test(=merge_filecheck))'
+default-filter = '!(binary(project_merge) & test(=merge_filecheck)) & !test(=mutation::mutation_differential)'
 
 [profile.slate]
-default-filter = 'package(slate-c2rust) & !(binary(project_merge) & test(=merge_filecheck))'
+default-filter = 'package(slate-c2rust) & !(binary(project_merge) & test(=merge_filecheck)) & !test(=mutation::mutation_differential)'
+
+[profile.mutation]
+default-filter = 'package(slate-c2rust) & binary(differential) & test(=mutation::mutation_differential)'
 
 [profile.merge]
 default-filter = 'package(slate-c2rust) & binary(project_merge) & test(=merge_filecheck)'

@@ -1,12 +1,17 @@
 use std::collections::{BTreeSet, HashMap, HashSet};
 
-use slate_analysis::{UnitFacts, integer_constant, single_read_initializers};
+use slate_analysis::{
+    FunctionIdentity, Known, UnitFacts, integer_constant, single_read_initializers,
+};
 use slate_parser::ast::{FileId, Loc, NodeId};
 use slate_parser::ir::{
-    self, ArithOp, ArithSema, BindingId, ConversionSema, Fits, Module, Number, Overflow, PlaceKind,
-    Statement, StorageDuration, Type, Value, ValueKind,
+    self, ArithOp, ArithSema, BindingId, CompareOp, ConversionSema, Fits, Module, Number, Overflow,
+    PlaceKind, Statement, StorageDuration, Type, Value, ValueKind,
 };
 use slate_parser::sema::ctype::{CTypeKind, IntRank};
+
+mod strategies;
+use strategies::{binding_uses, literal_global, source_token};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Rule {
@@ -16,6 +21,41 @@ pub enum Rule {
     ShiftAmount,
     ComparisonThreshold,
     CastBoundary,
+    BinaryOperator,
+    NegateCondition,
+    DeleteStatement,
+    FloatBoundary,
+    FloatSpecial,
+    StringBytes,
+    ArrayIndex,
+    CharacterBoundary,
+    NullPointer,
+}
+
+impl Rule {
+    pub fn strategy(self) -> &'static str {
+        match self {
+            Self::BinaryOperator => "operator",
+            Self::NegateCondition => "condition",
+            Self::DeleteStatement => "statement",
+            Self::FloatBoundary | Self::FloatSpecial => "float",
+            Self::StringBytes => "string",
+            Self::ArrayIndex => "array",
+            Self::CharacterBoundary => "char",
+            Self::NullPointer => "pointer",
+            _ => "integer",
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+enum Edit {
+    ReplaceNumber { before: Number, after: Number },
+    ReplaceBinaryOperator { before: ArithOp, after: ArithOp },
+    NegateCondition { before: CompareOp, after: CompareOp },
+    DeleteStatement,
+    ReplaceString { global: BindingId, bytes: Vec<u32> },
+    ReplacePointerWithNull,
 }
 
 #[derive(Debug, Clone)]
@@ -24,14 +64,18 @@ pub struct Mutation {
     pub location: Loc,
     function: NodeId,
     node: NodeId,
-    before: Number,
-    after: Number,
+    edit: Edit,
     replacement: String,
 }
 
 impl Mutation {
-    pub fn replacement(&self) -> &str {
-        &self.replacement
+    pub fn description(&self) -> String {
+        match &self.edit {
+            Edit::ReplaceString { bytes, .. } if bytes.len() > 80 => {
+                format!("{} string bytes", bytes.len() - 1)
+            }
+            _ => self.replacement.clone(),
+        }
     }
 
     /// Apply to the original module or to a clone that preserves its node IDs.
@@ -63,17 +107,41 @@ impl Mutation {
                         *fit = if always { Fits::Always } else { Fits::Unknown };
                     }
                 }
-                if value.node.id == self.mutation.node
-                    && value.node.spelling == self.mutation.location
-                    && let ValueKind::Constant(number) = &mut value.node.value
-                    && *number == self.mutation.before
-                {
-                    *number = self.mutation.after.clone();
-                    self.changed_depth = Some(self.depth);
+                if value.node.id != self.mutation.node {
+                    return;
                 }
+                match (&self.mutation.edit, &mut value.node.value) {
+                    (Edit::ReplaceNumber { before, after }, ValueKind::Constant(number))
+                        if before == number =>
+                    {
+                        *number = after.clone();
+                    }
+                    (
+                        Edit::ReplaceBinaryOperator { before, after },
+                        ValueKind::Arith { op, .. },
+                    ) if before == op => {
+                        *op = *after;
+                    }
+                    (Edit::NegateCondition { before, after }, ValueKind::Compare { op, .. })
+                        if before == op =>
+                    {
+                        *op = *after;
+                    }
+                    (
+                        Edit::ReplacePointerWithNull,
+                        ValueKind::AddressOf(_) | ValueKind::ArrayDecay { .. },
+                    ) => {
+                        value.node.value = ValueKind::Null;
+                    }
+                    _ => return,
+                }
+                self.changed_depth = Some(self.depth);
             }
         }
 
+        if let Edit::ReplaceString { global, bytes } = &self.edit {
+            return strategies::apply_string(module, self.function, self.node, *global, bytes);
+        }
         let Some(body) = module
             .functions
             .iter_mut()
@@ -82,6 +150,13 @@ impl Mutation {
         else {
             return false;
         };
+        if matches!(self.edit, Edit::DeleteStatement) {
+            if let Some(index) = body.iter().position(|statement| statement.id == self.node) {
+                body.remove(index);
+                return true;
+            }
+            return false;
+        }
         let mut replace = Replace {
             mutation: self,
             depth: 0,
@@ -99,15 +174,13 @@ impl Mutation {
         }
         let range = location.offset..location.end();
         let token = source.get(range.clone())?;
-        if !token.starts_with(|c: char| c.is_ascii_digit())
-            || !token
-                .bytes()
-                .all(|byte| byte.is_ascii_alphanumeric() || byte == b'\'')
-        {
+        if !source_token(self.rule, &self.edit, token) {
             return None;
         }
         let mut output = source.to_owned();
-        output.replace_range(range, &self.replacement);
+        let line_breaks = token.bytes().filter(|&byte| byte == b'\n').count();
+        let replacement = format!("{}{}", self.replacement, "\n".repeat(line_breaks));
+        output.replace_range(range, &replacement);
         Some(output)
     }
 }
@@ -126,10 +199,13 @@ pub fn candidates(module: &Module, facts: UnitFacts<'_>) -> Vec<Mutation> {
     };
     let single_reads: HashSet<_> = single_read_initializers(body).collect();
     let mut initializers = HashMap::new();
+    let (uses, projected_reads) = binding_uses(module);
     let mut collector = Collector {
         module,
         function: main.id,
         mutations: Vec::new(),
+        uses,
+        arrays: HashSet::new(),
     };
     for statement in body {
         match &statement.value {
@@ -144,23 +220,54 @@ pub fn candidates(module: &Module, facts: UnitFacts<'_>) -> Vec<Mutation> {
             {
                 initializers.insert(variable.id, initializer);
             }
-            Statement::Return(Some(value)) => collector.output(value, &initializers),
-            Statement::Expression(call)
-                if facts.printf_format(call.node.id).is_some()
-                    && let ValueKind::Call { arguments, .. } = &call.node.value =>
+            Statement::Let(variable)
+                if matches!(
+                    variable.ty,
+                    Type::Array {
+                        length: Some(_),
+                        ..
+                    }
+                ) && variable.initializer.is_some()
+                    && collector
+                        .uses
+                        .get(&variable.id)
+                        .is_some_and(|uses| projected_reads.get(&variable.id) == Some(uses)) =>
             {
-                for argument in arguments.iter().skip(1).filter(|argument| {
-                    module.c_types.value(argument).is_some_and(|ty| {
-                        matches!(
-                            module.c_types.types.canonical_kind(ty),
-                            CTypeKind::Int {
-                                rank: IntRank::Int,
-                                signed: true
-                            }
-                        )
-                    })
-                }) {
-                    collector.output(argument, &initializers);
+                collector.arrays.insert(variable.id);
+            }
+            Statement::Return(Some(value)) => collector.output(value, &initializers),
+            Statement::If {
+                condition,
+                then_body,
+                else_body: Some(else_body),
+                folded: None,
+            } if strategies::constant_return(then_body)
+                && strategies::constant_return(else_body) =>
+            {
+                collector.negate_condition(condition);
+            }
+            Statement::Expression(call)
+                if let ValueKind::Call {
+                    callee: ir::Callee::Direct(callee),
+                    arguments,
+                    ..
+                } = &call.node.value =>
+            {
+                match facts.identity(*callee) {
+                    FunctionIdentity::Known(Known::Puts)
+                        if let [argument] = arguments.as_slice() =>
+                    {
+                        collector.string_argument(argument);
+                        if literal_global(module, argument).is_some() {
+                            collector.delete_statement(statement.id, call);
+                        }
+                    }
+                    FunctionIdentity::Known(Known::Printf)
+                        if let Some((format, args)) = arguments.split_first() =>
+                    {
+                        collector.printf(format, args, &initializers);
+                    }
+                    _ => {}
                 }
             }
             _ => {}
@@ -190,6 +297,8 @@ struct Collector<'a> {
     module: &'a Module,
     function: NodeId,
     mutations: Vec<Mutation>,
+    uses: HashMap<BindingId, usize>,
+    arrays: HashSet<BindingId>,
 }
 
 impl Collector<'_> {
@@ -206,7 +315,9 @@ impl Collector<'_> {
                     value = initializer;
                 }
                 ValueKind::Copy { operand, .. } | ValueKind::Convert { operand, .. }
-                    if value.ty.integer_bits().is_some() && operand.ty.integer_bits().is_some() =>
+                    if (value.ty.integer_bits().is_some()
+                        && operand.ty.integer_bits().is_some())
+                        || strategies::preserves_float_range(&value.ty, &operand.ty) =>
                 {
                     if matches!(
                         value.node.value,
@@ -224,7 +335,9 @@ impl Collector<'_> {
         }
 
         match &value.node.value {
+            ValueKind::Constant(Number::FloatBits(_)) => self.float_literal(value),
             ValueKind::Constant(_) => {
+                self.character_literal(value);
                 if let Some((min, max)) = cast {
                     self.literal(
                         value,
@@ -237,7 +350,16 @@ impl Collector<'_> {
                     true
                 });
             }
-            ValueKind::Compare { left, right, .. } => {
+            ValueKind::Compare {
+                op, left, right, ..
+            } => {
+                self.negate_condition(value);
+                if matches!(op, CompareOp::Eq | CompareOp::Ne) {
+                    self.null_pointer(left);
+                    self.null_pointer(right);
+                }
+                self.float_literal(strategies::unwrap_float(left));
+                self.float_literal(strategies::unwrap_float(right));
                 for (operand, other) in [(left, right), (right, left)] {
                     if let Some(threshold) = constant(other) {
                         self.literal(
@@ -255,8 +377,13 @@ impl Collector<'_> {
                 right,
                 semantics,
             } => {
+                self.binary_operator(value, *op, left, right, *semantics);
                 self.arithmetic(*op, left, right, *semantics, &value.ty);
             }
+            ValueKind::Read {
+                place,
+                ordering: None,
+            } => self.array_index(place),
             _ => {}
         }
     }
@@ -364,13 +491,9 @@ impl Collector<'_> {
         else {
             return;
         };
-        if value.node.spelling != value.node.expansion
-            || value.node.macro_origin.is_some()
-            || value.node.macro_nesting.is_some()
-            || !self.module.macro_provenance(value.node.id).is_empty()
-        {
+        let Some(location) = self.editable_location(value) else {
             return;
-        }
+        };
         let Some(original) = constant(value) else {
             return;
         };
@@ -416,11 +539,13 @@ impl Collector<'_> {
             };
             self.mutations.push(Mutation {
                 rule,
-                location: value.node.spelling,
+                location,
                 function: self.function,
                 node: value.node.id,
-                before: before.clone(),
-                after,
+                edit: Edit::ReplaceNumber {
+                    before: before.clone(),
+                    after,
+                },
                 replacement,
             });
         }
