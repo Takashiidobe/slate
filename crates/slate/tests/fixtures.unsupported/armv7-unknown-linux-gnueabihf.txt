@@ -6,6 +6,7 @@ bitint_float
 bitint_float_ext
 bitint_ops
 bitint_rotate
+bitint_rotate_unsigned_count
 bitint_shift
 bitint_shift_widths
 bitint_va_wide
