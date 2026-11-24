@@ -89,7 +89,8 @@ int main(void) {
 // CHECK-NEXT:     sum
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: fn prefix(values: &[i32], len: i32) -> i32 {
+// CHECK-NEXT: fn prefix(values: &[i32]) -> i32 {
+// CHECK-NEXT:     let len: i32 = values.len() as i32;
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
 // CHECK-NEXT:         sum += values[i as usize];
@@ -119,7 +120,7 @@ int main(void) {
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ),
-// CHECK-NEXT:         prefix(window.0.as_slice(), 2i32)
+// CHECK-NEXT:         prefix(&window.0[0usize..2usize])
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe { free((heap as *mut ()) as *mut core::ffi::c_void) };
 // CHECK-NEXT:     0

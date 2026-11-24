@@ -18,6 +18,7 @@ use slate_parser::ir::{
     self, BindingId, Callee, Evaluation, MacroValues, MacroWrap, NumericType, Parameters, Place,
     PlaceKind, Statement, Type, Value, Visitor,
 };
+pub use sources::fixed_array_position;
 use sources::pointee;
 use std::cell::OnceCell;
 
@@ -43,6 +44,7 @@ pub(super) struct Node {
 pub(super) enum Shape {
     Array {
         length: u64,
+        offset: u64,
         element: Type,
         object: Option<BindingId>,
     },

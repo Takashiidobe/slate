@@ -356,6 +356,23 @@ impl FunctionLowerer<'_, '_> {
         {
             peeled = operand;
         }
+        if let Some((place, extent, start)) = slate_analysis::fixed_array_position(peeled)
+            && let Some(count) = slate_analysis::nonnegative_integer_constant(length)
+            && let Some(end) = start.checked_add(count).filter(|&end| end <= extent)
+            && (start != 0 || end != extent)
+            && !self.place_is_unsafe(place)
+        {
+            return Ok(Expr::Ref {
+                mutable: target.mutable,
+                expr: Box::new(Expr::Index {
+                    base: Box::new(self.lower_place(place)?),
+                    index: Box::new(Expr::Range {
+                        start: Box::new(libc_calls::usize_lit(start)),
+                        end: Box::new(libc_calls::usize_lit(end)),
+                    }),
+                }),
+            });
+        }
         let safe = match &peeled.node.value {
             ValueKind::ArrayDecay { place, .. } => !self.place_is_unsafe(place),
             #[expect(

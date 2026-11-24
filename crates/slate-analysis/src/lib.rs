@@ -31,6 +31,11 @@ pub use def_use::{BindingMutability, BorrowArgument};
 pub use facts::{BindingFacts, Facts, UnitFacts, ValueFacts, analyze};
 pub use guarded_heap::{GuardedHeapStatement, HeapElement, HeapIndex};
 pub use identity::{FunctionIdentity, Known};
-pub use pointer::{Borrow, HeapAction, Length, Owner, PointerFact, PointerRole};
+pub use pointer::{
+    Borrow, HeapAction, Length, Owner, PointerFact, PointerRole, fixed_array_position,
+};
+pub fn nonnegative_integer_constant(value: &slate_parser::ir::Value) -> Option<u64> {
+    u64::try_from(counted_loops::integer_constant(value)?).ok()
+}
 pub use printf::PrintfFormat;
 pub use program::{FunctionEntry, FunctionId, Program, ProgramBinding, ProgramUnit, UnitId};

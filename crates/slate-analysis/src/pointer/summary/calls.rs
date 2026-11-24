@@ -12,35 +12,31 @@ use slate_parser::ir::{
 impl Walker<'_, '_> {
     fn shape(&self, value: &Value) -> Shape {
         let peeled = peel_argument(value);
+        if let Some((place, length, offset)) = super::fixed_array_position(peeled)
+            && let PlaceKind::Binding(array) = place.kind
+        {
+            let object = ProgramBinding {
+                unit: self.unit,
+                binding: array,
+            };
+            let object = if self.automatic.contains(&array) || self.constants.contains(&object) {
+                None
+            } else if self.mutable_statics.contains(&object) {
+                Some(array)
+            } else {
+                return Shape::Other;
+            };
+            return match pointee(&peeled.ty) {
+                Some(element) => Shape::Array {
+                    length,
+                    offset,
+                    element: element.clone(),
+                    object,
+                },
+                None => Shape::Other,
+            };
+        }
         match &peeled.node.value {
-            ValueKind::ArrayDecay {
-                place:
-                    Place {
-                        kind: PlaceKind::Binding(array),
-                        ..
-                    },
-                length: Some(length),
-            } => {
-                let object = ProgramBinding {
-                    unit: self.unit,
-                    binding: *array,
-                };
-                let object = if self.automatic.contains(array) || self.constants.contains(&object) {
-                    None
-                } else if self.mutable_statics.contains(&object) {
-                    Some(*array)
-                } else {
-                    return Shape::Other;
-                };
-                match pointee(&peeled.ty) {
-                    Some(element) => Shape::Array {
-                        length: *length,
-                        element: element.clone(),
-                        object,
-                    },
-                    None => Shape::Other,
-                }
-            }
             ValueKind::Constant(ir::Number::Integer(number)) => {
                 u64::try_from(number).map_or(Shape::Other, Shape::Constant)
             }

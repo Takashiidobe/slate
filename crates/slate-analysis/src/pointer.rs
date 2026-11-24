@@ -6,6 +6,9 @@ mod length;
 mod ownership;
 mod summary;
 
+pub use summary::fixed_array_position;
+
+use crate::counted_loops::CountedLoop;
 use crate::identity::FunctionIdentity;
 use crate::program::{Program, ProgramBinding, UnitId};
 use foldhash::{HashMap, HashSet};
@@ -106,6 +109,7 @@ const MACRO: u8 = 1 << 7;
 pub(crate) fn analyze(
     program: &Program<'_>,
     identities: &HashMap<ProgramBinding, FunctionIdentity>,
+    counted_loops: &[HashMap<BindingId, CountedLoop>],
 ) -> PointerFacts {
     let timing = std::env::var_os("SLATE_INTERPROC_TIMING")
         .is_some()
@@ -117,8 +121,14 @@ pub(crate) fn analyze(
     let (summaries, leaked_statics) = summary::Summaries::new(program, functions);
     let flow = flow::solve(program, &summaries, leaked_statics);
     let owned = ownership::prove(program, &summaries, &flow);
-    let (lengths, unproven) =
-        length::prove(program, &summaries, &flow, &owned, &inputs.mutable_statics);
+    let (lengths, unproven) = length::prove(
+        program,
+        &summaries,
+        &flow,
+        &owned,
+        &inputs.mutable_statics,
+        counted_loops,
+    );
     let c_strings = c_string::parameters(&summaries, &flow);
     let facts = emit::facts(
         program, &summaries, &flow, owned, &lengths, &unproven, &c_strings,

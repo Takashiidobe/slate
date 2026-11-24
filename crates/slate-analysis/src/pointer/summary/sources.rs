@@ -1,4 +1,5 @@
 use super::{NULLABLE, NodeKind, OFFSET, STACK_GROWTH, STACK_RED_ZONE, Sources, Walker};
+use crate::counted_loops::integer_constant;
 use crate::heap_ir::read_binding;
 use crate::program::ProgramBinding;
 use slate_parser::ir::{ConversionKind, Place, PlaceKind, Type, Value, ValueKind};
@@ -36,6 +37,42 @@ pub(super) fn peel_argument(value: &Value) -> &Value {
         )]
         _ => value,
     }
+}
+
+pub fn fixed_array_position(value: &Value) -> Option<(&Place, u64, u64)> {
+    crate::def_use::deep(|| match &peel_argument(value).node.value {
+        ValueKind::ArrayDecay {
+            place,
+            length: Some(extent),
+        } if matches!(place.kind, PlaceKind::Binding(_)) => Some((place, *extent, 0)),
+        ValueKind::PointerOffset {
+            pointer,
+            amount,
+            subtract,
+            ..
+        } if same_pointee(&pointer.ty, &value.ty) => {
+            let (place, extent, offset) = fixed_array_position(pointer)?;
+            let amount = i128::try_from(integer_constant(amount)?).ok()?;
+            let offset = if *subtract {
+                i128::from(offset).checked_sub(amount)?
+            } else {
+                i128::from(offset).checked_add(amount)?
+            };
+            let offset = u64::try_from(offset).ok()?;
+            (offset <= extent).then_some((place, extent, offset))
+        }
+        ValueKind::AddressOf(place) => {
+            let PlaceKind::Deref(pointer) = &place.kind else {
+                return None;
+            };
+            fixed_array_position(pointer)
+        }
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "only fixed array decay and constant element offsets define an array position"
+        )]
+        _ => None,
+    })
 }
 
 pub(super) fn pointee(ty: &Type) -> Option<&Type> {

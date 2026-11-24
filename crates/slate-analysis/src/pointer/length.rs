@@ -2,10 +2,16 @@ use super::borrow;
 use super::flow::Flow;
 use super::ownership::OwnershipFacts;
 use super::summary::{Shape, Summaries};
+use crate::counted_loops::{self, CountedLoop};
+use crate::def_use::DefUse;
 use crate::effects::{Effects, FunctionEffects};
+use crate::heap_ir::read_binding;
 use crate::program::{FunctionId, Program, ProgramBinding};
 use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
-use slate_parser::ir::Type;
+use slate_parser::ast::NodeId;
+use slate_parser::ir::{
+    self, BindingId, Function, Place, PlaceKind, Statement, Type, Value, ValueKind, Visitor,
+};
 
 pub(super) type Lengths = HashMap<(usize, usize), usize>;
 
@@ -18,15 +24,27 @@ pub(super) fn prove(
     flow: &Flow,
     owned: &OwnershipFacts,
     mutable_statics: &HashSet<ProgramBinding>,
+    counted_loops: &[HashMap<BindingId, CountedLoop>],
 ) -> (Lengths, Vec<bool>) {
     let mut active = candidate_pairs(index);
     let effects = StaticArrays::new(program, index, mutable_statics, &flow.leaked_statics);
 
+    let mut bounded = HashMap::new();
     loop {
         let mut next: Pairs = active
             .iter()
             .copied()
-            .filter(|&pair| proves_pair(program, index, &effects, &active, pair))
+            .filter(|&pair| {
+                proves_pair(
+                    program,
+                    index,
+                    &effects,
+                    &active,
+                    &mut bounded,
+                    counted_loops,
+                    pair,
+                )
+            })
             .collect();
         retain_unique_pairs(&mut next);
 
@@ -161,6 +179,8 @@ fn proves_pair(
     index: &Summaries,
     effects: &StaticArrays<'_>,
     active: &Pairs,
+    bounded: &mut HashMap<Pair, bool>,
+    counted_loops: &[HashMap<BindingId, CountedLoop>],
     (function, pointer, length): Pair,
 ) -> bool {
     let Summaries {
@@ -168,10 +188,10 @@ fn proves_pair(
         incoming,
         ..
     } = index;
-    let Some(element) = summaries[function]
-        .as_ref()
-        .and_then(|summary| summary.pointees[pointer].as_ref())
-    else {
+    let Some(callee) = &summaries[function] else {
+        return false;
+    };
+    let Some(element) = &callee.pointees[pointer] else {
         return false;
     };
     incoming[function].iter().all(|&(caller, index)| {
@@ -195,13 +215,25 @@ fn proves_pair(
             (
                 Some(Shape::Array {
                     length: extent,
+                    offset,
                     element: source,
                     object,
                 }),
                 Some(Shape::Constant(count)),
             ) => {
-                extent == count
+                count <= &(extent - offset)
                     && same(source)
+                    && ((*offset == 0 && extent == count)
+                        || *bounded
+                            .entry((function, pointer, length))
+                            .or_insert_with(|| {
+                                accesses_within_count(
+                                    &callee_entry.function.value,
+                                    callee.parameters[pointer],
+                                    callee.parameters[length],
+                                    &counted_loops[callee_entry.unit.0 as usize],
+                                )
+                            }))
                     && object.is_none_or(|binding| {
                         effects.untouched(
                             FunctionId(function as u32),
@@ -237,6 +269,93 @@ fn proves_pair(
             _ => false,
         }
     })
+}
+
+fn accesses_within_count(
+    function: &Function,
+    pointer: BindingId,
+    count: BindingId,
+    loops: &HashMap<BindingId, CountedLoop>,
+) -> bool {
+    let Some(body) = &function.body else {
+        return false;
+    };
+    let def_use = DefUse::of(body);
+    if !def_use.whole_body_structured() || def_use.escapes(count) {
+        return false;
+    }
+    let mut uses = PrefixUses {
+        pointer,
+        count,
+        loops,
+        bounded: HashMap::new(),
+        reads: HashMap::new(),
+    };
+    ir::walk_function_body(&mut body.clone(), &mut uses);
+    !uses.reads.is_empty() && uses.reads == uses.bounded
+}
+
+struct PrefixUses<'a> {
+    pointer: BindingId,
+    count: BindingId,
+    loops: &'a HashMap<BindingId, CountedLoop>,
+    bounded: HashMap<NodeId, usize>,
+    reads: HashMap<NodeId, usize>,
+}
+
+impl Visitor for PrefixUses<'_> {
+    fn statement(&mut self, statement: &Statement) {
+        if let Statement::For { id, body, .. } = statement
+            && let Some(loop_) = self.loops.get(id)
+            && !loop_.inclusive
+            && read_binding(&loop_.end) == Some(self.count)
+            && counted_loops::integer_constant(&loop_.start)
+                .is_some_and(|start| start.sign() != num_bigint::Sign::Minus)
+        {
+            let mut accesses = BoundedReads {
+                index: loop_.index,
+                pointer: self.pointer,
+                bounded: &mut self.bounded,
+            };
+            ir::walk_function_body(&mut body.clone(), &mut accesses);
+        }
+    }
+
+    fn rewrite_value(&mut self, value: &mut Value) {
+        if read_binding(value) == Some(self.pointer) {
+            *self.reads.entry(value.node.id).or_default() += 1;
+        }
+    }
+}
+
+struct BoundedReads<'a> {
+    index: BindingId,
+    pointer: BindingId,
+    bounded: &'a mut HashMap<NodeId, usize>,
+}
+
+impl Visitor for BoundedReads<'_> {
+    fn value_kind(&mut self, kind: &ValueKind) {
+        if let ValueKind::Read {
+            place:
+                Place {
+                    kind: PlaceKind::Deref(address),
+                    ..
+                },
+            ..
+        } = kind
+            && let ValueKind::PointerOffset {
+                pointer,
+                amount,
+                subtract: false,
+                ..
+            } = &address.node.value
+            && read_binding(pointer) == Some(self.pointer)
+            && read_binding(amount) == Some(self.index)
+        {
+            *self.bounded.entry(pointer.node.id).or_default() += 1;
+        }
+    }
 }
 
 fn retain_unique_pairs(next: &mut Pairs) {

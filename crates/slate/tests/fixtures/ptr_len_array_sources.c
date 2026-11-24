@@ -77,7 +77,8 @@ int main(void) {
 // CHECK-NEXT:         values[i as usize] += 1;
 // CHECK-NEXT:     }
 // CHECK: {{^}}}
-// CHECK-LABEL: {{^}}fn sum_prefix(values: &[i32], len: i32) -> i32 {
+// CHECK-LABEL: {{^}}fn sum_prefix(values: &[i32]) -> i32 {
+// CHECK-NEXT:     let len: i32 = values.len() as i32;
 // CHECK-NEXT:     let mut sum: i32 = 0;
 // CHECK-NEXT:     for i in 0..len {
 // CHECK-NEXT:         sum += values[i as usize];

@@ -150,7 +150,7 @@ pub fn analyze(program: &Program<'_>) -> Facts {
             loops
         })
         .collect();
-    let pointers = pointer::analyze(program, &identities);
+    let pointers = pointer::analyze(program, &identities, &counted_loops);
     let mut bindings: HashMap<ProgramBinding, BindingFacts> = pointers
         .bindings
         .into_iter()
