@@ -1,4 +1,3 @@
-bitint_rotate_unsigned_count
 bitint_va_wide
 builtin_generic_bit_counts
 int128_arith
