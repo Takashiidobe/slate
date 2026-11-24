@@ -1349,6 +1349,7 @@ pub enum CallingConvention {
     Stdcall,
     Fastcall,
     Vectorcall,
+    Regcall,
     Thiscall,
     MsAbi,
     SysVAbi,

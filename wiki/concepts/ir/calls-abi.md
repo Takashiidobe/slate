@@ -232,6 +232,9 @@ across an extern boundary (`transparent_union_call.c`).
   x86-64 too. `CTypeKind::Function` and `ir::Type::Function` carry a `CallConv`
   (`fn stdcall(i32) -> i32`), and `AbiSignature.calling` repeats it, so a call
   keeps it in compact output. `__cdecl` is the default.
+- On x86 and x86-64, `__regcall` and `__attribute__((regcall))` preserve
+  `regcall` in function types and call signatures. Slate reports a lowering
+  barrier because Rust has no corresponding `extern` ABI.
 - Placement follows clang: a specifier or trailing attribute goes to the
   innermost function declarator (or a function typedef in the specifiers); one
   on a pointer or grouped declarator goes to the function type beneath. One on a

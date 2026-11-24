@@ -746,11 +746,12 @@ Designator indices are unevaluated.
 ## Calling conventions and `__declspec`
 
 - `Attribute::CallingConvention`: `Cdecl`, `Stdcall`, `Fastcall`, `Vectorcall`,
-  `Thiscall`, `MsAbi`, `SysVAbi`, `RegParm(Expr)`, `Pcs(Aapcs | AapcsVfp)`, from
-  GNU attributes or MS keywords. Specifier positions apply to the declaration;
-  nested positions stay on `Attributed`/`Pointer`; trailing ones in declarator
-  attributes. `regparm` stays unevaluated. Sema checks support and conflicts and
-  puts x86 conventions in the function type
+  `Regcall`, `Thiscall`, `MsAbi`, `SysVAbi`, `RegParm(Expr)`, and
+  `Pcs(Aapcs | AapcsVfp)`. GNU attributes and convention keywords such as
+  `__regcall` produce the same node. Specifier positions apply to the
+  declaration. Nested positions stay on `Attributed` or `Pointer`, and trailing
+  positions stay in declarator attributes. `regparm` stays unevaluated. Sema
+  checks support and conflicts and puts x86 conventions in the function type
   ([calling conventions](ir/calls-abi.md#calling-conventions)).
 - `__declspec(...)`: single parentheses, space-separated entries.
   `dllimport`/`dllexport` → `DllImport`/`DllExport`; `align(expr)` →

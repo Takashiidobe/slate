@@ -630,7 +630,7 @@ Attribute = (* no arguments *)
           | Invalid { name: string, arguments: vec<string> } ;
 
 AlignAsOperand    = Type { ty: TypeName } | "Expr(" expr ")" ;
-CallingConvention = "Cdecl" | "Stdcall" | "Fastcall" | "Vectorcall"
+CallingConvention = "Cdecl" | "Stdcall" | "Fastcall" | "Vectorcall" | "Regcall"
                   | "Thiscall" | "MsAbi" | "SysVAbi" | "PreserveMost"
                   | "PreserveAll" | "PreserveNone"
                   | "RegParm(" expr ")"

@@ -561,8 +561,8 @@ fn parse_attribute_value(
             .map(Attribute::TlsModel)
             .unwrap_or_else(|| invalid_attribute(name, arguments))),
         "ms_struct" if arguments.is_empty() => Ok(Attribute::MsStruct),
-        "cdecl" | "stdcall" | "fastcall" | "vectorcall" | "thiscall" | "ms_abi" | "sysv_abi"
-        | "preserve_most" | "preserve_all" | "preserve_none"
+        "cdecl" | "stdcall" | "fastcall" | "vectorcall" | "regcall" | "thiscall" | "ms_abi"
+        | "sysv_abi" | "preserve_most" | "preserve_all" | "preserve_none"
             if arguments.is_empty() =>
         {
             let convention = match canonical_name {
@@ -570,6 +570,7 @@ fn parse_attribute_value(
                 "stdcall" => CallingConvention::Stdcall,
                 "fastcall" => CallingConvention::Fastcall,
                 "vectorcall" => CallingConvention::Vectorcall,
+                "regcall" => CallingConvention::Regcall,
                 "thiscall" => CallingConvention::Thiscall,
                 "ms_abi" => CallingConvention::MsAbi,
                 "preserve_most" => CallingConvention::PreserveMost,
@@ -756,6 +757,7 @@ fn keyword_calling_convention(token: Option<&Token>) -> Option<CallingConvention
         "__stdcall" | "_stdcall" => CallingConvention::Stdcall,
         "__fastcall" | "_fastcall" => CallingConvention::Fastcall,
         "__vectorcall" => CallingConvention::Vectorcall,
+        "__regcall" => CallingConvention::Regcall,
         "__thiscall" | "_thiscall" => CallingConvention::Thiscall,
         _ => return None,
     })

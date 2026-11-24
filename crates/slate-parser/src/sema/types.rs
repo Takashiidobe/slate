@@ -2603,6 +2603,7 @@ impl TypeResolver {
                     }
                     crate::ast::CallingConvention::Cdecl => Some(CallConv::C),
                     crate::ast::CallingConvention::Vectorcall => Some(CallConv::X86Vectorcall),
+                    crate::ast::CallingConvention::Regcall => Some(CallConv::X86Regcall),
                     crate::ast::CallingConvention::Stdcall if x86 => Some(CallConv::X86Stdcall),
                     crate::ast::CallingConvention::Fastcall if x86 => Some(CallConv::X86Fastcall),
                     crate::ast::CallingConvention::Thiscall if x86 => Some(CallConv::X86Thiscall),

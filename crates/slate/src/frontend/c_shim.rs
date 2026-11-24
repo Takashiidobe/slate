@@ -23,6 +23,8 @@ fn c_type_for_tag(tag: &str) -> Type {
         "u32" => "unsigned int",
         "i64" => "long long",
         "u64" => "unsigned long long",
+        "i128" => "__int128",
+        "u128" => "unsigned __int128",
         "isize" => "long",
         "usize" => "size_t",
         "f32" => "float",
@@ -33,7 +35,7 @@ fn c_type_for_tag(tag: &str) -> Type {
         "ld" => "double",
         "f80" => "__slate_f80",
         "cf80" => "__slate_cf80",
-        "lq" => "long double",
+        "lq" => "__float128",
         tag if memory_aggregate(tag).is_some() => return Type::Struct(format!("__slate_{tag}")),
         _ => return Type::Named("void").pointer(),
     })

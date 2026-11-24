@@ -115,6 +115,8 @@ Rust list in place.
 
 - Runtime and name-based bridges: `frontend/c_shim.rs` and
   `frontend/shims/{long_double,fenv}.c`.
+- Mixed x87 signatures use `__float128`, `__int128`, and `unsigned __int128`
+  for the `lq`, `i128`, and `u128` bridge tags on both sides of the C shim.
 - Generated crates compile `src/slate_long_double.c` with `cc` in `build.rs`.
 
 ## Why not just `f64`
