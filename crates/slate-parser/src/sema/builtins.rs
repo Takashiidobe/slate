@@ -948,12 +948,23 @@ pub(super) fn clang_builtin(name: &str, dialect: &Dialect) -> Option<&'static Cl
             target_builtin(name, dialect.target().family)
                 .filter(|builtin| ms_clang || !builtin.is_microsoft_only())
         }),
-        CompilerFlavor::Msvc => clang.or_else(|| {
-            target_builtin(name, dialect.target().family).filter(|builtin| {
-                builtin.is_microsoft_only()
-                    && (builtin.kind != ClangBuiltinKind::Library || library.recognizes(name))
+        CompilerFlavor::Msvc => clang
+            .or_else(|| {
+                target_builtin(name, dialect.target().family).filter(|builtin| {
+                    builtin.is_microsoft_only()
+                        && (builtin.kind != ClangBuiltinKind::Library || library.recognizes(name))
+                })
             })
-        }),
+            .or_else(|| {
+                let table = match dialect.target().triple.as_str() {
+                    "i686-pc-windows-msvc" => MSVC_X86_BUILTINS,
+                    "x86_64-pc-windows-msvc" => MSVC_X64_BUILTINS,
+                    "thumbv7a-pc-windows-msvc" => MSVC_ARM_BUILTINS,
+                    "aarch64-pc-windows-msvc" => MSVC_ARM64_BUILTINS,
+                    _ => return None,
+                };
+                registered_builtin(table, name)
+            }),
     }
 }
 
@@ -1464,6 +1475,7 @@ fn fixed_rank(bits: u32, target: &TargetInfo) -> Option<IntRank> {
 
 include!("clang_builtins.rs");
 include!("clang_aarch64_builtins.rs");
+include!("msvc_builtins.rs");
 include!("gcc_builtins.rs");
 include!("gcc_x86_builtins.rs");
 include!("gcc_arm_builtins.rs");

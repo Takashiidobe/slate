@@ -415,6 +415,9 @@ looks a name up in this order:
     an undeclared call gets the builtin's prototype, not an implicit `int()`.
   - Slate binds such declarations through the libc catalog (`slate_support`)
     even though they have no system-header provenance.
+  - On Windows targets, the generated MSVC catalog also recognizes intrinsics
+    that the MSVC headers and compiler list for that target. This supplements
+    the shared Clang entries and their existing builtin semantics.
 - gcc flavor: the clang entry, unless its prototype names a header type
   (`FILE *`, `jmp_buf`) that gcc spells as a plain pointer; then the gcc entry,
   then for `__builtin_X` the library entry `X` (clang's, or gcc's when clang's

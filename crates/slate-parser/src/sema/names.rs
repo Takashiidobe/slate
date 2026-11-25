@@ -298,6 +298,10 @@ impl Resolver {
                             crate::sema::is_gcc_aarch64_tuple_name(name)
                         } else {
                             BUILTIN_TYPEDEFS.contains(&name)
+                                || (self.flavor.is_msvc()
+                                    && super::builtins::MSVC_BUILTIN_TYPEDEFS
+                                        .binary_search(&name)
+                                        .is_ok())
                         }
                     {
                         self.resolution

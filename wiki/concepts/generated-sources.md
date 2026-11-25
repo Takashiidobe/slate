@@ -30,6 +30,20 @@ instead of editing by hand.
 - `include!`d into `src/sema/builtins.rs`: one `BuiltinPrototype` per clang
   builtin signature. Hand-written entries and custom lowering live in
   `builtins.rs` ([ir/builtins](ir/builtins.md)).
+- `src/sema/msvc_builtins.rs` uses Microsoft Learn's alphabetical inventory
+  and its linked family pages. `generate_msvc_builtins.py` extracts declarations
+  from the MSVC header set and checks recognition with `cl.exe` for each
+  target. Its JSON Lines report records the documentation revisions, compiler
+  version, and entries without compiler evidence.
+
+From the workspace root, regenerate with the installed MSVC oracle and Clang.
+Use `--documents <directory>` to read saved Microsoft Learn Markdown pages.
+Pass a rebuilt `slate` binary to include the lowering probe results.
+
+```sh
+python3 crates/slate-parser/tools/generate_msvc_builtins.py \
+  --slate target/test-cache/release/slate
+```
 
 ## Attributes
 

@@ -132,12 +132,12 @@ void f(void) {
 // DEFAULT-NEXT:         call<u32, signature=fn(i32, ptr<u32>) -> u32>(%[[VALUE__encls_u32]], const<i32>(0), null<ptr<u32>> [c="size_t *"]);
 // DEFAULT-NEXT:         call<u32, signature=fn(i32, ptr<u32>) -> u32>(%[[VALUE__enclu_u32]], const<i32>(0), null<ptr<u32>> [c="size_t *"]);
 // DEFAULT-NEXT:         call<u32, signature=fn(i32, ptr<u32>) -> u32>(%[[VALUE__enclv_u32]], const<i32>(0), null<ptr<u32>> [c="size_t *"]);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<u8>, ptr<const u8>, u32) -> void>(%[[VALUE___movsb]], null<ptr<u8>>, null<ptr<const u8>>, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)) [c="size_t"]);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<u32>, ptr<const u32>, u32) -> void>(%[[VALUE___movsd]], null<ptr<u32>>, null<ptr<const u32>>, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)) [c="size_t"]);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<u16>, ptr<const u16>, u32) -> void>(%[[VALUE___movsw]], null<ptr<u16>>, null<ptr<const u16>>, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)) [c="size_t"]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<u8>, ptr<const u8>, u32) -> void>(%[[VALUE___movsb]], null<ptr<u8>>, null<ptr<const u8>>, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)) [c="__size_t"]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<u32>, ptr<const u32>, u32) -> void>(%[[VALUE___movsd]], null<ptr<u32>>, null<ptr<const u32>>, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)) [c="__size_t"]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<u16>, ptr<const u16>, u32) -> void>(%[[VALUE___movsw]], null<ptr<u16>>, null<ptr<const u16>>, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)) [c="__size_t"]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<u8>, u8, u32) -> void>(%[[VALUE___stosb]], null<ptr<u8>>, reinterpret<u8, reason=arg, fits=unknown>(truncate<i8, reason=arg, fits=always>(const<i32>(0))), reinterpret<u32, reason=arg, fits=always>(const<i32>(0)) [c="__size_t"]);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<u32>, u32, u32) -> void>(%[[VALUE___stosd]], null<ptr<u32>>, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(0)) [c="size_t"]);
-// DEFAULT-NEXT:         call<void, signature=fn(ptr<u16>, u16, u32) -> void>(%[[VALUE___stosw]], null<ptr<u16>>, reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0))), reinterpret<u32, reason=arg, fits=always>(const<i32>(0)) [c="size_t"]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<u32>, u32, u32) -> void>(%[[VALUE___stosd]], null<ptr<u32>>, reinterpret<u32, reason=arg, fits=always>(const<i32>(0)), reinterpret<u32, reason=arg, fits=always>(const<i32>(0)) [c="__size_t"]);
+// DEFAULT-NEXT:         call<void, signature=fn(ptr<u16>, u16, u32) -> void>(%[[VALUE___stosw]], null<ptr<u16>>, reinterpret<u16, reason=arg, fits=unknown>(truncate<i16, reason=arg, fits=always>(const<i32>(0))), reinterpret<u32, reason=arg, fits=always>(const<i32>(0)) [c="__size_t"]);
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, i32) -> void>(%[[VALUE___cpuid]], null<ptr<i32>>, const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn(ptr<i32>, i32, i32) -> void>(%[[VALUE___cpuidex]], null<ptr<i32>>, const<i32>(0), const<i32>(0));
 // DEFAULT-NEXT:         call<void, signature=fn() -> void>(%[[VALUE___halt]]);
