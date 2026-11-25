@@ -140,6 +140,7 @@ fn effect_free_place(place: &ir::Place) -> bool {
 
 pub(super) fn open_coded_builtin(builtin: &str) -> bool {
     bit_count_method(builtin).is_some()
+        || bit_scan_builtin(builtin).is_some()
         || bitreverse_function(builtin).is_some()
         || is_find_first_set(builtin)
         || is_parity_or_clrsb(builtin)
@@ -155,6 +156,15 @@ pub(super) fn open_coded_builtin(builtin: &str) -> bool {
                 | "__builtin_setjmp"
                 | "__builtin_longjmp"
         )
+}
+
+fn bit_scan_builtin(builtin: &str) -> Option<(&'static str, Option<i64>)> {
+    match builtin {
+        "_BitScanForward" | "_BitScanForward64" => Some(("trailing_zeros", None)),
+        "_BitScanReverse" => Some(("leading_zeros", Some(31))),
+        "_BitScanReverse64" => Some(("leading_zeros", Some(63))),
+        _ => None,
+    }
 }
 
 fn bitreverse_function(builtin: &str) -> Option<&'static str> {
@@ -348,6 +358,70 @@ impl FunctionLowerer<'_, '_> {
                 }),
                 then_expr: Box::new(var(&otherwise)),
                 else_expr: Box::new(count(var(&bits))),
+            })),
+        })))
+    }
+
+    fn lower_bit_scan(
+        &mut self,
+        value: &ir::Value,
+        arguments: &[ir::Value],
+        method: &str,
+        max_index: Option<i64>,
+    ) -> Result<Expr> {
+        let [output, mask] = arguments else {
+            return Err(unsupported_value(value));
+        };
+        let [pointer, bits] = [self.next_temp(), self.next_temp()];
+        let var = |name: &String| Expr::var(name.as_str().into());
+        let bind = |name: &String, ty, init| Stmt::Let {
+            origin: rust::LocalOrigin::Synthetic,
+            name: name.clone(),
+            mutable: false,
+            ty,
+            init: Some(init),
+        };
+        let status = |n| Expr::Value(rust::RustValue::TypedUInt(n, Prim::U8));
+        let count = Expr::MethodCall {
+            recv: Box::new(var(&bits)),
+            method: method.into(),
+            args: Vec::new(),
+            unsafe_: rust::Unsafe(false),
+        };
+        let index = match max_index {
+            Some(max_index) => Expr::Binary {
+                op: BinOp::Sub,
+                lhs: Box::new(Expr::Value(max_index.into())),
+                rhs: Box::new(count),
+            },
+            None => count,
+        };
+        let store = Stmt::Expr(Expr::MethodCall {
+            recv: Box::new(var(&pointer)),
+            method: "write".into(),
+            args: vec![index],
+            unsafe_: rust::Unsafe(true),
+        });
+        Ok(Expr::Block(Box::new(rust::Block {
+            stmts: vec![
+                bind(
+                    &pointer,
+                    Some(self.lower_type(&output.ty)?),
+                    self.lower_value(output)?,
+                ),
+                bind(&bits, None, self.lower_value(mask)?),
+            ],
+            tail: Some(Box::new(Expr::If {
+                cond: Box::new(Expr::Binary {
+                    op: BinOp::Eq,
+                    lhs: Box::new(var(&bits)),
+                    rhs: Box::new(Expr::Value(0i64.into())),
+                }),
+                then_expr: Box::new(status(0)),
+                else_expr: Box::new(Expr::Block(Box::new(rust::Block {
+                    stmts: vec![store],
+                    tail: Some(Box::new(status(1))),
+                }))),
             })),
         })))
     }
@@ -2228,6 +2302,15 @@ impl FunctionLowerer<'_, '_> {
                     return Err(unsupported_value(value));
                 };
                 self.lower_bit_count(value, method, arguments)?
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if let Some((method, max_index)) =
+                self.tables.builtin_name(*id).and_then(bit_scan_builtin) =>
+            {
+                self.lower_bit_scan(value, arguments, method, max_index)?
             }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),
