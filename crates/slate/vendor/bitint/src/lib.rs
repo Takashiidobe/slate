@@ -454,6 +454,10 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BU
             .bitor_bits(self.shl_bits((BITS - shift as usize) % BITS))
     }
 
+    pub const fn reverse_bits(self) -> Self {
+        Self::from_limbs(self.to_limbs().reverse_bits())
+    }
+
     pub const fn rem_u32(self, modulus: u32) -> u32 {
         self.to_limbs().rem_u32(modulus)
     }
@@ -937,6 +941,12 @@ impl<const BITS: usize, const LIMBS: usize, const BYTES: usize, A: Alignment> BI
         Self::from_limbs(self.to_limbs().shr_bits(shift))
     }
 
+    pub const fn reverse_bits(self) -> Self {
+        Self::from_limbs(BIntLimbs {
+            bits: self.to_limbs().bits.reverse_bits(),
+        })
+    }
+
     pub const fn compare(self, rhs: Self) -> i32 {
         match self.to_limbs().cmp(&rhs.to_limbs()) {
             Ordering::Less => -1,
@@ -1138,6 +1148,16 @@ struct BUintLimbs<const BITS: usize, const LIMBS: usize> {
 }
 
 impl<const BITS: usize, const LIMBS: usize> BUintLimbs<BITS, LIMBS> {
+    const fn reverse_bits(self) -> Self {
+        let mut limbs = [0; LIMBS];
+        let mut i = 0;
+        while i < LIMBS {
+            limbs[LIMBS - 1 - i] = self.limbs[i].reverse_bits();
+            i += 1;
+        }
+        Self { limbs }.shr_bits((64 - BITS % 64) % 64)
+    }
+
     const fn rem_u32(&self, modulus: u32) -> u32 {
         let mut rem: u128 = 0;
         let mut i = LIMBS;

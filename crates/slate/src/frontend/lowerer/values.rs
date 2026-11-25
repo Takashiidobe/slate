@@ -149,6 +149,7 @@ pub(super) fn open_coded_builtin(builtin: &str) -> bool {
             builtin,
             "__builtin_elementwise_abs"
                 | "__builtin_elementwise_add_sat"
+                | "__builtin_elementwise_bitreverse"
                 | "__builtin_elementwise_sub_sat"
                 | "__builtin_setjmp"
                 | "__builtin_longjmp"
@@ -2232,6 +2233,13 @@ impl FunctionLowerer<'_, '_> {
                 ..
             } if self.tables.builtin_name(*id) == Some("__builtin_elementwise_abs") => {
                 self.lower_elementwise_abs(value, arguments)?
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if self.tables.builtin_name(*id) == Some("__builtin_elementwise_bitreverse") => {
+                self.lower_elementwise_bitreverse(value, arguments)?
             }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),

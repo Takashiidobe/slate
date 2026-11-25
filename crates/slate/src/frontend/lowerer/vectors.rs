@@ -52,6 +52,26 @@ pub(super) fn vector_constructor(ty: &rust::Type, method: &str) -> Expr {
     Expr::var(format!("{base}::{method}").into())
 }
 
+fn map_vector_lanes(ty: &rust::Type, vector: Expr, map: Expr) -> Expr {
+    let lanes = Expr::MethodCall {
+        recv: Box::new(vector),
+        method: "to_array".into(),
+        args: Vec::new(),
+        unsafe_: rust::Unsafe(false),
+    };
+    Expr::Call {
+        func: Box::new(vector_constructor(ty, "from_array")),
+        args: vec![Expr::MethodCall {
+            recv: Box::new(lanes),
+            method: "map".into(),
+            args: vec![map],
+            unsafe_: rust::Unsafe(false),
+        }],
+        binding: CallBinding::Generated,
+        unsafe_: rust::Unsafe(false),
+    }
+}
+
 impl Tables<'_> {
     pub(super) fn vector_element(&self, ty: &ir::Type) -> Option<ir::NumericType> {
         match self.resolve_type(ty) {
@@ -246,26 +266,72 @@ impl FunctionLowerer<'_, '_> {
         if vector.is_none() {
             return lane(lowered);
         }
-        let constructor = vector_constructor(&self.lower_type(&value.ty)?, "from_array");
-        let lanes = Expr::MethodCall {
-            recv: Box::new(lowered),
-            method: "to_array".into(),
-            args: Vec::new(),
-            unsafe_: rust::Unsafe(false),
+        Ok(map_vector_lanes(
+            &self.lower_type(&value.ty)?,
+            lowered,
+            Expr::Closure {
+                params: vec!["__lane".into()],
+                body: Box::new(lane(Expr::var("__lane".into()))?),
+            },
+        ))
+    }
+
+    pub(super) fn lower_elementwise_bitreverse(
+        &mut self,
+        value: &ir::Value,
+        arguments: &[ir::Value],
+    ) -> Result<Expr> {
+        let [operand] = arguments else {
+            return Err(unsupported_value(value));
         };
-        Ok(Expr::Call {
-            func: Box::new(constructor),
-            args: vec![Expr::MethodCall {
-                recv: Box::new(lanes),
-                method: "map".into(),
-                args: vec![Expr::Closure {
-                    params: vec!["__lane".into()],
-                    body: Box::new(lane(Expr::var("__lane".into()))?),
-                }],
+        let lowered = self.lower_value(operand)?;
+        if self.tables.wide_int(&value.ty).is_some() {
+            return Ok(Expr::MethodCall {
+                recv: Box::new(lowered),
+                method: "reverse_bits".into(),
+                args: Vec::new(),
                 unsafe_: rust::Unsafe(false),
-            }],
+            });
+        }
+
+        let vector_element = self.tables.vector_element(&value.ty);
+        let integer = vector_element.map_or_else(
+            || self.tables.resolve_type(&value.ty).clone(),
+            ir::Type::Numeric,
+        );
+        let ir::Type::Numeric(ir::NumericType::Integer { width, .. }) = integer else {
+            return Err(unsupported_value(value));
+        };
+        let rust::Type::Prim(prim) = self.lower_type(&integer)? else {
+            return Err(unsupported_value(value));
+        };
+        let padding = prim_width(prim) - width;
+        let reverse_bits =
+            Expr::var(format!("{}::reverse_bits", prim.resolved().spelling()).into());
+        if vector_element.is_some() {
+            if padding != 0 {
+                return Err(unsupported_value(value));
+            }
+            return Ok(map_vector_lanes(
+                &self.lower_type(&value.ty)?,
+                lowered,
+                reverse_bits,
+            ));
+        }
+
+        let reversed = Expr::Call {
+            func: Box::new(reverse_bits),
+            args: vec![lowered],
             binding: CallBinding::Generated,
             unsafe_: rust::Unsafe(false),
+        };
+        if padding == 0 {
+            return Ok(reversed);
+        }
+        Ok(Expr::Binary {
+            op: BinOp::Shr,
+            lhs: Box::new(reversed),
+            rhs: Box::new(Expr::Value(rust::RustValue::I64(i64::from(padding)))),
         })
     }
 

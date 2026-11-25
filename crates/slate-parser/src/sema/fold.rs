@@ -2,9 +2,9 @@ use super::builtins::{BitBuiltin, ConstantBuiltin, StdcBit};
 use super::entity::Entities;
 use crate::compiler_args::CompilerFlavor;
 use crate::ir::{
-    AggregateTarget, ArithOp, ArithSema, BindingId, CompareOp, ConversionKind, FloatType,
-    LogicalOp, Number, NumericType, Overflow, Place, PlaceKind, ShiftFill, StorageDuration, Type,
-    UnaryArithOp, Value, ValueKind, Visitor, walk_function_value,
+    AggregateMember, AggregateTarget, ArithOp, ArithSema, BindingId, CompareOp, ConversionKind,
+    FloatType, LogicalOp, Number, NumericType, Overflow, Place, PlaceKind, ShiftFill,
+    StorageDuration, Type, UnaryArithOp, Value, ValueKind, Visitor, walk_function_value,
 };
 use foldhash::HashMap;
 use num_bigint::{BigInt, BigUint, Sign};
@@ -132,6 +132,14 @@ pub(super) fn bit_builtin(
     fallback: Option<&Value>,
     target: Target,
 ) -> Option<BigInt> {
+    if builtin == BitBuiltin::Bitreverse {
+        let (width, signed) = integer_type(&argument.ty)?;
+        return Some(reverse_bits(
+            integer_constant(argument, target)?,
+            width,
+            signed,
+        ));
+    }
     if matches!(builtin, BitBuiltin::RotateLeft | BitBuiltin::RotateRight) {
         let (width, false) = integer_type(&argument.ty)? else {
             return None;
@@ -192,10 +200,139 @@ pub(super) fn bit_builtin(
             magnitude.leading_zeros() - unused - 1
         }
         BitBuiltin::Bswap => return Some((bits.swap_bytes() >> unused).into()),
-        BitBuiltin::Bitreverse => return Some((bits.reverse_bits() >> unused).into()),
-        BitBuiltin::RotateLeft | BitBuiltin::RotateRight | BitBuiltin::Stdc(_) => return None,
+        BitBuiltin::Bitreverse
+        | BitBuiltin::RotateLeft
+        | BitBuiltin::RotateRight
+        | BitBuiltin::Stdc(_) => return None,
     };
     Some(count.into())
+}
+
+fn reverse_bits(value: BigInt, width: u32, signed: bool) -> BigInt {
+    let bits = normalize(value, width, false);
+    let reversed = if let Ok(bits) = u128::try_from(&bits)
+        && width <= 128
+    {
+        BigInt::from(bits.reverse_bits() >> (128 - width))
+    } else {
+        let byte_count = width.div_ceil(8);
+        let (_, mut bytes) = bits.to_bytes_le();
+        bytes.resize(byte_count as usize, 0);
+        bytes.reverse();
+        for byte in &mut bytes {
+            *byte = byte.reverse_bits();
+        }
+        BigInt::from_bytes_le(Sign::Plus, &bytes) >> (byte_count * 8 - width)
+    };
+    normalize(reversed, width, signed)
+}
+
+pub(super) fn elementwise_bitreverse(operand: &Value, target: Target) -> Option<ValueKind> {
+    let Type::Vector {
+        element,
+        lanes,
+        scalable: None,
+    } = operand.ty
+    else {
+        let (width, signed) = integer_type(&operand.ty)?;
+        let result = reverse_bits(integer_constant(operand, target)?, width, signed);
+        return Some(ValueKind::Constant(integer_number(&operand.ty, result)));
+    };
+    let ty = Type::Numeric(element);
+    let (width, signed) = integer_type(&ty)?;
+    let env = Env::constant(target, None);
+    let members = (0..u64::from(lanes))
+        .map(|index| {
+            let lane = integer_vector_lane(operand, index, MAX_DEPTH, env)?;
+            let result = reverse_bits(lane, width, signed);
+            Some(AggregateMember {
+                target: AggregateTarget::Index(index),
+                value: Value {
+                    ty: ty.clone(),
+                    node: operand
+                        .node
+                        .derive(ValueKind::Constant(integer_number(&ty, result))),
+                },
+            })
+        })
+        .collect::<Option<_>>()?;
+    Some(ValueKind::Aggregate {
+        members,
+        zero_fill: false,
+    })
+}
+
+fn integer_vector_lane(value: &Value, index: u64, depth: usize, env: Env<'_>) -> Option<BigInt> {
+    let depth = depth.checked_sub(1)?;
+    let Type::Vector {
+        element,
+        lanes,
+        scalable: None,
+    } = value.ty
+    else {
+        return None;
+    };
+    if index >= u64::from(lanes) {
+        return None;
+    }
+    let (width, signed) = integer_type(&Type::Numeric(element))?;
+    let lane = |value| integer_vector_lane(value, index, depth, env);
+    let result = match &value.node.value {
+        ValueKind::Aggregate { .. } => {
+            match member(Stored::Value(value), AggregateTarget::Index(index))? {
+                Stored::Value(value) => evaluate(value, depth, env)?,
+                Stored::Integer(value) => value,
+            }
+        }
+        ValueKind::Copy { operand, .. } => lane(operand)?,
+        ValueKind::Convert {
+            kind: ConversionKind::VectorSplat,
+            operand,
+            ..
+        } => evaluate(operand, depth, env)?,
+        ValueKind::Arith {
+            op,
+            left,
+            right,
+            semantics,
+        } => arithmetic(
+            *op,
+            *semantics,
+            lane(left)?,
+            lane(right)?,
+            width,
+            signed,
+            env.flavor,
+        )?,
+        ValueKind::Unary {
+            op,
+            operand,
+            semantics,
+        } => match (op, semantics) {
+            (UnaryArithOp::Not, ArithSema::Exact) => !lane(operand)?,
+            (UnaryArithOp::Neg, ArithSema::Integer { overflow }) => arithmetic_result(
+                -lane(operand)?,
+                width,
+                signed,
+                *overflow,
+                env.flavor.is_some(),
+            )?,
+            _ => return None,
+        },
+        ValueKind::Conditional {
+            condition,
+            then_value,
+            else_value,
+        } => {
+            if evaluate(condition, depth, env)?.sign() == Sign::NoSign {
+                lane(else_value)?
+            } else {
+                lane(then_value)?
+            }
+        }
+        _ => return None,
+    };
+    Some(normalize(result, width, signed))
 }
 
 fn stdc_bit(operation: StdcBit, bits: u128, width: u32) -> BigInt {

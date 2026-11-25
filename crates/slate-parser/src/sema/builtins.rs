@@ -131,6 +131,7 @@ impl BitBuiltin {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum ConstantBuiltin {
     Abs,
+    ElementwiseBitreverse,
     Expect,
     Strlen,
     Strcmp,
@@ -148,6 +149,7 @@ impl ConstantBuiltin {
         };
         let (builtin, arity) = match name.as_str() {
             "__builtin_abs" | "__builtin_labs" | "__builtin_llabs" => (Self::Abs, 1),
+            "__builtin_elementwise_bitreverse" => (Self::ElementwiseBitreverse, 1),
             "__builtin_expect" => (Self::Expect, 2),
             "__builtin_expect_with_probability" => (Self::Expect, 3),
             "__builtin_strlen" => (Self::Strlen, 1),

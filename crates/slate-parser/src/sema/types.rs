@@ -1029,6 +1029,14 @@ impl TypeResolver {
     ) -> Result<ValueKind, ResolveError> {
         use super::builtins::ConstantBuiltin;
         let rejected = ResolveError::Rejected("builtin call is not a constant");
+        if builtin == ConstantBuiltin::ElementwiseBitreverse {
+            let [argument] = arguments else {
+                return Err(rejected);
+            };
+            let operand = self.constant_value_with_context(context, argument)?;
+            return super::fold::elementwise_bitreverse(&operand.value, self.fold_target())
+                .ok_or(rejected);
+        }
         if builtin.strings() {
             let mut strings = Vec::new();
             for argument in &arguments[..arguments.len().min(2)] {
@@ -1160,8 +1168,11 @@ impl TypeResolver {
                     .cloned()
                     .ok_or(ResolveError::Rejected("nonconstant or unknown identifier"));
             }
-            ExprKind::CompoundLiteral { ty, initializer } if ty.specifiers.is_constexpr => {
+            ExprKind::CompoundLiteral { ty, initializer } => {
                 let c = self.typed(e)?.c;
+                if !ty.specifiers.is_constexpr && !matches!(self.ir_type(c), Type::Vector { .. }) {
+                    return self.literal(context, e);
+                }
                 let value = self.constant_initializer(
                     e,
                     c,
