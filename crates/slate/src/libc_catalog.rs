@@ -52,6 +52,9 @@ const MSVC_INTRINSICS: &[Symbol] = &[
     msvc_intrinsic("_subborrow_u32", "slate_support::_subborrow_u32", MSVC_X86),
     msvc_intrinsic("_addcarry_u64", "slate_support::_addcarry_u64", MSVC_X64),
     msvc_intrinsic("_subborrow_u64", "slate_support::_subborrow_u64", MSVC_X64),
+    msvc_intrinsic("__mulh", "slate_support::__mulh", MSVC_X64),
+    msvc_intrinsic("__umulh", "slate_support::__umulh", MSVC_X64),
+    msvc_intrinsic("_mul128", "slate_support::_mul128", MSVC_X64),
     msvc_intrinsic("_umul128", "slate_support::_umul128", MSVC_X64),
 ];
 

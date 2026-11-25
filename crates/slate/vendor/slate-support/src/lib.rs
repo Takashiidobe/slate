@@ -144,6 +144,26 @@ mod machine_intrinsics {
 
     #[cfg(target_arch = "x86_64")]
     #[inline]
+    pub fn __mulh(a: i64, b: i64) -> i64 {
+        ((a as i128 * b as i128) >> 64) as i64
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[inline]
+    pub fn __umulh(a: u64, b: u64) -> u64 {
+        ((a as u128 * b as u128) >> 64) as u64
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[inline]
+    pub unsafe fn _mul128(a: i64, b: i64, high: *mut i64) -> i64 {
+        let product = a as i128 * b as i128;
+        unsafe { high.write((product >> 64) as i64) };
+        product as i64
+    }
+
+    #[cfg(target_arch = "x86_64")]
+    #[inline]
     pub unsafe fn _umul128(a: u64, b: u64, high: *mut u64) -> u64 {
         let product = a as u128 * b as u128;
         unsafe { high.write((product >> 64) as u64) };
