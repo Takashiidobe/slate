@@ -349,17 +349,41 @@ impl FunctionLowerer<'_, '_> {
                 },
                 vec![modulus(width)],
             ),
-            None => Expr::Cast {
-                expr: Box::new(call(
-                    Expr::Cast {
-                        expr: Box::new(count.clone()),
-                        ty: rust::Type::Prim(Prim::I64),
-                    },
-                    "rem_euclid",
-                    vec![Expr::Value(rust::RustValue::I64(i64::from(width)))],
-                )),
-                ty: rust::Type::Prim(Prim::U32),
-            },
+            None => {
+                let (signed, count_width) = match self.tables.resolve_type(&count_ty) {
+                    ir::Type::Numeric(ir::NumericType::Integer { signed, width, .. }) => {
+                        (*signed, *width)
+                    }
+                    _ => (false, 1),
+                };
+                let prim = match (signed, count_width > 64) {
+                    (true, false) => Prim::I64,
+                    (true, true) => Prim::I128,
+                    (false, false) => Prim::U64,
+                    (false, true) => Prim::U128,
+                };
+                let count = Expr::Cast {
+                    expr: Box::new(count.clone()),
+                    ty: rust::Type::Prim(prim),
+                };
+                let reduced = if signed {
+                    call(
+                        count,
+                        "rem_euclid",
+                        vec![Expr::Value(rust::RustValue::I64(i64::from(width)))],
+                    )
+                } else {
+                    Expr::Binary {
+                        op: BinOp::Rem,
+                        lhs: Box::new(count),
+                        rhs: Box::new(Expr::Value(rust::RustValue::U128(u128::from(width)))),
+                    }
+                };
+                Expr::Cast {
+                    expr: Box::new(reduced),
+                    ty: rust::Type::Prim(Prim::U32),
+                }
+            }
         };
         if let Some(wide) = self.tables.wide_int(&operand.ty) {
             return Ok(call(
