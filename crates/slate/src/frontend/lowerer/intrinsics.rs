@@ -22,7 +22,9 @@ pub(super) fn builtin_intrinsic(
             Some("llvm.copysign")
         }
         "__builtin_powi" | "__builtin_powif" | "__builtin_powil" => Some("llvm.powi"),
-        "__builtin_bswap16" | "__builtin_bswap32" | "__builtin_bswap64" => Some("llvm.bswap"),
+        "__builtin_bswap16" | "__builtin_bswap32" | "__builtin_bswap64" | "__builtin_bswap128" => {
+            Some("llvm.bswap")
+        }
         "__builtin_frame_address" => Some("llvm.frameaddress"),
         "__builtin_return_address" => Some("llvm.returnaddress"),
         "_mm_pause" => Some("llvm.x86.sse2.pause"),
