@@ -140,6 +140,7 @@ fn effect_free_place(place: &ir::Place) -> bool {
 
 pub(super) fn open_coded_builtin(builtin: &str) -> bool {
     bit_count_method(builtin).is_some()
+        || bitreverse_function(builtin).is_some()
         || is_find_first_set(builtin)
         || is_parity_or_clrsb(builtin)
         || stdc_rotate_method(builtin).is_some()
@@ -152,6 +153,16 @@ pub(super) fn open_coded_builtin(builtin: &str) -> bool {
                 | "__builtin_setjmp"
                 | "__builtin_longjmp"
         )
+}
+
+fn bitreverse_function(builtin: &str) -> Option<&'static str> {
+    match builtin {
+        "__builtin_bitreverse8" => Some("u8::reverse_bits"),
+        "__builtin_bitreverse16" => Some("u16::reverse_bits"),
+        "__builtin_bitreverse32" => Some("u32::reverse_bits"),
+        "__builtin_bitreverse64" => Some("u64::reverse_bits"),
+        _ => None,
+    }
 }
 
 fn stdc_rotate_method(builtin: &str) -> Option<&'static str> {
@@ -2164,6 +2175,23 @@ impl FunctionLowerer<'_, '_> {
                 ..
             } if self.tables.builtin_name(*id).is_some_and(is_find_first_set) => {
                 self.lower_find_first_set(value, arguments)?
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if let Some(function) =
+                self.tables.builtin_name(*id).and_then(bitreverse_function) =>
+            {
+                let [operand] = arguments.as_slice() else {
+                    return Err(unsupported_value(value));
+                };
+                Expr::Call {
+                    func: Box::new(Expr::var(function.into())),
+                    args: vec![self.lower_value(operand)?],
+                    binding: CallBinding::Generated,
+                    unsafe_: rust::Unsafe(false),
+                }
             }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),
