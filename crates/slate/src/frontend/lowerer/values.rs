@@ -144,6 +144,7 @@ pub(super) fn open_coded_builtin(builtin: &str) -> bool {
         || is_find_first_set(builtin)
         || is_parity_or_clrsb(builtin)
         || stdc_rotate_method(builtin).is_some()
+        || shift128_op(builtin).is_some()
         || is_stdc_bit(builtin)
         || matches!(
             builtin,
@@ -184,6 +185,14 @@ fn rotate_method(builtin: &str) -> Option<&'static str> {
         | "__builtin_rotateright16"
         | "__builtin_rotateright32"
         | "__builtin_rotateright64" => Some("rotate_right"),
+        _ => None,
+    }
+}
+
+fn shift128_op(builtin: &str) -> Option<BinOp> {
+    match builtin {
+        "__shiftleft128" => Some(BinOp::Shl),
+        "__shiftright128" => Some(BinOp::Shr),
         _ => None,
     }
 }
@@ -449,6 +458,49 @@ impl FunctionLowerer<'_, '_> {
                 }),
             })),
         })))
+    }
+
+    fn lower_shift128(
+        &mut self,
+        value: &ir::Value,
+        op: BinOp,
+        arguments: &[ir::Value],
+    ) -> Result<Expr> {
+        let [low, high, count] = arguments else {
+            return Err(unsupported_value(value));
+        };
+        let binary = |op, lhs, rhs| Expr::Binary {
+            op,
+            lhs: Box::new(lhs),
+            rhs: Box::new(rhs),
+        };
+        let as_u128 = |expr| Expr::Cast {
+            expr: Box::new(expr),
+            ty: rust::Type::Prim(Prim::U128),
+        };
+        let low = as_u128(self.lower_value(low)?);
+        let high = as_u128(self.lower_value(high)?);
+        let half_width = Expr::Value(64i64.into());
+        let bits = binary(
+            BinOp::BitOr,
+            low,
+            binary(BinOp::Shl, high, half_width.clone()),
+        );
+        let shift = binary(
+            BinOp::BitAnd,
+            self.lower_value(count)?,
+            Expr::Value(63i64.into()),
+        );
+        let shifted = binary(op, bits, shift);
+        let half = if matches!(op, BinOp::Shl) {
+            binary(BinOp::Shr, shifted, half_width)
+        } else {
+            shifted
+        };
+        Ok(Expr::Cast {
+            expr: Box::new(half),
+            ty: rust::Type::Prim(Prim::U64),
+        })
     }
 
     pub(super) fn lower_evaluation_statements(
@@ -1950,6 +2002,13 @@ impl FunctionLowerer<'_, '_> {
                     }],
                     unsafe_: rust::Unsafe(false),
                 }
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if let Some(op) = self.tables.builtin_name(*id).and_then(shift128_op) => {
+                self.lower_shift128(value, op, arguments)?
             }
             ValueKind::Call {
                 callee: ir::Callee::Direct(id),
