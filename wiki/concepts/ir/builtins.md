@@ -431,6 +431,10 @@ looks a name up in this order:
   [intrinsic lowering](../intrinsic-lowering.md) for catalog and signature
   limits.
 
+Entries marked `ALL_MS_LANGUAGES` are available in MSVC mode and in Clang
+mode with Microsoft extensions enabled. This includes the Microsoft
+`_rotl*` and `_rotr*` scalar rotate names.
+
 ## alloca
 
 `alloca`, `_alloca`, `__builtin_alloca` and the `_with_align` variants are

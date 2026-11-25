@@ -316,6 +316,10 @@ impl ClangBuiltin {
         self.attributes.contains(&attribute)
     }
 
+    fn is_microsoft_only(&self) -> bool {
+        self.languages == Some(BuiltinLanguage::AllMsLanguages)
+    }
+
     fn names_header_type(&self) -> bool {
         self.prototype.is_some_and(|prototype| {
             std::iter::once(&prototype.ret)
@@ -925,20 +929,28 @@ fn elementwise_signature(operation: &str) -> Option<DerivedSignature> {
 }
 
 pub(super) fn clang_builtin(name: &str, dialect: &Dialect) -> Option<&'static ClangBuiltin> {
+    let flavor = dialect.flavor();
+    let msvc = flavor.is_msvc();
+    let ms_clang = flavor.is_clang() && dialect.features().microsoft_extensions;
     let library = &dialect.options().library_builtins;
-    let clang = registered_builtin(CLANG_BUILTINS, name)
-        .filter(|builtin| builtin.kind != ClangBuiltinKind::Library || library.recognizes(name));
-    match dialect.flavor() {
+    let clang = registered_builtin(CLANG_BUILTINS, name).filter(|builtin| {
+        (msvc || ms_clang || !builtin.is_microsoft_only())
+            && (builtin.kind != ClangBuiltinKind::Library || library.recognizes(name))
+    });
+    match flavor {
         CompilerFlavor::Gcc => match clang {
             Some(builtin) if !builtin.names_header_type() => Some(builtin),
             clang => gcc_builtin(name, dialect)
                 .or(clang)
                 .or_else(|| gcc_target_builtin(name, dialect.target().family)),
         },
-        CompilerFlavor::Clang => clang.or_else(|| target_builtin(name, dialect.target().family)),
+        CompilerFlavor::Clang => clang.or_else(|| {
+            target_builtin(name, dialect.target().family)
+                .filter(|builtin| ms_clang || !builtin.is_microsoft_only())
+        }),
         CompilerFlavor::Msvc => clang.or_else(|| {
             target_builtin(name, dialect.target().family).filter(|builtin| {
-                builtin.languages == Some(BuiltinLanguage::AllMsLanguages)
+                builtin.is_microsoft_only()
                     && (builtin.kind != ClangBuiltinKind::Library || library.recognizes(name))
             })
         }),
@@ -955,8 +967,9 @@ fn gcc_builtin(name: &str, dialect: &Dialect) -> Option<&'static ClangBuiltin> {
         })
         .or_else(|| {
             let library = name.strip_prefix("__builtin_")?;
-            let clang = registered_builtin(CLANG_BUILTINS, library)
-                .filter(|builtin| builtin.kind == ClangBuiltinKind::Library);
+            let clang = registered_builtin(CLANG_BUILTINS, library).filter(|builtin| {
+                builtin.kind == ClangBuiltinKind::Library && !builtin.is_microsoft_only()
+            });
             clang
                 .filter(|builtin| !builtin.names_header_type())
                 .or_else(|| {

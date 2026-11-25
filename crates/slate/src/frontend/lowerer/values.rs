@@ -190,11 +190,19 @@ fn rotate_method(builtin: &str) -> Option<&'static str> {
         "__builtin_rotateleft8"
         | "__builtin_rotateleft16"
         | "__builtin_rotateleft32"
-        | "__builtin_rotateleft64" => Some("rotate_left"),
+        | "__builtin_rotateleft64"
+        | "_rotl8"
+        | "_rotl16"
+        | "_rotl"
+        | "_rotl64" => Some("rotate_left"),
         "__builtin_rotateright8"
         | "__builtin_rotateright16"
         | "__builtin_rotateright32"
-        | "__builtin_rotateright64" => Some("rotate_right"),
+        | "__builtin_rotateright64"
+        | "_rotr8"
+        | "_rotr16"
+        | "_rotr"
+        | "_rotr64" => Some("rotate_right"),
         _ => None,
     }
 }
