@@ -1077,7 +1077,7 @@ impl<'a> Preprocessor<'a> {
         if microsoft.iso_volatile == Some(false) {
             self.macros.remove("_ISO_VOLATILE");
         }
-        if microsoft.strict_ansi {
+        if !self.dialect.features().ms_extensions {
             self.macros.remove("_MSC_EXTENSIONS");
         }
         let mut defines: Vec<String> = [

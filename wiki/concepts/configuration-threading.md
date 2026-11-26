@@ -57,6 +57,9 @@ Ask questions with the shared helpers, never by comparing values:
 - Standard: `standard.at_least_c99()`, `.at_least_c11()`, `.at_least_c23()`.
   Read `stdc_version()` only for the macro's value. Grammar and keyword gates
   belong in `StandardFeatures`.
+- MSVC `/Za` rules apply when `flavor.is_msvc() && !features.ms_extensions`.
+  The flag is on by default for MSVC and off under `/Za`. Use
+  `microsoft_extensions` for the shared Microsoft keyword and builtin gates.
 - Target: `target.family.is_x86()` for either x86 width; single families compare
   with `==`.
 

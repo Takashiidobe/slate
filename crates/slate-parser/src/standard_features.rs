@@ -66,6 +66,7 @@ pub struct StandardFeatures {
     pub valueless_return_in_nonvoid: bool,
     pub value_return_in_void: bool,
     pub inline_semantics: InlineSemantics,
+    pub ms_extensions: bool,
     pub microsoft_extensions: bool,
     pub microsoft_compatibility: bool,
     pub microsoft_anonymous_records: bool,
@@ -168,6 +169,7 @@ impl StandardFeatures {
             } else {
                 InlineSemantics::ProvideDef
             },
+            ms_extensions: false,
             microsoft_extensions: false,
             microsoft_compatibility: false,
             microsoft_anonymous_records: false,
@@ -199,6 +201,7 @@ impl StandardFeatures {
         graphs: SourceGraphs,
     ) -> Self {
         let mut features = Self::new(standard);
+        features.ms_extensions = flavor.is_msvc() && !microsoft.strict_ansi;
         features.trigraphs = graphs
             .trigraphs
             .unwrap_or(features.trigraphs && !flavor.is_msvc());
