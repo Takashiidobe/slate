@@ -33,6 +33,7 @@ pub enum Warning {
     ExtraSemi,
     ExtraTopLevelSemi,
     CastLvalue,
+    BlockScopeFunction,
     UnrepresentableCharacter,
     HigherPrecisionForComplexDivision,
     Openmp,
@@ -70,6 +71,7 @@ impl Warning {
         Self::ExtraSemi,
         Self::ExtraTopLevelSemi,
         Self::CastLvalue,
+        Self::BlockScopeFunction,
         Self::UnrepresentableCharacter,
         Self::HigherPrecisionForComplexDivision,
         Self::Openmp,
@@ -111,6 +113,7 @@ impl Warning {
             Self::ExtraSemi => "extra-semi",
             Self::ExtraTopLevelSemi => "extra-top-level-semi",
             Self::CastLvalue => "cast-lvalue",
+            Self::BlockScopeFunction => "block-scope-function",
             Self::UnrepresentableCharacter => "unrepresentable-character",
             Self::HigherPrecisionForComplexDivision => "higher-precision-for-complex-division",
         }
@@ -148,7 +151,7 @@ impl Warning {
 
     fn msvc_level(self) -> Option<u32> {
         match self {
-            Self::CastLvalue | Self::ExtraTopLevelSemi => Some(4),
+            Self::CastLvalue | Self::ExtraTopLevelSemi | Self::BlockScopeFunction => Some(4),
             _ => None,
         }
     }

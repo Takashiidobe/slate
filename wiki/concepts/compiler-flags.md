@@ -71,6 +71,7 @@ how the result reaches each stage is in
     array bounds (C2466), and `$` in identifiers (C2018).
     Dollar signs can survive preprocessing for `/E` or be stringized.
     At warning level 4, `/Za` reports each empty file-scope statement (C4019).
+    It suppresses the block-scope function declaration warning (C4210).
   - Trigraphs are off by default. `/Zc:trigraphs` turns on replacement and `??/`
     line splicing in every `/std:` mode, `/Zc:trigraphs-` turns it off again,
     and the last one wins (`SourceGraphs::trigraphs`).

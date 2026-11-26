@@ -52,6 +52,7 @@ pub(super) fn validate(
         unpromoted_division: None,
         unpromoted_divisions: 0,
         block_ranges: Vec::new(),
+        msvc_seen_functions: HashSet::new(),
     };
     for (declaration, item) in unit.decls.iter().zip(items) {
         checker.item = Some(declaration.id);
@@ -131,6 +132,7 @@ struct Checker<'a> {
     unpromoted_division: Option<(NodeId, Span<()>)>,
     unpromoted_divisions: usize,
     block_ranges: Vec<std::ops::Range<u32>>,
+    msvc_seen_functions: HashSet<String>,
 }
 
 #[derive(Default)]
@@ -347,10 +349,13 @@ impl Checker<'_> {
                 self.types.external_overloads.remove(&id);
             }
             self.mangle_external_overload(node, function.declarator.name(), ty, true);
-            names = function
-                .declarator
-                .name()
-                .map(|name| self.types.function_names(ty, name));
+            let name = function.declarator.name();
+            if self.types.features().ms_extensions
+                && let Some(name) = name
+            {
+                self.msvc_seen_functions.insert(name.to_owned());
+            }
+            names = name.map(|name| self.types.function_names(ty, name));
             if let Some((returned, ..)) = self.types.ctypes.function_parts(ty) {
                 if self.types.is_incomplete_record(returned) {
                     self.reject(&at, "incomplete result type in function definition");
@@ -851,6 +856,22 @@ impl Checker<'_> {
             }
             if !global && storage == StorageClass::Static {
                 self.reject(declarator, "block scope static function");
+            }
+            if self.types.features().ms_extensions
+                && let Some(name) = declarator.declarator.name()
+                && self.msvc_seen_functions.insert(name.to_owned())
+                && !global
+                && self
+                    .types
+                    .declarations
+                    .get(&declarator.id)
+                    .is_some_and(|id| self.types.entities.ty(id).is_none())
+            {
+                self.types.warn(
+                    Warning::BlockScopeFunction,
+                    "nonstandard extension used: function given file scope",
+                    declarator,
+                );
             }
             let attributes = specifiers
                 .attributes_with(&declarator.declarator, &declarator.attributes)

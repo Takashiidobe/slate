@@ -59,6 +59,8 @@ severity(w) =
   diagnostic level.
 - MSVC `extra-top-level-semi` (C4019) defaults on under `/Za` at level 4 or
   above. The parser reports each standalone file-scope semicolon.
+- MSVC `block-scope-function` (C4210) defaults on at level 4 or above when
+  extensions are enabled and a function is first declared at block scope.
 
 ## Warnings
 
