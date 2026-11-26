@@ -3468,6 +3468,11 @@ impl TypeResolver {
                         if !anonymous && !microsoft_record {
                             continue;
                         }
+                        if self.flavor().is_msvc() && !self.features().ms_extensions {
+                            return Err(ResolveError::Rejected(
+                                "nameless struct or union member is not allowed with /Za",
+                            ));
+                        }
                         self.check_attributes(&declaration.specifiers.attributes, Subject::Field)?;
                         self.check_function_type_attributes(
                             &declaration.specifiers.attributes,

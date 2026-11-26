@@ -65,10 +65,10 @@ how the result reaches each stage is in
     `StandardFeatures::ms_extensions`, which drops `_MSC_EXTENSIONS`.
     `/Ze` keeps the default extension mode.
     `/Za` conflicts (D8016, either order) with `/Ze` and with any
-    `/std:`, checked in `check_msvc_conflicts`. cl.exe's `/Za` also rejects
-    nameless struct members (C2467), casts used as lvalues (C2105), zero-size
-    arrays (C2466) and `$` in identifiers (C2018); slate does not emulate those
-    yet.
+    `/std:`, checked in `check_msvc_conflicts`. `/Za` rejects nameless struct
+    and union members (C2467), including members declared by tag or typedef.
+    cl.exe also rejects casts used as lvalues (C2105), zero-size arrays (C2466)
+    and `$` in identifiers (C2018).
   - Trigraphs are off by default. `/Zc:trigraphs` turns on replacement and `??/`
     line splicing in every `/std:` mode, `/Zc:trigraphs-` turns it off again,
     and the last one wins (`SourceGraphs::trigraphs`).
