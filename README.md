@@ -11,6 +11,8 @@ This generates better rust than machine translation.
 Slate supports all versions of C, from C89 to C2y, as well as non-standard
 features like inline asm, long double, bitsets, nested functions, and many more.
 
+See the [Slate user guide](docs/src/users.md) for translation workflows.
+
 ## Installation
 
 Install [`slate-c2rust`](https://crates.io/crates/slate-c2rust) from crates.io
@@ -132,7 +134,7 @@ MSVC's `__declspec`, nested functions, binary constants, vector extensions, and
 many more. Basically, if any of the three major compilers (GCC, Clang, MSVC) can
 compile your C, and Slate can't, it's a bug.
 
-See [feature coverage](crates/slate/docs/src/features.md) and
+See [feature coverage](docs/src/features.md) and
 [testing](wiki/concepts/differential-fixtures.md) for how we maintain regression
 testing.
 

@@ -13,6 +13,8 @@ die() {
     exit 1
 }
 
+command -v mdbook >/dev/null 2>&1 || die "mdbook is required; run: cargo install mdbook --version 0.5.4 --locked"
+
 slate_headers=${SLATE_HEADERS:-}
 if [[ -z $slate_headers ]]; then
     case $(uname -s) in
@@ -58,6 +60,7 @@ CARGO_PROFILE_RELEASE_STRIP=true \
 rm -rf "$out"
 mkdir -p "$out/headers"
 cp -r "$root/frontend/." "$out/"
+mdbook build "$root/../docs" --dest-dir "$out/docs"
 
 hashed() {
     local path=$1 stem=$2 ext=$3 hash

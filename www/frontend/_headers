@@ -16,3 +16,5 @@
   Cache-Control: no-cache
 /examples/*
   Cache-Control: no-cache
+/docs/*
+  Cache-Control: no-cache
