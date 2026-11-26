@@ -3080,9 +3080,18 @@ impl TypeResolver {
                             Some(extent) => Extent::Variable(Some(*extent)),
                             None => match self.constant_integer(expr) {
                                 Ok(length) => {
-                                    Extent::Fixed(u64::try_from(length).map_err(|_| {
+                                    let length = u64::try_from(length).map_err(|_| {
                                         ResolveError::Rejected("invalid array length")
-                                    })?)
+                                    })?;
+                                    if length == 0
+                                        && self.flavor().is_msvc()
+                                        && !self.features().ms_extensions
+                                    {
+                                        return Err(ResolveError::Rejected(
+                                            "zero-size array is not allowed with /Za",
+                                        ));
+                                    }
+                                    Extent::Fixed(length)
                                 }
                                 Err(_) if self.prototype_scope || self.provisional_extents => {
                                     Extent::Variable(None)

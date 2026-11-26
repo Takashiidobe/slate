@@ -67,8 +67,8 @@ how the result reaches each stage is in
     `/Za` conflicts (D8016, either order) with `/Ze` and with any
     `/std:`, checked in `check_msvc_conflicts`. `/Za` rejects nameless struct
     and union members (C2467), including members declared by tag or typedef.
-    It rejects casts used as lvalues (C2105, C2106, C2102).
-    cl.exe also rejects zero-size arrays (C2466) and `$` in identifiers (C2018).
+    It rejects casts used as lvalues (C2105, C2106, C2102) and explicit zero
+    array bounds (C2466). cl.exe also rejects `$` in identifiers (C2018).
   - Trigraphs are off by default. `/Zc:trigraphs` turns on replacement and `??/`
     line splicing in every `/std:` mode, `/Zc:trigraphs-` turns it off again,
     and the last one wins (`SourceGraphs::trigraphs`).
