@@ -91,6 +91,18 @@ mod string_intrinsics {
 #[cfg(all(windows, any(target_arch = "x86", target_arch = "x86_64")))]
 pub use string_intrinsics::*;
 
+#[cfg(all(windows, any(target_arch = "x86_64", target_arch = "aarch64")))]
+#[inline]
+pub fn __mulh(a: i64, b: i64) -> i64 {
+    ((a as i128 * b as i128) >> 64) as i64
+}
+
+#[cfg(all(windows, any(target_arch = "x86_64", target_arch = "aarch64")))]
+#[inline]
+pub fn __umulh(a: u64, b: u64) -> u64 {
+    ((a as u128 * b as u128) >> 64) as u64
+}
+
 #[cfg(all(windows, any(target_arch = "x86", target_arch = "x86_64")))]
 mod machine_intrinsics {
     #[cfg(target_arch = "x86")]
@@ -140,18 +152,6 @@ mod machine_intrinsics {
         let diff = a as i128 - b as i128 - (borrow != 0) as i128;
         unsafe { out.write(diff as u64) };
         (diff < 0) as u8
-    }
-
-    #[cfg(target_arch = "x86_64")]
-    #[inline]
-    pub fn __mulh(a: i64, b: i64) -> i64 {
-        ((a as i128 * b as i128) >> 64) as i64
-    }
-
-    #[cfg(target_arch = "x86_64")]
-    #[inline]
-    pub fn __umulh(a: u64, b: u64) -> u64 {
-        ((a as u128 * b as u128) >> 64) as u64
     }
 
     #[cfg(target_arch = "x86_64")]

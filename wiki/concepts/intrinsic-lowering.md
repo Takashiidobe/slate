@@ -51,6 +51,8 @@
 - MSVC `__ll_lshift`, `__ll_rshift`, and `__ull_rshift` use Rust shifts.
   Counts use the low six bits on x64 and the low five on x86.
   The signed right shift sign-extends, and the unsigned right shift zero-fills.
+- MSVC `__mulh` and `__umulh` on x64 and ARM64 use shared support functions
+  that return the high 64 bits of an `i128` or `u128` product.
 - `__builtin_flt_rounds()` calls `__slate_fenv_flt_rounds` in
   `frontend/shims/fenv.c`: `fegetround()` maps target `FE_TOWARDZERO`,
   `FE_TONEAREST`, `FE_UPWARD`, `FE_DOWNWARD` to 0, 1, 2, 3; unknown modes to -1.

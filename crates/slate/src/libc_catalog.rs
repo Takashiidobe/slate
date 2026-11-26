@@ -21,6 +21,7 @@ include!("libc_symbols_table.rs");
 
 const MSVC_X86: &[&str] = &["i686-pc-windows-msvc", "x86_64-pc-windows-msvc"];
 const MSVC_X64: &[&str] = &["x86_64-pc-windows-msvc"];
+const MSVC_X64_ARM64: &[&str] = &["x86_64-pc-windows-msvc", "aarch64-pc-windows-msvc"];
 const MSVC_IA32: &[&str] = &["i686-pc-windows-msvc"];
 
 const fn msvc_intrinsic(
@@ -52,8 +53,8 @@ const MSVC_INTRINSICS: &[Symbol] = &[
     msvc_intrinsic("_subborrow_u32", "slate_support::_subborrow_u32", MSVC_X86),
     msvc_intrinsic("_addcarry_u64", "slate_support::_addcarry_u64", MSVC_X64),
     msvc_intrinsic("_subborrow_u64", "slate_support::_subborrow_u64", MSVC_X64),
-    msvc_intrinsic("__mulh", "slate_support::__mulh", MSVC_X64),
-    msvc_intrinsic("__umulh", "slate_support::__umulh", MSVC_X64),
+    msvc_intrinsic("__mulh", "slate_support::__mulh", MSVC_X64_ARM64),
+    msvc_intrinsic("__umulh", "slate_support::__umulh", MSVC_X64_ARM64),
     msvc_intrinsic("_mul128", "slate_support::_mul128", MSVC_X64),
     msvc_intrinsic("_umul128", "slate_support::_umul128", MSVC_X64),
 ];
