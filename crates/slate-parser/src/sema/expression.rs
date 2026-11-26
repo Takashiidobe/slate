@@ -1785,6 +1785,28 @@ impl Lowerer {
     fn lower_place(&mut self, e: &Expr) -> Result<Lvalue, ResolveError> {
         match &e.value {
             ExprKind::Paren(inner) => self.place(inner),
+            ExprKind::Cast { value, .. } => {
+                let c = self.lvalue_result(e)?;
+                let source = self.place(value)?;
+                let access = source.access;
+                let source_pointer = self.types.ctypes.pointer(source.c);
+                let address =
+                    self.operand(value, source_pointer, ValueKind::AddressOf(source.place));
+                let pointer = self.types.ctypes.pointer(c);
+                let cast = self.operand(
+                    e,
+                    pointer,
+                    ValueKind::Convert {
+                        kind: ConversionKind::PointerCast,
+                        operand: Box::new(address.value),
+                        reason: ConversionReason::Explicit,
+                        semantics: ConversionSema::Exact,
+                    },
+                );
+                let mut place = self.deref(cast)?;
+                place.place.access = place.place.access.union(access);
+                Ok(place)
+            }
             ExprKind::Generic { associations, .. } => {
                 let selected = self.generic_selected(e, associations)?;
                 self.place(selected)

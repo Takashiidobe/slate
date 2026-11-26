@@ -67,8 +67,8 @@ how the result reaches each stage is in
     `/Za` conflicts (D8016, either order) with `/Ze` and with any
     `/std:`, checked in `check_msvc_conflicts`. `/Za` rejects nameless struct
     and union members (C2467), including members declared by tag or typedef.
-    cl.exe also rejects casts used as lvalues (C2105), zero-size arrays (C2466)
-    and `$` in identifiers (C2018).
+    It rejects casts used as lvalues (C2105, C2106, C2102).
+    cl.exe also rejects zero-size arrays (C2466) and `$` in identifiers (C2018).
   - Trigraphs are off by default. `/Zc:trigraphs` turns on replacement and `??/`
     line splicing in every `/std:` mode, `/Zc:trigraphs-` turns it off again,
     and the last one wins (`SourceGraphs::trigraphs`).
@@ -99,7 +99,8 @@ how the result reaches each stage is in
     number is level 1 (cl.exe warns D9014), a non-number is rejected.
     Separately, the last `/W0` or `/w` silences warnings as `-w` does
     (`ignore_warnings`), even after `/Wall`; a later `/W1`..`/W4` or `/Wall`
-    turns them back on. Other levels do not filter warnings yet.
+    turns them back on. Warnings with a modeled MSVC level use the last option,
+    including after `/Wall`.
   - `/Gd`, `/Gr`, `/Gz` and `/Gv` set `TargetAbi::default_convention` (cdecl,
     fastcall, stdcall, vectorcall) for every function type without an explicit
     convention ([calls-abi](ir/calls-abi.md#calling-conventions)). On x64 only

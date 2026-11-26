@@ -26,6 +26,11 @@ Forming a place never reads it.
   `index(field(deref(p), a), i)`, which touches only that element.
 - Bit-fields and vector lanes are readable and writable but not addressable.
 - Reusing a place evaluates a side-effecting base or index once.
+- Default MSVC mode lets a scalar cast name the operand's storage if the
+  operand is a scalar lvalue other than a bit-field and the cast type fits.
+  Lowering takes the operand's address, casts the pointer and dereferences it.
+  The source object's qualifiers still govern writes. Value casts use normal
+  conversions. `/Za` disables cast lvalues.
 
 | C                         | IR (types and policies elided)                 |
 | ------------------------- | ---------------------------------------------- |

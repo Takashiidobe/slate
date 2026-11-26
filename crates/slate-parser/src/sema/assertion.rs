@@ -2025,6 +2025,7 @@ impl Checker<'_> {
             | ExprKind::Postfix { operand, .. } => {
                 self.captured_write(operand);
                 self.expression(operand);
+                self.warn_cast_lvalue(operand);
             }
             ExprKind::Paren(expr)
             | ExprKind::Unary { operand: expr, .. }
@@ -2036,6 +2037,7 @@ impl Checker<'_> {
                 let target_expr = target;
                 self.captured_write(target);
                 self.expression(target);
+                self.warn_cast_lvalue(target);
                 self.expression(value);
                 if *op == AssignOp::DivAssign {
                     self.complex_division(expr, target, value);
@@ -2223,6 +2225,25 @@ impl Checker<'_> {
         if let Err(reason) = self.types.record_conversion(expr, from, to, context) {
             self.errors
                 .push(error(at.provenance, at.expansion, reason.to_string()));
+        }
+    }
+
+    fn warn_cast_lvalue(&mut self, target: &Expr) {
+        if !self.types.features().ms_extensions {
+            return;
+        }
+        let mut cast = target;
+        while let ExprKind::Paren(inner) = &cast.value {
+            cast = inner;
+        }
+        if matches!(cast.value, ExprKind::Cast { .. })
+            && self.types.typed(cast).is_ok_and(|typed| typed.lvalue)
+        {
+            self.types.warn(
+                Warning::CastLvalue,
+                "nonstandard extension used: cast on lvalue",
+                cast,
+            );
         }
     }
 

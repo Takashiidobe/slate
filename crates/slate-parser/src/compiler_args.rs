@@ -2656,6 +2656,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 .filter(|level| *level == 100)
                 .or(Some(0));
             parsed.diagnostics.ignore_warnings = true;
+            parsed.diagnostics.msvc_warning_level = Some(0);
         } else if let Some(value) = argument.strip_prefix("/W") {
             parsed.saw(Opt::MsvcWarningLevel, argument);
             let level = match next_value(arguments, &mut index, argument, value)? {
@@ -2666,6 +2667,7 @@ fn parse_arguments(arguments: &[String]) -> Result<ParsedCompilerArgs, CompilerA
                 },
             };
             parsed.diagnostics.ignore_warnings = level == 0;
+            parsed.diagnostics.msvc_warning_level = Some(level);
             if parsed.msvc_warning_level != Some(100) {
                 parsed.msvc_warning_level = Some(level);
             }

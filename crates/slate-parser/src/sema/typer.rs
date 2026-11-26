@@ -561,11 +561,7 @@ impl TypeResolver {
             ExprKind::Assign { op, target, value } => {
                 let value = self.operand_type(value)?;
                 let assigned = if *op == AssignOp::Assign {
-                    let typed = self.typed(target)?;
-                    if !typed.lvalue {
-                        return Err(NOT_ASSIGNABLE);
-                    }
-                    self.require_modifiable_lvalue(typed.c)?;
+                    let typed = self.modifiable_target(target)?;
                     Typed::rvalue(self.ctypes.unqualified(typed.c))
                 } else {
                     let op = super::expression::assignment_operator(*op)?;
@@ -578,9 +574,22 @@ impl TypeResolver {
                 Typed::rvalue(self.operand_type(right)?)
             }
             ExprKind::Cast { ty, value } => {
-                self.typed(value)?;
+                let source = self.typed(value)?;
                 let to = self.type_name(ty)?;
-                Typed::rvalue(self.ctypes.unqualified(to))
+                let to = self.ctypes.unqualified(to);
+                if self.features().ms_extensions
+                    && source.lvalue
+                    && source.bits.is_none()
+                    && self.ctypes.is_scalar(source.c)
+                    && self.ctypes.is_scalar(to)
+                    && let Ok(from_layout) = self.storage(self.ir_type(source.c))
+                    && let Ok(to_layout) = self.storage(self.ir_type(to))
+                    && to_layout.size_bytes <= from_layout.size_bytes
+                {
+                    Typed::lvalue(to)
+                } else {
+                    Typed::rvalue(to)
+                }
             }
             ExprKind::CompoundLiteral { ty, initializer } => {
                 let resolved = self.type_name(ty)?;
@@ -2066,12 +2075,22 @@ impl TypeResolver {
             .classify_conversion(computed, updated, ConversionContext::Assign, false)
     }
 
-    fn updated(&mut self, target: &Expr) -> Result<Typed, ResolveError> {
+    fn modifiable_target(&mut self, target: &Expr) -> Result<Typed, ResolveError> {
         let typed = self.typed(target)?;
         if !typed.lvalue {
             return Err(NOT_ASSIGNABLE);
         }
-        self.require_modifiable_lvalue(typed.c)?;
+        match &target.value {
+            ExprKind::Paren(inner) | ExprKind::Cast { value: inner, .. } => {
+                self.modifiable_target(inner)?;
+            }
+            _ => self.require_modifiable_lvalue(typed.c)?,
+        }
+        Ok(typed)
+    }
+
+    fn updated(&mut self, target: &Expr) -> Result<Typed, ResolveError> {
+        let typed = self.modifiable_target(target)?;
         if !(self.ctypes.is_scalar(typed.c) || self.ctypes.is_vector(typed.c)) {
             return Err(ResolveError::Rejected("non-arithmetic operand"));
         }
@@ -2121,6 +2140,9 @@ impl TypeResolver {
     fn register_rooted(&mut self, operand: &Expr) -> bool {
         match &operand.value {
             ExprKind::Paren(inner) => self.register_rooted(inner),
+            ExprKind::Cast { value, .. } if self.features().ms_extensions => {
+                self.register_rooted(value)
+            }
             ExprKind::Member {
                 base, arrow: false, ..
             } => self.register_rooted(base),

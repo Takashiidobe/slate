@@ -54,6 +54,9 @@ severity(w) =
   `Availability::Extension` never becomes `Rejected`; `StandardFeatures` does
   not read `DiagnosticOptions`.
 - Verified against clang 22.1.8 and gcc 16.2.1.
+- MSVC `cast-lvalue` (C4213) defaults on at level 4 or above, for stores and
+  updates through a cast. The last `/W<n>`, `/Wall` or `/w` sets the
+  diagnostic level.
 
 ## Warnings
 

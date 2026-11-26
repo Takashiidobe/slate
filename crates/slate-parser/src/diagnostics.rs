@@ -31,6 +31,7 @@ pub enum Warning {
     JumpSehFinally,
     ExtraTokens,
     ExtraSemi,
+    CastLvalue,
     UnrepresentableCharacter,
     HigherPrecisionForComplexDivision,
     Openmp,
@@ -66,6 +67,7 @@ impl Warning {
         Self::JumpSehFinally,
         Self::ExtraTokens,
         Self::ExtraSemi,
+        Self::CastLvalue,
         Self::UnrepresentableCharacter,
         Self::HigherPrecisionForComplexDivision,
         Self::Openmp,
@@ -105,6 +107,7 @@ impl Warning {
             Self::JumpSehFinally => "jump-seh-finally",
             Self::ExtraTokens => "extra-tokens",
             Self::ExtraSemi => "extra-semi",
+            Self::CastLvalue => "cast-lvalue",
             Self::UnrepresentableCharacter => "unrepresentable-character",
             Self::HigherPrecisionForComplexDivision => "higher-precision-for-complex-division",
         }
@@ -138,6 +141,13 @@ impl Warning {
                 | Self::Deprecated
                 | Self::ExtraSemi
         )
+    }
+
+    fn msvc_level(self) -> Option<u32> {
+        match self {
+            Self::CastLvalue => Some(4),
+            _ => None,
+        }
     }
 
     fn default_severity(
@@ -207,6 +217,7 @@ pub struct DiagnosticOptions {
     pub pedantic_errors: bool,
     pub ignore_warnings: bool,
     pub permissive: bool,
+    pub msvc_warning_level: Option<u32>,
     settings: BTreeMap<Warning, WarningSetting>,
 }
 
@@ -244,11 +255,16 @@ impl DiagnosticContext<'_> {
     }
 
     pub fn severity_as(&self, warning: Warning, pedantic: bool) -> Option<Severity> {
-        self.resolve(
-            warning,
-            warning.default_severity(self.standard, self.flavor),
-            pedantic,
-        )
+        let default = match warning.msvc_level() {
+            Some(level)
+                if !self.flavor.is_msvc()
+                    || self.options.msvc_warning_level.unwrap_or(1) < level =>
+            {
+                DefaultSeverity::Ignored
+            }
+            _ => warning.default_severity(self.standard, self.flavor),
+        };
+        self.resolve(warning, default, pedantic)
     }
 
     pub fn severity_error_by_default(&self, warning: Warning) -> Option<Severity> {
