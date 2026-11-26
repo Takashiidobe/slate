@@ -206,7 +206,9 @@ impl StandardFeatures {
             .trigraphs
             .unwrap_or(features.trigraphs && !flavor.is_msvc());
         features.digraphs = graphs.digraphs.unwrap_or(features.digraphs);
-        features.dollars_in_identifiers = graphs.dollars.unwrap_or(true);
+        features.dollars_in_identifiers = graphs
+            .dollars
+            .unwrap_or(!flavor.is_msvc() || features.ms_extensions);
         features.blocks = flavor.is_clang() && graphs.blocks.unwrap_or(false);
         features.pascal_strings = flavor.is_clang() && graphs.pascal_strings.unwrap_or(false);
         if flavor.is_clang() {

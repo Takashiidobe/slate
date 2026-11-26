@@ -113,6 +113,16 @@ impl Preprocessor<'_> {
 
     pub(super) fn record_define(&mut self, directive: &Directive) -> Result<(), PPFailure> {
         let (name, name_token) = self.macro_name(directive, "#define")?;
+        let rest = &directive.arguments[1..];
+        let no_dollar =
+            self.dialect.flavor().is_msvc() && !self.dialect.features().dollars_in_identifiers;
+        if no_dollar
+            && let Some(token) = std::iter::once(name_token)
+                .chain(rest.first().filter(|token| !token.leading_space))
+                .find(|token| token.value.is_dollar_identifier())
+        {
+            return Err(PPFailure::at(token.spelling, PPErrorKind::DollarIdentifier));
+        }
         self.reject_defined_name(&name, name_token)?;
         if self.is_reserved_macro(&name) {
             self.warn(
@@ -124,7 +134,6 @@ impl Preprocessor<'_> {
             return Ok(());
         }
         let src = self.source(directive.loc.file);
-        let rest = &directive.arguments[1..];
         let name_end = name_token.spelling.offset + name_token.spelling.length;
         let (parameters, variadic, named_variadic, replacement) = match rest.first() {
             Some(open) if open.value == Token::LParen && open.spelling.offset == name_end => {
@@ -135,6 +144,12 @@ impl Preprocessor<'_> {
                         PPFailure::at(open.spelling, PPErrorKind::ExpectedParametersClose)
                     })?;
                 let list = &rest[1..close];
+                if no_dollar
+                    && let Some(token) =
+                        list.iter().find(|token| token.value.is_dollar_identifier())
+                {
+                    return Err(PPFailure::at(token.spelling, PPErrorKind::DollarIdentifier));
+                }
                 let mut parameters = Vec::new();
                 let mut variadic = false;
                 let mut named_variadic = None;

@@ -1948,6 +1948,17 @@ impl<'a> Preprocessor<'a> {
         let expanded = self.expand_has_embed(&expanded, directive.loc.file)?;
         let expanded = self.expand_has_include(&expanded, directive.loc.file);
         let expanded = expand_has_checks(&expanded, self.dialect);
+        if self.dialect.flavor().is_msvc()
+            && !self.dialect.features().dollars_in_identifiers
+            && let Some(token) = expanded
+                .iter()
+                .find(|token| token.value.is_dollar_identifier())
+        {
+            return Err(PPFailure::at(
+                token.expansion,
+                PPErrorKind::DollarIdentifier,
+            ));
+        }
         self.trace_condition_names(&expanded);
         for token in &expanded {
             self.warn_traditional_literal(token);

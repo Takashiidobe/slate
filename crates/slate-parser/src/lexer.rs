@@ -358,6 +358,10 @@ pub enum Token {
 }
 
 impl Token {
+    pub(crate) fn is_dollar_identifier(&self) -> bool {
+        matches!(self, Self::Ident(name) if name.contains('$'))
+    }
+
     pub fn integer_value_i128(&self) -> Option<i128> {
         let Token::IntLit(spelling) = self else {
             return None;

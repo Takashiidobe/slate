@@ -67,6 +67,8 @@ pub(super) enum PPErrorKind {
     },
     #[error("expected macro name after {0}")]
     ExpectedMacroName(&'static str),
+    #[error("character '$' is not permitted in an identifier with /Za")]
+    DollarIdentifier,
     #[error("{0}")]
     InvalidPaste(String),
     #[error("newline in string literal")]

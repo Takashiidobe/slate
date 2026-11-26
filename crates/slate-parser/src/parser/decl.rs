@@ -333,6 +333,19 @@ impl Parser {
         root_file: FileId,
         mut macros: MacroInvocations,
     ) -> Result<TranslationUnit, ParseError> {
+        if self.flavor().is_msvc()
+            && !self.features().dollars_in_identifiers
+            && let Some(position) = input
+                .tokens
+                .iter()
+                .position(|token| token.value.is_dollar_identifier())
+        {
+            return Err(self.error_at_tokens(
+                &input.tokens,
+                position,
+                "character '$' is not permitted in an identifier with /Za",
+            ));
+        }
         self.mark_ms_asm_lines(&mut input);
         if self.flavor().is_gcc() {
             input.drop_c23_va_start_extra_arguments();
