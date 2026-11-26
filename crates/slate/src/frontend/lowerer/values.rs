@@ -145,6 +145,7 @@ pub(super) fn open_coded_builtin(builtin: &str) -> bool {
         || is_find_first_set(builtin)
         || is_parity_or_clrsb(builtin)
         || stdc_rotate_method(builtin).is_some()
+        || shift64_op(builtin).is_some()
         || shift128_op(builtin).is_some()
         || is_stdc_bit(builtin)
         || matches!(
@@ -203,6 +204,14 @@ fn rotate_method(builtin: &str) -> Option<&'static str> {
         | "_rotr16"
         | "_rotr"
         | "_rotr64" => Some("rotate_right"),
+        _ => None,
+    }
+}
+
+fn shift64_op(builtin: &str) -> Option<BinOp> {
+    match builtin {
+        "__ll_lshift" => Some(BinOp::Shl),
+        "__ll_rshift" | "__ull_rshift" => Some(BinOp::Shr),
         _ => None,
     }
 }
@@ -2083,6 +2092,29 @@ impl FunctionLowerer<'_, '_> {
                         ty: rust::Type::Prim(Prim::U32),
                     }],
                     unsafe_: rust::Unsafe(false),
+                }
+            }
+            ValueKind::Call {
+                callee: ir::Callee::Direct(id),
+                arguments,
+                ..
+            } if let Some(op) = self.tables.builtin_name(*id).and_then(shift64_op) => {
+                let [operand, count] = arguments.as_slice() else {
+                    return Err(unsupported_value(value));
+                };
+                let mask = match self.tables.target.family {
+                    TargetFamily::X86 => 31i64,
+                    TargetFamily::X86_64 => 63i64,
+                    _ => return Err(unsupported_value(value)),
+                };
+                Expr::Binary {
+                    op,
+                    lhs: Box::new(self.lower_value(operand)?),
+                    rhs: Box::new(Expr::Binary {
+                        op: BinOp::BitAnd,
+                        lhs: Box::new(self.lower_value(count)?),
+                        rhs: Box::new(Expr::Value(mask.into())),
+                    }),
                 }
             }
             ValueKind::Call {

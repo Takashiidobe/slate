@@ -48,6 +48,9 @@
   their entry by LLVM name and take the same path.
 - Scalar `__builtin_rotateleft/right{8,16,32,64}` calls use Rust integer
   `rotate_left`/`rotate_right`; counts convert to `u32` and wrap modulo width.
+- MSVC `__ll_lshift`, `__ll_rshift`, and `__ull_rshift` use Rust shifts.
+  Counts use the low six bits on x64 and the low five on x86.
+  The signed right shift sign-extends, and the unsigned right shift zero-fills.
 - `__builtin_flt_rounds()` calls `__slate_fenv_flt_rounds` in
   `frontend/shims/fenv.c`: `fegetround()` maps target `FE_TOWARDZERO`,
   `FE_TONEAREST`, `FE_UPWARD`, `FE_DOWNWARD` to 0, 1, 2, 3; unknown modes to -1.
