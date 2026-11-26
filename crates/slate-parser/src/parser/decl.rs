@@ -3,8 +3,10 @@ use super::declarator::{DeclaratorError, DeclaratorParser, IdentifierList};
 use super::{Annotation, Parser, ParserInput, span_tokens, string_literal_content};
 use crate::ast::*;
 use crate::const_expr;
+use crate::diagnostics::{DiagnosticContext, Warning};
 use crate::error::ParseError;
 use crate::lexer::{Keyword, Token, TokenSpanExt};
+use crate::pp::{DirectiveDiagnostic, PPError};
 use crate::reachability::filter_translation_unit;
 use crate::target_info::TargetOs;
 use std::rc::Rc;
@@ -392,6 +394,16 @@ impl Parser {
         position: &mut usize,
         linkage: bool,
     ) -> Result<Vec<Decl>, ParseError> {
+        let extra_semi = if !linkage && self.flavor().is_msvc() && !self.features().ms_extensions {
+            (DiagnosticContext {
+                options: &self.dialect().options().diagnostics,
+                standard: self.standard(),
+                flavor: self.flavor(),
+            })
+            .severity(Warning::ExtraTopLevelSemi)
+        } else {
+            None
+        };
         let mut decls = Vec::new();
         while *position < tokens.len() {
             for annotation in self.input.take(tokens, *position, *position) {
@@ -402,6 +414,20 @@ impl Parser {
                 return Ok(decls);
             }
             if tokens.value_at(*position) == Some(&Token::Semi) {
+                if let Some(severity) = extra_semi {
+                    let text = "empty statement at global scope";
+                    let error = self.error_at_tokens(tokens, *position, text);
+                    self.directive_diagnostics.push(DirectiveDiagnostic {
+                        severity,
+                        text: text.into(),
+                        error: PPError {
+                            message: error.message,
+                            source_code: error.source_code,
+                            span: Some(error.span),
+                        },
+                        warning: Some(Warning::ExtraTopLevelSemi),
+                    });
+                }
                 *position += 1;
                 continue;
             }

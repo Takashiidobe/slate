@@ -57,6 +57,8 @@ severity(w) =
 - MSVC `cast-lvalue` (C4213) defaults on at level 4 or above, for stores and
   updates through a cast. The last `/W<n>`, `/Wall` or `/w` sets the
   diagnostic level.
+- MSVC `extra-top-level-semi` (C4019) defaults on under `/Za` at level 4 or
+  above. The parser reports each standalone file-scope semicolon.
 
 ## Warnings
 

@@ -31,6 +31,7 @@ pub enum Warning {
     JumpSehFinally,
     ExtraTokens,
     ExtraSemi,
+    ExtraTopLevelSemi,
     CastLvalue,
     UnrepresentableCharacter,
     HigherPrecisionForComplexDivision,
@@ -67,6 +68,7 @@ impl Warning {
         Self::JumpSehFinally,
         Self::ExtraTokens,
         Self::ExtraSemi,
+        Self::ExtraTopLevelSemi,
         Self::CastLvalue,
         Self::UnrepresentableCharacter,
         Self::HigherPrecisionForComplexDivision,
@@ -107,6 +109,7 @@ impl Warning {
             Self::JumpSehFinally => "jump-seh-finally",
             Self::ExtraTokens => "extra-tokens",
             Self::ExtraSemi => "extra-semi",
+            Self::ExtraTopLevelSemi => "extra-top-level-semi",
             Self::CastLvalue => "cast-lvalue",
             Self::UnrepresentableCharacter => "unrepresentable-character",
             Self::HigherPrecisionForComplexDivision => "higher-precision-for-complex-division",
@@ -145,7 +148,7 @@ impl Warning {
 
     fn msvc_level(self) -> Option<u32> {
         match self {
-            Self::CastLvalue => Some(4),
+            Self::CastLvalue | Self::ExtraTopLevelSemi => Some(4),
             _ => None,
         }
     }
