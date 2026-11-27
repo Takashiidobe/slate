@@ -79,15 +79,15 @@ int main(void) {
 // CHECK-NEXT: static headers: __SlateAlign16<[header; 2]> = __SlateAlign16(
 // CHECK-NEXT:     [
 // CHECK-NEXT:         header {
-// CHECK-NEXT:             name: b"CSeq\0".as_ptr() as *const i8,
+// CHECK-NEXT:             name: c"CSeq".as_ptr(),
 // CHECK-NEXT:             name_length: (core::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
 // CHECK-NEXT:             search: core::ptr::null::<i8>(),
 // CHECK-NEXT:             search_length: 0u64,
 // CHECK-NEXT:         },
 // CHECK-NEXT:         header {
-// CHECK-NEXT:             name: b"From\0".as_ptr() as *const i8,
+// CHECK-NEXT:             name: c"From".as_ptr(),
 // CHECK-NEXT:             name_length: (core::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
-// CHECK-NEXT:             search: b"sip:\0".as_ptr() as *const i8,
+// CHECK-NEXT:             search: c"sip:".as_ptr(),
 // CHECK-NEXT:             search_length: (core::mem::size_of::<[i8; 5]>() as u64).wrapping_sub(1u64),
 // CHECK-NEXT:         },
 // CHECK-NEXT:     ],

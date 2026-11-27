@@ -1,6 +1,5 @@
 mod array_iter;
 mod branch_init;
-mod cstr_literal;
 mod dead_store;
 mod for_range;
 mod inline_temps;
@@ -16,7 +15,6 @@ mod slot_promote;
 pub(super) mod walk;
 
 use super::NodeRule;
-use crate::backend::rust_ast::Prim;
 
 pub(super) fn control_flow_registry() -> Vec<Box<dyn NodeRule>> {
     vec![
@@ -30,7 +28,7 @@ pub(super) fn control_flow_registry() -> Vec<Box<dyn NodeRule>> {
     ]
 }
 
-pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Box<dyn NodeRule>> {
+pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
     let mut rules = control_flow_registry();
     rules.extend(vec![
         Box::new(slot_promote::SlotPromote) as Box<dyn NodeRule>,
@@ -44,15 +42,6 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
         Box::new(inline_temps::InlineConstArgTemps),
         Box::new(inline_temps::AsmOutputTempFold),
         Box::new(pattern_range::MatchRangeFold),
-        Box::new(cstr_literal::CStrLiteral {
-            c_char: if slate_parser::target_info::TargetInfo::for_triple(&target.triple)
-                .map_or(target.char_signed, |rust_abi| rust_abi.char_signed)
-            {
-                Prim::I8
-            } else {
-                Prim::U8
-            },
-        }),
     ]);
     rules.extend(vec![
         Box::new(dead_store::DeadStore) as Box<dyn NodeRule>,

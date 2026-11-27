@@ -82,7 +82,7 @@ int main(void) {
 // CHECK-NEXT: static mut present: kobj_attribute = kobj_attribute {
 // CHECK-NEXT:     attr: {
 // CHECK-NEXT:         let mut [[T_0:__t[0-9]+]]: attribute = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:         [[T_0]].name = b"present\0".as_ptr() as *const i8;
+// CHECK-NEXT:         [[T_0]].name = c"present".as_ptr();
 // CHECK-NEXT:         [[T_0]].mode = 292i32;
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },

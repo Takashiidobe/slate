@@ -51,6 +51,22 @@ fn thin_pointer(ty: &rust::Type) -> bool {
     )
 }
 
+fn is_byte_ptr(ty: &rust::Type) -> bool {
+    let rust::Type::Ptr { inner, .. } = ty else {
+        return false;
+    };
+    match **inner {
+        rust::Type::CLib(rust::CLibType::CHAR) => true,
+        rust::Type::Prim(prim) => matches!(prim.resolved(), Prim::I8 | Prim::U8),
+        _ => false,
+    }
+}
+
+fn is_c_char_const_ptr(ty: &rust::Type, rust_char_signed: bool) -> bool {
+    let c_char = if rust_char_signed { Prim::I8 } else { Prim::U8 };
+    matches!(ty, rust::Type::Ptr { mutable: false, inner } if **inner == rust::Type::CLib(rust::CLibType::CHAR) || matches!(**inner, rust::Type::Prim(prim) if prim.resolved() == c_char))
+}
+
 fn integer_prim(ty: &rust::Type) -> bool {
     matches!(
         ty,
@@ -269,6 +285,29 @@ pub(super) fn noreturn_unreachable() -> Expr {
 }
 
 impl FunctionLowerer<'_, '_> {
+    fn string_literal_pointer(&self, bytes: &[u8], ty: rust::Type) -> Expr {
+        let c_string = bytes
+            .split_last()
+            .filter(|(last, rest)| **last == 0 && !rest.contains(&0) && is_byte_ptr(&ty));
+        let pointer = Expr::MethodCall {
+            recv: Box::new(match c_string {
+                Some((_, content)) => Expr::CStr(content.to_vec()),
+                None => Expr::ByteStr(bytes.to_vec()),
+            }),
+            method: "as_ptr".into(),
+            args: Vec::new(),
+            unsafe_: rust::Unsafe(false),
+        };
+        if c_string.is_some() && is_c_char_const_ptr(&ty, self.tables.rust_layout.char_signed) {
+            pointer
+        } else {
+            Expr::Cast {
+                expr: Box::new(pointer),
+                ty,
+            }
+        }
+    }
+
     fn lower_function_address(&mut self, value: &ir::Value, id: BindingId) -> Result<Expr> {
         if self.tables.stdio.functions.contains_key(&id) {
             self.dependencies.stdio_layout_used = true;
@@ -1532,6 +1571,17 @@ impl FunctionLowerer<'_, '_> {
                     Some((_, _, container)) => rust::Type::Prim(container),
                     None => self.lower_type(&operand.ty)?,
                 };
+                if *kind == ir::ConversionKind::PointerCast
+                    && let ValueKind::ArrayDecay { place, .. } = &operand.node.value
+                    && let PlaceKind::Binding(id) = place.kind
+                    && let Some(bytes) = self.tables.strings.get(&id)
+                    && !self.tables.macro_values.contains_key(&operand.node.id)
+                {
+                    let target = self.lower_value_type(value)?;
+                    if thin_pointer(&target) {
+                        return Ok(self.string_literal_pointer(bytes, target));
+                    }
+                }
                 let mut expr = self.lower_value(operand)?;
                 if *kind == ir::ConversionKind::PointerCast
                     && matches!(operand.node.value, ValueKind::ArrayDecay { .. })
@@ -1631,15 +1681,8 @@ impl FunctionLowerer<'_, '_> {
                         decayed
                     });
                 };
-                Expr::Cast {
-                    expr: Box::new(Expr::MethodCall {
-                        recv: Box::new(Expr::ByteStr(bytes.clone())),
-                        method: "as_ptr".into(),
-                        args: Vec::new(),
-                        unsafe_: rust::Unsafe(false),
-                    }),
-                    ty: self.lower_value_type(value)?,
-                }
+                let ty = self.lower_value_type(value)?;
+                self.string_literal_pointer(bytes, ty)
             }
             ValueKind::Arith { .. } | ValueKind::Unary { .. }
                 if let Some(bits) = self.tables.fold_long_double(value) =>

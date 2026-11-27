@@ -254,7 +254,7 @@ int main(void) {
 // CHECK-NEXT:     [[T_0]].bytes = 3 as size_t;
 // CHECK-NEXT:     [[T_0]].wide = 4u64;
 // CHECK-NEXT:     [[T_0]].tag = 120 as c_char;
-// CHECK-NEXT:     [[T_0]].name = b"shared\0".as_ptr() as *const c_char;
+// CHECK-NEXT:     [[T_0]].name = c"shared".as_ptr();
 // CHECK-NEXT:     [[T_0]].label = [97i8, 98i8, 99i8, 0i8];
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };

@@ -42,27 +42,27 @@ int main(void) {
 // CHECK-NEXT: static mut fields: __SlateAlign16<[field; 6]> = __SlateAlign16(
 // CHECK-NEXT:     [
 // CHECK-NEXT:         field {
-// CHECK-NEXT:             name: b"cred\0".as_ptr() as *const i8,
+// CHECK-NEXT:             name: c"cred".as_ptr(),
 // CHECK-NEXT:             is_signed: false as i32,
 // CHECK-NEXT:             size: core::mem::size_of::<*const cred>() as i32,
 // CHECK-NEXT:         },
 // CHECK-NEXT:         field {
-// CHECK-NEXT:             name: b"u32\0".as_ptr() as *const i8,
+// CHECK-NEXT:             name: c"u32".as_ptr(),
 // CHECK-NEXT:             is_signed: ((-1i32 as u32) < (1i32 as u32)) as i32,
 // CHECK-NEXT:             size: 4i32,
 // CHECK-NEXT:         },
 // CHECK-NEXT:         field {
-// CHECK-NEXT:             name: b"int\0".as_ptr() as *const i8,
+// CHECK-NEXT:             name: c"int".as_ptr(),
 // CHECK-NEXT:             is_signed: true as i32,
 // CHECK-NEXT:             size: 4i32,
 // CHECK-NEXT:         },
 // CHECK-NEXT:         field {
-// CHECK-NEXT:             name: b"eq\0".as_ptr() as *const i8,
+// CHECK-NEXT:             name: c"eq".as_ptr(),
 // CHECK-NEXT:             is_signed: true as i32,
 // CHECK-NEXT:             size: 0i32,
 // CHECK-NEXT:         },
 // CHECK-NEXT:         field {
-// CHECK-NEXT:             name: b"ge\0".as_ptr() as *const i8,
+// CHECK-NEXT:             name: c"ge".as_ptr(),
 // CHECK-NEXT:             is_signed: false as i32,
 // CHECK-NEXT:             size: 0i32,
 // CHECK-NEXT:         },

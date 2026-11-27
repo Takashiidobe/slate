@@ -185,7 +185,7 @@ int main(void) {
 // CHECK-NEXT:         + unsafe {
 // CHECK-NEXT:             (strchrnul(c"abc".as_ptr() as *const core::ffi::c_char, 122i32 as i32)
 // CHECK-NEXT:                     as *mut i8)
-// CHECK-NEXT:                 .offset_from(c"abc".as_ptr() as *mut i8) as i64
+// CHECK-NEXT:                 .offset_from((c"abc".as_ptr() as *mut i8) as *mut i8) as i64
 // CHECK-NEXT:         }
 // CHECK-NEXT:         + ((!unsafe {
 // CHECK-NEXT:             (strcasestr(

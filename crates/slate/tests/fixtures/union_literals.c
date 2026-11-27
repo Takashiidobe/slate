@@ -380,7 +380,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: static pointer: __SlateConst<pointer_or_int> = __SlateConst(
 // CHECK-NEXT:     pointer_or_int {
-// CHECK-NEXT:         text: b"text\0".as_ptr() as *const i8,
+// CHECK-NEXT:         text: c"text".as_ptr(),
 // CHECK-NEXT:     },
 // CHECK-NEXT: );
 // CHECK-EMPTY:

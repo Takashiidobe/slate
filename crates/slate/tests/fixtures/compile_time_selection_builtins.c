@@ -33,8 +33,8 @@ int main(void) {
 // CHECK-NEXT:     let diff_type: i32 = 0;
 // CHECK-NEXT:     let i: i32 = 7;
 // CHECK-NEXT:     let d: f64 = 2.5f64;
-// CHECK-NEXT:     let i_name: *const i8 = TYPE_NAME!() as *const i8;
-// CHECK-NEXT:     let d_name: *const i8 = TYPE_NAME__2!() as *const i8;
+// CHECK-NEXT:     let i_name: *const i8 = TYPE_NAME__2!() as *const i8;
+// CHECK-NEXT:     let d_name: *const i8 = TYPE_NAME!() as *const i8;
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         slate_support::printf(

@@ -51,11 +51,7 @@ int main(void) {
 // CHECK-NEXT: static mut grid: {{\[\[}}i8; 4]; 2] = {{\[\[}}97, 98, 99, 0], [120, 121, 122, 0]];
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut words: __SlateAlign16<[*const i8; 3]> = __SlateAlign16(
-// CHECK-NEXT:     [
-// CHECK-NEXT:         b"zero\0".as_ptr() as *const i8,
-// CHECK-NEXT:         b"one\0".as_ptr() as *const i8,
-// CHECK-NEXT:         b"two\0".as_ptr() as *const i8,
-// CHECK-NEXT:     ],
+// CHECK-NEXT:     [c"zero".as_ptr(), c"one".as_ptr(), c"two".as_ptr()],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut high: [i8; 4] = [-128, -1, 127, 0];

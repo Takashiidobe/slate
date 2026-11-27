@@ -29,11 +29,7 @@ int main(void) {
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
 // CHECK-NEXT: static typenames: __SlateAlign16<[*const i8; 3]> = __SlateAlign16(
-// CHECK-NEXT:     [
-// CHECK-NEXT:         b"nil\0".as_ptr() as *const i8,
-// CHECK-NEXT:         b"boolean\0".as_ptr() as *const i8,
-// CHECK-NEXT:         b"number\0".as_ptr() as *const i8,
-// CHECK-NEXT:     ],
+// CHECK-NEXT:     [c"nil".as_ptr(), c"boolean".as_ptr(), c"number".as_ptr()],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut counter: i32 = unsafe { core::mem::zeroed() };

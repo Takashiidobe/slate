@@ -100,7 +100,7 @@ pub(in crate::backend) fn apply_local(
     target: &slate_parser::target_info::TargetInfo,
 ) {
     let passes = [
-        RuleRegistry::build(rules::registry(target)),
+        RuleRegistry::build(rules::registry()),
         RuleRegistry::build(rules::late_registry()),
     ];
     for item in &mut program.items {

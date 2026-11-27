@@ -82,21 +82,21 @@ int main(void) {
 // CHECK-NEXT:     [
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_0:__t[0-9]+]]: entry = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             [[T_0]].name = b"zero\0".as_ptr() as *const i8;
+// CHECK-NEXT:             [[T_0]].name = c"zero".as_ptr();
 // CHECK-NEXT:             [[T_0]].value = 0i32;
 // CHECK-NEXT:             [[T_0]].next = core::ptr::null_mut::<entry>();
 // CHECK-NEXT:             [[T_0]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_1:__t[0-9]+]]: entry = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             [[T_1]].name = b"one\0".as_ptr() as *const i8;
+// CHECK-NEXT:             [[T_1]].name = c"one".as_ptr();
 // CHECK-NEXT:             [[T_1]].value = 1i32;
 // CHECK-NEXT:             [[T_1]].next = core::ptr::null_mut::<entry>();
 // CHECK-NEXT:             [[T_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let mut [[T_2:__t[0-9]+]]: entry = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:             [[T_2]].name = b"two\0".as_ptr() as *const i8;
+// CHECK-NEXT:             [[T_2]].name = c"two".as_ptr();
 // CHECK-NEXT:             [[T_2]].value = 2i32;
 // CHECK-NEXT:             [[T_2]].next = core::ptr::null_mut::<entry>();
 // CHECK-NEXT:             [[T_2]]
@@ -111,11 +111,7 @@ int main(void) {
 // CHECK-NEXT: static exported_table: [i32; 3] = [10, 20, 30];
 // CHECK-EMPTY:
 // CHECK-NEXT: static names: __SlateAlign16<[*const i8; 3]> = __SlateAlign16(
-// CHECK-NEXT:     [
-// CHECK-NEXT:         b"alpha\0".as_ptr() as *const i8,
-// CHECK-NEXT:         b"beta\0".as_ptr() as *const i8,
-// CHECK-NEXT:         b"gamma\0".as_ptr() as *const i8,
-// CHECK-NEXT:     ],
+// CHECK-NEXT:     [c"alpha".as_ptr(), c"beta".as_ptr(), c"gamma".as_ptr()],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: static first: __SlateConst<*const entry> = __SlateConst(

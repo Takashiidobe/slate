@@ -81,7 +81,7 @@ int main(void) {
 // CHECK-NEXT: static mut table: __SlateAlign16<[ctl; 2]> = __SlateAlign16(
 // CHECK-NEXT:     [
 // CHECK-NEXT:         ctl {
-// CHECK-NEXT:             name: b"one\0".as_ptr() as *const i8,
+// CHECK-NEXT:             name: c"one".as_ptr(),
 // CHECK-NEXT:             min: (core::ptr::addr_of!(sysctl_vals.0) as *const i32)
 // CHECK-NEXT:                 .wrapping_offset(1i32 as isize) as *mut (),
 // CHECK-NEXT:             max: (core::ptr::addr_of!(sysctl_vals.0) as *const i32)

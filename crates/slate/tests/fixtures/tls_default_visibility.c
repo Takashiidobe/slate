@@ -66,7 +66,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: unsafe impl<T> Sync for __SlateAlign16<T> {}
 // CHECK-EMPTY:
-// CHECK-NEXT: static mut malloc_conf: *const i8 = b"background_thread:true\0".as_ptr() as *const i8;
+// CHECK-NEXT: static mut malloc_conf: *const i8 = c"background_thread:true".as_ptr();
 // CHECK-EMPTY:
 // CHECK-NEXT: static mut exported_count: i32 = 3;
 // CHECK-EMPTY:

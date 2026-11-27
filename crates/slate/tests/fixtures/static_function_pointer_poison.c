@@ -74,7 +74,7 @@ int main(void) {
 // CHECK-NEXT:             60319u64.wrapping_add(16045481047390945280u64) as *mut (),
 // CHECK-NEXT:         );
 // CHECK-NEXT:         (*[[T_1]]).gpl_only = 1i32;
-// CHECK-NEXT:         (*[[T_1]]).name = b"tail\0".as_ptr() as *const i8;
+// CHECK-NEXT:         (*[[T_1]]).name = c"tail".as_ptr();
 // CHECK-NEXT:     }
 // CHECK-NEXT:     [[T_0]]
 // CHECK-NEXT: };
@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT:     {
 // CHECK-NEXT:         let mut [[T_0]]: proto = unsafe { core::mem::zeroed() };
 // CHECK-NEXT:         [[T_0]].func = Some(add);
-// CHECK-NEXT:         [[T_0]].name = b"add\0".as_ptr() as *const i8;
+// CHECK-NEXT:         [[T_0]].name = c"add".as_ptr();
 // CHECK-NEXT:         [[T_0]]
 // CHECK-NEXT:     },
 // CHECK-NEXT: );

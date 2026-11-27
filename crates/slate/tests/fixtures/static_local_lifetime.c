@@ -217,11 +217,7 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: static names: __SlateAlign16<[*const i8; 3]> = __SlateAlign16(
-// CHECK-NEXT:     [
-// CHECK-NEXT:         b"zero\0".as_ptr() as *const i8,
-// CHECK-NEXT:         b"one\0".as_ptr() as *const i8,
-// CHECK-NEXT:         b"two\0".as_ptr() as *const i8,
-// CHECK-NEXT:     ],
+// CHECK-NEXT:     [c"zero".as_ptr(), c"one".as_ptr(), c"two".as_ptr()],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: fn loop_scoped() -> i32 {

@@ -83,7 +83,7 @@ int main(void) {
 // CHECK-NEXT:                 opaque: core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *mut ()>(
 // CHECK-NEXT:                     Some(twice),
 // CHECK-NEXT:                 ),
-// CHECK-NEXT:                 name: b"twice\0".as_ptr() as *const i8,
+// CHECK-NEXT:                 name: c"twice".as_ptr(),
 // CHECK-NEXT:             },
 // CHECK-NEXT:             Entry {
 // CHECK-NEXT:                 value: (core::ptr::addr_of_mut!(values.0) as *mut i32)
@@ -96,7 +96,7 @@ int main(void) {
 // CHECK-NEXT:                         abs as *const (),
 // CHECK-NEXT:                     ),
 // CHECK-NEXT:                 ),
-// CHECK-NEXT:                 name: b"abs\0".as_ptr() as *const i8,
+// CHECK-NEXT:                 name: c"abs".as_ptr(),
 // CHECK-NEXT:             },
 // CHECK-NEXT:         ]
 // CHECK-NEXT:     },
@@ -120,7 +120,7 @@ int main(void) {
 // CHECK-NEXT:                 opaque: core::mem::transmute::<Option<unsafe extern "C-unwind" fn(i32) -> i32>, *mut ()>(
 // CHECK-NEXT:                     Some(twice),
 // CHECK-NEXT:                 ),
-// CHECK-NEXT:                 name: b"group\0".as_ptr() as *const i8,
+// CHECK-NEXT:                 name: c"group".as_ptr(),
 // CHECK-NEXT:             }
 // CHECK-NEXT:         };
 // CHECK-NEXT:         [[T_0]]

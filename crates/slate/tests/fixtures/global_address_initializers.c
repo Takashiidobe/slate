@@ -155,12 +155,12 @@ int main(void) {
 // CHECK-NEXT: static mut cursors: __SlateAlign16<[Cursor; 2]> = __SlateAlign16(
 // CHECK-NEXT:     [
 // CHECK-NEXT:         Cursor {
-// CHECK-NEXT:             label: b"counter\0".as_ptr() as *const i8,
+// CHECK-NEXT:             label: c"counter".as_ptr(),
 // CHECK-NEXT:             value: core::ptr::addr_of_mut!(counter),
 // CHECK-NEXT:             pair: core::ptr::addr_of_mut!(pair),
 // CHECK-NEXT:         },
 // CHECK-NEXT:         Cursor {
-// CHECK-NEXT:             label: b"table\0".as_ptr() as *const i8,
+// CHECK-NEXT:             label: c"table".as_ptr(),
 // CHECK-NEXT:             value: unsafe {
 // CHECK-NEXT:                 (core::ptr::addr_of_mut!(table.0) as *mut i32)
 // CHECK-NEXT:                     .wrapping_offset(3i32 as isize)
