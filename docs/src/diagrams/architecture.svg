@@ -1,26 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 330" role="img" aria-labelledby="title desc">
-<title id="title">Slate architecture</title>
-<desc id="desc">Target headers and C source pass through slate-parser, typed IR lowering, and optional backend rewrites to Rust source or a Cargo crate.</desc>
-<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#4338ca"/></marker></defs>
-<rect width="800" height="330" fill="#fff"/>
-<rect x="20" y="50" width="175" height="90" rx="8" fill="#eef2ff" stroke="#4338ca"/>
-<text x="107.5" y="83" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#1e1b4b">C source + target headers</text>
-<text x="107.5" y="110" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">slate-sysroots</text>
-<path d="M195 95H210" stroke="#4338ca" stroke-width="2" marker-end="url(#arrow)"/>
-<rect x="215" y="50" width="175" height="90" rx="8" fill="#eef2ff" stroke="#4338ca"/>
-<text x="302.5" y="83" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#1e1b4b">Preprocess, parse, sema</text>
-<text x="302.5" y="110" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">slate-parser</text>
-<path d="M390 95H405" stroke="#4338ca" stroke-width="2" marker-end="url(#arrow)"/>
-<rect x="410" y="50" width="175" height="90" rx="8" fill="#eef2ff" stroke="#4338ca"/>
-<text x="497.5" y="83" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#1e1b4b">Typed IR to Rust AST</text>
-<text x="497.5" y="110" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">Slate frontend</text>
-<path d="M585 95H600" stroke="#4338ca" stroke-width="2" marker-end="url(#arrow)"/>
-<rect x="605" y="50" width="175" height="90" rx="8" fill="#eef2ff" stroke="#4338ca"/>
-<text x="692.5" y="83" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#1e1b4b">Rewrites and emission</text>
-<text x="692.5" y="110" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">Slate backend</text>
-<path d="M692 140V230H430" fill="none" stroke="#4338ca" stroke-width="2" marker-end="url(#arrow)"/>
-<path d="M497 140V180H302V230" fill="none" stroke="#4338ca" stroke-width="2" marker-end="url(#arrow)"/>
-<text x="385" y="170" font-family="sans-serif" font-size="13" fill="#334155">raw lowering</text>
-<rect x="175" y="230" width="255" height="65" rx="8" fill="#f1f5f9" stroke="#334155"/>
-<text x="302" y="269" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#0f172a">Rust source or Cargo crate</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="576" height="100" viewBox="0 0 576 100" role="img" aria-labelledby="title description">
+  <title id="title">Slate translation pipeline</title>
+  <desc id="description">Slate-parser goes from C to IR, slate-analysis from IR to IR, and Slate's lowerer from IR to Rust.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0 0L8 4L0 8Z" fill="#4338ca"/>
+    </marker>
+  </defs>
+  <rect width="576" height="100" rx="12" fill="#f8fafc"/>
+  <g fill="#eef2ff" stroke="#4338ca">
+    <rect x="12" y="14" width="168" height="72" rx="8"/>
+    <rect x="204" y="14" width="168" height="72" rx="8"/>
+    <rect x="396" y="14" width="168" height="72" rx="8"/>
+  </g>
+  <g fill="none" stroke="#4338ca" stroke-width="1.5" marker-end="url(#arrow)">
+    <path d="M181 50H200"/>
+    <path d="M373 50H392"/>
+  </g>
+  <g font-family="system-ui, sans-serif" font-size="14" text-anchor="middle" fill="#1e1b4b">
+    <g font-size="18" font-weight="600">
+      <text x="96" y="45">slate-parser</text>
+      <text x="288" y="45">slate-analysis</text>
+      <text x="480" y="45">slate (lowerer)</text>
+    </g>
+    <text x="96" y="66">C → IR</text>
+    <text x="288" y="66">IR → IR</text>
+    <text x="480" y="66">IR → Rust</text>
+  </g>
 </svg>

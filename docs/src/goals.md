@@ -1,25 +1,14 @@
 # Goals
 
-## Support all of C
-
-Support every C standard from C89 to C2y and all extensions in GCC, Clang, and
-MSVC.
-
-## Translate across platforms
-
-Translate the same project for different operating systems and architectures,
-preserving each target's data layout and calling conventions. Where a project
-supports multiple targets, generate one Rust crate that builds for them.
-
-## Generate Rust people can maintain
-
-Use pointer analysis to turn raw pointers into references and slices where the
-program permits. Keep source comments with the code they describe and use macro
-definitions and expansions to recover named constants and other abstractions in
-the generated Rust.
-
-## Preserve observable behavior
-
-Preserve all observable behavior of the C program for the same target and
-compiler settings, including output, exit status, and interactions with other
-code. Every rewrite must preserve that behavior.
+1. **Support all of C.** Support every C standard from C89 to C2y and all
+   extensions in GCC, Clang, and MSVC.
+2. **Translate across platforms.** Target x86_64, i686, aarch64, and arm32
+   across Linux, macOS, Windows, FreeBSD, and Android. Generate one Rust crate
+   for a project’s selected targets while preserving each target’s data layout
+   and calling conventions.
+3. **Generate Rust people can maintain.** Keep comments with the code they
+   describe and recover abstractions from C macros. Use pointer analysis and
+   rewrites to express the program in idiomatic Rust.
+4. **Preserve observable behavior.** The original C program and the generated
+   Rust should show no observable difference in execution on the same target
+   with the same inputs.

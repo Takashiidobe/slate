@@ -1,51 +1,60 @@
-# Translate C to Rust
+# Usage
 
-Slate translates a C source file to Rust or a C project to a Cargo crate. Try a
-single file in the [Playground](../) or install the CLI.
+These simple examples show how to translate a C file or build a Rust crate from
+a C project. Try a single file in the [Playground](../) or install Slate to run
+the examples locally.
 
-## Install and translate a file
+## Install Slate
 
 ```sh
 cargo +nightly install slate-c2rust --locked
-printf 'int add(int a, int b) { return a + b; }\n' > add.c
-slate translate add.c > add.rs
 ```
 
 Use `cargo binstall slate-c2rust` if a prebuilt binary is available for your
 platform. The package is named `slate-c2rust` and the command is `slate`.
 
-Pass compiler flags before the input file. Slate defaults to Clang mode. Use
-`--flavor=gcc` or `--flavor=msvc` for source built with those compilers.
+## Translate a file
+
+Create a small C file and write the translation to `add.rs`.
 
 ```sh
-slate translate --flavor=gcc -std=gnu17 -Iinclude -DNDEBUG add.c > add.rs
+printf 'int add(int a, int b) { return a + b; }\n' > add.c
+slate translate add.c > add.rs
 ```
 
-Single-file output can use [support crates](vendored-crates.md) or require C
-runtime code. Use project translation to generate the Cargo manifest and the
-support files the project needs.
+Put compiler arguments such as `-std=gnu17` and `-Iinclude` before the input
+file. Slate defaults to Clang mode. Use `--flavor=gcc` or `--flavor=msvc` to
+match those compilers.
 
-## Translate an executable
+## Install headers
 
-Use your build's `compile_commands.json` so Slate gets the compiler flags,
-defines, and include paths for each source file. For a CMake project, configure
-with a generator that exports the database, such as Ninja.
+Slate uses your native compiler's headers for host translation when available.
+For cross-target translation, install the target and compiler headers. For
+example, install x86-64 Linux headers for Clang.
+
+```sh
+slate sysroot install x86_64-unknown-linux-gnu
+slate sysroot install compiler-headers clang
+```
+
+## Translate an application
+
+Slate reads a compilation database, `compile_commands.json`, to get each C
+file's compiler flags and include paths. For an application, use the compile
+commands for its `main` and the files that link into the same executable. CMake
+can generate the database with Ninja.
 
 ```sh
 cmake -S project -B project/build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 slate translate-project \
   --compile-commands project/build/compile_commands.json project project-rs
-cargo +nightly build --manifest-path project-rs/Cargo.toml
+cargo +nightly run --manifest-path project-rs/Cargo.toml
 ```
-
-The database for an executable should include its `main` and the source files
-that link into that executable.
 
 ## Translate a library
 
-Use a compilation database for the library's source files and select the Cargo
-crate type. Use `staticlib` for a static C-compatible library or `cdylib` for a
-shared one.
+Use the compile commands for the library's source files. Select `staticlib` for
+a static C-compatible library or `cdylib` for a shared library.
 
 ```sh
 slate translate-project \
@@ -54,16 +63,47 @@ slate translate-project \
 cargo +nightly build --manifest-path library-rs/Cargo.toml
 ```
 
-See [cross compilation](compilation.md) to translate for another platform or
-combine several target configurations into one crate.
+## Translate zlib for multiple platforms
 
-## Diagnose a translation failure
+This matrix translates zlib for x86-64 Linux and Arm64 FreeBSD with `FASTEST`
+enabled and disabled on each. Install the Linux and Clang headers above, then
+run these commands from a zlib checkout.
 
-If Slate cannot find system headers for your host, run
-`slate sysroot doctor native` to see which compiler and include directories it
-found. For another target, install its headers as described in
-[cross compilation](compilation.md).
+```sh
+slate sysroot install aarch64-unknown-freebsd
+cmake -S . -B build-clang -G Ninja -DCMAKE_C_COMPILER=clang \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+slate project target add zlib.json linux-x86_64 build-clang/compile_commands.json \
+  --triple x86_64-unknown-linux-gnu --build-target zlibstatic
+slate project target add zlib.json freebsd-aarch64 build-clang/compile_commands.json \
+  --triple aarch64-unknown-freebsd --build-target zlibstatic
+slate project feature add zlib.json FASTEST
+slate translate-project --manifest zlib.json --merge \
+  --manifest-target linux-x86_64,freebsd-aarch64 --crate-type staticlib \
+  . ../zlib-rs
+```
 
-If Slate reports unsupported C, use `slate lowering-barriers` with the same
-compiler flags and input to locate the first lowering barrier. See
-[feature coverage](features.md) for examples and known gaps.
+The result is one crate with a `fastest` Cargo feature. Slate uses Rust `#[cfg]`
+where the translations differ by target or feature. This example reuses the same
+compile commands across both targets. If your build generates different sources
+or configuration headers for each target, use that target's own compilation
+database.
+
+## Translate a freestanding project
+
+Keep `-ffreestanding` in the compile commands for the project. When the
+project's C files are all freestanding, Slate generates a `#![no_std]` crate.
+For a CMake project that builds a freestanding library, you can generate the
+database and translate it like this.
+
+```sh
+cmake -S kernel -B kernel/build -G Ninja -DCMAKE_C_COMPILER=clang \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_C_FLAGS=-ffreestanding
+slate translate-project \
+  --compile-commands kernel/build/compile_commands.json \
+  --crate-type staticlib kernel kernel-rs
+cargo +nightly build --manifest-path kernel-rs/Cargo.toml
+```
+
+For a kernel or firmware image, link the static library with your project's
+startup code and linker script using the original target's build settings.

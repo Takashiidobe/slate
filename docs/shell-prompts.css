@@ -1,0 +1,22 @@
+pre > code.with-shell-prompts {
+    position: relative;
+    padding-inline-start: calc(1rem + 2ch);
+}
+
+.shell-prompts {
+    position: absolute;
+    inset-block-start: 1rem;
+    inset-inline-start: 1rem;
+    color: #a84900;
+    pointer-events: none;
+    user-select: none;
+    white-space: pre;
+}
+
+:is(.ayu, .coal, .navy) .shell-prompts {
+    color: #ffad66;
+}
+
+.shell-prompts::before {
+    content: attr(data-prompts);
+}

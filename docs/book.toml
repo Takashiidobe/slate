@@ -2,3 +2,7 @@
 title = "Slate"
 authors = ["Takashiidobe"]
 language = "en"
+
+[output.html]
+additional-css = ["shell-prompts.css"]
+additional-js = ["shell-prompts.js"]
