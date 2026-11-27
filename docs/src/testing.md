@@ -1,5 +1,8 @@
 # Testing
 
+See [Tools](tools/index.md) for regenerating checks, sweeping projects, and
+comparing Slate's results with a compiler.
+
 Tests belong beside the layer whose behavior they check:
 
 | Concern | Test location | What to assert |
@@ -51,7 +54,7 @@ cargo nextest r --release --profile parser
 ```
 
 Use parser fixtures for preprocessing output, AST shape, semantic diagnostics,
-and typed IR. Do not add unit tests for parser paths.
+and IR. Do not add unit tests for parser paths.
 
 ## Analysis fixtures
 

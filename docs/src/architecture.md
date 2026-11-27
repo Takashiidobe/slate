@@ -10,19 +10,19 @@
 
 ### `slate-parser`
 
-`slate-parser` owns the meaning of the C source and produces typed IR.
+`slate-parser` owns the meaning of the C source and produces IR.
 
 1. **Preprocess.** Resolve includes and conditional branches, and expand macros.
 2. **Tokenize.** Convert the preprocessed input into C tokens.
 3. **Parse.** Build a syntax tree from the tokens.
 4. **Check semantics.** Resolve names and types, check constraints, and
    determine conversions and target layout.
-5. **Emit IR.** Record the checked program in typed IR, making operations such
+5. **Emit IR.** Record the checked program in IR, making operations such
    as conversions and evaluation order explicit for the next stage.
 
 ### `slate-analysis`
 
-`slate-analysis` is the middle end. It takes typed C IR and does two things.
+`slate-analysis` is the middle end. It takes IR and does two things.
 
 - **Transform the IR.** Rewrite C operations into simpler forms while preserving
   their meaning.
@@ -32,7 +32,7 @@
 
 ### `slate`
 
-Slate's lowerer turns the typed IR into a Rust syntax tree and uses the analysis
+Slate's lowerer turns the IR into a Rust syntax tree and uses the analysis
 facts to choose Rust representations. Slate then rewrites and emits the Rust. It
 also owns Cargo crate generation and merging translations for multiple targets.
 
@@ -48,6 +48,6 @@ also owns Cargo crate generation and merging translations for multiple targets.
   layouts, and values.
 - **`slate-cargo-toml`** owns the typed models for the `Cargo.toml` and
   `.cargo/config.toml` files Slate writes.
-- **`slate-mutate`** owns the typed IR mutations used by differential tests.
+- **`slate-mutate`** owns the IR mutations used by differential tests.
 - **`slate-lints`** owns Slate-specific Rust lints, such as checks that pattern
   matches handle sensitive IR variants explicitly.

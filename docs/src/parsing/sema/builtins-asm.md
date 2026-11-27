@@ -12,9 +12,9 @@ intrinsic binding.
 int same_type(void) { return __builtin_types_compatible_p(int, long); }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 fn %0 @same_type() -> i32 [linkage=external] [fallthrough=ub_if_used] {
     return const<i32>(0);
 }
@@ -41,9 +41,9 @@ int bit(void) {
 }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 fn %0 @bit() -> i32 [linkage=external] [fallthrough=ub_if_used] {
     let %1 out: i32 [storage=automatic];
     asm "movl %1, %0" [dialect=att] [options=pure,nomem,nostack] {

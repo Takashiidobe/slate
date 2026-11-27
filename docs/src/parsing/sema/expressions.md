@@ -12,9 +12,9 @@ int sum(unsigned char a, unsigned char b) {
 }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 fn %0 @sum(%1 a: u8, %2 b: u8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
     return add<i32, overflow=ub>(
         reinterpret<i32, reason=promotion, fits=unknown>(widen<u32, reason=promotion>(read<u8>(%1))),

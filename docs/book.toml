@@ -5,4 +5,4 @@ language = "en"
 
 [output.html]
 additional-css = ["shell-prompts.css", "transforms.css"]
-additional-js = ["shell-prompts.js"]
+additional-js = ["shell-prompts.js", "syntax-highlighting.js"]

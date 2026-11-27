@@ -5,4 +5,4 @@
 - [Tokenization](tokenization.md)
 - [Parsing C syntax](syntax.md)
 - [Semantic analysis](sema.md)
-- [Typed IR](ir.md)
+- [IR](ir.md)

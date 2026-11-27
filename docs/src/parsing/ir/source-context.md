@@ -15,16 +15,16 @@ typedef unsigned int word;
 word next(word n) { return PLUS_ONE(n); }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 return add<u32, overflow=wrap>(read<u32>(%2) [c="word"], reinterpret<u32, reason=usual_arith>(const<u32>(1)) [c="word"]) [c="word"];
 ```
 
 With metadata, macros, comments, and spans enabled, the dump includes the same
 add with origin labels:
 
-```text
+```ir
 return add<u32, overflow=wrap>(
     read<u32>(%2) [c="word"] [macro_arg="#0.0"] [macro=PLUS_ONE#0 arg0],
     reinterpret<u32, reason=usual_arith>(const<u32>(1) [macro=PLUS_ONE#0 body]) [c="word"] [macro=PLUS_ONE#0 body]) [c="word"] [macro_value="#0"] [macro=PLUS_ONE#0 body];
@@ -34,7 +34,7 @@ The read of `n` is argument zero of expansion zero. The literal comes from the
 macro body. The `macro_value` marker connects the result to the whole expansion.
 The invocation table records which definition and argument ranges produced it:
 
-```text
+```ir
 type @type0 word = u32 [c="unsigned int"];
 comment leading "// Increment a word." [spelling=7:58+20, expansion=7:58+20];
 macro_definition #0 PLUS_ONE(x) [defined=7:1] = "( ( x ) + 1u )";

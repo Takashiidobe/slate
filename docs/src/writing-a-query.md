@@ -1,6 +1,6 @@
 # Analyses
 
-`slate-analysis` computes facts from typed C IR for one target at a time. A
+`slate-analysis` computes facts from IR for one target at a time. A
 `Program` contains that target's translation units after IR transforms. Analysis
 reads the program and produces read-only `Facts`. Lowering uses those facts to
 choose Rust representations, such as a slice for a pointer with a proven extent.

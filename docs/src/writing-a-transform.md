@@ -1,6 +1,6 @@
 # Transforms
 
-Transforms simplify typed C IR before [fact analysis](writing-a-query.md) and
+Transforms simplify IR before [fact analysis](writing-a-query.md) and
 Rust lowering. Use `emit-slate-ir` to see what a pass changes.
 
 ```bash

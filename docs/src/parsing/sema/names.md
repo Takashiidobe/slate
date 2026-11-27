@@ -18,9 +18,9 @@ int read_x(int test) {
 }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 global %0 x: i32 [storage=static] = const<i32>(3) [linkage=external];
 fn %1 @read_x(%2 test: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
     let %3 value: i32 [storage=automatic] = read<i32>(%0);

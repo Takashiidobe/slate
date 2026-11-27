@@ -2,11 +2,11 @@
 
 Use the original compile command when translating a source file. Slate needs the
 same active code, type layout, and calling convention that the C compiler would
-use. Two commands for the same file can produce different typed IR.
+use. Two commands for the same file can produce different IR.
 
 <figure style="margin-inline: 0; text-align: center;">
 
-![Compiler arguments produce CompilerArgs and a Dialect. Preprocessing, parsing, and sema read that configuration. Typed IR carries the resolved effects into Rust lowering.](../diagrams/parsing-arguments.svg)
+![Compiler arguments produce CompilerArgs and a Dialect. Preprocessing, parsing, and sema read that configuration. IR carries the resolved effects into Rust lowering.](../diagrams/parsing-arguments.svg)
 
 </figure>
 
@@ -79,7 +79,7 @@ check. See the
    sema. `TypeResolver::with_names` takes that configuration for type,
    conversion, layout, and ABI rules. The sema lowerer builds its numeric
    context from the same dialect.
-4. **Emit Rust from IR.** Typed IR carries the effective target and resolved
+4. **Emit Rust from IR.** IR carries the effective target and resolved
    behavior, including such details as layout, ABI, and arithmetic overflow
    rules. Rust lowering reads those results. The compiler flavor and original
    flag list stay on the frontend side.

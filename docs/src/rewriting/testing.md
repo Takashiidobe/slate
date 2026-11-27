@@ -12,7 +12,7 @@ SLATE_RULE_TRACE=1 slate translate input.c
 ```
 
 The trace lists rule names on stderr. If the shape you expect already appears in
-typed IR, check the IR passes before changing the Rust engine. See
+IR, check the IR passes before changing the Rust engine. See
 [Inspecting the IR Pipeline](../parsing/ir/pipeline.md).
 
 ## Check the output and behavior

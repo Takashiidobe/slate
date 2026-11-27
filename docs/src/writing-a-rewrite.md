@@ -1,10 +1,11 @@
-# Rewriting
+# Rewrites
 
-Slate rewrites the Rust AST after lowering chooses Rust representations. Rules
-simplify local expressions, bindings, and control flow while preserving the
-behavior of the translated C program. Both `translate` and `translate-project`
-run the backend rewrites. Project translation also links across translation
-units before applying the per-function rules.
+Slate uses analysis facts during lowering to choose Rust representations,
+including binding mutability and function parameter types. The backend then
+rewrites the Rust AST to simplify expressions, bindings, and control flow. Both
+`translate` and `translate-project` run the backend rewrites. Project
+translation also links across translation units before applying the per-function
+rules.
 
 <figure style="margin-inline: 0; text-align: center;">
 
@@ -21,6 +22,10 @@ depends on the Rust shape that lowering produced.
 
 - [The Rewrite Engine](rewriting/engine.md). Follow a rule from its match to the
   next edit.
+- [Binding Mutability](lowering/remove_mut.md). See how def-use facts determine
+  which bindings get `mut` as Slate emits them.
+- [Interprocedural Lifts](lowering/interprocedural.md). Follow a change to a
+  signature through the definition and its call sites.
 - [Bindings and Temporary Storage](rewriting/bindings.md). Simplify Rust
   bindings without changing storage or effect order.
 - [Control Flow and Iteration](rewriting/control-flow.md). Clean up the control

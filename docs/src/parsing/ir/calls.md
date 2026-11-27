@@ -13,9 +13,9 @@ __attribute__((ms_abi)) int add(int a, int b);
 int apply(int x) { return add(x, 1); }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 fn %2 @add(%5 a: i32, %6 b: i32) -> i32 [linkage=external] [abi=win64 ms_abi(scalar, scalar) -> scalar];
 fn %3 @apply(%4 x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
     return call<i32, signature=fn ms_abi(i32, i32) -> i32, abi=win64 ms_abi(scalar, scalar) -> scalar>(

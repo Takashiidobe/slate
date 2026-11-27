@@ -14,9 +14,9 @@ int mix(const int *p, int i, unsigned char n) {
 }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 fn %0 @mix(%1 p: ptr<const i32>, %2 i: i32, %3 n: u8) -> i32 [linkage=external] [fallthrough=ub_if_used] {
     return add<i32, overflow=ub>(
         read<i32>(deref(ptr_offset<ptr<const i32>, subtract=false, element=i32, overflow=ub>(read<ptr<const i32>>(%1), read<i32>(%2)))),
@@ -34,7 +34,7 @@ rules.
 
 ## Read the target header
 
-```text
+```ir
 target "x86_64-unknown-linux-gnu" {
     endian = little;
     pointer [size=8, align=8];

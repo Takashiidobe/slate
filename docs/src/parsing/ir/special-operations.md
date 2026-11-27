@@ -14,9 +14,9 @@ int bump(_Atomic int *p) {
 }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 let %2: i32 [synthetic] = update<i32, result=old, atomic=acq_rel>(
     deref(read<ptr<atomic i32>>(%1)),
     add<i32, overflow=wrap>(old<i32>, const<i32>(1)));
@@ -37,9 +37,9 @@ int fits(int a, int b, int *out) {
 }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 return from_bool<i32, reason=return>(not<bool>(overflow_add<bool>(read<i32>(%1), read<i32>(%2), deref(read<ptr<i32>>(%3)))));
 ```
 
@@ -60,9 +60,9 @@ int bit(void) {
 }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 fn %0 @bit() -> i32 [linkage=external] [fallthrough=ub_if_used] {
     let %1 out: i32 [storage=automatic];
     asm "movl %1, %0" [dialect=att] [options=pure,nomem,nostack] {

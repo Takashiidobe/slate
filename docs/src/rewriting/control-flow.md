@@ -32,11 +32,8 @@ bindings.
 
 ## Simplify a loop
 
-Rules in `for_range.rs` and `array_iter.rs` handle eligible ranges and array
-iteration in the lowered Rust tree. Replacing indexed access with iteration
-needs the same visited elements and order. An index needed for another
-computation must remain available, and writes must preserve the borrow the loop
-needs.
+[Loop and Iterator Recovery](loop-recovery.md) shows how Slate recovers a range
+and when it can replace indexed access with iteration over array elements.
 
 C gotos are structured earlier. For those rules, see
 [Structure Goto](../transforms/structure-goto.md) and

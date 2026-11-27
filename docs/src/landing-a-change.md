@@ -6,7 +6,7 @@ the next one.
 
 ## Lower C IR to Rust
 
-Start in Slate's lowerer when the typed C IR has the information you need and
+Start in Slate's lowerer when the IR has the information you need and
 Slate emits incorrect Rust or reports a lowering barrier. Use
 `slate emit-slate-ir` on the fixture to see what the parser hands the
 translator, then `slate translate` to see the result.
@@ -49,11 +49,11 @@ SLATE_DIFF_FIXTURE=add cargo nextest run --release --profile slate \
   --test differential -E 'test(=generated_differential)'
 ```
 
-## Change parsing or typed IR
+## Change parsing or IR
 
 When the lowerer needs a fact about C that the IR omits or gets wrong, fix
 `slate-parser`. It takes source through preprocessing, lexing, parsing, and
-semantic analysis before emitting typed IR. Fix the earliest stage where the
+semantic analysis before emitting IR. Fix the earliest stage where the
 information is wrong.
 
 | What needs to change                                         | Where to start in `slate-parser`                                   |
@@ -67,7 +67,7 @@ information is wrong.
 1. Add a C fixture under `tests/fixtures/<flavor>/<os>/<arch>/` in
    `slate-parser`. Use the `error/` tree for a diagnostic. Run the fixture's
    parser or IR command first and verify that its diagnostic or output differs
-   from the expected result. For a typed IR fixture, check the fact the lowerer
+   from the expected result. For a IR fixture, check the fact the lowerer
    will read.
 2. Fix the owning subsystem and regenerate the fixture's checks with the
    `slate-parser` FileCheck updater. Run the `parser` profile. If the lowerer

@@ -18,13 +18,13 @@ struct record sample;
 
 **Linux x86-64**
 
-```text
+```ir
 global %0 word: i64 [storage=static] [linkage=external];
 ```
 
 **Windows x64**
 
-```text
+```ir
 global %0 word: i32 [storage=static] [linkage=external];
 ```
 
@@ -34,7 +34,7 @@ target. Consumers work from the concrete type instead of resolving the spelling
 
 ## Read a packed record
 
-```text
+```ir
 type @type0 record = struct {
     field0 tag: i8;
     field1 value: i32;
@@ -55,9 +55,9 @@ typedef int lanes __attribute__((vector_size(16)));
 lanes add_lanes(lanes a, lanes b) { return a + b; }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 type @type0 lanes = vector<i32, 4>;
 return add<vector<i32, 4>, elementwise=true, overflow=wrap>(read<vector<i32, 4>>(%2) [c="lanes"], read<vector<i32, 4>>(%3) [c="lanes"]) [c="lanes"];
 ```

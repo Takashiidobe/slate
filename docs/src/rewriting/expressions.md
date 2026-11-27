@@ -31,6 +31,6 @@ already has a different operation in the tree. That helper keeps the check
 observable under the C null pointer flag. See
 [Translation Unit Configuration](../parsing/configuration.md#how-a-flag-changes-rust-output).
 
-Some idioms come directly from typed IR. For example, lowering emits `+=` when a
+Some idioms come directly from IR. For example, lowering emits `+=` when a
 write adds to a read of the same place and the access has the appropriate
 semantics.

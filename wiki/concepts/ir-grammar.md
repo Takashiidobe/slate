@@ -44,6 +44,7 @@ and the `Display` impls in `src/ir/numeric.rs`, `src/ir/abi.rs`,
 
 ## Lexical
 
+<!-- ANCHOR: lexical -->
 ```ebnf
 binding    = "%" digits ;                (* BindingId: locals, globals, functions,
                                             parameters, loops, switches, labels *)
@@ -55,6 +56,7 @@ string     = '"' { char | escape } '"' ; (* Rust {:?} quoting *)
 int_list   = "[" [ int { ", " int } ] "]" ;
 opt_int    = "Some(" int ")" | "None" ;
 ```
+<!-- ANCHOR_END: lexical -->
 
 `%N` is identity; the name printed after it is only a spelling. A `binding` used
 before its declaration (a function called before its definition, a loop ID in
@@ -62,6 +64,7 @@ before its declaration (a function called before its definition, a loop ID in
 
 ## Module
 
+<!-- ANCHOR: module -->
 ```ebnf
 module     = "module" "{" target [ "freestanding" ";" ] [ "nostdinc" ";" ]
              [ "null_pointer_is_valid" ";" ]
@@ -96,6 +99,7 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
            | "i128, u128" | "bf16" | "f16" | "f32" | "f64" | "f80" | "f128"
            | "d32" | "d64" | "d128" ;
 ```
+<!-- ANCHOR_END: module -->
 
 - `code16` marks an `-m16` unit: C semantics and layout are the i686 target's,
   but code must be encoded for 16-bit real mode (gcc's `.code16gcc`).
@@ -145,6 +149,7 @@ storage_of = "bool" | "i8, u8" | "i16, u16" | "i32, u32" | "i64, u64"
 
 ## Types
 
+<!-- ANCHOR: types -->
 ```ebnf
 type          = "void" | "bool" | "va_list" | numeric
               | "complex<" numeric ">"
@@ -167,6 +172,7 @@ fn_type       = "fn" [ " " call_conv ] "(" [ fn_params ] ") -> " type ;
 call_conv     = "stdcall" | "fastcall" | "vectorcall" | "regcall" | "thiscall" | "ms_abi" | "sysv_abi" ;
 fn_params     = "unprototyped" | type { ", " type } [ ", ..." ] | "..." ;
 ```
+<!-- ANCHOR_END: types -->
 
 - Types are concrete and target-resolved; the C spelling is metadata.
 - `b` marks a bit-precise integer (`_BitInt(N)`), distinct from the standard
@@ -193,6 +199,7 @@ fn_params     = "unprototyped" | type { ", " type } [ ", ..." ] | "..." ;
 
 ## Type definitions
 
+<!-- ANCHOR: type-definitions -->
 ```ebnf
 type_def      = "type" type_ref [ c_identifier ] "=" type_body { metadata } ";" ;
 type_body     = type                                          (* alias *)
@@ -210,6 +217,7 @@ record_layout = "[size=" int ", align=" int ", offsets=" int_list
 unit          = "(" int ", " int ")" ;                        (* byte offset, size *)
 enumerators   = "{" { binding c_identifier "=" value { metadata } ";" } "}" ;
 ```
+<!-- ANCHOR_END: type-definitions -->
 
 - `fieldN` is the field's index in declaration order; places refer to fields by
   that index. `: W` is a bit-field width.
@@ -221,6 +229,7 @@ enumerators   = "{" { binding c_identifier "=" value { metadata } ";" } "}" ;
 
 ## Globals
 
+<!-- ANCHOR: globals -->
 ```ebnf
 global       = ( "global" | "extern" ) variable linkage symbol_attrs
                [ "[common]" ] { metadata } ";" ;
@@ -243,6 +252,7 @@ symbol_attrs = [ "[asm_name=" string "]" ] [ "[visibility=" visibility "]" ]
 visibility   = "default" | "hidden" | "protected" | "internal" ;
 tls_model    = "global-dynamic" | "local-dynamic" | "initial-exec" | "local-exec" ;
 ```
+<!-- ANCHOR_END: globals -->
 
 - `global` is a definition, `extern` a declaration only. All declarations of one
   object with linkage are merged into a single `global`.
@@ -252,6 +262,7 @@ tls_model    = "global-dynamic" | "local-dynamic" | "initial-exec" | "local-exec
 
 ## Functions
 
+<!-- ANCHOR: functions -->
 ```ebnf
 function    = "fn" binding "@" c_identifier "(" [ params ] ")" "->" type
               linkage symbol_attrs [ "[inline=" ( "hint" | "always" | "never" ) "]" ]
@@ -275,6 +286,7 @@ fallthrough = "ret_zero" | "ret_void" | "ub_if_used" | "ub"
 target_feature = ( "+" | "-" ) feature_name | "arch=" cpu_name | "tune=" cpu_name
                | "branch-protection=" protection ;
 ```
+<!-- ANCHOR_END: functions -->
 
 - One `fn` per function: the body and parameters come from the definition, or
   else the first prototype.
@@ -315,6 +327,7 @@ target_feature = ( "+" | "-" ) feature_name | "arch=" cpu_name | "tune=" cpu_nam
 
 ## ABI signatures
 
+<!-- ANCHOR: abi-signatures -->
 ```ebnf
 abi_signature = convention [ " " call_conv ] [ " regparm=" integer ] [ " sseregparm" ]
                 "(" [ abi_pass { ", " abi_pass } ] ") -> " abi_pass ;
@@ -326,6 +339,7 @@ abi_pass      = "void" | "scalar" | "direct" | "native_c" | "scalable"
 chunk         = "i" digits | float_type | "pair<" float_type ">" | "quad<" float_type ">"
               | "vector<" numeric ", " int ">" ;
 ```
+<!-- ANCHOR_END: abi-signatures -->
 
 - `native_c`: rustc's `extern "C"` passes a same-layout `repr(C)` type exactly
   as the C compiler does. Other record and complex shapes are explicit because
@@ -342,6 +356,7 @@ chunk         = "i" digits | float_type | "pair<" float_type ">" | "quad<" float
 
 ## Statements
 
+<!-- ANCHOR: statements -->
 ```ebnf
 statement  = simple { metadata } ";"
            | "macro_body #" digits { metadata } body
@@ -445,6 +460,7 @@ simple     = "let" binding ":" type "[synthetic" [ ", unsequenced" ] "]"
 body       = { statement } ;                   (* indented one level deeper *)
 evaluation = value | "{" { statement } "yield" value ";" "}" ;
 ```
+<!-- ANCHOR_END: statements -->
 
 - Loops, switches and labels are identified by their `binding`. `break` and
   `continue` name the loop or switch they leave, and `case`/`default` name their
@@ -529,6 +545,7 @@ evaluation = value | "{" { statement } "yield" value ";" "}" ;
 
 ## Places
 
+<!-- ANCHOR: places -->
 ```ebnf
 place  = place_kind { metadata } ;
 place_kind
@@ -552,6 +569,7 @@ sync_scope = ", sync_scope=" scope ;
 scope    = "device" | "workgroup" | "wavefront" | "single" | "cluster"
          | "dynamic(" value ")" ;
 ```
+<!-- ANCHOR_END: places -->
 
 - A place is a storage location, not a read. Only `read`, `write`, `store`,
   `update`, `compare_exchange`, `addr_of`, the decays and the `va_*` values use
@@ -586,6 +604,7 @@ scope    = "device" | "workgroup" | "wavefront" | "single" | "cluster"
 
 ## Values
 
+<!-- ANCHOR: values -->
 ```ebnf
 value      = core { metadata } ;
 core       = "const<" type ">(" constant ")"
@@ -654,6 +673,7 @@ va_class    = "int" | "sse" | "sse_wide"
 reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
            | "usual_arith" | "excess_precision" | "explicit" ;
 ```
+<!-- ANCHOR_END: values -->
 
 - The type after `<` is the result type, except in `read`/`write` and
   `compare_exchange` (result `bool`, or the place type for `form=old`), where it
@@ -710,6 +730,7 @@ reason     = "return" | "assign" | "arg" | "vararg" | "promotion"
 
 ### Operations
 
+<!-- ANCHOR: operations -->
 ```ebnf
 conversion = "widen" | "truncate" | "reinterpret" | "bit_cast" | "from_bool"
            | "int_to_float" | "float_widen" | "float_narrow" | "float_convert"
@@ -733,9 +754,11 @@ logical_op = "logical_and" | "logical_or" ;
 float_class = "nan" | "infinite" | "finite" | "normal" | "subnormal"
             | "zero" | "signaling" | "sign_bit" ;
 ```
+<!-- ANCHOR_END: operations -->
 
 ### Operation policies
 
+<!-- ANCHOR: operation-policies -->
 ```ebnf
 conversion_policy = (* exact: nothing *)
                   | ", fits=" ( "always" | "unknown" )
@@ -760,6 +783,7 @@ floating          = ", rounding=" ( "nearest_even" | "environment" )
                     ", exceptions=" exceptions ;
 exceptions        = "ignore" | "observable" ;
 ```
+<!-- ANCHOR_END: operation-policies -->
 
 - A policy is the operation's behavior _if_ the case occurs, not a claim that it
   does. `overflow=ub` is signed C arithmetic; `wrap` is unsigned or `-fwrapv`;
@@ -796,6 +820,7 @@ enumerator, global, or function); a parameter's comments print above its
 function prefixed with `param <name>`. These are non-executing metadata and are
 absent from default dumps.
 
+<!-- ANCHOR: metadata -->
 ```ebnf
 metadata = "[" key "=" string "]" ;          (* only with --show-metadata *)
 c_type   = '[c=' string ']' ;                (* always, when spelling differs from canonical *)
@@ -816,6 +841,7 @@ macro_cover      = "expr" | "callee" | "call_arguments" | "statements" | "decl"
                  | "type" | "name" | "split" ;
 range            = digits "+" digits ;
 ```
+<!-- ANCHOR_END: metadata -->
 
 - `macro_body` and the place `macro_arg` appear only with `--show-macros`;
   their first number is the `macro_expansion` and a `macro_arg`'s second is the

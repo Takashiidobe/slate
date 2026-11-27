@@ -134,9 +134,8 @@ MSVC's `__declspec`, nested functions, binary constants, vector extensions, and
 many more. Basically, if any of the three major compilers (GCC, Clang, MSVC) can
 compile your C, and Slate can't, it's a bug.
 
-See [feature coverage](docs/src/features.md) and
-[testing](wiki/concepts/differential-fixtures.md) for how we maintain regression
-testing.
+See the [Testing guide](docs/src/testing.md) for the supported and unsupported
+fixtures and how we compare translated Rust with native C.
 
 Compared to other tools like c2rust, slate also preserves and attaches comments
 to nodes. This allows comments to travel along with the conversion, and be

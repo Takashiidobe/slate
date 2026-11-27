@@ -40,7 +40,7 @@ The AST starts with the form the author wrote. Sema can preserve the parts that
 still help after types and conversions are resolved.
 
 - **Control flow.** A C `for` keeps its initializer, test, increment, and body
-  through typed IR. Keeping those parts together lets
+  through IR. Keeping those parts together lets
   [counted loop analysis](../analysis/counted-loops.md) recognize an index range
   that lowering can emit as a Rust `for`. The IR also keeps explicit blocks and
   the targets of `break` and `continue` so lowering can preserve scopes and
@@ -57,7 +57,7 @@ still help after types and conversions are resolved.
 
 Some source forms have served their purpose by the time sema emits IR. For
 example, the AST keeps parentheses while parsing an expression. The nested
-operations already express their grouping in typed IR, so the inner operation
+operations already express their grouping in IR, so the inner operation
 can carry its own span without a separate parenthesis node.
 
 ## Hand the tree to sema

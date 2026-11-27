@@ -51,6 +51,9 @@ slate translate-project \
 cargo +nightly run --manifest-path project-rs/Cargo.toml
 ```
 
+See [Project Translation](project/index.md) for build target selection and
+what Slate writes to the generated crate.
+
 ## Translate a library
 
 Use the compile commands for the library's source files. Select `staticlib` for
@@ -88,6 +91,9 @@ where the translations differ by target or feature. This example reuses the same
 compile commands across both targets. If your build generates different sources
 or configuration headers for each target, use that target's own compilation
 database.
+
+See [Merge](project/merge.md) for how Slate combines translations and how to
+check the result for each configuration.
 
 ## Translate a freestanding project
 

@@ -14,9 +14,9 @@ static struct row r = { .values[1] = 4, 5 };
 int get(void) { return r.values[0]; }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 global %1 r: @type0 [storage=static] =
     aggregate<@type0, zero_fill=false>(
         field0 = aggregate<array<i32, 3>, zero_fill=true>(

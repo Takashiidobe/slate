@@ -21,13 +21,13 @@ slate emit-slate-ir --passes=const-fold input.c
 
 **Before transforms**
 
-```text
+```ir
 let %1 c: i8 [storage=automatic] = truncate<i8, reason=assign, fits=unknown>(const<i32>(200));
 ```
 
 **After Const Fold**
 
-```text
+```ir
 let %1 c: i8 [storage=automatic] = const<i8>(-56);
 ```
 

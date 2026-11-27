@@ -1,6 +1,6 @@
-# Typed IR
+# IR
 
-Slate uses typed IR to carry the meaning of a checked C program into analysis
+Slate uses IR to carry the meaning of a checked C program into analysis
 and Rust lowering. Sema resolves types, conversions, layout, ABI, and
 compiler-dependent behavior once. The IR writes those decisions as concrete
 types, operations, and annotations that downstream stages can use directly.
@@ -13,7 +13,7 @@ context such as comments and macro origins travels alongside those semantics.
 
 <figure style="margin-inline: 0; text-align: center;">
 
-![Sema emits typed IR, transforms simplify it, fact analysis reads it, and Rust lowering consumes both the IR and facts.](../diagrams/parsing-ir.svg)
+![Sema emits IR, transforms simplify it, fact analysis reads it, and Rust lowering consumes both the IR and facts.](../diagrams/parsing-ir.svg)
 
 </figure>
 
@@ -22,6 +22,10 @@ context such as comments and macro origins travels alongside those semantics.
 Run `slate emit-slate-ir input.c`. The examples use `x86_64-unknown-linux-gnu`
 unless a different target is shown. IR excerpts omit unrelated output and
 sometimes wrap long operations across lines.
+
+For the full syntax and node descriptions, see the
+[IR Reference](../reference/ir.md) and
+[Printed IR Grammar](../reference/ir-grammar.md).
 
 - [Reading a Module](ir/module.md). Read concrete types, binding IDs, and a
   complete operation.

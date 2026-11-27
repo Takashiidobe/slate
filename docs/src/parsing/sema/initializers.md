@@ -11,9 +11,9 @@ struct row { int values[3]; };
 struct row r = { .values[1] = 4, 5 };
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 type @type0 row = struct {
     field0 values: array<i32, 3>;
 } [size=12, align=4, offsets=[0]];

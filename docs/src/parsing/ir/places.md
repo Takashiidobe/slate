@@ -14,9 +14,9 @@ void bump(volatile int *p, int i) {
 }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 fn %0 @bump(%1 p: ptr<volatile i32>, %2 i: i32) -> void [linkage=external] [fallthrough=ret_void] {
     let %3: ptr<volatile i32> [synthetic] = ptr_offset<ptr<volatile i32>, subtract=false, element=i32, overflow=ub>(
         read<ptr<volatile i32>>(%1), read<i32>(%2));

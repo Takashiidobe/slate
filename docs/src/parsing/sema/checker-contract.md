@@ -16,9 +16,9 @@ void stop(void) {
 }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 fn %0 @stop() -> void [linkage=external] [fallthrough=ret_void] {
     while %1 ne<i32>(const<i32>(1), const<i32>(0))
         break %1;

@@ -14,13 +14,13 @@ int add(int a, int b) { return a + b; }
 
 **Default signed overflow behavior**
 
-```text
+```ir
 return add<i32, overflow=ub>(read<i32>(%1), read<i32>(%2));
 ```
 
 **With `-fwrapv`**
 
-```text
+```ir
 return add<i32, overflow=wrap>(read<i32>(%1), read<i32>(%2));
 ```
 
@@ -28,6 +28,10 @@ Both additions operate on `i32`. The policy changes from C undefined behavior on
 overflow to wrapping. The Rust lowerer can select an explicit wrapping operation
 for the second case, so its behavior survives a change in the Rust build
 profile.
+
+Floating-point operations can carry rounding and exception policies in the same
+way. See [Floating-point environment](../../floating-point-environment.md) for
+how a scoped C pragma changes individual IR operations and their Rust lowering.
 
 ## Keep conversions at the right width
 

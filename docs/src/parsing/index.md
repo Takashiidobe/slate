@@ -1,6 +1,6 @@
 # Parsing
 
-The parser turns one configured C translation unit into typed IR. It expands
+The parser turns one configured C translation unit into IR. It expands
 preprocessor directives, tokenizes the resulting source, builds a syntax tree,
 checks C semantics, and lowers checked syntax directly into IR.
 
@@ -16,7 +16,7 @@ parser does not produce conditional AST nodes.
 
 ## Inspect parser output
 
-Use `emit-slate-ir` to print the parser's typed IR:
+Use `emit-slate-ir` to print the parser's IR:
 
 ```bash
 cargo run --release -p slate-c2rust -- emit-slate-ir \
@@ -43,7 +43,7 @@ defines that boundary.
 - [Parsing C syntax](syntax.md) builds a syntax tree without resolving C types.
 - [Semantic analysis](sema.md) resolves names, types, conversions, and
   constraints.
-- [Typed IR](ir.md) describes the checked program for Slate.
+- [IR](ir.md) describes the checked program for Slate.
 
 The
 [parser architecture concept](https://github.com/takashiidobe/slate/blob/main/wiki/concepts/parser-architecture.md)

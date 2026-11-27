@@ -11,9 +11,9 @@ enum { count = sizeof(long) };
 int table[count];
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 type @type0 = enum : u32 {
     %0 count = const<i32>(8);
 } [size=4, align=4];

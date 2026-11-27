@@ -15,9 +15,9 @@ struct record { char tag; int value; };
 #pragma pack(pop)
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 type @type0 record = struct {
     field0 tag: i8;
     field1 value: i32;
@@ -46,9 +46,9 @@ value differently.
 __attribute__((ms_abi)) int add(int a, int b) { return a + b; }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 fn %0 @add(%1 a: i32, %2 b: i32) -> i32 [linkage=external] [abi=win64 ms_abi(scalar, scalar) -> scalar] [fallthrough=ub_if_used] {
     return add<i32, overflow=ub>(read<i32>(%1), read<i32>(%2));
 }

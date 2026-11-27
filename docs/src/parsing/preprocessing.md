@@ -23,5 +23,5 @@ The preprocessor gets its flavor, target, and options from the shared
 - [Conditional Compilation](conditional-compilation.md) explains what a single
   run selects and what the project planner learns from a trace.
 
-The supported directives are listed in
-[Reference](../reference/index.md#preprocessor-directives).
+For the algorithm and supported directives, see the
+[Preprocessor Reference](../reference/preprocessor.md).

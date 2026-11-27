@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="576" height="100" viewBox="0 0 576 100" role="img" aria-labelledby="title description">
   <title id="title">Semantic analysis and IR emission</title>
-  <desc id="description">Resolve names in the translation unit, check C semantics, and emit typed IR from the recorded decisions.</desc>
+  <desc id="description">Resolve names in the translation unit, check C semantics, and emit IR from the recorded decisions.</desc>
   <defs>
     <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
       <path d="M0 0L8 4L0 8Z" fill="#4338ca"/>
@@ -23,7 +23,7 @@
       <text x="72" y="46">TranslationUnit</text>
       <text x="216" y="46">Name resolution</text>
       <text x="360" y="46">Checker</text>
-      <text x="504" y="46">Typed IR</text>
+      <text x="504" y="46">IR</text>
     </g>
     <g font-size="11">
       <text x="72" y="63">Parsed C syntax</text>

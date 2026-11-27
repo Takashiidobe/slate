@@ -17,9 +17,9 @@ int scan(int n) {
 }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 for %4
     init:
         write<i32>(%3, const<i32>(0));
@@ -49,9 +49,9 @@ int take(int a, int b);
 int g(int i) { return take(i++, i); }
 ```
 
-**Typed IR excerpt**
+**IR excerpt**
 
-```text
+```ir
 let %7: i32 [synthetic, unsequenced] = read<i32>(%4);
 let %8: i32 [synthetic, unsequenced] = add<i32, overflow=ub>(read<i32>(%7), const<i32>(1));
 write<i32, unsequenced>(%4, read<i32>(%8));

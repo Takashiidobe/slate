@@ -7,13 +7,13 @@ operations that Rust lowering can translate directly.
 
 <figure style="margin-inline: 0; text-align: center;">
 
-![Name resolution connects AST identifiers to bindings. The checker records C semantic facts, and the emitter uses them to build typed IR.](../diagrams/parsing-sema.svg)
+![Name resolution connects AST identifiers to bindings. The checker records C semantic facts, and the emitter uses them to build IR.](../diagrams/parsing-sema.svg)
 
 </figure>
 
 `Sema::new` resolves names and sets up the type resolver. `Sema::analyze` checks
 the AST and records semantic decisions. `Sema::lower` consumes those records to
-build [Typed IR](ir.md).
+build [IR](ir.md).
 
 ## Semantic decisions
 
