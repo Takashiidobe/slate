@@ -1,0 +1,11 @@
+.transform-pass h2 {
+    margin-block: 1.25rem 0.35rem;
+}
+
+.transform-pass p {
+    margin-block: 0.5rem;
+}
+
+.transform-pass pre {
+    margin-block: 0.5rem 0.75rem;
+}

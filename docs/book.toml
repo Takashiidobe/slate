@@ -4,5 +4,5 @@ authors = ["Takashiidobe"]
 language = "en"
 
 [output.html]
-additional-css = ["shell-prompts.css"]
+additional-css = ["shell-prompts.css", "transforms.css"]
 additional-js = ["shell-prompts.js"]
