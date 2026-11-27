@@ -5,9 +5,24 @@ through its address. Slate builds a `DefUse` index in one walk of a function
 body. Queries use the binding's ID, so two locals spelled `x` in different
 scopes have separate entries.
 
-The index groups accesses to a binding. To decide whether a write feeds a read,
-a consumer also checks the region between them. A branch or jump may change
-which definition reaches a use.
+## Why it matters
+
+A definition gives a binding a value. A use reads that value or exposes its
+storage. Both matter when moving code or choosing a Rust representation. For
+example, `x = 2` requires a mutable binding after initialization, and
+`prepare(&x)` can change `x` even when the IR shows no direct assignment. Moving
+a temporary initializer past either use can change the value it reads.
+
+The shared index gives transforms and lowering the same account of those
+accesses. A transform checks where the accesses occur before moving code.
+Analysis summarizes them into binding facts that lowering uses to decide whether
+to emit `mut`.
+
+<figure style="margin-inline: 0; text-align: center;">
+
+![A walk over the function IR builds a DefUse index. Analysis summarizes the accesses as binding facts, and lowering combines those facts with the chosen call signatures to emit Rust bindings.](../diagrams/def-use-flow.svg)
+
+</figure>
 
 ## Collect accesses
 
@@ -39,14 +54,15 @@ int bump(int a) {
 ```
 
 ```text
-statement 1   Read(a), Initialize(x)
-statement 2   Read(x), Write(x)
-statement 3   Read(x)
+int x = a   → Read(a), Initialize(x)
+x += 1      → Read(x), Write(x)
+return x    → Read(x)
 ```
 
-In this straight-line region, the initializer feeds the update's read, and the
-update feeds the return's read. The write after initialization means the lowerer
-emits `let mut x`.
+This sketch groups the accesses by source statement. In the straight-line
+region, the initializer feeds the update's read, and the update feeds the
+return's read. The write after initialization means the lowerer emits
+`let mut x`.
 
 Two branches that assign `x` produce two write entries. Their position numbers
 describe where the writes appear in the IR. Which write reaches a later read
@@ -67,3 +83,16 @@ For example, a backward jump can make a later write feed an earlier read.
 - **Temporary uses.** A single-read query requires one replaceable value read. A
   use in a VLA extent or capture keeps the temporary alive even when the
   ordinary expression walk sees only one read.
+
+## Start in the code
+
+- `DefUse::of` builds the per-function index. `single_read` checks for a
+  replaceable read, and `touched_in` checks whether a binding appears in a
+  statement range. `DefUse::for_mutability` builds the index used for binding
+  mutability. These live in `crates/slate-analysis/src/def_use.rs`.
+- `analyze` combines the results into `Facts`. `UnitFacts::binding` looks up a
+  `BindingFacts` entry by `BindingId` within one translation unit. See
+  `crates/slate-analysis/src/facts.rs`.
+- `crates/slate/src/frontend/lowerer/` consumes `BindingFacts::mutability` when
+  emitting bindings. A direct address argument stays distinct until lowering
+  knows whether the call takes a shared or exclusive borrow.
