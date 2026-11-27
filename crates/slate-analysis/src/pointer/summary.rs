@@ -181,6 +181,7 @@ pub(super) struct Summaries {
     pub(super) base: Vec<u32>,
     pub(super) candidates: Vec<bool>,
     pub(super) blockers: Vec<Option<&'static str>>,
+    pub(super) external: Vec<bool>,
     pub(super) parameters: Vec<HashMap<usize, u32>>,
     pub(super) incoming: Vec<Vec<(usize, usize)>>,
 }
@@ -260,11 +261,31 @@ impl Summaries {
                 base,
                 candidates,
                 blockers,
+                external: vec![false; count],
                 parameters,
                 incoming,
             },
             leaked_statics,
         )
+    }
+
+    pub(super) fn assume_external_callers(&mut self, program: &Program<'_>) -> bool {
+        let mut any = false;
+        for (id, entry) in program.functions() {
+            let function = id.0 as usize;
+            let shimmable = self.blockers[function].is_some()
+                && !matches!(
+                    program.export_pin(id),
+                    Some(ExportPin::Naked | ExportPin::Interrupt | ExportPin::Variadic)
+                )
+                && blocker(&entry.function.value, None, false).is_none();
+            if shimmable {
+                self.candidates[function] = true;
+                self.external[function] = true;
+                any = true;
+            }
+        }
+        any
     }
 
     pub(super) fn count_nodes(&self) -> usize {

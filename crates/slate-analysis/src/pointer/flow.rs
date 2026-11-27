@@ -63,6 +63,7 @@ impl Flow {
     pub(super) fn propagate_unproven(
         &self,
         covered: &HashSet<(usize, usize)>,
+        external: &[bool],
         unproven: &mut [Option<Origin>],
     ) {
         let mut edges: Vec<(u32, u32)> = self
@@ -74,7 +75,9 @@ impl Flow {
                 self.edges
                     .arguments
                     .iter()
-                    .filter(|&&(_, _, callee, index)| !covered.contains(&(callee, index)))
+                    .filter(|&&(_, _, callee, index)| {
+                        !external[callee] && !covered.contains(&(callee, index))
+                    })
                     .map(|&(from, to, _, _)| (from, to)),
             )
             .map(|(from, to)| (self.class_of(from), self.class_of(to)))

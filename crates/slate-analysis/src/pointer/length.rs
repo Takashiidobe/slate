@@ -79,7 +79,7 @@ fn candidate_pairs(index: &Summaries) -> Pairs {
     let mut active = HashSet::new();
     for (function, summary) in summaries.iter().enumerate() {
         let Some(summary) = summary else { continue };
-        if !candidates[function] || incoming[function].is_empty() {
+        if !candidates[function] || index.external[function] || incoming[function].is_empty() {
             continue;
         }
         let unwritten = |index: usize| !summary.written.contains(&summary.parameters[index]);
@@ -272,7 +272,7 @@ fn proves_pair(
     })
 }
 
-fn accesses_within_count(
+pub(super) fn accesses_within_count(
     function: &Function,
     pointer: BindingId,
     count: BindingId,

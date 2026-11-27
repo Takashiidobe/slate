@@ -8,6 +8,7 @@ pub(super) fn parameters(index: &Summaries, flow: &Flow) -> HashSet<(usize, usiz
         functions: summaries,
         base,
         candidates,
+        external,
         parameters,
         incoming,
         ..
@@ -15,7 +16,7 @@ pub(super) fn parameters(index: &Summaries, flow: &Flow) -> HashSet<(usize, usiz
     let mut active = HashSet::new();
     for (function, summary) in summaries.iter().enumerate() {
         let Some(summary) = summary else { continue };
-        if !candidates[function] || incoming[function].is_empty() {
+        if !candidates[function] || (incoming[function].is_empty() && !external[function]) {
             continue;
         }
         for (&index, &node) in &parameters[function] {
@@ -40,20 +41,21 @@ pub(super) fn parameters(index: &Summaries, flow: &Flow) -> HashSet<(usize, usiz
             .iter()
             .copied()
             .filter(|&(function, index)| {
-                incoming[function].iter().all(|&(caller, site)| {
-                    let Some(summary) = &summaries[caller] else {
-                        return false;
-                    };
-                    let site = &summary.calls[site];
-                    let forwarded = match site.shapes.get(index) {
-                        Some(Shape::Binding(binding)) => summary
-                            .unwritten_parameter(*binding)
-                            .is_some_and(|parameter| active.contains(&(caller, parameter))),
-                        Some(_) | None => false,
-                    };
-                    !site.pinned
-                        && (forwarded || site.literals.get(index).copied().unwrap_or(false))
-                })
+                external[function]
+                    || incoming[function].iter().all(|&(caller, site)| {
+                        let Some(summary) = &summaries[caller] else {
+                            return false;
+                        };
+                        let site = &summary.calls[site];
+                        let forwarded = match site.shapes.get(index) {
+                            Some(Shape::Binding(binding)) => summary
+                                .unwritten_parameter(*binding)
+                                .is_some_and(|parameter| active.contains(&(caller, parameter))),
+                            Some(_) | None => false,
+                        };
+                        !site.pinned
+                            && (forwarded || site.literals.get(index).copied().unwrap_or(false))
+                    })
             })
             .collect();
         if next == active {

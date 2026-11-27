@@ -243,7 +243,9 @@ pub(crate) fn analyze(
     let functions = summary::collect(&inputs);
     let summarized = timing.map(|start| (start.elapsed(), std::time::Instant::now()));
 
-    let (summaries, leaked_statics) = summary::Summaries::new(program, functions);
+    let (mut summaries, leaked_statics) = summary::Summaries::new(program, functions);
+    let reasons = std::env::var_os("SLATE_LIFT_REASONS")
+        .map(|mode| (mode == "sites", leaked_statics.clone()));
     let flow = flow::solve(program, &summaries, leaked_statics);
     let owned = ownership::prove(program, &summaries, &flow);
     let (lengths, unproven) = length::prove(
@@ -258,15 +260,34 @@ pub(crate) fn analyze(
     let facts = emit::facts(
         program, &summaries, &flow, owned, &lengths, &unproven, &c_strings,
     );
-    if let Some(mode) = std::env::var_os("SLATE_LIFT_REASONS") {
-        reasons::report(
-            program,
-            &summaries,
-            &flow,
-            &unproven,
-            &facts,
-            mode == "sites",
-        );
+    if let Some((sites, leaked_statics)) = reasons {
+        reasons::report(program, &summaries, &flow, &unproven, &facts, sites);
+        if summaries.assume_external_callers(program) {
+            let flow = flow::solve(program, &summaries, leaked_statics);
+            let owned = ownership::prove(program, &summaries, &flow);
+            let (lengths, unproven) = length::prove(
+                program,
+                &summaries,
+                &flow,
+                &owned,
+                &inputs.mutable_statics,
+                counted_loops,
+            );
+            let c_strings = c_string::parameters(&summaries, &flow);
+            let shimmed = emit::facts(
+                program, &summaries, &flow, owned, &lengths, &unproven, &c_strings,
+            );
+            reasons::report_shims(
+                program,
+                &summaries,
+                &flow,
+                &unproven,
+                &facts,
+                &shimmed,
+                counted_loops,
+                sites,
+            );
+        }
     }
 
     if let Some((summarize, joined)) = summarized {

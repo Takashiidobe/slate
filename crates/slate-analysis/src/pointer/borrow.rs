@@ -48,7 +48,7 @@ pub(super) fn unproven(
         }
         for site in &summary.calls {
             let callee = site.callee.0 as usize;
-            if !candidates[callee] {
+            if !candidates[callee] || index.external[callee] {
                 continue;
             }
             for (index, &parameter) in &parameters[callee] {
@@ -82,6 +82,6 @@ pub(super) fn unproven(
         }
     }
 
-    flow.propagate_unproven(covered, &mut unproven);
+    flow.propagate_unproven(covered, &index.external, &mut unproven);
     unproven
 }
