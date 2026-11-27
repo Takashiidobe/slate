@@ -193,6 +193,9 @@ inline. Analyses match on value shape directly; one that must not reach into
 macro code (`inline_temporaries`, the pointer analysis's pinned calls) reads
 `Module::macro_values`.
 
+IR transforms stop at expansion and hole boundaries; see [macro provenance in
+IR transforms](../macro-provenance-transforms.md).
+
 Slate's frontend (`crates/slate/src/frontend.rs`, `lower_parsed`) builds with
 structure on in every mode; `slate-parser ir` builds it only with
 `--show-macros`.

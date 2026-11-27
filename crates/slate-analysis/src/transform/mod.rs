@@ -237,6 +237,15 @@ impl Passes {
     }
 
     pub fn run(&self, module: &mut Module, slot: Slot) {
+        self.run_observed(module, slot, |_, _| {});
+    }
+
+    pub fn run_observed(
+        &self,
+        module: &mut Module,
+        slot: Slot,
+        mut after: impl FnMut(&'static str, &Module),
+    ) {
         for pass in PASSES {
             if pass.slots.contains(&slot)
                 && self.0.iter().any(|selected| std::ptr::eq(*selected, pass))
@@ -247,6 +256,7 @@ impl Passes {
                 if let Some(function) = pass.function {
                     run_functions(module, function);
                 }
+                after(pass.name, module);
             }
         }
     }

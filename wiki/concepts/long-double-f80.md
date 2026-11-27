@@ -1,5 +1,11 @@
 # How Slate represents C long double
 
+<!-- toc -->
+- [Formats by target](#formats-by-target)
+- [How Slate stores f80](#how-slate-stores-f80)
+- [Why f80 calls need a C bridge](#why-f80-calls-need-a-c-bridge)
+<!-- /toc -->
+
 Slate represents C `long double` as `f64`, `f80`, or `f128`, depending on the
 target ABI. For `f80`, Slate generates a Rust type named `LongDouble`.
 

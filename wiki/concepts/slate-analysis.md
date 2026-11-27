@@ -19,6 +19,8 @@
 - [Byte buffers and mem\* calls](#byte-buffers-and-mem-calls)
 - [C-string arrays](#c-string-arrays)
 - [Heap buffers](#heap-buffers)
+  - [Byte-buffer control flow](#byte-buffer-control-flow)
+  - [Guarded typed allocations](#guarded-typed-allocations)
 - [Effect summaries](#effect-summaries)
 - [Def-use](#def-use)
   - [Binding mutability](#binding-mutability)
@@ -94,6 +96,10 @@ order. `frontend::lower_parsed` calls two slots per unit:
 - `Slot::AfterMacroStrip`, after `strip_macro_structure` and
   `pass_caller_locals`. Only kept expansions remain; the code of dropped ones
   is ordinary statements now.
+
+Every pass follows [macro provenance in IR
+transforms](macro-provenance-transforms.md): stop at macro boundaries, keep
+`NodeId`s, and record a `macro_rejections` reason when a region must change.
 
 A pass that needs callee summaries from other units would run at a
 whole-target slot after `project::merge::without_definitions`; none does yet.

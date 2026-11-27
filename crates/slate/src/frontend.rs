@@ -16,6 +16,9 @@ pub mod distinct_functions;
 pub(crate) mod long_double;
 pub mod lowerer;
 mod macro_keep;
+mod macro_provenance;
+
+use macro_provenance::ProvenanceCheck;
 
 pub struct LoweredModule {
     pub program: crate::backend::rust_ast::Program,
@@ -70,6 +73,8 @@ pub enum Error {
         "{path}: IR built with macro structure and stripped differs from the IR built without it\n{difference}"
     )]
     MacroStructureChangedIr { path: PathBuf, difference: String },
+    #[error("{path}: an IR transform dropped macro provenance\n{lost}")]
+    MacroProvenanceLost { path: PathBuf, lost: String },
 }
 
 #[derive(Debug, Error, miette::Diagnostic)]
@@ -448,13 +453,27 @@ fn lower_parsed(
     for warning in warnings {
         crate::diagnostics::collect(&warning, diagnostics);
     }
-    passes.run(&mut module, Slot::BeforeMacroKeep);
+    let checking = std::env::var_os("SLATE_CHECK_MACRO_STRUCTURE").is_some();
+    let mut provenance = checking.then(|| ProvenanceCheck::new(&module));
+    let mut observe = |step: &'static str, module: &Module| {
+        if let Some(check) = &mut provenance {
+            check.after(step, module);
+        }
+    };
+    passes.run_observed(&mut module, Slot::BeforeMacroKeep, &mut observe);
     let kept = macro_keep::kept_expansions(&mut module);
     module.strip_macro_structure(|expansion| kept.contains(&expansion));
     macro_keep::pass_caller_locals(&mut module);
-    passes.run(&mut module, Slot::AfterMacroStrip);
-    if std::env::var_os("SLATE_CHECK_MACRO_STRUCTURE").is_some() {
+    observe("macro-keep", &module);
+    passes.run_observed(&mut module, Slot::AfterMacroStrip, &mut observe);
+    if checking {
         check_macro_structure(path, &unit, &files)?;
+    }
+    if let Some(lost) = provenance.and_then(|check| check.report(&module)) {
+        return Err(Error::MacroProvenanceLost {
+            path: path.to_path_buf(),
+            lost,
+        });
     }
     Ok((module, files, parser.directive_diagnostics().to_vec()))
 }
