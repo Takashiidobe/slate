@@ -7,10 +7,10 @@ const STACK_RED_ZONE: usize = 512 << 10;
 const STACK_GROWTH: usize = 16 << 20;
 
 use super::ownership::Owned;
-use super::{ESCAPE, MACRO, NULLABLE, OFFSET, SHARED, WRITE};
+use super::{ESCAPE, MACRO, NULLABLE, OFFSET, Reason, SHARED, WRITE};
 use crate::def_use::DefUse;
 use crate::identity::FunctionIdentity;
-use crate::program::{FunctionId, Program, ProgramBinding, UnitId};
+use crate::program::{ExportPin, FunctionId, Program, ProgramBinding, UnitId};
 use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
 use heap::Ownership;
 use slate_parser::ast::{NodeId, Span};
@@ -36,7 +36,8 @@ pub(super) struct Node {
     pub(super) byte_elements: bool,
     pub(super) opaque_pointee: bool,
     pub(super) flags: u8,
-    pub(super) raw: bool,
+    pub(super) escape: Option<Reason>,
+    pub(super) raw: Option<Reason>,
     pub(super) reads: u32,
 }
 
@@ -179,6 +180,7 @@ pub(super) struct Summaries {
     pub(super) functions: Vec<Option<Summary>>,
     pub(super) base: Vec<u32>,
     pub(super) candidates: Vec<bool>,
+    pub(super) blockers: Vec<Option<&'static str>>,
     pub(super) parameters: Vec<HashMap<usize, u32>>,
     pub(super) incoming: Vec<Vec<(usize, usize)>>,
 }
@@ -216,16 +218,17 @@ impl Summaries {
                 leaked_statics.insert(ProgramBinding { unit, binding });
             }
         }
-        let candidates: Vec<bool> = program
+        let blockers: Vec<Option<&'static str>> = program
             .functions()
             .map(|(id, entry)| {
-                candidate(
+                blocker(
                     &entry.function.value,
-                    program.exported(id),
+                    program.export_pin(id),
                     address_taken[id.0 as usize],
                 )
             })
             .collect();
+        let candidates = blockers.iter().map(Option::is_none).collect();
         let parameters: Vec<HashMap<usize, u32>> = summaries
             .iter()
             .zip(&base)
@@ -256,6 +259,7 @@ impl Summaries {
                 functions: summaries,
                 base,
                 candidates,
+                blockers,
                 parameters,
                 incoming,
             },
@@ -268,19 +272,32 @@ impl Summaries {
     }
 }
 
-fn candidate(function: &ir::Function, exported: bool, address_taken: bool) -> bool {
-    !address_taken
-        && !exported
-        && function.name != "main"
-        && matches!(
-            function.parameters,
-            Parameters::Prototype {
-                variadic: false,
-                ..
-            }
-        )
-        && !function.semantics.naked
-        && !function.semantics.interrupt
+fn blocker(
+    function: &ir::Function,
+    pin: Option<ExportPin>,
+    address_taken: bool,
+) -> Option<&'static str> {
+    if address_taken {
+        Some("address_taken")
+    } else if let Some(pin) = pin {
+        Some(pin.name())
+    } else if function.name == "main" {
+        Some("main")
+    } else if !matches!(
+        function.parameters,
+        Parameters::Prototype {
+            variadic: false,
+            ..
+        }
+    ) {
+        Some("variadic")
+    } else if function.semantics.naked {
+        Some("naked")
+    } else if function.semantics.interrupt {
+        Some("interrupt")
+    } else {
+        None
+    }
 }
 
 #[derive(Default)]
@@ -373,10 +390,20 @@ impl Walker<'_, '_> {
             byte_elements,
             opaque_pointee: matches!(ty, Type::Pointer { pointee, .. } if **pointee == Type::Void),
             flags: 0,
-            raw: false,
+            escape: None,
+            raw: None,
             reads: 0,
         });
         Some(node)
+    }
+
+    fn escape(&mut self, node: u32, flags: u8, reason: Reason) {
+        self.flag(node, flags | ESCAPE);
+        self.nodes[node as usize].escape.get_or_insert(reason);
+    }
+
+    fn make_raw(&mut self, node: u32, reason: Reason) {
+        self.nodes[node as usize].raw.get_or_insert(reason);
     }
 
     fn node(&self, binding: BindingId) -> Option<u32> {
@@ -388,9 +415,20 @@ impl Walker<'_, '_> {
     }
 
     fn mark(&mut self, value: &Value, flags: u8) {
+        self.mark_sources(value, flags, None);
+    }
+
+    fn leak(&mut self, value: &Value, flags: u8, reason: Reason) {
+        self.mark_sources(value, flags | ESCAPE, Some(reason));
+    }
+
+    fn mark_sources(&mut self, value: &Value, flags: u8, escape: Option<Reason>) {
         let sources = self.sources(value);
         for (node, _) in sources.roots {
-            self.flag(node, flags);
+            match escape {
+                Some(reason) => self.escape(node, flags, reason),
+                None => self.flag(node, flags),
+            }
         }
         if flags & (WRITE | ESCAPE) != 0 {
             self.stored.extend(sources.objects.iter().copied());
@@ -412,7 +450,7 @@ impl Walker<'_, '_> {
         let mut sources = Sources::default();
         self.collect_address_sources(place, false, &mut sources);
         for (node, _) in sources.roots {
-            self.flag(node, ESCAPE | WRITE);
+            self.escape(node, WRITE, Reason::Atomic);
         }
     }
 
@@ -420,18 +458,20 @@ impl Walker<'_, '_> {
         let sources = self.sources(value);
         let element = self.element_of(value);
         for (source, moved) in sources.roots {
-            if (moved && element != Some(source))
-                || !matches!(
-                    self.nodes[source as usize].kind,
-                    NodeKind::Local | NodeKind::Parameter(_)
-                )
-            {
-                self.nodes[returned as usize].raw = true;
+            if moved && element != Some(source) {
+                self.make_raw(returned, Reason::ReturnMoved);
+            } else if !matches!(
+                self.nodes[source as usize].kind,
+                NodeKind::Local | NodeKind::Parameter(_)
+            ) {
+                self.make_raw(returned, Reason::ReturnTemporary);
             }
             self.returned_from.push(source);
         }
-        if sources.opaque || sources.retyped {
-            self.nodes[returned as usize].raw = true;
+        if sources.opaque {
+            self.make_raw(returned, Reason::ReturnOpaque);
+        } else if sources.retyped {
+            self.make_raw(returned, Reason::ReturnRetyped);
         }
         if sources.null {
             self.flag(returned, NULLABLE);
@@ -481,16 +521,18 @@ impl Walker<'_, '_> {
         match &place.kind {
             PlaceKind::Binding(binding) => match self.node(*binding) {
                 Some(node) => self.assign(node, value),
-                None => self.mark(value, ESCAPE),
+                None => self.leak(value, 0, Reason::StoreUntracked),
             },
-            PlaceKind::Deref(_)
-            | PlaceKind::CompoundLiteral { .. }
+            PlaceKind::Field { .. } | PlaceKind::ComplexPart { .. } => {
+                self.leak(value, 0, Reason::StoreField)
+            }
+            PlaceKind::Deref(_) | PlaceKind::Index { .. } => {
+                self.leak(value, 0, Reason::StoreMemory)
+            }
+            PlaceKind::CompoundLiteral { .. }
             | PlaceKind::Temporary { .. }
-            | PlaceKind::ComplexPart { .. }
-            | PlaceKind::Field { .. }
-            | PlaceKind::Index { .. }
             | PlaceKind::Lane { .. }
-            | PlaceKind::Swizzle { .. } => self.mark(value, ESCAPE),
+            | PlaceKind::Swizzle { .. } => self.leak(value, 0, Reason::StoreElement),
         }
     }
 
@@ -513,7 +555,7 @@ impl Walker<'_, '_> {
                 if let Some(node) = self.node(*binding) {
                     match access {
                         Use::Read => self.nodes[node as usize].reads += 1,
-                        Use::Address => self.flag(node, ESCAPE | WRITE),
+                        Use::Address => self.escape(node, WRITE, Reason::AddressOfPointer),
                         Use::Write => {}
                     }
                 }
@@ -527,7 +569,7 @@ impl Walker<'_, '_> {
             PlaceKind::CompoundLiteral { initializer, .. }
             | PlaceKind::Temporary { initializer, .. } => {
                 self.value(initializer);
-                self.mark(initializer, ESCAPE);
+                self.leak(initializer, 0, Reason::CompoundLiteral);
             }
             PlaceKind::ComplexPart { base, .. }
             | PlaceKind::Field { base, .. }

@@ -2,7 +2,7 @@ use super::flow::Flow;
 use super::length::Lengths;
 use super::ownership::OwnershipFacts;
 use super::summary::{NodeKind, Shape, Summaries, Summary};
-use super::{Borrow, Length, Owner, PointerFact, PointerFacts, PointerRole};
+use super::{Borrow, Length, Origin, Owner, PointerFact, PointerFacts, PointerRole};
 use crate::program::{FunctionId, Program, ProgramBinding};
 use foldhash::{HashMap, HashMapExt, HashSet};
 use slate_parser::ir::{Callee, Parameters};
@@ -13,7 +13,7 @@ pub(super) fn facts(
     flow: &Flow,
     ownership: OwnershipFacts,
     lengths: &Lengths,
-    unproven: &[bool],
+    unproven: &[Option<Origin>],
     c_strings: &HashSet<(usize, usize)>,
 ) -> PointerFacts {
     let OwnershipFacts {
@@ -38,7 +38,7 @@ fn emit_returns(
     program: &Program<'_>,
     index: &Summaries,
     flow: &Flow,
-    unproven: &[bool],
+    unproven: &[Option<Origin>],
     returns: &mut HashMap<ProgramBinding, Borrow>,
 ) {
     let Summaries {
@@ -57,10 +57,9 @@ fn emit_returns(
         let global = base[function] + node;
         let class = flow.class_of(global) as usize;
         let item = &summary.nodes[node as usize];
-        if let Some(borrow) = flow
-            .borrow(global, item.byte_elements)
-            .filter(|_| flow.lifts_return(function) && !unproven[class] && !item.opaque_pointee)
-        {
+        if let Some(borrow) = flow.borrow(global, item.byte_elements).filter(|_| {
+            flow.lifts_return(function) && unproven[class].is_none() && !item.opaque_pointee
+        }) {
             returns.insert(
                 ProgramBinding {
                     unit: entry.unit,
@@ -78,7 +77,7 @@ fn emit_bindings(
     flow: &Flow,
     owned: &HashMap<u32, bool>,
     lengths: &Lengths,
-    unproven: &[bool],
+    unproven: &[Option<Origin>],
     c_strings: &HashSet<(usize, usize)>,
 ) -> HashMap<ProgramBinding, PointerFact> {
     let Summaries {
@@ -109,7 +108,7 @@ fn emit_bindings(
                 .borrow(global, item.byte_elements)
                 .filter(|borrow| {
                     !item.opaque_pointee
-                        && !unproven[class]
+                        && unproven[class].is_none()
                         && (role == PointerRole::Parameter || !borrow.mutable)
                 })
                 .map(|borrow| Borrow {

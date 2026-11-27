@@ -1,4 +1,4 @@
-use super::{NULLABLE, NodeKind, OFFSET, STACK_GROWTH, STACK_RED_ZONE, Sources, Walker};
+use super::{NULLABLE, NodeKind, OFFSET, Reason, STACK_GROWTH, STACK_RED_ZONE, Sources, Walker};
 use crate::counted_loops::integer_constant;
 use crate::heap_ir::read_binding;
 use crate::program::ProgramBinding;
@@ -203,16 +203,19 @@ impl Walker<'_, '_> {
                 self.unions.push((destination, source));
                 self.copies.push((source, destination));
             }
-            if moved
-                || self.nodes[source as usize].kind == NodeKind::Return
+            if moved {
+                self.make_raw(destination, Reason::Moved);
+            } else if self.nodes[source as usize].kind == NodeKind::Return
                 || (self.nodes[source as usize].kind == NodeKind::Temporary
                     && !self.call_results.contains(&source))
             {
-                self.nodes[destination as usize].raw = true;
+                self.make_raw(destination, Reason::TemporarySource);
             }
         }
-        if sources.opaque || sources.retyped {
-            self.nodes[destination as usize].raw = true;
+        if sources.opaque {
+            self.make_raw(destination, Reason::OpaqueValue);
+        } else if sources.retyped {
+            self.make_raw(destination, Reason::Retyped);
         }
         if sources.null {
             self.flag(destination, NULLABLE);
@@ -279,7 +282,7 @@ impl Walker<'_, '_> {
         match &place.kind {
             PlaceKind::Binding(binding) => {
                 if let Some(node) = self.node(*binding) {
-                    self.nodes[node as usize].raw = true;
+                    self.make_raw(node, Reason::Rebased);
                     self.flag(node, OFFSET);
                 }
             }

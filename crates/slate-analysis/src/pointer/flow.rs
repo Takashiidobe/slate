@@ -1,5 +1,8 @@
 use super::summary::{NodeKind, Summaries};
-use super::{Borrow, ESCAPE, FREE, NULLABLE, OFFSET, PointerCapability, SHARED, STRING, WRITE};
+use super::{
+    Borrow, ESCAPE, FREE, NULLABLE, OFFSET, Origin, PointerCapability, Reason, SHARED, STRING,
+    WRITE,
+};
 use crate::program::{FunctionId, Program, ProgramBinding};
 use foldhash::{HashSet, HashSetExt};
 use slate_parser::ir::BindingId;
@@ -7,7 +10,8 @@ use slate_parser::ir::BindingId;
 pub(super) struct Flow {
     class_of: Vec<u32>,
     class_flags: Vec<u8>,
-    raw: Vec<bool>,
+    escape: Vec<Option<Origin>>,
+    raw: Vec<Option<Origin>>,
     returned: Vec<bool>,
     liftable: Vec<bool>,
     pinned: Vec<u32>,
@@ -26,7 +30,13 @@ impl Flow {
         self.class_flags[class as usize]
     }
     pub(super) fn raw(&self, node: u32) -> bool {
+        self.raw[node as usize].is_some()
+    }
+    pub(super) fn raw_origin(&self, node: u32) -> Option<Origin> {
         self.raw[node as usize]
+    }
+    pub(super) fn escape_origin(&self, class: u32) -> Option<Origin> {
+        self.escape[class as usize]
     }
     pub(super) fn returned(&self, class: u32) -> bool {
         self.returned[class as usize]
@@ -53,7 +63,7 @@ impl Flow {
     pub(super) fn propagate_unproven(
         &self,
         covered: &HashSet<(usize, usize)>,
-        unproven: &mut [bool],
+        unproven: &mut [Option<Origin>],
     ) {
         let mut edges: Vec<(u32, u32)> = self
             .edges
@@ -70,7 +80,7 @@ impl Flow {
             .map(|(from, to)| (self.class_of(from), self.class_of(to)))
             .filter(|(from, to)| from != to)
             .collect();
-        reach(self.node_count(), &mut edges, unproven);
+        reach_labeled(self.node_count(), &mut edges, unproven);
     }
 }
 
@@ -118,8 +128,9 @@ impl Flow {
         } = index;
         let total = index.count_nodes();
         let mut classes = UnionFind::new(total);
-        let mut raw = vec![false; total];
+        let mut raw = vec![None; total];
         let mut seeds = vec![0u8; total];
+        let mut escapes = vec![None; total];
         let mut edges = ValueEdges::default();
         for (function, summary) in summaries.iter().enumerate() {
             let Some(summary) = summary else { continue };
@@ -133,22 +144,31 @@ impl Flow {
             for (node, entry) in summary.nodes.iter().enumerate() {
                 let global = (offset + node as u32) as usize;
                 seeds[global] = entry.flags;
-                raw[global] = entry.raw
-                    || (matches!(entry.kind, NodeKind::Parameter(_)) && !candidates[function]);
+                escapes[global] = entry.escape;
+                raw[global] = entry.raw.map(Origin::local).or_else(|| {
+                    (matches!(entry.kind, NodeKind::Parameter(_)) && !candidates[function])
+                        .then_some(Origin::local(Reason::NonCandidateParameter))
+                });
                 if entry.kind == NodeKind::Return && !candidates[function] {
                     seeds[global] |= ESCAPE;
+                    escapes[global].get_or_insert(Reason::NonCandidateReturn);
                 }
             }
         }
         let mut class_flags = vec![0u8; total];
+        let mut escape = vec![None; total];
         for node in 0..total as u32 {
-            let class = classes.find(node);
-            class_flags[class as usize] |= seeds[node as usize];
+            let class = classes.find(node) as usize;
+            class_flags[class] |= seeds[node as usize];
+            if escape[class].is_none() {
+                escape[class] = escapes[node as usize].map(Origin::local);
+            }
         }
 
         Flow {
             class_of: (0..total as u32).map(|node| classes.find(node)).collect(),
             class_flags,
+            escape,
             raw,
             edges,
             returned: vec![false; total],
@@ -184,7 +204,7 @@ impl Flow {
             };
             let class = self.class_of(parameter);
             if candidates[function]
-                && !item.raw
+                && item.raw.is_none()
                 && !item.opaque_pointee
                 && !summary.returned_from.is_empty()
                 && summary
@@ -208,7 +228,7 @@ impl Flow {
                         let returned = base[callee.0 as usize] + returned;
                         self.edges.connect_return(returned, result);
                     }
-                    None => self.raw[result as usize] = true,
+                    None => self.make_raw(result, Reason::CalleeNoReturn),
                 }
             }
         }
@@ -239,7 +259,7 @@ impl Flow {
                                 .push((caller, parameter, callee, index));
                             objects.push(((false, caller), index));
                         }
-                        Some(_) | None => self.class_flags[caller as usize] |= ESCAPE,
+                        Some(_) | None => self.escape(caller, Reason::NonCandidateCallee),
                     }
                 }
                 if !candidates[callee] {
@@ -300,12 +320,31 @@ impl Flow {
         }
         for &(left, right) in aliased {
             if (self.class_flags[left as usize] | self.class_flags[right as usize]) & WRITE != 0 {
-                self.class_flags[left as usize] |= ESCAPE;
-                self.class_flags[right as usize] |= ESCAPE;
+                self.escape(left, Reason::AliasedWrittenArguments);
+                self.escape(right, Reason::AliasedWrittenArguments);
             }
         }
-        propagate(&mut self.class_flags, ESCAPE, &mut backward);
+        for (flags, escape) in self.class_flags.iter().zip(&mut self.escape) {
+            if flags & ESCAPE != 0 {
+                escape.get_or_insert(Origin::local(Reason::Unlabeled));
+            }
+        }
+        reach_labeled(self.class_of.len(), &mut backward, &mut self.escape);
+        for (flags, escape) in self.class_flags.iter_mut().zip(&self.escape) {
+            if escape.is_some() {
+                *flags |= ESCAPE;
+            }
+        }
         backward
+    }
+
+    fn escape(&mut self, class: u32, reason: Reason) {
+        self.class_flags[class as usize] |= ESCAPE;
+        self.escape[class as usize].get_or_insert(Origin::local(reason));
+    }
+
+    fn make_raw(&mut self, node: u32, reason: Reason) {
+        self.raw[node as usize].get_or_insert(Origin::local(reason));
     }
 
     fn liftable_returns(&self, index: &Summaries, lifetimes: &[ReturnLifetime]) -> Vec<bool> {
@@ -315,6 +354,7 @@ impl Flow {
             candidates,
             parameters,
             incoming,
+            ..
         } = index;
         let immutable = |node: u32| {
             let flags = self.flags(self.class_of(node));
@@ -396,11 +436,12 @@ impl Flow {
                 Some((_, parameter)) if self.liftable[function] => {
                     self.edges.connect_return(parameter, returned);
                 }
-                Some(_) | None => self.raw[returned as usize] = true,
+                Some(_) => self.make_raw(returned, Reason::ReturnLifetimeRejected),
+                None => self.make_raw(returned, Reason::ReturnNoLifetime),
             }
             for &(result, callee) in &summary.results {
                 if !self.liftable[callee.0 as usize] {
-                    self.raw[(base[function] + result) as usize] = true;
+                    self.make_raw(base[function] + result, Reason::CalleeReturnUnlifted);
                 }
             }
         }
@@ -487,11 +528,11 @@ impl Flow {
             for &node in &summary.projected {
                 let node = base[function] + node;
                 if self.flags(self.class_of(node)) & NULLABLE != 0 {
-                    self.raw[node as usize] = true;
+                    self.make_raw(node, Reason::NullableProjection);
                 }
             }
         }
-        reach(self.node_count(), &mut self.edges.copies, &mut self.raw);
+        reach_labeled(self.node_count(), &mut self.edges.copies, &mut self.raw);
     }
 }
 
@@ -531,6 +572,26 @@ impl UnionFind {
 }
 
 fn reach(count: usize, edges: &mut [(u32, u32)], seeds: &mut [bool]) {
+    let mut labels: Vec<Option<()>> = seeds.iter().map(|&seed| seed.then_some(())).collect();
+    reach_from(count, edges, &mut labels, |()| ());
+    for (seed, label) in seeds.iter_mut().zip(labels) {
+        *seed = label.is_some();
+    }
+}
+
+fn reach_labeled(count: usize, edges: &mut [(u32, u32)], origins: &mut [Option<Origin>]) {
+    reach_from(count, edges, origins, |origin| Origin {
+        propagated: true,
+        ..origin
+    });
+}
+
+fn reach_from<L: Copy>(
+    count: usize,
+    edges: &mut [(u32, u32)],
+    labels: &mut [Option<L>],
+    carry: impl Fn(L) -> L,
+) {
     edges.sort_unstable();
     let mut start = vec![0usize; count + 1];
     for &(from, _) in edges.iter() {
@@ -539,11 +600,16 @@ fn reach(count: usize, edges: &mut [(u32, u32)], seeds: &mut [bool]) {
     for index in 0..count {
         start[index + 1] += start[index];
     }
-    let mut stack: Vec<u32> = (0..count as u32).filter(|&n| seeds[n as usize]).collect();
+    let mut stack: Vec<u32> = (0..count as u32)
+        .filter(|&n| labels[n as usize].is_some())
+        .collect();
     while let Some(node) = stack.pop() {
+        let Some(label) = labels[node as usize] else {
+            continue;
+        };
         for &(_, to) in &edges[start[node as usize]..start[node as usize + 1]] {
-            if !seeds[to as usize] {
-                seeds[to as usize] = true;
+            if labels[to as usize].is_none() {
+                labels[to as usize] = Some(carry(label));
                 stack.push(to);
             }
         }

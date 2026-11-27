@@ -1,4 +1,4 @@
-use foldhash::{HashMap, HashMapExt, HashSet, HashSetExt};
+use foldhash::{HashMap, HashMapExt};
 use slate_parser::ast::Span;
 use slate_parser::files::Files;
 use slate_parser::ir::{self, BindingId, Callee, Linkage};
@@ -31,7 +31,64 @@ pub struct Program<'m> {
     units: Vec<ProgramUnit<'m>>,
     functions: Vec<FunctionEntry<'m>>,
     resolved: HashMap<ProgramBinding, FunctionId>,
-    exported: Vec<bool>,
+    exported: Vec<Option<ExportPin>>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub enum ExportPin {
+    Exported,
+    Alias,
+    Weakref,
+    Ifunc,
+    Fallback,
+    DefinedTwice,
+    GlobalAsm,
+    Prototype,
+    Section,
+    Used,
+    Retain,
+    DllStorage,
+    Selectany,
+    Constructor,
+    Destructor,
+    Naked,
+    Interrupt,
+    WeakOdr,
+    Discardable,
+    TargetFeature,
+    Sme,
+    AbiPass,
+    Variadic,
+}
+
+impl ExportPin {
+    pub fn name(self) -> &'static str {
+        match self {
+            ExportPin::Exported => "exported",
+            ExportPin::Alias => "alias",
+            ExportPin::Weakref => "weakref",
+            ExportPin::Ifunc => "ifunc",
+            ExportPin::Fallback => "fallback",
+            ExportPin::DefinedTwice => "defined_twice",
+            ExportPin::GlobalAsm => "global_asm",
+            ExportPin::Prototype => "declared_other_prototype",
+            ExportPin::Section => "section",
+            ExportPin::Used => "used",
+            ExportPin::Retain => "retain",
+            ExportPin::DllStorage => "dll_storage",
+            ExportPin::Selectany => "selectany",
+            ExportPin::Constructor => "constructor",
+            ExportPin::Destructor => "destructor",
+            ExportPin::Naked => "naked",
+            ExportPin::Interrupt => "interrupt",
+            ExportPin::WeakOdr => "weak_odr",
+            ExportPin::Discardable => "discardable",
+            ExportPin::TargetFeature => "target_feature",
+            ExportPin::Sme => "sme",
+            ExportPin::AbiPass => "abi_pass",
+            ExportPin::Variadic => "variadic",
+        }
+    }
 }
 
 impl<'m> Program<'m> {
@@ -81,14 +138,22 @@ impl<'m> Program<'m> {
         let pinned = if closed {
             pinned_symbols(&units, &resolved, &functions)
         } else {
-            HashSet::new()
+            HashMap::new()
         };
         let exported = functions
             .iter()
             .map(|entry: &FunctionEntry<'m>| {
                 let function = &entry.function.value;
-                exported(units[entry.unit.0 as usize].module, function)
-                    && (!closed || pinned.contains(link_name(function)) || fixed_abi(function))
+                if !exported(units[entry.unit.0 as usize].module, function) {
+                    return None;
+                }
+                if !closed {
+                    return Some(ExportPin::Exported);
+                }
+                pinned
+                    .get(link_name(function))
+                    .copied()
+                    .or_else(|| fixed_abi(function))
             })
             .collect();
         Self {
@@ -100,7 +165,13 @@ impl<'m> Program<'m> {
     }
 
     pub fn exported(&self, id: FunctionId) -> bool {
-        self.exported.get(id.0 as usize).copied().unwrap_or(true)
+        self.exported.get(id.0 as usize).is_none_or(Option::is_some)
+    }
+
+    pub fn export_pin(&self, id: FunctionId) -> Option<ExportPin> {
+        self.exported
+            .get(id.0 as usize)
+            .map_or(Some(ExportPin::Exported), |pin| *pin)
     }
 
     pub fn units(&self) -> impl ExactSizeIterator<Item = (UnitId, ProgramUnit<'m>)> + '_ {
@@ -225,33 +296,43 @@ fn has_known_body(function: &ir::Function) -> bool {
         && symbol.ifunc.is_none()
 }
 
-fn fixed_abi(function: &ir::Function) -> bool {
+fn fixed_abi(function: &ir::Function) -> Option<ExportPin> {
     let symbol = &function.symbol;
     let semantics = &function.semantics;
-    symbol.section.is_some()
-        || symbol.used
-        || symbol.retain
-        || symbol.dll_storage.is_some()
-        || symbol.selectany
-        || semantics.constructor.is_some()
-        || semantics.destructor.is_some()
-        || semantics.naked
-        || semantics.interrupt
-        || semantics.weak_odr
-        || semantics.discardable
-        || !semantics.target.is_empty()
-        || !semantics.sme.is_empty()
-        || function
-            .abi
-            .as_ref()
-            .is_some_and(ir::AbiSignature::has_nontrivial_pass)
-        || !matches!(
-            function.parameters,
-            ir::Parameters::Prototype {
-                variadic: false,
-                ..
-            }
-        )
+    [
+        (symbol.section.is_some(), ExportPin::Section),
+        (symbol.used, ExportPin::Used),
+        (symbol.retain, ExportPin::Retain),
+        (symbol.dll_storage.is_some(), ExportPin::DllStorage),
+        (symbol.selectany, ExportPin::Selectany),
+        (semantics.constructor.is_some(), ExportPin::Constructor),
+        (semantics.destructor.is_some(), ExportPin::Destructor),
+        (semantics.naked, ExportPin::Naked),
+        (semantics.interrupt, ExportPin::Interrupt),
+        (semantics.weak_odr, ExportPin::WeakOdr),
+        (semantics.discardable, ExportPin::Discardable),
+        (!semantics.target.is_empty(), ExportPin::TargetFeature),
+        (!semantics.sme.is_empty(), ExportPin::Sme),
+        (
+            function
+                .abi
+                .as_ref()
+                .is_some_and(ir::AbiSignature::has_nontrivial_pass),
+            ExportPin::AbiPass,
+        ),
+        (
+            !matches!(
+                function.parameters,
+                ir::Parameters::Prototype {
+                    variadic: false,
+                    ..
+                }
+            ),
+            ExportPin::Variadic,
+        ),
+    ]
+    .into_iter()
+    .find_map(|(fixed, pin)| fixed.then_some(pin))
 }
 
 fn mentions(template: &str, symbol: &str) -> bool {
@@ -264,43 +345,47 @@ fn pinned_symbols<'m>(
     units: &[ProgramUnit<'m>],
     resolved: &HashMap<ProgramBinding, FunctionId>,
     functions: &[FunctionEntry<'m>],
-) -> HashSet<&'m str> {
-    let mut pinned = HashSet::new();
+) -> HashMap<&'m str, ExportPin> {
+    let mut pinned = HashMap::new();
+    let mut pin = |name: &'m str, reason: ExportPin| {
+        pinned.entry(name).or_insert(reason);
+    };
     let mut defined: HashMap<&'m str, u32> = HashMap::new();
     for ProgramUnit { module, .. } in units {
         for function in &module.functions {
             let symbol = &function.symbol;
-            pinned.extend(
-                [
-                    &symbol.alias,
-                    &symbol.weakref,
-                    &symbol.ifunc,
-                    &symbol.fallback,
-                ]
-                .into_iter()
-                .flatten()
-                .map(String::as_str),
-            );
+            for (target, reason) in [
+                (&symbol.alias, ExportPin::Alias),
+                (&symbol.weakref, ExportPin::Weakref),
+                (&symbol.ifunc, ExportPin::Ifunc),
+                (&symbol.fallback, ExportPin::Fallback),
+            ] {
+                if let Some(target) = target {
+                    pin(target, reason);
+                }
+            }
             if function.body.is_some() && matches!(function.linkage, Linkage::External) {
                 *defined.entry(link_name(function)).or_default() += 1;
             }
         }
         for global in &module.globals {
             let symbol = &global.symbol;
-            pinned.extend(
-                [&symbol.alias, &symbol.weakref, &symbol.fallback]
-                    .into_iter()
-                    .flatten()
-                    .map(String::as_str),
-            );
+            for (target, reason) in [
+                (&symbol.alias, ExportPin::Alias),
+                (&symbol.weakref, ExportPin::Weakref),
+                (&symbol.fallback, ExportPin::Fallback),
+            ] {
+                if let Some(target) = target {
+                    pin(target, reason);
+                }
+            }
         }
     }
-    pinned.extend(
-        defined
-            .iter()
-            .filter(|(_, count)| **count > 1)
-            .map(|(name, _)| *name),
-    );
+    for (name, count) in &defined {
+        if *count > 1 {
+            pin(name, ExportPin::DefinedTwice);
+        }
+    }
     for (unit, ProgramUnit { module, .. }) in (0u32..).map(UnitId).zip(units) {
         for function in functions.iter().map(|entry| &entry.function.value) {
             let name = link_name(function);
@@ -309,7 +394,7 @@ fn pinned_symbols<'m>(
                 .iter()
                 .any(|asm| mentions(&asm.value.template, name))
             {
-                pinned.insert(name);
+                pin(name, ExportPin::GlobalAsm);
             }
         }
         for declaration in module.functions.iter().filter(|f| f.body.is_none()) {
@@ -321,7 +406,7 @@ fn pinned_symbols<'m>(
             };
             let definition = &functions[id.0 as usize].function.value;
             if !same_prototype(&declaration.value, definition) {
-                pinned.insert(link_name(definition));
+                pin(link_name(definition), ExportPin::Prototype);
             }
         }
     }

@@ -1,7 +1,7 @@
 use super::super::{FREE, OFFSET, STRING, WRITE};
 use super::heap::Release;
 use super::sources::{part_address, peel_argument, pointee, same_pointee};
-use super::{CallSite, ESCAPE, NodeKind, Shape, Walker, tracked_pointer};
+use super::{CallSite, ESCAPE, NodeKind, Reason, Shape, Walker, tracked_pointer};
 use crate::heap_ir::{peel_conversions, read_binding, touches};
 use crate::identity::{FunctionIdentity, Known};
 use crate::program::ProgramBinding;
@@ -335,9 +335,13 @@ impl Walker<'_, '_> {
             });
         }
         for (index, argument) in arguments.iter().enumerate() {
-            let flags = known.map_or(ESCAPE, |known| known_argument(known, index));
-            if flags != 0 {
-                self.mark(argument, flags);
+            match known.map(|known| known_argument(known, index)) {
+                None => self.leak(argument, 0, Reason::OpaqueCall),
+                Some(flags) if flags & ESCAPE != 0 => {
+                    self.leak(argument, flags, Reason::LibraryCall)
+                }
+                Some(0) => {}
+                Some(flags) => self.mark(argument, flags),
             }
         }
     }

@@ -4,6 +4,7 @@ mod emit;
 mod flow;
 mod length;
 mod ownership;
+mod reasons;
 mod summary;
 
 pub use summary::fixed_array_position;
@@ -97,6 +98,130 @@ pub enum HeapAction {
     ClearedCheck(bool),
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+enum Reason {
+    StoreUntracked,
+    StoreField,
+    StoreMemory,
+    StoreElement,
+    CompoundLiteral,
+    AddressOfPointer,
+    Atomic,
+    Aggregate,
+    BlockCapture,
+    NestedCapture,
+    PointerToInteger,
+    Intrinsic,
+    OpenMp,
+    AsmOperand,
+    CleanupOrByref,
+    InitializeUntracked,
+    ReturnUntracked,
+    OpaqueCall,
+    LibraryCall,
+    NonCandidateCallee,
+    NonCandidateReturn,
+    AliasedWrittenArguments,
+    Unlabeled,
+    NonCandidateParameter,
+    ReturnMoved,
+    ReturnTemporary,
+    ReturnOpaque,
+    ReturnRetyped,
+    Moved,
+    TemporarySource,
+    OpaqueValue,
+    Retyped,
+    Uninitialized,
+    Rebased,
+    AsmOutput,
+    HeapWrite,
+    CalleeNoReturn,
+    ReturnNoLifetime,
+    ReturnLifetimeRejected,
+    CalleeReturnUnlifted,
+    NullableProjection,
+    MacroArgument,
+    NoBorrow,
+    LeakedAutomatic,
+    RawReturn,
+    MacroCallSite,
+    UnprovenArgument,
+    PartOffset,
+    RawArgument,
+}
+
+impl Reason {
+    fn name(self) -> &'static str {
+        match self {
+            Reason::StoreUntracked => "escape.store_untracked_binding",
+            Reason::StoreField => "escape.store_field",
+            Reason::StoreMemory => "escape.store_memory",
+            Reason::StoreElement => "escape.store_other_place",
+            Reason::CompoundLiteral => "escape.compound_literal",
+            Reason::AddressOfPointer => "escape.address_of_pointer",
+            Reason::Atomic => "escape.atomic",
+            Reason::Aggregate => "escape.aggregate",
+            Reason::BlockCapture => "escape.block_capture",
+            Reason::NestedCapture => "escape.nested_capture",
+            Reason::PointerToInteger => "escape.pointer_to_integer",
+            Reason::Intrinsic => "escape.intrinsic",
+            Reason::OpenMp => "escape.openmp",
+            Reason::AsmOperand => "escape.asm_operand",
+            Reason::CleanupOrByref => "escape.cleanup_or_byref",
+            Reason::InitializeUntracked => "escape.initialize_untracked",
+            Reason::ReturnUntracked => "escape.return_untracked",
+            Reason::OpaqueCall => "escape.opaque_call",
+            Reason::LibraryCall => "escape.library_call",
+            Reason::NonCandidateCallee => "escape.non_candidate_callee",
+            Reason::NonCandidateReturn => "escape.non_candidate_return",
+            Reason::AliasedWrittenArguments => "escape.aliased_written_arguments",
+            Reason::Unlabeled => "escape.unlabeled",
+            Reason::NonCandidateParameter => "raw.non_candidate_parameter",
+            Reason::ReturnMoved => "raw.return_moved",
+            Reason::ReturnTemporary => "raw.return_temporary",
+            Reason::ReturnOpaque => "raw.return_opaque",
+            Reason::ReturnRetyped => "raw.return_retyped",
+            Reason::Moved => "raw.moved",
+            Reason::TemporarySource => "raw.temporary_source",
+            Reason::OpaqueValue => "raw.opaque_value",
+            Reason::Retyped => "raw.retyped",
+            Reason::Uninitialized => "raw.uninitialized",
+            Reason::Rebased => "raw.rebased",
+            Reason::AsmOutput => "raw.asm_output",
+            Reason::HeapWrite => "raw.heap_write",
+            Reason::CalleeNoReturn => "raw.callee_no_return",
+            Reason::ReturnNoLifetime => "raw.return_no_parameter_lifetime",
+            Reason::ReturnLifetimeRejected => "raw.return_lifetime_rejected",
+            Reason::CalleeReturnUnlifted => "raw.callee_return_unlifted",
+            Reason::NullableProjection => "raw.nullable_projection",
+            Reason::MacroArgument => "unproven.macro_argument",
+            Reason::NoBorrow => "unproven.no_borrow",
+            Reason::LeakedAutomatic => "unproven.leaked_automatic",
+            Reason::RawReturn => "unproven.raw_return",
+            Reason::MacroCallSite => "unproven.macro_call_site",
+            Reason::UnprovenArgument => "unproven.argument",
+            Reason::PartOffset => "unproven.part_offset",
+            Reason::RawArgument => "unproven.raw_argument",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+struct Origin {
+    reason: Reason,
+    propagated: bool,
+}
+
+impl Origin {
+    fn local(reason: Reason) -> Self {
+        Origin {
+            reason,
+            propagated: false,
+        }
+    }
+}
+
 const WRITE: u8 = 1;
 const OFFSET: u8 = 1 << 1;
 const FREE: u8 = 1 << 2;
@@ -133,6 +258,16 @@ pub(crate) fn analyze(
     let facts = emit::facts(
         program, &summaries, &flow, owned, &lengths, &unproven, &c_strings,
     );
+    if let Some(mode) = std::env::var_os("SLATE_LIFT_REASONS") {
+        reasons::report(
+            program,
+            &summaries,
+            &flow,
+            &unproven,
+            &facts,
+            mode == "sites",
+        );
+    }
 
     if let Some((summarize, joined)) = summarized {
         for (phase, elapsed) in [("summarize", summarize), ("join", joined.elapsed())] {

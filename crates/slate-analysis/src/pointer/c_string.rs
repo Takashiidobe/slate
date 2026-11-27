@@ -10,6 +10,7 @@ pub(super) fn parameters(index: &Summaries, flow: &Flow) -> HashSet<(usize, usiz
         candidates,
         parameters,
         incoming,
+        ..
     } = index;
     let mut active = HashSet::new();
     for (function, summary) in summaries.iter().enumerate() {

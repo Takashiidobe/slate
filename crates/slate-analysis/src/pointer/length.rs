@@ -1,3 +1,4 @@
+use super::Origin;
 use super::borrow;
 use super::flow::Flow;
 use super::ownership::OwnershipFacts;
@@ -25,7 +26,7 @@ pub(super) fn prove(
     owned: &OwnershipFacts,
     mutable_statics: &HashSet<ProgramBinding>,
     counted_loops: &[HashMap<BindingId, CountedLoop>],
-) -> (Lengths, Vec<bool>) {
+) -> (Lengths, Vec<Option<Origin>>) {
     let mut active = candidate_pairs(index);
     let effects = StaticArrays::new(program, index, mutable_statics, &flow.leaked_statics);
 
@@ -372,7 +373,7 @@ fn retain_unique_pairs(next: &mut Pairs) {
 fn can_borrow(
     index: &Summaries,
     flow: &Flow,
-    unproven: &[bool],
+    unproven: &[Option<Origin>],
     function: usize,
     pointer: usize,
 ) -> bool {
@@ -381,7 +382,7 @@ fn can_borrow(
     let item = index.functions[function]
         .as_ref()
         .map(|summary| &summary.nodes[(node - index.base[function]) as usize]);
-    !unproven[class]
+    unproven[class].is_none()
         && item.is_some_and(|item| {
             !item.opaque_pointee
                 && flow

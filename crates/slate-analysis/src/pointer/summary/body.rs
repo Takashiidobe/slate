@@ -1,6 +1,6 @@
 use super::heap::Allocation;
 use super::{
-    ESCAPE, Named, NodeKind, STACK_GROWTH, STACK_RED_ZONE, Use, WRITE, Walker, place_bindings,
+    Named, NodeKind, Reason, STACK_GROWTH, STACK_RED_ZONE, Use, WRITE, Walker, place_bindings,
     tracked_pointer,
 };
 use foldhash::HashMap;
@@ -48,7 +48,7 @@ impl Walker<'_, '_> {
             ValueKind::Aggregate { members, .. } => {
                 for member in members {
                     self.value(&member.value);
-                    self.mark(&member.value, ESCAPE);
+                    self.leak(&member.value, 0, Reason::Aggregate);
                 }
             }
             ValueKind::ArrayDecay { place, .. } | ValueKind::AddressOf(place) => {
@@ -114,8 +114,8 @@ impl Walker<'_, '_> {
                 self.value(desired);
                 self.place(place, Use::Write);
                 self.atomic(place);
-                self.mark(expected, ESCAPE);
-                self.mark(desired, ESCAPE);
+                self.leak(expected, 0, Reason::Atomic);
+                self.leak(desired, 0, Reason::Atomic);
             }
             ValueKind::PointerOffset {
                 pointer, amount, ..
@@ -167,7 +167,7 @@ impl Walker<'_, '_> {
             ValueKind::Block(literal) => {
                 for capture in &literal.captures {
                     if let Some(node) = self.node(capture.id) {
-                        self.flag(node, ESCAPE | WRITE);
+                        self.escape(node, WRITE, Reason::BlockCapture);
                     }
                 }
             }
@@ -181,7 +181,7 @@ impl Walker<'_, '_> {
                     && tracked_pointer(&value.ty).is_none()
                     && value.ty != Type::Bool
                 {
-                    self.mark(operand, ESCAPE);
+                    self.leak(operand, 0, Reason::PointerToInteger);
                 }
             }
             ValueKind::Arith { left, right, .. } | ValueKind::Logical { left, right, .. } => {
@@ -218,7 +218,7 @@ impl Walker<'_, '_> {
             ValueKind::Intrinsic { arguments, .. } => {
                 for argument in arguments {
                     self.value(argument);
-                    self.mark(argument, ESCAPE);
+                    self.leak(argument, 0, Reason::Intrinsic);
                 }
             }
         }
@@ -232,7 +232,7 @@ impl Walker<'_, '_> {
         };
         ir::walk_body(&mut vec![statement.clone()], &mut escaper);
         for node in escaper.hits {
-            self.flag(node, ESCAPE | WRITE);
+            self.escape(node, WRITE, Reason::OpenMp);
         }
         let mut named = Named(Vec::new());
         ir::walk_body(&mut vec![statement.clone()], &mut named);
@@ -271,7 +271,7 @@ impl Walker<'_, '_> {
     fn asm_input(&mut self, value: &Value, executes: bool) {
         self.value(value);
         if executes && tracked_pointer(&value.ty).is_some() {
-            self.mark(value, ESCAPE | WRITE);
+            self.leak(value, WRITE, Reason::AsmOperand);
         }
     }
 
@@ -287,8 +287,8 @@ impl Walker<'_, '_> {
             && let Some(node) = self.node(binding)
         {
             match access {
-                Use::Read => self.flag(node, ESCAPE | WRITE),
-                Use::Write | Use::Address => self.nodes[node as usize].raw = true,
+                Use::Read => self.escape(node, WRITE, Reason::AsmOperand),
+                Use::Write | Use::Address => self.make_raw(node, Reason::AsmOutput),
             }
         }
     }
@@ -314,7 +314,7 @@ impl Walker<'_, '_> {
                     self.value(initializer);
                     match node {
                         Some(node) => self.assign(node, initializer),
-                        None => self.mark(initializer, ESCAPE),
+                        None => self.leak(initializer, 0, Reason::InitializeUntracked),
                     }
                 }
             }
@@ -329,7 +329,7 @@ impl Walker<'_, '_> {
                 if let Some(node) = node
                     && (variable.cleanup.is_some() || variable.byref)
                 {
-                    self.flag(node, ESCAPE | WRITE);
+                    self.escape(node, WRITE, Reason::CleanupOrByref);
                 }
                 if let Some(handler) = variable.cleanup
                     && let Some(id) = self.program.callee(self.unit, &Callee::Direct(handler))
@@ -339,7 +339,7 @@ impl Walker<'_, '_> {
                 if let Some(node) = node
                     && variable.initializer.is_none()
                 {
-                    self.nodes[node as usize].raw = true;
+                    self.make_raw(node, Reason::Uninitialized);
                 }
                 if matches!(variable.storage, StorageDuration::Automatic)
                     && !variable.byref
@@ -365,7 +365,7 @@ impl Walker<'_, '_> {
                     }
                     match node {
                         Some(node) => self.assign(node, initializer),
-                        None => self.mark(initializer, ESCAPE),
+                        None => self.leak(initializer, 0, Reason::InitializeUntracked),
                     }
                 }
             }
@@ -396,7 +396,7 @@ impl Walker<'_, '_> {
                 self.value(value);
                 match self.returned {
                     Some(node) => self.flow_return(node, value),
-                    None => self.mark(value, ESCAPE),
+                    None => self.leak(value, 0, Reason::ReturnUntracked),
                 }
             }
             Statement::Block(body)
@@ -498,7 +498,7 @@ impl Walker<'_, '_> {
             Statement::NestedFunction(nested) => {
                 for capture in &nested.captures {
                     if let Some(node) = self.node(capture.id) {
-                        self.flag(node, ESCAPE | WRITE);
+                        self.escape(node, WRITE, Reason::NestedCapture);
                     }
                     self.leaked.insert(capture.id);
                     self.written.insert(capture.id);

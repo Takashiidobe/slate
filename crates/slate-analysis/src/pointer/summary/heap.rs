@@ -1,6 +1,6 @@
 use super::super::ownership::Owned;
 use super::super::{HeapAction, HeapStatement};
-use super::{ESCAPE, MACRO, NodeKind, Use, Walker};
+use super::{ESCAPE, MACRO, NodeKind, Reason, Use, Walker};
 use crate::counted_loops::{integer_constant, plain_local};
 use crate::def_use::DefUse;
 use crate::heap_ir::{
@@ -122,7 +122,7 @@ impl Walker<'_, '_> {
                     if is_null_pointer(value) {
                         self.store(place, value);
                     } else if let Some(node) = self.node(binding) {
-                        self.nodes[node as usize].raw = true;
+                        self.make_raw(node, Reason::HeapWrite);
                     }
                 }
                 Some(HeapAction::ClearedCheck(_))
