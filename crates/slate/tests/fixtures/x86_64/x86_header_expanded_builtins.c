@@ -1853,80 +1853,62 @@ int main(void) {
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         SHOW__8!(c"sqrt256_ps".as_ptr() as *mut i8, _mm256_sqrt_ps(a));
 // CHECK-NEXT:         SHOW__7!(c"sqrt256_pd".as_ptr() as *mut i8, _mm256_sqrt_pd(c));
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_0".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = a.to_array();
+// CHECK-NEXT:                     let [[T_1]] = b.to_array();
+// CHECK-NEXT:                     let [[T_2]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_0]][__lane] == [[T_1]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_2]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_1".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = a.to_array();
+// CHECK-NEXT:                     let [[T_4]] = b.to_array();
+// CHECK-NEXT:                     let [[T_5]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_3]][__lane] < [[T_4]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_5]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_2".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_6:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_7:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_8:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_6]][__lane] <= [[T_7]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_8]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
 // CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_0".as_ptr() as *mut i8,
+// CHECK-NEXT:         c"cmp_ps_3".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let [[V_2:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
 // CHECK-NEXT:             let [[V_3:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = [[V_2]].to_array();
-// CHECK-NEXT:                         let [[T_1]] = [[V_3]].to_array();
-// CHECK-NEXT:                         let [[T_2]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_0]][__lane] == [[T_1]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_2]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_1".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_4:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_5:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = [[V_4]].to_array();
-// CHECK-NEXT:                         let [[T_4]] = [[V_5]].to_array();
-// CHECK-NEXT:                         let [[T_5]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_3]][__lane] < [[T_4]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_5]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_2".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_6:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_7:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_6:__t[0-9]+]] = [[V_6]].to_array();
-// CHECK-NEXT:                         let [[T_7:__t[0-9]+]] = [[V_7]].to_array();
-// CHECK-NEXT:                         let [[T_8:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_6]][__lane] <= [[T_7]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_8]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_3".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_8:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_9:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_9:__t[0-9]+]] = [[V_8]].to_array();
-// CHECK-NEXT:                         let [[T_10:__t[0-9]+]] = [[V_8]].to_array();
+// CHECK-NEXT:                         let [[T_9:__t[0-9]+]] = [[V_2]].to_array();
+// CHECK-NEXT:                         let [[T_10:__t[0-9]+]] = [[V_2]].to_array();
 // CHECK-NEXT:                         let [[T_11:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
 // CHECK-NEXT:                                 |__lane| -(([[T_9]][__lane] != [[T_10]][__lane]) as i32),
@@ -1935,8 +1917,8 @@ int main(void) {
 // CHECK-NEXT:                         [[T_11]]
 // CHECK-NEXT:                     })
 // CHECK-NEXT:                         | {
-// CHECK-NEXT:                             let [[T_12:__t[0-9]+]] = [[V_9]].to_array();
-// CHECK-NEXT:                             let [[T_13:__t[0-9]+]] = [[V_9]].to_array();
+// CHECK-NEXT:                             let [[T_12:__t[0-9]+]] = [[V_3]].to_array();
+// CHECK-NEXT:                             let [[T_13:__t[0-9]+]] = [[V_3]].to_array();
 // CHECK-NEXT:                             let [[T_14:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                 core::array::from_fn(
 // CHECK-NEXT:                                     |__lane| -(([[T_12]][__lane] != [[T_13]][__lane]) as i32),
@@ -1948,79 +1930,63 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_4".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_10:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_11:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_15:__t[0-9]+]] = [[V_10]].to_array();
-// CHECK-NEXT:                         let [[T_16:__t[0-9]+]] = [[V_11]].to_array();
-// CHECK-NEXT:                         let [[T_17:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_15]][__lane] != [[T_16]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_17]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_5".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_12:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_13:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     !{
-// CHECK-NEXT:                         let [[T_18:__t[0-9]+]] = [[V_12]].to_array();
-// CHECK-NEXT:                         let [[T_19:__t[0-9]+]] = [[V_13]].to_array();
-// CHECK-NEXT:                         let [[T_20:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_18]][__lane] < [[T_19]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_20]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_6".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_14:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_15:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     !{
-// CHECK-NEXT:                         let [[T_21:__t[0-9]+]] = [[V_14]].to_array();
-// CHECK-NEXT:                         let [[T_22:__t[0-9]+]] = [[V_15]].to_array();
-// CHECK-NEXT:                         let [[T_23:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_21]][__lane] <= [[T_22]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_23]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_4".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_15:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_16:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_17:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_15]][__lane] != [[T_16]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_17]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_5".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 !{
+// CHECK-NEXT:                     let [[T_18:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_19:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_20:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_18]][__lane] < [[T_19]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_20]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_6".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 !{
+// CHECK-NEXT:                     let [[T_21:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_22:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_23:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_21]][__lane] <= [[T_22]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_23]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     SHOW!(
 // CHECK-NEXT:         c"cmp_ps_7".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_16:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_17:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:             let [[V_4:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:             let [[V_5:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_24:__t[0-9]+]] = [[V_16]].to_array();
-// CHECK-NEXT:                         let [[T_25:__t[0-9]+]] = [[V_16]].to_array();
+// CHECK-NEXT:                         let [[T_24:__t[0-9]+]] = [[V_4]].to_array();
+// CHECK-NEXT:                         let [[T_25:__t[0-9]+]] = [[V_4]].to_array();
 // CHECK-NEXT:                         let [[T_26:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
 // CHECK-NEXT:                                 |__lane| -(([[T_24]][__lane] == [[T_25]][__lane]) as i32),
@@ -2029,8 +1995,8 @@ int main(void) {
 // CHECK-NEXT:                         [[T_26]]
 // CHECK-NEXT:                     })
 // CHECK-NEXT:                         & {
-// CHECK-NEXT:                             let [[T_27:__t[0-9]+]] = [[V_17]].to_array();
-// CHECK-NEXT:                             let [[T_28:__t[0-9]+]] = [[V_17]].to_array();
+// CHECK-NEXT:                             let [[T_27:__t[0-9]+]] = [[V_5]].to_array();
+// CHECK-NEXT:                             let [[T_28:__t[0-9]+]] = [[V_5]].to_array();
 // CHECK-NEXT:                             let [[T_29:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                 core::array::from_fn(
 // CHECK-NEXT:                                     |__lane| -(([[T_27]][__lane] == [[T_28]][__lane]) as i32),
@@ -2045,13 +2011,13 @@ int main(void) {
 // CHECK-NEXT:     SHOW!(
 // CHECK-NEXT:         c"cmp_ps_8".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_18:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_19:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:             let [[V_6:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:             let [[V_7:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_30:__t[0-9]+]] = [[V_18]].to_array();
-// CHECK-NEXT:                         let [[T_31:__t[0-9]+]] = [[V_19]].to_array();
+// CHECK-NEXT:                         let [[T_30:__t[0-9]+]] = [[V_6]].to_array();
+// CHECK-NEXT:                         let [[T_31:__t[0-9]+]] = [[V_7]].to_array();
 // CHECK-NEXT:                         let [[T_32:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
 // CHECK-NEXT:                                 |__lane| -(([[T_30]][__lane] == [[T_31]][__lane]) as i32),
@@ -2060,8 +2026,8 @@ int main(void) {
 // CHECK-NEXT:                         [[T_32]]
 // CHECK-NEXT:                     })
 // CHECK-NEXT:                         | (({
-// CHECK-NEXT:                             let [[T_33:__t[0-9]+]] = [[V_18]].to_array();
-// CHECK-NEXT:                             let [[T_34:__t[0-9]+]] = [[V_18]].to_array();
+// CHECK-NEXT:                             let [[T_33:__t[0-9]+]] = [[V_6]].to_array();
+// CHECK-NEXT:                             let [[T_34:__t[0-9]+]] = [[V_6]].to_array();
 // CHECK-NEXT:                             let [[T_35:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                 core::array::from_fn(
 // CHECK-NEXT:                                     |__lane| -(([[T_33]][__lane] != [[T_34]][__lane]) as i32),
@@ -2070,8 +2036,8 @@ int main(void) {
 // CHECK-NEXT:                             [[T_35]]
 // CHECK-NEXT:                         })
 // CHECK-NEXT:                             | {
-// CHECK-NEXT:                                 let [[T_36:__t[0-9]+]] = [[V_19]].to_array();
-// CHECK-NEXT:                                 let [[T_37:__t[0-9]+]] = [[V_19]].to_array();
+// CHECK-NEXT:                                 let [[T_36:__t[0-9]+]] = [[V_7]].to_array();
+// CHECK-NEXT:                                 let [[T_37:__t[0-9]+]] = [[V_7]].to_array();
 // CHECK-NEXT:                                 let [[T_38:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                     core::array::from_fn(
 // CHECK-NEXT:                                         |__lane| -(([[T_36]][__lane] != [[T_37]][__lane]) as i32),
@@ -2083,53 +2049,43 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_9".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_20:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_21:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     !{
-// CHECK-NEXT:                         let [[T_39:__t[0-9]+]] = [[V_20]].to_array();
-// CHECK-NEXT:                         let [[T_40:__t[0-9]+]] = [[V_21]].to_array();
-// CHECK-NEXT:                         let [[T_41:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_39]][__lane] >= [[T_40]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_41]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_10".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_22:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_23:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     !{
-// CHECK-NEXT:                         let [[T_42:__t[0-9]+]] = [[V_22]].to_array();
-// CHECK-NEXT:                         let [[T_43:__t[0-9]+]] = [[V_23]].to_array();
-// CHECK-NEXT:                         let [[T_44:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_42]][__lane] > [[T_43]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_44]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_9".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 !{
+// CHECK-NEXT:                     let [[T_39:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_40:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_41:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_39]][__lane] >= [[T_40]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_41]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_10".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 !{
+// CHECK-NEXT:                     let [[T_42:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_43:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_44:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_42]][__lane] > [[T_43]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_44]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     SHOW!(
 // CHECK-NEXT:         c"cmp_ps_11".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_24:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_25:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:             let [[V_8:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:             let [[V_9:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                     core::simd::Simd::splat(0i32),
@@ -2140,13 +2096,13 @@ int main(void) {
 // CHECK-NEXT:     SHOW!(
 // CHECK-NEXT:         c"cmp_ps_12".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_26:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_27:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:             let [[V_10:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:             let [[V_11:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_45:__t[0-9]+]] = [[V_26]].to_array();
-// CHECK-NEXT:                         let [[T_46:__t[0-9]+]] = [[V_27]].to_array();
+// CHECK-NEXT:                         let [[T_45:__t[0-9]+]] = [[V_10]].to_array();
+// CHECK-NEXT:                         let [[T_46:__t[0-9]+]] = [[V_11]].to_array();
 // CHECK-NEXT:                         let [[T_47:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
 // CHECK-NEXT:                                 |__lane| -(([[T_45]][__lane] != [[T_46]][__lane]) as i32),
@@ -2155,8 +2111,8 @@ int main(void) {
 // CHECK-NEXT:                         [[T_47]]
 // CHECK-NEXT:                     })
 // CHECK-NEXT:                         & (({
-// CHECK-NEXT:                             let [[T_48:__t[0-9]+]] = [[V_26]].to_array();
-// CHECK-NEXT:                             let [[T_49:__t[0-9]+]] = [[V_26]].to_array();
+// CHECK-NEXT:                             let [[T_48:__t[0-9]+]] = [[V_10]].to_array();
+// CHECK-NEXT:                             let [[T_49:__t[0-9]+]] = [[V_10]].to_array();
 // CHECK-NEXT:                             let [[T_50:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                 core::array::from_fn(
 // CHECK-NEXT:                                     |__lane| -(([[T_48]][__lane] == [[T_49]][__lane]) as i32),
@@ -2165,8 +2121,8 @@ int main(void) {
 // CHECK-NEXT:                             [[T_50]]
 // CHECK-NEXT:                         })
 // CHECK-NEXT:                             & {
-// CHECK-NEXT:                                 let [[T_51:__t[0-9]+]] = [[V_27]].to_array();
-// CHECK-NEXT:                                 let [[T_52:__t[0-9]+]] = [[V_27]].to_array();
+// CHECK-NEXT:                                 let [[T_51:__t[0-9]+]] = [[V_11]].to_array();
+// CHECK-NEXT:                                 let [[T_52:__t[0-9]+]] = [[V_11]].to_array();
 // CHECK-NEXT:                                 let [[T_53:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                     core::array::from_fn(
 // CHECK-NEXT:                                         |__lane| -(([[T_51]][__lane] == [[T_52]][__lane]) as i32),
@@ -2178,53 +2134,43 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_13".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_28:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_29:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_54:__t[0-9]+]] = [[V_28]].to_array();
-// CHECK-NEXT:                         let [[T_55:__t[0-9]+]] = [[V_29]].to_array();
-// CHECK-NEXT:                         let [[T_56:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_54]][__lane] >= [[T_55]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_56]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_14".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_30:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_31:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_57:__t[0-9]+]] = [[V_30]].to_array();
-// CHECK-NEXT:                         let [[T_58:__t[0-9]+]] = [[V_31]].to_array();
-// CHECK-NEXT:                         let [[T_59:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_57]][__lane] > [[T_58]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_59]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_13".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_54:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_55:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_56:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_54]][__lane] >= [[T_55]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_56]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_14".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_57:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_58:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_59:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_57]][__lane] > [[T_58]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_59]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     SHOW!(
 // CHECK-NEXT:         c"cmp_ps_15".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_32:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_33:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:             let [[V_12:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:             let [[V_13:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                     !core::simd::Simd::splat(0i32),
@@ -2232,79 +2178,63 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_16".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_34:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_35:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_60:__t[0-9]+]] = [[V_34]].to_array();
-// CHECK-NEXT:                         let [[T_61:__t[0-9]+]] = [[V_35]].to_array();
-// CHECK-NEXT:                         let [[T_62:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_60]][__lane] == [[T_61]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_62]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_17".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_36:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_37:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_63:__t[0-9]+]] = [[V_36]].to_array();
-// CHECK-NEXT:                         let [[T_64:__t[0-9]+]] = [[V_37]].to_array();
-// CHECK-NEXT:                         let [[T_65:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_63]][__lane] < [[T_64]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_65]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_18".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_38:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_39:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_66:__t[0-9]+]] = [[V_38]].to_array();
-// CHECK-NEXT:                         let [[T_67:__t[0-9]+]] = [[V_39]].to_array();
-// CHECK-NEXT:                         let [[T_68:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_66]][__lane] <= [[T_67]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_68]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_16".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_60:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_61:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_62:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_60]][__lane] == [[T_61]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_62]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_17".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_63:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_64:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_65:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_63]][__lane] < [[T_64]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_65]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_18".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_66:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_67:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_68:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_66]][__lane] <= [[T_67]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_68]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     SHOW!(
 // CHECK-NEXT:         c"cmp_ps_19".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_40:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_41:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:             let [[V_14:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:             let [[V_15:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_69:__t[0-9]+]] = [[V_40]].to_array();
-// CHECK-NEXT:                         let [[T_70:__t[0-9]+]] = [[V_40]].to_array();
+// CHECK-NEXT:                         let [[T_69:__t[0-9]+]] = [[V_14]].to_array();
+// CHECK-NEXT:                         let [[T_70:__t[0-9]+]] = [[V_14]].to_array();
 // CHECK-NEXT:                         let [[T_71:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
 // CHECK-NEXT:                                 |__lane| -(([[T_69]][__lane] != [[T_70]][__lane]) as i32),
@@ -2313,8 +2243,8 @@ int main(void) {
 // CHECK-NEXT:                         [[T_71]]
 // CHECK-NEXT:                     })
 // CHECK-NEXT:                         | {
-// CHECK-NEXT:                             let [[T_72:__t[0-9]+]] = [[V_41]].to_array();
-// CHECK-NEXT:                             let [[T_73:__t[0-9]+]] = [[V_41]].to_array();
+// CHECK-NEXT:                             let [[T_72:__t[0-9]+]] = [[V_15]].to_array();
+// CHECK-NEXT:                             let [[T_73:__t[0-9]+]] = [[V_15]].to_array();
 // CHECK-NEXT:                             let [[T_74:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                 core::array::from_fn(
 // CHECK-NEXT:                                     |__lane| -(([[T_72]][__lane] != [[T_73]][__lane]) as i32),
@@ -2326,79 +2256,63 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_20".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_42:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_43:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_75:__t[0-9]+]] = [[V_42]].to_array();
-// CHECK-NEXT:                         let [[T_76:__t[0-9]+]] = [[V_43]].to_array();
-// CHECK-NEXT:                         let [[T_77:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_75]][__lane] != [[T_76]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_77]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_21".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_44:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_45:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     !{
-// CHECK-NEXT:                         let [[T_78:__t[0-9]+]] = [[V_44]].to_array();
-// CHECK-NEXT:                         let [[T_79:__t[0-9]+]] = [[V_45]].to_array();
-// CHECK-NEXT:                         let [[T_80:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_78]][__lane] < [[T_79]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_80]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_22".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_46:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_47:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     !{
-// CHECK-NEXT:                         let [[T_81:__t[0-9]+]] = [[V_46]].to_array();
-// CHECK-NEXT:                         let [[T_82:__t[0-9]+]] = [[V_47]].to_array();
-// CHECK-NEXT:                         let [[T_83:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_81]][__lane] <= [[T_82]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_83]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_20".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_75:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_76:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_77:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_75]][__lane] != [[T_76]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_77]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_21".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 !{
+// CHECK-NEXT:                     let [[T_78:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_79:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_80:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_78]][__lane] < [[T_79]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_80]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_22".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 !{
+// CHECK-NEXT:                     let [[T_81:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_82:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_83:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_81]][__lane] <= [[T_82]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_83]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     SHOW!(
 // CHECK-NEXT:         c"cmp_ps_23".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_48:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_49:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:             let [[V_16:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:             let [[V_17:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_84:__t[0-9]+]] = [[V_48]].to_array();
-// CHECK-NEXT:                         let [[T_85:__t[0-9]+]] = [[V_48]].to_array();
+// CHECK-NEXT:                         let [[T_84:__t[0-9]+]] = [[V_16]].to_array();
+// CHECK-NEXT:                         let [[T_85:__t[0-9]+]] = [[V_16]].to_array();
 // CHECK-NEXT:                         let [[T_86:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
 // CHECK-NEXT:                                 |__lane| -(([[T_84]][__lane] == [[T_85]][__lane]) as i32),
@@ -2407,8 +2321,8 @@ int main(void) {
 // CHECK-NEXT:                         [[T_86]]
 // CHECK-NEXT:                     })
 // CHECK-NEXT:                         & {
-// CHECK-NEXT:                             let [[T_87:__t[0-9]+]] = [[V_49]].to_array();
-// CHECK-NEXT:                             let [[T_88:__t[0-9]+]] = [[V_49]].to_array();
+// CHECK-NEXT:                             let [[T_87:__t[0-9]+]] = [[V_17]].to_array();
+// CHECK-NEXT:                             let [[T_88:__t[0-9]+]] = [[V_17]].to_array();
 // CHECK-NEXT:                             let [[T_89:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                 core::array::from_fn(
 // CHECK-NEXT:                                     |__lane| -(([[T_87]][__lane] == [[T_88]][__lane]) as i32),
@@ -2423,13 +2337,13 @@ int main(void) {
 // CHECK-NEXT:     SHOW!(
 // CHECK-NEXT:         c"cmp_ps_24".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_50:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_51:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:             let [[V_18:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:             let [[V_19:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_90:__t[0-9]+]] = [[V_50]].to_array();
-// CHECK-NEXT:                         let [[T_91:__t[0-9]+]] = [[V_51]].to_array();
+// CHECK-NEXT:                         let [[T_90:__t[0-9]+]] = [[V_18]].to_array();
+// CHECK-NEXT:                         let [[T_91:__t[0-9]+]] = [[V_19]].to_array();
 // CHECK-NEXT:                         let [[T_92:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
 // CHECK-NEXT:                                 |__lane| -(([[T_90]][__lane] == [[T_91]][__lane]) as i32),
@@ -2438,8 +2352,8 @@ int main(void) {
 // CHECK-NEXT:                         [[T_92]]
 // CHECK-NEXT:                     })
 // CHECK-NEXT:                         | (({
-// CHECK-NEXT:                             let [[T_93:__t[0-9]+]] = [[V_50]].to_array();
-// CHECK-NEXT:                             let [[T_94:__t[0-9]+]] = [[V_50]].to_array();
+// CHECK-NEXT:                             let [[T_93:__t[0-9]+]] = [[V_18]].to_array();
+// CHECK-NEXT:                             let [[T_94:__t[0-9]+]] = [[V_18]].to_array();
 // CHECK-NEXT:                             let [[T_95:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                 core::array::from_fn(
 // CHECK-NEXT:                                     |__lane| -(([[T_93]][__lane] != [[T_94]][__lane]) as i32),
@@ -2448,8 +2362,8 @@ int main(void) {
 // CHECK-NEXT:                             [[T_95]]
 // CHECK-NEXT:                         })
 // CHECK-NEXT:                             | {
-// CHECK-NEXT:                                 let [[T_96:__t[0-9]+]] = [[V_51]].to_array();
-// CHECK-NEXT:                                 let [[T_97:__t[0-9]+]] = [[V_51]].to_array();
+// CHECK-NEXT:                                 let [[T_96:__t[0-9]+]] = [[V_19]].to_array();
+// CHECK-NEXT:                                 let [[T_97:__t[0-9]+]] = [[V_19]].to_array();
 // CHECK-NEXT:                                 let [[T_98:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                     core::array::from_fn(
 // CHECK-NEXT:                                         |__lane| -(([[T_96]][__lane] != [[T_97]][__lane]) as i32),
@@ -2461,53 +2375,43 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_25".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_52:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_53:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     !{
-// CHECK-NEXT:                         let [[T_99:__t[0-9]+]] = [[V_52]].to_array();
-// CHECK-NEXT:                         let [[T_100:__t[0-9]+]] = [[V_53]].to_array();
-// CHECK-NEXT:                         let [[T_101:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_99]][__lane] >= [[T_100]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_101]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_26".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_54:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_55:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     !{
-// CHECK-NEXT:                         let [[T_102:__t[0-9]+]] = [[V_54]].to_array();
-// CHECK-NEXT:                         let [[T_103:__t[0-9]+]] = [[V_55]].to_array();
-// CHECK-NEXT:                         let [[T_104:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_102]][__lane] > [[T_103]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_104]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_25".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 !{
+// CHECK-NEXT:                     let [[T_99:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_100:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_101:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_99]][__lane] >= [[T_100]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_101]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_26".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 !{
+// CHECK-NEXT:                     let [[T_102:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_103:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_104:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_102]][__lane] > [[T_103]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_104]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     SHOW!(
 // CHECK-NEXT:         c"cmp_ps_27".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_56:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_57:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:             let [[V_20:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:             let [[V_21:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                     core::simd::Simd::splat(0i32),
@@ -2518,13 +2422,13 @@ int main(void) {
 // CHECK-NEXT:     SHOW!(
 // CHECK-NEXT:         c"cmp_ps_28".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_58:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_59:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:             let [[V_22:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:             let [[V_23:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_105:__t[0-9]+]] = [[V_58]].to_array();
-// CHECK-NEXT:                         let [[T_106:__t[0-9]+]] = [[V_59]].to_array();
+// CHECK-NEXT:                         let [[T_105:__t[0-9]+]] = [[V_22]].to_array();
+// CHECK-NEXT:                         let [[T_106:__t[0-9]+]] = [[V_23]].to_array();
 // CHECK-NEXT:                         let [[T_107:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                             core::array::from_fn(
 // CHECK-NEXT:                                 |__lane| -(([[T_105]][__lane] != [[T_106]][__lane]) as i32),
@@ -2533,8 +2437,8 @@ int main(void) {
 // CHECK-NEXT:                         [[T_107]]
 // CHECK-NEXT:                     })
 // CHECK-NEXT:                         & (({
-// CHECK-NEXT:                             let [[T_108:__t[0-9]+]] = [[V_58]].to_array();
-// CHECK-NEXT:                             let [[T_109:__t[0-9]+]] = [[V_58]].to_array();
+// CHECK-NEXT:                             let [[T_108:__t[0-9]+]] = [[V_22]].to_array();
+// CHECK-NEXT:                             let [[T_109:__t[0-9]+]] = [[V_22]].to_array();
 // CHECK-NEXT:                             let [[T_110:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                 core::array::from_fn(
 // CHECK-NEXT:                                     |__lane| -(([[T_108]][__lane] == [[T_109]][__lane]) as i32),
@@ -2543,8 +2447,8 @@ int main(void) {
 // CHECK-NEXT:                             [[T_110]]
 // CHECK-NEXT:                         })
 // CHECK-NEXT:                             & {
-// CHECK-NEXT:                                 let [[T_111:__t[0-9]+]] = [[V_59]].to_array();
-// CHECK-NEXT:                                 let [[T_112:__t[0-9]+]] = [[V_59]].to_array();
+// CHECK-NEXT:                                 let [[T_111:__t[0-9]+]] = [[V_23]].to_array();
+// CHECK-NEXT:                                 let [[T_112:__t[0-9]+]] = [[V_23]].to_array();
 // CHECK-NEXT:                                 let [[T_113:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
 // CHECK-NEXT:                                     core::array::from_fn(
 // CHECK-NEXT:                                         |__lane| -(([[T_111]][__lane] == [[T_112]][__lane]) as i32),
@@ -2556,53 +2460,43 @@ int main(void) {
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_29".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_60:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_61:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_114:__t[0-9]+]] = [[V_60]].to_array();
-// CHECK-NEXT:                         let [[T_115:__t[0-9]+]] = [[V_61]].to_array();
-// CHECK-NEXT:                         let [[T_116:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_114]][__lane] >= [[T_115]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_116]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW!(
-// CHECK-NEXT:         c"cmp_ps_30".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_62:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_63:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_117:__t[0-9]+]] = [[V_62]].to_array();
-// CHECK-NEXT:                         let [[T_118:__t[0-9]+]] = [[V_63]].to_array();
-// CHECK-NEXT:                         let [[T_119:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
-// CHECK-NEXT:                             core::array::from_fn(
-// CHECK-NEXT:                                 |__lane| -(([[T_117]][__lane] > [[T_118]][__lane]) as i32),
-// CHECK-NEXT:                             ),
-// CHECK-NEXT:                         );
-// CHECK-NEXT:                         [[T_119]]
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
+// CHECK-NEXT:     unsafe {
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_29".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_114:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_115:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_116:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_114]][__lane] >= [[T_115]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_116]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW!(
+// CHECK-NEXT:             c"cmp_ps_30".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_117:__t[0-9]+]] = a.to_array();
+// CHECK-NEXT:                     let [[T_118:__t[0-9]+]] = b.to_array();
+// CHECK-NEXT:                     let [[T_119:__t[0-9]+]]: core::simd::Simd<i32, 8> = core::simd::Simd::from_array(
+// CHECK-NEXT:                         core::array::from_fn(
+// CHECK-NEXT:                             |__lane| -(([[T_117]][__lane] > [[T_118]][__lane]) as i32),
+// CHECK-NEXT:                         ),
+// CHECK-NEXT:                     );
+// CHECK-NEXT:                     [[T_119]]
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     SHOW!(
 // CHECK-NEXT:         c"cmp_ps_31".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_64:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_65:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
+// CHECK-NEXT:             let [[V_24:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
+// CHECK-NEXT:             let [[V_25:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i32, 8>, core::simd::Simd<f32, 8>>(
 // CHECK-NEXT:                     !core::simd::Simd::splat(0i32),
@@ -2630,11 +2524,11 @@ int main(void) {
 // CHECK-NEXT:         show(c"cmp_pd_lt".as_ptr(), core::ptr::addr_of_mut!(t_) as *const (), 32i32);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut t_: core::simd::Simd<f32, 4> = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let [[V_66:__v[0-9]+]]: core::simd::Simd<f32, 4> = unsafe { _mm256_castps256_ps128(a) };
+// CHECK-NEXT:     let [[V_26:__v[0-9]+]]: core::simd::Simd<f32, 4> = unsafe { _mm256_castps256_ps128(a) };
 // CHECK-NEXT:     t_ = unsafe {
 // CHECK-NEXT:         core::mem::transmute::<core::simd::Simd<i32, 4>, core::simd::Simd<f32, 4>>(
 // CHECK-NEXT:             !{
-// CHECK-NEXT:                 let [[T_124:__t[0-9]+]] = [[V_66]].to_array();
+// CHECK-NEXT:                 let [[T_124:__t[0-9]+]] = [[V_26]].to_array();
 // CHECK-NEXT:                 let [[T_125:__t[0-9]+]]: core::simd::Simd<f32, 4> = _mm256_castps256_ps128(b);
 // CHECK-NEXT:                 let [[T_126:__t[0-9]+]] = [[T_125]].to_array();
 // CHECK-NEXT:                 let [[T_127:__t[0-9]+]]: core::simd::Simd<i32, 4> = core::simd::Simd::from_array(

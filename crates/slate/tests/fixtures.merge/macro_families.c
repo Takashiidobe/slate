@@ -56,9 +56,8 @@ int main(void) {
 // CHECK-NEXT: #[cfg(feature = "alpha")]
 // CHECK-NEXT: macro_rules! STEP {
 // CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + ((($x) * 2) as c_long);
+// CHECK-NEXT:             total += (($x) * 2) as c_long;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -69,9 +68,8 @@ int main(void) {
 // CHECK-NEXT: #[cfg(not(feature = "alpha"))]
 // CHECK-NEXT: macro_rules! STEP {
 // CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + ((($x) + 1) as c_long);
+// CHECK-NEXT:             total += (($x) + 1) as c_long;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -85,9 +83,8 @@ int main(void) {
 // CHECK-NEXT: macro_rules! MARK {
 // CHECK-NEXT:     ($x:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             let __v: c_long = unsafe { total };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 total = __v | (($x) as c_long);
+// CHECK-NEXT:                 total |= ($x) as c_long;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
@@ -109,9 +106,8 @@ int main(void) {
 // CHECK-NEXT: macro_rules! MARK {
 // CHECK-NEXT:     ($x:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             let __v: c_long = unsafe { total };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 total = __v ^ (($x) as c_long);
+// CHECK-NEXT:                 total ^= ($x) as c_long;
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;

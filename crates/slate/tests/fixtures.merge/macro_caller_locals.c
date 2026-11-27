@@ -250,9 +250,7 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 *$cursor = $v;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             let __v: *mut i32 = $cursor;
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: *mut i32 = unsafe { __v.add(1) };
-// CHECK-NEXT:             $cursor = [[V_0]];
+// CHECK-NEXT:             $cursor = unsafe { $cursor.add(1) };
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -263,12 +261,8 @@ int main(void) {
 // CHECK-NEXT: macro_rules! DROP {
 // CHECK-NEXT:     ($n:expr, $hold:expr, $bits:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             let __v: u32 = $hold;
-// CHECK-NEXT:             let [[V_0]]: u32 = __v >> $n;
-// CHECK-NEXT:             $hold = [[V_0]];
-// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: u32 = $bits;
-// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: u32 = [[V_1]].wrapping_sub(($n) as u32);
-// CHECK-NEXT:             $bits = [[V_2]];
+// CHECK-NEXT:             $hold >>= $n;
+// CHECK-NEXT:             $bits = $bits.wrapping_sub(($n) as u32);
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -325,9 +319,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! READ_INTO {
 // CHECK-NEXT:     ($v:expr, $total:expr, $scale:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             let __v: i32 = $total;
-// CHECK-NEXT:             let [[V_0]]: i32 = __v + (($v) + $scale);
-// CHECK-NEXT:             $total = [[V_0]];
+// CHECK-NEXT:             $total += ($v) + $scale;
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -339,9 +331,7 @@ int main(void) {
 // CHECK-NEXT:     ($n:expr, $hold:expr, $bits:expr, $total:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             DROP!($n, $hold, $bits);
-// CHECK-NEXT:             let __v: i32 = $total;
-// CHECK-NEXT:             let [[V_0]]: i32 = (__v as u32).wrapping_add(BITS!(2i32, $hold)) as i32;
-// CHECK-NEXT:             $total = [[V_0]];
+// CHECK-NEXT:             $total = (($total) as u32).wrapping_add(BITS!(2i32, $hold)) as i32;
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -353,9 +343,7 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr, $total:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let temp: i32 = 1;
-// CHECK-NEXT:             let __v: i32 = $total;
-// CHECK-NEXT:             let [[V_0]]: i32 = __v + (temp + $a);
-// CHECK-NEXT:             $total = [[V_0]];
+// CHECK-NEXT:             $total += temp + $a;
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }

@@ -455,8 +455,7 @@ int main(void) {
 // CHECK-NEXT:         hit != 0,
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let [[V_1]]: i32 = hit;
-// CHECK-NEXT:             let [[V_2]]: i32 = [[V_1]] + 1;
-// CHECK-NEXT:             hit = [[V_2]];
+// CHECK-NEXT:             hit = [[V_1]] + 1;
 // CHECK-NEXT:             [[V_1]]
 // CHECK-NEXT:         },
 // CHECK-NEXT:         hit + 5
@@ -473,21 +472,21 @@ int main(void) {
 // CHECK-NEXT:         println!("{} {}", taken, hit);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     let mut chosen: i32 = 0;
-// CHECK-NEXT:     let [[V_10:__v[0-9]+]]: i32 = if hit != 0 {
-// CHECK-NEXT:         let [[V_3]]: i32 = hit;
-// CHECK-NEXT:         hit = [[V_3]] + 1;
-// CHECK-NEXT:         let [[V_4]]: i32 = if [[V_3]] < 9 {
-// CHECK-NEXT:             let [[V_5]]: i32 = hit;
-// CHECK-NEXT:             hit = [[V_5]] + 1;
-// CHECK-NEXT:             [[V_5]]
+// CHECK-NEXT:     let [[V_2]]: i32 = if hit != 0 {
+// CHECK-NEXT:         let [[V_10:__v[0-9]+]]: i32 = hit;
+// CHECK-NEXT:         hit = [[V_10]] + 1;
+// CHECK-NEXT:         let [[V_3]]: i32 = if [[V_10]] < 9 {
+// CHECK-NEXT:             let [[V_4]]: i32 = hit;
+// CHECK-NEXT:             hit = [[V_4]] + 1;
+// CHECK-NEXT:             [[V_4]]
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             9
 // CHECK-NEXT:         };
-// CHECK-NEXT:         [[V_4]]
+// CHECK-NEXT:         [[V_3]]
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         MAX!(hit, 9i32)
 // CHECK-NEXT:     };
-// CHECK-NEXT:     chosen = [[V_10]];
+// CHECK-NEXT:     chosen = [[V_2]];
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -892,8 +891,7 @@ int main(void) {
 // CHECK-NEXT:                     zero != 0,
 // CHECK-NEXT:                     ({
 // CHECK-NEXT:                         let [[V_1]]: i32 = hit;
-// CHECK-NEXT:                         let [[V_2]]: i32 = [[V_1]] + 1;
-// CHECK-NEXT:                         hit = [[V_2]];
+// CHECK-NEXT:                         hit = [[V_1]] + 1;
 // CHECK-NEXT:                         [[V_1]]
 // CHECK-NEXT:                     }) != 0
 // CHECK-NEXT:                 ) as i32,
@@ -918,10 +916,9 @@ int main(void) {
 // CHECK-NEXT:                 EITHER!(
 // CHECK-NEXT:                     one != 0,
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[V_3]]: i32 = hit;
-// CHECK-NEXT:                         let [[V_4]]: i32 = [[V_3]] + 1;
-// CHECK-NEXT:                         hit = [[V_4]];
-// CHECK-NEXT:                         [[V_3]]
+// CHECK-NEXT:                         let [[V_10]]: i32 = hit;
+// CHECK-NEXT:                         hit = [[V_10]] + 1;
+// CHECK-NEXT:                         [[V_10]]
 // CHECK-NEXT:                     }) != 0
 // CHECK-NEXT:                 ) as i32,
 // CHECK-NEXT:             )
@@ -942,10 +939,9 @@ int main(void) {
 // CHECK-NEXT:             BOTH!(
 // CHECK-NEXT:                 zero != 0,
 // CHECK-NEXT:                 ({
-// CHECK-NEXT:                     let [[V_10]]: i32 = hit;
-// CHECK-NEXT:                     let [[V_11:__v[0-9]+]]: i32 = [[V_10]] + 1;
-// CHECK-NEXT:                     hit = [[V_11]];
-// CHECK-NEXT:                     [[V_10]]
+// CHECK-NEXT:                     let [[V_2]]: i32 = hit;
+// CHECK-NEXT:                     hit = [[V_2]] + 1;
+// CHECK-NEXT:                     [[V_2]]
 // CHECK-NEXT:                 }) != 0
 // CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         );
@@ -955,26 +951,25 @@ int main(void) {
 // CHECK-NEXT:             EITHER!(
 // CHECK-NEXT:                 one != 0,
 // CHECK-NEXT:                 ({
-// CHECK-NEXT:                     let [[V_12:__v[0-9]+]]: i32 = hit;
-// CHECK-NEXT:                     let [[V_13:__v[0-9]+]]: i32 = [[V_12]] + 1;
-// CHECK-NEXT:                     hit = [[V_13]];
-// CHECK-NEXT:                     [[V_12]]
+// CHECK-NEXT:                     let [[V_8]]: i32 = hit;
+// CHECK-NEXT:                     hit = [[V_8]] + 1;
+// CHECK-NEXT:                     [[V_8]]
 // CHECK-NEXT:                 }) != 0
 // CHECK-NEXT:             ) as i32
 // CHECK-NEXT:         );
 // CHECK-NEXT:         println!("{}", hit);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_5]]: bool = if zero != 0 {
-// CHECK-NEXT:         let [[V_6]]: i32 = hit;
-// CHECK-NEXT:         hit = [[V_6]] + 1;
-// CHECK-NEXT:         let [[V_7]]: i32 = if [[V_6]] < 5 {
-// CHECK-NEXT:             let [[V_8]]: i32 = hit;
-// CHECK-NEXT:             hit = [[V_8]] + 1;
-// CHECK-NEXT:             [[V_8]]
+// CHECK-NEXT:     let [[V_3]]: bool = if zero != 0 {
+// CHECK-NEXT:         let [[V_4]]: i32 = hit;
+// CHECK-NEXT:         hit = [[V_4]] + 1;
+// CHECK-NEXT:         let [[V_5]]: i32 = if [[V_4]] < 5 {
+// CHECK-NEXT:             let [[V_6]]: i32 = hit;
+// CHECK-NEXT:             hit = [[V_6]] + 1;
+// CHECK-NEXT:             [[V_6]]
 // CHECK-NEXT:         } else {
 // CHECK-NEXT:             5
 // CHECK-NEXT:         };
-// CHECK-NEXT:         [[V_7]] != 0
+// CHECK-NEXT:         [[V_5]] != 0
 // CHECK-NEXT:     } else {
 // CHECK-NEXT:         false
 // CHECK-NEXT:     };
@@ -982,7 +977,7 @@ int main(void) {
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), [[V_5]] as i32) };
+// CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), [[V_3]] as i32) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(windows)]
@@ -1025,13 +1020,13 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", [[V_5]] as i32);
+// CHECK-NEXT:         println!("{}", [[V_3]] as i32);
 // CHECK-NEXT:         println!("{}", hit);
 // CHECK-NEXT:         println!("{}", (one != 0 || TWICE!(note(4i32)) != 0) as i32);
 // CHECK-NEXT:         println!("{}", (one != 0 && TWICE!(note(5i32)) != 0) as i32);
 // CHECK-NEXT:         println!("{}", hit);
 // CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_9]]: bool = note(1i32) != 0 && note(0i32) != 0;
+// CHECK-NEXT:     let [[V_7]]: bool = note(1i32) != 0 && note(0i32) != 0;
 // CHECK-NEXT:     #[cfg(windows)]
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     #[cfg(windows)]
@@ -1039,14 +1034,14 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             slate_support::printf(
 // CHECK-NEXT:                 c"%d\n".as_ptr(),
-// CHECK-NEXT:                 ([[V_9]] as i32) + ((note(0i32) != 0 || note(2i32) != 0) as i32),
+// CHECK-NEXT:                 ([[V_7]] as i32) + ((note(0i32) != 0 || note(2i32) != 0) as i32),
 // CHECK-NEXT:             )
 // CHECK-NEXT:         };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     #[cfg(unix)]
 // CHECK-NEXT:     {
-// CHECK-NEXT:         println!("{}", ([[V_9]] as i32) + ((note(0i32) != 0 || note(2i32) != 0) as i32));
+// CHECK-NEXT:         println!("{}", ([[V_7]] as i32) + ((note(0i32) != 0 || note(2i32) != 0) as i32));
 // CHECK-NEXT:     }
 // CHECK-NEXT:     show_trace(c"logic".as_ptr());
 // CHECK-NEXT: }
@@ -1259,9 +1254,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! BUMP_AND {
 // CHECK-NEXT:     ($x:expr, $y:expr) => {
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let __v: i32 = $x;
-// CHECK-NEXT:             let [[V_2]]: i32 = __v + 1;
-// CHECK-NEXT:             $x = [[V_2]];
+// CHECK-NEXT:             $x += 1i32;
 // CHECK-NEXT:             $y
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
@@ -1341,9 +1334,8 @@ int main(void) {
 // CHECK-NEXT:     () => {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let __v: *mut i32 = unsafe { cursor };
-// CHECK-NEXT:             let [[V_2]]: *mut i32 = unsafe { __v.add(1) };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 cursor = [[V_2]];
+// CHECK-NEXT:                 cursor = __v.add(1);
 // CHECK-NEXT:             }
 // CHECK-NEXT:             unsafe { *__v }
 // CHECK-NEXT:         }
@@ -1354,8 +1346,7 @@ int main(void) {
 // CHECK-NEXT:     ($p:expr) => {
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let __v: *mut i32 = $p;
-// CHECK-NEXT:             let [[V_2]]: *mut i32 = unsafe { __v.add(1) };
-// CHECK-NEXT:             $p = [[V_2]];
+// CHECK-NEXT:             $p = unsafe { __v.add(1) };
 // CHECK-NEXT:             unsafe { *__v }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };

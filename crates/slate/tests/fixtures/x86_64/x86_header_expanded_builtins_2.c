@@ -889,88 +889,53 @@ int main(void) {
 // CHECK-NEXT:             c"shuffle_pd".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::simd::simd_swizzle!(c, _mm_set1_pd(5.5f64), [1, 2])
 // CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__2!(
+// CHECK-NEXT:             c"alignr0".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                         y,
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                         x,
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__2!(
+// CHECK-NEXT:             c"alignr5".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                         y,
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                         x,
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:         SHOW__2!(
+// CHECK-NEXT:             c"alignr16".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                         y,
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                         x,
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
 // CHECK-NEXT:     }
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"alignr0".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: core::simd::Simd<i8, 16> = unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     x,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: core::simd::Simd<i8, 16> = unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     y,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
-// CHECK-NEXT:                     core::simd::simd_swizzle!(
-// CHECK-NEXT:                         [[V_2]],
-// CHECK-NEXT:                         [[V_1]],
-// CHECK-NEXT:                         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-// CHECK-NEXT:                     ),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"alignr5".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_3:__v[0-9]+]]: core::simd::Simd<i8, 16> = unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     x,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             let [[V_4:__v[0-9]+]]: core::simd::Simd<i8, 16> = unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     y,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
-// CHECK-NEXT:                     core::simd::simd_swizzle!(
-// CHECK-NEXT:                         [[V_4]],
-// CHECK-NEXT:                         [[V_3]],
-// CHECK-NEXT:                         [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-// CHECK-NEXT:                     ),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     SHOW__2!(
-// CHECK-NEXT:         c"alignr16".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_5:__v[0-9]+]]: core::simd::Simd<i8, 16> = unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     x,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             let [[V_6:__v[0-9]+]]: core::simd::Simd<i8, 16> = unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     y,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
-// CHECK-NEXT:                     core::simd::simd_swizzle!(
-// CHECK-NEXT:                         [[V_6]],
-// CHECK-NEXT:                         [[V_5]],
-// CHECK-NEXT:                         [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
-// CHECK-NEXT:                     ),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
 // CHECK-NEXT:     SHOW__2!(
 // CHECK-NEXT:         c"alignr20".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_7:__v[0-9]+]]: core::simd::Simd<i8, 16> = unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
-// CHECK-NEXT:                     x,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             let [[V_8:__v[0-9]+]]: core::simd::Simd<i8, 16> = unsafe {
+// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: core::simd::Simd<i8, 16> = unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
 // CHECK-NEXT:                     y,
 // CHECK-NEXT:                 )
@@ -978,7 +943,9 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i8, 16>, core::simd::Simd<i64, 2>>(
 // CHECK-NEXT:                     core::simd::simd_swizzle!(
-// CHECK-NEXT:                         [[V_7]],
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
+// CHECK-NEXT:                             x,
+// CHECK-NEXT:                         ),
 // CHECK-NEXT:                         core::simd::Simd::splat(0i8),
 // CHECK-NEXT:                         [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
 // CHECK-NEXT:                     ),
@@ -989,12 +956,12 @@ int main(void) {
 // CHECK-NEXT:     SHOW__2!(
 // CHECK-NEXT:         c"alignr32".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_9:__v[0-9]+]]: core::simd::Simd<i8, 16> = unsafe {
+// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: core::simd::Simd<i8, 16> = unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
 // CHECK-NEXT:                     x,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:             };
-// CHECK-NEXT:             let [[V_10:__v[0-9]+]]: core::simd::Simd<i8, 16> = unsafe {
+// CHECK-NEXT:             let [[V_3:__v[0-9]+]]: core::simd::Simd<i8, 16> = unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 2>, core::simd::Simd<i8, 16>>(
 // CHECK-NEXT:                     y,
 // CHECK-NEXT:                 )
@@ -1063,43 +1030,28 @@ int main(void) {
 // CHECK-NEXT:             c"shuffle256_pd".as_ptr() as *mut i8,
 // CHECK-NEXT:             core::simd::simd_swizzle!(c, _mm256_set1_pd(7.0f64), [0, 5, 3, 6])
 // CHECK-NEXT:         );
-// CHECK-NEXT:     }
-// CHECK-NEXT:     SHOW__3!(
-// CHECK-NEXT:         c"alignr256_3".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_11:__v[0-9]+]]: core::simd::Simd<i8, 32> = unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i8, 32>>(
-// CHECK-NEXT:                     x,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             let [[V_1]]: core::simd::Simd<i8, 32> = unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i8, 32>>(
-// CHECK-NEXT:                     y,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i8, 32>, core::simd::Simd<i64, 4>>(
-// CHECK-NEXT:                     core::simd::simd_swizzle!(
-// CHECK-NEXT:                         [[V_1]],
-// CHECK-NEXT:                         [[V_11]],
-// CHECK-NEXT:                         [
-// CHECK-NEXT:                             3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 32, 33, 34, 19,
-// CHECK-NEXT:                             20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 48, 49, 50,
-// CHECK-NEXT:                         ]
+// CHECK-NEXT:         SHOW__3!(
+// CHECK-NEXT:             c"alignr256_3".as_ptr() as *mut i8,
+// CHECK-NEXT:             core::mem::transmute::<core::simd::Simd<i8, 32>, core::simd::Simd<i64, 4>>(
+// CHECK-NEXT:                 core::simd::simd_swizzle!(
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i8, 32>>(
+// CHECK-NEXT:                         y,
 // CHECK-NEXT:                     ),
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
+// CHECK-NEXT:                     core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i8, 32>>(
+// CHECK-NEXT:                         x,
+// CHECK-NEXT:                     ),
+// CHECK-NEXT:                     [
+// CHECK-NEXT:                         3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 32, 33, 34, 19, 20,
+// CHECK-NEXT:                         21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 48, 49, 50,
+// CHECK-NEXT:                     ]
+// CHECK-NEXT:                 ),
+// CHECK-NEXT:             )
+// CHECK-NEXT:         );
+// CHECK-NEXT:     }
 // CHECK-NEXT:     SHOW__3!(
 // CHECK-NEXT:         c"alignr256_17".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_12:__v[0-9]+]]: core::simd::Simd<i8, 32> = unsafe {
-// CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i8, 32>>(
-// CHECK-NEXT:                     x,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             let [[V_3]]: core::simd::Simd<i8, 32> = unsafe {
+// CHECK-NEXT:             let [[V_4:__v[0-9]+]]: core::simd::Simd<i8, 32> = unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i8, 32>>(
 // CHECK-NEXT:                     y,
 // CHECK-NEXT:                 )
@@ -1107,7 +1059,9 @@ int main(void) {
 // CHECK-NEXT:             unsafe {
 // CHECK-NEXT:                 core::mem::transmute::<core::simd::Simd<i8, 32>, core::simd::Simd<i64, 4>>(
 // CHECK-NEXT:                     core::simd::simd_swizzle!(
-// CHECK-NEXT:                         [[V_12]],
+// CHECK-NEXT:                         core::mem::transmute::<core::simd::Simd<i64, 4>, core::simd::Simd<i8, 32>>(
+// CHECK-NEXT:                             x,
+// CHECK-NEXT:                         ),
 // CHECK-NEXT:                         core::simd::Simd::splat(0i8),
 // CHECK-NEXT:                         [
 // CHECK-NEXT:                             1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 32, 17,
@@ -1120,42 +1074,32 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     SHOW__3!(
 // CHECK-NEXT:         c"perm2x128_21".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_13:__v[0-9]+]]: core::simd::Simd<i64, 4> = x;
-// CHECK-NEXT:             let [[V_5]]: core::simd::Simd<i64, 4> = y;
-// CHECK-NEXT:             core::simd::simd_swizzle!([[V_13]], [[V_5]], [2, 3, 4, 5])
-// CHECK-NEXT:         }
+// CHECK-NEXT:         core::simd::simd_swizzle!(x, y, [2, 3, 4, 5])
 // CHECK-NEXT:     );
 // CHECK-NEXT:     SHOW__3!(
 // CHECK-NEXT:         c"perm2x128_08".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_14:__v[0-9]+]]: core::simd::Simd<i64, 4> = x;
-// CHECK-NEXT:             let [[V_7]]: core::simd::Simd<i64, 4> = y;
-// CHECK-NEXT:             core::simd::simd_swizzle!(core::simd::Simd::splat(0i64), [[V_14]], [0, 1, 4, 5])
+// CHECK-NEXT:             let [[V_1]]: core::simd::Simd<i64, 4> = y;
+// CHECK-NEXT:             core::simd::simd_swizzle!(core::simd::Simd::splat(0i64), x, [0, 1, 4, 5])
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     SHOW__3!(
 // CHECK-NEXT:         c"perm2x128_83".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_15:__v[0-9]+]]: core::simd::Simd<i64, 4> = x;
-// CHECK-NEXT:             let [[V_9]]: core::simd::Simd<i64, 4> = y;
-// CHECK-NEXT:             core::simd::simd_swizzle!([[V_9]], core::simd::Simd::splat(0i64), [2, 3, 4, 5])
+// CHECK-NEXT:             let [[V_2]]: core::simd::Simd<i64, 4> = x;
+// CHECK-NEXT:             core::simd::simd_swizzle!(y, core::simd::Simd::splat(0i64), [2, 3, 4, 5])
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     SHOW__9!(
 // CHECK-NEXT:         c"perm2f128_ps".as_ptr() as *mut i8,
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_16:__v[0-9]+]]: core::simd::Simd<f32, 8> = a;
-// CHECK-NEXT:             let [[V_17:__v[0-9]+]]: core::simd::Simd<f32, 8> = b;
-// CHECK-NEXT:             core::simd::simd_swizzle!([[V_16]], [[V_17]], [0, 1, 2, 3, 12, 13, 14, 15])
-// CHECK-NEXT:         }
+// CHECK-NEXT:         core::simd::simd_swizzle!(a, b, [0, 1, 2, 3, 12, 13, 14, 15])
 // CHECK-NEXT:     );
 // CHECK-NEXT:     SHOW__11!(
 // CHECK-NEXT:         c"perm2f128_pd".as_ptr() as *mut i8,
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let [[V_18:__v[0-9]+]]: core::simd::Simd<f64, 4> = c;
-// CHECK-NEXT:             let [[V_19:__v[0-9]+]]: core::simd::Simd<f64, 4> = c;
-// CHECK-NEXT:             core::simd::simd_swizzle!([[V_18]], [[V_18]], [2, 3, 4, 5])
+// CHECK-NEXT:             let [[V_5:__v[0-9]+]]: core::simd::Simd<f64, 4> = c;
+// CHECK-NEXT:             let [[V_6:__v[0-9]+]]: core::simd::Simd<f64, 4> = c;
+// CHECK-NEXT:             core::simd::simd_swizzle!([[V_5]], [[V_5]], [2, 3, 4, 5])
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     unsafe {

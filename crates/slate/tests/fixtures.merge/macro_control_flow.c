@@ -574,9 +574,8 @@ int main(void) {
 // CHECK-NEXT:                 if i == 1 {
 // CHECK-NEXT:                     continue;
 // CHECK-NEXT:                 }
-// CHECK-NEXT:                 let __v: i32 = unsafe { trace };
 // CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     trace = __v + i;
+// CHECK-NEXT:                     trace += i;
 // CHECK-NEXT:                 }
 // CHECK-NEXT:             }
 // CHECK-NEXT:             if true {

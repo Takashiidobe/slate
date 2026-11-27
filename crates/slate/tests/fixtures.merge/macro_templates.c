@@ -169,9 +169,8 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! AFTER {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { calls };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             calls = __v + 10;
+// CHECK-NEXT:             calls += 10;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         println!("{}", ($a) as i32);
 // CHECK-NEXT:     };
@@ -254,9 +253,8 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! AFTER {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { calls };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             calls = __v + 10;
+// CHECK-NEXT:             calls += 10;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), ($a) as i32) };
@@ -402,9 +400,9 @@ int main(void) {
 // CHECK-NEXT:     SHOW!(local + 1);
 // CHECK-NEXT:     SHOW!(byte);
 // CHECK-NEXT:     SHOW!(wide >> 30i32);
-// CHECK-NEXT:     WIDEN__3!(local);
-// CHECK-NEXT:     WIDEN!(wide);
-// CHECK-NEXT:     WIDEN__2!(byte);
+// CHECK-NEXT:     WIDEN__2!(local);
+// CHECK-NEXT:     WIDEN__3!(wide);
+// CHECK-NEXT:     WIDEN!(byte);
 // CHECK-NEXT:     TWICE!(next());
 // CHECK-NEXT:     unsafe {
 // CHECK-NEXT:         AFTER!(calls);
@@ -456,7 +454,7 @@ int main(void) {
 // CHECK-NEXT:     ($s:expr) => {
 // CHECK-NEXT:         let __v: *mut state = $s;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             (*__v).count = (*__v).count + 1;
+// CHECK-NEXT:             (*__v).count += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -471,27 +469,24 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! WIDEN {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + $a;
+// CHECK-NEXT:             total += (($a) as i32) as c_long;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! WIDEN__2 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + ((($a) as i32) as c_long);
+// CHECK-NEXT:             total += ($a) as c_long;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! WIDEN__3 {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: c_long = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + (($a) as c_long);
+// CHECK-NEXT:             total += $a;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

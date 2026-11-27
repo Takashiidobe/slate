@@ -17,8 +17,13 @@ them is the default; inlining one is a fallback, never a transform's goal.
 - **Analyses are transparent.** A fact pass (`counted_loops`, `pointer`,
   `def_use`) reads the resolved value tree. A macro wrap never blocks a fact.
 - **Transforms stop at macro boundaries.** A transform does not rewrite across
-  an expansion root or a hole boundary, and not inside a macro body outside its
-  holes. Outside every expansion it is free. `truth_canonicalize` is the
+  an expansion root or a hole boundary. Outside every expansion it is free.
+  Inside one kept body (a `Statement::MacroExpansion` body, or a wrapped
+  `StatementExpression` root) a rewrite whose nodes all stay in that body is
+  allowed: it may move a hole whole, but not change a hole's contents, move a
+  node across the root or into a nested region. The template changes for every
+  site alike; a site whose decision differs gets its own content-hashed
+  template. `truth_canonicalize` is the
   reference: `if (!IS_EMPTY(q))` stays `!IS_EMPTY!(q)`.
 - **Required transforms record why.** A pass lowering needs for correctness
   (`structure_goto`, `labeled_blocks`, `do_while_zero`) that must change a
@@ -71,7 +76,7 @@ expansion.
 | --- | --- | --- | --- | --- | --- |
 | structure-goto | after strip | not entered (`children` skips `MacroExpansion`); a goto in a macro makes keep reject it (`control_transfer`) | not entered | restructures; moves regions whole | yes |
 | truth-canonicalize | after strip | blocked (expansion depth) | blocked (hole depth) | rewrites; keeps a protected macro value and negates around it | yes |
-| inline-temps | before keep, after strip | a temp read inside a region is not inlined (`nested_depth`) | same | inlines | yes |
+| inline-temps | before keep, after strip | inlines a temp whose definition and use are in the same body (`expansion_body`, `TemplateBlocks`); a temp read in a nested region or hole is not inlined (`nested_depth`) | moved whole, never entered | inlines | yes |
 | const-fold | after strip | blocked (depth); comparisons with a wrapped operand are left | blocked | folds | yes |
 | do-while-zero | after strip | not entered; a kept macro's `do { } while (0)` stays a loop for its template | not entered | unwraps | yes |
 | labeled-blocks | after strip | not entered; `negation` keeps a protected value | not entered | rewrites | yes |
@@ -82,4 +87,4 @@ expansion.
 Every pass is stricter than the rule inside holes: rewriting there is allowed
 but none does it. Relax a pass only when a fixture shows the missed rewrite.
 
-See: `slate-8ge7.2.5`, `slate-8ge7.2.6`.
+See: `slate-8ge7.2.5`, `slate-8ge7.2.6`, `slate-8ge7.2.8`.

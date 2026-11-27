@@ -31,6 +31,23 @@ pub(super) fn transform(function: &mut Function, cx: &mut PassContext) {
         macro_values,
     };
     context.statements(body);
+    walk_function_body(body, &mut TemplateBlocks { context: &context });
+}
+
+struct TemplateBlocks<'c, 'a> {
+    context: &'c Context<'a>,
+}
+
+impl Visitor for TemplateBlocks<'_, '_> {
+    fn rewrite_value(&mut self, value: &mut Value) {
+        if self.context.macro_values.contains_key(&value.node.id)
+            && let ValueKind::StatementExpression(evaluation) = &mut value.node.value
+        {
+            self.context
+                .list(&mut evaluation.statements, Some(&mut evaluation.value));
+            self.context.statements_nested(&mut evaluation.statements);
+        }
+    }
 }
 
 fn plain(access: &Access) -> bool {
@@ -176,6 +193,7 @@ impl Context<'_> {
         self.list(body, None);
         for statement in body {
             deep(|| {
+                self.expansion_body(&mut statement.value);
                 for list in children(&mut statement.value) {
                     self.statements(list);
                 }
@@ -187,9 +205,16 @@ impl Context<'_> {
         }
     }
 
+    fn expansion_body(&self, statement: &mut Statement) {
+        if let Statement::MacroExpansion { body, .. } = statement {
+            self.statements(body);
+        }
+    }
+
     fn statements_nested(&self, body: &mut [Span<Statement>]) {
         for statement in body {
             deep(|| {
+                self.expansion_body(&mut statement.value);
                 for list in children(&mut statement.value) {
                     self.statements(list);
                 }

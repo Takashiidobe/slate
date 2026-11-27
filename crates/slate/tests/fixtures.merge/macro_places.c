@@ -523,17 +523,13 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ADD {
 // CHECK-NEXT:     ($x:expr, $n:expr) => {
-// CHECK-NEXT:         let __v: i32 = $x;
-// CHECK-NEXT:         let [[V_1:__v[0-9]+]]: i32 = __v + $n;
-// CHECK-NEXT:         $x = [[V_1]];
+// CHECK-NEXT:         $x += $n;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! BUMP {
 // CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         let __v: i32 = $x;
-// CHECK-NEXT:         let [[V_1]]: i32 = __v + 1;
-// CHECK-NEXT:         $x = [[V_1]];
+// CHECK-NEXT:         $x += 1;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -553,9 +549,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! PUSH {
 // CHECK-NEXT:     ($stack:expr, $top:expr, $v:expr) => {
 // CHECK-NEXT:         $stack[($top) as usize] = $v;
-// CHECK-NEXT:         let __v: i32 = $top;
-// CHECK-NEXT:         let [[V_1]]: i32 = __v + 1;
-// CHECK-NEXT:         $top = [[V_1]];
+// CHECK-NEXT:         $top += 1;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

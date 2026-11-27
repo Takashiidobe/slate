@@ -25,8 +25,7 @@ int main(void) {
 // CHECK-NEXT:     let old: i64 = EXCHANGE!(
 // CHECK-NEXT:         {
 // CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = index;
-// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: i32 = [[V_0]] + 1;
-// CHECK-NEXT:             index = [[V_1]];
+// CHECK-NEXT:             index = [[V_0]] + 1;
 // CHECK-NEXT:             unsafe { values.0.as_mut_ptr().offset([[V_0]] as isize) }
 // CHECK-NEXT:         },
 // CHECK-NEXT:         25i64

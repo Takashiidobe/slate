@@ -239,9 +239,8 @@ int main(void) {
 // CHECK-NEXT: macro_rules! BUMPED {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         println!("{}", $a);
-// CHECK-NEXT:         let __v: i32 = unsafe { bumps };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             bumps = __v + 1;
+// CHECK-NEXT:             bumps += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -312,9 +311,8 @@ int main(void) {
 // CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:         unsafe { slate_support::printf(c"%d\n".as_ptr(), $a) };
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:         let __v: i32 = unsafe { bumps };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             bumps = __v + 1;
+// CHECK-NEXT:             bumps += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -737,8 +735,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! STORE {
 // CHECK-NEXT:     ($p:expr, $v:expr) => {
 // CHECK-NEXT:         let __v: *mut c_char = $p;
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: *mut c_char = unsafe { __v.add(1) };
-// CHECK-NEXT:         $p = [[V_0]];
+// CHECK-NEXT:         $p = unsafe { __v.add(1) };
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *__v = ($v) as c_char;
 // CHECK-NEXT:         }
@@ -747,9 +744,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! WRITES_LOCAL {
 // CHECK-NEXT:     ($a:expr, $count:expr) => {
-// CHECK-NEXT:         let __v: i32 = $count;
-// CHECK-NEXT:         let [[V_0]]: i32 = __v + $a;
-// CHECK-NEXT:         $count = [[V_0]];
+// CHECK-NEXT:         $count += $a;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

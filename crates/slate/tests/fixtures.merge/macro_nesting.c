@@ -190,7 +190,7 @@ int main(void) {
 // CHECK-NEXT:     SEND!(value, value + 5);
 // CHECK-NEXT:     ADD!(value);
 // CHECK-NEXT:     SAME_BODY!(value + 1);
-// CHECK-NEXT:     ADD_READS!(value);
+// CHECK-NEXT:     ADD_READS__2!(value);
 // CHECK-NEXT:     TEMP!(value);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -220,27 +220,24 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ADD {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + $a;
+// CHECK-NEXT:             total += $a;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ADD_READS {
-// CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { total };
+// CHECK-NEXT:     ($a:expr, $reads__1:expr) => {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + (($a) + reads);
+// CHECK-NEXT:             total += ($a) + $reads__1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ADD_READS__2 {
-// CHECK-NEXT:     ($a:expr, $reads__1:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { total };
+// CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + (($a) + $reads__1);
+// CHECK-NEXT:             total += ($a) + reads;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -249,9 +246,8 @@ int main(void) {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let temp: i32 = 7;
 // CHECK-NEXT:         let temp: i32 = 5;
-// CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + (temp + $a + temp);
+// CHECK-NEXT:             total += temp + $a + temp;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -259,9 +255,8 @@ int main(void) {
 // CHECK-NEXT: macro_rules! CALLS_ONLY_NESTED {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         ONLY_NESTED!($a);
-// CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + 1;
+// CHECK-NEXT:             total += 1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -269,19 +264,17 @@ int main(void) {
 // CHECK-NEXT: macro_rules! LOCAL_READS {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let mut reads__1: i32 = 40;
-// CHECK-NEXT:         ADD_READS__2!($a, reads__1);
-// CHECK-NEXT:         let __v: i32 = unsafe { total };
+// CHECK-NEXT:         ADD_READS!($a, reads__1);
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + reads__1;
+// CHECK-NEXT:             total += reads__1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ONLY_NESTED {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + ($a) * 3;
+// CHECK-NEXT:             total += ($a) * 3;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -312,9 +305,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SAME_BODY {
 // CHECK-NEXT:     ($a:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + $a;
+// CHECK-NEXT:             total += $a;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -324,17 +316,15 @@ int main(void) {
 // CHECK-NEXT:         let width: i32 = $length;
 // CHECK-NEXT:         if width > 8 {
 // CHECK-NEXT:             let val: i32 = ($value) as i32;
-// CHECK-NEXT:             let __v: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = ((__v as i32) | ((val as u16) as i32)) as u16;
+// CHECK-NEXT:                 buffer = ((buffer as i32) | ((val as u16) as i32)) as u16;
 // CHECK-NEXT:                 PUT_SHORT!(buffer);
-// CHECK-NEXT:                 total = total + width;
+// CHECK-NEXT:                 total += width;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = (([[V_0]] as i32) | ((($value) as u16) as i32)) as u16;
-// CHECK-NEXT:                 total = total + width;
+// CHECK-NEXT:                 buffer = ((buffer as i32) | ((($value) as u16) as i32)) as u16;
+// CHECK-NEXT:                 total += width;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
@@ -356,17 +346,15 @@ int main(void) {
 // CHECK-NEXT:         let width: i32 = ($length) as i32;
 // CHECK-NEXT:         if width > 8 {
 // CHECK-NEXT:             let val: i32 = ($value) as i32;
-// CHECK-NEXT:             let __v: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = ((__v as i32) | ((val as u16) as i32)) as u16;
+// CHECK-NEXT:                 buffer = ((buffer as i32) | ((val as u16) as i32)) as u16;
 // CHECK-NEXT:                 PUT_SHORT!(buffer);
-// CHECK-NEXT:                 total = total + width;
+// CHECK-NEXT:                 total += width;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         } else {
-// CHECK-NEXT:             let [[V_0]]: u16 = unsafe { buffer };
 // CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 buffer = (([[V_0]] as i32) | ((($value) as u16) as i32)) as u16;
-// CHECK-NEXT:                 total = total + width;
+// CHECK-NEXT:                 buffer = ((buffer as i32) | ((($value) as u16) as i32)) as u16;
+// CHECK-NEXT:                 total += width;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
@@ -375,9 +363,8 @@ int main(void) {
 // CHECK-NEXT: macro_rules! TEMP {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let temp: i32 = 5;
-// CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + (($a) + temp);
+// CHECK-NEXT:             total += ($a) + temp;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -385,10 +372,9 @@ int main(void) {
 // CHECK-NEXT: macro_rules! USES_LEAK {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let leaked: i32 = $a;
-// CHECK-NEXT:         let __v: i32 = unsafe { total };
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total = __v + leaked;
-// CHECK-NEXT:             total = total + leaked * 2;
+// CHECK-NEXT:             total += leaked;
+// CHECK-NEXT:             total += leaked * 2;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

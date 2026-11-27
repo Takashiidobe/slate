@@ -170,9 +170,7 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! BUMP {
 // CHECK-NEXT:     ($x:expr, $count:expr) => {
-// CHECK-NEXT:         let __v: i32 = $count;
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = __v + $x;
-// CHECK-NEXT:         $count = [[V_0]];
+// CHECK-NEXT:         $count += $x;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

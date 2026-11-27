@@ -40,12 +40,11 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! THROW {
 // CHECK-NEXT:     ($v:expr) => {
-// CHECK-NEXT:         let __v: i32 = unsafe { jb_top };
-// CHECK-NEXT:         let [[V_0:__v[0-9]+]]: i32 = __v - 1;
+// CHECK-NEXT:         let __v: i32 = (unsafe { jb_top }) - 1;
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             jb_top = [[V_0]];
+// CHECK-NEXT:             jb_top = __v;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         unsafe { longjmp((*jb_stack.offset([[V_0]] as isize)).as_mut_ptr(), $v) };
+// CHECK-NEXT:         unsafe { longjmp((*jb_stack.offset(__v as isize)).as_mut_ptr(), $v) };
 // CHECK-NEXT:         unsafe { core::hint::unreachable_unchecked() };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -83,11 +82,11 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: fn run_case(id: i32, fail: i32) {
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = unsafe { jb_top };
+// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: i32 = unsafe { jb_top };
 // CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         jb_top = [[V_1]] + 1;
+// CHECK-NEXT:         jb_top = [[V_0]] + 1;
 // CHECK-NEXT:     }
-// CHECK-NEXT:     if (unsafe { _setjmp((*jb_stack.offset([[V_1]] as isize)).as_mut_ptr()) }) == 0 {
+// CHECK-NEXT:     if (unsafe { _setjmp((*jb_stack.offset([[V_0]] as isize)).as_mut_ptr()) }) == 0 {
 // CHECK-NEXT:         inner(fail);
 // CHECK-NEXT:         println!("case {}: no exception", id);
 // CHECK-NEXT:     } else {

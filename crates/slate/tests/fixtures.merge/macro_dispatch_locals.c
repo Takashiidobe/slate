@@ -135,12 +135,8 @@ int main(void) {
 // CHECK-NEXT: macro_rules! BYTEBITS {
 // CHECK-NEXT:     ($hold:expr, $bits:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             let __v: u32 = $hold;
-// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: u32 = __v >> (($bits) & 7);
-// CHECK-NEXT:             $hold = [[V_1]];
-// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: u32 = $bits;
-// CHECK-NEXT:             let [[V_3:__v[0-9]+]]: u32 = [[V_2]].wrapping_sub(($bits) & 7);
-// CHECK-NEXT:             $bits = [[V_3]];
+// CHECK-NEXT:             $hold >>= ($bits) & 7;
+// CHECK-NEXT:             $bits = $bits.wrapping_sub(($bits) & 7);
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -151,12 +147,8 @@ int main(void) {
 // CHECK-NEXT: macro_rules! DROPBITS {
 // CHECK-NEXT:     ($n:expr, $hold:expr, $bits:expr) => {
 // CHECK-NEXT:         loop {
-// CHECK-NEXT:             let __v: u32 = $hold;
-// CHECK-NEXT:             let [[V_1]]: u32 = __v >> $n;
-// CHECK-NEXT:             $hold = [[V_1]];
-// CHECK-NEXT:             let [[V_2]]: u32 = $bits;
-// CHECK-NEXT:             let [[V_3]]: u32 = [[V_2]].wrapping_sub(($n) as u32);
-// CHECK-NEXT:             $bits = [[V_3]];
+// CHECK-NEXT:             $hold >>= $n;
+// CHECK-NEXT:             $bits = $bits.wrapping_sub(($n) as u32);
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
