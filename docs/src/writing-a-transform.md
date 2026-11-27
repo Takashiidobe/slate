@@ -10,9 +10,11 @@ slate translate input.c
 ```
 
 The first command prints IR with no optional transforms. Use a comma-separated
-pass list or `--passes=all` to inspect more than one pass. The Rust examples
-below show the resulting shapes with signatures and ABI details omitted. Later
-passes and Rust rewrites can simplify them further.
+pass list or `--passes=all` to inspect more than one pass. Each Rust block below
+shows the function emitted by `slate translate`, which runs the full pipeline.
+The rewrite blocks isolate the named pass and use shorthand IR. Uppercase
+letters stand for expressions or statement lists, and `continue L` and `break L`
+name their exact targets.
 
 ## What the macro slots see
 
@@ -37,138 +39,478 @@ within each slot. The sections below follow the order after macro strip.
 
 ## structure-goto
 
-C `if (bad) goto done; work(); done: finish();` can lower to:
+### Purpose
 
-```rust
-'done: {
-    if bad != 0 {
-        break 'done;
-    }
-    work();
+Replace direct gotos with labeled blocks and loops where the jump targets fit
+structured control flow.
+
+### Example
+
+**C input**
+
+```c
+int run(int skip, int x) {
+    if (skip)
+        goto done;
+    x += 1;
+done:
+    return x * 2;
 }
-finish();
 ```
 
-A forward jump over a statement range becomes a break from the block enclosing
-that range. A backward jump to the start of a range becomes a continue in a
-loop. A sole trailing `if c { goto L }` can become the test of a do-while loop.
+**Emitted Rust**
 
-The pass needs to account for every edge into the region. Cleanup or VLA
-declarations and switch cases owned by an enclosing switch can block a rewrite.
-A function with computed gotos, label addresses, or asm goto stays out of this
-pass. Lowering handles residual jumps with dispatch.
+```rust
+fn run(skip: i32, mut x: i32) -> i32 {
+    if skip == 0 {
+        x += 1;
+    }
+    x * 2
+}
+```
+
+### Rewrite rules
+
+```text
+if C { goto L }; A; L: B  →  block K { if C { break K }; A }; B
+L: A; if C { goto L }; B  →  do { A } while C; B
+```
+
+For a forward edge, `K` is fresh and the block ends exactly where `L` began. For
+a backward edge, the second rule requires a single trailing conditional jump to
+`L`. The general backward rule wraps the range in a loop, turns its back edges
+into continues, and adds an exit where the original range fell through. In the
+example, later passes turn the forward block into an `if`.
+
+### Caveats
+
+Account for every edge to the label before replacing it. A jump into the middle
+from outside the candidate range can bypass the new structured entry. The pass
+also checks for VLA or cleanup declarations and case labels owned by an outer
+switch. An address such as `&&L` makes the function ineligible because the label
+is also a value. Residual jumps go to dispatch during lowering.
 
 ## truth-canonicalize
 
-C `return !(a < b);` for integer operands can lower to
-`return (a >= b) as i32;`. The comparison stays boolean until the return
-converts it to the C result type.
+### Purpose
 
-In IR, `ne(from_bool(b), 0) → b`, `eq(from_bool(b), 0) → not(b)`, and
-`not(not(b)) → b`. A conditional with arms `1` and `0` becomes
-`from_bool(condition)`. When sema uses a synthetic boolean temporary for
-`a || f()`, the pass can recover `a != 0 || f() != 0`, keeping the call on the
-right of the short circuit.
+Remove redundant truth tests and recover short-circuit expressions from boolean
+IR.
 
-Negated equality can flip even for floats. Negated ordered float comparisons
-stay as written because NaN makes `!(a < b)` differ from `a >= b`. Explicit
-conversions and comparisons and protected macro values can block the rewrite.
+### Example
+
+**C input**
+
+```c
+int inverted(int a, int b) {
+    return !(a < b);
+}
+```
+
+**Emitted Rust**
+
+```rust
+fn inverted(a: i32, b: i32) -> i32 {
+    (a >= b) as i32
+}
+```
+
+### Rewrite rules
+
+```text
+ne(from_bool(b), 0)            → b
+eq(from_bool(b), 0)            → not(b)
+not(not(b))                    → b
+not(lt_int(a, b))              → ge_int(a, b)
+if c { 1 } else { 0 }          → from_bool(c)
+if c { 1 } else { from_bool(y) } → from_bool(c || y)
+```
+
+`from_bool` maps false to 0 and true to 1. The first two identities follow from
+those two values. The last identity evaluates `y` only when `c` is false. The
+pass can also recover a short circuit from branches writing the same synthetic
+boolean temporary. A source variable written by both arms keeps its branch
+writes.
+
+### Caveats
+
+Ordered floating point comparisons need a separate rule. With `a = NaN`,
+`!(a < b)` is true and `a >= b` is false, so the pass keeps the negation.
+Negating equality can still flip `==` and `!=`. Rewrites that would remove an
+explicit conversion or comparison, or a protected macro value, are blocked.
 
 ## inline-temps
 
-For C `n--; return n;`, sema can save the old value of `n` in a synthetic
-temporary for the decrement. Rust can use `n -= 1; return n;` once the
-subtraction reads `n` directly.
+### Purpose
 
-`temp t = E; ...; use(read(t)) → ...; use(E)` moves the same initializer to its
-sole read. The types must agree, and the read must be in the next 32 sibling
-statements or the list's tail value. Multiple reads, captures, macro argument
-holes, nested statement bodies, and opaque control flow block the move. The
-producer's effects must commute with intervening evaluation. An effectful
-producer must also stay out of a conditional arm or short circuit operand that
-might never run.
+Move a synthetic temporary’s initializer into its only read so lowering can emit
+the expression directly.
+
+### Example
+
+**C input**
+
+```c
+int decrement(int n) {
+    n--;
+    return n;
+}
+```
+
+**Emitted Rust**
+
+```rust
+fn decrement(mut n: i32) -> i32 {
+    n -= 1;
+    n
+}
+```
+
+### Rewrite rules
+
+```text
+temp t = E; S; use(read(t))  →  S; use(E)
+temp a = read(n); temp b = a - 1; write(n, b)
+                            →  write(n, read(n) - 1)
+```
+
+The pass substitutes the initializer once, keeping its type and node ID.
+
+### Caveats
+
+The read must be in one of the next 32 sibling statements or the list's tail
+value. It must be a direct value use outside macro arguments, address operands,
+and statement expressions. Captures, a second read, or an unsequenced temporary
+keep the binding.
+
+Moving `E` reorders it with `S` and any evaluation before the read in the
+consumer. For ordinary reads and writes, the conflicts to check are
+`reads(E) ∩ writes(S)`, `writes(E) ∩ reads(S)`, and `writes(E) ∩ writes(S)`. For
+example, sinking `t = read(n)` past `write(n, 7)` would change which value
+reaches the consumer. The pass also blocks opaque statements and control flow.
+An effectful initializer must execute on the same paths, so moving a call under
+the right operand of `&&` would be invalid when the left operand is false.
 
 ## const-fold
 
-C `signed char c = 200;` on the usual eight-bit target can lower to
-`let c: i8 = -56;`.
+### Purpose
 
-An implicit integer conversion of a constant becomes a constant of the
-destination type. For a narrowing to eight bits, `200 mod 256 = 200`, whose
-signed interpretation is `200 - 256 = -56`. The pass also folds signed negation
-of literals and eligible comparisons of integer constants.
+Fold implicit integer conversions, signed negations, and comparisons of
+constants into typed literals.
 
-Explicit casts, general arithmetic such as `60 * 60`, and shifts stay in the IR.
-A kept expansion or wrapped macro value can also block folding.
+### Example
+
+**C input**
+
+```c
+signed char narrow(void) {
+    signed char c = 200;
+    return c;
+}
+```
+
+**Emitted Rust**
+
+```rust
+fn narrow() -> i8 {
+    let c: i8 = -56;
+    c
+}
+```
+
+### Rewrite rules
+
+```text
+implicit_int_convert<T>(const(v)) → const<T>(convert_T(v))
+r = v mod 2^width(T), with 0 <= r < 2^width(T)
+convert_T(v) = r - 2^width(T) if T is signed and r >= 2^(width(T)-1)
+convert_T(v) = r              otherwise
+```
+
+For the eight-bit signed destination, `r = 200` and `200 - 256 = -56`. The pass
+also folds signed literal negation and eligible integer constant comparisons,
+such as `ne(1, 0) → true`.
+
+### Caveats
+
+The match is limited to these IR operations. An explicit cast such as
+`(signed char)200`, an arithmetic expression such as `60 * 60`, or a conversion
+of a wrapped macro constant stays in the IR.
 
 ## do-while-zero
 
-C `do { if (stop) break; work(); } while (0);` can lower to a Rust labeled block
-with `break 'once` in the conditional arm.
+### Purpose
 
-`do B while false → block B` runs the body once. If the body breaks or continues
-to that loop, the pass emits a labeled block and makes either jump an exit from
-the block. A continue would have reached the false test and exited anyway. Jumps
-targeting inner loops keep their targets.
+Turn a do-while loop with a constant false test into a block that runs once.
 
-The test must have no evaluation statements and must be false as a boolean
-constant or a recognized constant integer comparison. Kept macro expansions
-retain their loop. The pass can simplify the same loop from a macro that Slate
-chose to emit inline.
+### Example
+
+**C input**
+
+```c
+int once(int stop, int x) {
+    do {
+        if (stop)
+            continue;
+        x += 1;
+    } while (0);
+    return x;
+}
+```
+
+**Emitted Rust**
+
+```rust
+fn once(stop: i32, mut x: i32) -> i32 {
+    if stop == 0 {
+        x += 1;
+    }
+    x
+}
+```
+
+### Rewrite rules
+
+```text
+do_L { A } while false  →  block { A }                 if A has no jumps to L
+do_L { A } while false  →  block L { A[continue L ↦ break L] } otherwise
+```
+
+A continue targeting `L` reaches the false test, so it has the same destination
+as a break targeting `L`. Inner loop jumps keep their targets. The later
+`labeled-blocks` pass can turn the exit in this example into a plain `if`.
+
+### Caveats
+
+The test must consist of a false boolean constant or a recognized false integer
+comparison, with no evaluation statements. For example, `while (tick(), 0)`
+still calls `tick()` whenever execution reaches its test. Kept expansions retain
+the loop shape for their macro template. The same loop becomes eligible when
+Slate emits the expansion inline.
 
 ## labeled-blocks
 
-C `if (c) goto other; f(); goto done; other: g(); done: return;` can lower to
-`if c != 0 { g(); } else { f(); }` followed by the function exit.
+### Purpose
 
-After goto structuring, `if c { A; break L }; B; break L` can become
-`if c { A } else { B }; break L`. Both arms reach the same exit. The pass can
-also move a tail into the sole break that reaches it, remove redundant blocks,
-and recover switch arms from labeled control flow.
+Recover if/else branches and switch arms from labeled blocks and their exits.
 
-A shared tail stays in place when moving it would require duplication. The pass
-keeps early continues and rejects tail moves that would change name resolution
-or cross a cleanup, VLA, or SEH scope.
+### Example
+
+**C input**
+
+```c
+int choose(int c, int x) {
+    if (c)
+        goto other;
+    x += 1;
+    goto done;
+other:
+    x += 2;
+done:
+    return x;
+}
+```
+
+**Emitted Rust**
+
+```rust
+fn choose(c: i32, mut x: i32) -> i32 {
+    if c == 0 {
+        x += 1;
+    } else {
+        x += 2;
+    }
+    x
+}
+```
+
+### Rewrite rules
+
+```text
+block L { if C { A; break L }; B; break L }
+    → if C { A } else { B }
+```
+
+Both branches reach the end of `L`, and each executes the same body as before.
+This pass can also sink a common tail into the sole break that reaches it, and
+can move case siblings into switch arms.
+
+### Caveats
+
+If two breaks share the tail, sinking would duplicate it. If the true branch
+ends in `continue`, the two branches have different destinations. A tail move
+also needs to preserve scope and name resolution. For example, moving a call to
+`helper()` into a block that declares a local named `helper` would change what
+the emitted Rust call resolves to. Cleanup, VLA, and SEH scopes can also block a
+move.
 
 ## dead-temporaries
 
-For C `c ? f() : g();`, Rust can emit `if c != 0 { f(); } else { g(); }` without
-a local for the unused result.
+### Purpose
 
-For an unread synthetic scalar `t`, `write(t, E) → eval(E)` and the declaration
-disappears. Any initializer also becomes an evaluation. This preserves both
-which call runs and where it runs.
+Remove unread synthetic result slots while keeping the expressions that produced
+their values.
 
-A read of the result, an indirect use, or a type capture such as a VLA extent
-keeps the storage. The pass keeps source locals and storage inside retained
-macro regions.
+### Example
+
+**C input**
+
+```c
+int f(void);
+int g(void);
+
+void discard(int c) {
+    c ? f() : g();
+}
+```
+
+**Emitted Rust**
+
+```rust
+unsafe extern "C" {
+    fn f() -> i32;
+    fn g() -> i32;
+}
+
+fn discard(c: i32) {
+    if c != 0 {
+        unsafe { f() };
+    } else {
+        unsafe { g() };
+    }
+}
+```
+
+### Rewrite rules
+
+```text
+temp t; if C { write(t, E) } else { write(t, F) }
+    → if C { eval(E) } else { eval(F) }
+temp t = E → eval(E)
+```
+
+The result slot can disappear when it is a synthetic scalar with zero reads and
+all references are direct writes. Every initializer or written value is still
+evaluated at the original point. The example must call exactly one of `f()` and
+`g()`, even though their results are discarded.
+
+### Caveats
+
+Changing the C statement to `return c ? f() : g();` adds a read of the result
+slot. A VLA extent can also refer to a temporary through its type, even when the
+statement list has no read. Both uses keep the slot. Source declarations and
+storage in kept expansions stay in place.
 
 ## decl-init
 
-C `int x; x = compute(); return x;` can lower to `let x = compute(); return x;`.
+### Purpose
 
-`let x; ...; write(x, E) → ...; let x = E` sinks the declaration to its first
-ordinary write without moving `E`. For an adjacent conditional whose two arms
-end in a write to `x`, it can build one conditional initializer and keep each
-arm's preceding statements inside that arm.
+Combine an uninitialized declaration with its first assignment so lowering can
+emit an initialized Rust binding.
 
-An explicit initializer, an earlier read or address use, or a control flow or
-lifetime boundary that prevents sinking keeps the declaration separate. For the
-conditional case, its test and arm prefixes must leave `x` untouched.
+### Example
+
+**C input**
+
+```c
+int choose(int c) {
+    int x;
+    if (c)
+        x = 4;
+    else
+        x = 9;
+    return x;
+}
+```
+
+**Emitted Rust**
+
+```rust
+fn choose(c: i32) -> i32 {
+    let x: i32 = if c != 0 {
+        4
+    } else {
+        9
+    };
+    x
+}
+```
+
+### Rewrite rules
+
+```text
+let x; S; write(x, E) → S; let x = E
+let x; if C { A; write(x, E) } else { B; write(x, F) }
+    → let x = if C { A; E } else { B; F }
+```
+
+The first rule moves the declaration to the write. The second keeps each branch
+prefix in its original arm. In both rules the initializer runs where the first
+write's value would have run.
+
+### Caveats
+
+The declaration must have no source initializer. In the straight-line rule `S`
+and `E` must leave `x` untouched, with no control flow or lifetime boundary that
+prevents sinking. The branch rule needs an adjacent conditional with one final
+write per branch and no intervening use of `x` in the test or either arm. For
+example, `int x; prepare(&x); x = compute();` needs the storage before `prepare`
+runs.
 
 ## truth-locals
 
-C `int found = 0; if (hit) found = 1; if (found) report();` can lower to
-`let mut found = false;`, an assignment of `true`, and `if found`.
+### Purpose
 
-When every definition of an automatic integer is proven to store 0 or 1, the
-pass can store that value as a boolean. It replaces `x != 0` with `x` and
-`x == 0` with `!x`. An integer read converts the boolean back to the original
-integer type. Copies between eligible locals carry the proof.
+Store an integer local as a boolean when all its definitions produce 0 or 1 and
+its uses favor truth tests.
 
-Truth uses must outnumber integer reads. An unknown definition, a stored value
-outside 0 and 1, an address use, a capture, a volatile access, or a reference
-inside a macro or OpenMP region keeps the integer representation.
+### Example
+
+**C input**
+
+```c
+int classify(int a, int b) {
+    int lt = a < b;
+    if (lt)
+        return 4;
+    return 5;
+}
+```
+
+**Emitted Rust**
+
+```rust
+fn classify(a: i32, b: i32) -> i32 {
+    let lt: bool = a < b;
+    if lt {
+        return 4;
+    }
+    5
+}
+```
+
+### Rewrite rules
+
+```text
+all definitions of x ∈ {0, 1}
+encode(0) = false, encode(1) = true
+ne(read_int(x), 0) → read_bool(x)
+eq(read_int(x), 0) → not(read_bool(x))
+other read_int(x)  → from_bool<int>(read_bool(x))
+```
+
+The encoding preserves every possible stored value. A definition qualifies if it
+is 0, 1, a conversion from a boolean, a conditional with two qualifying arms, or
+a copy from another proven local. The pass solves the proof across copies. Truth
+uses must outnumber integer reads, since each remaining integer read needs a
+conversion back.
+
+### Caveats
+
+A write of 2 would collapse two distinct nonzero values into true, changing a
+later integer read. A call that writes through `&x` defeats the proof and needs
+the original storage type. Updates, captures, volatile or atomic accesses, and
+references in macro or OpenMP regions also keep the integer local.
 
 ## Add a transform fixture
 
