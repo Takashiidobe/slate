@@ -36,10 +36,7 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(raw_ptr_alias::RawPtrAliasElide),
         Box::new(array_iter::ForArrayIterRecover),
         Box::new(return_cleanup::UnreachableAfterReturn),
-        Box::new(return_cleanup::ReturnSlotFold),
         Box::new(inline_temps::LateInlineTemps),
-        Box::new(inline_temps::InlineConstArgTemps),
-        Box::new(inline_temps::AsmOutputTempFold),
     ]);
     rules.extend(vec![
         Box::new(dead_store::DeadStore) as Box<dyn NodeRule>,

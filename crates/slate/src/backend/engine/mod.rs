@@ -26,9 +26,6 @@ pub(in crate::backend) trait NodeRule {
     fn requeues_producers(&self) -> bool {
         false
     }
-    fn requeues_consumer_producers(&self) -> bool {
-        false
-    }
     fn requeues_moved_nodes(&self) -> bool {
         false
     }
@@ -258,18 +255,6 @@ fn run_worklist(arena: &mut FunctionOptimizer, registry: &RuleRegistry) {
                         if let Some(producer) = arena.definition(name) {
                             worklist.insert(producer.index());
                         }
-                    }
-                }
-                if rule.requeues_consumer_producers() {
-                    let producers: Vec<u32> = def_use_targets
-                        .iter()
-                        .filter(|&&neighbor| arena.get(neighbor).is_some())
-                        .flat_map(|&neighbor| arena.reads(neighbor).to_vec())
-                        .filter_map(|name| arena.definition(name))
-                        .map(|producer| producer.index())
-                        .collect();
-                    for index in producers {
-                        worklist.insert(index);
                     }
                 }
                 break;
