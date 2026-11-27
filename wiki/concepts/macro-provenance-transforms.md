@@ -29,6 +29,10 @@ them is the default; inlining one is a fallback, never a transform's goal.
   (`Span::with_value`, `Place { kind, ..place }`), so provenance follows it.
   `Span::derive` and `Place::new` mint a new id with no provenance. Moving a
   node keeps its id; moving it into or out of a region rejects the expansion.
+- **Hoisting splits are folded, not transformed.** `frontend::macro_fold` runs
+  before the passes and rebuilds a split value region as one
+  `StatementExpression` (see [macro invocations](ir/pipeline.md#macro-invocations)),
+  so the passes see an intact region.
 - **Inline versus template is lowering's choice**, not a transform's. No pass
   re-runs on an expansion after it is inlined unless a fixture needs it.
 

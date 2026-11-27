@@ -60,7 +60,7 @@ fn first_write(body: &[Span<Statement>], variable: &Variable) -> Option<usize> {
                     && place.access.is_plain()
                     && place.ty == variable.ty
                     && value.ty == variable.ty
-                    && DefUse::of(range).straight_line_write(variable.id, range.len())
+                    && DefUse::of(range).only_writes(variable.id, 1)
                 {
                     return Some(index);
                 }

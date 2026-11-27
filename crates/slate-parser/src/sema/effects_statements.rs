@@ -39,6 +39,7 @@ pub(super) fn normalize(
     module.c_types.nodes = hoister.c_nodes;
     module.c_types.bindings = hoister.c_bindings;
     module.next_binding = hoister.next_id;
+    module.macro_hoisted_runs = hoister.hoisted_runs;
     for expansion in hoister.split_expansions {
         module
             .macro_rejections

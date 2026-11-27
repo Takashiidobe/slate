@@ -107,6 +107,7 @@ pub(super) struct Hoister {
     pub(super) c_bindings: HashMap<BindingId, super::ctype::QualType>,
     pub(super) macro_roots: HashMap<crate::ast::NodeId, Vec<crate::ast::MacroExpansionId>>,
     pub(super) split_expansions: HashSet<crate::ast::MacroExpansionId>,
+    pub(super) hoisted_runs: HashMap<crate::ast::NodeId, HoistedRun>,
 }
 
 impl Hoister {
@@ -129,6 +130,7 @@ impl Hoister {
             c_bindings: HashMap::new(),
             macro_roots: HashMap::new(),
             split_expansions: HashSet::new(),
+            hoisted_runs: HashMap::new(),
         }
     }
 
@@ -487,13 +489,21 @@ impl Hoister {
         value: Value,
         out: &mut Vec<Span<Statement>>,
     ) -> Result<Value, ResolveError> {
-        let expansions = self.macro_roots.get(&value.node.id).cloned();
+        let root = value.node.id;
+        let expansions = self.macro_roots.get(&root).cloned();
         let before = out.len();
         let hoisted = super::deep(|| self.hoist_value(value, out))?;
         if let Some(expansions) = expansions
             && (out.len() > before || !self.macro_roots.contains_key(&hoisted.node.id))
         {
             self.split_expansions.extend(expansions);
+            self.hoisted_runs.insert(
+                root,
+                HoistedRun {
+                    statements: out[before..].iter().map(|statement| statement.id).collect(),
+                    value: hoisted.node.id,
+                },
+            );
         }
         Ok(hoisted)
     }

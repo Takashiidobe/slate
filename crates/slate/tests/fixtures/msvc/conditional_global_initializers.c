@@ -452,20 +452,51 @@ int main(void) {
 // AARCH64-PC-WINDOWS-MSVC-NEXT:         ((const { core::mem::size_of::<[ptrlen; 3]>() }) as u64)
 // AARCH64-PC-WINDOWS-MSVC-NEXT:             / ((const { core::mem::size_of::<ptrlen>() }) as u64) == 3
 // CHECK-NEXT:     );
-// CHECK-NEXT:     let [[V_0:__v[0-9]+]]: bool = same(names.0[0], c"ping".as_ptr()) != 0
-// CHECK-NEXT:         && same(names.0[1], c"query".as_ptr()) != 0;
-// CHECK-NEXT:     if !([[V_0]] && same(names.0[2], c"session-bind@openssh.com".as_ptr()) != 0) {
-// CHECK-NEXT:         unsafe { abort() };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: bool = extra.0.hash == core::ptr::addr_of!(vt_a.0)
-// CHECK-NEXT:         && (unsafe { (*extra.0.hash).r#fn.unwrap()(5i32) }) == 15;
-// CHECK-NEXT:     if !([[V_1]] && (unsafe { extra.0.fallback.unwrap()(5i32) }) == 12) {
-// CHECK-NEXT:         unsafe { abort() };
-// CHECK-NEXT:     }
-// CHECK-NEXT:     if !((unsafe { strcmp(extra.0.alg, c"Ed25519".as_ptr()) }) == 0
-// CHECK-NEXT:         && same(extra.0.prefix, c"".as_ptr()) != 0) {
-// CHECK-NEXT:         unsafe { abort() };
-// CHECK-NEXT:     }
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[V_0:__v[0-9]+]]: bool;
+// CHECK-NEXT:             if same(names.0[0], c"ping".as_ptr()) != 0 {
+// CHECK-NEXT:                 [[V_0]] = same(names.0[1], c"query".as_ptr()) != 0;
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 [[V_0]] = false;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             let mut [[V_1:__v[0-9]+]]: bool;
+// CHECK-NEXT:             if [[V_0]] {
+// CHECK-NEXT:                 [[V_1]] = same(names.0[2], c"session-bind@openssh.com".as_ptr()) != 0;
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 [[V_1]] = false;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             [[V_1]]
+// CHECK-NEXT:         }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[V_2:__v[0-9]+]]: bool;
+// CHECK-NEXT:             if extra.0.hash == core::ptr::addr_of!(vt_a.0) {
+// CHECK-NEXT:                 [[V_2]] = (unsafe { (*extra.0.hash).r#fn.unwrap()(5i32) }) == 15;
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 [[V_2]] = false;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             let mut [[V_3:__v[0-9]+]]: bool;
+// CHECK-NEXT:             if [[V_2]] {
+// CHECK-NEXT:                 [[V_3]] = (unsafe { extra.0.fallback.unwrap()(5i32) }) == 12;
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 [[V_3]] = false;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             [[V_3]]
+// CHECK-NEXT:         }
+// CHECK-NEXT:     );
+// CHECK-NEXT:     CHECK!(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut [[V_4:__v[0-9]+]]: bool;
+// CHECK-NEXT:             if (unsafe { strcmp(extra.0.alg, c"Ed25519".as_ptr()) }) == 0 {
+// CHECK-NEXT:                 [[V_4]] = same(extra.0.prefix, c"".as_ptr()) != 0;
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 [[V_4]] = false;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             [[V_4]]
+// CHECK-NEXT:         }
+// CHECK-NEXT:     );
 // CHECK-NEXT:     CHECK!(
 // CHECK-NEXT:         pick.0
 // X86_64-PC-WINDOWS-MSVC-NEXT:             == if (core::mem::size_of::<*mut ()>() as u64) == 8 {

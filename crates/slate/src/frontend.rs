@@ -15,6 +15,7 @@ pub mod c_shim;
 pub mod distinct_functions;
 pub(crate) mod long_double;
 pub mod lowerer;
+mod macro_fold;
 mod macro_keep;
 mod macro_provenance;
 
@@ -453,6 +454,7 @@ fn lower_parsed(
     for warning in warnings {
         crate::diagnostics::collect(&warning, diagnostics);
     }
+    let folded = macro_fold::fold_hoisted_runs(&mut module);
     let checking = std::env::var_os("SLATE_CHECK_MACRO_STRUCTURE").is_some();
     let mut provenance = checking.then(|| ProvenanceCheck::new(&module));
     let mut observe = |step: &'static str, module: &Module| {
@@ -462,6 +464,7 @@ fn lower_parsed(
     };
     passes.run_observed(&mut module, Slot::BeforeMacroKeep, &mut observe);
     let kept = macro_keep::kept_expansions(&mut module);
+    macro_fold::unfold_rejected(&mut module, folded, &kept);
     module.strip_macro_structure(|expansion| kept.contains(&expansion));
     macro_keep::pass_caller_locals(&mut module);
     observe("macro-keep", &module);

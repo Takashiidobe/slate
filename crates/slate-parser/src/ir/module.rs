@@ -28,6 +28,7 @@ pub struct Module {
     pub macro_hidden_arguments: HashMap<MacroExpansionId, Vec<BindingId>>,
     pub macro_written_casts: HashMap<NodeId, WrittenCast>,
     pub macro_values: MacroValues,
+    pub macro_hoisted_runs: HashMap<NodeId, HoistedRun>,
     pub zero_init_padding_bits: crate::compiler_options::ZeroInitPaddingBits,
     pub alloca: AllocaLayout,
     pub hosted: bool,
@@ -38,6 +39,12 @@ pub struct Module {
 }
 
 pub type MacroValues = HashMap<NodeId, Vec<MacroWrap>>;
+
+#[derive(Debug, Clone)]
+pub struct HoistedRun {
+    pub statements: Vec<NodeId>,
+    pub value: NodeId,
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum MacroWrap {
@@ -559,6 +566,7 @@ impl Module {
             macro_hidden_arguments: HashMap::new(),
             macro_written_casts: HashMap::new(),
             macro_values: MacroValues::new(),
+            macro_hoisted_runs: HashMap::new(),
             zero_init_padding_bits: crate::compiler_options::ZeroInitPaddingBits::Standard,
             alloca: AllocaLayout {
                 padding: 0,

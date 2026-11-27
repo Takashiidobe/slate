@@ -37,10 +37,10 @@ pub use declarations::{
 };
 pub use module::{
     AllocaLayout, Comment, Deallocator, DllStorage, Evaluation, Fallthrough, Function,
-    FunctionSemantics, Inlining, Linkage, MachineCodegen, MacroValues, MacroWrap, MemoryEffects,
-    Metadata, Module, NestedCapture, NestedFunction, OmpFor, OmpLoop, OmpParallel, OmpPrivate,
-    OmpSchedule, OmpScheduleKind, OmpScheduleModifier, OmpShared, SehHandler, SehIntrinsic,
-    Statement, SymbolAttributes, TargetFeature, TlsModel, Visibility, WrittenCast,
+    FunctionSemantics, HoistedRun, Inlining, Linkage, MachineCodegen, MacroValues, MacroWrap,
+    MemoryEffects, Metadata, Module, NestedCapture, NestedFunction, OmpFor, OmpLoop, OmpParallel,
+    OmpPrivate, OmpSchedule, OmpScheduleKind, OmpScheduleModifier, OmpShared, SehHandler,
+    SehIntrinsic, Statement, SymbolAttributes, TargetFeature, TlsModel, Visibility, WrittenCast,
 };
 
 pub use names::{Binding, BindingId, BindingKind, NameResolution, Reference};

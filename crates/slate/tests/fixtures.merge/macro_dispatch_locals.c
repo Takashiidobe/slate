@@ -41,13 +41,12 @@ int main(void) {
 // CHECK-NEXT: target windows-x86_64: 1 compiles
 // CHECK-NEXT:   macro_dispatch_locals.c: [] 1 compiled
 // CHECK-NEXT: total: 2 compiles across 2 targets
-// CHECK-NEXT: unit macro_dispatch_locals: 12 items, 1 gated, 0 duplicated functions
-// CHECK-NEXT: macros: 4 function-like, 3 lifted at least once (expansions counted per distinct compile)
-// CHECK-NEXT:   inline hoist_split_region: 2
+// CHECK-NEXT: unit macro_dispatch_locals: 13 items, 1 gated, 0 duplicated functions
+// CHECK-NEXT: macros: 4 function-like, 4 lifted at least once (expansions counted per distinct compile)
 // CHECK-NEXT:   macro BYTEBITS: 2 lifted, inline:
 // CHECK-NEXT:   macro DROPBITS: 6 lifted, inline:
 // CHECK-NEXT:   macro SWAP_LOCAL: 2 lifted, inline:
-// CHECK-NEXT:   macro UPDATE_CHECK: 0 lifted, inline: hoist_split_region 2
+// CHECK-NEXT:   macro UPDATE_CHECK: 2 lifted, inline:
 // CHECK-NEXT: projection: 12 checked, 0 not translatable, 0 mismatches
 // CHECK-NEXT: signatures: 0 shared symbols, 0 mismatches
 // CHECK-NEXT: exit: 0
@@ -99,27 +98,21 @@ int main(void) {
 // CHECK-NEXT: fn run(mut hold: u32, mut bits: u32, k: i32) -> u32 {
 // CHECK-NEXT:     let mut check: u32 = 1;
 // CHECK-NEXT:     let mut i: i32 = 0;
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: u32 = unsafe { core::mem::zeroed() };
-// CHECK-NEXT:     let mut __slate_state: usize = 6usize;
+// CHECK-NEXT:     let mut __slate_state: usize = 3usize;
 // CHECK-NEXT:     if k & 1 != 0 {
-// CHECK-NEXT:         __slate_state = 4;
+// CHECK-NEXT:         __slate_state = 1;
 // CHECK-NEXT:     } else {
-// CHECK-NEXT:         __slate_state = 5;
+// CHECK-NEXT:         __slate_state = 2;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     loop {
 // CHECK-NEXT:         match __slate_state {
-// CHECK-NEXT:             4 => {
-// CHECK-NEXT:                 if (unsafe { flags }) != 0 {
-// CHECK-NEXT:                     [[V_0]] = crc(check, i);
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     [[V_0]] = adl(check, i);
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 check = [[V_0]];
+// CHECK-NEXT:             1 => {
+// CHECK-NEXT:                 check = UPDATE_CHECK!(check, i);
 // CHECK-NEXT:                 SWAP_LOCAL!(hold, check);
-// CHECK-NEXT:                 let [[V_1:__v[0-9]+]]: i32 = i + 1;
-// CHECK-NEXT:                 i = [[V_1]];
-// CHECK-NEXT:                 if [[V_1]] < k {
-// CHECK-NEXT:                     __slate_state = 5;
+// CHECK-NEXT:                 let [[V_0:__v[0-9]+]]: i32 = i + 1;
+// CHECK-NEXT:                 i = [[V_0]];
+// CHECK-NEXT:                 if [[V_0]] < k {
+// CHECK-NEXT:                     __slate_state = 2;
 // CHECK-NEXT:                 } else {
 // CHECK-NEXT:                     break;
 // CHECK-NEXT:                 }
@@ -127,7 +120,7 @@ int main(void) {
 // CHECK-NEXT:             _ => {
 // CHECK-NEXT:                 DROPBITS!(1i32, hold, bits);
 // CHECK-NEXT:                 BYTEBITS!(hold, bits);
-// CHECK-NEXT:                 __slate_state = 4;
+// CHECK-NEXT:                 __slate_state = 1;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
@@ -143,11 +136,11 @@ int main(void) {
 // CHECK-NEXT:     ($hold:expr, $bits:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let __v: u32 = $hold;
-// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: u32 = __v >> (($bits) & 7);
-// CHECK-NEXT:             $hold = [[V_2]];
-// CHECK-NEXT:             let [[V_3:__v[0-9]+]]: u32 = $bits;
-// CHECK-NEXT:             let [[V_4:__v[0-9]+]]: u32 = [[V_3]].wrapping_sub(($bits) & 7);
-// CHECK-NEXT:             $bits = [[V_4]];
+// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: u32 = __v >> (($bits) & 7);
+// CHECK-NEXT:             $hold = [[V_1]];
+// CHECK-NEXT:             let [[V_2:__v[0-9]+]]: u32 = $bits;
+// CHECK-NEXT:             let [[V_3:__v[0-9]+]]: u32 = [[V_2]].wrapping_sub(($bits) & 7);
+// CHECK-NEXT:             $bits = [[V_3]];
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -159,11 +152,11 @@ int main(void) {
 // CHECK-NEXT:     ($n:expr, $hold:expr, $bits:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             let __v: u32 = $hold;
-// CHECK-NEXT:             let [[V_2]]: u32 = __v >> $n;
-// CHECK-NEXT:             $hold = [[V_2]];
-// CHECK-NEXT:             let [[V_3]]: u32 = $bits;
-// CHECK-NEXT:             let [[V_4]]: u32 = [[V_3]].wrapping_sub(($n) as u32);
-// CHECK-NEXT:             $bits = [[V_4]];
+// CHECK-NEXT:             let [[V_1]]: u32 = __v >> $n;
+// CHECK-NEXT:             $hold = [[V_1]];
+// CHECK-NEXT:             let [[V_2]]: u32 = $bits;
+// CHECK-NEXT:             let [[V_3]]: u32 = [[V_2]].wrapping_sub(($n) as u32);
+// CHECK-NEXT:             $bits = [[V_3]];
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
@@ -180,6 +173,20 @@ int main(void) {
 // CHECK-NEXT:             if true {
 // CHECK-NEXT:                 break;
 // CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! UPDATE_CHECK {
+// CHECK-NEXT:     ($check:expr, $len:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let mut __v: u32;
+// CHECK-NEXT:             if (unsafe { flags }) != 0 {
+// CHECK-NEXT:                 __v = crc($check, $len);
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 __v = adl($check, $len);
+// CHECK-NEXT:             }
+// CHECK-NEXT:             __v
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

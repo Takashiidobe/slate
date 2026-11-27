@@ -22,19 +22,15 @@ int main(void) {
 // CHECK-LABEL: {{^}}fn __slate_main() -> i32 {
 // CHECK-NEXT:     let mut values: __SlateAlign16<[i64; 3]> = __SlateAlign16([4i64, 9i64, 16i64]);
 // CHECK-NEXT:     let mut index: i32 = 0;
-// CHECK-NEXT:     let mut old: i64 = 0;
-// CHECK-NEXT:     let mut [[V_0:__v[0-9]+]]: i64;
-// CHECK-NEXT:     let [[V_1:__v[0-9]+]]: i32 = index;
-// CHECK-NEXT:     index = [[V_1]] + 1;
-// CHECK-NEXT:     let exchange_pointer: *mut i64 = unsafe {
-// CHECK-NEXT:         values.0.as_mut_ptr().offset([[V_1]] as isize)
-// CHECK-NEXT:     };
-// CHECK-NEXT:     let exchange_value: i64 = unsafe { *exchange_pointer };
-// CHECK-NEXT:     unsafe {
-// CHECK-NEXT:         *exchange_pointer = 25;
-// CHECK-NEXT:     }
-// CHECK-NEXT:     [[V_0]] = exchange_value;
-// CHECK-NEXT:     old = [[V_0]];
+// CHECK-NEXT:     let old: i64 = EXCHANGE!(
+// CHECK-NEXT:         {
+// CHECK-NEXT:             let [[V_0:__v[0-9]+]]: i32 = index;
+// CHECK-NEXT:             let [[V_1:__v[0-9]+]]: i32 = [[V_0]] + 1;
+// CHECK-NEXT:             index = [[V_1]];
+// CHECK-NEXT:             unsafe { values.0.as_mut_ptr().offset([[V_0]] as isize) }
+// CHECK-NEXT:         },
+// CHECK-NEXT:         25i64
+// CHECK-NEXT:     );
 // CHECK-NEXT:     let _ = std::io::Write::flush(&mut std::io::stdout());
 // CHECK-NEXT:     unsafe { slate_support::printf(c"%ld %ld %d\n".as_ptr(), old, values.0[0], index) };
 // CHECK-NEXT:     unsafe { fflush(core::ptr::null_mut()) };

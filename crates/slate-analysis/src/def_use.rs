@@ -171,10 +171,6 @@ impl DefUse {
         }
     }
 
-    pub fn straight_line_write(&self, binding: BindingId, statements: usize) -> bool {
-        self.straight_line_writes(binding, statements, 1)
-    }
-
     pub fn straight_line_writes(
         &self,
         binding: BindingId,

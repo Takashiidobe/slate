@@ -188,8 +188,16 @@ Hoisting ignores macro structure: the value tree is the one built without it,
 so effects hoist exactly as without structure. An expansion whose value hoisted
 statements, or whose root value was replaced (`r += NEXT()` with `*cursor++`,
 `GT_OFF(x)` with a call under `&&`), is split: `effects_statements::normalize`
-records it in `Module::macro_rejections` as `hoist_split_region`, and it stays
-inline. Analyses match on value shape directly; one that must not reach into
+records it in `Module::macro_rejections` as `hoist_split_region`, and
+`Module::macro_hoisted_runs` maps the root (or hole) node id to a
+`HoistedRun { statements, value }`: the ids of the statements hoisting emitted
+for it, in order, and the id of the value left in their place. Slate's
+`frontend::macro_fold` folds a run back into a `StatementExpression` at that
+value when the run is contiguous, its declarations are used only there, the
+value is reached unconditionally, and nothing evaluated between them conflicts
+with the run's effects; the wraps move to the new node and the rejection is
+dropped. A folded expansion that macro_keep still rejects is unfolded before the
+strip, so inline output is unchanged. An unfolded split stays inline. Analyses match on value shape directly; one that must not reach into
 macro code (`inline_temporaries`, the pointer analysis's pinned calls) reads
 `Module::macro_values`.
 
