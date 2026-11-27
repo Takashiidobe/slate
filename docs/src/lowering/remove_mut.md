@@ -1,7 +1,8 @@
 # remove_mut
 
 Slate uses IR def-use facts to decide which Rust bindings need `mut`. The old
-`remove_mut` Rust rewrite now happens when Slate emits the binding.
+`remove_mut` Rust rewrite now happens when Slate emits the binding. See
+[Def-Use](../analysis/def-use.md) for how analysis collects the facts.
 
 ## Example
 

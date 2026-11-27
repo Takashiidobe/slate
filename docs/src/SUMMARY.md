@@ -17,6 +17,7 @@
     - [Floating-point Environment](floating-point-environment.md)
     - [Vendored Crates](vendored-crates.md)
   - [Analyses](writing-a-query.md)
+    - [Def-Use](analysis/def-use.md)
   - [Transforms](writing-a-transform.md)
     - [Structure Goto](transforms/structure-goto.md)
     - [Truth Canonicalize](transforms/truth-canonicalize.md)
