@@ -134,38 +134,23 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! BYTEBITS {
 // CHECK-NEXT:     ($hold:expr, $bits:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             $hold >>= ($bits) & 7;
-// CHECK-NEXT:             $bits = $bits.wrapping_sub(($bits) & 7);
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         $hold >>= ($bits) & 7;
+// CHECK-NEXT:         $bits = $bits.wrapping_sub(($bits) & 7);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! DROPBITS {
 // CHECK-NEXT:     ($n:expr, $hold:expr, $bits:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             $hold >>= $n;
-// CHECK-NEXT:             $bits = $bits.wrapping_sub(($n) as u32);
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         $hold >>= $n;
+// CHECK-NEXT:         $bits = $bits.wrapping_sub(($n) as u32);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SWAP_LOCAL {
 // CHECK-NEXT:     ($a:expr, $b:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let t: u32 = $a;
-// CHECK-NEXT:             $a = $b;
-// CHECK-NEXT:             $b = t;
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         let t: u32 = $a;
+// CHECK-NEXT:         $a = $b;
+// CHECK-NEXT:         $b = t;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

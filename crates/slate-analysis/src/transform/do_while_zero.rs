@@ -5,7 +5,7 @@ use slate_parser::ir::{
 
 use super::PassContext;
 use super::const_fold::constant_comparison;
-use super::inline_temporaries::{children, evaluations};
+use super::inline_temporaries::{children_and_expansions, evaluations};
 
 pub(super) fn transform(function: &mut Function, cx: &mut PassContext) {
     let Some(body) = &mut function.body else {
@@ -18,7 +18,7 @@ pub(super) fn transform(function: &mut Function, cx: &mut PassContext) {
 
 fn list(body: &mut [Span<Statement>], macro_values: &MacroValues, retired: &mut Vec<NodeId>) {
     for statement in body {
-        for child in children(&mut statement.value) {
+        for child in children_and_expansions(&mut statement.value) {
             list(child, macro_values, retired);
         }
         for evaluation in evaluations(&mut statement.value) {
@@ -64,7 +64,7 @@ fn exits(body: &mut [Span<Statement>], id: BindingId) -> bool {
             }
             _ => {}
         }
-        for child in children(&mut statement.value) {
+        for child in children_and_expansions(&mut statement.value) {
             found |= exits(child, id);
         }
         for evaluation in evaluations(&mut statement.value) {

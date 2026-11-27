@@ -183,12 +183,11 @@ int main(void) {
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             *[[V_0]] = (*[[V_0]]).wrapping_add([[V_2]]);
 // CHECK-NEXT:         }
-// CHECK-NEXT:         let [[V_1]]: i32 = count + 1;
-// CHECK-NEXT:         count = [[V_1]];
-// CHECK-NEXT:         if [[V_1]] < n {
-// CHECK-NEXT:             continue;
+// CHECK-NEXT:         let [[V_3:__v[0-9]+]]: i32 = count + 1;
+// CHECK-NEXT:         count = [[V_3]];
+// CHECK-NEXT:         if [[V_3]] >= n {
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
-// CHECK-NEXT:         break;
 // CHECK-NEXT:     }
 // CHECK-NEXT:     (values.0[0] % 1000) as i32
 // CHECK-NEXT: }

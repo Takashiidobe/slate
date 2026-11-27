@@ -190,7 +190,7 @@ int main(void) {
 // CHECK-NEXT:     SEND!(value, value + 5);
 // CHECK-NEXT:     ADD!(value);
 // CHECK-NEXT:     SAME_BODY!(value + 1);
-// CHECK-NEXT:     ADD_READS__2!(value);
+// CHECK-NEXT:     ADD_READS!(value);
 // CHECK-NEXT:     TEMP!(value);
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -227,17 +227,17 @@ int main(void) {
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ADD_READS {
-// CHECK-NEXT:     ($a:expr, $reads__1:expr) => {
+// CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total += ($a) + $reads__1;
+// CHECK-NEXT:             total += ($a) + reads;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ADD_READS__2 {
-// CHECK-NEXT:     ($a:expr) => {
+// CHECK-NEXT:     ($a:expr, $reads__1:expr) => {
 // CHECK-NEXT:         unsafe {
-// CHECK-NEXT:             total += ($a) + reads;
+// CHECK-NEXT:             total += ($a) + $reads__1;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -264,7 +264,7 @@ int main(void) {
 // CHECK-NEXT: macro_rules! LOCAL_READS {
 // CHECK-NEXT:     ($a:expr) => {
 // CHECK-NEXT:         let mut reads__1: i32 = 40;
-// CHECK-NEXT:         ADD_READS!($a, reads__1);
+// CHECK-NEXT:         ADD_READS__2!($a, reads__1);
 // CHECK-NEXT:         unsafe {
 // CHECK-NEXT:             total += reads__1;
 // CHECK-NEXT:         }

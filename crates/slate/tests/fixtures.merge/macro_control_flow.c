@@ -492,13 +492,8 @@ int main(void) {
 // CHECK-NEXT: macro_rules! BAIL_IF {
 // CHECK-NEXT:     ($c:expr) => {
 // CHECK-NEXT:         {
-// CHECK-NEXT:             loop {
-// CHECK-NEXT:                 if $c {
-// CHECK-NEXT:                     return;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 if true {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             if $c {
+// CHECK-NEXT:                 return;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
@@ -566,20 +561,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! OWN_LOOP {
 // CHECK-NEXT:     ($n:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             for i in 0..$n {
-// CHECK-NEXT:                 if i == 3 {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 if i == 1 {
-// CHECK-NEXT:                     continue;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     trace += i;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
+// CHECK-NEXT:         for i in 0..$n {
+// CHECK-NEXT:             if i == 3 {
 // CHECK-NEXT:                 break;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             if i == 1 {
+// CHECK-NEXT:                 continue;
+// CHECK-NEXT:             }
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 trace += i;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };

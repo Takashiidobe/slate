@@ -394,26 +394,16 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SET_FIELD {
 // CHECK-NEXT:     ($p:expr, $name:ident, $v:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*$p).$name = $v;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             (*$p).$name = $v;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SET_FIELD__2 {
 // CHECK-NEXT:     ($p:expr, $name:ident, $v:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 (*$p).[[SLATE_ANON_0]].$name = $v;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             (*$p).[[SLATE_ANON_0]].$name = $v;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -426,27 +416,17 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SWAP {
 // CHECK-NEXT:     ($T:ty, $a:expr, $b:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let tmp: $T = $a;
-// CHECK-NEXT:             $a = $b;
-// CHECK-NEXT:             $b = tmp;
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         let tmp: $T = $a;
+// CHECK-NEXT:         $a = $b;
+// CHECK-NEXT:         $b = tmp;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! TRACE {
 // CHECK-NEXT:     ($x__0:expr $(, $x:expr)*) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $($x,)*) };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe { slate_support::printf(($x__0) as *const c_char, $($x,)*) };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

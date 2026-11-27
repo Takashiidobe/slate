@@ -129,6 +129,17 @@ pub(super) fn children(statement: &mut Statement) -> Vec<&mut Vec<Span<Statement
     }
 }
 
+pub(super) fn children_and_expansions(statement: &mut Statement) -> Vec<&mut Vec<Span<Statement>>> {
+    match statement {
+        Statement::MacroExpansion { body, .. } => vec![body],
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "every other statement nests the lists children() returns"
+        )]
+        other => children(other),
+    }
+}
+
 pub(super) fn evaluations(statement: &mut Statement) -> Vec<&mut Evaluation> {
     match statement {
         Statement::While { condition, .. } | Statement::DoWhile { condition, .. } => {

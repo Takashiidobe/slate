@@ -206,8 +206,12 @@ Nothing is rewritten that removes an `explicit` conversion or comparison, a
 Lowering uses the same rules through `transform::negation` for loop exit tests
 (`if !c { break }`) of a `do`/`while` and of a `while`/`for` whose condition
 has hoisted statements; a head test with none lowers to `while c` directly. A
-`break` the C source wrote at the loop head stays `if c { break }`: no rule
-folds it into the condition. Negations that the backend's goto structuring builds
+`break` the C source wrote at the loop head folds through
+`structure::loop_or_while` (`if c { break }` first, or `if c { .. } else {
+break }` alone, becomes `while`) when it is the plain first statement of a
+`while (1)`, a headless `for`, or a `do` body; `block-flatten` and the
+lowering's `push_scoped` keep scopes that bind nothing from hiding it.
+Negations that the backend's goto structuring builds
 (`if !(i < 5) { break }` from `if (i < 5) goto top`) are not canonicalized.
 
 ### Truth locals
@@ -239,9 +243,23 @@ Fixtures: `fixtures.transforms/truth-locals/`, `fixtures/int_truth_locals.c`.
 
 ### Labeled blocks
 
-`labeled-blocks` (`transform/labeled_blocks.rs`, `slate-8ge7.24.10.7`) runs in
-`Slot::AfterMacroStrip` after `do-while-zero`. It recovers if/else and `match`
-arms from the labeled blocks that `structure-goto` and `do-while-zero` build:
+`block-flatten` (`transform/block_flatten.rs`, `slate-8ge7.24.23.1`) runs
+between `do-while-zero` and `labeled-blocks`: a C block whose top level has no
+`Let`, `Temporary` or nested function splices into its parent, so no consumer
+sees `{ goto done; }` or a loop body's braces as a scope. A block that declares
+keeps its scope (shadowing, cleanup, VLA dealloc).
+
+`do-while-zero`, `block-flatten` and `labeled-blocks` run in both
+`Slot::BeforeMacroKeep` and `Slot::AfterMacroStrip` and enter
+`Statement::MacroExpansion` bodies (`children_and_expansions`), so a kept
+statement macro `do { if (c) break; X } while (0)` templates as
+`if !c { X }` (`slate-8ge7.24.23.3`). A `break` inside a nested expansion is
+counted by the visitor, so a block whose break sits there is not sunk or
+dissolved.
+
+`labeled-blocks` (`transform/labeled_blocks.rs`, `slate-8ge7.24.10.7`) runs
+after `block-flatten`. It recovers if/else and `match` arms from the labeled
+blocks that `structure-goto` and `do-while-zero` build:
 
 - sink: a `block L { ... }` whose body ends in a jump and has exactly one
   `break L` takes the statements after it, up to the first jump (or up to the
@@ -256,7 +274,9 @@ arms from the labeled blocks that `structure-goto` and `do-while-zero` build:
   `transform::negation`. `continue` exits are left alone, so `if (c) continue;`
   keeps its early `continue`.
 - a trailing `break` to the enclosing block is dropped, a block with no breaks
-  left is removed, a switch's case siblings move into the `Case` body, and
+  left is removed, a block whose only statement is a loop dissolves with its
+  breaks retargeted to the loop (`block %B { for { .. break %B } }` from
+  `structure-goto`), a switch's case siblings move into the `Case` body, and
   after sinking finishes, case arms that end in `break L` with the switch at
   `L`'s end switch to `break switch`.
 

@@ -86,13 +86,13 @@ int main(void) {
 // SLATE-FILECHECK-BEGIN x86_64-unknown-linux-gnu
 // CHECK-LABEL: {{^}}fn %{{[0-9]+}} @swapped(%{{[0-9]+}} a: i32, %{{[0-9]+}} b: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // CHECK-NEXT:     macro_body #0 {
-// CHECK-NEXT:         do %[[V0:[0-9]+]]
+// CHECK-NEXT:         {
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 let %[[V_T:[0-9]+]] t: i32 [storage=automatic] = read<i32>(%[[V_A:[0-9]+]]);
 // CHECK-NEXT:                 write<i32>(%[[V_A]], read<i32>(%[[V_B:[0-9]+]]));
 // CHECK-NEXT:                 write<i32>(%[[V_B]], read<i32>(%[[V_T]]));
 // CHECK-NEXT:             }
-// CHECK-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     return add<i32, overflow=ub>(mul<i32, overflow=ub>(read<i32>(%[[V_A]]), const<i32>(10)), read<i32>(%[[V_B]]));
 // CHECK: {{^}}}
@@ -127,7 +127,7 @@ int main(void) {
 // CHECK: {{^}}}
 // CHECK-LABEL: {{^}}fn %{{[0-9]+}} @clamp(%{{[0-9]+}} x: i32) -> i32 [linkage=external] [fallthrough=ub_if_used] {
 // CHECK-NEXT:     macro_body #3 {
-// CHECK-NEXT:         do %[[V0:[0-9]+]]
+// CHECK-NEXT:         block %[[V0:[0-9]+]] {
 // CHECK-NEXT:             {
 // CHECK-NEXT:                 if lt<i32>(read<i32>(%[[V_X:[0-9]+]]), const<i32>(0))
 // CHECK-NEXT:                     {
@@ -137,7 +137,7 @@ int main(void) {
 // CHECK-NEXT:                 if gt<i32>(read<i32>(%[[V_X]]), const<i32>(9))
 // CHECK-NEXT:                     write<i32>(%[[V_X]], const<i32>(9));
 // CHECK-NEXT:             }
-// CHECK-NEXT:         while ne<i32>(const<i32>(0), const<i32>(0));
+// CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     return read<i32>(%[[V_X]]);
 // CHECK: {{^}}}

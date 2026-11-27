@@ -42,34 +42,14 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! ASSIGN {
 // CHECK-NEXT:     ($d:expr, $e:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             if !$d.is_null() && !unsafe { (*$d).chan.is_null() } {
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     (*$e).band = (*(*$d).chan).band;
-// CHECK-NEXT:                     (*$e).width = (*$d).width;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     (*$e).band = 0;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:         if !$d.is_null() && !unsafe { (*$d).chan.is_null() } {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*$e).band = (*(*$d).chan).band;
+// CHECK-NEXT:                 (*$e).width = (*$d).width;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! STORE {
-// CHECK-NEXT:     ($p:expr, $i:expr, $v:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             if !$p.is_null() {
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *$p.offset(($i) as isize) = $v;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
+// CHECK-NEXT:         } else {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 (*$e).band = 0;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
@@ -77,14 +57,19 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! STORE__2 {
 // CHECK-NEXT:     ($p:expr, $i:expr, $v:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             if !$p.is_null() {
-// CHECK-NEXT:                 unsafe {
-// CHECK-NEXT:                     *$p.offset(($i) as isize) = $v;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:         if !$p.is_null() {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *$p.offset(($i) as isize) = $v;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! STORE {
+// CHECK-NEXT:     ($p:expr, $i:expr, $v:expr) => {
+// CHECK-NEXT:         if !$p.is_null() {
+// CHECK-NEXT:             unsafe {
+// CHECK-NEXT:                 *$p.offset(($i) as isize) = $v;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };

@@ -71,1569 +71,1468 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! REPORT__4 {
 // CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = ($X) as $T;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         __t.leading_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0:__t[0-9]+]] = x;
-// CHECK-NEXT:                         (![[T_0]] as $T).leading_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1:__t[0-9]+]] = x;
-// CHECK-NEXT:                         [[T_1]].trailing_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2:__t[0-9]+]] = x;
-// CHECK-NEXT:                         (![[T_2]] as $T).trailing_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3:__t[0-9]+]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4:__t[0-9]+]] = (![[T_3]] as $T).leading_zeros();
-// CHECK-NEXT:                             if [[T_4]] == 16 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5:__t[0-9]+]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6:__t[0-9]+]] = [[T_5]].leading_zeros();
-// CHECK-NEXT:                             if [[T_6]] == 16 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7:__t[0-9]+]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8:__t[0-9]+]] = (![[T_7]] as $T).trailing_zeros();
-// CHECK-NEXT:                             if [[T_8]] == 16 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9:__t[0-9]+]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10:__t[0-9]+]] = [[T_9]].trailing_zeros();
-// CHECK-NEXT:                             if [[T_10]] == 16 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11:__t[0-9]+]] = x;
-// CHECK-NEXT:                         (16 - [[T_11]].count_ones()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12:__t[0-9]+]] = x;
-// CHECK-NEXT:                         [[T_12]].count_ones() as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:         let x: $T = (($X) as $T) & 137438953471;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     (((__t as $T) & 137438953471).leading_zeros() - 27) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0:__t[0-9]+]] = x;
+// CHECK-NEXT:                     (((((![[T_0]] as $T) & 137438953471) as $T) & 137438953471)
+// CHECK-NEXT:                         .leading_zeros() - 27) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1:__t[0-9]+]] = x;
+// CHECK-NEXT:                     (([[T_1]] as $T) & 137438953471).trailing_zeros().min(37u32) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2:__t[0-9]+]] = x;
+// CHECK-NEXT:                     ((((![[T_2]] as $T) & 137438953471) as $T) & 137438953471)
+// CHECK-NEXT:                         .trailing_zeros()
+// CHECK-NEXT:                         .min(37u32) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3:__t[0-9]+]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13:__t[0-9]+]] = x;
-// CHECK-NEXT:                         [[T_13]].count_ones() == 1
-// CHECK-NEXT:                     }) as u32,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14:__t[0-9]+]] = x;
-// CHECK-NEXT:                         (16 - [[T_14]].leading_zeros()) as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                         let [[T_4:__t[0-9]+]] = ((((![[T_3]] as $T) & 137438953471) as $T)
+// CHECK-NEXT:                                 & 137438953471)
+// CHECK-NEXT:                             .leading_zeros() - 27;
+// CHECK-NEXT:                         if [[T_4]] == 37 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5:__t[0-9]+]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_15:__t[0-9]+]] = x;
-// CHECK-NEXT:                         if [[T_15]].leading_zeros() == 16 {
-// CHECK-NEXT:                             0u16
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             1u16.checked_shl(15 - [[T_15]].leading_zeros()).unwrap_or(0u16)
-// CHECK-NEXT:                                 as $T
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
+// CHECK-NEXT:                         let [[T_6:__t[0-9]+]] = (([[T_5]] as $T) & 137438953471).leading_zeros() - 27;
+// CHECK-NEXT:                         if [[T_6]] == 37 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7:__t[0-9]+]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_16:__t[0-9]+]] = x;
-// CHECK-NEXT:                         if [[T_16]].count_ones() == 0 {
-// CHECK-NEXT:                             1u16
-// CHECK-NEXT:                         } else if [[T_16]].count_ones() == 1 {
-// CHECK-NEXT:                             [[T_16]]
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             1u16.checked_shl(16 - [[T_16]].leading_zeros()).unwrap_or(0u16)
-// CHECK-NEXT:                                 as $T
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! REPORT__2 {
-// CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = $X;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         __t.leading_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = x;
-// CHECK-NEXT:                         (![[T_0]]).leading_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1]] = x;
-// CHECK-NEXT:                         [[T_1]].trailing_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = x;
-// CHECK-NEXT:                         (![[T_2]]).trailing_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4]] = (![[T_3]]).leading_zeros();
-// CHECK-NEXT:                             if [[T_4]] == 65 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6]] = [[T_5]].leading_zeros();
-// CHECK-NEXT:                             if [[T_6]] == 65 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8]] = (![[T_7]]).trailing_zeros();
-// CHECK-NEXT:                             if [[T_8]] == 65 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10]] = [[T_9]].trailing_zeros();
-// CHECK-NEXT:                             if [[T_10]] == 65 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11]] = x;
-// CHECK-NEXT:                         (65 - [[T_11]].count_ones()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12]] = x;
-// CHECK-NEXT:                         [[T_12]].count_ones() as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                         let [[T_8:__t[0-9]+]] = ((((![[T_7]] as $T) & 137438953471) as $T)
+// CHECK-NEXT:                                 & 137438953471)
+// CHECK-NEXT:                             .trailing_zeros()
+// CHECK-NEXT:                             .min(37u32);
+// CHECK-NEXT:                         if [[T_8]] == 37 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9:__t[0-9]+]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13]] = x;
-// CHECK-NEXT:                         [[T_13]].count_ones() == 1
-// CHECK-NEXT:                     }) as u32,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14]] = x;
-// CHECK-NEXT:                         (65 - [[T_14]].leading_zeros()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                             let [[T_15]] = x;
-// CHECK-NEXT:                             if [[T_15]].leading_zeros() == 65 {
-// CHECK-NEXT:                                 <bitint::BUint<65, 2, 16, bitint::A8>>::from_u128(0)
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 <bitint::BUint<65, 2, 16, bitint::A8>>::from_u128(1)
-// CHECK-NEXT:                                     .shl_bits((64 - [[T_15]].leading_zeros()) as usize)
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         .to_u128() as u64,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                             let [[T_16]] = x;
-// CHECK-NEXT:                             if [[T_16]].count_ones() == 0 {
-// CHECK-NEXT:                                 <bitint::BUint<65, 2, 16, bitint::A8>>::from_u128(1)
-// CHECK-NEXT:                             } else if [[T_16]].count_ones() == 1 {
-// CHECK-NEXT:                                 [[T_16]]
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 <bitint::BUint<65, 2, 16, bitint::A8>>::from_u128(1)
-// CHECK-NEXT:                                     .shl_bits((65 - [[T_16]].leading_zeros()) as usize)
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         .to_u128() as u64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:                         let [[T_10:__t[0-9]+]] = (([[T_9]] as $T) & 137438953471)
+// CHECK-NEXT:                             .trailing_zeros()
+// CHECK-NEXT:                             .min(37u32);
+// CHECK-NEXT:                         if [[T_10]] == 37 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11:__t[0-9]+]] = x;
+// CHECK-NEXT:                     (37 - (([[T_11]] as $T) & 137438953471).count_ones()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12:__t[0-9]+]] = x;
+// CHECK-NEXT:                     (([[T_12]] as $T) & 137438953471).count_ones() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13:__t[0-9]+]] = x;
+// CHECK-NEXT:                     (([[T_13]] as $T) & 137438953471).count_ones() == 1
+// CHECK-NEXT:                 }) as u32,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14:__t[0-9]+]] = x;
+// CHECK-NEXT:                     (37 - ((([[T_14]] as $T) & 137438953471).leading_zeros() - 27)) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_15:__t[0-9]+]] = x;
+// CHECK-NEXT:                     if (([[T_15]] as $T) & 137438953471).leading_zeros() - 27 == 37 {
+// CHECK-NEXT:                         0u64
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         (1u64
+// CHECK-NEXT:                             .checked_shl(
+// CHECK-NEXT:                                 36 - ((([[T_15]] as $T) & 137438953471).leading_zeros() - 27),
+// CHECK-NEXT:                             )
+// CHECK-NEXT:                             .unwrap_or(0u64) as $T) & 137438953471
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as $T,
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_16:__t[0-9]+]] = x;
+// CHECK-NEXT:                     if (([[T_16]] as $T) & 137438953471).count_ones() == 0 {
+// CHECK-NEXT:                         1u64
+// CHECK-NEXT:                     } else if (([[T_16]] as $T) & 137438953471).count_ones() == 1 {
+// CHECK-NEXT:                         [[T_16]]
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         (1u64
+// CHECK-NEXT:                             .checked_shl(
+// CHECK-NEXT:                                 37 - ((([[T_16]] as $T) & 137438953471).leading_zeros() - 27),
+// CHECK-NEXT:                             )
+// CHECK-NEXT:                             .unwrap_or(0u64) as $T) & 137438953471
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as $T,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! REPORT__5 {
 // CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = ($X) as $T;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         __t.leading_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = x;
-// CHECK-NEXT:                         (![[T_0]] as $T).leading_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1]] = x;
-// CHECK-NEXT:                         [[T_1]].trailing_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = x;
-// CHECK-NEXT:                         (![[T_2]] as $T).trailing_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4]] = (![[T_3]] as $T).leading_zeros();
-// CHECK-NEXT:                             if [[T_4]] == 8 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6]] = [[T_5]].leading_zeros();
-// CHECK-NEXT:                             if [[T_6]] == 8 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8]] = (![[T_7]] as $T).trailing_zeros();
-// CHECK-NEXT:                             if [[T_8]] == 8 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10]] = [[T_9]].trailing_zeros();
-// CHECK-NEXT:                             if [[T_10]] == 8 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11]] = x;
-// CHECK-NEXT:                         (8 - [[T_11]].count_ones()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12]] = x;
-// CHECK-NEXT:                         [[T_12]].count_ones() as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:         let x: $T = ($X) as $T;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     __t.leading_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = x;
+// CHECK-NEXT:                     (![[T_0]] as $T).leading_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1]] = x;
+// CHECK-NEXT:                     [[T_1]].trailing_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2]] = x;
+// CHECK-NEXT:                     (![[T_2]] as $T).trailing_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13]] = x;
-// CHECK-NEXT:                         [[T_13]].count_ones() == 1
-// CHECK-NEXT:                     }) as u32,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14]] = x;
-// CHECK-NEXT:                         (8 - [[T_14]].leading_zeros()) as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                         let [[T_4]] = (![[T_3]] as $T).leading_zeros();
+// CHECK-NEXT:                         if [[T_4]] == 16 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_15]] = x;
-// CHECK-NEXT:                         if [[T_15]].leading_zeros() == 8 {
-// CHECK-NEXT:                             0u8
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             1u8.checked_shl(7 - [[T_15]].leading_zeros()).unwrap_or(0u8)
-// CHECK-NEXT:                                 as $T
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
+// CHECK-NEXT:                         let [[T_6]] = [[T_5]].leading_zeros();
+// CHECK-NEXT:                         if [[T_6]] == 16 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_16]] = x;
-// CHECK-NEXT:                         if [[T_16]].count_ones() == 0 {
-// CHECK-NEXT:                             1u8
-// CHECK-NEXT:                         } else if [[T_16]].count_ones() == 1 {
-// CHECK-NEXT:                             [[T_16]]
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             1u8.checked_shl(8 - [[T_16]].leading_zeros()).unwrap_or(0u8)
-// CHECK-NEXT:                                 as $T
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:                         let [[T_8]] = (![[T_7]] as $T).trailing_zeros();
+// CHECK-NEXT:                         if [[T_8]] == 16 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_10]] = [[T_9]].trailing_zeros();
+// CHECK-NEXT:                         if [[T_10]] == 16 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11]] = x;
+// CHECK-NEXT:                     (16 - [[T_11]].count_ones()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12]] = x;
+// CHECK-NEXT:                     [[T_12]].count_ones() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13]] = x;
+// CHECK-NEXT:                     [[T_13]].count_ones() == 1
+// CHECK-NEXT:                 }) as u32,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14]] = x;
+// CHECK-NEXT:                     (16 - [[T_14]].leading_zeros()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_15]] = x;
+// CHECK-NEXT:                     if [[T_15]].leading_zeros() == 16 {
+// CHECK-NEXT:                         0u16
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         1u16.checked_shl(15 - [[T_15]].leading_zeros()).unwrap_or(0u16)
+// CHECK-NEXT:                             as $T
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_16]] = x;
+// CHECK-NEXT:                     if [[T_16]].count_ones() == 0 {
+// CHECK-NEXT:                         1u16
+// CHECK-NEXT:                     } else if [[T_16]].count_ones() == 1 {
+// CHECK-NEXT:                         [[T_16]]
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         1u16.checked_shl(16 - [[T_16]].leading_zeros()).unwrap_or(0u16)
+// CHECK-NEXT:                             as $T
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! REPORT__6 {
 // CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = $X;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         (((__t as $T) & 8191).leading_zeros() - 3) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = x;
-// CHECK-NEXT:                         (((((![[T_0]] as $T) & 8191) as $T) & 8191).leading_zeros() - 3)
-// CHECK-NEXT:                             as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1]] = x;
-// CHECK-NEXT:                         (([[T_1]] as $T) & 8191).trailing_zeros().min(13u32) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = x;
-// CHECK-NEXT:                         ((((![[T_2]] as $T) & 8191) as $T) & 8191)
-// CHECK-NEXT:                             .trailing_zeros()
-// CHECK-NEXT:                             .min(13u32) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4]] = ((((![[T_3]] as $T) & 8191) as $T) & 8191)
-// CHECK-NEXT:                                 .leading_zeros() - 3;
-// CHECK-NEXT:                             if [[T_4]] == 13 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6]] = (([[T_5]] as $T) & 8191).leading_zeros() - 3;
-// CHECK-NEXT:                             if [[T_6]] == 13 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8]] = ((((![[T_7]] as $T) & 8191) as $T) & 8191)
-// CHECK-NEXT:                                 .trailing_zeros()
-// CHECK-NEXT:                                 .min(13u32);
-// CHECK-NEXT:                             if [[T_8]] == 13 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10]] = (([[T_9]] as $T) & 8191)
-// CHECK-NEXT:                                 .trailing_zeros()
-// CHECK-NEXT:                                 .min(13u32);
-// CHECK-NEXT:                             if [[T_10]] == 13 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11]] = x;
-// CHECK-NEXT:                         (13 - (([[T_11]] as $T) & 8191).count_ones()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12]] = x;
-// CHECK-NEXT:                         (([[T_12]] as $T) & 8191).count_ones() as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:         let x: $T = ($X) as $T;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     __t.leading_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = x;
+// CHECK-NEXT:                     (![[T_0]] as $T).leading_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1]] = x;
+// CHECK-NEXT:                     [[T_1]].trailing_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2]] = x;
+// CHECK-NEXT:                     (![[T_2]] as $T).trailing_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13]] = x;
-// CHECK-NEXT:                         (([[T_13]] as $T) & 8191).count_ones() == 1
-// CHECK-NEXT:                     }) as u32,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14]] = x;
-// CHECK-NEXT:                         (13 - ((([[T_14]] as $T) & 8191).leading_zeros() - 3)) as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                         let [[T_4]] = (![[T_3]] as $T).leading_zeros();
+// CHECK-NEXT:                         if [[T_4]] == 8 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_15]] = x;
-// CHECK-NEXT:                         if (([[T_15]] as $T) & 8191).leading_zeros() - 3 == 13 {
-// CHECK-NEXT:                             0u16
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             (1u16
-// CHECK-NEXT:                                 .checked_shl(
-// CHECK-NEXT:                                     12 - ((([[T_15]] as $T) & 8191).leading_zeros() - 3),
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                                 .unwrap_or(0u16) as $T) & 8191
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
+// CHECK-NEXT:                         let [[T_6]] = [[T_5]].leading_zeros();
+// CHECK-NEXT:                         if [[T_6]] == 8 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_16]] = x;
-// CHECK-NEXT:                         if (([[T_16]] as $T) & 8191).count_ones() == 0 {
-// CHECK-NEXT:                             1u16
-// CHECK-NEXT:                         } else if (([[T_16]] as $T) & 8191).count_ones() == 1 {
-// CHECK-NEXT:                             [[T_16]]
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             (1u16
-// CHECK-NEXT:                                 .checked_shl(
-// CHECK-NEXT:                                     13 - ((([[T_16]] as $T) & 8191).leading_zeros() - 3),
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                                 .unwrap_or(0u16) as $T) & 8191
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:                         let [[T_8]] = (![[T_7]] as $T).trailing_zeros();
+// CHECK-NEXT:                         if [[T_8]] == 8 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_10]] = [[T_9]].trailing_zeros();
+// CHECK-NEXT:                         if [[T_10]] == 8 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11]] = x;
+// CHECK-NEXT:                     (8 - [[T_11]].count_ones()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12]] = x;
+// CHECK-NEXT:                     [[T_12]].count_ones() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13]] = x;
+// CHECK-NEXT:                     [[T_13]].count_ones() == 1
+// CHECK-NEXT:                 }) as u32,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14]] = x;
+// CHECK-NEXT:                     (8 - [[T_14]].leading_zeros()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_15]] = x;
+// CHECK-NEXT:                     if [[T_15]].leading_zeros() == 8 {
+// CHECK-NEXT:                         0u8
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         1u8.checked_shl(7 - [[T_15]].leading_zeros()).unwrap_or(0u8) as $T
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_16]] = x;
+// CHECK-NEXT:                     if [[T_16]].count_ones() == 0 {
+// CHECK-NEXT:                         1u8
+// CHECK-NEXT:                     } else if [[T_16]].count_ones() == 1 {
+// CHECK-NEXT:                         [[T_16]]
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         1u8.checked_shl(8 - [[T_16]].leading_zeros()).unwrap_or(0u8) as $T
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! REPORT__7 {
 // CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = (($X) as $T) & 127;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         (((__t as $T) & 127).leading_zeros() - 1) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = x;
-// CHECK-NEXT:                         (((((![[T_0]] as $T) & 127) as $T) & 127).leading_zeros() - 1)
-// CHECK-NEXT:                             as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1]] = x;
-// CHECK-NEXT:                         (([[T_1]] as $T) & 127).trailing_zeros().min(7u32) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = x;
-// CHECK-NEXT:                         ((((![[T_2]] as $T) & 127) as $T) & 127).trailing_zeros().min(7u32)
-// CHECK-NEXT:                             as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4]] = ((((![[T_3]] as $T) & 127) as $T) & 127)
-// CHECK-NEXT:                                 .leading_zeros() - 1;
-// CHECK-NEXT:                             if [[T_4]] == 7 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6]] = (([[T_5]] as $T) & 127).leading_zeros() - 1;
-// CHECK-NEXT:                             if [[T_6]] == 7 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8]] = ((((![[T_7]] as $T) & 127) as $T) & 127)
-// CHECK-NEXT:                                 .trailing_zeros()
-// CHECK-NEXT:                                 .min(7u32);
-// CHECK-NEXT:                             if [[T_8]] == 7 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10]] = (([[T_9]] as $T) & 127).trailing_zeros().min(7u32);
-// CHECK-NEXT:                             if [[T_10]] == 7 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11]] = x;
-// CHECK-NEXT:                         (7 - (([[T_11]] as $T) & 127).count_ones()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12]] = x;
-// CHECK-NEXT:                         (([[T_12]] as $T) & 127).count_ones() as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:         let x: $T = $X;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     __t.leading_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = x;
+// CHECK-NEXT:                     (![[T_0]] as $T).leading_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1]] = x;
+// CHECK-NEXT:                     [[T_1]].trailing_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2]] = x;
+// CHECK-NEXT:                     (![[T_2]] as $T).trailing_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13]] = x;
-// CHECK-NEXT:                         (([[T_13]] as $T) & 127).count_ones() == 1
-// CHECK-NEXT:                     }) as u32,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14]] = x;
-// CHECK-NEXT:                         (7 - ((([[T_14]] as $T) & 127).leading_zeros() - 1)) as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                         let [[T_4]] = (![[T_3]] as $T).leading_zeros();
+// CHECK-NEXT:                         if [[T_4]] == 64 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_15]] = x;
-// CHECK-NEXT:                         if (([[T_15]] as $T) & 127).leading_zeros() - 1 == 7 {
-// CHECK-NEXT:                             0u8
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             (1u8
-// CHECK-NEXT:                                 .checked_shl(
-// CHECK-NEXT:                                     6 - ((([[T_15]] as $T) & 127).leading_zeros() - 1),
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                                 .unwrap_or(0u8) as $T) & 127
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
+// CHECK-NEXT:                         let [[T_6]] = [[T_5]].leading_zeros();
+// CHECK-NEXT:                         if [[T_6]] == 64 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_16]] = x;
-// CHECK-NEXT:                         if (([[T_16]] as $T) & 127).count_ones() == 0 {
-// CHECK-NEXT:                             1u8
-// CHECK-NEXT:                         } else if (([[T_16]] as $T) & 127).count_ones() == 1 {
-// CHECK-NEXT:                             [[T_16]]
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             (1u8
-// CHECK-NEXT:                                 .checked_shl(
-// CHECK-NEXT:                                     7 - ((([[T_16]] as $T) & 127).leading_zeros() - 1),
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                                 .unwrap_or(0u8) as $T) & 127
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:                         let [[T_8]] = (![[T_7]] as $T).trailing_zeros();
+// CHECK-NEXT:                         if [[T_8]] == 64 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_10]] = [[T_9]].trailing_zeros();
+// CHECK-NEXT:                         if [[T_10]] == 64 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11]] = x;
+// CHECK-NEXT:                     (64 - [[T_11]].count_ones()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12]] = x;
+// CHECK-NEXT:                     [[T_12]].count_ones() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13]] = x;
+// CHECK-NEXT:                     [[T_13]].count_ones() == 1
+// CHECK-NEXT:                 }) as u32,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14]] = x;
+// CHECK-NEXT:                     (64 - [[T_14]].leading_zeros()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_15]] = x;
+// CHECK-NEXT:                     if [[T_15]].leading_zeros() == 64 {
+// CHECK-NEXT:                         0u64
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         1u64.checked_shl(63 - [[T_15]].leading_zeros()).unwrap_or(0u64)
+// CHECK-NEXT:                             as $T
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_16]] = x;
+// CHECK-NEXT:                     if [[T_16]].count_ones() == 0 {
+// CHECK-NEXT:                         1u64
+// CHECK-NEXT:                     } else if [[T_16]].count_ones() == 1 {
+// CHECK-NEXT:                         [[T_16]]
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         1u64.checked_shl(64 - [[T_16]].leading_zeros()).unwrap_or(0u64)
+// CHECK-NEXT:                             as $T
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 },
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! REPORT__8 {
 // CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = ($X) as $T;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         __t.leading_zeros() as $T
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = x;
-// CHECK-NEXT:                         (![[T_0]] as $T).leading_zeros() as $T
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1]] = x;
-// CHECK-NEXT:                         [[T_1]].trailing_zeros() as $T
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = x;
-// CHECK-NEXT:                         (![[T_2]] as $T).trailing_zeros() as $T
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4]] = (![[T_3]] as $T).leading_zeros();
-// CHECK-NEXT:                             if [[T_4]] == 32 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as $T
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6]] = [[T_5]].leading_zeros();
-// CHECK-NEXT:                             if [[T_6]] == 32 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as $T
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8]] = (![[T_7]] as $T).trailing_zeros();
-// CHECK-NEXT:                             if [[T_8]] == 32 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as $T
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10]] = [[T_9]].trailing_zeros();
-// CHECK-NEXT:                             if [[T_10]] == 32 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as $T
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11]] = x;
-// CHECK-NEXT:                         (32 - [[T_11]].count_ones()) as $T
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12]] = x;
-// CHECK-NEXT:                         [[T_12]].count_ones() as $T
-// CHECK-NEXT:                     },
+// CHECK-NEXT:         let x: $T = $X;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     (((__t as $T) & 127).leading_zeros() - 1) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = x;
+// CHECK-NEXT:                     (((((![[T_0]] as $T) & 127) as $T) & 127).leading_zeros() - 1) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1]] = x;
+// CHECK-NEXT:                     (([[T_1]] as $T) & 127).trailing_zeros().min(7u32) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2]] = x;
+// CHECK-NEXT:                     ((((![[T_2]] as $T) & 127) as $T) & 127).trailing_zeros().min(7u32)
+// CHECK-NEXT:                         as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13]] = x;
-// CHECK-NEXT:                         [[T_13]].count_ones() == 1
-// CHECK-NEXT:                     }) as $T,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14]] = x;
-// CHECK-NEXT:                         (32 - [[T_14]].leading_zeros()) as $T
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                         let [[T_4]] = ((((![[T_3]] as $T) & 127) as $T) & 127).leading_zeros()
+// CHECK-NEXT:                             - 1;
+// CHECK-NEXT:                         if [[T_4]] == 7 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5]] = x;
 // CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_6]] = (([[T_5]] as $T) & 127).leading_zeros() - 1;
+// CHECK-NEXT:                         if [[T_6]] == 7 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_8]] = ((((![[T_7]] as $T) & 127) as $T) & 127)
+// CHECK-NEXT:                             .trailing_zeros()
+// CHECK-NEXT:                             .min(7u32);
+// CHECK-NEXT:                         if [[T_8]] == 7 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_10]] = (([[T_9]] as $T) & 127).trailing_zeros().min(7u32);
+// CHECK-NEXT:                         if [[T_10]] == 7 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11]] = x;
+// CHECK-NEXT:                     (7 - (([[T_11]] as $T) & 127).count_ones()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12]] = x;
+// CHECK-NEXT:                     (([[T_12]] as $T) & 127).count_ones() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13]] = x;
+// CHECK-NEXT:                     (([[T_13]] as $T) & 127).count_ones() == 1
+// CHECK-NEXT:                 }) as u32,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14]] = x;
+// CHECK-NEXT:                     (7 - ((([[T_14]] as $T) & 127).leading_zeros() - 1)) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_15]] = x;
+// CHECK-NEXT:                     if (([[T_15]] as $T) & 127).leading_zeros() - 1 == 7 {
+// CHECK-NEXT:                         0u8
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         (1u8
+// CHECK-NEXT:                             .checked_shl(6 - ((([[T_15]] as $T) & 127).leading_zeros() - 1))
+// CHECK-NEXT:                             .unwrap_or(0u8) as $T) & 127
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_16]] = x;
+// CHECK-NEXT:                     if (([[T_16]] as $T) & 127).count_ones() == 0 {
+// CHECK-NEXT:                         1u8
+// CHECK-NEXT:                     } else if (([[T_16]] as $T) & 127).count_ones() == 1 {
+// CHECK-NEXT:                         [[T_16]]
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         (1u8
+// CHECK-NEXT:                             .checked_shl(7 - ((([[T_16]] as $T) & 127).leading_zeros() - 1))
+// CHECK-NEXT:                             .unwrap_or(0u8) as $T) & 127
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! REPORT__2 {
+// CHECK-NEXT:     ($T:ty, $X:expr) => {
+// CHECK-NEXT:         let x: $T = $X;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     __t.leading_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = x;
+// CHECK-NEXT:                     (![[T_0]]).leading_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1]] = x;
+// CHECK-NEXT:                     [[T_1]].trailing_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2]] = x;
+// CHECK-NEXT:                     (![[T_2]]).trailing_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_4]] = (![[T_3]]).leading_zeros();
+// CHECK-NEXT:                         if [[T_4]] == 128 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_6]] = [[T_5]].leading_zeros();
+// CHECK-NEXT:                         if [[T_6]] == 128 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_8]] = (![[T_7]]).trailing_zeros();
+// CHECK-NEXT:                         if [[T_8]] == 128 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_10]] = [[T_9]].trailing_zeros();
+// CHECK-NEXT:                         if [[T_10]] == 128 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11]] = x;
+// CHECK-NEXT:                     (128 - [[T_11]].count_ones()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12]] = x;
+// CHECK-NEXT:                     [[T_12]].count_ones() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13]] = x;
+// CHECK-NEXT:                     [[T_13]].count_ones() == 1
+// CHECK-NEXT:                 }) as u32,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14]] = x;
+// CHECK-NEXT:                     (128 - [[T_14]].leading_zeros()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
 // CHECK-NEXT:                         let [[T_15]] = x;
-// CHECK-NEXT:                         if [[T_15]].leading_zeros() == 32 {
-// CHECK-NEXT:                             0u32
+// CHECK-NEXT:                         if [[T_15]].leading_zeros() == 128 {
+// CHECK-NEXT:                             <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(0)
 // CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             1u32.checked_shl(31 - [[T_15]].leading_zeros()).unwrap_or(0u32)
-// CHECK-NEXT:                                 as $T
+// CHECK-NEXT:                             <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(1)
+// CHECK-NEXT:                                 .shl_bits((127 - [[T_15]].leading_zeros()) as usize)
 // CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
-// CHECK-NEXT:                     ({
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     .to_u128() as u64,
+// CHECK-NEXT:                 {
 // CHECK-NEXT:                         let [[T_16]] = x;
 // CHECK-NEXT:                         if [[T_16]].count_ones() == 0 {
-// CHECK-NEXT:                             1u32
+// CHECK-NEXT:                             <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(1)
 // CHECK-NEXT:                         } else if [[T_16]].count_ones() == 1 {
 // CHECK-NEXT:                             [[T_16]]
 // CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             1u32.checked_shl(32 - [[T_16]].leading_zeros()).unwrap_or(0u32)
-// CHECK-NEXT:                                 as $T
+// CHECK-NEXT:                             <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(1)
+// CHECK-NEXT:                                 .shl_bits((128 - [[T_16]].leading_zeros()) as usize)
 // CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     .to_u128() as u64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! REPORT__9 {
 // CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = $X;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         __t.leading_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = x;
-// CHECK-NEXT:                         (![[T_0]] as $T).leading_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1]] = x;
-// CHECK-NEXT:                         [[T_1]].trailing_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = x;
-// CHECK-NEXT:                         (![[T_2]] as $T).trailing_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4]] = (![[T_3]] as $T).leading_zeros();
-// CHECK-NEXT:                             if [[T_4]] == 64 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6]] = [[T_5]].leading_zeros();
-// CHECK-NEXT:                             if [[T_6]] == 64 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8]] = (![[T_7]] as $T).trailing_zeros();
-// CHECK-NEXT:                             if [[T_8]] == 64 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10]] = [[T_9]].trailing_zeros();
-// CHECK-NEXT:                             if [[T_10]] == 64 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11]] = x;
-// CHECK-NEXT:                         (64 - [[T_11]].count_ones()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12]] = x;
-// CHECK-NEXT:                         [[T_12]].count_ones() as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:         let x: $T = (($X) as $T) & 8191;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     (((__t as $T) & 8191).leading_zeros() - 3) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = x;
+// CHECK-NEXT:                     (((((![[T_0]] as $T) & 8191) as $T) & 8191).leading_zeros() - 3) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1]] = x;
+// CHECK-NEXT:                     (([[T_1]] as $T) & 8191).trailing_zeros().min(13u32) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2]] = x;
+// CHECK-NEXT:                     ((((![[T_2]] as $T) & 8191) as $T) & 8191).trailing_zeros().min(13u32)
+// CHECK-NEXT:                         as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13]] = x;
-// CHECK-NEXT:                         [[T_13]].count_ones() == 1
-// CHECK-NEXT:                     }) as u32,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14]] = x;
-// CHECK-NEXT:                         (64 - [[T_14]].leading_zeros()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_15]] = x;
-// CHECK-NEXT:                         if [[T_15]].leading_zeros() == 64 {
-// CHECK-NEXT:                             0u64
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             1u64.checked_shl(63 - [[T_15]].leading_zeros()).unwrap_or(0u64)
-// CHECK-NEXT:                                 as $T
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_16]] = x;
-// CHECK-NEXT:                         if [[T_16]].count_ones() == 0 {
-// CHECK-NEXT:                             1u64
-// CHECK-NEXT:                         } else if [[T_16]].count_ones() == 1 {
-// CHECK-NEXT:                             [[T_16]]
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             1u64.checked_shl(64 - [[T_16]].leading_zeros()).unwrap_or(0u64)
-// CHECK-NEXT:                                 as $T
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:                         let [[T_4]] = ((((![[T_3]] as $T) & 8191) as $T) & 8191)
+// CHECK-NEXT:                             .leading_zeros() - 3;
+// CHECK-NEXT:                         if [[T_4]] == 13 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_6]] = (([[T_5]] as $T) & 8191).leading_zeros() - 3;
+// CHECK-NEXT:                         if [[T_6]] == 13 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_8]] = ((((![[T_7]] as $T) & 8191) as $T) & 8191)
+// CHECK-NEXT:                             .trailing_zeros()
+// CHECK-NEXT:                             .min(13u32);
+// CHECK-NEXT:                         if [[T_8]] == 13 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_10]] = (([[T_9]] as $T) & 8191).trailing_zeros().min(13u32);
+// CHECK-NEXT:                         if [[T_10]] == 13 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11]] = x;
+// CHECK-NEXT:                     (13 - (([[T_11]] as $T) & 8191).count_ones()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12]] = x;
+// CHECK-NEXT:                     (([[T_12]] as $T) & 8191).count_ones() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13]] = x;
+// CHECK-NEXT:                     (([[T_13]] as $T) & 8191).count_ones() == 1
+// CHECK-NEXT:                 }) as u32,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14]] = x;
+// CHECK-NEXT:                     (13 - ((([[T_14]] as $T) & 8191).leading_zeros() - 3)) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_15]] = x;
+// CHECK-NEXT:                     if (([[T_15]] as $T) & 8191).leading_zeros() - 3 == 13 {
+// CHECK-NEXT:                         0u16
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         (1u16
+// CHECK-NEXT:                             .checked_shl(
+// CHECK-NEXT:                                 12 - ((([[T_15]] as $T) & 8191).leading_zeros() - 3),
+// CHECK-NEXT:                             )
+// CHECK-NEXT:                             .unwrap_or(0u16) as $T) & 8191
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_16]] = x;
+// CHECK-NEXT:                     if (([[T_16]] as $T) & 8191).count_ones() == 0 {
+// CHECK-NEXT:                         1u16
+// CHECK-NEXT:                     } else if (([[T_16]] as $T) & 8191).count_ones() == 1 {
+// CHECK-NEXT:                         [[T_16]]
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         (1u16
+// CHECK-NEXT:                             .checked_shl(
+// CHECK-NEXT:                                 13 - ((([[T_16]] as $T) & 8191).leading_zeros() - 3),
+// CHECK-NEXT:                             )
+// CHECK-NEXT:                             .unwrap_or(0u16) as $T) & 8191
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! REPORT__10 {
 // CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = (($X) as $T) & 8191;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         (((__t as $T) & 8191).leading_zeros() - 3) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = x;
-// CHECK-NEXT:                         (((((![[T_0]] as $T) & 8191) as $T) & 8191).leading_zeros() - 3)
-// CHECK-NEXT:                             as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1]] = x;
-// CHECK-NEXT:                         (([[T_1]] as $T) & 8191).trailing_zeros().min(13u32) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = x;
-// CHECK-NEXT:                         ((((![[T_2]] as $T) & 8191) as $T) & 8191)
+// CHECK-NEXT:         let x: $T = (($X) as $T) & 127;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     (((__t as $T) & 127).leading_zeros() - 1) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = x;
+// CHECK-NEXT:                     (((((![[T_0]] as $T) & 127) as $T) & 127).leading_zeros() - 1) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1]] = x;
+// CHECK-NEXT:                     (([[T_1]] as $T) & 127).trailing_zeros().min(7u32) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2]] = x;
+// CHECK-NEXT:                     ((((![[T_2]] as $T) & 127) as $T) & 127).trailing_zeros().min(7u32)
+// CHECK-NEXT:                         as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_4]] = ((((![[T_3]] as $T) & 127) as $T) & 127).leading_zeros()
+// CHECK-NEXT:                             - 1;
+// CHECK-NEXT:                         if [[T_4]] == 7 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_6]] = (([[T_5]] as $T) & 127).leading_zeros() - 1;
+// CHECK-NEXT:                         if [[T_6]] == 7 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_8]] = ((((![[T_7]] as $T) & 127) as $T) & 127)
 // CHECK-NEXT:                             .trailing_zeros()
-// CHECK-NEXT:                             .min(13u32) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4]] = ((((![[T_3]] as $T) & 8191) as $T) & 8191)
-// CHECK-NEXT:                                 .leading_zeros() - 3;
-// CHECK-NEXT:                             if [[T_4]] == 13 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6]] = (([[T_5]] as $T) & 8191).leading_zeros() - 3;
-// CHECK-NEXT:                             if [[T_6]] == 13 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8]] = ((((![[T_7]] as $T) & 8191) as $T) & 8191)
-// CHECK-NEXT:                                 .trailing_zeros()
-// CHECK-NEXT:                                 .min(13u32);
-// CHECK-NEXT:                             if [[T_8]] == 13 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10]] = (([[T_9]] as $T) & 8191)
-// CHECK-NEXT:                                 .trailing_zeros()
-// CHECK-NEXT:                                 .min(13u32);
-// CHECK-NEXT:                             if [[T_10]] == 13 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11]] = x;
-// CHECK-NEXT:                         (13 - (([[T_11]] as $T) & 8191).count_ones()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12]] = x;
-// CHECK-NEXT:                         (([[T_12]] as $T) & 8191).count_ones() as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                             .min(7u32);
+// CHECK-NEXT:                         if [[T_8]] == 7 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13]] = x;
-// CHECK-NEXT:                         (([[T_13]] as $T) & 8191).count_ones() == 1
-// CHECK-NEXT:                     }) as u32,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14]] = x;
-// CHECK-NEXT:                         (13 - ((([[T_14]] as $T) & 8191).leading_zeros() - 3)) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_15]] = x;
-// CHECK-NEXT:                         if (([[T_15]] as $T) & 8191).leading_zeros() - 3 == 13 {
-// CHECK-NEXT:                             0u16
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             (1u16
-// CHECK-NEXT:                                 .checked_shl(
-// CHECK-NEXT:                                     12 - ((([[T_15]] as $T) & 8191).leading_zeros() - 3),
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                                 .unwrap_or(0u16) as $T) & 8191
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
-// CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_16]] = x;
-// CHECK-NEXT:                         if (([[T_16]] as $T) & 8191).count_ones() == 0 {
-// CHECK-NEXT:                             1u16
-// CHECK-NEXT:                         } else if (([[T_16]] as $T) & 8191).count_ones() == 1 {
-// CHECK-NEXT:                             [[T_16]]
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             (1u16
-// CHECK-NEXT:                                 .checked_shl(
-// CHECK-NEXT:                                     13 - ((([[T_16]] as $T) & 8191).leading_zeros() - 3),
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                                 .unwrap_or(0u16) as $T) & 8191
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:                         let [[T_10]] = (([[T_9]] as $T) & 127).trailing_zeros().min(7u32);
+// CHECK-NEXT:                         if [[T_10]] == 7 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11]] = x;
+// CHECK-NEXT:                     (7 - (([[T_11]] as $T) & 127).count_ones()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12]] = x;
+// CHECK-NEXT:                     (([[T_12]] as $T) & 127).count_ones() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13]] = x;
+// CHECK-NEXT:                     (([[T_13]] as $T) & 127).count_ones() == 1
+// CHECK-NEXT:                 }) as u32,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14]] = x;
+// CHECK-NEXT:                     (7 - ((([[T_14]] as $T) & 127).leading_zeros() - 1)) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_15]] = x;
+// CHECK-NEXT:                     if (([[T_15]] as $T) & 127).leading_zeros() - 1 == 7 {
+// CHECK-NEXT:                         0u8
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         (1u8
+// CHECK-NEXT:                             .checked_shl(6 - ((([[T_15]] as $T) & 127).leading_zeros() - 1))
+// CHECK-NEXT:                             .unwrap_or(0u8) as $T) & 127
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_16]] = x;
+// CHECK-NEXT:                     if (([[T_16]] as $T) & 127).count_ones() == 0 {
+// CHECK-NEXT:                         1u8
+// CHECK-NEXT:                     } else if (([[T_16]] as $T) & 127).count_ones() == 1 {
+// CHECK-NEXT:                         [[T_16]]
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         (1u8
+// CHECK-NEXT:                             .checked_shl(7 - ((([[T_16]] as $T) & 127).leading_zeros() - 1))
+// CHECK-NEXT:                             .unwrap_or(0u8) as $T) & 127
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! REPORT__11 {
 // CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = (($X) as $T) & 137438953471;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         (((__t as $T) & 137438953471).leading_zeros() - 27) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = x;
-// CHECK-NEXT:                         (((((![[T_0]] as $T) & 137438953471) as $T) & 137438953471)
-// CHECK-NEXT:                             .leading_zeros() - 27) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1]] = x;
-// CHECK-NEXT:                         (([[T_1]] as $T) & 137438953471).trailing_zeros().min(37u32) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = x;
-// CHECK-NEXT:                         ((((![[T_2]] as $T) & 137438953471) as $T) & 137438953471)
+// CHECK-NEXT:         let x: $T = (($X) as $T) & 1;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     (((__t as $T) & 1).leading_zeros() - 7) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = x;
+// CHECK-NEXT:                     (((((![[T_0]] as $T) & 1) as $T) & 1).leading_zeros() - 7) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1]] = x;
+// CHECK-NEXT:                     (([[T_1]] as $T) & 1).trailing_zeros().min(1u32) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2]] = x;
+// CHECK-NEXT:                     ((((![[T_2]] as $T) & 1) as $T) & 1).trailing_zeros().min(1u32) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_4]] = ((((![[T_3]] as $T) & 1) as $T) & 1).leading_zeros() - 7;
+// CHECK-NEXT:                         if [[T_4]] == 1 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_6]] = (([[T_5]] as $T) & 1).leading_zeros() - 7;
+// CHECK-NEXT:                         if [[T_6]] == 1 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_8]] = ((((![[T_7]] as $T) & 1) as $T) & 1)
 // CHECK-NEXT:                             .trailing_zeros()
-// CHECK-NEXT:                             .min(37u32) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4]] = ((((![[T_3]] as $T) & 137438953471) as $T)
-// CHECK-NEXT:                                     & 137438953471)
-// CHECK-NEXT:                                 .leading_zeros() - 27;
-// CHECK-NEXT:                             if [[T_4]] == 37 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6]] = (([[T_5]] as $T) & 137438953471).leading_zeros()
-// CHECK-NEXT:                                 - 27;
-// CHECK-NEXT:                             if [[T_6]] == 37 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8]] = ((((![[T_7]] as $T) & 137438953471) as $T)
-// CHECK-NEXT:                                     & 137438953471)
-// CHECK-NEXT:                                 .trailing_zeros()
-// CHECK-NEXT:                                 .min(37u32);
-// CHECK-NEXT:                             if [[T_8]] == 37 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10]] = (([[T_9]] as $T) & 137438953471)
-// CHECK-NEXT:                                 .trailing_zeros()
-// CHECK-NEXT:                                 .min(37u32);
-// CHECK-NEXT:                             if [[T_10]] == 37 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11]] = x;
-// CHECK-NEXT:                         (37 - (([[T_11]] as $T) & 137438953471).count_ones()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12]] = x;
-// CHECK-NEXT:                         (([[T_12]] as $T) & 137438953471).count_ones() as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                             .min(1u32);
+// CHECK-NEXT:                         if [[T_8]] == 1 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13]] = x;
-// CHECK-NEXT:                         (([[T_13]] as $T) & 137438953471).count_ones() == 1
-// CHECK-NEXT:                     }) as u32,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14]] = x;
-// CHECK-NEXT:                         (37 - ((([[T_14]] as $T) & 137438953471).leading_zeros() - 27))
-// CHECK-NEXT:                             as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_15]] = x;
-// CHECK-NEXT:                         if (([[T_15]] as $T) & 137438953471).leading_zeros() - 27 == 37 {
-// CHECK-NEXT:                             0u64
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             (1u64
-// CHECK-NEXT:                                 .checked_shl(
-// CHECK-NEXT:                                     36 - ((([[T_15]] as $T) & 137438953471).leading_zeros() - 27),
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                                 .unwrap_or(0u64) as $T) & 137438953471
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as $T,
-// CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_16]] = x;
-// CHECK-NEXT:                         if (([[T_16]] as $T) & 137438953471).count_ones() == 0 {
-// CHECK-NEXT:                             1u64
-// CHECK-NEXT:                         } else if (([[T_16]] as $T) & 137438953471).count_ones() == 1 {
-// CHECK-NEXT:                             [[T_16]]
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             (1u64
-// CHECK-NEXT:                                 .checked_shl(
-// CHECK-NEXT:                                     37 - ((([[T_16]] as $T) & 137438953471).leading_zeros() - 27),
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                                 .unwrap_or(0u64) as $T) & 137438953471
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as $T,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! REPORT__3 {
-// CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = $X;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         __t.leading_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = x;
-// CHECK-NEXT:                         (![[T_0]]).leading_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1]] = x;
-// CHECK-NEXT:                         [[T_1]].trailing_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = x;
-// CHECK-NEXT:                         (![[T_2]]).trailing_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4]] = (![[T_3]]).leading_zeros();
-// CHECK-NEXT:                             if [[T_4]] == 128 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6]] = [[T_5]].leading_zeros();
-// CHECK-NEXT:                             if [[T_6]] == 128 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8]] = (![[T_7]]).trailing_zeros();
-// CHECK-NEXT:                             if [[T_8]] == 128 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10]] = [[T_9]].trailing_zeros();
-// CHECK-NEXT:                             if [[T_10]] == 128 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11]] = x;
-// CHECK-NEXT:                         (128 - [[T_11]].count_ones()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12]] = x;
-// CHECK-NEXT:                         [[T_12]].count_ones() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13]] = x;
-// CHECK-NEXT:                         [[T_13]].count_ones() == 1
-// CHECK-NEXT:                     }) as u32,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14]] = x;
-// CHECK-NEXT:                         (128 - [[T_14]].leading_zeros()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                             let [[T_15]] = x;
-// CHECK-NEXT:                             if [[T_15]].leading_zeros() == 128 {
-// CHECK-NEXT:                                 <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(0)
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(1)
-// CHECK-NEXT:                                     .shl_bits((127 - [[T_15]].leading_zeros()) as usize)
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         .to_u128() as u64,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                             let [[T_16]] = x;
-// CHECK-NEXT:                             if [[T_16]].count_ones() == 0 {
-// CHECK-NEXT:                                 <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(1)
-// CHECK-NEXT:                             } else if [[T_16]].count_ones() == 1 {
-// CHECK-NEXT:                                 [[T_16]]
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(1)
-// CHECK-NEXT:                                     .shl_bits((128 - [[T_16]].leading_zeros()) as usize)
-// CHECK-NEXT:                             }
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         .to_u128() as u64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:                         let [[T_10]] = (([[T_9]] as $T) & 1).trailing_zeros().min(1u32);
+// CHECK-NEXT:                         if [[T_10]] == 1 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11]] = x;
+// CHECK-NEXT:                     (1 - (([[T_11]] as $T) & 1).count_ones()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12]] = x;
+// CHECK-NEXT:                     (([[T_12]] as $T) & 1).count_ones() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13]] = x;
+// CHECK-NEXT:                     (([[T_13]] as $T) & 1).count_ones() == 1
+// CHECK-NEXT:                 }) as u32,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14]] = x;
+// CHECK-NEXT:                     (1 - ((([[T_14]] as $T) & 1).leading_zeros() - 7)) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_15]] = x;
+// CHECK-NEXT:                     if (([[T_15]] as $T) & 1).leading_zeros() - 7 == 1 {
+// CHECK-NEXT:                         0u8
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         (1u8
+// CHECK-NEXT:                             .checked_shl(0 - ((([[T_15]] as $T) & 1).leading_zeros() - 7))
+// CHECK-NEXT:                             .unwrap_or(0u8) as $T) & 1
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_16]] = x;
+// CHECK-NEXT:                     if (([[T_16]] as $T) & 1).count_ones() == 0 {
+// CHECK-NEXT:                         1u8
+// CHECK-NEXT:                     } else if (([[T_16]] as $T) & 1).count_ones() == 1 {
+// CHECK-NEXT:                         [[T_16]]
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         (1u8
+// CHECK-NEXT:                             .checked_shl(1 - ((([[T_16]] as $T) & 1).leading_zeros() - 7))
+// CHECK-NEXT:                             .unwrap_or(0u8) as $T) & 1
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! REPORT {
 // CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = $X;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         __t.leading_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = x;
-// CHECK-NEXT:                         (![[T_0]]).leading_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1]] = x;
-// CHECK-NEXT:                         [[T_1]].trailing_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = x;
-// CHECK-NEXT:                         (![[T_2]]).trailing_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4]] = (![[T_3]]).leading_zeros();
-// CHECK-NEXT:                             if [[T_4]] == 100 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6]] = [[T_5]].leading_zeros();
-// CHECK-NEXT:                             if [[T_6]] == 100 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8]] = (![[T_7]]).trailing_zeros();
-// CHECK-NEXT:                             if [[T_8]] == 100 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10]] = [[T_9]].trailing_zeros();
-// CHECK-NEXT:                             if [[T_10]] == 100 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11]] = x;
-// CHECK-NEXT:                         (100 - [[T_11]].count_ones()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12]] = x;
-// CHECK-NEXT:                         [[T_12]].count_ones() as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:         let x: $T = $X;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     __t.leading_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = x;
+// CHECK-NEXT:                     (![[T_0]]).leading_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1]] = x;
+// CHECK-NEXT:                     [[T_1]].trailing_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2]] = x;
+// CHECK-NEXT:                     (![[T_2]]).trailing_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13]] = x;
-// CHECK-NEXT:                         [[T_13]].count_ones() == 1
-// CHECK-NEXT:                     }) as u32,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14]] = x;
-// CHECK-NEXT:                         (100 - [[T_14]].leading_zeros()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                             let [[T_15]] = x;
-// CHECK-NEXT:                             if [[T_15]].leading_zeros() == 100 {
-// CHECK-NEXT:                                 <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(0)
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(1)
-// CHECK-NEXT:                                     .shl_bits((99 - [[T_15]].leading_zeros()) as usize)
-// CHECK-NEXT:                             }
+// CHECK-NEXT:                         let [[T_4]] = (![[T_3]]).leading_zeros();
+// CHECK-NEXT:                         if [[T_4]] == 100 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_6]] = [[T_5]].leading_zeros();
+// CHECK-NEXT:                         if [[T_6]] == 100 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_8]] = (![[T_7]]).trailing_zeros();
+// CHECK-NEXT:                         if [[T_8]] == 100 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_10]] = [[T_9]].trailing_zeros();
+// CHECK-NEXT:                         if [[T_10]] == 100 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11]] = x;
+// CHECK-NEXT:                     (100 - [[T_11]].count_ones()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12]] = x;
+// CHECK-NEXT:                     [[T_12]].count_ones() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13]] = x;
+// CHECK-NEXT:                     [[T_13]].count_ones() == 1
+// CHECK-NEXT:                 }) as u32,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14]] = x;
+// CHECK-NEXT:                     (100 - [[T_14]].leading_zeros()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                         let [[T_15]] = x;
+// CHECK-NEXT:                         if [[T_15]].leading_zeros() == 100 {
+// CHECK-NEXT:                             <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(0)
+// CHECK-NEXT:                         } else {
+// CHECK-NEXT:                             <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(1)
+// CHECK-NEXT:                                 .shl_bits((99 - [[T_15]].leading_zeros()) as usize)
 // CHECK-NEXT:                         }
-// CHECK-NEXT:                         .to_u128() as u64,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                             let [[T_16]] = x;
-// CHECK-NEXT:                             if [[T_16]].count_ones() == 0 {
-// CHECK-NEXT:                                 <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(1)
-// CHECK-NEXT:                             } else if [[T_16]].count_ones() == 1 {
-// CHECK-NEXT:                                 [[T_16]]
-// CHECK-NEXT:                             } else {
-// CHECK-NEXT:                                 <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(1)
-// CHECK-NEXT:                                     .shl_bits((100 - [[T_16]].leading_zeros()) as usize)
-// CHECK-NEXT:                             }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     .to_u128() as u64,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                         let [[T_16]] = x;
+// CHECK-NEXT:                         if [[T_16]].count_ones() == 0 {
+// CHECK-NEXT:                             <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(1)
+// CHECK-NEXT:                         } else if [[T_16]].count_ones() == 1 {
+// CHECK-NEXT:                             [[T_16]]
+// CHECK-NEXT:                         } else {
+// CHECK-NEXT:                             <bitint::BUint<100, 2, 16, bitint::A8>>::from_u128(1)
+// CHECK-NEXT:                                 .shl_bits((100 - [[T_16]].leading_zeros()) as usize)
 // CHECK-NEXT:                         }
-// CHECK-NEXT:                         .to_u128() as u64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     .to_u128() as u64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! REPORT__12 {
 // CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = $X;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         (((__t as $T) & 127).leading_zeros() - 1) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = x;
-// CHECK-NEXT:                         (((((![[T_0]] as $T) & 127) as $T) & 127).leading_zeros() - 1)
-// CHECK-NEXT:                             as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1]] = x;
-// CHECK-NEXT:                         (([[T_1]] as $T) & 127).trailing_zeros().min(7u32) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = x;
-// CHECK-NEXT:                         ((((![[T_2]] as $T) & 127) as $T) & 127).trailing_zeros().min(7u32)
-// CHECK-NEXT:                             as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4]] = ((((![[T_3]] as $T) & 127) as $T) & 127)
-// CHECK-NEXT:                                 .leading_zeros() - 1;
-// CHECK-NEXT:                             if [[T_4]] == 7 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6]] = (([[T_5]] as $T) & 127).leading_zeros() - 1;
-// CHECK-NEXT:                             if [[T_6]] == 7 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8]] = ((((![[T_7]] as $T) & 127) as $T) & 127)
-// CHECK-NEXT:                                 .trailing_zeros()
-// CHECK-NEXT:                                 .min(7u32);
-// CHECK-NEXT:                             if [[T_8]] == 7 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10]] = (([[T_9]] as $T) & 127).trailing_zeros().min(7u32);
-// CHECK-NEXT:                             if [[T_10]] == 7 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11]] = x;
-// CHECK-NEXT:                         (7 - (([[T_11]] as $T) & 127).count_ones()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12]] = x;
-// CHECK-NEXT:                         (([[T_12]] as $T) & 127).count_ones() as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:         let x: $T = $X;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     (((__t as $T) & 137438953471).leading_zeros() - 27) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = x;
+// CHECK-NEXT:                     (((((![[T_0]] as $T) & 137438953471) as $T) & 137438953471)
+// CHECK-NEXT:                         .leading_zeros() - 27) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1]] = x;
+// CHECK-NEXT:                     (([[T_1]] as $T) & 137438953471).trailing_zeros().min(37u32) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2]] = x;
+// CHECK-NEXT:                     ((((![[T_2]] as $T) & 137438953471) as $T) & 137438953471)
+// CHECK-NEXT:                         .trailing_zeros()
+// CHECK-NEXT:                         .min(37u32) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13]] = x;
-// CHECK-NEXT:                         (([[T_13]] as $T) & 127).count_ones() == 1
-// CHECK-NEXT:                     }) as u32,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14]] = x;
-// CHECK-NEXT:                         (7 - ((([[T_14]] as $T) & 127).leading_zeros() - 1)) as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                         let [[T_4]] = ((((![[T_3]] as $T) & 137438953471) as $T)
+// CHECK-NEXT:                                 & 137438953471)
+// CHECK-NEXT:                             .leading_zeros() - 27;
+// CHECK-NEXT:                         if [[T_4]] == 37 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_15]] = x;
-// CHECK-NEXT:                         if (([[T_15]] as $T) & 127).leading_zeros() - 1 == 7 {
-// CHECK-NEXT:                             0u8
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             (1u8
-// CHECK-NEXT:                                 .checked_shl(
-// CHECK-NEXT:                                     6 - ((([[T_15]] as $T) & 127).leading_zeros() - 1),
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                                 .unwrap_or(0u8) as $T) & 127
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
+// CHECK-NEXT:                         let [[T_6]] = (([[T_5]] as $T) & 137438953471).leading_zeros() - 27;
+// CHECK-NEXT:                         if [[T_6]] == 37 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_16]] = x;
-// CHECK-NEXT:                         if (([[T_16]] as $T) & 127).count_ones() == 0 {
-// CHECK-NEXT:                             1u8
-// CHECK-NEXT:                         } else if (([[T_16]] as $T) & 127).count_ones() == 1 {
-// CHECK-NEXT:                             [[T_16]]
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             (1u8
-// CHECK-NEXT:                                 .checked_shl(
-// CHECK-NEXT:                                     7 - ((([[T_16]] as $T) & 127).leading_zeros() - 1),
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                                 .unwrap_or(0u8) as $T) & 127
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:                         let [[T_8]] = ((((![[T_7]] as $T) & 137438953471) as $T)
+// CHECK-NEXT:                                 & 137438953471)
+// CHECK-NEXT:                             .trailing_zeros()
+// CHECK-NEXT:                             .min(37u32);
+// CHECK-NEXT:                         if [[T_8]] == 37 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_10]] = (([[T_9]] as $T) & 137438953471)
+// CHECK-NEXT:                             .trailing_zeros()
+// CHECK-NEXT:                             .min(37u32);
+// CHECK-NEXT:                         if [[T_10]] == 37 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11]] = x;
+// CHECK-NEXT:                     (37 - (([[T_11]] as $T) & 137438953471).count_ones()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12]] = x;
+// CHECK-NEXT:                     (([[T_12]] as $T) & 137438953471).count_ones() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13]] = x;
+// CHECK-NEXT:                     (([[T_13]] as $T) & 137438953471).count_ones() == 1
+// CHECK-NEXT:                 }) as u32,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14]] = x;
+// CHECK-NEXT:                     (37 - ((([[T_14]] as $T) & 137438953471).leading_zeros() - 27)) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_15]] = x;
+// CHECK-NEXT:                     if (([[T_15]] as $T) & 137438953471).leading_zeros() - 27 == 37 {
+// CHECK-NEXT:                         0u64
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         (1u64
+// CHECK-NEXT:                             .checked_shl(
+// CHECK-NEXT:                                 36 - ((([[T_15]] as $T) & 137438953471).leading_zeros() - 27),
+// CHECK-NEXT:                             )
+// CHECK-NEXT:                             .unwrap_or(0u64) as $T) & 137438953471
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as $T,
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_16]] = x;
+// CHECK-NEXT:                     if (([[T_16]] as $T) & 137438953471).count_ones() == 0 {
+// CHECK-NEXT:                         1u64
+// CHECK-NEXT:                     } else if (([[T_16]] as $T) & 137438953471).count_ones() == 1 {
+// CHECK-NEXT:                         [[T_16]]
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         (1u64
+// CHECK-NEXT:                             .checked_shl(
+// CHECK-NEXT:                                 37 - ((([[T_16]] as $T) & 137438953471).leading_zeros() - 27),
+// CHECK-NEXT:                             )
+// CHECK-NEXT:                             .unwrap_or(0u64) as $T) & 137438953471
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as $T,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! REPORT__13 {
 // CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = $X;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         (((__t as $T) & 137438953471).leading_zeros() - 27) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = x;
-// CHECK-NEXT:                         (((((![[T_0]] as $T) & 137438953471) as $T) & 137438953471)
-// CHECK-NEXT:                             .leading_zeros() - 27) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1]] = x;
-// CHECK-NEXT:                         (([[T_1]] as $T) & 137438953471).trailing_zeros().min(37u32) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = x;
-// CHECK-NEXT:                         ((((![[T_2]] as $T) & 137438953471) as $T) & 137438953471)
+// CHECK-NEXT:         let x: $T = $X;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     (((__t as $T) & 8191).leading_zeros() - 3) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = x;
+// CHECK-NEXT:                     (((((![[T_0]] as $T) & 8191) as $T) & 8191).leading_zeros() - 3) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1]] = x;
+// CHECK-NEXT:                     (([[T_1]] as $T) & 8191).trailing_zeros().min(13u32) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2]] = x;
+// CHECK-NEXT:                     ((((![[T_2]] as $T) & 8191) as $T) & 8191).trailing_zeros().min(13u32)
+// CHECK-NEXT:                         as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_4]] = ((((![[T_3]] as $T) & 8191) as $T) & 8191)
+// CHECK-NEXT:                             .leading_zeros() - 3;
+// CHECK-NEXT:                         if [[T_4]] == 13 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_6]] = (([[T_5]] as $T) & 8191).leading_zeros() - 3;
+// CHECK-NEXT:                         if [[T_6]] == 13 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_8]] = ((((![[T_7]] as $T) & 8191) as $T) & 8191)
 // CHECK-NEXT:                             .trailing_zeros()
-// CHECK-NEXT:                             .min(37u32) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4]] = ((((![[T_3]] as $T) & 137438953471) as $T)
-// CHECK-NEXT:                                     & 137438953471)
-// CHECK-NEXT:                                 .leading_zeros() - 27;
-// CHECK-NEXT:                             if [[T_4]] == 37 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6]] = (([[T_5]] as $T) & 137438953471).leading_zeros()
-// CHECK-NEXT:                                 - 27;
-// CHECK-NEXT:                             if [[T_6]] == 37 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8]] = ((((![[T_7]] as $T) & 137438953471) as $T)
-// CHECK-NEXT:                                     & 137438953471)
-// CHECK-NEXT:                                 .trailing_zeros()
-// CHECK-NEXT:                                 .min(37u32);
-// CHECK-NEXT:                             if [[T_8]] == 37 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10]] = (([[T_9]] as $T) & 137438953471)
-// CHECK-NEXT:                                 .trailing_zeros()
-// CHECK-NEXT:                                 .min(37u32);
-// CHECK-NEXT:                             if [[T_10]] == 37 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11]] = x;
-// CHECK-NEXT:                         (37 - (([[T_11]] as $T) & 137438953471).count_ones()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12]] = x;
-// CHECK-NEXT:                         (([[T_12]] as $T) & 137438953471).count_ones() as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                             .min(13u32);
+// CHECK-NEXT:                         if [[T_8]] == 13 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13]] = x;
-// CHECK-NEXT:                         (([[T_13]] as $T) & 137438953471).count_ones() == 1
-// CHECK-NEXT:                     }) as u32,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14]] = x;
-// CHECK-NEXT:                         (37 - ((([[T_14]] as $T) & 137438953471).leading_zeros() - 27))
-// CHECK-NEXT:                             as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                         let [[T_10]] = (([[T_9]] as $T) & 8191).trailing_zeros().min(13u32);
+// CHECK-NEXT:                         if [[T_10]] == 13 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11]] = x;
+// CHECK-NEXT:                     (13 - (([[T_11]] as $T) & 8191).count_ones()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12]] = x;
+// CHECK-NEXT:                     (([[T_12]] as $T) & 8191).count_ones() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13]] = x;
+// CHECK-NEXT:                     (([[T_13]] as $T) & 8191).count_ones() == 1
+// CHECK-NEXT:                 }) as u32,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14]] = x;
+// CHECK-NEXT:                     (13 - ((([[T_14]] as $T) & 8191).leading_zeros() - 3)) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_15]] = x;
+// CHECK-NEXT:                     if (([[T_15]] as $T) & 8191).leading_zeros() - 3 == 13 {
+// CHECK-NEXT:                         0u16
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         (1u16
+// CHECK-NEXT:                             .checked_shl(
+// CHECK-NEXT:                                 12 - ((([[T_15]] as $T) & 8191).leading_zeros() - 3),
+// CHECK-NEXT:                             )
+// CHECK-NEXT:                             .unwrap_or(0u16) as $T) & 8191
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_16]] = x;
+// CHECK-NEXT:                     if (([[T_16]] as $T) & 8191).count_ones() == 0 {
+// CHECK-NEXT:                         1u16
+// CHECK-NEXT:                     } else if (([[T_16]] as $T) & 8191).count_ones() == 1 {
+// CHECK-NEXT:                         [[T_16]]
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         (1u16
+// CHECK-NEXT:                             .checked_shl(
+// CHECK-NEXT:                                 13 - ((([[T_16]] as $T) & 8191).leading_zeros() - 3),
+// CHECK-NEXT:                             )
+// CHECK-NEXT:                             .unwrap_or(0u16) as $T) & 8191
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! REPORT__3 {
+// CHECK-NEXT:     ($T:ty, $X:expr) => {
+// CHECK-NEXT:         let x: $T = $X;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     __t.leading_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = x;
+// CHECK-NEXT:                     (![[T_0]]).leading_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1]] = x;
+// CHECK-NEXT:                     [[T_1]].trailing_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2]] = x;
+// CHECK-NEXT:                     (![[T_2]]).trailing_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = x;
 // CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_4]] = (![[T_3]]).leading_zeros();
+// CHECK-NEXT:                         if [[T_4]] == 65 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_6]] = [[T_5]].leading_zeros();
+// CHECK-NEXT:                         if [[T_6]] == 65 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_8]] = (![[T_7]]).trailing_zeros();
+// CHECK-NEXT:                         if [[T_8]] == 65 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_10]] = [[T_9]].trailing_zeros();
+// CHECK-NEXT:                         if [[T_10]] == 65 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11]] = x;
+// CHECK-NEXT:                     (65 - [[T_11]].count_ones()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12]] = x;
+// CHECK-NEXT:                     [[T_12]].count_ones() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13]] = x;
+// CHECK-NEXT:                     [[T_13]].count_ones() == 1
+// CHECK-NEXT:                 }) as u32,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14]] = x;
+// CHECK-NEXT:                     (65 - [[T_14]].leading_zeros()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
 // CHECK-NEXT:                         let [[T_15]] = x;
-// CHECK-NEXT:                         if (([[T_15]] as $T) & 137438953471).leading_zeros() - 27 == 37 {
-// CHECK-NEXT:                             0u64
+// CHECK-NEXT:                         if [[T_15]].leading_zeros() == 65 {
+// CHECK-NEXT:                             <bitint::BUint<65, 2, 16, bitint::A8>>::from_u128(0)
 // CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             (1u64
-// CHECK-NEXT:                                 .checked_shl(
-// CHECK-NEXT:                                     36 - ((([[T_15]] as $T) & 137438953471).leading_zeros() - 27),
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                                 .unwrap_or(0u64) as $T) & 137438953471
+// CHECK-NEXT:                             <bitint::BUint<65, 2, 16, bitint::A8>>::from_u128(1)
+// CHECK-NEXT:                                 .shl_bits((64 - [[T_15]].leading_zeros()) as usize)
 // CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as $T,
-// CHECK-NEXT:                     ({
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     .to_u128() as u64,
+// CHECK-NEXT:                 {
 // CHECK-NEXT:                         let [[T_16]] = x;
-// CHECK-NEXT:                         if (([[T_16]] as $T) & 137438953471).count_ones() == 0 {
-// CHECK-NEXT:                             1u64
-// CHECK-NEXT:                         } else if (([[T_16]] as $T) & 137438953471).count_ones() == 1 {
+// CHECK-NEXT:                         if [[T_16]].count_ones() == 0 {
+// CHECK-NEXT:                             <bitint::BUint<65, 2, 16, bitint::A8>>::from_u128(1)
+// CHECK-NEXT:                         } else if [[T_16]].count_ones() == 1 {
 // CHECK-NEXT:                             [[T_16]]
 // CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             (1u64
-// CHECK-NEXT:                                 .checked_shl(
-// CHECK-NEXT:                                     37 - ((([[T_16]] as $T) & 137438953471).leading_zeros() - 27),
-// CHECK-NEXT:                                 )
-// CHECK-NEXT:                                 .unwrap_or(0u64) as $T) & 137438953471
+// CHECK-NEXT:                             <bitint::BUint<65, 2, 16, bitint::A8>>::from_u128(1)
+// CHECK-NEXT:                                 .shl_bits((65 - [[T_16]].leading_zeros()) as usize)
 // CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as $T,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     .to_u128() as u64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! REPORT__14 {
 // CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = (($X) as $T) & 1;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         (((__t as $T) & 1).leading_zeros() - 7) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = x;
-// CHECK-NEXT:                         (((((![[T_0]] as $T) & 1) as $T) & 1).leading_zeros() - 7) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1]] = x;
-// CHECK-NEXT:                         (([[T_1]] as $T) & 1).trailing_zeros().min(1u32) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = x;
-// CHECK-NEXT:                         ((((![[T_2]] as $T) & 1) as $T) & 1).trailing_zeros().min(1u32)
-// CHECK-NEXT:                             as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4]] = ((((![[T_3]] as $T) & 1) as $T) & 1).leading_zeros()
-// CHECK-NEXT:                                 - 7;
-// CHECK-NEXT:                             if [[T_4]] == 1 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6]] = (([[T_5]] as $T) & 1).leading_zeros() - 7;
-// CHECK-NEXT:                             if [[T_6]] == 1 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8]] = ((((![[T_7]] as $T) & 1) as $T) & 1)
-// CHECK-NEXT:                                 .trailing_zeros()
-// CHECK-NEXT:                                 .min(1u32);
-// CHECK-NEXT:                             if [[T_8]] == 1 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10]] = (([[T_9]] as $T) & 1).trailing_zeros().min(1u32);
-// CHECK-NEXT:                             if [[T_10]] == 1 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11]] = x;
-// CHECK-NEXT:                         (1 - (([[T_11]] as $T) & 1).count_ones()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12]] = x;
-// CHECK-NEXT:                         (([[T_12]] as $T) & 1).count_ones() as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:         let x: $T = ($X) as $T;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     __t.leading_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = x;
+// CHECK-NEXT:                     (![[T_0]] as $T).leading_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1]] = x;
+// CHECK-NEXT:                     [[T_1]].trailing_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2]] = x;
+// CHECK-NEXT:                     (![[T_2]] as $T).trailing_zeros() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13]] = x;
-// CHECK-NEXT:                         (([[T_13]] as $T) & 1).count_ones() == 1
-// CHECK-NEXT:                     }) as u32,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14]] = x;
-// CHECK-NEXT:                         (1 - ((([[T_14]] as $T) & 1).leading_zeros() - 7)) as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                         let [[T_4]] = (![[T_3]] as $T).leading_zeros();
+// CHECK-NEXT:                         if [[T_4]] == 64 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_15]] = x;
-// CHECK-NEXT:                         if (([[T_15]] as $T) & 1).leading_zeros() - 7 == 1 {
-// CHECK-NEXT:                             0u8
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             (1u8
-// CHECK-NEXT:                                 .checked_shl(0 - ((([[T_15]] as $T) & 1).leading_zeros() - 7))
-// CHECK-NEXT:                                 .unwrap_or(0u8) as $T) & 1
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
+// CHECK-NEXT:                         let [[T_6]] = [[T_5]].leading_zeros();
+// CHECK-NEXT:                         if [[T_6]] == 64 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_16]] = x;
-// CHECK-NEXT:                         if (([[T_16]] as $T) & 1).count_ones() == 0 {
-// CHECK-NEXT:                             1u8
-// CHECK-NEXT:                         } else if (([[T_16]] as $T) & 1).count_ones() == 1 {
-// CHECK-NEXT:                             [[T_16]]
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             (1u8
-// CHECK-NEXT:                                 .checked_shl(1 - ((([[T_16]] as $T) & 1).leading_zeros() - 7))
-// CHECK-NEXT:                                 .unwrap_or(0u8) as $T) & 1
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as u64,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:                         let [[T_8]] = (![[T_7]] as $T).trailing_zeros();
+// CHECK-NEXT:                         if [[T_8]] == 64 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_10]] = [[T_9]].trailing_zeros();
+// CHECK-NEXT:                         if [[T_10]] == 64 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11]] = x;
+// CHECK-NEXT:                     (64 - [[T_11]].count_ones()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12]] = x;
+// CHECK-NEXT:                     [[T_12]].count_ones() as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13]] = x;
+// CHECK-NEXT:                     [[T_13]].count_ones() == 1
+// CHECK-NEXT:                 }) as u32,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14]] = x;
+// CHECK-NEXT:                     (64 - [[T_14]].leading_zeros()) as u32
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_15]] = x;
+// CHECK-NEXT:                     if [[T_15]].leading_zeros() == 64 {
+// CHECK-NEXT:                         0u64
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         1u64.checked_shl(63 - [[T_15]].leading_zeros()).unwrap_or(0u64)
+// CHECK-NEXT:                             as $T
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as $T,
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_16]] = x;
+// CHECK-NEXT:                     if [[T_16]].count_ones() == 0 {
+// CHECK-NEXT:                         1u64
+// CHECK-NEXT:                     } else if [[T_16]].count_ones() == 1 {
+// CHECK-NEXT:                         [[T_16]]
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         1u64.checked_shl(64 - [[T_16]].leading_zeros()).unwrap_or(0u64)
+// CHECK-NEXT:                             as $T
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as $T,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! REPORT__15 {
 // CHECK-NEXT:     ($T:ty, $X:expr) => {
-// CHECK-NEXT:         '__slate_label_0: loop {
-// CHECK-NEXT:             let x: $T = ($X) as $T;
-// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 slate_support::printf(
-// CHECK-NEXT:                     c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let __t = x;
-// CHECK-NEXT:                         __t.leading_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_0]] = x;
-// CHECK-NEXT:                         (![[T_0]] as $T).leading_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_1]] = x;
-// CHECK-NEXT:                         [[T_1]].trailing_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_2]] = x;
-// CHECK-NEXT:                         (![[T_2]] as $T).trailing_zeros() as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_3]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_4]] = (![[T_3]] as $T).leading_zeros();
-// CHECK-NEXT:                             if [[T_4]] == 64 { 0u32 } else { [[T_4]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_5]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_6]] = [[T_5]].leading_zeros();
-// CHECK-NEXT:                             if [[T_6]] == 64 { 0u32 } else { [[T_6]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_7]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_8]] = (![[T_7]] as $T).trailing_zeros();
-// CHECK-NEXT:                             if [[T_8]] == 64 { 0u32 } else { [[T_8]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_9]] = x;
-// CHECK-NEXT:                         ({
-// CHECK-NEXT:                             let [[T_10]] = [[T_9]].trailing_zeros();
-// CHECK-NEXT:                             if [[T_10]] == 64 { 0u32 } else { [[T_10]] + 1 }
-// CHECK-NEXT:                         }) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_11]] = x;
-// CHECK-NEXT:                         (64 - [[T_11]].count_ones()) as u32
-// CHECK-NEXT:                     },
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_12]] = x;
-// CHECK-NEXT:                         [[T_12]].count_ones() as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:         let x: $T = ($X) as $T;
+// CHECK-NEXT:         let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             slate_support::printf(
+// CHECK-NEXT:                 c"%u %u %u %u %u %u %u %u %u %u %u %u %llu %llu\n".as_ptr(),
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let __t = x;
+// CHECK-NEXT:                     __t.leading_zeros() as $T
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_0]] = x;
+// CHECK-NEXT:                     (![[T_0]] as $T).leading_zeros() as $T
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_1]] = x;
+// CHECK-NEXT:                     [[T_1]].trailing_zeros() as $T
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_2]] = x;
+// CHECK-NEXT:                     (![[T_2]] as $T).trailing_zeros() as $T
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_3]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_13]] = x;
-// CHECK-NEXT:                         [[T_13]].count_ones() == 1
-// CHECK-NEXT:                     }) as u32,
-// CHECK-NEXT:                     {
-// CHECK-NEXT:                         let [[T_14]] = x;
-// CHECK-NEXT:                         (64 - [[T_14]].leading_zeros()) as u32
-// CHECK-NEXT:                     },
+// CHECK-NEXT:                         let [[T_4]] = (![[T_3]] as $T).leading_zeros();
+// CHECK-NEXT:                         if [[T_4]] == 32 { 0u32 } else { [[T_4]] + 1 }
+// CHECK-NEXT:                     }) as $T
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_5]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_15]] = x;
-// CHECK-NEXT:                         if [[T_15]].leading_zeros() == 64 {
-// CHECK-NEXT:                             0u64
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             1u64.checked_shl(63 - [[T_15]].leading_zeros()).unwrap_or(0u64)
-// CHECK-NEXT:                                 as $T
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as $T,
+// CHECK-NEXT:                         let [[T_6]] = [[T_5]].leading_zeros();
+// CHECK-NEXT:                         if [[T_6]] == 32 { 0u32 } else { [[T_6]] + 1 }
+// CHECK-NEXT:                     }) as $T
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_7]] = x;
 // CHECK-NEXT:                     ({
-// CHECK-NEXT:                         let [[T_16]] = x;
-// CHECK-NEXT:                         if [[T_16]].count_ones() == 0 {
-// CHECK-NEXT:                             1u64
-// CHECK-NEXT:                         } else if [[T_16]].count_ones() == 1 {
-// CHECK-NEXT:                             [[T_16]]
-// CHECK-NEXT:                         } else {
-// CHECK-NEXT:                             1u64.checked_shl(64 - [[T_16]].leading_zeros()).unwrap_or(0u64)
-// CHECK-NEXT:                                 as $T
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                     }) as $T,
-// CHECK-NEXT:                 )
-// CHECK-NEXT:             };
-// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:                         let [[T_8]] = (![[T_7]] as $T).trailing_zeros();
+// CHECK-NEXT:                         if [[T_8]] == 32 { 0u32 } else { [[T_8]] + 1 }
+// CHECK-NEXT:                     }) as $T
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_9]] = x;
+// CHECK-NEXT:                     ({
+// CHECK-NEXT:                         let [[T_10]] = [[T_9]].trailing_zeros();
+// CHECK-NEXT:                         if [[T_10]] == 32 { 0u32 } else { [[T_10]] + 1 }
+// CHECK-NEXT:                     }) as $T
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_11]] = x;
+// CHECK-NEXT:                     (32 - [[T_11]].count_ones()) as $T
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_12]] = x;
+// CHECK-NEXT:                     [[T_12]].count_ones() as $T
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_13]] = x;
+// CHECK-NEXT:                     [[T_13]].count_ones() == 1
+// CHECK-NEXT:                 }) as $T,
+// CHECK-NEXT:                 {
+// CHECK-NEXT:                     let [[T_14]] = x;
+// CHECK-NEXT:                     (32 - [[T_14]].leading_zeros()) as $T
+// CHECK-NEXT:                 },
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_15]] = x;
+// CHECK-NEXT:                     if [[T_15]].leading_zeros() == 32 {
+// CHECK-NEXT:                         0u32
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         1u32.checked_shl(31 - [[T_15]].leading_zeros()).unwrap_or(0u32)
+// CHECK-NEXT:                             as $T
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:                 ({
+// CHECK-NEXT:                     let [[T_16]] = x;
+// CHECK-NEXT:                     if [[T_16]].count_ones() == 0 {
+// CHECK-NEXT:                         1u32
+// CHECK-NEXT:                     } else if [[T_16]].count_ones() == 1 {
+// CHECK-NEXT:                         [[T_16]]
+// CHECK-NEXT:                     } else {
+// CHECK-NEXT:                         1u32.checked_shl(32 - [[T_16]].leading_zeros()).unwrap_or(0u32)
+// CHECK-NEXT:                             as $T
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                 }) as u64,
+// CHECK-NEXT:             )
+// CHECK-NEXT:         };
+// CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -1666,27 +1565,27 @@ int main(void) {
 // CHECK-NEXT:         REPORT!(bitint::BUint<100, 2, 16, bitint::A8>, w);
 // CHECK-NEXT:         REPORT!(bitint::BUint<100, 2, 16, bitint::A8>, w.shl_bits(30 as usize));
 // CHECK-NEXT:         REPORT!(bitint::BUint<100, 2, 16, bitint::A8>, w.bitnot());
-// CHECK-NEXT:         REPORT__2!(
+// CHECK-NEXT:         REPORT__3!(
 // CHECK-NEXT:             bitint::BUint<65, 2, 16, bitint::A8>,
 // CHECK-NEXT:             <bitint::BUint<65, 2, 16, bitint::A8>>::from_u128(
 // CHECK-NEXT:                 seeds.0[i as usize] as u128,
 // CHECK-NEXT:             )
 // CHECK-NEXT:         );
-// CHECK-NEXT:         REPORT__2!(
+// CHECK-NEXT:         REPORT__3!(
 // CHECK-NEXT:             bitint::BUint<65, 2, 16, bitint::A8>,
 // CHECK-NEXT:             <bitint::BUint<65, 2, 16, bitint::A8>>::from_u128(
 // CHECK-NEXT:                     seeds.0[i as usize] as u128,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .bitnot()
 // CHECK-NEXT:         );
-// CHECK-NEXT:         REPORT__3!(
+// CHECK-NEXT:         REPORT__2!(
 // CHECK-NEXT:             bitint::BUint<128, 2, 16, bitint::A8>,
 // CHECK-NEXT:             <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
 // CHECK-NEXT:                     seeds.0[i as usize] as u128,
 // CHECK-NEXT:                 )
 // CHECK-NEXT:                 .shl_bits(64 as usize)
 // CHECK-NEXT:         );
-// CHECK-NEXT:         REPORT__3!(
+// CHECK-NEXT:         REPORT__2!(
 // CHECK-NEXT:             bitint::BUint<128, 2, 16, bitint::A8>,
 // CHECK-NEXT:             <bitint::BUint<128, 2, 16, bitint::A8>>::from_u128(
 // CHECK-NEXT:                     seeds.0[i as usize] as u128,
@@ -1703,18 +1602,18 @@ int main(void) {
 // CHECK-NEXT:         < (core::mem::size_of::<[u64; 24]>() as u64)
 // CHECK-NEXT:             / (core::mem::size_of::<u64>() as u64) {
 // CHECK-NEXT:         let s: u64 = seeds.0[i as usize];
-// CHECK-NEXT:         REPORT__5!(u8, s);
-// CHECK-NEXT:         REPORT__4!(u16, s);
-// CHECK-NEXT:         REPORT__8!(u32, s);
-// CHECK-NEXT:         REPORT__9!(u64, s);
-// CHECK-NEXT:         REPORT__14!(u8, s);
-// CHECK-NEXT:         REPORT__7!(u8, s);
-// CHECK-NEXT:         REPORT__10!(u16, s);
-// CHECK-NEXT:         REPORT__11!(u64, s);
-// CHECK-NEXT:         REPORT__15!(u64, s);
-// CHECK-NEXT:         REPORT__12!(u8, (!((s as u8) & 127) as u8) & 127);
-// CHECK-NEXT:         REPORT__6!(u16, (!((s as u16) & 8191) as u16) & 8191);
-// CHECK-NEXT:         REPORT__13!(u64, (!((s as u64) & 137438953471) as u64) & 137438953471);
+// CHECK-NEXT:         REPORT__6!(u8, s);
+// CHECK-NEXT:         REPORT__5!(u16, s);
+// CHECK-NEXT:         REPORT__15!(u32, s);
+// CHECK-NEXT:         REPORT__7!(u64, s);
+// CHECK-NEXT:         REPORT__11!(u8, s);
+// CHECK-NEXT:         REPORT__10!(u8, s);
+// CHECK-NEXT:         REPORT__9!(u16, s);
+// CHECK-NEXT:         REPORT__4!(u64, s);
+// CHECK-NEXT:         REPORT__14!(u64, s);
+// CHECK-NEXT:         REPORT__8!(u8, (!((s as u8) & 127) as u8) & 127);
+// CHECK-NEXT:         REPORT__13!(u16, (!((s as u16) & 8191) as u16) & 8191);
+// CHECK-NEXT:         REPORT__12!(u64, (!((s as u64) & 137438953471) as u64) & 137438953471);
 // CHECK-NEXT:         i = i.wrapping_add(1);
 // CHECK-NEXT:     }
 // CHECK-NEXT:     wide();

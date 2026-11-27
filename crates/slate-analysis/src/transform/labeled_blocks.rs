@@ -6,7 +6,7 @@ use slate_parser::ir::{
 };
 
 use super::PassContext;
-use super::inline_temporaries::{children, evaluations};
+use super::inline_temporaries::{children, children_and_expansions, evaluations};
 use super::structure_goto::jump_lists;
 use super::truth_canonicalize::negation;
 
@@ -60,7 +60,7 @@ impl Pass<'_> {
                 changed = true;
                 continue;
             }
-            if self.dissolve(body, index) {
+            if self.dissolve(body, index) || self.loop_block(body, index) {
                 changed = true;
                 continue;
             }
@@ -111,7 +111,7 @@ impl Pass<'_> {
                 changed |= self.list(body, Some(Exit::Continue(id)));
             }
             other => {
-                for child in children(other) {
+                for child in children_and_expansions(other) {
                     changed |= self.list(child, None);
                 }
             }
@@ -273,6 +273,47 @@ impl Pass<'_> {
         self.retired.push(body[index].id);
         body.splice(index..=index, inner);
         true
+    }
+
+    fn loop_block(&mut self, body: &mut Body, index: usize) -> bool {
+        let Statement::LabeledBlock { id, body: inner } = &mut body[index].value else {
+            return false;
+        };
+        let id = *id;
+        let [only] = inner.as_mut_slice() else {
+            return false;
+        };
+        let target = match &only.value {
+            Statement::For { id, .. }
+            | Statement::While { id, .. }
+            | Statement::DoWhile { id, .. } => *id,
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only a loop's own break can replace the block's exit"
+            )]
+            _ => return false,
+        };
+        if nested_breaks(inner, id) != all_breaks(inner, id) {
+            return false;
+        }
+        retarget(inner, id, target);
+        let block = body.remove(index);
+        self.retired.push(block.id);
+        if let Statement::LabeledBlock { body: inner, .. } = block.value {
+            body.splice(index..index, inner);
+        }
+        true
+    }
+}
+
+fn retarget(body: &mut Body, from: BindingId, to: BindingId) {
+    for statement in body {
+        if matches!(statement.value, Statement::Break(target) if target == from) {
+            statement.value = Statement::Break(to);
+        }
+        for child in children(&mut statement.value) {
+            retarget(child, from, to);
+        }
     }
 }
 

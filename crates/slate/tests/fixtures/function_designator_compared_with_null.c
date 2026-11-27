@@ -28,15 +28,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! BUILD_CHECK {
 // CHECK-NEXT:     ($cond:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             if $cond {
-// CHECK-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:                 unsafe { slate_support::puts(c"unreachable".as_ptr()) };
-// CHECK-NEXT:                 unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:         if $cond {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { slate_support::puts(c"unreachable".as_ptr()) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

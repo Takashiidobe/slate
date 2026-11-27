@@ -350,31 +350,29 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: fn loop_guards(counter: *mut i32, n: i32) -> i32 {
 // CHECK-NEXT:     let mut total: i32 = 0;
-// CHECK-NEXT:     '[[SLATE_BREAK_0]]: {
-// CHECK-NEXT:         for i in 0..n {
-// CHECK-NEXT:             let mut scope: guard = guard_take(counter, 1i32);
-// CHECK-NEXT:             let __slate_cleanup_ptr_1 = core::ptr::addr_of_mut!(scope) as *mut _;
-// CHECK-NEXT:             let __slate_cleanup_1 = ::slate_support::Guard(
-// CHECK-NEXT:                 &mut || guard_release(__slate_cleanup_ptr_1 as *mut _),
-// CHECK-NEXT:             );
-// CHECK-NEXT:             while !scope.lock.is_null() || false {
-// CHECK-NEXT:                 if false {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 } else {
-// CHECK-NEXT:                     let mut c: i8 = 99;
-// CHECK-NEXT:                     let __slate_cleanup_ptr_3 = core::ptr::addr_of_mut!(c) as *mut _;
-// CHECK-NEXT:                     let __slate_cleanup_3 = ::slate_support::Guard(
-// CHECK-NEXT:                         &mut || note(__slate_cleanup_ptr_3 as *mut _),
-// CHECK-NEXT:                     );
-// CHECK-NEXT:                     if i != 1 {
-// CHECK-NEXT:                         if i == 3 {
-// CHECK-NEXT:                             break '[[SLATE_BREAK_0]];
-// CHECK-NEXT:                         }
-// CHECK-NEXT:                         total += unsafe { *counter };
-// CHECK-NEXT:                     }
-// CHECK-NEXT:                 }
+// CHECK-NEXT:     '[[SLATE_BREAK_1:__slate_break_[0-9]+]]: for i in 0..n {
+// CHECK-NEXT:         let mut scope: guard = guard_take(counter, 1i32);
+// CHECK-NEXT:         let __slate_cleanup_ptr_0 = core::ptr::addr_of_mut!(scope) as *mut _;
+// CHECK-NEXT:         let __slate_cleanup_0 = ::slate_support::Guard(
+// CHECK-NEXT:             &mut || guard_release(__slate_cleanup_ptr_0 as *mut _),
+// CHECK-NEXT:         );
+// CHECK-NEXT:         while !scope.lock.is_null() || false {
+// CHECK-NEXT:             if false {
 // CHECK-NEXT:                 break;
+// CHECK-NEXT:             } else {
+// CHECK-NEXT:                 let mut c: i8 = 99;
+// CHECK-NEXT:                 let __slate_cleanup_ptr_2 = core::ptr::addr_of_mut!(c) as *mut _;
+// CHECK-NEXT:                 let __slate_cleanup_2 = ::slate_support::Guard(
+// CHECK-NEXT:                     &mut || note(__slate_cleanup_ptr_2 as *mut _),
+// CHECK-NEXT:                 );
+// CHECK-NEXT:                 if i != 1 {
+// CHECK-NEXT:                     if i == 3 {
+// CHECK-NEXT:                         break '[[SLATE_BREAK_1]];
+// CHECK-NEXT:                     }
+// CHECK-NEXT:                     total += unsafe { *counter };
+// CHECK-NEXT:                 }
 // CHECK-NEXT:             }
+// CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     }
 // CHECK-NEXT:     total

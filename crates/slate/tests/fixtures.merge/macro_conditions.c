@@ -162,15 +162,10 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! Tracecv {
 // CHECK-NEXT:     ($c:expr, $x__0:expr $(, $x:expr)*) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             if (unsafe { verbose }) > 1 && $c {
-// CHECK-NEXT:                 let _ = std::io::Write::flush(&mut std::io::stdout());
-// CHECK-NEXT:                 unsafe { slate_support::printf(($x__0) as *const c_char, $($x,)*) };
-// CHECK-NEXT:                 unsafe { fflush(core::ptr::null_mut()) };
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:         if (unsafe { verbose }) > 1 && $c {
+// CHECK-NEXT:             let _ = std::io::Write::flush(&mut std::io::stdout());
+// CHECK-NEXT:             unsafe { slate_support::printf(($x__0) as *const c_char, $($x,)*) };
+// CHECK-NEXT:             unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }

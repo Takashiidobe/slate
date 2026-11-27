@@ -33,12 +33,12 @@ impl FunctionLowerer<'_, '_> {
         structure::label_needed(body, &label).then_some(label)
     }
 
-    fn continue_block(&self, id: BindingId, body: Vec<Stmt>) -> Stmt {
+    fn push_continue_block(&self, into: &mut Vec<Stmt>, id: BindingId, body: Vec<Stmt>) {
         let label = self.continue_label(id);
         if structure::uses_label_or_exprs(&body, &label) {
-            Stmt::LabeledBlock { label, body }
+            into.push(Stmt::LabeledBlock { label, body });
         } else {
-            Stmt::Scope { body }
+            structure::push_scoped(into, body);
         }
     }
 
@@ -596,7 +596,7 @@ impl FunctionLowerer<'_, '_> {
                     if matches!(cond, Expr::Value(rust::RustValue::Bool(true))) {
                         let mut body = body;
                         let label = self.loop_label(*id, &mut body);
-                        return Ok(Stmt::Loop { label, body });
+                        return Ok(structure::loop_or_while(label, body));
                     }
                     let mut stmts = body;
                     let label = self.loop_label(*id, &mut stmts);
@@ -612,7 +612,7 @@ impl FunctionLowerer<'_, '_> {
                         then_body: vec![Stmt::Break(None)],
                         else_body: Vec::new(),
                     });
-                    loop_body.push(Stmt::Scope { body });
+                    loop_body.extend(body);
                     let label = self.loop_label(*id, &mut loop_body);
                     Stmt::Loop {
                         label,
@@ -658,13 +658,13 @@ impl FunctionLowerer<'_, '_> {
                 };
                 match increment {
                     Some(increment) => {
-                        loop_body.push(self.continue_block(*id, body));
+                        self.push_continue_block(&mut loop_body, *id, body);
                         loop_body.extend(self.lower_evaluation_statements(increment)?);
                     }
-                    None => loop_body.push(Stmt::Scope { body }),
+                    None => loop_body.extend(body),
                 }
                 let label = self.loop_label(*id, &mut loop_body);
-                statements.push(match head {
+                let lowered = match head {
                     Some(cond) => Stmt::While {
                         label,
                         cond,
@@ -673,11 +673,12 @@ impl FunctionLowerer<'_, '_> {
                             tail: None,
                         },
                     },
-                    None => Stmt::Loop {
-                        label,
-                        body: loop_body,
-                    },
-                });
+                    None => structure::loop_or_while(label, loop_body),
+                };
+                if statements.is_empty() {
+                    return Ok(lowered);
+                }
+                statements.push(lowered);
                 Stmt::Scope { body: statements }
             }
             ir::Statement::DoWhile {
@@ -686,7 +687,8 @@ impl FunctionLowerer<'_, '_> {
                 condition,
             } => {
                 let body = self.lower_statement_list(body)?;
-                let mut loop_body = vec![self.continue_block(*id, body)];
+                let mut loop_body = Vec::new();
+                self.push_continue_block(&mut loop_body, *id, body);
                 let (prefix, condition) = self.lower_exit_condition(condition)?;
                 loop_body.extend(prefix);
                 loop_body.push(Stmt::If {
@@ -695,10 +697,7 @@ impl FunctionLowerer<'_, '_> {
                     else_body: Vec::new(),
                 });
                 let label = self.loop_label(*id, &mut loop_body);
-                Stmt::Loop {
-                    label,
-                    body: loop_body,
-                }
+                structure::loop_or_while(label, loop_body)
             }
             ir::Statement::Switch {
                 id,

@@ -216,16 +216,21 @@ int main(void) {
 // CHECK: {{^}}#![allow(non_camel_case_types, non_snake_case, non_upper_case_globals)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
+// CHECK-NEXT: macro_rules! CHECK__3 {
+// CHECK-NEXT:     ($value:expr, $expected:expr, $code:expr) => {
+// CHECK-NEXT:         {
+// CHECK-NEXT:             if ($value) != (($expected) as i64) {
+// CHECK-NEXT:                 return $code;
+// CHECK-NEXT:             }
+// CHECK-NEXT:         }
+// CHECK-NEXT:     };
+// CHECK-NEXT: }
+// CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! CHECK {
 // CHECK-NEXT:     ($value:expr, $expected:expr, $code:expr) => {
 // CHECK-NEXT:         {
-// CHECK-NEXT:             loop {
-// CHECK-NEXT:                 if ($value) != $expected {
-// CHECK-NEXT:                     return $code;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 if true {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             if ($value) != $expected {
+// CHECK-NEXT:                 return $code;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
@@ -234,28 +239,8 @@ int main(void) {
 // CHECK-NEXT: macro_rules! CHECK__4 {
 // CHECK-NEXT:     ($value:expr, $expected:expr, $code:expr) => {
 // CHECK-NEXT:         {
-// CHECK-NEXT:             loop {
-// CHECK-NEXT:                 if ($value) != (($expected) as *mut ()) {
-// CHECK-NEXT:                     return $code;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 if true {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
-// CHECK-NEXT:     };
-// CHECK-NEXT: }
-// CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! CHECK__3 {
-// CHECK-NEXT:     ($value:expr, $expected:expr, $code:expr) => {
-// CHECK-NEXT:         {
-// CHECK-NEXT:             loop {
-// CHECK-NEXT:                 if ($value) != (($expected) as i64) {
-// CHECK-NEXT:                     return $code;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 if true {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             if ($value) != (($expected) as *mut ()) {
+// CHECK-NEXT:                 return $code;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
@@ -264,13 +249,8 @@ int main(void) {
 // CHECK-NEXT: macro_rules! CHECK__2 {
 // CHECK-NEXT:     ($value:expr, $expected:expr, $code:expr) => {
 // CHECK-NEXT:         {
-// CHECK-NEXT:             loop {
-// CHECK-NEXT:                 if ($value) != (($expected) as u64) {
-// CHECK-NEXT:                     return $code;
-// CHECK-NEXT:                 }
-// CHECK-NEXT:                 if true {
-// CHECK-NEXT:                     break;
-// CHECK-NEXT:                 }
+// CHECK-NEXT:             if ($value) != (($expected) as u64) {
+// CHECK-NEXT:                 return $code;
 // CHECK-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };

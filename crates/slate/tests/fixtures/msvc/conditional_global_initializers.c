@@ -99,28 +99,50 @@ int main(void) {
 // CHECK-NEXT: #![allow(suspicious_runtime_symbol_definitions)]
 // CHECK-NEXT: #![no_main]
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! CHECK__2 {
+// X86_64-PC-WINDOWS-MSVC-NEXT: macro_rules! CHECK {
+// I686-PC-WINDOWS-MSVC-NEXT: macro_rules! CHECK__2 {
+// AARCH64-PC-WINDOWS-MSVC-NEXT: macro_rules! CHECK__2 {
 // CHECK-NEXT:     ($c:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             if !(($c) != 0) {
-// CHECK-NEXT:                 unsafe { abort() };
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// X86_64-PC-WINDOWS-MSVC-NEXT:         if !$c {
+// X86_64-PC-WINDOWS-MSVC-NEXT:             unsafe { abort() };
+// I686-PC-WINDOWS-MSVC-NEXT:         loop {
+// I686-PC-WINDOWS-MSVC-NEXT:             if !(($c) != 0) {
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { abort() };
+// I686-PC-WINDOWS-MSVC-NEXT:             }
+// I686-PC-WINDOWS-MSVC-NEXT:             if true {
+// I686-PC-WINDOWS-MSVC-NEXT:                 break;
+// I686-PC-WINDOWS-MSVC-NEXT:             }
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         loop {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             if !(($c) != 0) {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 unsafe { abort() };
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             }
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             if true {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 break;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! CHECK {
+// X86_64-PC-WINDOWS-MSVC-NEXT: macro_rules! CHECK__2 {
+// I686-PC-WINDOWS-MSVC-NEXT: macro_rules! CHECK {
+// AARCH64-PC-WINDOWS-MSVC-NEXT: macro_rules! CHECK {
 // CHECK-NEXT:     ($c:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             if !$c {
-// CHECK-NEXT:                 unsafe { abort() };
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// X86_64-PC-WINDOWS-MSVC-NEXT:         if !(($c) != 0) {
+// X86_64-PC-WINDOWS-MSVC-NEXT:             unsafe { abort() };
+// I686-PC-WINDOWS-MSVC-NEXT:         loop {
+// I686-PC-WINDOWS-MSVC-NEXT:             if !$c {
+// I686-PC-WINDOWS-MSVC-NEXT:                 unsafe { abort() };
+// I686-PC-WINDOWS-MSVC-NEXT:             }
+// I686-PC-WINDOWS-MSVC-NEXT:             if true {
+// I686-PC-WINDOWS-MSVC-NEXT:                 break;
+// I686-PC-WINDOWS-MSVC-NEXT:             }
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         loop {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             if !$c {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 unsafe { abort() };
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             }
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             if true {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 break;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             }
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -454,43 +476,51 @@ int main(void) {
 // CHECK-NEXT:     );
 // CHECK-NEXT:     CHECK!(
 // CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[V_0:__v[0-9]+]]: bool;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             let mut [[V_0:__v[0-9]+]]: bool;
+// I686-PC-WINDOWS-MSVC-NEXT:             let mut [[V_1:__v[0-9]+]]: bool;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             let mut [[V_1:__v[0-9]+]]: bool;
 // CHECK-NEXT:             if same(names.0[0], c"ping".as_ptr()) != 0 {
-// CHECK-NEXT:                 [[V_0]] = same(names.0[1], c"query".as_ptr()) != 0;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 [[V_0]] = false;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             let mut [[V_1:__v[0-9]+]]: bool;
-// CHECK-NEXT:             if [[V_0]] {
-// CHECK-NEXT:                 [[V_1]] = same(names.0[2], c"session-bind@openssh.com".as_ptr()) != 0;
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 [[V_0]] = same(names.0[1], c"query".as_ptr()) != 0;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             } else {
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 [[V_0]] = false;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             }
+// X86_64-PC-WINDOWS-MSVC-NEXT:             let mut [[V_2:__v[0-9]+]]: bool;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             if [[V_0]] {
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 [[V_2]] = same(names.0[2], c"session-bind@openssh.com".as_ptr()) != 0;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             } else {
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 [[V_2]] = false;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             }
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[V_2]]
+// X86_64-PC-WINDOWS-MSVC-NEXT:         }
+// X86_64-PC-WINDOWS-MSVC-NEXT:     );
+// X86_64-PC-WINDOWS-MSVC-NEXT:     CHECK!(
+// X86_64-PC-WINDOWS-MSVC-NEXT:         {
+// X86_64-PC-WINDOWS-MSVC-NEXT:             let mut [[V_3:__v[0-9]+]]: bool;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             if extra.0.hash == core::ptr::addr_of!(vt_a.0) {
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 [[V_3]] = (unsafe { (*extra.0.hash).r#fn.unwrap()(5i32) }) == 15;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             } else {
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 [[V_3]] = false;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             }
+// X86_64-PC-WINDOWS-MSVC-NEXT:             let mut [[V_1:__v[0-9]+]]: bool;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             if [[V_3]] {
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 [[V_1]] = (unsafe { extra.0.fallback.unwrap()(5i32) }) == 12;
+// I686-PC-WINDOWS-MSVC-NEXT:                 [[V_1]] = same(names.0[1], c"query".as_ptr()) != 0;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 [[V_1]] = same(names.0[1], c"query".as_ptr()) != 0;
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 [[V_1]] = false;
 // CHECK-NEXT:             }
-// CHECK-NEXT:             [[V_1]]
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     CHECK!(
-// CHECK-NEXT:         {
-// CHECK-NEXT:             let mut [[V_2:__v[0-9]+]]: bool;
-// CHECK-NEXT:             if extra.0.hash == core::ptr::addr_of!(vt_a.0) {
-// CHECK-NEXT:                 [[V_2]] = (unsafe { (*extra.0.hash).r#fn.unwrap()(5i32) }) == 15;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 [[V_2]] = false;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             let mut [[V_3:__v[0-9]+]]: bool;
-// CHECK-NEXT:             if [[V_2]] {
-// CHECK-NEXT:                 [[V_3]] = (unsafe { extra.0.fallback.unwrap()(5i32) }) == 12;
-// CHECK-NEXT:             } else {
-// CHECK-NEXT:                 [[V_3]] = false;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             [[V_3]]
-// CHECK-NEXT:         }
-// CHECK-NEXT:     );
-// CHECK-NEXT:     CHECK!(
-// CHECK-NEXT:         {
+// X86_64-PC-WINDOWS-MSVC-NEXT:             [[V_1]]
+// X86_64-PC-WINDOWS-MSVC-NEXT:         }
+// X86_64-PC-WINDOWS-MSVC-NEXT:     );
+// X86_64-PC-WINDOWS-MSVC-NEXT:     CHECK!(
+// X86_64-PC-WINDOWS-MSVC-NEXT:         {
 // CHECK-NEXT:             let mut [[V_4:__v[0-9]+]]: bool;
-// CHECK-NEXT:             if (unsafe { strcmp(extra.0.alg, c"Ed25519".as_ptr()) }) == 0 {
-// CHECK-NEXT:                 [[V_4]] = same(extra.0.prefix, c"".as_ptr()) != 0;
+// X86_64-PC-WINDOWS-MSVC-NEXT:             if (unsafe { strcmp(extra.0.alg, c"Ed25519".as_ptr()) }) == 0 {
+// X86_64-PC-WINDOWS-MSVC-NEXT:                 [[V_4]] = same(extra.0.prefix, c"".as_ptr()) != 0;
+// I686-PC-WINDOWS-MSVC-NEXT:             if [[V_1]] {
+// I686-PC-WINDOWS-MSVC-NEXT:                 [[V_4]] = same(names.0[2], c"session-bind@openssh.com".as_ptr()) != 0;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             if [[V_1]] {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 [[V_4]] = same(names.0[2], c"session-bind@openssh.com".as_ptr()) != 0;
 // CHECK-NEXT:             } else {
 // CHECK-NEXT:                 [[V_4]] = false;
 // CHECK-NEXT:             }
@@ -498,6 +528,62 @@ int main(void) {
 // CHECK-NEXT:         }
 // CHECK-NEXT:     );
 // CHECK-NEXT:     CHECK!(
+// I686-PC-WINDOWS-MSVC-NEXT:         {
+// I686-PC-WINDOWS-MSVC-NEXT:             let mut [[V_5:__v[0-9]+]]: bool;
+// I686-PC-WINDOWS-MSVC-NEXT:             if extra.0.hash == core::ptr::addr_of!(vt_a.0) {
+// I686-PC-WINDOWS-MSVC-NEXT:                 [[V_5]] = (unsafe { (*extra.0.hash).r#fn.unwrap()(5i32) }) == 15;
+// I686-PC-WINDOWS-MSVC-NEXT:             } else {
+// I686-PC-WINDOWS-MSVC-NEXT:                 [[V_5]] = false;
+// I686-PC-WINDOWS-MSVC-NEXT:             }
+// I686-PC-WINDOWS-MSVC-NEXT:             let mut [[V_6:__v[0-9]+]]: bool;
+// I686-PC-WINDOWS-MSVC-NEXT:             if [[V_5]] {
+// I686-PC-WINDOWS-MSVC-NEXT:                 [[V_6]] = (unsafe { extra.0.fallback.unwrap()(5i32) }) == 12;
+// I686-PC-WINDOWS-MSVC-NEXT:             } else {
+// I686-PC-WINDOWS-MSVC-NEXT:                 [[V_6]] = false;
+// I686-PC-WINDOWS-MSVC-NEXT:             }
+// I686-PC-WINDOWS-MSVC-NEXT:             [[V_6]]
+// I686-PC-WINDOWS-MSVC-NEXT:         }
+// I686-PC-WINDOWS-MSVC-NEXT:     );
+// I686-PC-WINDOWS-MSVC-NEXT:     CHECK!(
+// I686-PC-WINDOWS-MSVC-NEXT:         {
+// I686-PC-WINDOWS-MSVC-NEXT:             let mut [[V_7:__v[0-9]+]]: bool;
+// I686-PC-WINDOWS-MSVC-NEXT:             if (unsafe { strcmp(extra.0.alg, c"Ed25519".as_ptr()) }) == 0 {
+// I686-PC-WINDOWS-MSVC-NEXT:                 [[V_7]] = same(extra.0.prefix, c"".as_ptr()) != 0;
+// I686-PC-WINDOWS-MSVC-NEXT:             } else {
+// I686-PC-WINDOWS-MSVC-NEXT:                 [[V_7]] = false;
+// I686-PC-WINDOWS-MSVC-NEXT:             }
+// I686-PC-WINDOWS-MSVC-NEXT:             [[V_7]]
+// I686-PC-WINDOWS-MSVC-NEXT:         }
+// I686-PC-WINDOWS-MSVC-NEXT:     );
+// I686-PC-WINDOWS-MSVC-NEXT:     CHECK!(
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             let mut [[V_5:__v[0-9]+]]: bool;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             if extra.0.hash == core::ptr::addr_of!(vt_a.0) {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 [[V_5]] = (unsafe { (*extra.0.hash).r#fn.unwrap()(5i32) }) == 15;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             } else {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 [[V_5]] = false;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             }
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             let mut [[V_6:__v[0-9]+]]: bool;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             if [[V_5]] {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 [[V_6]] = (unsafe { extra.0.fallback.unwrap()(5i32) }) == 12;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             } else {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 [[V_6]] = false;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             }
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[V_6]]
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         }
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     );
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     CHECK!(
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             let mut [[V_7:__v[0-9]+]]: bool;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             if (unsafe { strcmp(extra.0.alg, c"Ed25519".as_ptr()) }) == 0 {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 [[V_7]] = same(extra.0.prefix, c"".as_ptr()) != 0;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             } else {
+// AARCH64-PC-WINDOWS-MSVC-NEXT:                 [[V_7]] = false;
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             }
+// AARCH64-PC-WINDOWS-MSVC-NEXT:             [[V_7]]
+// AARCH64-PC-WINDOWS-MSVC-NEXT:         }
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     );
+// AARCH64-PC-WINDOWS-MSVC-NEXT:     CHECK!(
 // CHECK-NEXT:         pick.0
 // X86_64-PC-WINDOWS-MSVC-NEXT:             == if (core::mem::size_of::<*mut ()>() as u64) == 8 {
 // I686-PC-WINDOWS-MSVC-NEXT:             == if (core::mem::size_of::<*mut ()>() as u32) == 8 {

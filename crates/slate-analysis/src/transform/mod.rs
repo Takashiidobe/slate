@@ -1,3 +1,4 @@
+mod block_flatten;
 mod const_fold;
 mod dead_temporaries;
 mod decl_init;
@@ -69,13 +70,19 @@ pub static PASSES: &[Pass] = &[
     },
     Pass {
         name: "do-while-zero",
-        slots: &[Slot::AfterMacroStrip],
+        slots: &[Slot::BeforeMacroKeep, Slot::AfterMacroStrip],
         decls: None,
         function: Some(do_while_zero::transform),
     },
     Pass {
+        name: "block-flatten",
+        slots: &[Slot::BeforeMacroKeep, Slot::AfterMacroStrip],
+        decls: None,
+        function: Some(block_flatten::transform),
+    },
+    Pass {
         name: "labeled-blocks",
-        slots: &[Slot::AfterMacroStrip],
+        slots: &[Slot::BeforeMacroKeep, Slot::AfterMacroStrip],
         decls: None,
         function: Some(labeled_blocks::transform),
     },

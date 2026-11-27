@@ -29,7 +29,9 @@ them is the default; inlining one is a fallback, never a transform's goal.
   (`structure_goto`, `labeled_blocks`, `do_while_zero`) that must change a
   region records a `Module::macro_rejections` reason for the expansion, as
   `effects_statements::normalize` does with `hoist_split_region`. Today none
-  has to: they never enter a region (below).
+  has to: `structure_goto` never enters a region, and `do_while_zero`,
+  `block_flatten` and `labeled_blocks` rewrite inside one body without moving
+  a node across its boundary (below).
 - **Node identity.** A rebuild of the same node keeps its `NodeId`
   (`Span::with_value`, `Place { kind, ..place }`), so provenance follows it.
   `Span::derive` and `Place::new` mint a new id with no provenance. Moving a
@@ -78,8 +80,9 @@ expansion.
 | truth-canonicalize | after strip | blocked (expansion depth) | blocked (hole depth) | rewrites; keeps a protected macro value and negates around it | yes |
 | inline-temps | before keep, after strip | inlines a temp whose definition and use are in the same body (`expansion_body`, `TemplateBlocks`); a temp read in a nested region or hole is not inlined (`nested_depth`) | moved whole, never entered | inlines | yes |
 | const-fold | after strip | blocked (depth); comparisons with a wrapped operand are left | blocked | folds | yes |
-| do-while-zero | after strip | not entered; a kept macro's `do { } while (0)` stays a loop for its template | not entered | unwraps | yes |
-| labeled-blocks | after strip | not entered; `negation` keeps a protected value | not entered | rewrites | yes |
+| do-while-zero | before keep, after strip | unwraps a body's own `do { } while (0)`; every node stays in the body | not entered | unwraps | yes |
+| block-flatten | before keep, after strip | splices a declaration-free block within the same body | not entered | splices | yes |
+| labeled-blocks | before keep, after strip | rewrites within the body; a break inside a nested expansion blocks sinking; `negation` keeps a protected value | not entered | rewrites | yes |
 | dead-temporaries | after strip | blocked (depth) | blocked | removes | yes |
 | decl-init | after strip | blocked (depth) | blocked | merges | yes |
 | truth-locals | after strip | a local read in a region keeps its `int` type | same, place holes too | retypes | yes |

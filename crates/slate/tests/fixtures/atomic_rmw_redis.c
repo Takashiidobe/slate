@@ -350,8 +350,7 @@ int main(void) {
 // CHECK-NEXT:         unsafe { fflush(core::ptr::null_mut()) };
 // CHECK-NEXT:     }
 // CHECK-NEXT:     println!("");
-// CHECK-NEXT:     let mut old: u64 = 0;
-// CHECK-NEXT:     old = unsafe {
+// CHECK-NEXT:     let old: u64 = unsafe {
 // CHECK-NEXT:         core::sync::atomic::AtomicU64::from_ptr(
 // CHECK-NEXT:                 core::ptr::addr_of_mut!(used_memory) as *mut u64,
 // CHECK-NEXT:             )

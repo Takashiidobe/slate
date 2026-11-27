@@ -837,6 +837,40 @@ fn fold_empty_branches(body: &mut Vec<Stmt>) {
     });
 }
 
+pub(super) fn loop_or_while(label: Option<Label>, mut body: Vec<Stmt>) -> Stmt {
+    match header_test(&mut body) {
+        Some(cond) => Stmt::While {
+            label,
+            cond,
+            body: RustBlock {
+                stmts: body,
+                tail: None,
+            },
+        },
+        None => Stmt::Loop { label, body },
+    }
+}
+
+pub(super) fn binds(body: &[Stmt]) -> bool {
+    body.iter().any(|stmt| match stmt {
+        Stmt::Let { .. } | Stmt::LetElse { .. } | Stmt::LetIf { .. } => true,
+        Stmt::Cfg { body, .. } => binds(body),
+        #[expect(
+            slate::sensitive_wildcard,
+            reason = "only let forms introduce a name the enclosing scope would see"
+        )]
+        _ => false,
+    })
+}
+
+pub(super) fn push_scoped(into: &mut Vec<Stmt>, body: Vec<Stmt>) {
+    if binds(&body) {
+        into.push(Stmt::Scope { body });
+    } else {
+        into.extend(body);
+    }
+}
+
 fn header_test(body: &mut Vec<Stmt>) -> Option<Expr> {
     let only = body.len() == 1;
     let Some(Stmt::If {

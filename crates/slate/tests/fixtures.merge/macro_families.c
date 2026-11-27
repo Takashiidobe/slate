@@ -82,13 +82,8 @@ int main(void) {
 // CHECK-NEXT: #[cfg(unix)]
 // CHECK-NEXT: macro_rules! MARK {
 // CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 total |= ($x) as c_long;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             total |= ($x) as c_long;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -105,13 +100,8 @@ int main(void) {
 // CHECK-NEXT: #[cfg(windows)]
 // CHECK-NEXT: macro_rules! MARK {
 // CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 total ^= ($x) as c_long;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             total ^= ($x) as c_long;
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -160,13 +150,8 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! BOTH {
 // CHECK-NEXT:     ($x:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             STEP!($x);
-// CHECK-NEXT:             MARK!($x);
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         STEP!($x);
+// CHECK-NEXT:         MARK!($x);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:

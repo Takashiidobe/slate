@@ -209,25 +209,15 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! BODY_LOCAL {
 // CHECK-NEXT:     ($x:expr, $total:expr, $scale:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let saved: i32 = $x;
-// CHECK-NEXT:             READ_INTO!(saved, $total, $scale);
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         let saved: i32 = $x;
+// CHECK-NEXT:         READ_INTO!(saved, $total, $scale);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! CHECK_DROP {
 // CHECK-NEXT:     ($n:expr, $bits:expr, $hold:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             if ($bits) >= (($n) as u32) {
-// CHECK-NEXT:                 DROP!($n, $hold, $bits);
-// CHECK-NEXT:             }
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:         if ($bits) >= (($n) as u32) {
+// CHECK-NEXT:             DROP!($n, $hold, $bits);
 // CHECK-NEXT:         }
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
@@ -246,61 +236,36 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! DEREF_WRITE {
 // CHECK-NEXT:     ($v:expr, $cursor:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             unsafe {
-// CHECK-NEXT:                 *$cursor = $v;
-// CHECK-NEXT:             }
-// CHECK-NEXT:             $cursor = unsafe { $cursor.add(1) };
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
+// CHECK-NEXT:         unsafe {
+// CHECK-NEXT:             *$cursor = $v;
 // CHECK-NEXT:         }
+// CHECK-NEXT:         $cursor = unsafe { $cursor.add(1) };
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! DROP {
 // CHECK-NEXT:     ($n:expr, $hold:expr, $bits:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             $hold >>= $n;
-// CHECK-NEXT:             $bits = $bits.wrapping_sub(($n) as u32);
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         $hold >>= $n;
+// CHECK-NEXT:         $bits = $bits.wrapping_sub(($n) as u32);
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! FIELD_WRITE {
 // CHECK-NEXT:     ($v:expr, $pair:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             $pair.right = $v;
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         $pair.right = $v;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! INDEX_WRITE {
 // CHECK-NEXT:     ($i:expr, $v:expr, $table:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             $table[($i) as usize] = $v;
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         $table[($i) as usize] = $v;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! INIT {
 // CHECK-NEXT:     ($hold:expr, $bits:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             $hold = 0;
-// CHECK-NEXT:             $bits = 0;
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         $hold = 0;
+// CHECK-NEXT:         $bits = 0;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
@@ -318,36 +283,21 @@ int main(void) {
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! READ_INTO {
 // CHECK-NEXT:     ($v:expr, $total:expr, $scale:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             $total += ($v) + $scale;
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         $total += ($v) + $scale;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! SHIFT_THEN_READ {
 // CHECK-NEXT:     ($n:expr, $hold:expr, $bits:expr, $total:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             DROP!($n, $hold, $bits);
-// CHECK-NEXT:             $total = (($total) as u32).wrapping_add(BITS!(2i32, $hold)) as i32;
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         DROP!($n, $hold, $bits);
+// CHECK-NEXT:         $total = (($total) as u32).wrapping_add(BITS!(2i32, $hold)) as i32;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
 // CHECK-NEXT: macro_rules! TEMP_ARG {
 // CHECK-NEXT:     ($a:expr, $total:expr) => {
-// CHECK-NEXT:         loop {
-// CHECK-NEXT:             let temp: i32 = 1;
-// CHECK-NEXT:             $total += temp + $a;
-// CHECK-NEXT:             if true {
-// CHECK-NEXT:                 break;
-// CHECK-NEXT:             }
-// CHECK-NEXT:         }
+// CHECK-NEXT:         let temp: i32 = 1;
+// CHECK-NEXT:         $total += temp + $a;
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
