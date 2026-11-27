@@ -645,11 +645,11 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT:     total += (!const_hit.is_null() && !mut_hit.is_null()) as i32;
 // CHECK-NEXT:     total += !unsafe {
-// CHECK-NEXT:         ((memchr(
+// CHECK-NEXT:         (memchr(
 // CHECK-NEXT:                 (phrase as *const ()) as *const core::ffi::c_void,
 // CHECK-NEXT:                 111i32 as i32,
 // CHECK-NEXT:                 11u64 as usize,
-// CHECK-NEXT:             ) as *mut ()) as *const ())
+// CHECK-NEXT:             ) as *mut ())
 // CHECK-NEXT:             .is_null()
 // CHECK-NEXT:     } as i32;
 // CHECK-NEXT:     total += !unsafe {
@@ -661,10 +661,10 @@ int main(void) {
 // CHECK-NEXT:             .is_null()
 // CHECK-NEXT:     } as i32;
 // CHECK-NEXT:     total += !unsafe {
-// CHECK-NEXT:         ((strstr(
+// CHECK-NEXT:         (strstr(
 // CHECK-NEXT:                 phrase as *const core::ffi::c_char,
 // CHECK-NEXT:                 c"world".as_ptr() as *const core::ffi::c_char,
-// CHECK-NEXT:             ) as *mut i8) as *const i8)
+// CHECK-NEXT:             ) as *mut i8)
 // CHECK-NEXT:             .is_null()
 // CHECK-NEXT:     } as i32;
 // CHECK-NEXT:     total += !unsafe {
@@ -765,13 +765,12 @@ int main(void) {
 // CHECK-NEXT:         )
 // CHECK-NEXT:     }) == 0) as i32;
 // CHECK-NEXT:     let const_month: *const i32 = wide_month.0.as_mut_ptr() as *const i32;
-// CHECK-NEXT:     total += !unsafe { (wcschr(const_month, 110i32) as *const i32).is_null() } as i32;
+// CHECK-NEXT:     total += !unsafe { wcschr(const_month, 110i32).is_null() } as i32;
 // CHECK-NEXT:     total += !unsafe {
 // CHECK-NEXT:         wcschr(wide_month.0.as_mut_ptr() as *const i32, 110i32).is_null()
 // CHECK-NEXT:     } as i32;
 // CHECK-NEXT:     total += !unsafe {
-// CHECK-NEXT:         (wcsstr(const_month, core::ptr::addr_of_mut!(__slate_str287) as *const i32)
-// CHECK-NEXT:                 as *const i32)
+// CHECK-NEXT:         wcsstr(const_month, core::ptr::addr_of_mut!(__slate_str287) as *const i32)
 // CHECK-NEXT:             .is_null()
 // CHECK-NEXT:     } as i32;
 // CHECK-NEXT:     total += !unsafe {

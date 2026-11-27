@@ -7,7 +7,6 @@ mod inline_temps;
 mod label_elide;
 pub(super) mod literal_casts;
 mod mutation;
-mod null_compare;
 mod pattern_range;
 mod pure_stmts;
 mod raw_ptr_alias;
@@ -44,7 +43,6 @@ pub(super) fn registry(target: &slate_parser::target_info::TargetInfo) -> Vec<Bo
         Box::new(inline_temps::LateInlineTemps),
         Box::new(inline_temps::InlineConstArgTemps),
         Box::new(inline_temps::AsmOutputTempFold),
-        Box::new(null_compare::NullCompare),
         Box::new(pattern_range::MatchRangeFold),
         Box::new(cstr_literal::CStrLiteral {
             c_char: if slate_parser::target_info::TargetInfo::for_triple(&target.triple)

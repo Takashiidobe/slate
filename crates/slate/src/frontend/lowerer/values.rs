@@ -1795,6 +1795,22 @@ impl FunctionLowerer<'_, '_> {
                 self.narrow_integer(unary, &value.ty)?
             }
             ValueKind::Unary {
+                op: ir::UnaryArithOp::Not,
+                operand,
+                ..
+            } if matches!(value.ty, ir::Type::Bool)
+                && !self.tables.macro_values.contains_key(&operand.node.id)
+                && let ValueKind::Compare {
+                    op: op @ (ir::CompareOp::Eq | ir::CompareOp::Ne),
+                    left,
+                    right,
+                    ..
+                } = &operand.node.value
+                && let Some(pointer) = self.raw_null_operand(left, right) =>
+            {
+                self.lower_null_check(*op == ir::CompareOp::Ne, pointer)?
+            }
+            ValueKind::Unary {
                 op,
                 operand,
                 semantics,
@@ -1920,6 +1936,14 @@ impl FunctionLowerer<'_, '_> {
                         expr: Box::new(is_null),
                     },
                 }
+            }
+            ValueKind::Compare {
+                op: op @ (ir::CompareOp::Eq | ir::CompareOp::Ne),
+                left,
+                right,
+                ..
+            } if let Some(pointer) = self.raw_null_operand(left, right) => {
+                self.lower_null_check(*op == ir::CompareOp::Eq, pointer)?
             }
             ValueKind::Compare {
                 op, left, right, ..

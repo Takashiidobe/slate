@@ -343,6 +343,46 @@ impl FunctionLowerer<'_, '_> {
         ))
     }
 
+    pub(super) fn raw_null_operand<'v>(
+        &self,
+        left: &'v ir::Value,
+        right: &'v ir::Value,
+    ) -> Option<&'v ir::Value> {
+        let pointer = if null_value(right) {
+            left
+        } else if null_value(left) {
+            right
+        } else {
+            return None;
+        };
+        let object_pointer = |value: &ir::Value| match self.tables.resolve_type(&value.ty) {
+            ir::Type::Pointer { pointee, .. } => {
+                !matches!(self.tables.resolve_type(pointee), ir::Type::Function { .. })
+            }
+            ir::Type::BlockPointer { .. } => true,
+            #[expect(
+                slate::sensitive_wildcard,
+                reason = "only object and block pointers lower to raw pointers with is_null"
+            )]
+            _ => false,
+        };
+        [peel_pointer_casts(pointer), pointer]
+            .into_iter()
+            .find(|value| object_pointer(value))
+    }
+
+    pub(super) fn lower_null_check(&mut self, equal: bool, pointer: &ir::Value) -> Result<Expr> {
+        let is_null = method(self.lower_value(pointer)?, "is_null", Vec::new());
+        Ok(if equal {
+            is_null
+        } else {
+            Expr::Unary {
+                op: rust::UnaryOp::Not,
+                expr: Box::new(is_null),
+            }
+        })
+    }
+
     pub(super) fn owned_null_condition(&self, condition: &ir::Value) -> Option<bool> {
         let ValueKind::Compare {
             op: op @ (ir::CompareOp::Eq | ir::CompareOp::Ne),

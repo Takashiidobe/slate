@@ -60,7 +60,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! STORE__2 {
+// CHECK-NEXT: macro_rules! STORE {
 // CHECK-NEXT:     ($p:expr, $i:expr, $v:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             if !$p.is_null() {
@@ -75,7 +75,7 @@ int main(void) {
 // CHECK-NEXT:     };
 // CHECK-NEXT: }
 // CHECK-EMPTY:
-// CHECK-NEXT: macro_rules! STORE {
+// CHECK-NEXT: macro_rules! STORE__2 {
 // CHECK-NEXT:     ($p:expr, $i:expr, $v:expr) => {
 // CHECK-NEXT:         loop {
 // CHECK-NEXT:             if !$p.is_null() {
@@ -164,7 +164,7 @@ int main(void) {
 // CHECK-NEXT:     for __pos in 3i32..10i32 {
 // CHECK-NEXT:         if __pos == 7 {
 // CHECK-NEXT:             __found = __pos;
-// CHECK-NEXT:             if core::ptr::null_mut::<u8>() != core::ptr::null_mut::<u8>() {
+// CHECK-NEXT:             if !core::ptr::null_mut::<u8>().is_null() {
 // CHECK-NEXT:                 unsafe {
 // CHECK-NEXT:                     *core::ptr::null_mut::<u8>() = __prev as u8;
 // CHECK-NEXT:                 }

@@ -48,7 +48,7 @@ int main(void) {
 // CHECK-NEXT:     }
 // CHECK-NEXT:     while !head.is_null() {
 // CHECK-NEXT:         n += unsafe { (*head).v };
-// CHECK-NEXT:         if unsafe { ((*head).next as *mut ()).is_null() } {
+// CHECK-NEXT:         if unsafe { (*head).next.is_null() } {
 // CHECK-NEXT:             break;
 // CHECK-NEXT:         }
 // CHECK-NEXT:         head = unsafe { (*head).next };
