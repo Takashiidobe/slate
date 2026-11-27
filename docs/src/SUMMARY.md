@@ -9,6 +9,8 @@
   - [Translate Directives](translate-directives.md)
   - [Parsing](parsing.md)
   - [Lowering](lowering.md)
+    - [remove_mut](lowering/remove_mut.md)
+    - [Interprocedural Lifts](lowering/interprocedural.md)
     - [Control Flow](goto.md)
     - [setjmp and longjmp](setjmp.md)
     - [Long Double](long-double.md)
