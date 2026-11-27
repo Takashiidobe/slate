@@ -6,7 +6,6 @@ mod inline_temps;
 mod label_elide;
 pub(super) mod literal_casts;
 mod mutation;
-mod pattern_range;
 mod pure_stmts;
 mod raw_ptr_alias;
 mod return_cleanup;
@@ -41,7 +40,6 @@ pub(super) fn registry() -> Vec<Box<dyn NodeRule>> {
         Box::new(inline_temps::LateInlineTemps),
         Box::new(inline_temps::InlineConstArgTemps),
         Box::new(inline_temps::AsmOutputTempFold),
-        Box::new(pattern_range::MatchRangeFold),
     ]);
     rules.extend(vec![
         Box::new(dead_store::DeadStore) as Box<dyn NodeRule>,

@@ -18,6 +18,7 @@ mod bitint;
 mod blocks;
 mod borrows;
 mod calls;
+mod case_ranges;
 mod comment_text;
 mod comments;
 mod complex;

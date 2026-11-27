@@ -275,7 +275,7 @@ impl FunctionLowerer<'_, '_> {
                 continue;
             };
             match_arms.push(rust::MatchArm {
-                pattern,
+                pattern: super::case_ranges::fold_case_runs(pattern),
                 body: self.lower_switch_arm(arm)?,
             });
         }
@@ -326,7 +326,7 @@ impl FunctionLowerer<'_, '_> {
         for (index, arm) in arms.iter().enumerate().filter(|(_, arm)| !arm.default) {
             if let Some(pattern) = switch_arm_pattern(arm)? {
                 dispatch.push(rust::ExprMatchArm {
-                    pattern,
+                    pattern: super::case_ranges::fold_case_runs(pattern),
                     value: case_index(index),
                 });
             }
@@ -401,7 +401,7 @@ impl FunctionLowerer<'_, '_> {
                 rust::Pattern::Wildcard
             } else {
                 match patterns[index].clone() {
-                    Some(pattern) => pattern,
+                    Some(pattern) => super::case_ranges::fold_case_runs(pattern),
                     None => continue,
                 }
             };

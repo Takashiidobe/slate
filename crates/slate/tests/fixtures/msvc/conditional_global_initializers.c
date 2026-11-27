@@ -323,14 +323,14 @@ int main(void) {
 // CHECK-NEXT: static vt_a: __SlateConst<hash_vt> = __SlateConst(
 // CHECK-NEXT:     hash_vt {
 // CHECK-NEXT:         r#fn: Some(hash_a),
-// CHECK-NEXT:         desc: b"a\0".as_ptr() as *const i8,
+// CHECK-NEXT:         desc: c"a".as_ptr(),
 // CHECK-NEXT:     },
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // CHECK-NEXT: static vt_b: __SlateConst<hash_vt> = __SlateConst(
 // CHECK-NEXT:     hash_vt {
 // CHECK-NEXT:         r#fn: Some(hash_b),
-// CHECK-NEXT:         desc: b"b\0".as_ptr() as *const i8,
+// CHECK-NEXT:         desc: c"b".as_ptr(),
 // CHECK-NEXT:     },
 // CHECK-NEXT: );
 // CHECK-EMPTY:
@@ -347,7 +347,7 @@ int main(void) {
 // CHECK-NEXT:     sign_extra {
 // CHECK-NEXT:         hash: core::ptr::addr_of!(vt_a.0),
 // CHECK-NEXT:         fallback: Some(hash_b),
-// CHECK-NEXT:         alg: b"Ed25519\0".as_ptr() as *const i8,
+// CHECK-NEXT:         alg: c"Ed25519".as_ptr(),
 // CHECK-NEXT:         prefix: ptrlen {
 // CHECK-NEXT:             ptr: b"\0".as_ptr() as *const (),
 // X86_64-PC-WINDOWS-MSVC-NEXT:             len: (core::mem::size_of::<[i8; 1]>() as u64).wrapping_sub(1u64),
@@ -555,13 +555,7 @@ int main(void) {
 // X86_64-PC-WINDOWS-MSVC-NEXT: static texts: __SlateAlign16<[*const i8; 5]> = __SlateAlign16(
 // I686-PC-WINDOWS-MSVC-NEXT: static texts: __SlateConst<[*const i8; 5]> = __SlateConst(
 // AARCH64-PC-WINDOWS-MSVC-NEXT: static texts: __SlateConst<[*const i8; 5]> = __SlateConst(
-// CHECK-NEXT:     [
-// CHECK-NEXT:         b"(\0".as_ptr() as *const i8,
-// CHECK-NEXT:         b")\0".as_ptr() as *const i8,
-// CHECK-NEXT:         b"&&\0".as_ptr() as *const i8,
-// CHECK-NEXT:         b"||\0".as_ptr() as *const i8,
-// CHECK-NEXT:         b"!\0".as_ptr() as *const i8,
-// CHECK-NEXT:     ],
+// CHECK-NEXT:     [c"(".as_ptr(), c")".as_ptr(), c"&&".as_ptr(), c"||".as_ptr(), c"!".as_ptr()],
 // CHECK-NEXT: );
 // CHECK-EMPTY:
 // X86_64-PC-WINDOWS-MSVC-NEXT: static expected: __SlateAlign16<[u32; 8]> = __SlateAlign16(

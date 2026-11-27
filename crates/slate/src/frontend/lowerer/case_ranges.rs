@@ -1,5 +1,3 @@
-use crate::backend::engine::NodeRule;
-use crate::backend::engine::arena::{FunctionOptimizer, NodeId, NodeKind, NodeKindTag};
 use crate::backend::rust_ast::Pattern;
 
 const MIN_RUN: usize = 3;
@@ -78,55 +76,15 @@ fn folded_alts(alts: &[Pattern]) -> Option<Vec<Pattern>> {
     ))
 }
 
-fn rewrite_of(pattern: &Pattern) -> Option<Pattern> {
-    let Pattern::Or(alts) = pattern else {
-        return None;
+pub(super) fn fold_case_runs(pattern: Pattern) -> Pattern {
+    let Pattern::Or(alts) = &pattern else {
+        return pattern;
     };
-    let folded = folded_alts(alts)?;
-    let rewritten = match <[Pattern; 1]>::try_from(folded) {
+    let Some(folded) = folded_alts(alts) else {
+        return pattern;
+    };
+    match <[Pattern; 1]>::try_from(folded) {
         Ok([single]) => single,
         Err(alts) => Pattern::Or(alts),
-    };
-    (rewritten != *pattern).then_some(rewritten)
-}
-
-pub(in crate::backend::engine) struct MatchRangeFold;
-
-impl NodeRule for MatchRangeFold {
-    fn name(&self) -> &'static str {
-        "pattern_range::fold"
-    }
-
-    fn priority(&self) -> u32 {
-        47
-    }
-
-    fn kinds(&self) -> &'static [NodeKindTag] {
-        &[NodeKindTag::Match]
-    }
-
-    fn matches(&self, arena: &FunctionOptimizer, id: NodeId) -> bool {
-        let Some(NodeKind::Match { arms, .. }) = arena.get(id) else {
-            return false;
-        };
-        arms.iter().any(|arm| rewrite_of(&arm.pattern).is_some())
-    }
-
-    fn apply(&self, arena: &mut FunctionOptimizer, id: NodeId) -> bool {
-        let Some(NodeKind::Match { arms, .. }) = arena.get_mut(id) else {
-            return false;
-        };
-        let mut changed = false;
-        for arm in arms.iter_mut() {
-            if let Some(rewritten) = rewrite_of(&arm.pattern) {
-                arm.pattern = rewritten;
-                changed = true;
-            }
-        }
-        if !changed {
-            return false;
-        }
-        arena.touch(id);
-        true
     }
 }
