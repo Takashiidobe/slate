@@ -8,12 +8,15 @@
 - [Routing](#routing)
 - [Which functions are shimmable](#which-functions-are-shimmable)
 - [Turning shims off](#turning-shims-off)
+- [Why this was shelved](#why-this-was-shelved)
 - [Limits](#limits)
 - [Related](#related)
 <!-- /toc -->
 
-Design for `slate-8ge7.26.7`, decided 2026-11-27 and 2026-11-28. Nothing here
-is implemented yet; the child beads `.2` to `.7` build it in order.
+Design for `slate-8ge7.26.7`, decided 2026-11-27 and 2026-11-28. **Shelved
+2026-11-28** before any code: sound rules for outside callers need effect
+analyses we do not have, and the yield did not justify building them. Read
+[Why this was shelved](#why-this-was-shelved) before picking it up again.
 
 The [pointer capability lattice](pointer-capability-lattice.md) only retypes
 candidates: functions whose every caller is visible. An exported function (open
@@ -194,6 +197,71 @@ other row; `.2` narrows it to this table.
   function with that C name, static ones in any unit included. Use it when an
   outside caller breaks the whole-object contract, or when a shim breaks a
   build.
+
+## Why this was shelved
+
+Internal candidates are sound because of provenance: a lifted argument traces
+back to a `&local` whose address never leaks, or to a lifted param of the
+caller. An outside caller gives no provenance, so every guarantee a Rust
+reference makes has to come from the callee's body alone. Each guarantee
+turned into a separate analysis:
+
+- **Nullability** was cheap: every shimmed param is `Option`. The outside
+  caller should also seed `NULLABLE` into `flow::solve` (so `f(p) { g(p); }`
+  makes `g`'s param nullable), not only `f`'s.
+- **Extent** (slices, `&CStr`): `from_raw_parts(p, n)` and `CStr::from_ptr`
+  claim memory C only touches on some paths. Soundness needs an every-path
+  proof: no early `return`/`break`/`goto`/noreturn call out of the guarded
+  loop, unconditional access each iteration, and no call that may `longjmp`
+  (lua raises errors that way). Dropped from v1 (`slate-8ge7.26.7.8`); costs
+  about 7-10% of redis would-lift params.
+- **Validity**: a non-null pointer must be a live, whole `T`. Accepted as the
+  caller contract with a `--no-lift-shim <name>` opt-out.
+- **Aliasing** is what stopped the work. The `.2` rule (no other compatible
+  param, no compatible named global) misses writes through pointers loaded
+  from memory, which is lua's normal shape:
+
+  ```c
+  void push_copy(lua_State *L, const TValue *src) {
+      TValue *top = L->top;
+      *top = *src;
+      L->top++;
+      check(src->tt);
+  }
+  ```
+
+  `push_copy(L, L->top - 1)` is ordinary lua; with `src: &TValue`, LLVM may
+  reuse a read of `*src` across the write through `top`.
+
+A sound aliasing rule needs effects `effects::Effects` does not have. Today it
+records only named internal, non-volatile, non-atomic mutable statics
+(`summary::Inputs::new`), callees, and `opaque`. It would need:
+
+1. Per-function read and write sets of lvalue types reached through anything
+   other than the function's own tracked param classes: named globals of every
+   linkage (an outside caller can pass `&exported_global`), derefs and fields
+   of loaded pointers and call results, and pointer arguments of untracked
+   origin. Closed over callees like `opaque`.
+2. Type compatibility: same type, `void` or character type, or containment as
+   a nested field or array element (unions included), so
+   `set(&pt, &pt.y)` aliases.
+3. Rules: `&mut T` needs no other compatible pointer param, no compatible read
+   or write in the closed set, and a non-opaque function; `&T` needs no
+   compatible write and no other compatible param that is written or escapes.
+4. Probably indirect-call resolution: any indirect call makes a function and
+   its callers opaque, and lua allocates through `g->frealloc`, so most of
+   lua would block on `shim.opaque` without resolving indirect calls to the
+   address-taken functions of compatible type.
+
+The only measurement (`.26.6`, `wiki/log/2026-11-27-18-54.md`) is an upper
+bound under none of these rules: redis closed 575 -> about 1160 lifted params,
+redis open 116 -> about 1865, lua open 41 -> about 170. Its open-mode counts
+also include exports v1 would exclude (`abi_pass`, `target_feature`, `alias`),
+because open mode reports every export as `ExportPin::Exported`. With the
+aliasing and opaque rules the real yield is unknown and likely far lower,
+especially for lua. Measure that first (the `.2` bead) if this is revisited;
+items 1-3 are also what any future "is this object touched during the call"
+question would need.
 
 ## Limits
 
