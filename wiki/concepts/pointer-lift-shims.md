@@ -2,11 +2,12 @@
 
 <!-- toc -->
 - [Shape](#shape)
-- [Conversions in the wrapper](#conversions-in-the-wrapper)
+- [What a shim lifts](#what-a-shim-lifts)
 - [Soundness rules for outside
   callers](#soundness-rules-for-outside-callers)
 - [Routing](#routing)
 - [Which functions are shimmable](#which-functions-are-shimmable)
+- [Turning shims off](#turning-shims-off)
 - [Limits](#limits)
 - [Related](#related)
 <!-- /toc -->
@@ -31,14 +32,14 @@ the epic continues.
 
 ## Shape
 
-For a shimmed `int f(struct s *p, const char *name)`:
+For a shimmed `int f(struct s *p, const struct t *q, const char *name)`:
 
 ```rust
-pub fn f(p: Option<&mut s>, name: Option<&CStr>) -> i32 { /* lifted body */ }
+pub fn f(p: Option<&mut s>, q: Option<&t>, name: *const c_char) -> i32 { /* lifted body */ }
 
 #[unsafe(export_name = "f")]
-pub extern "C-unwind" fn __slate_c_f(p: *mut s, name: *const c_char) -> i32 {
-    f(unsafe { p.as_mut() }, (!name.is_null()).then(|| unsafe { CStr::from_ptr(name) }))
+pub extern "C-unwind" fn __slate_c_f(p: *mut s, q: *const t, name: *const c_char) -> i32 {
+    f(unsafe { p.as_mut() }, unsafe { q.as_ref() }, name)
 }
 ```
 
@@ -55,23 +56,35 @@ pub extern "C-unwind" fn __slate_c_f(p: *mut s, name: *const c_char) -> i32 {
 - A function that is shimmable but lifts no param and no return is emitted
   exactly as today, with no wrapper.
 
-## Conversions in the wrapper
+## What a shim lifts
 
-| Lifted param                      | Wrapper argument                                                     |
-| --------------------------------- | -------------------------------------------------------------------- |
-| `Option<&T>` / `Option<&mut T>`   | `p.as_ref()` / `p.as_mut()`                                          |
-| `Option<&CStr>`                   | `None` if null, else `CStr::from_ptr(p)`                             |
-| `Option<&[T]>` / `Option<&mut [T]>` | `None` if null, else `from_raw_parts(_mut)(p, n)` with the body-proven count `n` |
-| scalar or unlifted                | passed through                                                       |
+A shimmed function lifts only single-object borrows: `Option<&T>` and
+`Option<&mut T>`, which the wrapper builds with `p.as_ref()` / `p.as_mut()`.
+Every other param passes through unchanged.
 
-- The length parameter `n` stays in the wrapper's C signature and is dropped
-  from the lifted one, as for candidates today. A slice lifts only with a
-  body-proven count (`length::accesses_within_count` against an unwritten
-  integer param); caller-proven lengths do not exist for outside callers.
-  Without one the param reports `shim.unbounded_many` and stays raw.
-- `CStr::from_ptr` runs `strlen` once per outside call. Internal calls pass the
-  `&CStr` and pay nothing.
-- A lifted return converts back to raw: `&T` with `ptr::from_ref`, `&mut T`
+No slices and no `&CStr`. Both claim more memory than C needs:
+`from_raw_parts(p, n)` claims `n` elements and `CStr::from_ptr` scans to a NUL,
+while C needs only what the body touches on the path it takes. Here an outside
+call `find_zero(a, 1000)` with `int a[2] = {1, 0}` is fine in C and undefined
+behavior behind a slice wrapper:
+
+```c
+size_t find_zero(const int *buf, size_t n) {
+    for (size_t i = 0; i < n; i++)
+        if (buf[i] == 0)
+            return i;
+    return n;
+}
+```
+
+Making these sound needs a proof that every path touches all of `[0, n)` or
+scans to the NUL: no early `return`/`break`/`goto`, no conditional access, and
+no call that may `longjmp` out of the loop. That is a later bead. A param that
+would otherwise be `many` or `c_str` reports `shim.no_slice` or `shim.no_c_str`
+and stays raw. The `.26.6` counts put the loss at about 7% of redis open
+(`c_str` 90 + slice 22 of 1634) and 10% of redis closed (47 + 4 of 491).
+
+A lifted return converts back to raw: `&T` with `ptr::from_ref`, `&mut T`
   with `ptr::from_mut`, `Option<..>` with `map_or(ptr::null(), ..)`. Return
   lifting keeps its existing conditions (one tracked pointer param, lifetime
   elision only).
@@ -86,9 +99,18 @@ and gets these rules:
 - **Nullability: every lifted pointer param is `Option`.** `NULLABLE` flows
   only caller -> callee in `flow::solve`, so in `f(p) { g(p); }` where `g`
   null-checks, `f` gets no null source and would lift to `&T`, which an outside
-  `f(NULL)` breaks. `&CStr` and slices become `Option` too, which needs
-  `Option<&CStr>` lowering in `c_string` (today `c_string` refuses nullable
-  classes). A must-deref analysis that proves non-null is a later bead.
+  `f(NULL)` breaks. A must-deref analysis that proves non-null is a later
+  bead.
+- **Whole-object contract.** A non-null pointer from an outside caller is
+  assumed to point at a live, aligned, whole `T`: Rust treats `&T` as
+  dereferenceable for `size_of::<T>()` from entry, even on paths that never
+  touch it. A dangling pointer the body ignores (`f(p, 0)` with
+  `if (flag) use(*p)`) or a smaller object cast to a larger struct type whose
+  prefix the body reads is fine in C and undefined behavior after the shim.
+  This is the contract every hand-written `ptr::as_ref` FFI binding makes, and
+  real callers rarely break it, so shims lift by default and a function that
+  does break it is opted out by name (see
+  [Turning shims off](#turning-shims-off)).
 - **Aliasing.** An outside caller may pass one object in two params, or pass a
   global the body also names. Two pointee types are compatible when they are
   the same type or either is `void` or a character type.
@@ -99,13 +121,13 @@ and gets these rules:
     that writes no compatible mutable global.
   - A failure reports `shim.aliased_param` or `shim.aliased_global` and keeps
     the param raw.
-- **Body-only length and C string.** `external` drops caller-proven length
-  pairs and the call-site half of `c_string` (literal or `c_string` argument).
 - **Caller-side rules still apply to internal callers.** `external` does not
   skip `borrow::unproven` or `Flow::propagate_unproven`: an internal call that
   passes an unproven argument (`unproven.argument`, `raw_argument`,
   `macro_call_site`, `part_offset`) still blocks the lift. External only
-  changes candidacy, length and `c_string`.
+  changes candidacy and the slice and `c_str` refusal above.
+- The wrapper sits on every indirect call, including calls from translated
+  code through a function pointer, so these rules cover those callers too.
 
 ## Routing
 
@@ -156,18 +178,25 @@ Excluded in v1:
 | `defined_twice`             | two definitions of one symbol: which body internal calls bind is ambiguous    |
 | `declared_other_prototype`  | a unit declares it with another arity or pointer-ness, so link cannot bind that unit's calls by Rust path |
 | named in a macro template   | `interproc::functions_pinned_by_templates`: the template's call text is not rewritten, so expansions pass raw args |
+| unit has `null_pointer_is_valid` | built with `-fno-delete-null-pointer-checks` (the kernel): code written for a compiler that infers nothing from pointer use is the worst fit for the whole-object contract |
 
 `Summaries::assume_external_callers` (the `.26.6` measurement) excludes only
 main, variadic, naked and interrupt, so its open-mode counts include every
 other row; `.2` narrows it to this table.
 
+## Turning shims off
+
+- `--lift-shims` / `--no-lift-shims` on `translate` and `translate-project`
+  turns the whole feature on or off. It is off by default until the corpus
+  gate (`.7`), then on.
+- `--no-lift-shim <name>`, repeatable, keeps the named C functions unshimmed:
+  raw signature, no wrapper, output as without shims. It matches every
+  function with that C name, static ones in any unit included. Use it when an
+  outside caller breaks the whole-object contract, or when a shim breaks a
+  build.
+
 ## Limits
 
-- The slice wrapper builds `&[T]` of `n` elements. C only needs the elements
-  the body touches; `accesses_within_count` proves the body stays below `n` but
-  not that it reaches it, so an outside caller that passes a shorter buffer
-  and relies on an early exit is undefined behavior in Rust and fine in C. v1
-  accepts `n` as the caller's contract.
 - A panic in the lifted body (an `unwrap` on `None` where C would fault)
   unwinds into C frames; `C-unwind` makes that defined, but a C caller without
   unwind tables aborts.
