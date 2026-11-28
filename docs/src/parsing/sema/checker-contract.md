@@ -49,3 +49,6 @@ Slate reports `break outside loop or switch` and emits no IR.
 emits a module. Start with `sema/assertion.rs` for checker rules,
 `sema/validate.rs` for structural checks, and `sema/numeric.rs` for the error
 variants.
+
+See [Error Handling](../../reference/errors.md) for how these errors propagate
+through Slate and become diagnostic reports.

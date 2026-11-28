@@ -231,4 +231,4 @@ fn increment(mut value: i32) -> i32 {
 
 Slate handles inline instructions and supported MASM-style operands. For
 instruction-shaped operations available as intrinsics, see
-[Microsoft intrinsics](../builtins.md#microsoft-intrinsics).
+[Microsoft intrinsics](../builtins/microsoft.md).

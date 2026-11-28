@@ -5,6 +5,8 @@ into declarations, statements, and expressions. It tracks typedef names where
 they affect the grammar, as in `T *x;`. Sema resolves bindings and types after
 parsing.
 
+See [AST Reference](../reference/ast.md) for the syntax model and dump options.
+
 <figure style="margin-inline: 0; text-align: center;">
 
 ![Syntax tree construction.](../diagrams/parsing-syntax.svg)

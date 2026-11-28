@@ -212,7 +212,7 @@ YMM operands require AVX. ZMM and mask operands require AVX-512F. A 32-bit or
 - SVE `zN` and `pN` clobbers require the appropriate SVE feature. Slate
   represents a `zN` clobber with the corresponding `vN` register.
 - Slate omits `za`, `zt0`, and `fpmr` clobbers in Rust. Function-level
-  [SME state attributes](../attributes.md#aarch64-sme-attributes) stop lowering
+  [SME state attributes](../attributes/sme.md) stop lowering
   when the function requires them.
 
 ## Arm32 operand choices

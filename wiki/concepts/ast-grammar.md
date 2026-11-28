@@ -29,6 +29,8 @@ their `Debug` form (derived, or `custom_debug` where fields are skipped) through
 
 ## Notation
 
+<!-- ANCHOR: notation -->
+
 - `a = ... ;` defines `a`; `|` separates choices; `[ x ]` is optional; `{ x }`
   is zero or more; `( ... )` groups; `(* ... *)` is a comment.
 - Node shapes are written as they print:
@@ -46,7 +48,11 @@ their `Debug` form (derived, or `custom_debug` where fields are skipped) through
   per level, with a trailing `,` after each. The productions use the flat form;
   whitespace and trailing commas are layout.
 
+<!-- ANCHOR_END: notation -->
+
 ## Lexical
+
+<!-- ANCHOR: lexical -->
 
 ```ebnf
 int    = digits ;
@@ -57,7 +63,11 @@ FileId = "FileId(" int ")" ;
 TagId  = "TagId(" int ")" ;
 ```
 
+<!-- ANCHOR_END: lexical -->
+
 ## Dump
+
+<!-- ANCHOR: dump -->
 
 ```ebnf
 dump      = { tag_line } { decl_line } ;
@@ -74,7 +84,11 @@ decl_line = "decl[" int "]" [ " #" int ] ": " span<DeclKind> ;
   function bodies, records and enums, and parameter `comments` are cleared,
   before printing.
 
+<!-- ANCHOR_END: dump -->
+
 ## S-expressions
+
+<!-- ANCHOR: s-expressions -->
 
 `slate-parser parse <source.c> --sexpr` uses `render::SExprRenderer` to expose
 the AST as nested lists. The browser AST tab uses this format. Each Rust debug
@@ -89,7 +103,11 @@ metadata. Top-level nodes originating in system headers are omitted and counted
 in `(system-header-nodes-omitted N)` so included headers do not obscure the
 input program.
 
+<!-- ANCHOR_END: s-expressions -->
+
 ## Spans
+
+<!-- ANCHOR: spans -->
 
 ```ebnf
 span<t>    = [ "#" int " " ] ( t | "Spanned {" "value:" t ","
@@ -104,7 +122,11 @@ Provenance = "Provenance {" "file:" FileId "," "kind:" ( "System" | "User" ) ","
   wrapped in `Spanned` with its provenance. Locations (`spelling`, `expansion`)
   and macro origins are never printed.
 
+<!-- ANCHOR_END: spans -->
+
 ## Declarations
+
+<!-- ANCHOR: declarations -->
 
 ```ebnf
 DeclKind = "Comment(" CommentGroup ")"
@@ -140,7 +162,11 @@ Loc          = Loc { file: FileId, offset: int, length: int } ;
   and tag bodies are in `tag[..]` lines, referenced by `TagId`.
 - A `FunctionDefinition` with an empty body prints without `body`.
 
+<!-- ANCHOR_END: declarations -->
+
 ## Specifiers
+
+<!-- ANCHOR: specifiers -->
 
 ```ebnf
 DeclarationSpecifiers = DeclarationSpecifiers {
@@ -166,7 +192,11 @@ TypeName     = TypeName { specifiers: DeclarationSpecifiers,
 
 `Qualifiers` with every field false prints as the bare word `Qualifiers`.
 
+<!-- ANCHOR_END: specifiers -->
+
 ## Type specifiers
+
+<!-- ANCHOR: type-specifiers -->
 
 ```ebnf
 TypeSpecifier = "Void" | "Bool"
@@ -222,7 +252,11 @@ TagKind      = "Struct" | "Union" | "Enum" ;
 - `Definition(TagId(N))` is where a tag body was written; the body is `tag[N]`.
   `Reference` names a tag without a body.
 
+<!-- ANCHOR_END: type-specifiers -->
+
 ## Declarators
+
+<!-- ANCHOR: declarators -->
 
 ```ebnf
 Declarator = "Abstract"
@@ -262,7 +296,11 @@ ParameterDeclarationKind = ParameterDeclarationKind {
 - `IdentifierList` is a K&R definition; its parameters keep the declared types,
   and promotion happens in sema.
 
+<!-- ANCHOR_END: declarators -->
+
 ## Tags
+
+<!-- ANCHOR: tags -->
 
 ```ebnf
 TagDefinition = TagDefinition { id: TagId, kind: TagKind, name: opt<string>,
@@ -286,7 +324,11 @@ Enumerator   = Enumerator { name: string, attributes?: vec<span<Attribute>>,
 
 A `FieldDecl` without declarators is an anonymous struct or union member.
 
+<!-- ANCHOR_END: tags -->
+
 ## Statements
+
+<!-- ANCHOR: statements -->
 
 ```ebnf
 StmtKind = "Null" | "Break" | "Continue" | "ReturnVoid"
@@ -346,7 +388,11 @@ OmpSchedule = OmpSchedule { kind: ("Static" | "Dynamic" | "Guided" | "Auto" | "R
 - `For.init` is an expression or declaration statement.
 - `LocalLabelDecl` is GNU `__label__`; `ComputedGoto` is `goto *e`.
 
+<!-- ANCHOR_END: statements -->
+
 ## Expressions
+
+<!-- ANCHOR: expressions -->
 
 ```ebnf
 ExprKind = "Identifier(" string ")"
@@ -414,7 +460,11 @@ AssignOp  = "Assign" | "AddAssign" | "SubAssign" | "MulAssign" | "DivAssign"
   (identifiers, `Member` and `Index`).
 - `Real`/`Imag` are GNU `__real__`/`__imag__`; `And`/`Or` are `&&`/`||`.
 
+<!-- ANCHOR_END: expressions -->
+
 ## Literals
+
+<!-- ANCHOR: literals -->
 
 ```ebnf
 IntegerLiteral = IntegerLiteral { value: digits, radix: Radix,
@@ -450,7 +500,11 @@ Encoding      = "Plain" | "Utf8" | "Utf16" | "Utf32" | "Wide" ;
 - `pieces` are the adjacent string tokens that were concatenated, in order.
   `code_units` is the decoded concatenation.
 
+<!-- ANCHOR_END: literals -->
+
 ## Initializers
+
+<!-- ANCHOR: initializers -->
 
 ```ebnf
 Initializer     = "Expr(" expr ")" | "List(" vec<InitializerItem> ")" ;
@@ -463,7 +517,11 @@ Designator      = "Array(" expr ")"
 
 `ArrayRange` is GNU `[a ... b]`.
 
+<!-- ANCHOR_END: initializers -->
+
 ## Pragmas
+
+<!-- ANCHOR: pragmas -->
 
 ```ebnf
 Pragma     = Pragma { kind: PragmaKind } ;
@@ -490,7 +548,11 @@ recognized pragma given an argument it does not accept --
 `Pack`'s `label` is the MSVC named slot: `#pragma pack(push, lbl, 1)` fills both
 `label` and `alignment`, `#pragma pack(pop, lbl)` only `label`.
 
+<!-- ANCHOR_END: pragmas -->
+
 ## Inline assembly
+
+<!-- ANCHOR: inline-assembly -->
 
 ```ebnf
 GnuAsm      = GnuAsm { qualifiers?: vec<span<AsmQualifier>>,
@@ -574,7 +636,7 @@ MsAsmOperator = "Offset" | "Type" | "Length" | "Size" | "Short" ;
 ```
 
 - `MsAsm` is one MSVC `__asm` statement, after merging (see
-  [MSVC inline asm](msvc-asm.md)). An instruction with only `label` is a label
+  [MSVC inline asm](https://github.com/Takashiidobe/slate/blob/main/wiki/concepts/msvc-asm.md)). An instruction with only `label` is a label
   on its own line; `a: b: nop` gives a label-only instruction for `a`.
 - `Register` is always `X86`, and `spelling` keeps the source case. `St(n)` is
   `st(n)`; a bare `st` is `St(0)`. `Name` is anything else: a C name, an asm
@@ -584,7 +646,11 @@ MsAsmOperator = "Offset" | "Type" | "Length" | "Size" | "Short" ;
   prints as its contents. `[eax]T.f` prints as `Binary` `Add` of the bracket and
   `T.f`.
 
+<!-- ANCHOR_END: inline-assembly -->
+
 ## Attributes
+
+<!-- ANCHOR: attributes -->
 
 ```ebnf
 Attribute = (* no arguments *)
@@ -648,3 +714,5 @@ CallingConvention = "Cdecl" | "Stdcall" | "Fastcall" | "Vectorcall" | "Regcall"
   gcc-flavor `mode` whose single argument is not an identifier, which gcc
   ignores with a warning. `Invalid` is a known attribute whose arguments did not
   fit its form.
+
+<!-- ANCHOR_END: attributes -->

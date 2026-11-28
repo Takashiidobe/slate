@@ -21,6 +21,9 @@ cargo +nightly build --manifest-path ../project-rs/Cargo.toml \
 
 ## Define the configurations
 
+A [Project Manifest](../reference/project-manifest.md) records the targets and
+features to merge.
+
 A manifest target names a triple and a compilation database. It can also specify
 the compiler flavor, sysroot, or C build target. Use separate databases when
 platforms build different source files or generate different headers. The same
