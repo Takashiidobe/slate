@@ -260,6 +260,8 @@ defaults every other call conservatively to `ESCAPE`.
 
 ## Related
 
+- [pointer-lift-shims.md](pointer-lift-shims.md) — lifting exported and
+  address-taken functions behind a C-ABI wrapper (`slate-8ge7.26.7`).
 - [rewrite-worklist-engine.md](../historical/rewrite-worklist-engine.md) —
   original lattice proposal and the interproc-vs-local-worklist split.
 - [rewrite-engine-v2.md](rewrite-engine-v2.md) — the arena/worklist engine this
